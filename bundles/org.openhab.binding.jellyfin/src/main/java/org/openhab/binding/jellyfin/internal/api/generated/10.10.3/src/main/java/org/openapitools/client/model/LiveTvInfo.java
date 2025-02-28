@@ -13,62 +13,48 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.client.model.LiveTvServiceInfo;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * LiveTvInfo
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  LiveTvInfo.JSON_PROPERTY_SERVICES,
+  LiveTvInfo.JSON_PROPERTY_IS_ENABLED,
+  LiveTvInfo.JSON_PROPERTY_ENABLED_USERS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class LiveTvInfo {
-  public static final String SERIALIZED_NAME_SERVICES = "Services";
-  @SerializedName(SERIALIZED_NAME_SERVICES)
+  public static final String JSON_PROPERTY_SERVICES = "Services";
   @javax.annotation.Nullable
   private List<LiveTvServiceInfo> services = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_IS_ENABLED = "IsEnabled";
-  @SerializedName(SERIALIZED_NAME_IS_ENABLED)
+  public static final String JSON_PROPERTY_IS_ENABLED = "IsEnabled";
   @javax.annotation.Nullable
   private Boolean isEnabled;
 
-  public static final String SERIALIZED_NAME_ENABLED_USERS = "EnabledUsers";
-  @SerializedName(SERIALIZED_NAME_ENABLED_USERS)
+  public static final String JSON_PROPERTY_ENABLED_USERS = "EnabledUsers";
   @javax.annotation.Nullable
   private List<String> enabledUsers = new ArrayList<>();
 
-  public LiveTvInfo() {
+  public LiveTvInfo() { 
   }
 
   public LiveTvInfo services(@javax.annotation.Nullable List<LiveTvServiceInfo> services) {
@@ -89,10 +75,15 @@ public class LiveTvInfo {
    * @return services
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SERVICES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<LiveTvServiceInfo> getServices() {
     return services;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SERVICES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setServices(@javax.annotation.Nullable List<LiveTvServiceInfo> services) {
     this.services = services;
   }
@@ -108,10 +99,15 @@ public class LiveTvInfo {
    * @return isEnabled
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_ENABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsEnabled() {
     return isEnabled;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_ENABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsEnabled(@javax.annotation.Nullable Boolean isEnabled) {
     this.isEnabled = isEnabled;
   }
@@ -135,16 +131,23 @@ public class LiveTvInfo {
    * @return enabledUsers
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLED_USERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getEnabledUsers() {
     return enabledUsers;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLED_USERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnabledUsers(@javax.annotation.Nullable List<String> enabledUsers) {
     this.enabledUsers = enabledUsers;
   }
 
 
-
+  /**
+   * Return true if this LiveTvInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -186,109 +189,63 @@ public class LiveTvInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Services");
-    openapiFields.add("IsEnabled");
-    openapiFields.add("EnabledUsers");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to LiveTvInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!LiveTvInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in LiveTvInfo is not found in the empty JSON string", LiveTvInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!LiveTvInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `LiveTvInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (jsonObj.get("Services") != null && !jsonObj.get("Services").isJsonNull()) {
-        JsonArray jsonArrayservices = jsonObj.getAsJsonArray("Services");
-        if (jsonArrayservices != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("Services").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `Services` to be an array in the JSON string but got `%s`", jsonObj.get("Services").toString()));
-          }
-
-          // validate the optional field `Services` (array)
-          for (int i = 0; i < jsonArrayservices.size(); i++) {
-            LiveTvServiceInfo.validateJsonElement(jsonArrayservices.get(i));
-          };
-        }
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("EnabledUsers") != null && !jsonObj.get("EnabledUsers").isJsonNull() && !jsonObj.get("EnabledUsers").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `EnabledUsers` to be an array in the JSON string but got `%s`", jsonObj.get("EnabledUsers").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!LiveTvInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'LiveTvInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<LiveTvInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(LiveTvInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<LiveTvInfo>() {
-           @Override
-           public void write(JsonWriter out, LiveTvInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public LiveTvInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of LiveTvInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of LiveTvInfo
-   * @throws IOException if the JSON string is invalid with respect to LiveTvInfo
-   */
-  public static LiveTvInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, LiveTvInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of LiveTvInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Services` to the URL query string
+    if (getServices() != null) {
+      for (int i = 0; i < getServices().size(); i++) {
+        if (getServices().get(i) != null) {
+          joiner.add(getServices().get(i).toUrlQueryString(String.format("%sServices%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `IsEnabled` to the URL query string
+    if (getIsEnabled() != null) {
+      joiner.add(String.format("%sIsEnabled%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsEnabled()))));
+    }
+
+    // add `EnabledUsers` to the URL query string
+    if (getEnabledUsers() != null) {
+      for (int i = 0; i < getEnabledUsers().size(); i++) {
+        joiner.add(String.format("%sEnabledUsers%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getEnabledUsers().get(i)))));
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

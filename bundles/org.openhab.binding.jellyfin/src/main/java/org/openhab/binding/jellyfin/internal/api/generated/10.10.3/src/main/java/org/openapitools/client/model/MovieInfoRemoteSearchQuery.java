@@ -13,71 +13,58 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import java.util.UUID;
 import org.openapitools.client.model.MovieInfo;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * MovieInfoRemoteSearchQuery
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  MovieInfoRemoteSearchQuery.JSON_PROPERTY_SEARCH_INFO,
+  MovieInfoRemoteSearchQuery.JSON_PROPERTY_ITEM_ID,
+  MovieInfoRemoteSearchQuery.JSON_PROPERTY_SEARCH_PROVIDER_NAME,
+  MovieInfoRemoteSearchQuery.JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class MovieInfoRemoteSearchQuery {
-  public static final String SERIALIZED_NAME_SEARCH_INFO = "SearchInfo";
-  @SerializedName(SERIALIZED_NAME_SEARCH_INFO)
-  @javax.annotation.Nullable
-  private MovieInfo searchInfo;
+  public static final String JSON_PROPERTY_SEARCH_INFO = "SearchInfo";
+  private JsonNullable<MovieInfo> searchInfo = JsonNullable.<MovieInfo>undefined();
 
-  public static final String SERIALIZED_NAME_ITEM_ID = "ItemId";
-  @SerializedName(SERIALIZED_NAME_ITEM_ID)
+  public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
   @javax.annotation.Nullable
   private UUID itemId;
 
-  public static final String SERIALIZED_NAME_SEARCH_PROVIDER_NAME = "SearchProviderName";
-  @SerializedName(SERIALIZED_NAME_SEARCH_PROVIDER_NAME)
-  @javax.annotation.Nullable
-  private String searchProviderName;
+  public static final String JSON_PROPERTY_SEARCH_PROVIDER_NAME = "SearchProviderName";
+  private JsonNullable<String> searchProviderName = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_INCLUDE_DISABLED_PROVIDERS = "IncludeDisabledProviders";
-  @SerializedName(SERIALIZED_NAME_INCLUDE_DISABLED_PROVIDERS)
+  public static final String JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS = "IncludeDisabledProviders";
   @javax.annotation.Nullable
   private Boolean includeDisabledProviders;
 
-  public MovieInfoRemoteSearchQuery() {
+  public MovieInfoRemoteSearchQuery() { 
   }
 
   public MovieInfoRemoteSearchQuery searchInfo(@javax.annotation.Nullable MovieInfo searchInfo) {
-    this.searchInfo = searchInfo;
+    this.searchInfo = JsonNullable.<MovieInfo>of(searchInfo);
     return this;
   }
 
@@ -86,12 +73,25 @@ public class MovieInfoRemoteSearchQuery {
    * @return searchInfo
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public MovieInfo getSearchInfo() {
+        return searchInfo.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SEARCH_INFO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<MovieInfo> getSearchInfo_JsonNullable() {
     return searchInfo;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SEARCH_INFO)
+  public void setSearchInfo_JsonNullable(JsonNullable<MovieInfo> searchInfo) {
+    this.searchInfo = searchInfo;
   }
 
   public void setSearchInfo(@javax.annotation.Nullable MovieInfo searchInfo) {
-    this.searchInfo = searchInfo;
+    this.searchInfo = JsonNullable.<MovieInfo>of(searchInfo);
   }
 
 
@@ -105,17 +105,22 @@ public class MovieInfoRemoteSearchQuery {
    * @return itemId
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getItemId() {
     return itemId;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemId(@javax.annotation.Nullable UUID itemId) {
     this.itemId = itemId;
   }
 
 
   public MovieInfoRemoteSearchQuery searchProviderName(@javax.annotation.Nullable String searchProviderName) {
-    this.searchProviderName = searchProviderName;
+    this.searchProviderName = JsonNullable.<String>of(searchProviderName);
     return this;
   }
 
@@ -124,12 +129,25 @@ public class MovieInfoRemoteSearchQuery {
    * @return searchProviderName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getSearchProviderName() {
+        return searchProviderName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getSearchProviderName_JsonNullable() {
     return searchProviderName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
+  public void setSearchProviderName_JsonNullable(JsonNullable<String> searchProviderName) {
+    this.searchProviderName = searchProviderName;
   }
 
   public void setSearchProviderName(@javax.annotation.Nullable String searchProviderName) {
-    this.searchProviderName = searchProviderName;
+    this.searchProviderName = JsonNullable.<String>of(searchProviderName);
   }
 
 
@@ -143,16 +161,23 @@ public class MovieInfoRemoteSearchQuery {
    * @return includeDisabledProviders
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIncludeDisabledProviders() {
     return includeDisabledProviders;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIncludeDisabledProviders(@javax.annotation.Nullable Boolean includeDisabledProviders) {
     this.includeDisabledProviders = includeDisabledProviders;
   }
 
 
-
+  /**
+   * Return true if this MovieInfoRemoteSearchQuery object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -162,9 +187,9 @@ public class MovieInfoRemoteSearchQuery {
       return false;
     }
     MovieInfoRemoteSearchQuery movieInfoRemoteSearchQuery = (MovieInfoRemoteSearchQuery) o;
-    return Objects.equals(this.searchInfo, movieInfoRemoteSearchQuery.searchInfo) &&
+    return equalsNullable(this.searchInfo, movieInfoRemoteSearchQuery.searchInfo) &&
         Objects.equals(this.itemId, movieInfoRemoteSearchQuery.itemId) &&
-        Objects.equals(this.searchProviderName, movieInfoRemoteSearchQuery.searchProviderName) &&
+        equalsNullable(this.searchProviderName, movieInfoRemoteSearchQuery.searchProviderName) &&
         Objects.equals(this.includeDisabledProviders, movieInfoRemoteSearchQuery.includeDisabledProviders);
   }
 
@@ -174,7 +199,7 @@ public class MovieInfoRemoteSearchQuery {
 
   @Override
   public int hashCode() {
-    return Objects.hash(searchInfo, itemId, searchProviderName, includeDisabledProviders);
+    return Objects.hash(hashCodeNullable(searchInfo), itemId, hashCodeNullable(searchProviderName), includeDisabledProviders);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -207,102 +232,59 @@ public class MovieInfoRemoteSearchQuery {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("SearchInfo");
-    openapiFields.add("ItemId");
-    openapiFields.add("SearchProviderName");
-    openapiFields.add("IncludeDisabledProviders");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to MovieInfoRemoteSearchQuery
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!MovieInfoRemoteSearchQuery.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in MovieInfoRemoteSearchQuery is not found in the empty JSON string", MovieInfoRemoteSearchQuery.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!MovieInfoRemoteSearchQuery.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `MovieInfoRemoteSearchQuery` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // validate the optional field `SearchInfo`
-      if (jsonObj.get("SearchInfo") != null && !jsonObj.get("SearchInfo").isJsonNull()) {
-        MovieInfo.validateJsonElement(jsonObj.get("SearchInfo"));
-      }
-      if ((jsonObj.get("ItemId") != null && !jsonObj.get("ItemId").isJsonNull()) && !jsonObj.get("ItemId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ItemId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ItemId").toString()));
-      }
-      if ((jsonObj.get("SearchProviderName") != null && !jsonObj.get("SearchProviderName").isJsonNull()) && !jsonObj.get("SearchProviderName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SearchProviderName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("SearchProviderName").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!MovieInfoRemoteSearchQuery.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'MovieInfoRemoteSearchQuery' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<MovieInfoRemoteSearchQuery> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(MovieInfoRemoteSearchQuery.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<MovieInfoRemoteSearchQuery>() {
-           @Override
-           public void write(JsonWriter out, MovieInfoRemoteSearchQuery value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public MovieInfoRemoteSearchQuery read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of MovieInfoRemoteSearchQuery given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of MovieInfoRemoteSearchQuery
-   * @throws IOException if the JSON string is invalid with respect to MovieInfoRemoteSearchQuery
-   */
-  public static MovieInfoRemoteSearchQuery fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, MovieInfoRemoteSearchQuery.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of MovieInfoRemoteSearchQuery to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `SearchInfo` to the URL query string
+    if (getSearchInfo() != null) {
+      joiner.add(getSearchInfo().toUrlQueryString(prefix + "SearchInfo" + suffix));
+    }
+
+    // add `ItemId` to the URL query string
+    if (getItemId() != null) {
+      joiner.add(String.format("%sItemId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
+    }
+
+    // add `SearchProviderName` to the URL query string
+    if (getSearchProviderName() != null) {
+      joiner.add(String.format("%sSearchProviderName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSearchProviderName()))));
+    }
+
+    // add `IncludeDisabledProviders` to the URL query string
+    if (getIncludeDisabledProviders() != null) {
+      joiner.add(String.format("%sIncludeDisabledProviders%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIncludeDisabledProviders()))));
+    }
+
+    return joiner.toString();
   }
 }
 

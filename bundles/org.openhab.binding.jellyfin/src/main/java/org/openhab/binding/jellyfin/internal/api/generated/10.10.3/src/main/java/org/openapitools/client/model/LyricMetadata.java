@@ -13,99 +13,78 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * LyricMetadata model.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  LyricMetadata.JSON_PROPERTY_ARTIST,
+  LyricMetadata.JSON_PROPERTY_ALBUM,
+  LyricMetadata.JSON_PROPERTY_TITLE,
+  LyricMetadata.JSON_PROPERTY_AUTHOR,
+  LyricMetadata.JSON_PROPERTY_LENGTH,
+  LyricMetadata.JSON_PROPERTY_BY,
+  LyricMetadata.JSON_PROPERTY_OFFSET,
+  LyricMetadata.JSON_PROPERTY_CREATOR,
+  LyricMetadata.JSON_PROPERTY_VERSION,
+  LyricMetadata.JSON_PROPERTY_IS_SYNCED
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class LyricMetadata {
-  public static final String SERIALIZED_NAME_ARTIST = "Artist";
-  @SerializedName(SERIALIZED_NAME_ARTIST)
-  @javax.annotation.Nullable
-  private String artist;
+  public static final String JSON_PROPERTY_ARTIST = "Artist";
+  private JsonNullable<String> artist = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ALBUM = "Album";
-  @SerializedName(SERIALIZED_NAME_ALBUM)
-  @javax.annotation.Nullable
-  private String album;
+  public static final String JSON_PROPERTY_ALBUM = "Album";
+  private JsonNullable<String> album = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TITLE = "Title";
-  @SerializedName(SERIALIZED_NAME_TITLE)
-  @javax.annotation.Nullable
-  private String title;
+  public static final String JSON_PROPERTY_TITLE = "Title";
+  private JsonNullable<String> title = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_AUTHOR = "Author";
-  @SerializedName(SERIALIZED_NAME_AUTHOR)
-  @javax.annotation.Nullable
-  private String author;
+  public static final String JSON_PROPERTY_AUTHOR = "Author";
+  private JsonNullable<String> author = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_LENGTH = "Length";
-  @SerializedName(SERIALIZED_NAME_LENGTH)
-  @javax.annotation.Nullable
-  private Long length;
+  public static final String JSON_PROPERTY_LENGTH = "Length";
+  private JsonNullable<Long> length = JsonNullable.<Long>undefined();
 
-  public static final String SERIALIZED_NAME_BY = "By";
-  @SerializedName(SERIALIZED_NAME_BY)
-  @javax.annotation.Nullable
-  private String by;
+  public static final String JSON_PROPERTY_BY = "By";
+  private JsonNullable<String> by = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_OFFSET = "Offset";
-  @SerializedName(SERIALIZED_NAME_OFFSET)
-  @javax.annotation.Nullable
-  private Long offset;
+  public static final String JSON_PROPERTY_OFFSET = "Offset";
+  private JsonNullable<Long> offset = JsonNullable.<Long>undefined();
 
-  public static final String SERIALIZED_NAME_CREATOR = "Creator";
-  @SerializedName(SERIALIZED_NAME_CREATOR)
-  @javax.annotation.Nullable
-  private String creator;
+  public static final String JSON_PROPERTY_CREATOR = "Creator";
+  private JsonNullable<String> creator = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_VERSION = "Version";
-  @SerializedName(SERIALIZED_NAME_VERSION)
-  @javax.annotation.Nullable
-  private String version;
+  public static final String JSON_PROPERTY_VERSION = "Version";
+  private JsonNullable<String> version = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_IS_SYNCED = "IsSynced";
-  @SerializedName(SERIALIZED_NAME_IS_SYNCED)
-  @javax.annotation.Nullable
-  private Boolean isSynced;
+  public static final String JSON_PROPERTY_IS_SYNCED = "IsSynced";
+  private JsonNullable<Boolean> isSynced = JsonNullable.<Boolean>undefined();
 
-  public LyricMetadata() {
+  public LyricMetadata() { 
   }
 
   public LyricMetadata artist(@javax.annotation.Nullable String artist) {
-    this.artist = artist;
+    this.artist = JsonNullable.<String>of(artist);
     return this;
   }
 
@@ -114,17 +93,30 @@ public class LyricMetadata {
    * @return artist
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getArtist() {
+        return artist.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ARTIST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getArtist_JsonNullable() {
     return artist;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ARTIST)
+  public void setArtist_JsonNullable(JsonNullable<String> artist) {
+    this.artist = artist;
   }
 
   public void setArtist(@javax.annotation.Nullable String artist) {
-    this.artist = artist;
+    this.artist = JsonNullable.<String>of(artist);
   }
 
 
   public LyricMetadata album(@javax.annotation.Nullable String album) {
-    this.album = album;
+    this.album = JsonNullable.<String>of(album);
     return this;
   }
 
@@ -133,17 +125,30 @@ public class LyricMetadata {
    * @return album
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getAlbum() {
+        return album.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ALBUM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getAlbum_JsonNullable() {
     return album;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ALBUM)
+  public void setAlbum_JsonNullable(JsonNullable<String> album) {
+    this.album = album;
   }
 
   public void setAlbum(@javax.annotation.Nullable String album) {
-    this.album = album;
+    this.album = JsonNullable.<String>of(album);
   }
 
 
   public LyricMetadata title(@javax.annotation.Nullable String title) {
-    this.title = title;
+    this.title = JsonNullable.<String>of(title);
     return this;
   }
 
@@ -152,17 +157,30 @@ public class LyricMetadata {
    * @return title
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getTitle() {
+        return title.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getTitle_JsonNullable() {
     return title;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TITLE)
+  public void setTitle_JsonNullable(JsonNullable<String> title) {
+    this.title = title;
   }
 
   public void setTitle(@javax.annotation.Nullable String title) {
-    this.title = title;
+    this.title = JsonNullable.<String>of(title);
   }
 
 
   public LyricMetadata author(@javax.annotation.Nullable String author) {
-    this.author = author;
+    this.author = JsonNullable.<String>of(author);
     return this;
   }
 
@@ -171,17 +189,30 @@ public class LyricMetadata {
    * @return author
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getAuthor() {
+        return author.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_AUTHOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getAuthor_JsonNullable() {
     return author;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AUTHOR)
+  public void setAuthor_JsonNullable(JsonNullable<String> author) {
+    this.author = author;
   }
 
   public void setAuthor(@javax.annotation.Nullable String author) {
-    this.author = author;
+    this.author = JsonNullable.<String>of(author);
   }
 
 
   public LyricMetadata length(@javax.annotation.Nullable Long length) {
-    this.length = length;
+    this.length = JsonNullable.<Long>of(length);
     return this;
   }
 
@@ -190,17 +221,30 @@ public class LyricMetadata {
    * @return length
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Long getLength() {
+        return length.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LENGTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Long> getLength_JsonNullable() {
     return length;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LENGTH)
+  public void setLength_JsonNullable(JsonNullable<Long> length) {
+    this.length = length;
   }
 
   public void setLength(@javax.annotation.Nullable Long length) {
-    this.length = length;
+    this.length = JsonNullable.<Long>of(length);
   }
 
 
   public LyricMetadata by(@javax.annotation.Nullable String by) {
-    this.by = by;
+    this.by = JsonNullable.<String>of(by);
     return this;
   }
 
@@ -209,17 +253,30 @@ public class LyricMetadata {
    * @return by
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getBy() {
+        return by.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_BY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getBy_JsonNullable() {
     return by;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_BY)
+  public void setBy_JsonNullable(JsonNullable<String> by) {
+    this.by = by;
   }
 
   public void setBy(@javax.annotation.Nullable String by) {
-    this.by = by;
+    this.by = JsonNullable.<String>of(by);
   }
 
 
   public LyricMetadata offset(@javax.annotation.Nullable Long offset) {
-    this.offset = offset;
+    this.offset = JsonNullable.<Long>of(offset);
     return this;
   }
 
@@ -228,17 +285,30 @@ public class LyricMetadata {
    * @return offset
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Long getOffset() {
+        return offset.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_OFFSET)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Long> getOffset_JsonNullable() {
     return offset;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_OFFSET)
+  public void setOffset_JsonNullable(JsonNullable<Long> offset) {
+    this.offset = offset;
   }
 
   public void setOffset(@javax.annotation.Nullable Long offset) {
-    this.offset = offset;
+    this.offset = JsonNullable.<Long>of(offset);
   }
 
 
   public LyricMetadata creator(@javax.annotation.Nullable String creator) {
-    this.creator = creator;
+    this.creator = JsonNullable.<String>of(creator);
     return this;
   }
 
@@ -247,17 +317,30 @@ public class LyricMetadata {
    * @return creator
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getCreator() {
+        return creator.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CREATOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getCreator_JsonNullable() {
     return creator;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CREATOR)
+  public void setCreator_JsonNullable(JsonNullable<String> creator) {
+    this.creator = creator;
   }
 
   public void setCreator(@javax.annotation.Nullable String creator) {
-    this.creator = creator;
+    this.creator = JsonNullable.<String>of(creator);
   }
 
 
   public LyricMetadata version(@javax.annotation.Nullable String version) {
-    this.version = version;
+    this.version = JsonNullable.<String>of(version);
     return this;
   }
 
@@ -266,17 +349,30 @@ public class LyricMetadata {
    * @return version
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getVersion() {
+        return version.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getVersion_JsonNullable() {
     return version;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  public void setVersion_JsonNullable(JsonNullable<String> version) {
+    this.version = version;
   }
 
   public void setVersion(@javax.annotation.Nullable String version) {
-    this.version = version;
+    this.version = JsonNullable.<String>of(version);
   }
 
 
   public LyricMetadata isSynced(@javax.annotation.Nullable Boolean isSynced) {
-    this.isSynced = isSynced;
+    this.isSynced = JsonNullable.<Boolean>of(isSynced);
     return this;
   }
 
@@ -285,16 +381,31 @@ public class LyricMetadata {
    * @return isSynced
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Boolean getIsSynced() {
-    return isSynced;
+        return isSynced.orElse(null);
   }
 
-  public void setIsSynced(@javax.annotation.Nullable Boolean isSynced) {
+  @JsonProperty(JSON_PROPERTY_IS_SYNCED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Boolean> getIsSynced_JsonNullable() {
+    return isSynced;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_SYNCED)
+  public void setIsSynced_JsonNullable(JsonNullable<Boolean> isSynced) {
     this.isSynced = isSynced;
   }
 
+  public void setIsSynced(@javax.annotation.Nullable Boolean isSynced) {
+    this.isSynced = JsonNullable.<Boolean>of(isSynced);
+  }
 
 
+  /**
+   * Return true if this LyricMetadata object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -304,16 +415,16 @@ public class LyricMetadata {
       return false;
     }
     LyricMetadata lyricMetadata = (LyricMetadata) o;
-    return Objects.equals(this.artist, lyricMetadata.artist) &&
-        Objects.equals(this.album, lyricMetadata.album) &&
-        Objects.equals(this.title, lyricMetadata.title) &&
-        Objects.equals(this.author, lyricMetadata.author) &&
-        Objects.equals(this.length, lyricMetadata.length) &&
-        Objects.equals(this.by, lyricMetadata.by) &&
-        Objects.equals(this.offset, lyricMetadata.offset) &&
-        Objects.equals(this.creator, lyricMetadata.creator) &&
-        Objects.equals(this.version, lyricMetadata.version) &&
-        Objects.equals(this.isSynced, lyricMetadata.isSynced);
+    return equalsNullable(this.artist, lyricMetadata.artist) &&
+        equalsNullable(this.album, lyricMetadata.album) &&
+        equalsNullable(this.title, lyricMetadata.title) &&
+        equalsNullable(this.author, lyricMetadata.author) &&
+        equalsNullable(this.length, lyricMetadata.length) &&
+        equalsNullable(this.by, lyricMetadata.by) &&
+        equalsNullable(this.offset, lyricMetadata.offset) &&
+        equalsNullable(this.creator, lyricMetadata.creator) &&
+        equalsNullable(this.version, lyricMetadata.version) &&
+        equalsNullable(this.isSynced, lyricMetadata.isSynced);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -322,7 +433,7 @@ public class LyricMetadata {
 
   @Override
   public int hashCode() {
-    return Objects.hash(artist, album, title, author, length, by, offset, creator, version, isSynced);
+    return Objects.hash(hashCodeNullable(artist), hashCodeNullable(album), hashCodeNullable(title), hashCodeNullable(author), hashCodeNullable(length), hashCodeNullable(by), hashCodeNullable(offset), hashCodeNullable(creator), hashCodeNullable(version), hashCodeNullable(isSynced));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -361,119 +472,89 @@ public class LyricMetadata {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Artist");
-    openapiFields.add("Album");
-    openapiFields.add("Title");
-    openapiFields.add("Author");
-    openapiFields.add("Length");
-    openapiFields.add("By");
-    openapiFields.add("Offset");
-    openapiFields.add("Creator");
-    openapiFields.add("Version");
-    openapiFields.add("IsSynced");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to LyricMetadata
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!LyricMetadata.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in LyricMetadata is not found in the empty JSON string", LyricMetadata.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!LyricMetadata.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `LyricMetadata` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Artist") != null && !jsonObj.get("Artist").isJsonNull()) && !jsonObj.get("Artist").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Artist` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Artist").toString()));
-      }
-      if ((jsonObj.get("Album") != null && !jsonObj.get("Album").isJsonNull()) && !jsonObj.get("Album").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Album` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Album").toString()));
-      }
-      if ((jsonObj.get("Title") != null && !jsonObj.get("Title").isJsonNull()) && !jsonObj.get("Title").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Title` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Title").toString()));
-      }
-      if ((jsonObj.get("Author") != null && !jsonObj.get("Author").isJsonNull()) && !jsonObj.get("Author").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Author` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Author").toString()));
-      }
-      if ((jsonObj.get("By") != null && !jsonObj.get("By").isJsonNull()) && !jsonObj.get("By").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `By` to be a primitive type in the JSON string but got `%s`", jsonObj.get("By").toString()));
-      }
-      if ((jsonObj.get("Creator") != null && !jsonObj.get("Creator").isJsonNull()) && !jsonObj.get("Creator").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Creator` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Creator").toString()));
-      }
-      if ((jsonObj.get("Version") != null && !jsonObj.get("Version").isJsonNull()) && !jsonObj.get("Version").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Version` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Version").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!LyricMetadata.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'LyricMetadata' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<LyricMetadata> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(LyricMetadata.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<LyricMetadata>() {
-           @Override
-           public void write(JsonWriter out, LyricMetadata value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public LyricMetadata read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of LyricMetadata given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of LyricMetadata
-   * @throws IOException if the JSON string is invalid with respect to LyricMetadata
-   */
-  public static LyricMetadata fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, LyricMetadata.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of LyricMetadata to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Artist` to the URL query string
+    if (getArtist() != null) {
+      joiner.add(String.format("%sArtist%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getArtist()))));
+    }
+
+    // add `Album` to the URL query string
+    if (getAlbum() != null) {
+      joiner.add(String.format("%sAlbum%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAlbum()))));
+    }
+
+    // add `Title` to the URL query string
+    if (getTitle() != null) {
+      joiner.add(String.format("%sTitle%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTitle()))));
+    }
+
+    // add `Author` to the URL query string
+    if (getAuthor() != null) {
+      joiner.add(String.format("%sAuthor%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAuthor()))));
+    }
+
+    // add `Length` to the URL query string
+    if (getLength() != null) {
+      joiner.add(String.format("%sLength%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLength()))));
+    }
+
+    // add `By` to the URL query string
+    if (getBy() != null) {
+      joiner.add(String.format("%sBy%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBy()))));
+    }
+
+    // add `Offset` to the URL query string
+    if (getOffset() != null) {
+      joiner.add(String.format("%sOffset%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOffset()))));
+    }
+
+    // add `Creator` to the URL query string
+    if (getCreator() != null) {
+      joiner.add(String.format("%sCreator%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCreator()))));
+    }
+
+    // add `Version` to the URL query string
+    if (getVersion() != null) {
+      joiner.add(String.format("%sVersion%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
+    }
+
+    // add `IsSynced` to the URL query string
+    if (getIsSynced() != null) {
+      joiner.add(String.format("%sIsSynced%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsSynced()))));
+    }
+
+    return joiner.toString();
   }
 }
 

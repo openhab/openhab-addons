@@ -10,222 +10,176 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import java.io.File;
 import org.openapitools.client.model.ProblemDetails;
 import java.util.UUID;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class VideoAttachmentsApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public VideoAttachmentsApi() {
-        this(Configuration.getDefaultApiClient());
+  public VideoAttachmentsApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public VideoAttachmentsApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
     }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
 
-    public VideoAttachmentsApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
+  /**
+   * Get video attachment.
+   * 
+   * @param videoId Video ID. (required)
+   * @param mediaSourceId Media Source ID. (required)
+   * @param index Attachment Index. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getAttachment(UUID videoId, String mediaSourceId, Integer index) throws ApiException {
+    ApiResponse<File> localVarResponse = getAttachmentWithHttpInfo(videoId, mediaSourceId, index);
+    return localVarResponse.getData();
+  }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
-    }
-
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
-
-    public int getHostIndex() {
-        return localHostIndex;
-    }
-
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
-    }
-
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for getAttachment
-     * @param videoId Video ID. (required)
-     * @param mediaSourceId Media Source ID. (required)
-     * @param index Attachment Index. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Attachment retrieved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Video or attachment not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getAttachmentCall(UUID videoId, String mediaSourceId, Integer index, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Get video attachment.
+   * 
+   * @param videoId Video ID. (required)
+   * @param mediaSourceId Media Source ID. (required)
+   * @param index Attachment Index. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getAttachmentWithHttpInfo(UUID videoId, String mediaSourceId, Integer index) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getAttachmentRequestBuilder(videoId, mediaSourceId, index);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getAttachment", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = null;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/Videos/{videoId}/{mediaSourceId}/Attachments/{index}"
-            .replace("{" + "videoId" + "}", localVarApiClient.escapeString(videoId.toString()))
-            .replace("{" + "mediaSourceId" + "}", localVarApiClient.escapeString(mediaSourceId.toString()))
-            .replace("{" + "index" + "}", localVarApiClient.escapeString(index.toString()));
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/octet-stream",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+  private HttpRequest.Builder getAttachmentRequestBuilder(UUID videoId, String mediaSourceId, Integer index) throws ApiException {
+    // verify the required parameter 'videoId' is set
+    if (videoId == null) {
+      throw new ApiException(400, "Missing the required parameter 'videoId' when calling getAttachment");
+    }
+    // verify the required parameter 'mediaSourceId' is set
+    if (mediaSourceId == null) {
+      throw new ApiException(400, "Missing the required parameter 'mediaSourceId' when calling getAttachment");
+    }
+    // verify the required parameter 'index' is set
+    if (index == null) {
+      throw new ApiException(400, "Missing the required parameter 'index' when calling getAttachment");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getAttachmentValidateBeforeCall(UUID videoId, String mediaSourceId, Integer index, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'videoId' is set
-        if (videoId == null) {
-            throw new ApiException("Missing the required parameter 'videoId' when calling getAttachment(Async)");
-        }
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
-        // verify the required parameter 'mediaSourceId' is set
-        if (mediaSourceId == null) {
-            throw new ApiException("Missing the required parameter 'mediaSourceId' when calling getAttachment(Async)");
-        }
+    String localVarPath = "/Videos/{videoId}/{mediaSourceId}/Attachments/{index}"
+        .replace("{videoId}", ApiClient.urlEncode(videoId.toString()))
+        .replace("{mediaSourceId}", ApiClient.urlEncode(mediaSourceId.toString()))
+        .replace("{index}", ApiClient.urlEncode(index.toString()));
 
-        // verify the required parameter 'index' is set
-        if (index == null) {
-            throw new ApiException("Missing the required parameter 'index' when calling getAttachment(Async)");
-        }
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
-        return getAttachmentCall(videoId, mediaSourceId, index, _callback);
+    localVarRequestBuilder.header("Accept", "application/octet-stream, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
 
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Get video attachment.
-     * 
-     * @param videoId Video ID. (required)
-     * @param mediaSourceId Media Source ID. (required)
-     * @param index Attachment Index. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Attachment retrieved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Video or attachment not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getAttachment(UUID videoId, String mediaSourceId, Integer index) throws ApiException {
-        ApiResponse<File> localVarResp = getAttachmentWithHttpInfo(videoId, mediaSourceId, index);
-        return localVarResp.getData();
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    /**
-     * Get video attachment.
-     * 
-     * @param videoId Video ID. (required)
-     * @param mediaSourceId Media Source ID. (required)
-     * @param index Attachment Index. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Attachment retrieved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Video or attachment not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getAttachmentWithHttpInfo(UUID videoId, String mediaSourceId, Integer index) throws ApiException {
-        okhttp3.Call localVarCall = getAttachmentValidateBeforeCall(videoId, mediaSourceId, index, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get video attachment. (asynchronously)
-     * 
-     * @param videoId Video ID. (required)
-     * @param mediaSourceId Media Source ID. (required)
-     * @param index Attachment Index. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Attachment retrieved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Video or attachment not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getAttachmentAsync(UUID videoId, String mediaSourceId, Integer index, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getAttachmentValidateBeforeCall(videoId, mediaSourceId, index, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
 }

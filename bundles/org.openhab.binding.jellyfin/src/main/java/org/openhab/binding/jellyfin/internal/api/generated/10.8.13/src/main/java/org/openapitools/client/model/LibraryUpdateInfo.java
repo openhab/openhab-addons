@@ -13,87 +13,74 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class LibraryUpdateInfo.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  LibraryUpdateInfo.JSON_PROPERTY_FOLDERS_ADDED_TO,
+  LibraryUpdateInfo.JSON_PROPERTY_FOLDERS_REMOVED_FROM,
+  LibraryUpdateInfo.JSON_PROPERTY_ITEMS_ADDED,
+  LibraryUpdateInfo.JSON_PROPERTY_ITEMS_REMOVED,
+  LibraryUpdateInfo.JSON_PROPERTY_ITEMS_UPDATED,
+  LibraryUpdateInfo.JSON_PROPERTY_COLLECTION_FOLDERS,
+  LibraryUpdateInfo.JSON_PROPERTY_IS_EMPTY
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class LibraryUpdateInfo {
-  public static final String SERIALIZED_NAME_FOLDERS_ADDED_TO = "FoldersAddedTo";
-  @SerializedName(SERIALIZED_NAME_FOLDERS_ADDED_TO)
+  public static final String JSON_PROPERTY_FOLDERS_ADDED_TO = "FoldersAddedTo";
   @javax.annotation.Nullable
   private List<String> foldersAddedTo = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_FOLDERS_REMOVED_FROM = "FoldersRemovedFrom";
-  @SerializedName(SERIALIZED_NAME_FOLDERS_REMOVED_FROM)
+  public static final String JSON_PROPERTY_FOLDERS_REMOVED_FROM = "FoldersRemovedFrom";
   @javax.annotation.Nullable
   private List<String> foldersRemovedFrom = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_ITEMS_ADDED = "ItemsAdded";
-  @SerializedName(SERIALIZED_NAME_ITEMS_ADDED)
+  public static final String JSON_PROPERTY_ITEMS_ADDED = "ItemsAdded";
   @javax.annotation.Nullable
   private List<String> itemsAdded = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_ITEMS_REMOVED = "ItemsRemoved";
-  @SerializedName(SERIALIZED_NAME_ITEMS_REMOVED)
+  public static final String JSON_PROPERTY_ITEMS_REMOVED = "ItemsRemoved";
   @javax.annotation.Nullable
   private List<String> itemsRemoved = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_ITEMS_UPDATED = "ItemsUpdated";
-  @SerializedName(SERIALIZED_NAME_ITEMS_UPDATED)
+  public static final String JSON_PROPERTY_ITEMS_UPDATED = "ItemsUpdated";
   @javax.annotation.Nullable
   private List<String> itemsUpdated = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_COLLECTION_FOLDERS = "CollectionFolders";
-  @SerializedName(SERIALIZED_NAME_COLLECTION_FOLDERS)
+  public static final String JSON_PROPERTY_COLLECTION_FOLDERS = "CollectionFolders";
   @javax.annotation.Nullable
   private List<String> collectionFolders = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_IS_EMPTY = "IsEmpty";
-  @SerializedName(SERIALIZED_NAME_IS_EMPTY)
+  public static final String JSON_PROPERTY_IS_EMPTY = "IsEmpty";
   @javax.annotation.Nullable
   private Boolean isEmpty;
 
-  public LibraryUpdateInfo() {
+  public LibraryUpdateInfo() { 
   }
 
+  @JsonCreator
   public LibraryUpdateInfo(
-     Boolean isEmpty
+    @JsonProperty(JSON_PROPERTY_IS_EMPTY) Boolean isEmpty
   ) {
-    this();
+  this();
     this.isEmpty = isEmpty;
   }
 
@@ -115,10 +102,15 @@ public class LibraryUpdateInfo {
    * @return foldersAddedTo
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_FOLDERS_ADDED_TO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getFoldersAddedTo() {
     return foldersAddedTo;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_FOLDERS_ADDED_TO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFoldersAddedTo(@javax.annotation.Nullable List<String> foldersAddedTo) {
     this.foldersAddedTo = foldersAddedTo;
   }
@@ -142,10 +134,15 @@ public class LibraryUpdateInfo {
    * @return foldersRemovedFrom
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_FOLDERS_REMOVED_FROM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getFoldersRemovedFrom() {
     return foldersRemovedFrom;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_FOLDERS_REMOVED_FROM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFoldersRemovedFrom(@javax.annotation.Nullable List<String> foldersRemovedFrom) {
     this.foldersRemovedFrom = foldersRemovedFrom;
   }
@@ -169,10 +166,15 @@ public class LibraryUpdateInfo {
    * @return itemsAdded
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ITEMS_ADDED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getItemsAdded() {
     return itemsAdded;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ITEMS_ADDED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemsAdded(@javax.annotation.Nullable List<String> itemsAdded) {
     this.itemsAdded = itemsAdded;
   }
@@ -196,10 +198,15 @@ public class LibraryUpdateInfo {
    * @return itemsRemoved
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ITEMS_REMOVED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getItemsRemoved() {
     return itemsRemoved;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ITEMS_REMOVED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemsRemoved(@javax.annotation.Nullable List<String> itemsRemoved) {
     this.itemsRemoved = itemsRemoved;
   }
@@ -223,10 +230,15 @@ public class LibraryUpdateInfo {
    * @return itemsUpdated
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ITEMS_UPDATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getItemsUpdated() {
     return itemsUpdated;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ITEMS_UPDATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemsUpdated(@javax.annotation.Nullable List<String> itemsUpdated) {
     this.itemsUpdated = itemsUpdated;
   }
@@ -250,10 +262,15 @@ public class LibraryUpdateInfo {
    * @return collectionFolders
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_COLLECTION_FOLDERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getCollectionFolders() {
     return collectionFolders;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_COLLECTION_FOLDERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCollectionFolders(@javax.annotation.Nullable List<String> collectionFolders) {
     this.collectionFolders = collectionFolders;
   }
@@ -264,6 +281,8 @@ public class LibraryUpdateInfo {
    * @return isEmpty
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_EMPTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsEmpty() {
     return isEmpty;
   }
@@ -271,6 +290,9 @@ public class LibraryUpdateInfo {
 
 
 
+  /**
+   * Return true if this LibraryUpdateInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -320,119 +342,98 @@ public class LibraryUpdateInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("FoldersAddedTo");
-    openapiFields.add("FoldersRemovedFrom");
-    openapiFields.add("ItemsAdded");
-    openapiFields.add("ItemsRemoved");
-    openapiFields.add("ItemsUpdated");
-    openapiFields.add("CollectionFolders");
-    openapiFields.add("IsEmpty");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to LibraryUpdateInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!LibraryUpdateInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in LibraryUpdateInfo is not found in the empty JSON string", LibraryUpdateInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!LibraryUpdateInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `LibraryUpdateInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("FoldersAddedTo") != null && !jsonObj.get("FoldersAddedTo").isJsonNull() && !jsonObj.get("FoldersAddedTo").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `FoldersAddedTo` to be an array in the JSON string but got `%s`", jsonObj.get("FoldersAddedTo").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("FoldersRemovedFrom") != null && !jsonObj.get("FoldersRemovedFrom").isJsonNull() && !jsonObj.get("FoldersRemovedFrom").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `FoldersRemovedFrom` to be an array in the JSON string but got `%s`", jsonObj.get("FoldersRemovedFrom").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("ItemsAdded") != null && !jsonObj.get("ItemsAdded").isJsonNull() && !jsonObj.get("ItemsAdded").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ItemsAdded` to be an array in the JSON string but got `%s`", jsonObj.get("ItemsAdded").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("ItemsRemoved") != null && !jsonObj.get("ItemsRemoved").isJsonNull() && !jsonObj.get("ItemsRemoved").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ItemsRemoved` to be an array in the JSON string but got `%s`", jsonObj.get("ItemsRemoved").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("ItemsUpdated") != null && !jsonObj.get("ItemsUpdated").isJsonNull() && !jsonObj.get("ItemsUpdated").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ItemsUpdated` to be an array in the JSON string but got `%s`", jsonObj.get("ItemsUpdated").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("CollectionFolders") != null && !jsonObj.get("CollectionFolders").isJsonNull() && !jsonObj.get("CollectionFolders").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `CollectionFolders` to be an array in the JSON string but got `%s`", jsonObj.get("CollectionFolders").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!LibraryUpdateInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'LibraryUpdateInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<LibraryUpdateInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(LibraryUpdateInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<LibraryUpdateInfo>() {
-           @Override
-           public void write(JsonWriter out, LibraryUpdateInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public LibraryUpdateInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of LibraryUpdateInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of LibraryUpdateInfo
-   * @throws IOException if the JSON string is invalid with respect to LibraryUpdateInfo
-   */
-  public static LibraryUpdateInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, LibraryUpdateInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of LibraryUpdateInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `FoldersAddedTo` to the URL query string
+    if (getFoldersAddedTo() != null) {
+      for (int i = 0; i < getFoldersAddedTo().size(); i++) {
+        joiner.add(String.format("%sFoldersAddedTo%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getFoldersAddedTo().get(i)))));
+      }
+    }
+
+    // add `FoldersRemovedFrom` to the URL query string
+    if (getFoldersRemovedFrom() != null) {
+      for (int i = 0; i < getFoldersRemovedFrom().size(); i++) {
+        joiner.add(String.format("%sFoldersRemovedFrom%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getFoldersRemovedFrom().get(i)))));
+      }
+    }
+
+    // add `ItemsAdded` to the URL query string
+    if (getItemsAdded() != null) {
+      for (int i = 0; i < getItemsAdded().size(); i++) {
+        joiner.add(String.format("%sItemsAdded%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getItemsAdded().get(i)))));
+      }
+    }
+
+    // add `ItemsRemoved` to the URL query string
+    if (getItemsRemoved() != null) {
+      for (int i = 0; i < getItemsRemoved().size(); i++) {
+        joiner.add(String.format("%sItemsRemoved%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getItemsRemoved().get(i)))));
+      }
+    }
+
+    // add `ItemsUpdated` to the URL query string
+    if (getItemsUpdated() != null) {
+      for (int i = 0; i < getItemsUpdated().size(); i++) {
+        joiner.add(String.format("%sItemsUpdated%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getItemsUpdated().get(i)))));
+      }
+    }
+
+    // add `CollectionFolders` to the URL query string
+    if (getCollectionFolders() != null) {
+      for (int i = 0; i < getCollectionFolders().size(); i++) {
+        joiner.add(String.format("%sCollectionFolders%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getCollectionFolders().get(i)))));
+      }
+    }
+
+    // add `IsEmpty` to the URL query string
+    if (getIsEmpty() != null) {
+      joiner.add(String.format("%sIsEmpty%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsEmpty()))));
+    }
+
+    return joiner.toString();
   }
 }
 

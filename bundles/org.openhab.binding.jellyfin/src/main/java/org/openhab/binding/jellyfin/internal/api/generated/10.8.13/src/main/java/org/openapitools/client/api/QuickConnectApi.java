@@ -10,585 +10,427 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import org.openapitools.client.model.ProblemDetails;
 import org.openapitools.client.model.QuickConnectResult;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class QuickConnectApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public QuickConnectApi() {
-        this(Configuration.getDefaultApiClient());
+  public QuickConnectApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public QuickConnectApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
     }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
 
-    public QuickConnectApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
+  /**
+   * Authorizes a pending quick connect request.
+   * 
+   * @param code Quick connect code to authorize. (required)
+   * @return Boolean
+   * @throws ApiException if fails to make API call
+   */
+  public Boolean authorize(String code) throws ApiException {
+    ApiResponse<Boolean> localVarResponse = authorizeWithHttpInfo(code);
+    return localVarResponse.getData();
+  }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
-    }
-
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
-
-    public int getHostIndex() {
-        return localHostIndex;
-    }
-
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
-    }
-
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for authorize
-     * @param code Quick connect code to authorize. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Quick connect result authorized successfully. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Unknown user id. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call authorizeCall(String code, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Authorizes a pending quick connect request.
+   * 
+   * @param code Quick connect code to authorize. (required)
+   * @return ApiResponse&lt;Boolean&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Boolean> authorizeWithHttpInfo(String code) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = authorizeRequestBuilder(code);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("authorize", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<Boolean>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = null;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/QuickConnect/Authorize";
+        return new ApiResponse<Boolean>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Boolean>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+  private HttpRequest.Builder authorizeRequestBuilder(String code) throws ApiException {
+    // verify the required parameter 'code' is set
+    if (code == null) {
+      throw new ApiException(400, "Missing the required parameter 'code' when calling authorize");
+    }
 
-        if (code != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("code", code));
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/QuickConnect/Authorize";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "code";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("code", code));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Attempts to retrieve authentication information.
+   * 
+   * @param secret Secret previously returned from the Initiate endpoint. (required)
+   * @return QuickConnectResult
+   * @throws ApiException if fails to make API call
+   */
+  public QuickConnectResult connect(String secret) throws ApiException {
+    ApiResponse<QuickConnectResult> localVarResponse = connectWithHttpInfo(secret);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Attempts to retrieve authentication information.
+   * 
+   * @param secret Secret previously returned from the Initiate endpoint. (required)
+   * @return ApiResponse&lt;QuickConnectResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<QuickConnectResult> connectWithHttpInfo(String secret) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = connectRequestBuilder(secret);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("connect", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<QuickConnectResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<QuickConnectResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<QuickConnectResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder connectRequestBuilder(String secret) throws ApiException {
+    // verify the required parameter 'secret' is set
+    if (secret == null) {
+      throw new ApiException(400, "Missing the required parameter 'secret' when calling connect");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/QuickConnect/Connect";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "secret";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("secret", secret));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets the current quick connect state.
+   * 
+   * @return Boolean
+   * @throws ApiException if fails to make API call
+   */
+  public Boolean getEnabled() throws ApiException {
+    ApiResponse<Boolean> localVarResponse = getEnabledWithHttpInfo();
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets the current quick connect state.
+   * 
+   * @return ApiResponse&lt;Boolean&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Boolean> getEnabledWithHttpInfo() throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getEnabledRequestBuilder();
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getEnabled", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<Boolean>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<Boolean>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Boolean>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getEnabledRequestBuilder() throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/QuickConnect/Enabled";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Initiate a new quick connect request.
+   * 
+   * @return QuickConnectResult
+   * @throws ApiException if fails to make API call
+   */
+  public QuickConnectResult initiate() throws ApiException {
+    ApiResponse<QuickConnectResult> localVarResponse = initiateWithHttpInfo();
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Initiate a new quick connect request.
+   * 
+   * @return ApiResponse&lt;QuickConnectResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<QuickConnectResult> initiateWithHttpInfo() throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = initiateRequestBuilder();
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("initiate", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<QuickConnectResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<QuickConnectResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<QuickConnectResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
     }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call authorizeValidateBeforeCall(String code, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'code' is set
-        if (code == null) {
-            throw new ApiException("Missing the required parameter 'code' when calling authorize(Async)");
-        }
-
-        return authorizeCall(code, _callback);
-
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
     }
+  }
 
-    /**
-     * Authorizes a pending quick connect request.
-     * 
-     * @param code Quick connect code to authorize. (required)
-     * @return Boolean
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Quick connect result authorized successfully. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Unknown user id. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public Boolean authorize(String code) throws ApiException {
-        ApiResponse<Boolean> localVarResp = authorizeWithHttpInfo(code);
-        return localVarResp.getData();
+  private HttpRequest.Builder initiateRequestBuilder() throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/QuickConnect/Initiate";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Authorizes a pending quick connect request.
-     * 
-     * @param code Quick connect code to authorize. (required)
-     * @return ApiResponse&lt;Boolean&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Quick connect result authorized successfully. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Unknown user id. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Boolean> authorizeWithHttpInfo(String code) throws ApiException {
-        okhttp3.Call localVarCall = authorizeValidateBeforeCall(code, null);
-        Type localVarReturnType = new TypeToken<Boolean>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    /**
-     * Authorizes a pending quick connect request. (asynchronously)
-     * 
-     * @param code Quick connect code to authorize. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Quick connect result authorized successfully. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Unknown user id. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call authorizeAsync(String code, final ApiCallback<Boolean> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = authorizeValidateBeforeCall(code, _callback);
-        Type localVarReturnType = new TypeToken<Boolean>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for connect
-     * @param secret Secret previously returned from the Initiate endpoint. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Quick connect result returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Unknown quick connect secret. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call connectCall(String secret, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/QuickConnect/Connect";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (secret != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("secret", secret));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call connectValidateBeforeCall(String secret, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'secret' is set
-        if (secret == null) {
-            throw new ApiException("Missing the required parameter 'secret' when calling connect(Async)");
-        }
-
-        return connectCall(secret, _callback);
-
-    }
-
-    /**
-     * Attempts to retrieve authentication information.
-     * 
-     * @param secret Secret previously returned from the Initiate endpoint. (required)
-     * @return QuickConnectResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Quick connect result returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Unknown quick connect secret. </td><td>  -  </td></tr>
-     </table>
-     */
-    public QuickConnectResult connect(String secret) throws ApiException {
-        ApiResponse<QuickConnectResult> localVarResp = connectWithHttpInfo(secret);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Attempts to retrieve authentication information.
-     * 
-     * @param secret Secret previously returned from the Initiate endpoint. (required)
-     * @return ApiResponse&lt;QuickConnectResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Quick connect result returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Unknown quick connect secret. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<QuickConnectResult> connectWithHttpInfo(String secret) throws ApiException {
-        okhttp3.Call localVarCall = connectValidateBeforeCall(secret, null);
-        Type localVarReturnType = new TypeToken<QuickConnectResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Attempts to retrieve authentication information. (asynchronously)
-     * 
-     * @param secret Secret previously returned from the Initiate endpoint. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Quick connect result returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Unknown quick connect secret. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call connectAsync(String secret, final ApiCallback<QuickConnectResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = connectValidateBeforeCall(secret, _callback);
-        Type localVarReturnType = new TypeToken<QuickConnectResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getEnabled
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Quick connect state returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getEnabledCall(final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/QuickConnect/Enabled";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getEnabledValidateBeforeCall(final ApiCallback _callback) throws ApiException {
-        return getEnabledCall(_callback);
-
-    }
-
-    /**
-     * Gets the current quick connect state.
-     * 
-     * @return Boolean
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Quick connect state returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public Boolean getEnabled() throws ApiException {
-        ApiResponse<Boolean> localVarResp = getEnabledWithHttpInfo();
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets the current quick connect state.
-     * 
-     * @return ApiResponse&lt;Boolean&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Quick connect state returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Boolean> getEnabledWithHttpInfo() throws ApiException {
-        okhttp3.Call localVarCall = getEnabledValidateBeforeCall(null);
-        Type localVarReturnType = new TypeToken<Boolean>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets the current quick connect state. (asynchronously)
-     * 
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Quick connect state returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getEnabledAsync(final ApiCallback<Boolean> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getEnabledValidateBeforeCall(_callback);
-        Type localVarReturnType = new TypeToken<Boolean>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for initiate
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Quick connect request successfully created. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Quick connect is not active on this server. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call initiateCall(final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/QuickConnect/Initiate";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call initiateValidateBeforeCall(final ApiCallback _callback) throws ApiException {
-        return initiateCall(_callback);
-
-    }
-
-    /**
-     * Initiate a new quick connect request.
-     * 
-     * @return QuickConnectResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Quick connect request successfully created. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Quick connect is not active on this server. </td><td>  -  </td></tr>
-     </table>
-     */
-    public QuickConnectResult initiate() throws ApiException {
-        ApiResponse<QuickConnectResult> localVarResp = initiateWithHttpInfo();
-        return localVarResp.getData();
-    }
-
-    /**
-     * Initiate a new quick connect request.
-     * 
-     * @return ApiResponse&lt;QuickConnectResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Quick connect request successfully created. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Quick connect is not active on this server. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<QuickConnectResult> initiateWithHttpInfo() throws ApiException {
-        okhttp3.Call localVarCall = initiateValidateBeforeCall(null);
-        Type localVarReturnType = new TypeToken<QuickConnectResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Initiate a new quick connect request. (asynchronously)
-     * 
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Quick connect request successfully created. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Quick connect is not active on this server. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call initiateAsync(final ApiCallback<QuickConnectResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = initiateValidateBeforeCall(_callback);
-        Type localVarReturnType = new TypeToken<QuickConnectResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
 }

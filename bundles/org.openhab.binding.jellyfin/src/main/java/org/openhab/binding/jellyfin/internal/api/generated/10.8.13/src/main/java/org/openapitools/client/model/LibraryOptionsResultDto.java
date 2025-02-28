@@ -13,68 +13,54 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.client.model.LibraryOptionInfoDto;
 import org.openapitools.client.model.LibraryTypeOptionsDto;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Library options result dto.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  LibraryOptionsResultDto.JSON_PROPERTY_METADATA_SAVERS,
+  LibraryOptionsResultDto.JSON_PROPERTY_METADATA_READERS,
+  LibraryOptionsResultDto.JSON_PROPERTY_SUBTITLE_FETCHERS,
+  LibraryOptionsResultDto.JSON_PROPERTY_TYPE_OPTIONS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class LibraryOptionsResultDto {
-  public static final String SERIALIZED_NAME_METADATA_SAVERS = "MetadataSavers";
-  @SerializedName(SERIALIZED_NAME_METADATA_SAVERS)
+  public static final String JSON_PROPERTY_METADATA_SAVERS = "MetadataSavers";
   @javax.annotation.Nullable
   private List<LibraryOptionInfoDto> metadataSavers = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_METADATA_READERS = "MetadataReaders";
-  @SerializedName(SERIALIZED_NAME_METADATA_READERS)
+  public static final String JSON_PROPERTY_METADATA_READERS = "MetadataReaders";
   @javax.annotation.Nullable
   private List<LibraryOptionInfoDto> metadataReaders = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_SUBTITLE_FETCHERS = "SubtitleFetchers";
-  @SerializedName(SERIALIZED_NAME_SUBTITLE_FETCHERS)
+  public static final String JSON_PROPERTY_SUBTITLE_FETCHERS = "SubtitleFetchers";
   @javax.annotation.Nullable
   private List<LibraryOptionInfoDto> subtitleFetchers = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_TYPE_OPTIONS = "TypeOptions";
-  @SerializedName(SERIALIZED_NAME_TYPE_OPTIONS)
+  public static final String JSON_PROPERTY_TYPE_OPTIONS = "TypeOptions";
   @javax.annotation.Nullable
   private List<LibraryTypeOptionsDto> typeOptions = new ArrayList<>();
 
-  public LibraryOptionsResultDto() {
+  public LibraryOptionsResultDto() { 
   }
 
   public LibraryOptionsResultDto metadataSavers(@javax.annotation.Nullable List<LibraryOptionInfoDto> metadataSavers) {
@@ -95,10 +81,15 @@ public class LibraryOptionsResultDto {
    * @return metadataSavers
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_METADATA_SAVERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<LibraryOptionInfoDto> getMetadataSavers() {
     return metadataSavers;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_METADATA_SAVERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMetadataSavers(@javax.annotation.Nullable List<LibraryOptionInfoDto> metadataSavers) {
     this.metadataSavers = metadataSavers;
   }
@@ -122,10 +113,15 @@ public class LibraryOptionsResultDto {
    * @return metadataReaders
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_METADATA_READERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<LibraryOptionInfoDto> getMetadataReaders() {
     return metadataReaders;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_METADATA_READERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMetadataReaders(@javax.annotation.Nullable List<LibraryOptionInfoDto> metadataReaders) {
     this.metadataReaders = metadataReaders;
   }
@@ -149,10 +145,15 @@ public class LibraryOptionsResultDto {
    * @return subtitleFetchers
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_FETCHERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<LibraryOptionInfoDto> getSubtitleFetchers() {
     return subtitleFetchers;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_FETCHERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubtitleFetchers(@javax.annotation.Nullable List<LibraryOptionInfoDto> subtitleFetchers) {
     this.subtitleFetchers = subtitleFetchers;
   }
@@ -176,16 +177,23 @@ public class LibraryOptionsResultDto {
    * @return typeOptions
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TYPE_OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<LibraryTypeOptionsDto> getTypeOptions() {
     return typeOptions;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TYPE_OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTypeOptions(@javax.annotation.Nullable List<LibraryTypeOptionsDto> typeOptions) {
     this.typeOptions = typeOptions;
   }
 
 
-
+  /**
+   * Return true if this LibraryOptionsResultDto object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -229,148 +237,79 @@ public class LibraryOptionsResultDto {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("MetadataSavers");
-    openapiFields.add("MetadataReaders");
-    openapiFields.add("SubtitleFetchers");
-    openapiFields.add("TypeOptions");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to LibraryOptionsResultDto
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!LibraryOptionsResultDto.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in LibraryOptionsResultDto is not found in the empty JSON string", LibraryOptionsResultDto.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!LibraryOptionsResultDto.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `LibraryOptionsResultDto` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (jsonObj.get("MetadataSavers") != null && !jsonObj.get("MetadataSavers").isJsonNull()) {
-        JsonArray jsonArraymetadataSavers = jsonObj.getAsJsonArray("MetadataSavers");
-        if (jsonArraymetadataSavers != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("MetadataSavers").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `MetadataSavers` to be an array in the JSON string but got `%s`", jsonObj.get("MetadataSavers").toString()));
-          }
-
-          // validate the optional field `MetadataSavers` (array)
-          for (int i = 0; i < jsonArraymetadataSavers.size(); i++) {
-            LibraryOptionInfoDto.validateJsonElement(jsonArraymetadataSavers.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("MetadataReaders") != null && !jsonObj.get("MetadataReaders").isJsonNull()) {
-        JsonArray jsonArraymetadataReaders = jsonObj.getAsJsonArray("MetadataReaders");
-        if (jsonArraymetadataReaders != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("MetadataReaders").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `MetadataReaders` to be an array in the JSON string but got `%s`", jsonObj.get("MetadataReaders").toString()));
-          }
-
-          // validate the optional field `MetadataReaders` (array)
-          for (int i = 0; i < jsonArraymetadataReaders.size(); i++) {
-            LibraryOptionInfoDto.validateJsonElement(jsonArraymetadataReaders.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("SubtitleFetchers") != null && !jsonObj.get("SubtitleFetchers").isJsonNull()) {
-        JsonArray jsonArraysubtitleFetchers = jsonObj.getAsJsonArray("SubtitleFetchers");
-        if (jsonArraysubtitleFetchers != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("SubtitleFetchers").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `SubtitleFetchers` to be an array in the JSON string but got `%s`", jsonObj.get("SubtitleFetchers").toString()));
-          }
-
-          // validate the optional field `SubtitleFetchers` (array)
-          for (int i = 0; i < jsonArraysubtitleFetchers.size(); i++) {
-            LibraryOptionInfoDto.validateJsonElement(jsonArraysubtitleFetchers.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("TypeOptions") != null && !jsonObj.get("TypeOptions").isJsonNull()) {
-        JsonArray jsonArraytypeOptions = jsonObj.getAsJsonArray("TypeOptions");
-        if (jsonArraytypeOptions != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("TypeOptions").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `TypeOptions` to be an array in the JSON string but got `%s`", jsonObj.get("TypeOptions").toString()));
-          }
-
-          // validate the optional field `TypeOptions` (array)
-          for (int i = 0; i < jsonArraytypeOptions.size(); i++) {
-            LibraryTypeOptionsDto.validateJsonElement(jsonArraytypeOptions.get(i));
-          };
-        }
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!LibraryOptionsResultDto.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'LibraryOptionsResultDto' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<LibraryOptionsResultDto> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(LibraryOptionsResultDto.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<LibraryOptionsResultDto>() {
-           @Override
-           public void write(JsonWriter out, LibraryOptionsResultDto value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public LibraryOptionsResultDto read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of LibraryOptionsResultDto given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of LibraryOptionsResultDto
-   * @throws IOException if the JSON string is invalid with respect to LibraryOptionsResultDto
-   */
-  public static LibraryOptionsResultDto fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, LibraryOptionsResultDto.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of LibraryOptionsResultDto to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `MetadataSavers` to the URL query string
+    if (getMetadataSavers() != null) {
+      for (int i = 0; i < getMetadataSavers().size(); i++) {
+        if (getMetadataSavers().get(i) != null) {
+          joiner.add(getMetadataSavers().get(i).toUrlQueryString(String.format("%sMetadataSavers%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `MetadataReaders` to the URL query string
+    if (getMetadataReaders() != null) {
+      for (int i = 0; i < getMetadataReaders().size(); i++) {
+        if (getMetadataReaders().get(i) != null) {
+          joiner.add(getMetadataReaders().get(i).toUrlQueryString(String.format("%sMetadataReaders%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `SubtitleFetchers` to the URL query string
+    if (getSubtitleFetchers() != null) {
+      for (int i = 0; i < getSubtitleFetchers().size(); i++) {
+        if (getSubtitleFetchers().get(i) != null) {
+          joiner.add(getSubtitleFetchers().get(i).toUrlQueryString(String.format("%sSubtitleFetchers%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `TypeOptions` to the URL query string
+    if (getTypeOptions() != null) {
+      for (int i = 0; i < getTypeOptions().size(); i++) {
+        if (getTypeOptions().get(i) != null) {
+          joiner.add(getTypeOptions().get(i).toUrlQueryString(String.format("%sTypeOptions%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

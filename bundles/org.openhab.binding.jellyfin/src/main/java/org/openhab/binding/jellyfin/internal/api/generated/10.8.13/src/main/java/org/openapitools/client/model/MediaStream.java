@@ -13,356 +13,296 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.client.model.MediaStreamType;
 import org.openapitools.client.model.SubtitleDeliveryMethod;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class MediaStream.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  MediaStream.JSON_PROPERTY_CODEC,
+  MediaStream.JSON_PROPERTY_CODEC_TAG,
+  MediaStream.JSON_PROPERTY_LANGUAGE,
+  MediaStream.JSON_PROPERTY_COLOR_RANGE,
+  MediaStream.JSON_PROPERTY_COLOR_SPACE,
+  MediaStream.JSON_PROPERTY_COLOR_TRANSFER,
+  MediaStream.JSON_PROPERTY_COLOR_PRIMARIES,
+  MediaStream.JSON_PROPERTY_DV_VERSION_MAJOR,
+  MediaStream.JSON_PROPERTY_DV_VERSION_MINOR,
+  MediaStream.JSON_PROPERTY_DV_PROFILE,
+  MediaStream.JSON_PROPERTY_DV_LEVEL,
+  MediaStream.JSON_PROPERTY_RPU_PRESENT_FLAG,
+  MediaStream.JSON_PROPERTY_EL_PRESENT_FLAG,
+  MediaStream.JSON_PROPERTY_BL_PRESENT_FLAG,
+  MediaStream.JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID,
+  MediaStream.JSON_PROPERTY_COMMENT,
+  MediaStream.JSON_PROPERTY_TIME_BASE,
+  MediaStream.JSON_PROPERTY_CODEC_TIME_BASE,
+  MediaStream.JSON_PROPERTY_TITLE,
+  MediaStream.JSON_PROPERTY_VIDEO_RANGE,
+  MediaStream.JSON_PROPERTY_VIDEO_RANGE_TYPE,
+  MediaStream.JSON_PROPERTY_VIDEO_DO_VI_TITLE,
+  MediaStream.JSON_PROPERTY_LOCALIZED_UNDEFINED,
+  MediaStream.JSON_PROPERTY_LOCALIZED_DEFAULT,
+  MediaStream.JSON_PROPERTY_LOCALIZED_FORCED,
+  MediaStream.JSON_PROPERTY_LOCALIZED_EXTERNAL,
+  MediaStream.JSON_PROPERTY_DISPLAY_TITLE,
+  MediaStream.JSON_PROPERTY_NAL_LENGTH_SIZE,
+  MediaStream.JSON_PROPERTY_IS_INTERLACED,
+  MediaStream.JSON_PROPERTY_IS_A_V_C,
+  MediaStream.JSON_PROPERTY_CHANNEL_LAYOUT,
+  MediaStream.JSON_PROPERTY_BIT_RATE,
+  MediaStream.JSON_PROPERTY_BIT_DEPTH,
+  MediaStream.JSON_PROPERTY_REF_FRAMES,
+  MediaStream.JSON_PROPERTY_PACKET_LENGTH,
+  MediaStream.JSON_PROPERTY_CHANNELS,
+  MediaStream.JSON_PROPERTY_SAMPLE_RATE,
+  MediaStream.JSON_PROPERTY_IS_DEFAULT,
+  MediaStream.JSON_PROPERTY_IS_FORCED,
+  MediaStream.JSON_PROPERTY_HEIGHT,
+  MediaStream.JSON_PROPERTY_WIDTH,
+  MediaStream.JSON_PROPERTY_AVERAGE_FRAME_RATE,
+  MediaStream.JSON_PROPERTY_REAL_FRAME_RATE,
+  MediaStream.JSON_PROPERTY_PROFILE,
+  MediaStream.JSON_PROPERTY_TYPE,
+  MediaStream.JSON_PROPERTY_ASPECT_RATIO,
+  MediaStream.JSON_PROPERTY_INDEX,
+  MediaStream.JSON_PROPERTY_SCORE,
+  MediaStream.JSON_PROPERTY_IS_EXTERNAL,
+  MediaStream.JSON_PROPERTY_DELIVERY_METHOD,
+  MediaStream.JSON_PROPERTY_DELIVERY_URL,
+  MediaStream.JSON_PROPERTY_IS_EXTERNAL_URL,
+  MediaStream.JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM,
+  MediaStream.JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM,
+  MediaStream.JSON_PROPERTY_PATH,
+  MediaStream.JSON_PROPERTY_PIXEL_FORMAT,
+  MediaStream.JSON_PROPERTY_LEVEL,
+  MediaStream.JSON_PROPERTY_IS_ANAMORPHIC
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class MediaStream {
-  public static final String SERIALIZED_NAME_CODEC = "Codec";
-  @SerializedName(SERIALIZED_NAME_CODEC)
-  @javax.annotation.Nullable
-  private String codec;
+  public static final String JSON_PROPERTY_CODEC = "Codec";
+  private JsonNullable<String> codec = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_CODEC_TAG = "CodecTag";
-  @SerializedName(SERIALIZED_NAME_CODEC_TAG)
-  @javax.annotation.Nullable
-  private String codecTag;
+  public static final String JSON_PROPERTY_CODEC_TAG = "CodecTag";
+  private JsonNullable<String> codecTag = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_LANGUAGE = "Language";
-  @SerializedName(SERIALIZED_NAME_LANGUAGE)
-  @javax.annotation.Nullable
-  private String language;
+  public static final String JSON_PROPERTY_LANGUAGE = "Language";
+  private JsonNullable<String> language = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_COLOR_RANGE = "ColorRange";
-  @SerializedName(SERIALIZED_NAME_COLOR_RANGE)
-  @javax.annotation.Nullable
-  private String colorRange;
+  public static final String JSON_PROPERTY_COLOR_RANGE = "ColorRange";
+  private JsonNullable<String> colorRange = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_COLOR_SPACE = "ColorSpace";
-  @SerializedName(SERIALIZED_NAME_COLOR_SPACE)
-  @javax.annotation.Nullable
-  private String colorSpace;
+  public static final String JSON_PROPERTY_COLOR_SPACE = "ColorSpace";
+  private JsonNullable<String> colorSpace = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_COLOR_TRANSFER = "ColorTransfer";
-  @SerializedName(SERIALIZED_NAME_COLOR_TRANSFER)
-  @javax.annotation.Nullable
-  private String colorTransfer;
+  public static final String JSON_PROPERTY_COLOR_TRANSFER = "ColorTransfer";
+  private JsonNullable<String> colorTransfer = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_COLOR_PRIMARIES = "ColorPrimaries";
-  @SerializedName(SERIALIZED_NAME_COLOR_PRIMARIES)
-  @javax.annotation.Nullable
-  private String colorPrimaries;
+  public static final String JSON_PROPERTY_COLOR_PRIMARIES = "ColorPrimaries";
+  private JsonNullable<String> colorPrimaries = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_DV_VERSION_MAJOR = "DvVersionMajor";
-  @SerializedName(SERIALIZED_NAME_DV_VERSION_MAJOR)
-  @javax.annotation.Nullable
-  private Integer dvVersionMajor;
+  public static final String JSON_PROPERTY_DV_VERSION_MAJOR = "DvVersionMajor";
+  private JsonNullable<Integer> dvVersionMajor = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_DV_VERSION_MINOR = "DvVersionMinor";
-  @SerializedName(SERIALIZED_NAME_DV_VERSION_MINOR)
-  @javax.annotation.Nullable
-  private Integer dvVersionMinor;
+  public static final String JSON_PROPERTY_DV_VERSION_MINOR = "DvVersionMinor";
+  private JsonNullable<Integer> dvVersionMinor = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_DV_PROFILE = "DvProfile";
-  @SerializedName(SERIALIZED_NAME_DV_PROFILE)
-  @javax.annotation.Nullable
-  private Integer dvProfile;
+  public static final String JSON_PROPERTY_DV_PROFILE = "DvProfile";
+  private JsonNullable<Integer> dvProfile = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_DV_LEVEL = "DvLevel";
-  @SerializedName(SERIALIZED_NAME_DV_LEVEL)
-  @javax.annotation.Nullable
-  private Integer dvLevel;
+  public static final String JSON_PROPERTY_DV_LEVEL = "DvLevel";
+  private JsonNullable<Integer> dvLevel = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_RPU_PRESENT_FLAG = "RpuPresentFlag";
-  @SerializedName(SERIALIZED_NAME_RPU_PRESENT_FLAG)
-  @javax.annotation.Nullable
-  private Integer rpuPresentFlag;
+  public static final String JSON_PROPERTY_RPU_PRESENT_FLAG = "RpuPresentFlag";
+  private JsonNullable<Integer> rpuPresentFlag = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_EL_PRESENT_FLAG = "ElPresentFlag";
-  @SerializedName(SERIALIZED_NAME_EL_PRESENT_FLAG)
-  @javax.annotation.Nullable
-  private Integer elPresentFlag;
+  public static final String JSON_PROPERTY_EL_PRESENT_FLAG = "ElPresentFlag";
+  private JsonNullable<Integer> elPresentFlag = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_BL_PRESENT_FLAG = "BlPresentFlag";
-  @SerializedName(SERIALIZED_NAME_BL_PRESENT_FLAG)
-  @javax.annotation.Nullable
-  private Integer blPresentFlag;
+  public static final String JSON_PROPERTY_BL_PRESENT_FLAG = "BlPresentFlag";
+  private JsonNullable<Integer> blPresentFlag = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_DV_BL_SIGNAL_COMPATIBILITY_ID = "DvBlSignalCompatibilityId";
-  @SerializedName(SERIALIZED_NAME_DV_BL_SIGNAL_COMPATIBILITY_ID)
-  @javax.annotation.Nullable
-  private Integer dvBlSignalCompatibilityId;
+  public static final String JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID = "DvBlSignalCompatibilityId";
+  private JsonNullable<Integer> dvBlSignalCompatibilityId = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_COMMENT = "Comment";
-  @SerializedName(SERIALIZED_NAME_COMMENT)
-  @javax.annotation.Nullable
-  private String comment;
+  public static final String JSON_PROPERTY_COMMENT = "Comment";
+  private JsonNullable<String> comment = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TIME_BASE = "TimeBase";
-  @SerializedName(SERIALIZED_NAME_TIME_BASE)
-  @javax.annotation.Nullable
-  private String timeBase;
+  public static final String JSON_PROPERTY_TIME_BASE = "TimeBase";
+  private JsonNullable<String> timeBase = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_CODEC_TIME_BASE = "CodecTimeBase";
-  @SerializedName(SERIALIZED_NAME_CODEC_TIME_BASE)
-  @javax.annotation.Nullable
-  private String codecTimeBase;
+  public static final String JSON_PROPERTY_CODEC_TIME_BASE = "CodecTimeBase";
+  private JsonNullable<String> codecTimeBase = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TITLE = "Title";
-  @SerializedName(SERIALIZED_NAME_TITLE)
-  @javax.annotation.Nullable
-  private String title;
+  public static final String JSON_PROPERTY_TITLE = "Title";
+  private JsonNullable<String> title = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_VIDEO_RANGE = "VideoRange";
-  @SerializedName(SERIALIZED_NAME_VIDEO_RANGE)
-  @javax.annotation.Nullable
-  private String videoRange;
+  public static final String JSON_PROPERTY_VIDEO_RANGE = "VideoRange";
+  private JsonNullable<String> videoRange = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_VIDEO_RANGE_TYPE = "VideoRangeType";
-  @SerializedName(SERIALIZED_NAME_VIDEO_RANGE_TYPE)
-  @javax.annotation.Nullable
-  private String videoRangeType;
+  public static final String JSON_PROPERTY_VIDEO_RANGE_TYPE = "VideoRangeType";
+  private JsonNullable<String> videoRangeType = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_VIDEO_DO_VI_TITLE = "VideoDoViTitle";
-  @SerializedName(SERIALIZED_NAME_VIDEO_DO_VI_TITLE)
-  @javax.annotation.Nullable
-  private String videoDoViTitle;
+  public static final String JSON_PROPERTY_VIDEO_DO_VI_TITLE = "VideoDoViTitle";
+  private JsonNullable<String> videoDoViTitle = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_LOCALIZED_UNDEFINED = "LocalizedUndefined";
-  @SerializedName(SERIALIZED_NAME_LOCALIZED_UNDEFINED)
-  @javax.annotation.Nullable
-  private String localizedUndefined;
+  public static final String JSON_PROPERTY_LOCALIZED_UNDEFINED = "LocalizedUndefined";
+  private JsonNullable<String> localizedUndefined = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_LOCALIZED_DEFAULT = "LocalizedDefault";
-  @SerializedName(SERIALIZED_NAME_LOCALIZED_DEFAULT)
-  @javax.annotation.Nullable
-  private String localizedDefault;
+  public static final String JSON_PROPERTY_LOCALIZED_DEFAULT = "LocalizedDefault";
+  private JsonNullable<String> localizedDefault = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_LOCALIZED_FORCED = "LocalizedForced";
-  @SerializedName(SERIALIZED_NAME_LOCALIZED_FORCED)
-  @javax.annotation.Nullable
-  private String localizedForced;
+  public static final String JSON_PROPERTY_LOCALIZED_FORCED = "LocalizedForced";
+  private JsonNullable<String> localizedForced = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_LOCALIZED_EXTERNAL = "LocalizedExternal";
-  @SerializedName(SERIALIZED_NAME_LOCALIZED_EXTERNAL)
-  @javax.annotation.Nullable
-  private String localizedExternal;
+  public static final String JSON_PROPERTY_LOCALIZED_EXTERNAL = "LocalizedExternal";
+  private JsonNullable<String> localizedExternal = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_DISPLAY_TITLE = "DisplayTitle";
-  @SerializedName(SERIALIZED_NAME_DISPLAY_TITLE)
-  @javax.annotation.Nullable
-  private String displayTitle;
+  public static final String JSON_PROPERTY_DISPLAY_TITLE = "DisplayTitle";
+  private JsonNullable<String> displayTitle = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_NAL_LENGTH_SIZE = "NalLengthSize";
-  @SerializedName(SERIALIZED_NAME_NAL_LENGTH_SIZE)
-  @javax.annotation.Nullable
-  private String nalLengthSize;
+  public static final String JSON_PROPERTY_NAL_LENGTH_SIZE = "NalLengthSize";
+  private JsonNullable<String> nalLengthSize = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_IS_INTERLACED = "IsInterlaced";
-  @SerializedName(SERIALIZED_NAME_IS_INTERLACED)
+  public static final String JSON_PROPERTY_IS_INTERLACED = "IsInterlaced";
   @javax.annotation.Nullable
   private Boolean isInterlaced;
 
-  public static final String SERIALIZED_NAME_IS_A_V_C = "IsAVC";
-  @SerializedName(SERIALIZED_NAME_IS_A_V_C)
-  @javax.annotation.Nullable
-  private Boolean isAVC;
+  public static final String JSON_PROPERTY_IS_A_V_C = "IsAVC";
+  private JsonNullable<Boolean> isAVC = JsonNullable.<Boolean>undefined();
 
-  public static final String SERIALIZED_NAME_CHANNEL_LAYOUT = "ChannelLayout";
-  @SerializedName(SERIALIZED_NAME_CHANNEL_LAYOUT)
-  @javax.annotation.Nullable
-  private String channelLayout;
+  public static final String JSON_PROPERTY_CHANNEL_LAYOUT = "ChannelLayout";
+  private JsonNullable<String> channelLayout = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_BIT_RATE = "BitRate";
-  @SerializedName(SERIALIZED_NAME_BIT_RATE)
-  @javax.annotation.Nullable
-  private Integer bitRate;
+  public static final String JSON_PROPERTY_BIT_RATE = "BitRate";
+  private JsonNullable<Integer> bitRate = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_BIT_DEPTH = "BitDepth";
-  @SerializedName(SERIALIZED_NAME_BIT_DEPTH)
-  @javax.annotation.Nullable
-  private Integer bitDepth;
+  public static final String JSON_PROPERTY_BIT_DEPTH = "BitDepth";
+  private JsonNullable<Integer> bitDepth = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_REF_FRAMES = "RefFrames";
-  @SerializedName(SERIALIZED_NAME_REF_FRAMES)
-  @javax.annotation.Nullable
-  private Integer refFrames;
+  public static final String JSON_PROPERTY_REF_FRAMES = "RefFrames";
+  private JsonNullable<Integer> refFrames = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_PACKET_LENGTH = "PacketLength";
-  @SerializedName(SERIALIZED_NAME_PACKET_LENGTH)
-  @javax.annotation.Nullable
-  private Integer packetLength;
+  public static final String JSON_PROPERTY_PACKET_LENGTH = "PacketLength";
+  private JsonNullable<Integer> packetLength = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_CHANNELS = "Channels";
-  @SerializedName(SERIALIZED_NAME_CHANNELS)
-  @javax.annotation.Nullable
-  private Integer channels;
+  public static final String JSON_PROPERTY_CHANNELS = "Channels";
+  private JsonNullable<Integer> channels = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_SAMPLE_RATE = "SampleRate";
-  @SerializedName(SERIALIZED_NAME_SAMPLE_RATE)
-  @javax.annotation.Nullable
-  private Integer sampleRate;
+  public static final String JSON_PROPERTY_SAMPLE_RATE = "SampleRate";
+  private JsonNullable<Integer> sampleRate = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_IS_DEFAULT = "IsDefault";
-  @SerializedName(SERIALIZED_NAME_IS_DEFAULT)
+  public static final String JSON_PROPERTY_IS_DEFAULT = "IsDefault";
   @javax.annotation.Nullable
   private Boolean isDefault;
 
-  public static final String SERIALIZED_NAME_IS_FORCED = "IsForced";
-  @SerializedName(SERIALIZED_NAME_IS_FORCED)
+  public static final String JSON_PROPERTY_IS_FORCED = "IsForced";
   @javax.annotation.Nullable
   private Boolean isForced;
 
-  public static final String SERIALIZED_NAME_HEIGHT = "Height";
-  @SerializedName(SERIALIZED_NAME_HEIGHT)
-  @javax.annotation.Nullable
-  private Integer height;
+  public static final String JSON_PROPERTY_HEIGHT = "Height";
+  private JsonNullable<Integer> height = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_WIDTH = "Width";
-  @SerializedName(SERIALIZED_NAME_WIDTH)
-  @javax.annotation.Nullable
-  private Integer width;
+  public static final String JSON_PROPERTY_WIDTH = "Width";
+  private JsonNullable<Integer> width = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_AVERAGE_FRAME_RATE = "AverageFrameRate";
-  @SerializedName(SERIALIZED_NAME_AVERAGE_FRAME_RATE)
-  @javax.annotation.Nullable
-  private Float averageFrameRate;
+  public static final String JSON_PROPERTY_AVERAGE_FRAME_RATE = "AverageFrameRate";
+  private JsonNullable<Float> averageFrameRate = JsonNullable.<Float>undefined();
 
-  public static final String SERIALIZED_NAME_REAL_FRAME_RATE = "RealFrameRate";
-  @SerializedName(SERIALIZED_NAME_REAL_FRAME_RATE)
-  @javax.annotation.Nullable
-  private Float realFrameRate;
+  public static final String JSON_PROPERTY_REAL_FRAME_RATE = "RealFrameRate";
+  private JsonNullable<Float> realFrameRate = JsonNullable.<Float>undefined();
 
-  public static final String SERIALIZED_NAME_PROFILE = "Profile";
-  @SerializedName(SERIALIZED_NAME_PROFILE)
-  @javax.annotation.Nullable
-  private String profile;
+  public static final String JSON_PROPERTY_PROFILE = "Profile";
+  private JsonNullable<String> profile = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TYPE = "Type";
-  @SerializedName(SERIALIZED_NAME_TYPE)
+  public static final String JSON_PROPERTY_TYPE = "Type";
   @javax.annotation.Nullable
   private MediaStreamType type;
 
-  public static final String SERIALIZED_NAME_ASPECT_RATIO = "AspectRatio";
-  @SerializedName(SERIALIZED_NAME_ASPECT_RATIO)
-  @javax.annotation.Nullable
-  private String aspectRatio;
+  public static final String JSON_PROPERTY_ASPECT_RATIO = "AspectRatio";
+  private JsonNullable<String> aspectRatio = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_INDEX = "Index";
-  @SerializedName(SERIALIZED_NAME_INDEX)
+  public static final String JSON_PROPERTY_INDEX = "Index";
   @javax.annotation.Nullable
   private Integer index;
 
-  public static final String SERIALIZED_NAME_SCORE = "Score";
-  @SerializedName(SERIALIZED_NAME_SCORE)
-  @javax.annotation.Nullable
-  private Integer score;
+  public static final String JSON_PROPERTY_SCORE = "Score";
+  private JsonNullable<Integer> score = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_IS_EXTERNAL = "IsExternal";
-  @SerializedName(SERIALIZED_NAME_IS_EXTERNAL)
+  public static final String JSON_PROPERTY_IS_EXTERNAL = "IsExternal";
   @javax.annotation.Nullable
   private Boolean isExternal;
 
-  public static final String SERIALIZED_NAME_DELIVERY_METHOD = "DeliveryMethod";
-  @SerializedName(SERIALIZED_NAME_DELIVERY_METHOD)
-  @javax.annotation.Nullable
-  private SubtitleDeliveryMethod deliveryMethod;
+  public static final String JSON_PROPERTY_DELIVERY_METHOD = "DeliveryMethod";
+  private JsonNullable<SubtitleDeliveryMethod> deliveryMethod = JsonNullable.<SubtitleDeliveryMethod>undefined();
 
-  public static final String SERIALIZED_NAME_DELIVERY_URL = "DeliveryUrl";
-  @SerializedName(SERIALIZED_NAME_DELIVERY_URL)
-  @javax.annotation.Nullable
-  private String deliveryUrl;
+  public static final String JSON_PROPERTY_DELIVERY_URL = "DeliveryUrl";
+  private JsonNullable<String> deliveryUrl = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_IS_EXTERNAL_URL = "IsExternalUrl";
-  @SerializedName(SERIALIZED_NAME_IS_EXTERNAL_URL)
-  @javax.annotation.Nullable
-  private Boolean isExternalUrl;
+  public static final String JSON_PROPERTY_IS_EXTERNAL_URL = "IsExternalUrl";
+  private JsonNullable<Boolean> isExternalUrl = JsonNullable.<Boolean>undefined();
 
-  public static final String SERIALIZED_NAME_IS_TEXT_SUBTITLE_STREAM = "IsTextSubtitleStream";
-  @SerializedName(SERIALIZED_NAME_IS_TEXT_SUBTITLE_STREAM)
+  public static final String JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM = "IsTextSubtitleStream";
   @javax.annotation.Nullable
   private Boolean isTextSubtitleStream;
 
-  public static final String SERIALIZED_NAME_SUPPORTS_EXTERNAL_STREAM = "SupportsExternalStream";
-  @SerializedName(SERIALIZED_NAME_SUPPORTS_EXTERNAL_STREAM)
+  public static final String JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM = "SupportsExternalStream";
   @javax.annotation.Nullable
   private Boolean supportsExternalStream;
 
-  public static final String SERIALIZED_NAME_PATH = "Path";
-  @SerializedName(SERIALIZED_NAME_PATH)
-  @javax.annotation.Nullable
-  private String path;
+  public static final String JSON_PROPERTY_PATH = "Path";
+  private JsonNullable<String> path = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PIXEL_FORMAT = "PixelFormat";
-  @SerializedName(SERIALIZED_NAME_PIXEL_FORMAT)
-  @javax.annotation.Nullable
-  private String pixelFormat;
+  public static final String JSON_PROPERTY_PIXEL_FORMAT = "PixelFormat";
+  private JsonNullable<String> pixelFormat = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_LEVEL = "Level";
-  @SerializedName(SERIALIZED_NAME_LEVEL)
-  @javax.annotation.Nullable
-  private Double level;
+  public static final String JSON_PROPERTY_LEVEL = "Level";
+  private JsonNullable<Double> level = JsonNullable.<Double>undefined();
 
-  public static final String SERIALIZED_NAME_IS_ANAMORPHIC = "IsAnamorphic";
-  @SerializedName(SERIALIZED_NAME_IS_ANAMORPHIC)
-  @javax.annotation.Nullable
-  private Boolean isAnamorphic;
+  public static final String JSON_PROPERTY_IS_ANAMORPHIC = "IsAnamorphic";
+  private JsonNullable<Boolean> isAnamorphic = JsonNullable.<Boolean>undefined();
 
-  public MediaStream() {
+  public MediaStream() { 
   }
 
+  @JsonCreator
   public MediaStream(
-     String videoRange, 
-     String videoRangeType, 
-     String videoDoViTitle, 
-     String displayTitle, 
-     Boolean isTextSubtitleStream
+    @JsonProperty(JSON_PROPERTY_VIDEO_RANGE) String videoRange, 
+    @JsonProperty(JSON_PROPERTY_VIDEO_RANGE_TYPE) String videoRangeType, 
+    @JsonProperty(JSON_PROPERTY_VIDEO_DO_VI_TITLE) String videoDoViTitle, 
+    @JsonProperty(JSON_PROPERTY_DISPLAY_TITLE) String displayTitle, 
+    @JsonProperty(JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM) Boolean isTextSubtitleStream
   ) {
-    this();
-    this.videoRange = videoRange;
-    this.videoRangeType = videoRangeType;
-    this.videoDoViTitle = videoDoViTitle;
-    this.displayTitle = displayTitle;
+  this();
+    this.videoRange = videoRange == null ? JsonNullable.<String>undefined() : JsonNullable.of(videoRange);
+    this.videoRangeType = videoRangeType == null ? JsonNullable.<String>undefined() : JsonNullable.of(videoRangeType);
+    this.videoDoViTitle = videoDoViTitle == null ? JsonNullable.<String>undefined() : JsonNullable.of(videoDoViTitle);
+    this.displayTitle = displayTitle == null ? JsonNullable.<String>undefined() : JsonNullable.of(displayTitle);
     this.isTextSubtitleStream = isTextSubtitleStream;
   }
 
   public MediaStream codec(@javax.annotation.Nullable String codec) {
-    this.codec = codec;
+    this.codec = JsonNullable.<String>of(codec);
     return this;
   }
 
@@ -371,17 +311,30 @@ public class MediaStream {
    * @return codec
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getCodec() {
+        return codec.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CODEC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getCodec_JsonNullable() {
     return codec;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CODEC)
+  public void setCodec_JsonNullable(JsonNullable<String> codec) {
+    this.codec = codec;
   }
 
   public void setCodec(@javax.annotation.Nullable String codec) {
-    this.codec = codec;
+    this.codec = JsonNullable.<String>of(codec);
   }
 
 
   public MediaStream codecTag(@javax.annotation.Nullable String codecTag) {
-    this.codecTag = codecTag;
+    this.codecTag = JsonNullable.<String>of(codecTag);
     return this;
   }
 
@@ -390,17 +343,30 @@ public class MediaStream {
    * @return codecTag
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getCodecTag() {
+        return codecTag.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CODEC_TAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getCodecTag_JsonNullable() {
     return codecTag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CODEC_TAG)
+  public void setCodecTag_JsonNullable(JsonNullable<String> codecTag) {
+    this.codecTag = codecTag;
   }
 
   public void setCodecTag(@javax.annotation.Nullable String codecTag) {
-    this.codecTag = codecTag;
+    this.codecTag = JsonNullable.<String>of(codecTag);
   }
 
 
   public MediaStream language(@javax.annotation.Nullable String language) {
-    this.language = language;
+    this.language = JsonNullable.<String>of(language);
     return this;
   }
 
@@ -409,17 +375,30 @@ public class MediaStream {
    * @return language
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getLanguage() {
+        return language.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LANGUAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getLanguage_JsonNullable() {
     return language;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LANGUAGE)
+  public void setLanguage_JsonNullable(JsonNullable<String> language) {
+    this.language = language;
   }
 
   public void setLanguage(@javax.annotation.Nullable String language) {
-    this.language = language;
+    this.language = JsonNullable.<String>of(language);
   }
 
 
   public MediaStream colorRange(@javax.annotation.Nullable String colorRange) {
-    this.colorRange = colorRange;
+    this.colorRange = JsonNullable.<String>of(colorRange);
     return this;
   }
 
@@ -428,17 +407,30 @@ public class MediaStream {
    * @return colorRange
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getColorRange() {
+        return colorRange.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_COLOR_RANGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getColorRange_JsonNullable() {
     return colorRange;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_COLOR_RANGE)
+  public void setColorRange_JsonNullable(JsonNullable<String> colorRange) {
+    this.colorRange = colorRange;
   }
 
   public void setColorRange(@javax.annotation.Nullable String colorRange) {
-    this.colorRange = colorRange;
+    this.colorRange = JsonNullable.<String>of(colorRange);
   }
 
 
   public MediaStream colorSpace(@javax.annotation.Nullable String colorSpace) {
-    this.colorSpace = colorSpace;
+    this.colorSpace = JsonNullable.<String>of(colorSpace);
     return this;
   }
 
@@ -447,17 +439,30 @@ public class MediaStream {
    * @return colorSpace
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getColorSpace() {
+        return colorSpace.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_COLOR_SPACE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getColorSpace_JsonNullable() {
     return colorSpace;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_COLOR_SPACE)
+  public void setColorSpace_JsonNullable(JsonNullable<String> colorSpace) {
+    this.colorSpace = colorSpace;
   }
 
   public void setColorSpace(@javax.annotation.Nullable String colorSpace) {
-    this.colorSpace = colorSpace;
+    this.colorSpace = JsonNullable.<String>of(colorSpace);
   }
 
 
   public MediaStream colorTransfer(@javax.annotation.Nullable String colorTransfer) {
-    this.colorTransfer = colorTransfer;
+    this.colorTransfer = JsonNullable.<String>of(colorTransfer);
     return this;
   }
 
@@ -466,17 +471,30 @@ public class MediaStream {
    * @return colorTransfer
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getColorTransfer() {
+        return colorTransfer.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_COLOR_TRANSFER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getColorTransfer_JsonNullable() {
     return colorTransfer;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_COLOR_TRANSFER)
+  public void setColorTransfer_JsonNullable(JsonNullable<String> colorTransfer) {
+    this.colorTransfer = colorTransfer;
   }
 
   public void setColorTransfer(@javax.annotation.Nullable String colorTransfer) {
-    this.colorTransfer = colorTransfer;
+    this.colorTransfer = JsonNullable.<String>of(colorTransfer);
   }
 
 
   public MediaStream colorPrimaries(@javax.annotation.Nullable String colorPrimaries) {
-    this.colorPrimaries = colorPrimaries;
+    this.colorPrimaries = JsonNullable.<String>of(colorPrimaries);
     return this;
   }
 
@@ -485,17 +503,30 @@ public class MediaStream {
    * @return colorPrimaries
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getColorPrimaries() {
+        return colorPrimaries.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_COLOR_PRIMARIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getColorPrimaries_JsonNullable() {
     return colorPrimaries;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_COLOR_PRIMARIES)
+  public void setColorPrimaries_JsonNullable(JsonNullable<String> colorPrimaries) {
+    this.colorPrimaries = colorPrimaries;
   }
 
   public void setColorPrimaries(@javax.annotation.Nullable String colorPrimaries) {
-    this.colorPrimaries = colorPrimaries;
+    this.colorPrimaries = JsonNullable.<String>of(colorPrimaries);
   }
 
 
   public MediaStream dvVersionMajor(@javax.annotation.Nullable Integer dvVersionMajor) {
-    this.dvVersionMajor = dvVersionMajor;
+    this.dvVersionMajor = JsonNullable.<Integer>of(dvVersionMajor);
     return this;
   }
 
@@ -504,17 +535,30 @@ public class MediaStream {
    * @return dvVersionMajor
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getDvVersionMajor() {
+        return dvVersionMajor.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DV_VERSION_MAJOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getDvVersionMajor_JsonNullable() {
     return dvVersionMajor;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DV_VERSION_MAJOR)
+  public void setDvVersionMajor_JsonNullable(JsonNullable<Integer> dvVersionMajor) {
+    this.dvVersionMajor = dvVersionMajor;
   }
 
   public void setDvVersionMajor(@javax.annotation.Nullable Integer dvVersionMajor) {
-    this.dvVersionMajor = dvVersionMajor;
+    this.dvVersionMajor = JsonNullable.<Integer>of(dvVersionMajor);
   }
 
 
   public MediaStream dvVersionMinor(@javax.annotation.Nullable Integer dvVersionMinor) {
-    this.dvVersionMinor = dvVersionMinor;
+    this.dvVersionMinor = JsonNullable.<Integer>of(dvVersionMinor);
     return this;
   }
 
@@ -523,17 +567,30 @@ public class MediaStream {
    * @return dvVersionMinor
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getDvVersionMinor() {
+        return dvVersionMinor.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DV_VERSION_MINOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getDvVersionMinor_JsonNullable() {
     return dvVersionMinor;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DV_VERSION_MINOR)
+  public void setDvVersionMinor_JsonNullable(JsonNullable<Integer> dvVersionMinor) {
+    this.dvVersionMinor = dvVersionMinor;
   }
 
   public void setDvVersionMinor(@javax.annotation.Nullable Integer dvVersionMinor) {
-    this.dvVersionMinor = dvVersionMinor;
+    this.dvVersionMinor = JsonNullable.<Integer>of(dvVersionMinor);
   }
 
 
   public MediaStream dvProfile(@javax.annotation.Nullable Integer dvProfile) {
-    this.dvProfile = dvProfile;
+    this.dvProfile = JsonNullable.<Integer>of(dvProfile);
     return this;
   }
 
@@ -542,17 +599,30 @@ public class MediaStream {
    * @return dvProfile
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getDvProfile() {
+        return dvProfile.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DV_PROFILE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getDvProfile_JsonNullable() {
     return dvProfile;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DV_PROFILE)
+  public void setDvProfile_JsonNullable(JsonNullable<Integer> dvProfile) {
+    this.dvProfile = dvProfile;
   }
 
   public void setDvProfile(@javax.annotation.Nullable Integer dvProfile) {
-    this.dvProfile = dvProfile;
+    this.dvProfile = JsonNullable.<Integer>of(dvProfile);
   }
 
 
   public MediaStream dvLevel(@javax.annotation.Nullable Integer dvLevel) {
-    this.dvLevel = dvLevel;
+    this.dvLevel = JsonNullable.<Integer>of(dvLevel);
     return this;
   }
 
@@ -561,17 +631,30 @@ public class MediaStream {
    * @return dvLevel
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getDvLevel() {
+        return dvLevel.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DV_LEVEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getDvLevel_JsonNullable() {
     return dvLevel;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DV_LEVEL)
+  public void setDvLevel_JsonNullable(JsonNullable<Integer> dvLevel) {
+    this.dvLevel = dvLevel;
   }
 
   public void setDvLevel(@javax.annotation.Nullable Integer dvLevel) {
-    this.dvLevel = dvLevel;
+    this.dvLevel = JsonNullable.<Integer>of(dvLevel);
   }
 
 
   public MediaStream rpuPresentFlag(@javax.annotation.Nullable Integer rpuPresentFlag) {
-    this.rpuPresentFlag = rpuPresentFlag;
+    this.rpuPresentFlag = JsonNullable.<Integer>of(rpuPresentFlag);
     return this;
   }
 
@@ -580,17 +663,30 @@ public class MediaStream {
    * @return rpuPresentFlag
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getRpuPresentFlag() {
+        return rpuPresentFlag.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_RPU_PRESENT_FLAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getRpuPresentFlag_JsonNullable() {
     return rpuPresentFlag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_RPU_PRESENT_FLAG)
+  public void setRpuPresentFlag_JsonNullable(JsonNullable<Integer> rpuPresentFlag) {
+    this.rpuPresentFlag = rpuPresentFlag;
   }
 
   public void setRpuPresentFlag(@javax.annotation.Nullable Integer rpuPresentFlag) {
-    this.rpuPresentFlag = rpuPresentFlag;
+    this.rpuPresentFlag = JsonNullable.<Integer>of(rpuPresentFlag);
   }
 
 
   public MediaStream elPresentFlag(@javax.annotation.Nullable Integer elPresentFlag) {
-    this.elPresentFlag = elPresentFlag;
+    this.elPresentFlag = JsonNullable.<Integer>of(elPresentFlag);
     return this;
   }
 
@@ -599,17 +695,30 @@ public class MediaStream {
    * @return elPresentFlag
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getElPresentFlag() {
+        return elPresentFlag.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_EL_PRESENT_FLAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getElPresentFlag_JsonNullable() {
     return elPresentFlag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_EL_PRESENT_FLAG)
+  public void setElPresentFlag_JsonNullable(JsonNullable<Integer> elPresentFlag) {
+    this.elPresentFlag = elPresentFlag;
   }
 
   public void setElPresentFlag(@javax.annotation.Nullable Integer elPresentFlag) {
-    this.elPresentFlag = elPresentFlag;
+    this.elPresentFlag = JsonNullable.<Integer>of(elPresentFlag);
   }
 
 
   public MediaStream blPresentFlag(@javax.annotation.Nullable Integer blPresentFlag) {
-    this.blPresentFlag = blPresentFlag;
+    this.blPresentFlag = JsonNullable.<Integer>of(blPresentFlag);
     return this;
   }
 
@@ -618,17 +727,30 @@ public class MediaStream {
    * @return blPresentFlag
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getBlPresentFlag() {
+        return blPresentFlag.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_BL_PRESENT_FLAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getBlPresentFlag_JsonNullable() {
     return blPresentFlag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_BL_PRESENT_FLAG)
+  public void setBlPresentFlag_JsonNullable(JsonNullable<Integer> blPresentFlag) {
+    this.blPresentFlag = blPresentFlag;
   }
 
   public void setBlPresentFlag(@javax.annotation.Nullable Integer blPresentFlag) {
-    this.blPresentFlag = blPresentFlag;
+    this.blPresentFlag = JsonNullable.<Integer>of(blPresentFlag);
   }
 
 
   public MediaStream dvBlSignalCompatibilityId(@javax.annotation.Nullable Integer dvBlSignalCompatibilityId) {
-    this.dvBlSignalCompatibilityId = dvBlSignalCompatibilityId;
+    this.dvBlSignalCompatibilityId = JsonNullable.<Integer>of(dvBlSignalCompatibilityId);
     return this;
   }
 
@@ -637,17 +759,30 @@ public class MediaStream {
    * @return dvBlSignalCompatibilityId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getDvBlSignalCompatibilityId() {
+        return dvBlSignalCompatibilityId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getDvBlSignalCompatibilityId_JsonNullable() {
     return dvBlSignalCompatibilityId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID)
+  public void setDvBlSignalCompatibilityId_JsonNullable(JsonNullable<Integer> dvBlSignalCompatibilityId) {
+    this.dvBlSignalCompatibilityId = dvBlSignalCompatibilityId;
   }
 
   public void setDvBlSignalCompatibilityId(@javax.annotation.Nullable Integer dvBlSignalCompatibilityId) {
-    this.dvBlSignalCompatibilityId = dvBlSignalCompatibilityId;
+    this.dvBlSignalCompatibilityId = JsonNullable.<Integer>of(dvBlSignalCompatibilityId);
   }
 
 
   public MediaStream comment(@javax.annotation.Nullable String comment) {
-    this.comment = comment;
+    this.comment = JsonNullable.<String>of(comment);
     return this;
   }
 
@@ -656,17 +791,30 @@ public class MediaStream {
    * @return comment
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getComment() {
+        return comment.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_COMMENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getComment_JsonNullable() {
     return comment;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_COMMENT)
+  public void setComment_JsonNullable(JsonNullable<String> comment) {
+    this.comment = comment;
   }
 
   public void setComment(@javax.annotation.Nullable String comment) {
-    this.comment = comment;
+    this.comment = JsonNullable.<String>of(comment);
   }
 
 
   public MediaStream timeBase(@javax.annotation.Nullable String timeBase) {
-    this.timeBase = timeBase;
+    this.timeBase = JsonNullable.<String>of(timeBase);
     return this;
   }
 
@@ -675,17 +823,30 @@ public class MediaStream {
    * @return timeBase
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getTimeBase() {
+        return timeBase.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TIME_BASE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getTimeBase_JsonNullable() {
     return timeBase;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TIME_BASE)
+  public void setTimeBase_JsonNullable(JsonNullable<String> timeBase) {
+    this.timeBase = timeBase;
   }
 
   public void setTimeBase(@javax.annotation.Nullable String timeBase) {
-    this.timeBase = timeBase;
+    this.timeBase = JsonNullable.<String>of(timeBase);
   }
 
 
   public MediaStream codecTimeBase(@javax.annotation.Nullable String codecTimeBase) {
-    this.codecTimeBase = codecTimeBase;
+    this.codecTimeBase = JsonNullable.<String>of(codecTimeBase);
     return this;
   }
 
@@ -694,17 +855,30 @@ public class MediaStream {
    * @return codecTimeBase
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getCodecTimeBase() {
+        return codecTimeBase.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CODEC_TIME_BASE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getCodecTimeBase_JsonNullable() {
     return codecTimeBase;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CODEC_TIME_BASE)
+  public void setCodecTimeBase_JsonNullable(JsonNullable<String> codecTimeBase) {
+    this.codecTimeBase = codecTimeBase;
   }
 
   public void setCodecTimeBase(@javax.annotation.Nullable String codecTimeBase) {
-    this.codecTimeBase = codecTimeBase;
+    this.codecTimeBase = JsonNullable.<String>of(codecTimeBase);
   }
 
 
   public MediaStream title(@javax.annotation.Nullable String title) {
-    this.title = title;
+    this.title = JsonNullable.<String>of(title);
     return this;
   }
 
@@ -713,12 +887,25 @@ public class MediaStream {
    * @return title
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getTitle() {
+        return title.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getTitle_JsonNullable() {
     return title;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TITLE)
+  public void setTitle_JsonNullable(JsonNullable<String> title) {
+    this.title = title;
   }
 
   public void setTitle(@javax.annotation.Nullable String title) {
-    this.title = title;
+    this.title = JsonNullable.<String>of(title);
   }
 
 
@@ -727,8 +914,25 @@ public class MediaStream {
    * @return videoRange
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getVideoRange() {
+    
+    if (videoRange == null) {
+      videoRange = JsonNullable.<String>undefined();
+    }
+    return videoRange.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_VIDEO_RANGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getVideoRange_JsonNullable() {
     return videoRange;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VIDEO_RANGE)
+  private void setVideoRange_JsonNullable(JsonNullable<String> videoRange) {
+    this.videoRange = videoRange;
   }
 
 
@@ -738,8 +942,25 @@ public class MediaStream {
    * @return videoRangeType
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getVideoRangeType() {
+    
+    if (videoRangeType == null) {
+      videoRangeType = JsonNullable.<String>undefined();
+    }
+    return videoRangeType.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_VIDEO_RANGE_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getVideoRangeType_JsonNullable() {
     return videoRangeType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VIDEO_RANGE_TYPE)
+  private void setVideoRangeType_JsonNullable(JsonNullable<String> videoRangeType) {
+    this.videoRangeType = videoRangeType;
   }
 
 
@@ -749,14 +970,31 @@ public class MediaStream {
    * @return videoDoViTitle
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getVideoDoViTitle() {
+    
+    if (videoDoViTitle == null) {
+      videoDoViTitle = JsonNullable.<String>undefined();
+    }
+    return videoDoViTitle.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_VIDEO_DO_VI_TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getVideoDoViTitle_JsonNullable() {
     return videoDoViTitle;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VIDEO_DO_VI_TITLE)
+  private void setVideoDoViTitle_JsonNullable(JsonNullable<String> videoDoViTitle) {
+    this.videoDoViTitle = videoDoViTitle;
   }
 
 
 
   public MediaStream localizedUndefined(@javax.annotation.Nullable String localizedUndefined) {
-    this.localizedUndefined = localizedUndefined;
+    this.localizedUndefined = JsonNullable.<String>of(localizedUndefined);
     return this;
   }
 
@@ -765,17 +1003,30 @@ public class MediaStream {
    * @return localizedUndefined
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getLocalizedUndefined() {
+        return localizedUndefined.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LOCALIZED_UNDEFINED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getLocalizedUndefined_JsonNullable() {
     return localizedUndefined;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LOCALIZED_UNDEFINED)
+  public void setLocalizedUndefined_JsonNullable(JsonNullable<String> localizedUndefined) {
+    this.localizedUndefined = localizedUndefined;
   }
 
   public void setLocalizedUndefined(@javax.annotation.Nullable String localizedUndefined) {
-    this.localizedUndefined = localizedUndefined;
+    this.localizedUndefined = JsonNullable.<String>of(localizedUndefined);
   }
 
 
   public MediaStream localizedDefault(@javax.annotation.Nullable String localizedDefault) {
-    this.localizedDefault = localizedDefault;
+    this.localizedDefault = JsonNullable.<String>of(localizedDefault);
     return this;
   }
 
@@ -784,17 +1035,30 @@ public class MediaStream {
    * @return localizedDefault
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getLocalizedDefault() {
+        return localizedDefault.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LOCALIZED_DEFAULT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getLocalizedDefault_JsonNullable() {
     return localizedDefault;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LOCALIZED_DEFAULT)
+  public void setLocalizedDefault_JsonNullable(JsonNullable<String> localizedDefault) {
+    this.localizedDefault = localizedDefault;
   }
 
   public void setLocalizedDefault(@javax.annotation.Nullable String localizedDefault) {
-    this.localizedDefault = localizedDefault;
+    this.localizedDefault = JsonNullable.<String>of(localizedDefault);
   }
 
 
   public MediaStream localizedForced(@javax.annotation.Nullable String localizedForced) {
-    this.localizedForced = localizedForced;
+    this.localizedForced = JsonNullable.<String>of(localizedForced);
     return this;
   }
 
@@ -803,17 +1067,30 @@ public class MediaStream {
    * @return localizedForced
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getLocalizedForced() {
+        return localizedForced.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LOCALIZED_FORCED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getLocalizedForced_JsonNullable() {
     return localizedForced;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LOCALIZED_FORCED)
+  public void setLocalizedForced_JsonNullable(JsonNullable<String> localizedForced) {
+    this.localizedForced = localizedForced;
   }
 
   public void setLocalizedForced(@javax.annotation.Nullable String localizedForced) {
-    this.localizedForced = localizedForced;
+    this.localizedForced = JsonNullable.<String>of(localizedForced);
   }
 
 
   public MediaStream localizedExternal(@javax.annotation.Nullable String localizedExternal) {
-    this.localizedExternal = localizedExternal;
+    this.localizedExternal = JsonNullable.<String>of(localizedExternal);
     return this;
   }
 
@@ -822,12 +1099,25 @@ public class MediaStream {
    * @return localizedExternal
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getLocalizedExternal() {
+        return localizedExternal.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LOCALIZED_EXTERNAL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getLocalizedExternal_JsonNullable() {
     return localizedExternal;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LOCALIZED_EXTERNAL)
+  public void setLocalizedExternal_JsonNullable(JsonNullable<String> localizedExternal) {
+    this.localizedExternal = localizedExternal;
   }
 
   public void setLocalizedExternal(@javax.annotation.Nullable String localizedExternal) {
-    this.localizedExternal = localizedExternal;
+    this.localizedExternal = JsonNullable.<String>of(localizedExternal);
   }
 
 
@@ -836,14 +1126,31 @@ public class MediaStream {
    * @return displayTitle
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getDisplayTitle() {
+    
+    if (displayTitle == null) {
+      displayTitle = JsonNullable.<String>undefined();
+    }
+    return displayTitle.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DISPLAY_TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getDisplayTitle_JsonNullable() {
     return displayTitle;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DISPLAY_TITLE)
+  private void setDisplayTitle_JsonNullable(JsonNullable<String> displayTitle) {
+    this.displayTitle = displayTitle;
   }
 
 
 
   public MediaStream nalLengthSize(@javax.annotation.Nullable String nalLengthSize) {
-    this.nalLengthSize = nalLengthSize;
+    this.nalLengthSize = JsonNullable.<String>of(nalLengthSize);
     return this;
   }
 
@@ -852,12 +1159,25 @@ public class MediaStream {
    * @return nalLengthSize
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getNalLengthSize() {
+        return nalLengthSize.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAL_LENGTH_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getNalLengthSize_JsonNullable() {
     return nalLengthSize;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAL_LENGTH_SIZE)
+  public void setNalLengthSize_JsonNullable(JsonNullable<String> nalLengthSize) {
+    this.nalLengthSize = nalLengthSize;
   }
 
   public void setNalLengthSize(@javax.annotation.Nullable String nalLengthSize) {
-    this.nalLengthSize = nalLengthSize;
+    this.nalLengthSize = JsonNullable.<String>of(nalLengthSize);
   }
 
 
@@ -871,17 +1191,22 @@ public class MediaStream {
    * @return isInterlaced
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_INTERLACED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsInterlaced() {
     return isInterlaced;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_INTERLACED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsInterlaced(@javax.annotation.Nullable Boolean isInterlaced) {
     this.isInterlaced = isInterlaced;
   }
 
 
   public MediaStream isAVC(@javax.annotation.Nullable Boolean isAVC) {
-    this.isAVC = isAVC;
+    this.isAVC = JsonNullable.<Boolean>of(isAVC);
     return this;
   }
 
@@ -890,17 +1215,30 @@ public class MediaStream {
    * @return isAVC
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Boolean getIsAVC() {
+        return isAVC.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_IS_A_V_C)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Boolean> getIsAVC_JsonNullable() {
     return isAVC;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_A_V_C)
+  public void setIsAVC_JsonNullable(JsonNullable<Boolean> isAVC) {
+    this.isAVC = isAVC;
   }
 
   public void setIsAVC(@javax.annotation.Nullable Boolean isAVC) {
-    this.isAVC = isAVC;
+    this.isAVC = JsonNullable.<Boolean>of(isAVC);
   }
 
 
   public MediaStream channelLayout(@javax.annotation.Nullable String channelLayout) {
-    this.channelLayout = channelLayout;
+    this.channelLayout = JsonNullable.<String>of(channelLayout);
     return this;
   }
 
@@ -909,17 +1247,30 @@ public class MediaStream {
    * @return channelLayout
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getChannelLayout() {
+        return channelLayout.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CHANNEL_LAYOUT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getChannelLayout_JsonNullable() {
     return channelLayout;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CHANNEL_LAYOUT)
+  public void setChannelLayout_JsonNullable(JsonNullable<String> channelLayout) {
+    this.channelLayout = channelLayout;
   }
 
   public void setChannelLayout(@javax.annotation.Nullable String channelLayout) {
-    this.channelLayout = channelLayout;
+    this.channelLayout = JsonNullable.<String>of(channelLayout);
   }
 
 
   public MediaStream bitRate(@javax.annotation.Nullable Integer bitRate) {
-    this.bitRate = bitRate;
+    this.bitRate = JsonNullable.<Integer>of(bitRate);
     return this;
   }
 
@@ -928,17 +1279,30 @@ public class MediaStream {
    * @return bitRate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getBitRate() {
+        return bitRate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_BIT_RATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getBitRate_JsonNullable() {
     return bitRate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_BIT_RATE)
+  public void setBitRate_JsonNullable(JsonNullable<Integer> bitRate) {
+    this.bitRate = bitRate;
   }
 
   public void setBitRate(@javax.annotation.Nullable Integer bitRate) {
-    this.bitRate = bitRate;
+    this.bitRate = JsonNullable.<Integer>of(bitRate);
   }
 
 
   public MediaStream bitDepth(@javax.annotation.Nullable Integer bitDepth) {
-    this.bitDepth = bitDepth;
+    this.bitDepth = JsonNullable.<Integer>of(bitDepth);
     return this;
   }
 
@@ -947,17 +1311,30 @@ public class MediaStream {
    * @return bitDepth
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getBitDepth() {
+        return bitDepth.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_BIT_DEPTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getBitDepth_JsonNullable() {
     return bitDepth;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_BIT_DEPTH)
+  public void setBitDepth_JsonNullable(JsonNullable<Integer> bitDepth) {
+    this.bitDepth = bitDepth;
   }
 
   public void setBitDepth(@javax.annotation.Nullable Integer bitDepth) {
-    this.bitDepth = bitDepth;
+    this.bitDepth = JsonNullable.<Integer>of(bitDepth);
   }
 
 
   public MediaStream refFrames(@javax.annotation.Nullable Integer refFrames) {
-    this.refFrames = refFrames;
+    this.refFrames = JsonNullable.<Integer>of(refFrames);
     return this;
   }
 
@@ -966,17 +1343,30 @@ public class MediaStream {
    * @return refFrames
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getRefFrames() {
+        return refFrames.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_REF_FRAMES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getRefFrames_JsonNullable() {
     return refFrames;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_REF_FRAMES)
+  public void setRefFrames_JsonNullable(JsonNullable<Integer> refFrames) {
+    this.refFrames = refFrames;
   }
 
   public void setRefFrames(@javax.annotation.Nullable Integer refFrames) {
-    this.refFrames = refFrames;
+    this.refFrames = JsonNullable.<Integer>of(refFrames);
   }
 
 
   public MediaStream packetLength(@javax.annotation.Nullable Integer packetLength) {
-    this.packetLength = packetLength;
+    this.packetLength = JsonNullable.<Integer>of(packetLength);
     return this;
   }
 
@@ -985,17 +1375,30 @@ public class MediaStream {
    * @return packetLength
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getPacketLength() {
+        return packetLength.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PACKET_LENGTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getPacketLength_JsonNullable() {
     return packetLength;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PACKET_LENGTH)
+  public void setPacketLength_JsonNullable(JsonNullable<Integer> packetLength) {
+    this.packetLength = packetLength;
   }
 
   public void setPacketLength(@javax.annotation.Nullable Integer packetLength) {
-    this.packetLength = packetLength;
+    this.packetLength = JsonNullable.<Integer>of(packetLength);
   }
 
 
   public MediaStream channels(@javax.annotation.Nullable Integer channels) {
-    this.channels = channels;
+    this.channels = JsonNullable.<Integer>of(channels);
     return this;
   }
 
@@ -1004,17 +1407,30 @@ public class MediaStream {
    * @return channels
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getChannels() {
+        return channels.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CHANNELS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getChannels_JsonNullable() {
     return channels;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CHANNELS)
+  public void setChannels_JsonNullable(JsonNullable<Integer> channels) {
+    this.channels = channels;
   }
 
   public void setChannels(@javax.annotation.Nullable Integer channels) {
-    this.channels = channels;
+    this.channels = JsonNullable.<Integer>of(channels);
   }
 
 
   public MediaStream sampleRate(@javax.annotation.Nullable Integer sampleRate) {
-    this.sampleRate = sampleRate;
+    this.sampleRate = JsonNullable.<Integer>of(sampleRate);
     return this;
   }
 
@@ -1023,12 +1439,25 @@ public class MediaStream {
    * @return sampleRate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getSampleRate() {
+        return sampleRate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SAMPLE_RATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getSampleRate_JsonNullable() {
     return sampleRate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SAMPLE_RATE)
+  public void setSampleRate_JsonNullable(JsonNullable<Integer> sampleRate) {
+    this.sampleRate = sampleRate;
   }
 
   public void setSampleRate(@javax.annotation.Nullable Integer sampleRate) {
-    this.sampleRate = sampleRate;
+    this.sampleRate = JsonNullable.<Integer>of(sampleRate);
   }
 
 
@@ -1042,10 +1471,15 @@ public class MediaStream {
    * @return isDefault
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_DEFAULT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsDefault() {
     return isDefault;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_DEFAULT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsDefault(@javax.annotation.Nullable Boolean isDefault) {
     this.isDefault = isDefault;
   }
@@ -1061,17 +1495,22 @@ public class MediaStream {
    * @return isForced
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_FORCED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsForced() {
     return isForced;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_FORCED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsForced(@javax.annotation.Nullable Boolean isForced) {
     this.isForced = isForced;
   }
 
 
   public MediaStream height(@javax.annotation.Nullable Integer height) {
-    this.height = height;
+    this.height = JsonNullable.<Integer>of(height);
     return this;
   }
 
@@ -1080,17 +1519,30 @@ public class MediaStream {
    * @return height
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getHeight() {
+        return height.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getHeight_JsonNullable() {
     return height;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_HEIGHT)
+  public void setHeight_JsonNullable(JsonNullable<Integer> height) {
+    this.height = height;
   }
 
   public void setHeight(@javax.annotation.Nullable Integer height) {
-    this.height = height;
+    this.height = JsonNullable.<Integer>of(height);
   }
 
 
   public MediaStream width(@javax.annotation.Nullable Integer width) {
-    this.width = width;
+    this.width = JsonNullable.<Integer>of(width);
     return this;
   }
 
@@ -1099,17 +1551,30 @@ public class MediaStream {
    * @return width
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getWidth() {
+        return width.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getWidth_JsonNullable() {
     return width;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_WIDTH)
+  public void setWidth_JsonNullable(JsonNullable<Integer> width) {
+    this.width = width;
   }
 
   public void setWidth(@javax.annotation.Nullable Integer width) {
-    this.width = width;
+    this.width = JsonNullable.<Integer>of(width);
   }
 
 
   public MediaStream averageFrameRate(@javax.annotation.Nullable Float averageFrameRate) {
-    this.averageFrameRate = averageFrameRate;
+    this.averageFrameRate = JsonNullable.<Float>of(averageFrameRate);
     return this;
   }
 
@@ -1118,17 +1583,30 @@ public class MediaStream {
    * @return averageFrameRate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Float getAverageFrameRate() {
+        return averageFrameRate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_AVERAGE_FRAME_RATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Float> getAverageFrameRate_JsonNullable() {
     return averageFrameRate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AVERAGE_FRAME_RATE)
+  public void setAverageFrameRate_JsonNullable(JsonNullable<Float> averageFrameRate) {
+    this.averageFrameRate = averageFrameRate;
   }
 
   public void setAverageFrameRate(@javax.annotation.Nullable Float averageFrameRate) {
-    this.averageFrameRate = averageFrameRate;
+    this.averageFrameRate = JsonNullable.<Float>of(averageFrameRate);
   }
 
 
   public MediaStream realFrameRate(@javax.annotation.Nullable Float realFrameRate) {
-    this.realFrameRate = realFrameRate;
+    this.realFrameRate = JsonNullable.<Float>of(realFrameRate);
     return this;
   }
 
@@ -1137,17 +1615,30 @@ public class MediaStream {
    * @return realFrameRate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Float getRealFrameRate() {
+        return realFrameRate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_REAL_FRAME_RATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Float> getRealFrameRate_JsonNullable() {
     return realFrameRate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_REAL_FRAME_RATE)
+  public void setRealFrameRate_JsonNullable(JsonNullable<Float> realFrameRate) {
+    this.realFrameRate = realFrameRate;
   }
 
   public void setRealFrameRate(@javax.annotation.Nullable Float realFrameRate) {
-    this.realFrameRate = realFrameRate;
+    this.realFrameRate = JsonNullable.<Float>of(realFrameRate);
   }
 
 
   public MediaStream profile(@javax.annotation.Nullable String profile) {
-    this.profile = profile;
+    this.profile = JsonNullable.<String>of(profile);
     return this;
   }
 
@@ -1156,12 +1647,25 @@ public class MediaStream {
    * @return profile
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getProfile() {
+        return profile.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PROFILE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getProfile_JsonNullable() {
     return profile;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PROFILE)
+  public void setProfile_JsonNullable(JsonNullable<String> profile) {
+    this.profile = profile;
   }
 
   public void setProfile(@javax.annotation.Nullable String profile) {
-    this.profile = profile;
+    this.profile = JsonNullable.<String>of(profile);
   }
 
 
@@ -1175,17 +1679,22 @@ public class MediaStream {
    * @return type
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public MediaStreamType getType() {
     return type;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@javax.annotation.Nullable MediaStreamType type) {
     this.type = type;
   }
 
 
   public MediaStream aspectRatio(@javax.annotation.Nullable String aspectRatio) {
-    this.aspectRatio = aspectRatio;
+    this.aspectRatio = JsonNullable.<String>of(aspectRatio);
     return this;
   }
 
@@ -1194,12 +1703,25 @@ public class MediaStream {
    * @return aspectRatio
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getAspectRatio() {
+        return aspectRatio.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ASPECT_RATIO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getAspectRatio_JsonNullable() {
     return aspectRatio;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ASPECT_RATIO)
+  public void setAspectRatio_JsonNullable(JsonNullable<String> aspectRatio) {
+    this.aspectRatio = aspectRatio;
   }
 
   public void setAspectRatio(@javax.annotation.Nullable String aspectRatio) {
-    this.aspectRatio = aspectRatio;
+    this.aspectRatio = JsonNullable.<String>of(aspectRatio);
   }
 
 
@@ -1213,17 +1735,22 @@ public class MediaStream {
    * @return index
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getIndex() {
     return index;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIndex(@javax.annotation.Nullable Integer index) {
     this.index = index;
   }
 
 
   public MediaStream score(@javax.annotation.Nullable Integer score) {
-    this.score = score;
+    this.score = JsonNullable.<Integer>of(score);
     return this;
   }
 
@@ -1232,12 +1759,25 @@ public class MediaStream {
    * @return score
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getScore() {
+        return score.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SCORE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getScore_JsonNullable() {
     return score;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SCORE)
+  public void setScore_JsonNullable(JsonNullable<Integer> score) {
+    this.score = score;
   }
 
   public void setScore(@javax.annotation.Nullable Integer score) {
-    this.score = score;
+    this.score = JsonNullable.<Integer>of(score);
   }
 
 
@@ -1251,17 +1791,22 @@ public class MediaStream {
    * @return isExternal
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_EXTERNAL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsExternal() {
     return isExternal;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_EXTERNAL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsExternal(@javax.annotation.Nullable Boolean isExternal) {
     this.isExternal = isExternal;
   }
 
 
   public MediaStream deliveryMethod(@javax.annotation.Nullable SubtitleDeliveryMethod deliveryMethod) {
-    this.deliveryMethod = deliveryMethod;
+    this.deliveryMethod = JsonNullable.<SubtitleDeliveryMethod>of(deliveryMethod);
     return this;
   }
 
@@ -1270,17 +1815,30 @@ public class MediaStream {
    * @return deliveryMethod
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public SubtitleDeliveryMethod getDeliveryMethod() {
+        return deliveryMethod.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DELIVERY_METHOD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<SubtitleDeliveryMethod> getDeliveryMethod_JsonNullable() {
     return deliveryMethod;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DELIVERY_METHOD)
+  public void setDeliveryMethod_JsonNullable(JsonNullable<SubtitleDeliveryMethod> deliveryMethod) {
+    this.deliveryMethod = deliveryMethod;
   }
 
   public void setDeliveryMethod(@javax.annotation.Nullable SubtitleDeliveryMethod deliveryMethod) {
-    this.deliveryMethod = deliveryMethod;
+    this.deliveryMethod = JsonNullable.<SubtitleDeliveryMethod>of(deliveryMethod);
   }
 
 
   public MediaStream deliveryUrl(@javax.annotation.Nullable String deliveryUrl) {
-    this.deliveryUrl = deliveryUrl;
+    this.deliveryUrl = JsonNullable.<String>of(deliveryUrl);
     return this;
   }
 
@@ -1289,17 +1847,30 @@ public class MediaStream {
    * @return deliveryUrl
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getDeliveryUrl() {
+        return deliveryUrl.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DELIVERY_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getDeliveryUrl_JsonNullable() {
     return deliveryUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DELIVERY_URL)
+  public void setDeliveryUrl_JsonNullable(JsonNullable<String> deliveryUrl) {
+    this.deliveryUrl = deliveryUrl;
   }
 
   public void setDeliveryUrl(@javax.annotation.Nullable String deliveryUrl) {
-    this.deliveryUrl = deliveryUrl;
+    this.deliveryUrl = JsonNullable.<String>of(deliveryUrl);
   }
 
 
   public MediaStream isExternalUrl(@javax.annotation.Nullable Boolean isExternalUrl) {
-    this.isExternalUrl = isExternalUrl;
+    this.isExternalUrl = JsonNullable.<Boolean>of(isExternalUrl);
     return this;
   }
 
@@ -1308,12 +1879,25 @@ public class MediaStream {
    * @return isExternalUrl
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Boolean getIsExternalUrl() {
+        return isExternalUrl.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_IS_EXTERNAL_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Boolean> getIsExternalUrl_JsonNullable() {
     return isExternalUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_EXTERNAL_URL)
+  public void setIsExternalUrl_JsonNullable(JsonNullable<Boolean> isExternalUrl) {
+    this.isExternalUrl = isExternalUrl;
   }
 
   public void setIsExternalUrl(@javax.annotation.Nullable Boolean isExternalUrl) {
-    this.isExternalUrl = isExternalUrl;
+    this.isExternalUrl = JsonNullable.<Boolean>of(isExternalUrl);
   }
 
 
@@ -1322,9 +1906,12 @@ public class MediaStream {
    * @return isTextSubtitleStream
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsTextSubtitleStream() {
     return isTextSubtitleStream;
   }
+
 
 
 
@@ -1338,17 +1925,22 @@ public class MediaStream {
    * @return supportsExternalStream
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSupportsExternalStream() {
     return supportsExternalStream;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSupportsExternalStream(@javax.annotation.Nullable Boolean supportsExternalStream) {
     this.supportsExternalStream = supportsExternalStream;
   }
 
 
   public MediaStream path(@javax.annotation.Nullable String path) {
-    this.path = path;
+    this.path = JsonNullable.<String>of(path);
     return this;
   }
 
@@ -1357,17 +1949,30 @@ public class MediaStream {
    * @return path
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPath() {
+        return path.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPath_JsonNullable() {
     return path;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PATH)
+  public void setPath_JsonNullable(JsonNullable<String> path) {
+    this.path = path;
   }
 
   public void setPath(@javax.annotation.Nullable String path) {
-    this.path = path;
+    this.path = JsonNullable.<String>of(path);
   }
 
 
   public MediaStream pixelFormat(@javax.annotation.Nullable String pixelFormat) {
-    this.pixelFormat = pixelFormat;
+    this.pixelFormat = JsonNullable.<String>of(pixelFormat);
     return this;
   }
 
@@ -1376,17 +1981,30 @@ public class MediaStream {
    * @return pixelFormat
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPixelFormat() {
+        return pixelFormat.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PIXEL_FORMAT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPixelFormat_JsonNullable() {
     return pixelFormat;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PIXEL_FORMAT)
+  public void setPixelFormat_JsonNullable(JsonNullable<String> pixelFormat) {
+    this.pixelFormat = pixelFormat;
   }
 
   public void setPixelFormat(@javax.annotation.Nullable String pixelFormat) {
-    this.pixelFormat = pixelFormat;
+    this.pixelFormat = JsonNullable.<String>of(pixelFormat);
   }
 
 
   public MediaStream level(@javax.annotation.Nullable Double level) {
-    this.level = level;
+    this.level = JsonNullable.<Double>of(level);
     return this;
   }
 
@@ -1395,17 +2013,30 @@ public class MediaStream {
    * @return level
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Double getLevel() {
+        return level.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LEVEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Double> getLevel_JsonNullable() {
     return level;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LEVEL)
+  public void setLevel_JsonNullable(JsonNullable<Double> level) {
+    this.level = level;
   }
 
   public void setLevel(@javax.annotation.Nullable Double level) {
-    this.level = level;
+    this.level = JsonNullable.<Double>of(level);
   }
 
 
   public MediaStream isAnamorphic(@javax.annotation.Nullable Boolean isAnamorphic) {
-    this.isAnamorphic = isAnamorphic;
+    this.isAnamorphic = JsonNullable.<Boolean>of(isAnamorphic);
     return this;
   }
 
@@ -1414,16 +2045,31 @@ public class MediaStream {
    * @return isAnamorphic
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Boolean getIsAnamorphic() {
-    return isAnamorphic;
+        return isAnamorphic.orElse(null);
   }
 
-  public void setIsAnamorphic(@javax.annotation.Nullable Boolean isAnamorphic) {
+  @JsonProperty(JSON_PROPERTY_IS_ANAMORPHIC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Boolean> getIsAnamorphic_JsonNullable() {
+    return isAnamorphic;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_ANAMORPHIC)
+  public void setIsAnamorphic_JsonNullable(JsonNullable<Boolean> isAnamorphic) {
     this.isAnamorphic = isAnamorphic;
   }
 
+  public void setIsAnamorphic(@javax.annotation.Nullable Boolean isAnamorphic) {
+    this.isAnamorphic = JsonNullable.<Boolean>of(isAnamorphic);
+  }
 
 
+  /**
+   * Return true if this MediaStream object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -1433,64 +2079,64 @@ public class MediaStream {
       return false;
     }
     MediaStream mediaStream = (MediaStream) o;
-    return Objects.equals(this.codec, mediaStream.codec) &&
-        Objects.equals(this.codecTag, mediaStream.codecTag) &&
-        Objects.equals(this.language, mediaStream.language) &&
-        Objects.equals(this.colorRange, mediaStream.colorRange) &&
-        Objects.equals(this.colorSpace, mediaStream.colorSpace) &&
-        Objects.equals(this.colorTransfer, mediaStream.colorTransfer) &&
-        Objects.equals(this.colorPrimaries, mediaStream.colorPrimaries) &&
-        Objects.equals(this.dvVersionMajor, mediaStream.dvVersionMajor) &&
-        Objects.equals(this.dvVersionMinor, mediaStream.dvVersionMinor) &&
-        Objects.equals(this.dvProfile, mediaStream.dvProfile) &&
-        Objects.equals(this.dvLevel, mediaStream.dvLevel) &&
-        Objects.equals(this.rpuPresentFlag, mediaStream.rpuPresentFlag) &&
-        Objects.equals(this.elPresentFlag, mediaStream.elPresentFlag) &&
-        Objects.equals(this.blPresentFlag, mediaStream.blPresentFlag) &&
-        Objects.equals(this.dvBlSignalCompatibilityId, mediaStream.dvBlSignalCompatibilityId) &&
-        Objects.equals(this.comment, mediaStream.comment) &&
-        Objects.equals(this.timeBase, mediaStream.timeBase) &&
-        Objects.equals(this.codecTimeBase, mediaStream.codecTimeBase) &&
-        Objects.equals(this.title, mediaStream.title) &&
-        Objects.equals(this.videoRange, mediaStream.videoRange) &&
-        Objects.equals(this.videoRangeType, mediaStream.videoRangeType) &&
-        Objects.equals(this.videoDoViTitle, mediaStream.videoDoViTitle) &&
-        Objects.equals(this.localizedUndefined, mediaStream.localizedUndefined) &&
-        Objects.equals(this.localizedDefault, mediaStream.localizedDefault) &&
-        Objects.equals(this.localizedForced, mediaStream.localizedForced) &&
-        Objects.equals(this.localizedExternal, mediaStream.localizedExternal) &&
-        Objects.equals(this.displayTitle, mediaStream.displayTitle) &&
-        Objects.equals(this.nalLengthSize, mediaStream.nalLengthSize) &&
+    return equalsNullable(this.codec, mediaStream.codec) &&
+        equalsNullable(this.codecTag, mediaStream.codecTag) &&
+        equalsNullable(this.language, mediaStream.language) &&
+        equalsNullable(this.colorRange, mediaStream.colorRange) &&
+        equalsNullable(this.colorSpace, mediaStream.colorSpace) &&
+        equalsNullable(this.colorTransfer, mediaStream.colorTransfer) &&
+        equalsNullable(this.colorPrimaries, mediaStream.colorPrimaries) &&
+        equalsNullable(this.dvVersionMajor, mediaStream.dvVersionMajor) &&
+        equalsNullable(this.dvVersionMinor, mediaStream.dvVersionMinor) &&
+        equalsNullable(this.dvProfile, mediaStream.dvProfile) &&
+        equalsNullable(this.dvLevel, mediaStream.dvLevel) &&
+        equalsNullable(this.rpuPresentFlag, mediaStream.rpuPresentFlag) &&
+        equalsNullable(this.elPresentFlag, mediaStream.elPresentFlag) &&
+        equalsNullable(this.blPresentFlag, mediaStream.blPresentFlag) &&
+        equalsNullable(this.dvBlSignalCompatibilityId, mediaStream.dvBlSignalCompatibilityId) &&
+        equalsNullable(this.comment, mediaStream.comment) &&
+        equalsNullable(this.timeBase, mediaStream.timeBase) &&
+        equalsNullable(this.codecTimeBase, mediaStream.codecTimeBase) &&
+        equalsNullable(this.title, mediaStream.title) &&
+        equalsNullable(this.videoRange, mediaStream.videoRange) &&
+        equalsNullable(this.videoRangeType, mediaStream.videoRangeType) &&
+        equalsNullable(this.videoDoViTitle, mediaStream.videoDoViTitle) &&
+        equalsNullable(this.localizedUndefined, mediaStream.localizedUndefined) &&
+        equalsNullable(this.localizedDefault, mediaStream.localizedDefault) &&
+        equalsNullable(this.localizedForced, mediaStream.localizedForced) &&
+        equalsNullable(this.localizedExternal, mediaStream.localizedExternal) &&
+        equalsNullable(this.displayTitle, mediaStream.displayTitle) &&
+        equalsNullable(this.nalLengthSize, mediaStream.nalLengthSize) &&
         Objects.equals(this.isInterlaced, mediaStream.isInterlaced) &&
-        Objects.equals(this.isAVC, mediaStream.isAVC) &&
-        Objects.equals(this.channelLayout, mediaStream.channelLayout) &&
-        Objects.equals(this.bitRate, mediaStream.bitRate) &&
-        Objects.equals(this.bitDepth, mediaStream.bitDepth) &&
-        Objects.equals(this.refFrames, mediaStream.refFrames) &&
-        Objects.equals(this.packetLength, mediaStream.packetLength) &&
-        Objects.equals(this.channels, mediaStream.channels) &&
-        Objects.equals(this.sampleRate, mediaStream.sampleRate) &&
+        equalsNullable(this.isAVC, mediaStream.isAVC) &&
+        equalsNullable(this.channelLayout, mediaStream.channelLayout) &&
+        equalsNullable(this.bitRate, mediaStream.bitRate) &&
+        equalsNullable(this.bitDepth, mediaStream.bitDepth) &&
+        equalsNullable(this.refFrames, mediaStream.refFrames) &&
+        equalsNullable(this.packetLength, mediaStream.packetLength) &&
+        equalsNullable(this.channels, mediaStream.channels) &&
+        equalsNullable(this.sampleRate, mediaStream.sampleRate) &&
         Objects.equals(this.isDefault, mediaStream.isDefault) &&
         Objects.equals(this.isForced, mediaStream.isForced) &&
-        Objects.equals(this.height, mediaStream.height) &&
-        Objects.equals(this.width, mediaStream.width) &&
-        Objects.equals(this.averageFrameRate, mediaStream.averageFrameRate) &&
-        Objects.equals(this.realFrameRate, mediaStream.realFrameRate) &&
-        Objects.equals(this.profile, mediaStream.profile) &&
+        equalsNullable(this.height, mediaStream.height) &&
+        equalsNullable(this.width, mediaStream.width) &&
+        equalsNullable(this.averageFrameRate, mediaStream.averageFrameRate) &&
+        equalsNullable(this.realFrameRate, mediaStream.realFrameRate) &&
+        equalsNullable(this.profile, mediaStream.profile) &&
         Objects.equals(this.type, mediaStream.type) &&
-        Objects.equals(this.aspectRatio, mediaStream.aspectRatio) &&
+        equalsNullable(this.aspectRatio, mediaStream.aspectRatio) &&
         Objects.equals(this.index, mediaStream.index) &&
-        Objects.equals(this.score, mediaStream.score) &&
+        equalsNullable(this.score, mediaStream.score) &&
         Objects.equals(this.isExternal, mediaStream.isExternal) &&
-        Objects.equals(this.deliveryMethod, mediaStream.deliveryMethod) &&
-        Objects.equals(this.deliveryUrl, mediaStream.deliveryUrl) &&
-        Objects.equals(this.isExternalUrl, mediaStream.isExternalUrl) &&
+        equalsNullable(this.deliveryMethod, mediaStream.deliveryMethod) &&
+        equalsNullable(this.deliveryUrl, mediaStream.deliveryUrl) &&
+        equalsNullable(this.isExternalUrl, mediaStream.isExternalUrl) &&
         Objects.equals(this.isTextSubtitleStream, mediaStream.isTextSubtitleStream) &&
         Objects.equals(this.supportsExternalStream, mediaStream.supportsExternalStream) &&
-        Objects.equals(this.path, mediaStream.path) &&
-        Objects.equals(this.pixelFormat, mediaStream.pixelFormat) &&
-        Objects.equals(this.level, mediaStream.level) &&
-        Objects.equals(this.isAnamorphic, mediaStream.isAnamorphic);
+        equalsNullable(this.path, mediaStream.path) &&
+        equalsNullable(this.pixelFormat, mediaStream.pixelFormat) &&
+        equalsNullable(this.level, mediaStream.level) &&
+        equalsNullable(this.isAnamorphic, mediaStream.isAnamorphic);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -1499,7 +2145,7 @@ public class MediaStream {
 
   @Override
   public int hashCode() {
-    return Objects.hash(codec, codecTag, language, colorRange, colorSpace, colorTransfer, colorPrimaries, dvVersionMajor, dvVersionMinor, dvProfile, dvLevel, rpuPresentFlag, elPresentFlag, blPresentFlag, dvBlSignalCompatibilityId, comment, timeBase, codecTimeBase, title, videoRange, videoRangeType, videoDoViTitle, localizedUndefined, localizedDefault, localizedForced, localizedExternal, displayTitle, nalLengthSize, isInterlaced, isAVC, channelLayout, bitRate, bitDepth, refFrames, packetLength, channels, sampleRate, isDefault, isForced, height, width, averageFrameRate, realFrameRate, profile, type, aspectRatio, index, score, isExternal, deliveryMethod, deliveryUrl, isExternalUrl, isTextSubtitleStream, supportsExternalStream, path, pixelFormat, level, isAnamorphic);
+    return Objects.hash(hashCodeNullable(codec), hashCodeNullable(codecTag), hashCodeNullable(language), hashCodeNullable(colorRange), hashCodeNullable(colorSpace), hashCodeNullable(colorTransfer), hashCodeNullable(colorPrimaries), hashCodeNullable(dvVersionMajor), hashCodeNullable(dvVersionMinor), hashCodeNullable(dvProfile), hashCodeNullable(dvLevel), hashCodeNullable(rpuPresentFlag), hashCodeNullable(elPresentFlag), hashCodeNullable(blPresentFlag), hashCodeNullable(dvBlSignalCompatibilityId), hashCodeNullable(comment), hashCodeNullable(timeBase), hashCodeNullable(codecTimeBase), hashCodeNullable(title), hashCodeNullable(videoRange), hashCodeNullable(videoRangeType), hashCodeNullable(videoDoViTitle), hashCodeNullable(localizedUndefined), hashCodeNullable(localizedDefault), hashCodeNullable(localizedForced), hashCodeNullable(localizedExternal), hashCodeNullable(displayTitle), hashCodeNullable(nalLengthSize), isInterlaced, hashCodeNullable(isAVC), hashCodeNullable(channelLayout), hashCodeNullable(bitRate), hashCodeNullable(bitDepth), hashCodeNullable(refFrames), hashCodeNullable(packetLength), hashCodeNullable(channels), hashCodeNullable(sampleRate), isDefault, isForced, hashCodeNullable(height), hashCodeNullable(width), hashCodeNullable(averageFrameRate), hashCodeNullable(realFrameRate), hashCodeNullable(profile), type, hashCodeNullable(aspectRatio), index, hashCodeNullable(score), isExternal, hashCodeNullable(deliveryMethod), hashCodeNullable(deliveryUrl), hashCodeNullable(isExternalUrl), isTextSubtitleStream, supportsExternalStream, hashCodeNullable(path), hashCodeNullable(pixelFormat), hashCodeNullable(level), hashCodeNullable(isAnamorphic));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -1586,232 +2232,329 @@ public class MediaStream {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Codec");
-    openapiFields.add("CodecTag");
-    openapiFields.add("Language");
-    openapiFields.add("ColorRange");
-    openapiFields.add("ColorSpace");
-    openapiFields.add("ColorTransfer");
-    openapiFields.add("ColorPrimaries");
-    openapiFields.add("DvVersionMajor");
-    openapiFields.add("DvVersionMinor");
-    openapiFields.add("DvProfile");
-    openapiFields.add("DvLevel");
-    openapiFields.add("RpuPresentFlag");
-    openapiFields.add("ElPresentFlag");
-    openapiFields.add("BlPresentFlag");
-    openapiFields.add("DvBlSignalCompatibilityId");
-    openapiFields.add("Comment");
-    openapiFields.add("TimeBase");
-    openapiFields.add("CodecTimeBase");
-    openapiFields.add("Title");
-    openapiFields.add("VideoRange");
-    openapiFields.add("VideoRangeType");
-    openapiFields.add("VideoDoViTitle");
-    openapiFields.add("LocalizedUndefined");
-    openapiFields.add("LocalizedDefault");
-    openapiFields.add("LocalizedForced");
-    openapiFields.add("LocalizedExternal");
-    openapiFields.add("DisplayTitle");
-    openapiFields.add("NalLengthSize");
-    openapiFields.add("IsInterlaced");
-    openapiFields.add("IsAVC");
-    openapiFields.add("ChannelLayout");
-    openapiFields.add("BitRate");
-    openapiFields.add("BitDepth");
-    openapiFields.add("RefFrames");
-    openapiFields.add("PacketLength");
-    openapiFields.add("Channels");
-    openapiFields.add("SampleRate");
-    openapiFields.add("IsDefault");
-    openapiFields.add("IsForced");
-    openapiFields.add("Height");
-    openapiFields.add("Width");
-    openapiFields.add("AverageFrameRate");
-    openapiFields.add("RealFrameRate");
-    openapiFields.add("Profile");
-    openapiFields.add("Type");
-    openapiFields.add("AspectRatio");
-    openapiFields.add("Index");
-    openapiFields.add("Score");
-    openapiFields.add("IsExternal");
-    openapiFields.add("DeliveryMethod");
-    openapiFields.add("DeliveryUrl");
-    openapiFields.add("IsExternalUrl");
-    openapiFields.add("IsTextSubtitleStream");
-    openapiFields.add("SupportsExternalStream");
-    openapiFields.add("Path");
-    openapiFields.add("PixelFormat");
-    openapiFields.add("Level");
-    openapiFields.add("IsAnamorphic");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to MediaStream
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!MediaStream.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in MediaStream is not found in the empty JSON string", MediaStream.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!MediaStream.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `MediaStream` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Codec") != null && !jsonObj.get("Codec").isJsonNull()) && !jsonObj.get("Codec").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Codec` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Codec").toString()));
-      }
-      if ((jsonObj.get("CodecTag") != null && !jsonObj.get("CodecTag").isJsonNull()) && !jsonObj.get("CodecTag").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `CodecTag` to be a primitive type in the JSON string but got `%s`", jsonObj.get("CodecTag").toString()));
-      }
-      if ((jsonObj.get("Language") != null && !jsonObj.get("Language").isJsonNull()) && !jsonObj.get("Language").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Language` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Language").toString()));
-      }
-      if ((jsonObj.get("ColorRange") != null && !jsonObj.get("ColorRange").isJsonNull()) && !jsonObj.get("ColorRange").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ColorRange` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ColorRange").toString()));
-      }
-      if ((jsonObj.get("ColorSpace") != null && !jsonObj.get("ColorSpace").isJsonNull()) && !jsonObj.get("ColorSpace").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ColorSpace` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ColorSpace").toString()));
-      }
-      if ((jsonObj.get("ColorTransfer") != null && !jsonObj.get("ColorTransfer").isJsonNull()) && !jsonObj.get("ColorTransfer").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ColorTransfer` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ColorTransfer").toString()));
-      }
-      if ((jsonObj.get("ColorPrimaries") != null && !jsonObj.get("ColorPrimaries").isJsonNull()) && !jsonObj.get("ColorPrimaries").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ColorPrimaries` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ColorPrimaries").toString()));
-      }
-      if ((jsonObj.get("Comment") != null && !jsonObj.get("Comment").isJsonNull()) && !jsonObj.get("Comment").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Comment` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Comment").toString()));
-      }
-      if ((jsonObj.get("TimeBase") != null && !jsonObj.get("TimeBase").isJsonNull()) && !jsonObj.get("TimeBase").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `TimeBase` to be a primitive type in the JSON string but got `%s`", jsonObj.get("TimeBase").toString()));
-      }
-      if ((jsonObj.get("CodecTimeBase") != null && !jsonObj.get("CodecTimeBase").isJsonNull()) && !jsonObj.get("CodecTimeBase").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `CodecTimeBase` to be a primitive type in the JSON string but got `%s`", jsonObj.get("CodecTimeBase").toString()));
-      }
-      if ((jsonObj.get("Title") != null && !jsonObj.get("Title").isJsonNull()) && !jsonObj.get("Title").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Title` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Title").toString()));
-      }
-      if ((jsonObj.get("VideoRange") != null && !jsonObj.get("VideoRange").isJsonNull()) && !jsonObj.get("VideoRange").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `VideoRange` to be a primitive type in the JSON string but got `%s`", jsonObj.get("VideoRange").toString()));
-      }
-      if ((jsonObj.get("VideoRangeType") != null && !jsonObj.get("VideoRangeType").isJsonNull()) && !jsonObj.get("VideoRangeType").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `VideoRangeType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("VideoRangeType").toString()));
-      }
-      if ((jsonObj.get("VideoDoViTitle") != null && !jsonObj.get("VideoDoViTitle").isJsonNull()) && !jsonObj.get("VideoDoViTitle").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `VideoDoViTitle` to be a primitive type in the JSON string but got `%s`", jsonObj.get("VideoDoViTitle").toString()));
-      }
-      if ((jsonObj.get("LocalizedUndefined") != null && !jsonObj.get("LocalizedUndefined").isJsonNull()) && !jsonObj.get("LocalizedUndefined").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `LocalizedUndefined` to be a primitive type in the JSON string but got `%s`", jsonObj.get("LocalizedUndefined").toString()));
-      }
-      if ((jsonObj.get("LocalizedDefault") != null && !jsonObj.get("LocalizedDefault").isJsonNull()) && !jsonObj.get("LocalizedDefault").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `LocalizedDefault` to be a primitive type in the JSON string but got `%s`", jsonObj.get("LocalizedDefault").toString()));
-      }
-      if ((jsonObj.get("LocalizedForced") != null && !jsonObj.get("LocalizedForced").isJsonNull()) && !jsonObj.get("LocalizedForced").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `LocalizedForced` to be a primitive type in the JSON string but got `%s`", jsonObj.get("LocalizedForced").toString()));
-      }
-      if ((jsonObj.get("LocalizedExternal") != null && !jsonObj.get("LocalizedExternal").isJsonNull()) && !jsonObj.get("LocalizedExternal").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `LocalizedExternal` to be a primitive type in the JSON string but got `%s`", jsonObj.get("LocalizedExternal").toString()));
-      }
-      if ((jsonObj.get("DisplayTitle") != null && !jsonObj.get("DisplayTitle").isJsonNull()) && !jsonObj.get("DisplayTitle").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `DisplayTitle` to be a primitive type in the JSON string but got `%s`", jsonObj.get("DisplayTitle").toString()));
-      }
-      if ((jsonObj.get("NalLengthSize") != null && !jsonObj.get("NalLengthSize").isJsonNull()) && !jsonObj.get("NalLengthSize").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `NalLengthSize` to be a primitive type in the JSON string but got `%s`", jsonObj.get("NalLengthSize").toString()));
-      }
-      if ((jsonObj.get("ChannelLayout") != null && !jsonObj.get("ChannelLayout").isJsonNull()) && !jsonObj.get("ChannelLayout").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ChannelLayout` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ChannelLayout").toString()));
-      }
-      if ((jsonObj.get("Profile") != null && !jsonObj.get("Profile").isJsonNull()) && !jsonObj.get("Profile").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Profile` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Profile").toString()));
-      }
-      // validate the optional field `Type`
-      if (jsonObj.get("Type") != null && !jsonObj.get("Type").isJsonNull()) {
-        MediaStreamType.validateJsonElement(jsonObj.get("Type"));
-      }
-      if ((jsonObj.get("AspectRatio") != null && !jsonObj.get("AspectRatio").isJsonNull()) && !jsonObj.get("AspectRatio").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `AspectRatio` to be a primitive type in the JSON string but got `%s`", jsonObj.get("AspectRatio").toString()));
-      }
-      // validate the optional field `DeliveryMethod`
-      if (jsonObj.get("DeliveryMethod") != null && !jsonObj.get("DeliveryMethod").isJsonNull()) {
-        SubtitleDeliveryMethod.validateJsonElement(jsonObj.get("DeliveryMethod"));
-      }
-      if ((jsonObj.get("DeliveryUrl") != null && !jsonObj.get("DeliveryUrl").isJsonNull()) && !jsonObj.get("DeliveryUrl").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `DeliveryUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("DeliveryUrl").toString()));
-      }
-      if ((jsonObj.get("Path") != null && !jsonObj.get("Path").isJsonNull()) && !jsonObj.get("Path").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Path` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Path").toString()));
-      }
-      if ((jsonObj.get("PixelFormat") != null && !jsonObj.get("PixelFormat").isJsonNull()) && !jsonObj.get("PixelFormat").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `PixelFormat` to be a primitive type in the JSON string but got `%s`", jsonObj.get("PixelFormat").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!MediaStream.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'MediaStream' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<MediaStream> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(MediaStream.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<MediaStream>() {
-           @Override
-           public void write(JsonWriter out, MediaStream value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public MediaStream read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of MediaStream given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of MediaStream
-   * @throws IOException if the JSON string is invalid with respect to MediaStream
-   */
-  public static MediaStream fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, MediaStream.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of MediaStream to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Codec` to the URL query string
+    if (getCodec() != null) {
+      joiner.add(String.format("%sCodec%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCodec()))));
+    }
+
+    // add `CodecTag` to the URL query string
+    if (getCodecTag() != null) {
+      joiner.add(String.format("%sCodecTag%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCodecTag()))));
+    }
+
+    // add `Language` to the URL query string
+    if (getLanguage() != null) {
+      joiner.add(String.format("%sLanguage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLanguage()))));
+    }
+
+    // add `ColorRange` to the URL query string
+    if (getColorRange() != null) {
+      joiner.add(String.format("%sColorRange%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getColorRange()))));
+    }
+
+    // add `ColorSpace` to the URL query string
+    if (getColorSpace() != null) {
+      joiner.add(String.format("%sColorSpace%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getColorSpace()))));
+    }
+
+    // add `ColorTransfer` to the URL query string
+    if (getColorTransfer() != null) {
+      joiner.add(String.format("%sColorTransfer%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getColorTransfer()))));
+    }
+
+    // add `ColorPrimaries` to the URL query string
+    if (getColorPrimaries() != null) {
+      joiner.add(String.format("%sColorPrimaries%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getColorPrimaries()))));
+    }
+
+    // add `DvVersionMajor` to the URL query string
+    if (getDvVersionMajor() != null) {
+      joiner.add(String.format("%sDvVersionMajor%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDvVersionMajor()))));
+    }
+
+    // add `DvVersionMinor` to the URL query string
+    if (getDvVersionMinor() != null) {
+      joiner.add(String.format("%sDvVersionMinor%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDvVersionMinor()))));
+    }
+
+    // add `DvProfile` to the URL query string
+    if (getDvProfile() != null) {
+      joiner.add(String.format("%sDvProfile%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDvProfile()))));
+    }
+
+    // add `DvLevel` to the URL query string
+    if (getDvLevel() != null) {
+      joiner.add(String.format("%sDvLevel%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDvLevel()))));
+    }
+
+    // add `RpuPresentFlag` to the URL query string
+    if (getRpuPresentFlag() != null) {
+      joiner.add(String.format("%sRpuPresentFlag%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRpuPresentFlag()))));
+    }
+
+    // add `ElPresentFlag` to the URL query string
+    if (getElPresentFlag() != null) {
+      joiner.add(String.format("%sElPresentFlag%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getElPresentFlag()))));
+    }
+
+    // add `BlPresentFlag` to the URL query string
+    if (getBlPresentFlag() != null) {
+      joiner.add(String.format("%sBlPresentFlag%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBlPresentFlag()))));
+    }
+
+    // add `DvBlSignalCompatibilityId` to the URL query string
+    if (getDvBlSignalCompatibilityId() != null) {
+      joiner.add(String.format("%sDvBlSignalCompatibilityId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDvBlSignalCompatibilityId()))));
+    }
+
+    // add `Comment` to the URL query string
+    if (getComment() != null) {
+      joiner.add(String.format("%sComment%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getComment()))));
+    }
+
+    // add `TimeBase` to the URL query string
+    if (getTimeBase() != null) {
+      joiner.add(String.format("%sTimeBase%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTimeBase()))));
+    }
+
+    // add `CodecTimeBase` to the URL query string
+    if (getCodecTimeBase() != null) {
+      joiner.add(String.format("%sCodecTimeBase%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCodecTimeBase()))));
+    }
+
+    // add `Title` to the URL query string
+    if (getTitle() != null) {
+      joiner.add(String.format("%sTitle%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTitle()))));
+    }
+
+    // add `VideoRange` to the URL query string
+    if (getVideoRange() != null) {
+      joiner.add(String.format("%sVideoRange%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVideoRange()))));
+    }
+
+    // add `VideoRangeType` to the URL query string
+    if (getVideoRangeType() != null) {
+      joiner.add(String.format("%sVideoRangeType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVideoRangeType()))));
+    }
+
+    // add `VideoDoViTitle` to the URL query string
+    if (getVideoDoViTitle() != null) {
+      joiner.add(String.format("%sVideoDoViTitle%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVideoDoViTitle()))));
+    }
+
+    // add `LocalizedUndefined` to the URL query string
+    if (getLocalizedUndefined() != null) {
+      joiner.add(String.format("%sLocalizedUndefined%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLocalizedUndefined()))));
+    }
+
+    // add `LocalizedDefault` to the URL query string
+    if (getLocalizedDefault() != null) {
+      joiner.add(String.format("%sLocalizedDefault%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLocalizedDefault()))));
+    }
+
+    // add `LocalizedForced` to the URL query string
+    if (getLocalizedForced() != null) {
+      joiner.add(String.format("%sLocalizedForced%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLocalizedForced()))));
+    }
+
+    // add `LocalizedExternal` to the URL query string
+    if (getLocalizedExternal() != null) {
+      joiner.add(String.format("%sLocalizedExternal%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLocalizedExternal()))));
+    }
+
+    // add `DisplayTitle` to the URL query string
+    if (getDisplayTitle() != null) {
+      joiner.add(String.format("%sDisplayTitle%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDisplayTitle()))));
+    }
+
+    // add `NalLengthSize` to the URL query string
+    if (getNalLengthSize() != null) {
+      joiner.add(String.format("%sNalLengthSize%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNalLengthSize()))));
+    }
+
+    // add `IsInterlaced` to the URL query string
+    if (getIsInterlaced() != null) {
+      joiner.add(String.format("%sIsInterlaced%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsInterlaced()))));
+    }
+
+    // add `IsAVC` to the URL query string
+    if (getIsAVC() != null) {
+      joiner.add(String.format("%sIsAVC%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsAVC()))));
+    }
+
+    // add `ChannelLayout` to the URL query string
+    if (getChannelLayout() != null) {
+      joiner.add(String.format("%sChannelLayout%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getChannelLayout()))));
+    }
+
+    // add `BitRate` to the URL query string
+    if (getBitRate() != null) {
+      joiner.add(String.format("%sBitRate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBitRate()))));
+    }
+
+    // add `BitDepth` to the URL query string
+    if (getBitDepth() != null) {
+      joiner.add(String.format("%sBitDepth%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBitDepth()))));
+    }
+
+    // add `RefFrames` to the URL query string
+    if (getRefFrames() != null) {
+      joiner.add(String.format("%sRefFrames%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRefFrames()))));
+    }
+
+    // add `PacketLength` to the URL query string
+    if (getPacketLength() != null) {
+      joiner.add(String.format("%sPacketLength%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPacketLength()))));
+    }
+
+    // add `Channels` to the URL query string
+    if (getChannels() != null) {
+      joiner.add(String.format("%sChannels%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getChannels()))));
+    }
+
+    // add `SampleRate` to the URL query string
+    if (getSampleRate() != null) {
+      joiner.add(String.format("%sSampleRate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSampleRate()))));
+    }
+
+    // add `IsDefault` to the URL query string
+    if (getIsDefault() != null) {
+      joiner.add(String.format("%sIsDefault%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsDefault()))));
+    }
+
+    // add `IsForced` to the URL query string
+    if (getIsForced() != null) {
+      joiner.add(String.format("%sIsForced%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsForced()))));
+    }
+
+    // add `Height` to the URL query string
+    if (getHeight() != null) {
+      joiner.add(String.format("%sHeight%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
+    }
+
+    // add `Width` to the URL query string
+    if (getWidth() != null) {
+      joiner.add(String.format("%sWidth%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
+    }
+
+    // add `AverageFrameRate` to the URL query string
+    if (getAverageFrameRate() != null) {
+      joiner.add(String.format("%sAverageFrameRate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAverageFrameRate()))));
+    }
+
+    // add `RealFrameRate` to the URL query string
+    if (getRealFrameRate() != null) {
+      joiner.add(String.format("%sRealFrameRate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRealFrameRate()))));
+    }
+
+    // add `Profile` to the URL query string
+    if (getProfile() != null) {
+      joiner.add(String.format("%sProfile%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProfile()))));
+    }
+
+    // add `Type` to the URL query string
+    if (getType() != null) {
+      joiner.add(String.format("%sType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+    }
+
+    // add `AspectRatio` to the URL query string
+    if (getAspectRatio() != null) {
+      joiner.add(String.format("%sAspectRatio%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAspectRatio()))));
+    }
+
+    // add `Index` to the URL query string
+    if (getIndex() != null) {
+      joiner.add(String.format("%sIndex%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIndex()))));
+    }
+
+    // add `Score` to the URL query string
+    if (getScore() != null) {
+      joiner.add(String.format("%sScore%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getScore()))));
+    }
+
+    // add `IsExternal` to the URL query string
+    if (getIsExternal() != null) {
+      joiner.add(String.format("%sIsExternal%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsExternal()))));
+    }
+
+    // add `DeliveryMethod` to the URL query string
+    if (getDeliveryMethod() != null) {
+      joiner.add(String.format("%sDeliveryMethod%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDeliveryMethod()))));
+    }
+
+    // add `DeliveryUrl` to the URL query string
+    if (getDeliveryUrl() != null) {
+      joiner.add(String.format("%sDeliveryUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDeliveryUrl()))));
+    }
+
+    // add `IsExternalUrl` to the URL query string
+    if (getIsExternalUrl() != null) {
+      joiner.add(String.format("%sIsExternalUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsExternalUrl()))));
+    }
+
+    // add `IsTextSubtitleStream` to the URL query string
+    if (getIsTextSubtitleStream() != null) {
+      joiner.add(String.format("%sIsTextSubtitleStream%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsTextSubtitleStream()))));
+    }
+
+    // add `SupportsExternalStream` to the URL query string
+    if (getSupportsExternalStream() != null) {
+      joiner.add(String.format("%sSupportsExternalStream%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSupportsExternalStream()))));
+    }
+
+    // add `Path` to the URL query string
+    if (getPath() != null) {
+      joiner.add(String.format("%sPath%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
+    }
+
+    // add `PixelFormat` to the URL query string
+    if (getPixelFormat() != null) {
+      joiner.add(String.format("%sPixelFormat%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPixelFormat()))));
+    }
+
+    // add `Level` to the URL query string
+    if (getLevel() != null) {
+      joiner.add(String.format("%sLevel%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLevel()))));
+    }
+
+    // add `IsAnamorphic` to the URL query string
+    if (getIsAnamorphic() != null) {
+      joiner.add(String.format("%sIsAnamorphic%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsAnamorphic()))));
+    }
+
+    return joiner.toString();
   }
 }
 

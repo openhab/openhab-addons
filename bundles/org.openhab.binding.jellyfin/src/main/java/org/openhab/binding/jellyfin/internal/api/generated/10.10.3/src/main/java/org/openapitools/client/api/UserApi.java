@@ -10,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import org.openapitools.client.model.AuthenticateUserByName;
 import org.openapitools.client.model.AuthenticationResult;
@@ -42,1971 +33,1305 @@ import org.openapitools.client.model.UserConfiguration;
 import org.openapitools.client.model.UserDto;
 import org.openapitools.client.model.UserPolicy;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class UserApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public UserApi() {
-        this(Configuration.getDefaultApiClient());
+  public UserApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public UserApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
     }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
 
-    public UserApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
+  /**
+   * Authenticates a user by name.
+   * 
+   * @param authenticateUserByName The M:Jellyfin.Api.Controllers.UserController.AuthenticateUserByName(Jellyfin.Api.Models.UserDtos.AuthenticateUserByName) request. (required)
+   * @return AuthenticationResult
+   * @throws ApiException if fails to make API call
+   */
+  public AuthenticationResult authenticateUserByName(AuthenticateUserByName authenticateUserByName) throws ApiException {
+    ApiResponse<AuthenticationResult> localVarResponse = authenticateUserByNameWithHttpInfo(authenticateUserByName);
+    return localVarResponse.getData();
+  }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
-    }
-
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
-
-    public int getHostIndex() {
-        return localHostIndex;
-    }
-
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
-    }
-
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for authenticateUserByName
-     * @param authenticateUserByName The M:Jellyfin.Api.Controllers.UserController.AuthenticateUserByName(Jellyfin.Api.Models.UserDtos.AuthenticateUserByName) request. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User authenticated. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call authenticateUserByNameCall(AuthenticateUserByName authenticateUserByName, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Authenticates a user by name.
+   * 
+   * @param authenticateUserByName The M:Jellyfin.Api.Controllers.UserController.AuthenticateUserByName(Jellyfin.Api.Models.UserDtos.AuthenticateUserByName) request. (required)
+   * @return ApiResponse&lt;AuthenticationResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<AuthenticationResult> authenticateUserByNameWithHttpInfo(AuthenticateUserByName authenticateUserByName) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = authenticateUserByNameRequestBuilder(authenticateUserByName);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("authenticateUserByName", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<AuthenticationResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = authenticateUserByName;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/Users/AuthenticateByName";
+        return new ApiResponse<AuthenticationResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<AuthenticationResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+  private HttpRequest.Builder authenticateUserByNameRequestBuilder(AuthenticateUserByName authenticateUserByName) throws ApiException {
+    // verify the required parameter 'authenticateUserByName' is set
+    if (authenticateUserByName == null) {
+      throw new ApiException(400, "Missing the required parameter 'authenticateUserByName' when calling authenticateUserByName");
+    }
 
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/AuthenticateByName";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(authenticateUserByName);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Authenticates a user with quick connect.
+   * 
+   * @param quickConnectDto The Jellyfin.Api.Models.UserDtos.QuickConnectDto request. (required)
+   * @return AuthenticationResult
+   * @throws ApiException if fails to make API call
+   */
+  public AuthenticationResult authenticateWithQuickConnect(QuickConnectDto quickConnectDto) throws ApiException {
+    ApiResponse<AuthenticationResult> localVarResponse = authenticateWithQuickConnectWithHttpInfo(quickConnectDto);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Authenticates a user with quick connect.
+   * 
+   * @param quickConnectDto The Jellyfin.Api.Models.UserDtos.QuickConnectDto request. (required)
+   * @return ApiResponse&lt;AuthenticationResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<AuthenticationResult> authenticateWithQuickConnectWithHttpInfo(QuickConnectDto quickConnectDto) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = authenticateWithQuickConnectRequestBuilder(quickConnectDto);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("authenticateWithQuickConnect", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<AuthenticationResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<AuthenticationResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<AuthenticationResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder authenticateWithQuickConnectRequestBuilder(QuickConnectDto quickConnectDto) throws ApiException {
+    // verify the required parameter 'quickConnectDto' is set
+    if (quickConnectDto == null) {
+      throw new ApiException(400, "Missing the required parameter 'quickConnectDto' when calling authenticateWithQuickConnect");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/AuthenticateWithQuickConnect";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(quickConnectDto);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Creates a user.
+   * 
+   * @param createUserByName The create user by name request body. (required)
+   * @return UserDto
+   * @throws ApiException if fails to make API call
+   */
+  public UserDto createUserByName(CreateUserByName createUserByName) throws ApiException {
+    ApiResponse<UserDto> localVarResponse = createUserByNameWithHttpInfo(createUserByName);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Creates a user.
+   * 
+   * @param createUserByName The create user by name request body. (required)
+   * @return ApiResponse&lt;UserDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<UserDto> createUserByNameWithHttpInfo(CreateUserByName createUserByName) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = createUserByNameRequestBuilder(createUserByName);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("createUserByName", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<UserDto>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<UserDto>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<UserDto>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder createUserByNameRequestBuilder(CreateUserByName createUserByName) throws ApiException {
+    // verify the required parameter 'createUserByName' is set
+    if (createUserByName == null) {
+      throw new ApiException(400, "Missing the required parameter 'createUserByName' when calling createUserByName");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call authenticateUserByNameValidateBeforeCall(AuthenticateUserByName authenticateUserByName, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'authenticateUserByName' is set
-        if (authenticateUserByName == null) {
-            throw new ApiException("Missing the required parameter 'authenticateUserByName' when calling authenticateUserByName(Async)");
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/New";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(createUserByName);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Deletes a user.
+   * 
+   * @param userId The user id. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void deleteUser(UUID userId) throws ApiException {
+    deleteUserWithHttpInfo(userId);
+  }
+
+  /**
+   * Deletes a user.
+   * 
+   * @param userId The user id. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> deleteUserWithHttpInfo(UUID userId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = deleteUserRequestBuilder(userId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("deleteUser", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder deleteUserRequestBuilder(UUID userId) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling deleteUser");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/{userId}"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Initiates the forgot password process for a local user.
+   * 
+   * @param forgotPasswordDto The forgot password request containing the entered username. (required)
+   * @return ForgotPasswordResult
+   * @throws ApiException if fails to make API call
+   */
+  public ForgotPasswordResult forgotPassword(ForgotPasswordDto forgotPasswordDto) throws ApiException {
+    ApiResponse<ForgotPasswordResult> localVarResponse = forgotPasswordWithHttpInfo(forgotPasswordDto);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Initiates the forgot password process for a local user.
+   * 
+   * @param forgotPasswordDto The forgot password request containing the entered username. (required)
+   * @return ApiResponse&lt;ForgotPasswordResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<ForgotPasswordResult> forgotPasswordWithHttpInfo(ForgotPasswordDto forgotPasswordDto) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = forgotPasswordRequestBuilder(forgotPasswordDto);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("forgotPassword", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<ForgotPasswordResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        return authenticateUserByNameCall(authenticateUserByName, _callback);
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
+        return new ApiResponse<ForgotPasswordResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ForgotPasswordResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder forgotPasswordRequestBuilder(ForgotPasswordDto forgotPasswordDto) throws ApiException {
+    // verify the required parameter 'forgotPasswordDto' is set
+    if (forgotPasswordDto == null) {
+      throw new ApiException(400, "Missing the required parameter 'forgotPasswordDto' when calling forgotPassword");
     }
 
-    /**
-     * Authenticates a user by name.
-     * 
-     * @param authenticateUserByName The M:Jellyfin.Api.Controllers.UserController.AuthenticateUserByName(Jellyfin.Api.Models.UserDtos.AuthenticateUserByName) request. (required)
-     * @return AuthenticationResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User authenticated. </td><td>  -  </td></tr>
-     </table>
-     */
-    public AuthenticationResult authenticateUserByName(AuthenticateUserByName authenticateUserByName) throws ApiException {
-        ApiResponse<AuthenticationResult> localVarResp = authenticateUserByNameWithHttpInfo(authenticateUserByName);
-        return localVarResp.getData();
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/ForgotPassword";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(forgotPasswordDto);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
     }
-
-    /**
-     * Authenticates a user by name.
-     * 
-     * @param authenticateUserByName The M:Jellyfin.Api.Controllers.UserController.AuthenticateUserByName(Jellyfin.Api.Models.UserDtos.AuthenticateUserByName) request. (required)
-     * @return ApiResponse&lt;AuthenticationResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User authenticated. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<AuthenticationResult> authenticateUserByNameWithHttpInfo(AuthenticateUserByName authenticateUserByName) throws ApiException {
-        okhttp3.Call localVarCall = authenticateUserByNameValidateBeforeCall(authenticateUserByName, null);
-        Type localVarReturnType = new TypeToken<AuthenticationResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Authenticates a user by name. (asynchronously)
-     * 
-     * @param authenticateUserByName The M:Jellyfin.Api.Controllers.UserController.AuthenticateUserByName(Jellyfin.Api.Models.UserDtos.AuthenticateUserByName) request. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User authenticated. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call authenticateUserByNameAsync(AuthenticateUserByName authenticateUserByName, final ApiCallback<AuthenticationResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = authenticateUserByNameValidateBeforeCall(authenticateUserByName, _callback);
-        Type localVarReturnType = new TypeToken<AuthenticationResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
-    /**
-     * Build call for authenticateWithQuickConnect
-     * @param quickConnectDto The Jellyfin.Api.Models.UserDtos.QuickConnectDto request. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User authenticated. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> Missing token. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call authenticateWithQuickConnectCall(QuickConnectDto quickConnectDto, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
+    return localVarRequestBuilder;
+  }
 
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Redeems a forgot password pin.
+   * 
+   * @param forgotPasswordPinDto The forgot password pin request containing the entered pin. (required)
+   * @return PinRedeemResult
+   * @throws ApiException if fails to make API call
+   */
+  public PinRedeemResult forgotPasswordPin(ForgotPasswordPinDto forgotPasswordPinDto) throws ApiException {
+    ApiResponse<PinRedeemResult> localVarResponse = forgotPasswordPinWithHttpInfo(forgotPasswordPinDto);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Redeems a forgot password pin.
+   * 
+   * @param forgotPasswordPinDto The forgot password pin request containing the entered pin. (required)
+   * @return ApiResponse&lt;PinRedeemResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<PinRedeemResult> forgotPasswordPinWithHttpInfo(ForgotPasswordPinDto forgotPasswordPinDto) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = forgotPasswordPinRequestBuilder(forgotPasswordPinDto);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("forgotPasswordPin", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<PinRedeemResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = quickConnectDto;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/Users/AuthenticateWithQuickConnect";
+        return new ApiResponse<PinRedeemResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PinRedeemResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+  private HttpRequest.Builder forgotPasswordPinRequestBuilder(ForgotPasswordPinDto forgotPasswordPinDto) throws ApiException {
+    // verify the required parameter 'forgotPasswordPinDto' is set
+    if (forgotPasswordPinDto == null) {
+      throw new ApiException(400, "Missing the required parameter 'forgotPasswordPinDto' when calling forgotPasswordPin");
+    }
 
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/ForgotPassword/Pin";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(forgotPasswordPinDto);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets the user based on auth token.
+   * 
+   * @return UserDto
+   * @throws ApiException if fails to make API call
+   */
+  public UserDto getCurrentUser() throws ApiException {
+    ApiResponse<UserDto> localVarResponse = getCurrentUserWithHttpInfo();
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets the user based on auth token.
+   * 
+   * @return ApiResponse&lt;UserDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<UserDto> getCurrentUserWithHttpInfo() throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getCurrentUserRequestBuilder();
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getCurrentUser", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<UserDto>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<UserDto>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<UserDto>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getCurrentUserRequestBuilder() throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/Me";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets a list of publicly visible users for display on a login screen.
+   * 
+   * @return List&lt;UserDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<UserDto> getPublicUsers() throws ApiException {
+    ApiResponse<List<UserDto>> localVarResponse = getPublicUsersWithHttpInfo();
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets a list of publicly visible users for display on a login screen.
+   * 
+   * @return ApiResponse&lt;List&lt;UserDto&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<UserDto>> getPublicUsersWithHttpInfo() throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getPublicUsersRequestBuilder();
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getPublicUsers", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<UserDto>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call authenticateWithQuickConnectValidateBeforeCall(QuickConnectDto quickConnectDto, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'quickConnectDto' is set
-        if (quickConnectDto == null) {
-            throw new ApiException("Missing the required parameter 'quickConnectDto' when calling authenticateWithQuickConnect(Async)");
+        return new ApiResponse<List<UserDto>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<UserDto>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getPublicUsersRequestBuilder() throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/Public";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets a user by Id.
+   * 
+   * @param userId The user id. (required)
+   * @return UserDto
+   * @throws ApiException if fails to make API call
+   */
+  public UserDto getUserById(UUID userId) throws ApiException {
+    ApiResponse<UserDto> localVarResponse = getUserByIdWithHttpInfo(userId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets a user by Id.
+   * 
+   * @param userId The user id. (required)
+   * @return ApiResponse&lt;UserDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<UserDto> getUserByIdWithHttpInfo(UUID userId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getUserByIdRequestBuilder(userId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getUserById", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<UserDto>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        return authenticateWithQuickConnectCall(quickConnectDto, _callback);
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
+        return new ApiResponse<UserDto>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<UserDto>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getUserByIdRequestBuilder(UUID userId) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling getUserById");
     }
 
-    /**
-     * Authenticates a user with quick connect.
-     * 
-     * @param quickConnectDto The Jellyfin.Api.Models.UserDtos.QuickConnectDto request. (required)
-     * @return AuthenticationResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User authenticated. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> Missing token. </td><td>  -  </td></tr>
-     </table>
-     */
-    public AuthenticationResult authenticateWithQuickConnect(QuickConnectDto quickConnectDto) throws ApiException {
-        ApiResponse<AuthenticationResult> localVarResp = authenticateWithQuickConnectWithHttpInfo(quickConnectDto);
-        return localVarResp.getData();
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/{userId}"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Authenticates a user with quick connect.
-     * 
-     * @param quickConnectDto The Jellyfin.Api.Models.UserDtos.QuickConnectDto request. (required)
-     * @return ApiResponse&lt;AuthenticationResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User authenticated. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> Missing token. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<AuthenticationResult> authenticateWithQuickConnectWithHttpInfo(QuickConnectDto quickConnectDto) throws ApiException {
-        okhttp3.Call localVarCall = authenticateWithQuickConnectValidateBeforeCall(quickConnectDto, null);
-        Type localVarReturnType = new TypeToken<AuthenticationResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    /**
-     * Authenticates a user with quick connect. (asynchronously)
-     * 
-     * @param quickConnectDto The Jellyfin.Api.Models.UserDtos.QuickConnectDto request. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User authenticated. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> Missing token. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call authenticateWithQuickConnectAsync(QuickConnectDto quickConnectDto, final ApiCallback<AuthenticationResult> _callback) throws ApiException {
+  /**
+   * Gets a list of users.
+   * 
+   * @param isHidden Optional filter by IsHidden&#x3D;true or false. (optional)
+   * @param isDisabled Optional filter by IsDisabled&#x3D;true or false. (optional)
+   * @return List&lt;UserDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<UserDto> getUsers(Boolean isHidden, Boolean isDisabled) throws ApiException {
+    ApiResponse<List<UserDto>> localVarResponse = getUsersWithHttpInfo(isHidden, isDisabled);
+    return localVarResponse.getData();
+  }
 
-        okhttp3.Call localVarCall = authenticateWithQuickConnectValidateBeforeCall(quickConnectDto, _callback);
-        Type localVarReturnType = new TypeToken<AuthenticationResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for createUserByName
-     * @param createUserByName The create user by name request body. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User created. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call createUserByNameCall(CreateUserByName createUserByName, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Gets a list of users.
+   * 
+   * @param isHidden Optional filter by IsHidden&#x3D;true or false. (optional)
+   * @param isDisabled Optional filter by IsDisabled&#x3D;true or false. (optional)
+   * @return ApiResponse&lt;List&lt;UserDto&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<UserDto>> getUsersWithHttpInfo(Boolean isHidden, Boolean isDisabled) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getUsersRequestBuilder(isHidden, isDisabled);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getUsers", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<UserDto>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = createUserByName;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/Users/New";
+        return new ApiResponse<List<UserDto>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<UserDto>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+  private HttpRequest.Builder getUsersRequestBuilder(Boolean isHidden, Boolean isDisabled) throws ApiException {
 
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "isHidden";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isHidden", isHidden));
+    localVarQueryParameterBaseName = "isDisabled";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isDisabled", isDisabled));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Updates a user.
+   * 
+   * @param userDto The updated user model. (required)
+   * @param userId The user id. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void updateUser(UserDto userDto, UUID userId) throws ApiException {
+    updateUserWithHttpInfo(userDto, userId);
+  }
+
+  /**
+   * Updates a user.
+   * 
+   * @param userDto The updated user model. (required)
+   * @param userId The user id. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> updateUserWithHttpInfo(UserDto userDto, UUID userId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = updateUserRequestBuilder(userDto, userId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("updateUser", localVarResponse);
         }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
         }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+  private HttpRequest.Builder updateUserRequestBuilder(UserDto userDto, UUID userId) throws ApiException {
+    // verify the required parameter 'userDto' is set
+    if (userDto == null) {
+      throw new ApiException(400, "Missing the required parameter 'userDto' when calling updateUser");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call createUserByNameValidateBeforeCall(CreateUserByName createUserByName, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'createUserByName' is set
-        if (createUserByName == null) {
-            throw new ApiException("Missing the required parameter 'createUserByName' when calling createUserByName(Async)");
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(userDto);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Updates a user configuration.
+   * 
+   * @param userConfiguration The new user configuration. (required)
+   * @param userId The user id. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void updateUserConfiguration(UserConfiguration userConfiguration, UUID userId) throws ApiException {
+    updateUserConfigurationWithHttpInfo(userConfiguration, userId);
+  }
+
+  /**
+   * Updates a user configuration.
+   * 
+   * @param userConfiguration The new user configuration. (required)
+   * @param userId The user id. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> updateUserConfigurationWithHttpInfo(UserConfiguration userConfiguration, UUID userId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = updateUserConfigurationRequestBuilder(userConfiguration, userId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("updateUserConfiguration", localVarResponse);
         }
-
-        return createUserByNameCall(createUserByName, _callback);
-
-    }
-
-    /**
-     * Creates a user.
-     * 
-     * @param createUserByName The create user by name request body. (required)
-     * @return UserDto
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User created. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public UserDto createUserByName(CreateUserByName createUserByName) throws ApiException {
-        ApiResponse<UserDto> localVarResp = createUserByNameWithHttpInfo(createUserByName);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Creates a user.
-     * 
-     * @param createUserByName The create user by name request body. (required)
-     * @return ApiResponse&lt;UserDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User created. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<UserDto> createUserByNameWithHttpInfo(CreateUserByName createUserByName) throws ApiException {
-        okhttp3.Call localVarCall = createUserByNameValidateBeforeCall(createUserByName, null);
-        Type localVarReturnType = new TypeToken<UserDto>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Creates a user. (asynchronously)
-     * 
-     * @param createUserByName The create user by name request body. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User created. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call createUserByNameAsync(CreateUserByName createUserByName, final ApiCallback<UserDto> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = createUserByNameValidateBeforeCall(createUserByName, _callback);
-        Type localVarReturnType = new TypeToken<UserDto>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for deleteUser
-     * @param userId The user id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User deleted. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> User not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteUserCall(UUID userId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
         }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        Object localVarPostBody = null;
+  private HttpRequest.Builder updateUserConfigurationRequestBuilder(UserConfiguration userConfiguration, UUID userId) throws ApiException {
+    // verify the required parameter 'userConfiguration' is set
+    if (userConfiguration == null) {
+      throw new ApiException(400, "Missing the required parameter 'userConfiguration' when calling updateUserConfiguration");
+    }
 
-        // create path and map variables
-        String localVarPath = "/Users/{userId}"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()));
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+    String localVarPath = "/Users/Configuration";
 
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(userConfiguration);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Updates a user&#39;s password.
+   * 
+   * @param updateUserPassword The M:Jellyfin.Api.Controllers.UserController.UpdateUserPassword(System.Nullable{System.Guid},Jellyfin.Api.Models.UserDtos.UpdateUserPassword) request. (required)
+   * @param userId The user id. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void updateUserPassword(UpdateUserPassword updateUserPassword, UUID userId) throws ApiException {
+    updateUserPasswordWithHttpInfo(updateUserPassword, userId);
+  }
+
+  /**
+   * Updates a user&#39;s password.
+   * 
+   * @param updateUserPassword The M:Jellyfin.Api.Controllers.UserController.UpdateUserPassword(System.Nullable{System.Guid},Jellyfin.Api.Models.UserDtos.UpdateUserPassword) request. (required)
+   * @param userId The user id. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> updateUserPasswordWithHttpInfo(UpdateUserPassword updateUserPassword, UUID userId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = updateUserPasswordRequestBuilder(updateUserPassword, userId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("updateUserPassword", localVarResponse);
         }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
         }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+  private HttpRequest.Builder updateUserPasswordRequestBuilder(UpdateUserPassword updateUserPassword, UUID userId) throws ApiException {
+    // verify the required parameter 'updateUserPassword' is set
+    if (updateUserPassword == null) {
+      throw new ApiException(400, "Missing the required parameter 'updateUserPassword' when calling updateUserPassword");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call deleteUserValidateBeforeCall(UUID userId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling deleteUser(Async)");
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/Password";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(updateUserPassword);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Updates a user policy.
+   * 
+   * @param userId The user id. (required)
+   * @param userPolicy The new user policy. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void updateUserPolicy(UUID userId, UserPolicy userPolicy) throws ApiException {
+    updateUserPolicyWithHttpInfo(userId, userPolicy);
+  }
+
+  /**
+   * Updates a user policy.
+   * 
+   * @param userId The user id. (required)
+   * @param userPolicy The new user policy. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> updateUserPolicyWithHttpInfo(UUID userId, UserPolicy userPolicy) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = updateUserPolicyRequestBuilder(userId, userPolicy);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("updateUserPolicy", localVarResponse);
         }
-
-        return deleteUserCall(userId, _callback);
-
-    }
-
-    /**
-     * Deletes a user.
-     * 
-     * @param userId The user id. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User deleted. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> User not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void deleteUser(UUID userId) throws ApiException {
-        deleteUserWithHttpInfo(userId);
-    }
-
-    /**
-     * Deletes a user.
-     * 
-     * @param userId The user id. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User deleted. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> User not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> deleteUserWithHttpInfo(UUID userId) throws ApiException {
-        okhttp3.Call localVarCall = deleteUserValidateBeforeCall(userId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Deletes a user. (asynchronously)
-     * 
-     * @param userId The user id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User deleted. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> User not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteUserAsync(UUID userId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = deleteUserValidateBeforeCall(userId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for forgotPassword
-     * @param forgotPasswordDto The forgot password request containing the entered username. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Password reset process started. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call forgotPasswordCall(ForgotPasswordDto forgotPasswordDto, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
         }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        Object localVarPostBody = forgotPasswordDto;
-
-        // create path and map variables
-        String localVarPath = "/Users/ForgotPassword";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+  private HttpRequest.Builder updateUserPolicyRequestBuilder(UUID userId, UserPolicy userPolicy) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling updateUserPolicy");
+    }
+    // verify the required parameter 'userPolicy' is set
+    if (userPolicy == null) {
+      throw new ApiException(400, "Missing the required parameter 'userPolicy' when calling updateUserPolicy");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call forgotPasswordValidateBeforeCall(ForgotPasswordDto forgotPasswordDto, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'forgotPasswordDto' is set
-        if (forgotPasswordDto == null) {
-            throw new ApiException("Missing the required parameter 'forgotPasswordDto' when calling forgotPassword(Async)");
-        }
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
-        return forgotPasswordCall(forgotPasswordDto, _callback);
+    String localVarPath = "/Users/{userId}/Policy"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()));
 
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(userPolicy);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
     }
-
-    /**
-     * Initiates the forgot password process for a local user.
-     * 
-     * @param forgotPasswordDto The forgot password request containing the entered username. (required)
-     * @return ForgotPasswordResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Password reset process started. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ForgotPasswordResult forgotPassword(ForgotPasswordDto forgotPasswordDto) throws ApiException {
-        ApiResponse<ForgotPasswordResult> localVarResp = forgotPasswordWithHttpInfo(forgotPasswordDto);
-        return localVarResp.getData();
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Initiates the forgot password process for a local user.
-     * 
-     * @param forgotPasswordDto The forgot password request containing the entered username. (required)
-     * @return ApiResponse&lt;ForgotPasswordResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Password reset process started. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<ForgotPasswordResult> forgotPasswordWithHttpInfo(ForgotPasswordDto forgotPasswordDto) throws ApiException {
-        okhttp3.Call localVarCall = forgotPasswordValidateBeforeCall(forgotPasswordDto, null);
-        Type localVarReturnType = new TypeToken<ForgotPasswordResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    /**
-     * Initiates the forgot password process for a local user. (asynchronously)
-     * 
-     * @param forgotPasswordDto The forgot password request containing the entered username. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Password reset process started. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call forgotPasswordAsync(ForgotPasswordDto forgotPasswordDto, final ApiCallback<ForgotPasswordResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = forgotPasswordValidateBeforeCall(forgotPasswordDto, _callback);
-        Type localVarReturnType = new TypeToken<ForgotPasswordResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for forgotPasswordPin
-     * @param forgotPasswordPinDto The forgot password pin request containing the entered pin. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Pin reset process started. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call forgotPasswordPinCall(ForgotPasswordPinDto forgotPasswordPinDto, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = forgotPasswordPinDto;
-
-        // create path and map variables
-        String localVarPath = "/Users/ForgotPassword/Pin";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call forgotPasswordPinValidateBeforeCall(ForgotPasswordPinDto forgotPasswordPinDto, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'forgotPasswordPinDto' is set
-        if (forgotPasswordPinDto == null) {
-            throw new ApiException("Missing the required parameter 'forgotPasswordPinDto' when calling forgotPasswordPin(Async)");
-        }
-
-        return forgotPasswordPinCall(forgotPasswordPinDto, _callback);
-
-    }
-
-    /**
-     * Redeems a forgot password pin.
-     * 
-     * @param forgotPasswordPinDto The forgot password pin request containing the entered pin. (required)
-     * @return PinRedeemResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Pin reset process started. </td><td>  -  </td></tr>
-     </table>
-     */
-    public PinRedeemResult forgotPasswordPin(ForgotPasswordPinDto forgotPasswordPinDto) throws ApiException {
-        ApiResponse<PinRedeemResult> localVarResp = forgotPasswordPinWithHttpInfo(forgotPasswordPinDto);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Redeems a forgot password pin.
-     * 
-     * @param forgotPasswordPinDto The forgot password pin request containing the entered pin. (required)
-     * @return ApiResponse&lt;PinRedeemResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Pin reset process started. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<PinRedeemResult> forgotPasswordPinWithHttpInfo(ForgotPasswordPinDto forgotPasswordPinDto) throws ApiException {
-        okhttp3.Call localVarCall = forgotPasswordPinValidateBeforeCall(forgotPasswordPinDto, null);
-        Type localVarReturnType = new TypeToken<PinRedeemResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Redeems a forgot password pin. (asynchronously)
-     * 
-     * @param forgotPasswordPinDto The forgot password pin request containing the entered pin. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Pin reset process started. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call forgotPasswordPinAsync(ForgotPasswordPinDto forgotPasswordPinDto, final ApiCallback<PinRedeemResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = forgotPasswordPinValidateBeforeCall(forgotPasswordPinDto, _callback);
-        Type localVarReturnType = new TypeToken<PinRedeemResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getCurrentUser
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User returned. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> Token is not owned by a user. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getCurrentUserCall(final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Users/Me";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getCurrentUserValidateBeforeCall(final ApiCallback _callback) throws ApiException {
-        return getCurrentUserCall(_callback);
-
-    }
-
-    /**
-     * Gets the user based on auth token.
-     * 
-     * @return UserDto
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User returned. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> Token is not owned by a user. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public UserDto getCurrentUser() throws ApiException {
-        ApiResponse<UserDto> localVarResp = getCurrentUserWithHttpInfo();
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets the user based on auth token.
-     * 
-     * @return ApiResponse&lt;UserDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User returned. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> Token is not owned by a user. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<UserDto> getCurrentUserWithHttpInfo() throws ApiException {
-        okhttp3.Call localVarCall = getCurrentUserValidateBeforeCall(null);
-        Type localVarReturnType = new TypeToken<UserDto>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets the user based on auth token. (asynchronously)
-     * 
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User returned. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> Token is not owned by a user. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getCurrentUserAsync(final ApiCallback<UserDto> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getCurrentUserValidateBeforeCall(_callback);
-        Type localVarReturnType = new TypeToken<UserDto>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getPublicUsers
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Public users returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPublicUsersCall(final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Users/Public";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getPublicUsersValidateBeforeCall(final ApiCallback _callback) throws ApiException {
-        return getPublicUsersCall(_callback);
-
-    }
-
-    /**
-     * Gets a list of publicly visible users for display on a login screen.
-     * 
-     * @return List&lt;UserDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Public users returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<UserDto> getPublicUsers() throws ApiException {
-        ApiResponse<List<UserDto>> localVarResp = getPublicUsersWithHttpInfo();
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets a list of publicly visible users for display on a login screen.
-     * 
-     * @return ApiResponse&lt;List&lt;UserDto&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Public users returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<UserDto>> getPublicUsersWithHttpInfo() throws ApiException {
-        okhttp3.Call localVarCall = getPublicUsersValidateBeforeCall(null);
-        Type localVarReturnType = new TypeToken<List<UserDto>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets a list of publicly visible users for display on a login screen. (asynchronously)
-     * 
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Public users returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPublicUsersAsync(final ApiCallback<List<UserDto>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getPublicUsersValidateBeforeCall(_callback);
-        Type localVarReturnType = new TypeToken<List<UserDto>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getUserById
-     * @param userId The user id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> User not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getUserByIdCall(UUID userId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Users/{userId}"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getUserByIdValidateBeforeCall(UUID userId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling getUserById(Async)");
-        }
-
-        return getUserByIdCall(userId, _callback);
-
-    }
-
-    /**
-     * Gets a user by Id.
-     * 
-     * @param userId The user id. (required)
-     * @return UserDto
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> User not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public UserDto getUserById(UUID userId) throws ApiException {
-        ApiResponse<UserDto> localVarResp = getUserByIdWithHttpInfo(userId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets a user by Id.
-     * 
-     * @param userId The user id. (required)
-     * @return ApiResponse&lt;UserDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> User not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<UserDto> getUserByIdWithHttpInfo(UUID userId) throws ApiException {
-        okhttp3.Call localVarCall = getUserByIdValidateBeforeCall(userId, null);
-        Type localVarReturnType = new TypeToken<UserDto>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets a user by Id. (asynchronously)
-     * 
-     * @param userId The user id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> User returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> User not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getUserByIdAsync(UUID userId, final ApiCallback<UserDto> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getUserByIdValidateBeforeCall(userId, _callback);
-        Type localVarReturnType = new TypeToken<UserDto>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getUsers
-     * @param isHidden Optional filter by IsHidden&#x3D;true or false. (optional)
-     * @param isDisabled Optional filter by IsDisabled&#x3D;true or false. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Users returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getUsersCall(Boolean isHidden, Boolean isDisabled, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Users";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (isHidden != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isHidden", isHidden));
-        }
-
-        if (isDisabled != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isDisabled", isDisabled));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getUsersValidateBeforeCall(Boolean isHidden, Boolean isDisabled, final ApiCallback _callback) throws ApiException {
-        return getUsersCall(isHidden, isDisabled, _callback);
-
-    }
-
-    /**
-     * Gets a list of users.
-     * 
-     * @param isHidden Optional filter by IsHidden&#x3D;true or false. (optional)
-     * @param isDisabled Optional filter by IsDisabled&#x3D;true or false. (optional)
-     * @return List&lt;UserDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Users returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<UserDto> getUsers(Boolean isHidden, Boolean isDisabled) throws ApiException {
-        ApiResponse<List<UserDto>> localVarResp = getUsersWithHttpInfo(isHidden, isDisabled);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets a list of users.
-     * 
-     * @param isHidden Optional filter by IsHidden&#x3D;true or false. (optional)
-     * @param isDisabled Optional filter by IsDisabled&#x3D;true or false. (optional)
-     * @return ApiResponse&lt;List&lt;UserDto&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Users returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<UserDto>> getUsersWithHttpInfo(Boolean isHidden, Boolean isDisabled) throws ApiException {
-        okhttp3.Call localVarCall = getUsersValidateBeforeCall(isHidden, isDisabled, null);
-        Type localVarReturnType = new TypeToken<List<UserDto>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets a list of users. (asynchronously)
-     * 
-     * @param isHidden Optional filter by IsHidden&#x3D;true or false. (optional)
-     * @param isDisabled Optional filter by IsDisabled&#x3D;true or false. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Users returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getUsersAsync(Boolean isHidden, Boolean isDisabled, final ApiCallback<List<UserDto>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getUsersValidateBeforeCall(isHidden, isDisabled, _callback);
-        Type localVarReturnType = new TypeToken<List<UserDto>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for updateUser
-     * @param userDto The updated user model. (required)
-     * @param userId The user id. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User updated. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> User information was not supplied. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User update forbidden. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updateUserCall(UserDto userDto, UUID userId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = userDto;
-
-        // create path and map variables
-        String localVarPath = "/Users";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call updateUserValidateBeforeCall(UserDto userDto, UUID userId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userDto' is set
-        if (userDto == null) {
-            throw new ApiException("Missing the required parameter 'userDto' when calling updateUser(Async)");
-        }
-
-        return updateUserCall(userDto, userId, _callback);
-
-    }
-
-    /**
-     * Updates a user.
-     * 
-     * @param userDto The updated user model. (required)
-     * @param userId The user id. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User updated. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> User information was not supplied. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User update forbidden. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public void updateUser(UserDto userDto, UUID userId) throws ApiException {
-        updateUserWithHttpInfo(userDto, userId);
-    }
-
-    /**
-     * Updates a user.
-     * 
-     * @param userDto The updated user model. (required)
-     * @param userId The user id. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User updated. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> User information was not supplied. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User update forbidden. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> updateUserWithHttpInfo(UserDto userDto, UUID userId) throws ApiException {
-        okhttp3.Call localVarCall = updateUserValidateBeforeCall(userDto, userId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Updates a user. (asynchronously)
-     * 
-     * @param userDto The updated user model. (required)
-     * @param userId The user id. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User updated. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> User information was not supplied. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User update forbidden. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updateUserAsync(UserDto userDto, UUID userId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = updateUserValidateBeforeCall(userDto, userId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for updateUserConfiguration
-     * @param userConfiguration The new user configuration. (required)
-     * @param userId The user id. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User configuration updated. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User configuration update forbidden. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updateUserConfigurationCall(UserConfiguration userConfiguration, UUID userId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = userConfiguration;
-
-        // create path and map variables
-        String localVarPath = "/Users/Configuration";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call updateUserConfigurationValidateBeforeCall(UserConfiguration userConfiguration, UUID userId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userConfiguration' is set
-        if (userConfiguration == null) {
-            throw new ApiException("Missing the required parameter 'userConfiguration' when calling updateUserConfiguration(Async)");
-        }
-
-        return updateUserConfigurationCall(userConfiguration, userId, _callback);
-
-    }
-
-    /**
-     * Updates a user configuration.
-     * 
-     * @param userConfiguration The new user configuration. (required)
-     * @param userId The user id. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User configuration updated. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User configuration update forbidden. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public void updateUserConfiguration(UserConfiguration userConfiguration, UUID userId) throws ApiException {
-        updateUserConfigurationWithHttpInfo(userConfiguration, userId);
-    }
-
-    /**
-     * Updates a user configuration.
-     * 
-     * @param userConfiguration The new user configuration. (required)
-     * @param userId The user id. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User configuration updated. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User configuration update forbidden. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> updateUserConfigurationWithHttpInfo(UserConfiguration userConfiguration, UUID userId) throws ApiException {
-        okhttp3.Call localVarCall = updateUserConfigurationValidateBeforeCall(userConfiguration, userId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Updates a user configuration. (asynchronously)
-     * 
-     * @param userConfiguration The new user configuration. (required)
-     * @param userId The user id. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User configuration updated. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User configuration update forbidden. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updateUserConfigurationAsync(UserConfiguration userConfiguration, UUID userId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = updateUserConfigurationValidateBeforeCall(userConfiguration, userId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for updateUserPassword
-     * @param updateUserPassword The M:Jellyfin.Api.Controllers.UserController.UpdateUserPassword(System.Nullable{System.Guid},Jellyfin.Api.Models.UserDtos.UpdateUserPassword) request. (required)
-     * @param userId The user id. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Password successfully reset. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User is not allowed to update the password. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> User not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updateUserPasswordCall(UpdateUserPassword updateUserPassword, UUID userId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = updateUserPassword;
-
-        // create path and map variables
-        String localVarPath = "/Users/Password";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call updateUserPasswordValidateBeforeCall(UpdateUserPassword updateUserPassword, UUID userId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'updateUserPassword' is set
-        if (updateUserPassword == null) {
-            throw new ApiException("Missing the required parameter 'updateUserPassword' when calling updateUserPassword(Async)");
-        }
-
-        return updateUserPasswordCall(updateUserPassword, userId, _callback);
-
-    }
-
-    /**
-     * Updates a user&#39;s password.
-     * 
-     * @param updateUserPassword The M:Jellyfin.Api.Controllers.UserController.UpdateUserPassword(System.Nullable{System.Guid},Jellyfin.Api.Models.UserDtos.UpdateUserPassword) request. (required)
-     * @param userId The user id. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Password successfully reset. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User is not allowed to update the password. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> User not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public void updateUserPassword(UpdateUserPassword updateUserPassword, UUID userId) throws ApiException {
-        updateUserPasswordWithHttpInfo(updateUserPassword, userId);
-    }
-
-    /**
-     * Updates a user&#39;s password.
-     * 
-     * @param updateUserPassword The M:Jellyfin.Api.Controllers.UserController.UpdateUserPassword(System.Nullable{System.Guid},Jellyfin.Api.Models.UserDtos.UpdateUserPassword) request. (required)
-     * @param userId The user id. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Password successfully reset. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User is not allowed to update the password. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> User not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> updateUserPasswordWithHttpInfo(UpdateUserPassword updateUserPassword, UUID userId) throws ApiException {
-        okhttp3.Call localVarCall = updateUserPasswordValidateBeforeCall(updateUserPassword, userId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Updates a user&#39;s password. (asynchronously)
-     * 
-     * @param updateUserPassword The M:Jellyfin.Api.Controllers.UserController.UpdateUserPassword(System.Nullable{System.Guid},Jellyfin.Api.Models.UserDtos.UpdateUserPassword) request. (required)
-     * @param userId The user id. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Password successfully reset. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User is not allowed to update the password. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> User not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updateUserPasswordAsync(UpdateUserPassword updateUserPassword, UUID userId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = updateUserPasswordValidateBeforeCall(updateUserPassword, userId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for updateUserPolicy
-     * @param userId The user id. (required)
-     * @param userPolicy The new user policy. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User policy updated. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> User policy was not supplied. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User policy update forbidden. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updateUserPolicyCall(UUID userId, UserPolicy userPolicy, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = userPolicy;
-
-        // create path and map variables
-        String localVarPath = "/Users/{userId}/Policy"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call updateUserPolicyValidateBeforeCall(UUID userId, UserPolicy userPolicy, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling updateUserPolicy(Async)");
-        }
-
-        // verify the required parameter 'userPolicy' is set
-        if (userPolicy == null) {
-            throw new ApiException("Missing the required parameter 'userPolicy' when calling updateUserPolicy(Async)");
-        }
-
-        return updateUserPolicyCall(userId, userPolicy, _callback);
-
-    }
-
-    /**
-     * Updates a user policy.
-     * 
-     * @param userId The user id. (required)
-     * @param userPolicy The new user policy. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User policy updated. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> User policy was not supplied. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User policy update forbidden. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public void updateUserPolicy(UUID userId, UserPolicy userPolicy) throws ApiException {
-        updateUserPolicyWithHttpInfo(userId, userPolicy);
-    }
-
-    /**
-     * Updates a user policy.
-     * 
-     * @param userId The user id. (required)
-     * @param userPolicy The new user policy. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User policy updated. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> User policy was not supplied. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User policy update forbidden. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> updateUserPolicyWithHttpInfo(UUID userId, UserPolicy userPolicy) throws ApiException {
-        okhttp3.Call localVarCall = updateUserPolicyValidateBeforeCall(userId, userPolicy, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Updates a user policy. (asynchronously)
-     * 
-     * @param userId The user id. (required)
-     * @param userPolicy The new user policy. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User policy updated. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> User policy was not supplied. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User policy update forbidden. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updateUserPolicyAsync(UUID userId, UserPolicy userPolicy, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = updateUserPolicyValidateBeforeCall(userId, userPolicy, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
 }

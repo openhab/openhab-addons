@@ -10,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import java.io.File;
 import org.openapitools.client.model.LiveStreamResponse;
@@ -35,952 +26,658 @@ import org.openapitools.client.model.PlaybackInfoResponse;
 import org.openapitools.client.model.ProblemDetails;
 import java.util.UUID;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class MediaInfoApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public MediaInfoApi() {
-        this(Configuration.getDefaultApiClient());
+  public MediaInfoApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public MediaInfoApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Closes a media source.
+   * 
+   * @param liveStreamId The livestream id. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void closeLiveStream(String liveStreamId) throws ApiException {
+    closeLiveStreamWithHttpInfo(liveStreamId);
+  }
+
+  /**
+   * Closes a media source.
+   * 
+   * @param liveStreamId The livestream id. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> closeLiveStreamWithHttpInfo(String liveStreamId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = closeLiveStreamRequestBuilder(liveStreamId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("closeLiveStream", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder closeLiveStreamRequestBuilder(String liveStreamId) throws ApiException {
+    // verify the required parameter 'liveStreamId' is set
+    if (liveStreamId == null) {
+      throw new ApiException(400, "Missing the required parameter 'liveStreamId' when calling closeLiveStream");
     }
 
-    public MediaInfoApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/LiveStreams/Close";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "liveStreamId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("liveStreamId", liveStreamId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Tests the network with a request with the size of the bitrate.
+   * 
+   * @param size The bitrate. Defaults to 102400. (optional, default to 102400)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getBitrateTestBytes(Integer size) throws ApiException {
+    ApiResponse<File> localVarResponse = getBitrateTestBytesWithHttpInfo(size);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Tests the network with a request with the size of the bitrate.
+   * 
+   * @param size The bitrate. Defaults to 102400. (optional, default to 102400)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getBitrateTestBytesWithHttpInfo(Integer size) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getBitrateTestBytesRequestBuilder(size);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getBitrateTestBytes", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getBitrateTestBytesRequestBuilder(Integer size) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Playback/BitrateTest";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "size";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("size", size));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    localVarRequestBuilder.header("Accept", "application/octet-stream");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets live playback media info for an item.
+   * 
+   * @param itemId The item id. (required)
+   * @param userId The user id. (optional)
+   * @return PlaybackInfoResponse
+   * @throws ApiException if fails to make API call
+   */
+  public PlaybackInfoResponse getPlaybackInfo(UUID itemId, UUID userId) throws ApiException {
+    ApiResponse<PlaybackInfoResponse> localVarResponse = getPlaybackInfoWithHttpInfo(itemId, userId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets live playback media info for an item.
+   * 
+   * @param itemId The item id. (required)
+   * @param userId The user id. (optional)
+   * @return ApiResponse&lt;PlaybackInfoResponse&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<PlaybackInfoResponse> getPlaybackInfoWithHttpInfo(UUID itemId, UUID userId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getPlaybackInfoRequestBuilder(itemId, userId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getPlaybackInfo", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<PlaybackInfoResponse>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<PlaybackInfoResponse>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PlaybackInfoResponse>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getPlaybackInfoRequestBuilder(UUID itemId, UUID userId) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getPlaybackInfo");
     }
 
-    public int getHostIndex() {
-        return localHostIndex;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/PlaybackInfo"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets live playback media info for an item.
+   * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence.  Query parameters are obsolete.
+   * @param itemId The item id. (required)
+   * @param userId The user id. (optional)
+   * @param maxStreamingBitrate The maximum streaming bitrate. (optional)
+   * @param startTimeTicks The start time in ticks. (optional)
+   * @param audioStreamIndex The audio stream index. (optional)
+   * @param subtitleStreamIndex The subtitle stream index. (optional)
+   * @param maxAudioChannels The maximum number of audio channels. (optional)
+   * @param mediaSourceId The media source id. (optional)
+   * @param liveStreamId The livestream id. (optional)
+   * @param autoOpenLiveStream Whether to auto open the livestream. (optional)
+   * @param enableDirectPlay Whether to enable direct play. Default: true. (optional)
+   * @param enableDirectStream Whether to enable direct stream. Default: true. (optional)
+   * @param enableTranscoding Whether to enable transcoding. Default: true. (optional)
+   * @param allowVideoStreamCopy Whether to allow to copy the video stream. Default: true. (optional)
+   * @param allowAudioStreamCopy Whether to allow to copy the audio stream. Default: true. (optional)
+   * @param playbackInfoDto The playback info. (optional)
+   * @return PlaybackInfoResponse
+   * @throws ApiException if fails to make API call
+   */
+  public PlaybackInfoResponse getPostedPlaybackInfo(UUID itemId, UUID userId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, String mediaSourceId, String liveStreamId, Boolean autoOpenLiveStream, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean enableTranscoding, Boolean allowVideoStreamCopy, Boolean allowAudioStreamCopy, PlaybackInfoDto playbackInfoDto) throws ApiException {
+    ApiResponse<PlaybackInfoResponse> localVarResponse = getPostedPlaybackInfoWithHttpInfo(itemId, userId, maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, mediaSourceId, liveStreamId, autoOpenLiveStream, enableDirectPlay, enableDirectStream, enableTranscoding, allowVideoStreamCopy, allowAudioStreamCopy, playbackInfoDto);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets live playback media info for an item.
+   * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence.  Query parameters are obsolete.
+   * @param itemId The item id. (required)
+   * @param userId The user id. (optional)
+   * @param maxStreamingBitrate The maximum streaming bitrate. (optional)
+   * @param startTimeTicks The start time in ticks. (optional)
+   * @param audioStreamIndex The audio stream index. (optional)
+   * @param subtitleStreamIndex The subtitle stream index. (optional)
+   * @param maxAudioChannels The maximum number of audio channels. (optional)
+   * @param mediaSourceId The media source id. (optional)
+   * @param liveStreamId The livestream id. (optional)
+   * @param autoOpenLiveStream Whether to auto open the livestream. (optional)
+   * @param enableDirectPlay Whether to enable direct play. Default: true. (optional)
+   * @param enableDirectStream Whether to enable direct stream. Default: true. (optional)
+   * @param enableTranscoding Whether to enable transcoding. Default: true. (optional)
+   * @param allowVideoStreamCopy Whether to allow to copy the video stream. Default: true. (optional)
+   * @param allowAudioStreamCopy Whether to allow to copy the audio stream. Default: true. (optional)
+   * @param playbackInfoDto The playback info. (optional)
+   * @return ApiResponse&lt;PlaybackInfoResponse&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<PlaybackInfoResponse> getPostedPlaybackInfoWithHttpInfo(UUID itemId, UUID userId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, String mediaSourceId, String liveStreamId, Boolean autoOpenLiveStream, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean enableTranscoding, Boolean allowVideoStreamCopy, Boolean allowAudioStreamCopy, PlaybackInfoDto playbackInfoDto) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getPostedPlaybackInfoRequestBuilder(itemId, userId, maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, mediaSourceId, liveStreamId, autoOpenLiveStream, enableDirectPlay, enableDirectStream, enableTranscoding, allowVideoStreamCopy, allowAudioStreamCopy, playbackInfoDto);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getPostedPlaybackInfo", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<PlaybackInfoResponse>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<PlaybackInfoResponse>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PlaybackInfoResponse>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getPostedPlaybackInfoRequestBuilder(UUID itemId, UUID userId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, String mediaSourceId, String liveStreamId, Boolean autoOpenLiveStream, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean enableTranscoding, Boolean allowVideoStreamCopy, Boolean allowAudioStreamCopy, PlaybackInfoDto playbackInfoDto) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getPostedPlaybackInfo");
     }
 
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/PlaybackInfo"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "maxStreamingBitrate";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxStreamingBitrate", maxStreamingBitrate));
+    localVarQueryParameterBaseName = "startTimeTicks";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("startTimeTicks", startTimeTicks));
+    localVarQueryParameterBaseName = "audioStreamIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("audioStreamIndex", audioStreamIndex));
+    localVarQueryParameterBaseName = "subtitleStreamIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("subtitleStreamIndex", subtitleStreamIndex));
+    localVarQueryParameterBaseName = "maxAudioChannels";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxAudioChannels", maxAudioChannels));
+    localVarQueryParameterBaseName = "mediaSourceId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("mediaSourceId", mediaSourceId));
+    localVarQueryParameterBaseName = "liveStreamId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("liveStreamId", liveStreamId));
+    localVarQueryParameterBaseName = "autoOpenLiveStream";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("autoOpenLiveStream", autoOpenLiveStream));
+    localVarQueryParameterBaseName = "enableDirectPlay";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableDirectPlay", enableDirectPlay));
+    localVarQueryParameterBaseName = "enableDirectStream";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableDirectStream", enableDirectStream));
+    localVarQueryParameterBaseName = "enableTranscoding";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableTranscoding", enableTranscoding));
+    localVarQueryParameterBaseName = "allowVideoStreamCopy";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("allowVideoStreamCopy", allowVideoStreamCopy));
+    localVarQueryParameterBaseName = "allowAudioStreamCopy";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("allowAudioStreamCopy", allowAudioStreamCopy));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(playbackInfoDto);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Opens a media source.
+   * 
+   * @param openToken The open token. (optional)
+   * @param userId The user id. (optional)
+   * @param playSessionId The play session id. (optional)
+   * @param maxStreamingBitrate The maximum streaming bitrate. (optional)
+   * @param startTimeTicks The start time in ticks. (optional)
+   * @param audioStreamIndex The audio stream index. (optional)
+   * @param subtitleStreamIndex The subtitle stream index. (optional)
+   * @param maxAudioChannels The maximum number of audio channels. (optional)
+   * @param itemId The item id. (optional)
+   * @param enableDirectPlay Whether to enable direct play. Default: true. (optional)
+   * @param enableDirectStream Whether to enable direct stream. Default: true. (optional)
+   * @param alwaysBurnInSubtitleWhenTranscoding Always burn-in subtitle when transcoding. (optional)
+   * @param openLiveStreamDto The open live stream dto. (optional)
+   * @return LiveStreamResponse
+   * @throws ApiException if fails to make API call
+   */
+  public LiveStreamResponse openLiveStream(String openToken, UUID userId, String playSessionId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, UUID itemId, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean alwaysBurnInSubtitleWhenTranscoding, OpenLiveStreamDto openLiveStreamDto) throws ApiException {
+    ApiResponse<LiveStreamResponse> localVarResponse = openLiveStreamWithHttpInfo(openToken, userId, playSessionId, maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, itemId, enableDirectPlay, enableDirectStream, alwaysBurnInSubtitleWhenTranscoding, openLiveStreamDto);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Opens a media source.
+   * 
+   * @param openToken The open token. (optional)
+   * @param userId The user id. (optional)
+   * @param playSessionId The play session id. (optional)
+   * @param maxStreamingBitrate The maximum streaming bitrate. (optional)
+   * @param startTimeTicks The start time in ticks. (optional)
+   * @param audioStreamIndex The audio stream index. (optional)
+   * @param subtitleStreamIndex The subtitle stream index. (optional)
+   * @param maxAudioChannels The maximum number of audio channels. (optional)
+   * @param itemId The item id. (optional)
+   * @param enableDirectPlay Whether to enable direct play. Default: true. (optional)
+   * @param enableDirectStream Whether to enable direct stream. Default: true. (optional)
+   * @param alwaysBurnInSubtitleWhenTranscoding Always burn-in subtitle when transcoding. (optional)
+   * @param openLiveStreamDto The open live stream dto. (optional)
+   * @return ApiResponse&lt;LiveStreamResponse&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<LiveStreamResponse> openLiveStreamWithHttpInfo(String openToken, UUID userId, String playSessionId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, UUID itemId, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean alwaysBurnInSubtitleWhenTranscoding, OpenLiveStreamDto openLiveStreamDto) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = openLiveStreamRequestBuilder(openToken, userId, playSessionId, maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, itemId, enableDirectPlay, enableDirectStream, alwaysBurnInSubtitleWhenTranscoding, openLiveStreamDto);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("openLiveStream", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<LiveStreamResponse>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<LiveStreamResponse>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<LiveStreamResponse>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder openLiveStreamRequestBuilder(String openToken, UUID userId, String playSessionId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, UUID itemId, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean alwaysBurnInSubtitleWhenTranscoding, OpenLiveStreamDto openLiveStreamDto) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/LiveStreams/Open";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "openToken";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("openToken", openToken));
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "playSessionId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("playSessionId", playSessionId));
+    localVarQueryParameterBaseName = "maxStreamingBitrate";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxStreamingBitrate", maxStreamingBitrate));
+    localVarQueryParameterBaseName = "startTimeTicks";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("startTimeTicks", startTimeTicks));
+    localVarQueryParameterBaseName = "audioStreamIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("audioStreamIndex", audioStreamIndex));
+    localVarQueryParameterBaseName = "subtitleStreamIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("subtitleStreamIndex", subtitleStreamIndex));
+    localVarQueryParameterBaseName = "maxAudioChannels";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxAudioChannels", maxAudioChannels));
+    localVarQueryParameterBaseName = "itemId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("itemId", itemId));
+    localVarQueryParameterBaseName = "enableDirectPlay";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableDirectPlay", enableDirectPlay));
+    localVarQueryParameterBaseName = "enableDirectStream";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableDirectStream", enableDirectStream));
+    localVarQueryParameterBaseName = "alwaysBurnInSubtitleWhenTranscoding";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("alwaysBurnInSubtitleWhenTranscoding", alwaysBurnInSubtitleWhenTranscoding));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Build call for closeLiveStream
-     * @param liveStreamId The livestream id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Livestream closed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call closeLiveStreamCall(String liveStreamId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
 
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/LiveStreams/Close";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (liveStreamId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("liveStreamId", liveStreamId));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(openLiveStreamDto);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
     }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call closeLiveStreamValidateBeforeCall(String liveStreamId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'liveStreamId' is set
-        if (liveStreamId == null) {
-            throw new ApiException("Missing the required parameter 'liveStreamId' when calling closeLiveStream(Async)");
-        }
-
-        return closeLiveStreamCall(liveStreamId, _callback);
-
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Closes a media source.
-     * 
-     * @param liveStreamId The livestream id. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Livestream closed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void closeLiveStream(String liveStreamId) throws ApiException {
-        closeLiveStreamWithHttpInfo(liveStreamId);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    /**
-     * Closes a media source.
-     * 
-     * @param liveStreamId The livestream id. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Livestream closed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> closeLiveStreamWithHttpInfo(String liveStreamId) throws ApiException {
-        okhttp3.Call localVarCall = closeLiveStreamValidateBeforeCall(liveStreamId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Closes a media source. (asynchronously)
-     * 
-     * @param liveStreamId The livestream id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Livestream closed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call closeLiveStreamAsync(String liveStreamId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = closeLiveStreamValidateBeforeCall(liveStreamId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getBitrateTestBytes
-     * @param size The bitrate. Defaults to 102400. (optional, default to 102400)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Test buffer returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getBitrateTestBytesCall(Integer size, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Playback/BitrateTest";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (size != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("size", size));
-        }
-
-        final String[] localVarAccepts = {
-            "application/octet-stream"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getBitrateTestBytesValidateBeforeCall(Integer size, final ApiCallback _callback) throws ApiException {
-        return getBitrateTestBytesCall(size, _callback);
-
-    }
-
-    /**
-     * Tests the network with a request with the size of the bitrate.
-     * 
-     * @param size The bitrate. Defaults to 102400. (optional, default to 102400)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Test buffer returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getBitrateTestBytes(Integer size) throws ApiException {
-        ApiResponse<File> localVarResp = getBitrateTestBytesWithHttpInfo(size);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Tests the network with a request with the size of the bitrate.
-     * 
-     * @param size The bitrate. Defaults to 102400. (optional, default to 102400)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Test buffer returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getBitrateTestBytesWithHttpInfo(Integer size) throws ApiException {
-        okhttp3.Call localVarCall = getBitrateTestBytesValidateBeforeCall(size, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Tests the network with a request with the size of the bitrate. (asynchronously)
-     * 
-     * @param size The bitrate. Defaults to 102400. (optional, default to 102400)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Test buffer returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getBitrateTestBytesAsync(Integer size, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getBitrateTestBytesValidateBeforeCall(size, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getPlaybackInfo
-     * @param itemId The item id. (required)
-     * @param userId The user id. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Playback info returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPlaybackInfoCall(UUID itemId, UUID userId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/PlaybackInfo"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getPlaybackInfoValidateBeforeCall(UUID itemId, UUID userId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getPlaybackInfo(Async)");
-        }
-
-        return getPlaybackInfoCall(itemId, userId, _callback);
-
-    }
-
-    /**
-     * Gets live playback media info for an item.
-     * 
-     * @param itemId The item id. (required)
-     * @param userId The user id. (optional)
-     * @return PlaybackInfoResponse
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Playback info returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public PlaybackInfoResponse getPlaybackInfo(UUID itemId, UUID userId) throws ApiException {
-        ApiResponse<PlaybackInfoResponse> localVarResp = getPlaybackInfoWithHttpInfo(itemId, userId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets live playback media info for an item.
-     * 
-     * @param itemId The item id. (required)
-     * @param userId The user id. (optional)
-     * @return ApiResponse&lt;PlaybackInfoResponse&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Playback info returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<PlaybackInfoResponse> getPlaybackInfoWithHttpInfo(UUID itemId, UUID userId) throws ApiException {
-        okhttp3.Call localVarCall = getPlaybackInfoValidateBeforeCall(itemId, userId, null);
-        Type localVarReturnType = new TypeToken<PlaybackInfoResponse>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets live playback media info for an item. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param userId The user id. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Playback info returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPlaybackInfoAsync(UUID itemId, UUID userId, final ApiCallback<PlaybackInfoResponse> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getPlaybackInfoValidateBeforeCall(itemId, userId, _callback);
-        Type localVarReturnType = new TypeToken<PlaybackInfoResponse>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getPostedPlaybackInfo
-     * @param itemId The item id. (required)
-     * @param userId The user id. (optional)
-     * @param maxStreamingBitrate The maximum streaming bitrate. (optional)
-     * @param startTimeTicks The start time in ticks. (optional)
-     * @param audioStreamIndex The audio stream index. (optional)
-     * @param subtitleStreamIndex The subtitle stream index. (optional)
-     * @param maxAudioChannels The maximum number of audio channels. (optional)
-     * @param mediaSourceId The media source id. (optional)
-     * @param liveStreamId The livestream id. (optional)
-     * @param autoOpenLiveStream Whether to auto open the livestream. (optional)
-     * @param enableDirectPlay Whether to enable direct play. Default: true. (optional)
-     * @param enableDirectStream Whether to enable direct stream. Default: true. (optional)
-     * @param enableTranscoding Whether to enable transcoding. Default: true. (optional)
-     * @param allowVideoStreamCopy Whether to allow to copy the video stream. Default: true. (optional)
-     * @param allowAudioStreamCopy Whether to allow to copy the audio stream. Default: true. (optional)
-     * @param playbackInfoDto The playback info. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Playback info returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPostedPlaybackInfoCall(UUID itemId, UUID userId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, String mediaSourceId, String liveStreamId, Boolean autoOpenLiveStream, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean enableTranscoding, Boolean allowVideoStreamCopy, Boolean allowAudioStreamCopy, PlaybackInfoDto playbackInfoDto, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = playbackInfoDto;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/PlaybackInfo"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (maxStreamingBitrate != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxStreamingBitrate", maxStreamingBitrate));
-        }
-
-        if (startTimeTicks != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startTimeTicks", startTimeTicks));
-        }
-
-        if (audioStreamIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("audioStreamIndex", audioStreamIndex));
-        }
-
-        if (subtitleStreamIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("subtitleStreamIndex", subtitleStreamIndex));
-        }
-
-        if (maxAudioChannels != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxAudioChannels", maxAudioChannels));
-        }
-
-        if (mediaSourceId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("mediaSourceId", mediaSourceId));
-        }
-
-        if (liveStreamId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("liveStreamId", liveStreamId));
-        }
-
-        if (autoOpenLiveStream != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("autoOpenLiveStream", autoOpenLiveStream));
-        }
-
-        if (enableDirectPlay != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableDirectPlay", enableDirectPlay));
-        }
-
-        if (enableDirectStream != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableDirectStream", enableDirectStream));
-        }
-
-        if (enableTranscoding != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableTranscoding", enableTranscoding));
-        }
-
-        if (allowVideoStreamCopy != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("allowVideoStreamCopy", allowVideoStreamCopy));
-        }
-
-        if (allowAudioStreamCopy != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("allowAudioStreamCopy", allowAudioStreamCopy));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getPostedPlaybackInfoValidateBeforeCall(UUID itemId, UUID userId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, String mediaSourceId, String liveStreamId, Boolean autoOpenLiveStream, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean enableTranscoding, Boolean allowVideoStreamCopy, Boolean allowAudioStreamCopy, PlaybackInfoDto playbackInfoDto, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getPostedPlaybackInfo(Async)");
-        }
-
-        return getPostedPlaybackInfoCall(itemId, userId, maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, mediaSourceId, liveStreamId, autoOpenLiveStream, enableDirectPlay, enableDirectStream, enableTranscoding, allowVideoStreamCopy, allowAudioStreamCopy, playbackInfoDto, _callback);
-
-    }
-
-    /**
-     * Gets live playback media info for an item.
-     * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence.  Query parameters are obsolete.
-     * @param itemId The item id. (required)
-     * @param userId The user id. (optional)
-     * @param maxStreamingBitrate The maximum streaming bitrate. (optional)
-     * @param startTimeTicks The start time in ticks. (optional)
-     * @param audioStreamIndex The audio stream index. (optional)
-     * @param subtitleStreamIndex The subtitle stream index. (optional)
-     * @param maxAudioChannels The maximum number of audio channels. (optional)
-     * @param mediaSourceId The media source id. (optional)
-     * @param liveStreamId The livestream id. (optional)
-     * @param autoOpenLiveStream Whether to auto open the livestream. (optional)
-     * @param enableDirectPlay Whether to enable direct play. Default: true. (optional)
-     * @param enableDirectStream Whether to enable direct stream. Default: true. (optional)
-     * @param enableTranscoding Whether to enable transcoding. Default: true. (optional)
-     * @param allowVideoStreamCopy Whether to allow to copy the video stream. Default: true. (optional)
-     * @param allowAudioStreamCopy Whether to allow to copy the audio stream. Default: true. (optional)
-     * @param playbackInfoDto The playback info. (optional)
-     * @return PlaybackInfoResponse
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Playback info returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public PlaybackInfoResponse getPostedPlaybackInfo(UUID itemId, UUID userId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, String mediaSourceId, String liveStreamId, Boolean autoOpenLiveStream, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean enableTranscoding, Boolean allowVideoStreamCopy, Boolean allowAudioStreamCopy, PlaybackInfoDto playbackInfoDto) throws ApiException {
-        ApiResponse<PlaybackInfoResponse> localVarResp = getPostedPlaybackInfoWithHttpInfo(itemId, userId, maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, mediaSourceId, liveStreamId, autoOpenLiveStream, enableDirectPlay, enableDirectStream, enableTranscoding, allowVideoStreamCopy, allowAudioStreamCopy, playbackInfoDto);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets live playback media info for an item.
-     * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence.  Query parameters are obsolete.
-     * @param itemId The item id. (required)
-     * @param userId The user id. (optional)
-     * @param maxStreamingBitrate The maximum streaming bitrate. (optional)
-     * @param startTimeTicks The start time in ticks. (optional)
-     * @param audioStreamIndex The audio stream index. (optional)
-     * @param subtitleStreamIndex The subtitle stream index. (optional)
-     * @param maxAudioChannels The maximum number of audio channels. (optional)
-     * @param mediaSourceId The media source id. (optional)
-     * @param liveStreamId The livestream id. (optional)
-     * @param autoOpenLiveStream Whether to auto open the livestream. (optional)
-     * @param enableDirectPlay Whether to enable direct play. Default: true. (optional)
-     * @param enableDirectStream Whether to enable direct stream. Default: true. (optional)
-     * @param enableTranscoding Whether to enable transcoding. Default: true. (optional)
-     * @param allowVideoStreamCopy Whether to allow to copy the video stream. Default: true. (optional)
-     * @param allowAudioStreamCopy Whether to allow to copy the audio stream. Default: true. (optional)
-     * @param playbackInfoDto The playback info. (optional)
-     * @return ApiResponse&lt;PlaybackInfoResponse&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Playback info returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<PlaybackInfoResponse> getPostedPlaybackInfoWithHttpInfo(UUID itemId, UUID userId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, String mediaSourceId, String liveStreamId, Boolean autoOpenLiveStream, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean enableTranscoding, Boolean allowVideoStreamCopy, Boolean allowAudioStreamCopy, PlaybackInfoDto playbackInfoDto) throws ApiException {
-        okhttp3.Call localVarCall = getPostedPlaybackInfoValidateBeforeCall(itemId, userId, maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, mediaSourceId, liveStreamId, autoOpenLiveStream, enableDirectPlay, enableDirectStream, enableTranscoding, allowVideoStreamCopy, allowAudioStreamCopy, playbackInfoDto, null);
-        Type localVarReturnType = new TypeToken<PlaybackInfoResponse>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets live playback media info for an item. (asynchronously)
-     * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence.  Query parameters are obsolete.
-     * @param itemId The item id. (required)
-     * @param userId The user id. (optional)
-     * @param maxStreamingBitrate The maximum streaming bitrate. (optional)
-     * @param startTimeTicks The start time in ticks. (optional)
-     * @param audioStreamIndex The audio stream index. (optional)
-     * @param subtitleStreamIndex The subtitle stream index. (optional)
-     * @param maxAudioChannels The maximum number of audio channels. (optional)
-     * @param mediaSourceId The media source id. (optional)
-     * @param liveStreamId The livestream id. (optional)
-     * @param autoOpenLiveStream Whether to auto open the livestream. (optional)
-     * @param enableDirectPlay Whether to enable direct play. Default: true. (optional)
-     * @param enableDirectStream Whether to enable direct stream. Default: true. (optional)
-     * @param enableTranscoding Whether to enable transcoding. Default: true. (optional)
-     * @param allowVideoStreamCopy Whether to allow to copy the video stream. Default: true. (optional)
-     * @param allowAudioStreamCopy Whether to allow to copy the audio stream. Default: true. (optional)
-     * @param playbackInfoDto The playback info. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Playback info returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPostedPlaybackInfoAsync(UUID itemId, UUID userId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, String mediaSourceId, String liveStreamId, Boolean autoOpenLiveStream, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean enableTranscoding, Boolean allowVideoStreamCopy, Boolean allowAudioStreamCopy, PlaybackInfoDto playbackInfoDto, final ApiCallback<PlaybackInfoResponse> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getPostedPlaybackInfoValidateBeforeCall(itemId, userId, maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, mediaSourceId, liveStreamId, autoOpenLiveStream, enableDirectPlay, enableDirectStream, enableTranscoding, allowVideoStreamCopy, allowAudioStreamCopy, playbackInfoDto, _callback);
-        Type localVarReturnType = new TypeToken<PlaybackInfoResponse>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for openLiveStream
-     * @param openToken The open token. (optional)
-     * @param userId The user id. (optional)
-     * @param playSessionId The play session id. (optional)
-     * @param maxStreamingBitrate The maximum streaming bitrate. (optional)
-     * @param startTimeTicks The start time in ticks. (optional)
-     * @param audioStreamIndex The audio stream index. (optional)
-     * @param subtitleStreamIndex The subtitle stream index. (optional)
-     * @param maxAudioChannels The maximum number of audio channels. (optional)
-     * @param itemId The item id. (optional)
-     * @param enableDirectPlay Whether to enable direct play. Default: true. (optional)
-     * @param enableDirectStream Whether to enable direct stream. Default: true. (optional)
-     * @param alwaysBurnInSubtitleWhenTranscoding Always burn-in subtitle when transcoding. (optional)
-     * @param openLiveStreamDto The open live stream dto. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Media source opened. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call openLiveStreamCall(String openToken, UUID userId, String playSessionId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, UUID itemId, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean alwaysBurnInSubtitleWhenTranscoding, OpenLiveStreamDto openLiveStreamDto, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = openLiveStreamDto;
-
-        // create path and map variables
-        String localVarPath = "/LiveStreams/Open";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (openToken != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("openToken", openToken));
-        }
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (playSessionId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("playSessionId", playSessionId));
-        }
-
-        if (maxStreamingBitrate != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxStreamingBitrate", maxStreamingBitrate));
-        }
-
-        if (startTimeTicks != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startTimeTicks", startTimeTicks));
-        }
-
-        if (audioStreamIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("audioStreamIndex", audioStreamIndex));
-        }
-
-        if (subtitleStreamIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("subtitleStreamIndex", subtitleStreamIndex));
-        }
-
-        if (maxAudioChannels != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxAudioChannels", maxAudioChannels));
-        }
-
-        if (itemId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("itemId", itemId));
-        }
-
-        if (enableDirectPlay != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableDirectPlay", enableDirectPlay));
-        }
-
-        if (enableDirectStream != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableDirectStream", enableDirectStream));
-        }
-
-        if (alwaysBurnInSubtitleWhenTranscoding != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("alwaysBurnInSubtitleWhenTranscoding", alwaysBurnInSubtitleWhenTranscoding));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call openLiveStreamValidateBeforeCall(String openToken, UUID userId, String playSessionId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, UUID itemId, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean alwaysBurnInSubtitleWhenTranscoding, OpenLiveStreamDto openLiveStreamDto, final ApiCallback _callback) throws ApiException {
-        return openLiveStreamCall(openToken, userId, playSessionId, maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, itemId, enableDirectPlay, enableDirectStream, alwaysBurnInSubtitleWhenTranscoding, openLiveStreamDto, _callback);
-
-    }
-
-    /**
-     * Opens a media source.
-     * 
-     * @param openToken The open token. (optional)
-     * @param userId The user id. (optional)
-     * @param playSessionId The play session id. (optional)
-     * @param maxStreamingBitrate The maximum streaming bitrate. (optional)
-     * @param startTimeTicks The start time in ticks. (optional)
-     * @param audioStreamIndex The audio stream index. (optional)
-     * @param subtitleStreamIndex The subtitle stream index. (optional)
-     * @param maxAudioChannels The maximum number of audio channels. (optional)
-     * @param itemId The item id. (optional)
-     * @param enableDirectPlay Whether to enable direct play. Default: true. (optional)
-     * @param enableDirectStream Whether to enable direct stream. Default: true. (optional)
-     * @param alwaysBurnInSubtitleWhenTranscoding Always burn-in subtitle when transcoding. (optional)
-     * @param openLiveStreamDto The open live stream dto. (optional)
-     * @return LiveStreamResponse
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Media source opened. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public LiveStreamResponse openLiveStream(String openToken, UUID userId, String playSessionId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, UUID itemId, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean alwaysBurnInSubtitleWhenTranscoding, OpenLiveStreamDto openLiveStreamDto) throws ApiException {
-        ApiResponse<LiveStreamResponse> localVarResp = openLiveStreamWithHttpInfo(openToken, userId, playSessionId, maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, itemId, enableDirectPlay, enableDirectStream, alwaysBurnInSubtitleWhenTranscoding, openLiveStreamDto);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Opens a media source.
-     * 
-     * @param openToken The open token. (optional)
-     * @param userId The user id. (optional)
-     * @param playSessionId The play session id. (optional)
-     * @param maxStreamingBitrate The maximum streaming bitrate. (optional)
-     * @param startTimeTicks The start time in ticks. (optional)
-     * @param audioStreamIndex The audio stream index. (optional)
-     * @param subtitleStreamIndex The subtitle stream index. (optional)
-     * @param maxAudioChannels The maximum number of audio channels. (optional)
-     * @param itemId The item id. (optional)
-     * @param enableDirectPlay Whether to enable direct play. Default: true. (optional)
-     * @param enableDirectStream Whether to enable direct stream. Default: true. (optional)
-     * @param alwaysBurnInSubtitleWhenTranscoding Always burn-in subtitle when transcoding. (optional)
-     * @param openLiveStreamDto The open live stream dto. (optional)
-     * @return ApiResponse&lt;LiveStreamResponse&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Media source opened. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<LiveStreamResponse> openLiveStreamWithHttpInfo(String openToken, UUID userId, String playSessionId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, UUID itemId, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean alwaysBurnInSubtitleWhenTranscoding, OpenLiveStreamDto openLiveStreamDto) throws ApiException {
-        okhttp3.Call localVarCall = openLiveStreamValidateBeforeCall(openToken, userId, playSessionId, maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, itemId, enableDirectPlay, enableDirectStream, alwaysBurnInSubtitleWhenTranscoding, openLiveStreamDto, null);
-        Type localVarReturnType = new TypeToken<LiveStreamResponse>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Opens a media source. (asynchronously)
-     * 
-     * @param openToken The open token. (optional)
-     * @param userId The user id. (optional)
-     * @param playSessionId The play session id. (optional)
-     * @param maxStreamingBitrate The maximum streaming bitrate. (optional)
-     * @param startTimeTicks The start time in ticks. (optional)
-     * @param audioStreamIndex The audio stream index. (optional)
-     * @param subtitleStreamIndex The subtitle stream index. (optional)
-     * @param maxAudioChannels The maximum number of audio channels. (optional)
-     * @param itemId The item id. (optional)
-     * @param enableDirectPlay Whether to enable direct play. Default: true. (optional)
-     * @param enableDirectStream Whether to enable direct stream. Default: true. (optional)
-     * @param alwaysBurnInSubtitleWhenTranscoding Always burn-in subtitle when transcoding. (optional)
-     * @param openLiveStreamDto The open live stream dto. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Media source opened. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call openLiveStreamAsync(String openToken, UUID userId, String playSessionId, Integer maxStreamingBitrate, Long startTimeTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxAudioChannels, UUID itemId, Boolean enableDirectPlay, Boolean enableDirectStream, Boolean alwaysBurnInSubtitleWhenTranscoding, OpenLiveStreamDto openLiveStreamDto, final ApiCallback<LiveStreamResponse> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = openLiveStreamValidateBeforeCall(openToken, userId, playSessionId, maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, itemId, enableDirectPlay, enableDirectStream, alwaysBurnInSubtitleWhenTranscoding, openLiveStreamDto, _callback);
-        Type localVarReturnType = new TypeToken<LiveStreamResponse>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
 }

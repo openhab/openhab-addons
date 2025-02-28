@@ -13,64 +13,50 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
-import java.util.Arrays;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import org.openapitools.client.JSON;
 
+import org.openapitools.client.ApiClient;
 /**
  * Upload subtitles dto.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  UploadSubtitleDto.JSON_PROPERTY_LANGUAGE,
+  UploadSubtitleDto.JSON_PROPERTY_FORMAT,
+  UploadSubtitleDto.JSON_PROPERTY_IS_FORCED,
+  UploadSubtitleDto.JSON_PROPERTY_DATA
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class UploadSubtitleDto {
-  public static final String SERIALIZED_NAME_LANGUAGE = "Language";
-  @SerializedName(SERIALIZED_NAME_LANGUAGE)
+  public static final String JSON_PROPERTY_LANGUAGE = "Language";
   @javax.annotation.Nonnull
   private String language;
 
-  public static final String SERIALIZED_NAME_FORMAT = "Format";
-  @SerializedName(SERIALIZED_NAME_FORMAT)
+  public static final String JSON_PROPERTY_FORMAT = "Format";
   @javax.annotation.Nonnull
   private String format;
 
-  public static final String SERIALIZED_NAME_IS_FORCED = "IsForced";
-  @SerializedName(SERIALIZED_NAME_IS_FORCED)
+  public static final String JSON_PROPERTY_IS_FORCED = "IsForced";
   @javax.annotation.Nonnull
   private Boolean isForced;
 
-  public static final String SERIALIZED_NAME_DATA = "Data";
-  @SerializedName(SERIALIZED_NAME_DATA)
+  public static final String JSON_PROPERTY_DATA = "Data";
   @javax.annotation.Nonnull
   private String data;
 
-  public UploadSubtitleDto() {
+  public UploadSubtitleDto() { 
   }
 
   public UploadSubtitleDto language(@javax.annotation.Nonnull String language) {
@@ -83,10 +69,15 @@ public class UploadSubtitleDto {
    * @return language
    */
   @javax.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_LANGUAGE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getLanguage() {
     return language;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_LANGUAGE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setLanguage(@javax.annotation.Nonnull String language) {
     this.language = language;
   }
@@ -102,10 +93,15 @@ public class UploadSubtitleDto {
    * @return format
    */
   @javax.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_FORMAT)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getFormat() {
     return format;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_FORMAT)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setFormat(@javax.annotation.Nonnull String format) {
     this.format = format;
   }
@@ -121,10 +117,15 @@ public class UploadSubtitleDto {
    * @return isForced
    */
   @javax.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_IS_FORCED)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Boolean getIsForced() {
     return isForced;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_FORCED)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setIsForced(@javax.annotation.Nonnull Boolean isForced) {
     this.isForced = isForced;
   }
@@ -140,16 +141,23 @@ public class UploadSubtitleDto {
    * @return data
    */
   @javax.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_DATA)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getData() {
     return data;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DATA)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setData(@javax.annotation.Nonnull String data) {
     this.data = data;
   }
 
 
-
+  /**
+   * Return true if this UploadSubtitleDto object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -193,112 +201,59 @@ public class UploadSubtitleDto {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Language");
-    openapiFields.add("Format");
-    openapiFields.add("IsForced");
-    openapiFields.add("Data");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
-    openapiRequiredFields.add("Language");
-    openapiRequiredFields.add("Format");
-    openapiRequiredFields.add("IsForced");
-    openapiRequiredFields.add("Data");
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to UploadSubtitleDto
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!UploadSubtitleDto.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in UploadSubtitleDto is not found in the empty JSON string", UploadSubtitleDto.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!UploadSubtitleDto.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `UploadSubtitleDto` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-
-      // check to make sure all required properties/fields are present in the JSON string
-      for (String requiredField : UploadSubtitleDto.openapiRequiredFields) {
-        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (!jsonObj.get("Language").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Language` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Language").toString()));
-      }
-      if (!jsonObj.get("Format").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Format` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Format").toString()));
-      }
-      if (!jsonObj.get("Data").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Data` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Data").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!UploadSubtitleDto.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'UploadSubtitleDto' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<UploadSubtitleDto> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(UploadSubtitleDto.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<UploadSubtitleDto>() {
-           @Override
-           public void write(JsonWriter out, UploadSubtitleDto value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public UploadSubtitleDto read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of UploadSubtitleDto given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of UploadSubtitleDto
-   * @throws IOException if the JSON string is invalid with respect to UploadSubtitleDto
-   */
-  public static UploadSubtitleDto fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, UploadSubtitleDto.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of UploadSubtitleDto to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Language` to the URL query string
+    if (getLanguage() != null) {
+      joiner.add(String.format("%sLanguage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLanguage()))));
+    }
+
+    // add `Format` to the URL query string
+    if (getFormat() != null) {
+      joiner.add(String.format("%sFormat%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFormat()))));
+    }
+
+    // add `IsForced` to the URL query string
+    if (getIsForced() != null) {
+      joiner.add(String.format("%sIsForced%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsForced()))));
+    }
+
+    // add `Data` to the URL query string
+    if (getData() != null) {
+      joiner.add(String.format("%sData%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getData()))));
+    }
+
+    return joiner.toString();
   }
 }
 

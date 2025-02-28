@@ -13,94 +13,80 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * ConfigImageTypes
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  ConfigImageTypes.JSON_PROPERTY_BACKDROP_SIZES,
+  ConfigImageTypes.JSON_PROPERTY_BASE_URL,
+  ConfigImageTypes.JSON_PROPERTY_LOGO_SIZES,
+  ConfigImageTypes.JSON_PROPERTY_POSTER_SIZES,
+  ConfigImageTypes.JSON_PROPERTY_PROFILE_SIZES,
+  ConfigImageTypes.JSON_PROPERTY_SECURE_BASE_URL,
+  ConfigImageTypes.JSON_PROPERTY_STILL_SIZES
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ConfigImageTypes {
-  public static final String SERIALIZED_NAME_BACKDROP_SIZES = "BackdropSizes";
-  @SerializedName(SERIALIZED_NAME_BACKDROP_SIZES)
-  @javax.annotation.Nullable
-  private List<String> backdropSizes;
+  public static final String JSON_PROPERTY_BACKDROP_SIZES = "BackdropSizes";
+  private JsonNullable<List<String>> backdropSizes = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_BASE_URL = "BaseUrl";
-  @SerializedName(SERIALIZED_NAME_BASE_URL)
-  @javax.annotation.Nullable
-  private String baseUrl;
+  public static final String JSON_PROPERTY_BASE_URL = "BaseUrl";
+  private JsonNullable<String> baseUrl = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_LOGO_SIZES = "LogoSizes";
-  @SerializedName(SERIALIZED_NAME_LOGO_SIZES)
-  @javax.annotation.Nullable
-  private List<String> logoSizes;
+  public static final String JSON_PROPERTY_LOGO_SIZES = "LogoSizes";
+  private JsonNullable<List<String>> logoSizes = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_POSTER_SIZES = "PosterSizes";
-  @SerializedName(SERIALIZED_NAME_POSTER_SIZES)
-  @javax.annotation.Nullable
-  private List<String> posterSizes;
+  public static final String JSON_PROPERTY_POSTER_SIZES = "PosterSizes";
+  private JsonNullable<List<String>> posterSizes = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_PROFILE_SIZES = "ProfileSizes";
-  @SerializedName(SERIALIZED_NAME_PROFILE_SIZES)
-  @javax.annotation.Nullable
-  private List<String> profileSizes;
+  public static final String JSON_PROPERTY_PROFILE_SIZES = "ProfileSizes";
+  private JsonNullable<List<String>> profileSizes = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_SECURE_BASE_URL = "SecureBaseUrl";
-  @SerializedName(SERIALIZED_NAME_SECURE_BASE_URL)
-  @javax.annotation.Nullable
-  private String secureBaseUrl;
+  public static final String JSON_PROPERTY_SECURE_BASE_URL = "SecureBaseUrl";
+  private JsonNullable<String> secureBaseUrl = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_STILL_SIZES = "StillSizes";
-  @SerializedName(SERIALIZED_NAME_STILL_SIZES)
-  @javax.annotation.Nullable
-  private List<String> stillSizes;
+  public static final String JSON_PROPERTY_STILL_SIZES = "StillSizes";
+  private JsonNullable<List<String>> stillSizes = JsonNullable.<List<String>>undefined();
 
-  public ConfigImageTypes() {
+  public ConfigImageTypes() { 
   }
 
   public ConfigImageTypes backdropSizes(@javax.annotation.Nullable List<String> backdropSizes) {
-    this.backdropSizes = backdropSizes;
+    this.backdropSizes = JsonNullable.<List<String>>of(backdropSizes);
     return this;
   }
 
   public ConfigImageTypes addBackdropSizesItem(String backdropSizesItem) {
-    if (this.backdropSizes == null) {
-      this.backdropSizes = new ArrayList<>();
+    if (this.backdropSizes == null || !this.backdropSizes.isPresent()) {
+      this.backdropSizes = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.backdropSizes.add(backdropSizesItem);
+    try {
+      this.backdropSizes.get().add(backdropSizesItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -109,17 +95,30 @@ public class ConfigImageTypes {
    * @return backdropSizes
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getBackdropSizes() {
+        return backdropSizes.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_BACKDROP_SIZES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getBackdropSizes_JsonNullable() {
     return backdropSizes;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_BACKDROP_SIZES)
+  public void setBackdropSizes_JsonNullable(JsonNullable<List<String>> backdropSizes) {
+    this.backdropSizes = backdropSizes;
   }
 
   public void setBackdropSizes(@javax.annotation.Nullable List<String> backdropSizes) {
-    this.backdropSizes = backdropSizes;
+    this.backdropSizes = JsonNullable.<List<String>>of(backdropSizes);
   }
 
 
   public ConfigImageTypes baseUrl(@javax.annotation.Nullable String baseUrl) {
-    this.baseUrl = baseUrl;
+    this.baseUrl = JsonNullable.<String>of(baseUrl);
     return this;
   }
 
@@ -128,25 +127,42 @@ public class ConfigImageTypes {
    * @return baseUrl
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getBaseUrl() {
+        return baseUrl.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_BASE_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getBaseUrl_JsonNullable() {
     return baseUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_BASE_URL)
+  public void setBaseUrl_JsonNullable(JsonNullable<String> baseUrl) {
+    this.baseUrl = baseUrl;
   }
 
   public void setBaseUrl(@javax.annotation.Nullable String baseUrl) {
-    this.baseUrl = baseUrl;
+    this.baseUrl = JsonNullable.<String>of(baseUrl);
   }
 
 
   public ConfigImageTypes logoSizes(@javax.annotation.Nullable List<String> logoSizes) {
-    this.logoSizes = logoSizes;
+    this.logoSizes = JsonNullable.<List<String>>of(logoSizes);
     return this;
   }
 
   public ConfigImageTypes addLogoSizesItem(String logoSizesItem) {
-    if (this.logoSizes == null) {
-      this.logoSizes = new ArrayList<>();
+    if (this.logoSizes == null || !this.logoSizes.isPresent()) {
+      this.logoSizes = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.logoSizes.add(logoSizesItem);
+    try {
+      this.logoSizes.get().add(logoSizesItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -155,25 +171,42 @@ public class ConfigImageTypes {
    * @return logoSizes
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getLogoSizes() {
+        return logoSizes.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LOGO_SIZES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getLogoSizes_JsonNullable() {
     return logoSizes;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LOGO_SIZES)
+  public void setLogoSizes_JsonNullable(JsonNullable<List<String>> logoSizes) {
+    this.logoSizes = logoSizes;
   }
 
   public void setLogoSizes(@javax.annotation.Nullable List<String> logoSizes) {
-    this.logoSizes = logoSizes;
+    this.logoSizes = JsonNullable.<List<String>>of(logoSizes);
   }
 
 
   public ConfigImageTypes posterSizes(@javax.annotation.Nullable List<String> posterSizes) {
-    this.posterSizes = posterSizes;
+    this.posterSizes = JsonNullable.<List<String>>of(posterSizes);
     return this;
   }
 
   public ConfigImageTypes addPosterSizesItem(String posterSizesItem) {
-    if (this.posterSizes == null) {
-      this.posterSizes = new ArrayList<>();
+    if (this.posterSizes == null || !this.posterSizes.isPresent()) {
+      this.posterSizes = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.posterSizes.add(posterSizesItem);
+    try {
+      this.posterSizes.get().add(posterSizesItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -182,25 +215,42 @@ public class ConfigImageTypes {
    * @return posterSizes
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getPosterSizes() {
+        return posterSizes.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_POSTER_SIZES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getPosterSizes_JsonNullable() {
     return posterSizes;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_POSTER_SIZES)
+  public void setPosterSizes_JsonNullable(JsonNullable<List<String>> posterSizes) {
+    this.posterSizes = posterSizes;
   }
 
   public void setPosterSizes(@javax.annotation.Nullable List<String> posterSizes) {
-    this.posterSizes = posterSizes;
+    this.posterSizes = JsonNullable.<List<String>>of(posterSizes);
   }
 
 
   public ConfigImageTypes profileSizes(@javax.annotation.Nullable List<String> profileSizes) {
-    this.profileSizes = profileSizes;
+    this.profileSizes = JsonNullable.<List<String>>of(profileSizes);
     return this;
   }
 
   public ConfigImageTypes addProfileSizesItem(String profileSizesItem) {
-    if (this.profileSizes == null) {
-      this.profileSizes = new ArrayList<>();
+    if (this.profileSizes == null || !this.profileSizes.isPresent()) {
+      this.profileSizes = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.profileSizes.add(profileSizesItem);
+    try {
+      this.profileSizes.get().add(profileSizesItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -209,17 +259,30 @@ public class ConfigImageTypes {
    * @return profileSizes
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getProfileSizes() {
+        return profileSizes.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PROFILE_SIZES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getProfileSizes_JsonNullable() {
     return profileSizes;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PROFILE_SIZES)
+  public void setProfileSizes_JsonNullable(JsonNullable<List<String>> profileSizes) {
+    this.profileSizes = profileSizes;
   }
 
   public void setProfileSizes(@javax.annotation.Nullable List<String> profileSizes) {
-    this.profileSizes = profileSizes;
+    this.profileSizes = JsonNullable.<List<String>>of(profileSizes);
   }
 
 
   public ConfigImageTypes secureBaseUrl(@javax.annotation.Nullable String secureBaseUrl) {
-    this.secureBaseUrl = secureBaseUrl;
+    this.secureBaseUrl = JsonNullable.<String>of(secureBaseUrl);
     return this;
   }
 
@@ -228,25 +291,42 @@ public class ConfigImageTypes {
    * @return secureBaseUrl
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getSecureBaseUrl() {
+        return secureBaseUrl.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SECURE_BASE_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getSecureBaseUrl_JsonNullable() {
     return secureBaseUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SECURE_BASE_URL)
+  public void setSecureBaseUrl_JsonNullable(JsonNullable<String> secureBaseUrl) {
+    this.secureBaseUrl = secureBaseUrl;
   }
 
   public void setSecureBaseUrl(@javax.annotation.Nullable String secureBaseUrl) {
-    this.secureBaseUrl = secureBaseUrl;
+    this.secureBaseUrl = JsonNullable.<String>of(secureBaseUrl);
   }
 
 
   public ConfigImageTypes stillSizes(@javax.annotation.Nullable List<String> stillSizes) {
-    this.stillSizes = stillSizes;
+    this.stillSizes = JsonNullable.<List<String>>of(stillSizes);
     return this;
   }
 
   public ConfigImageTypes addStillSizesItem(String stillSizesItem) {
-    if (this.stillSizes == null) {
-      this.stillSizes = new ArrayList<>();
+    if (this.stillSizes == null || !this.stillSizes.isPresent()) {
+      this.stillSizes = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.stillSizes.add(stillSizesItem);
+    try {
+      this.stillSizes.get().add(stillSizesItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -255,16 +335,31 @@ public class ConfigImageTypes {
    * @return stillSizes
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getStillSizes() {
-    return stillSizes;
+        return stillSizes.orElse(null);
   }
 
-  public void setStillSizes(@javax.annotation.Nullable List<String> stillSizes) {
+  @JsonProperty(JSON_PROPERTY_STILL_SIZES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getStillSizes_JsonNullable() {
+    return stillSizes;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_STILL_SIZES)
+  public void setStillSizes_JsonNullable(JsonNullable<List<String>> stillSizes) {
     this.stillSizes = stillSizes;
   }
 
+  public void setStillSizes(@javax.annotation.Nullable List<String> stillSizes) {
+    this.stillSizes = JsonNullable.<List<String>>of(stillSizes);
+  }
 
 
+  /**
+   * Return true if this ConfigImageTypes object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -274,13 +369,13 @@ public class ConfigImageTypes {
       return false;
     }
     ConfigImageTypes configImageTypes = (ConfigImageTypes) o;
-    return Objects.equals(this.backdropSizes, configImageTypes.backdropSizes) &&
-        Objects.equals(this.baseUrl, configImageTypes.baseUrl) &&
-        Objects.equals(this.logoSizes, configImageTypes.logoSizes) &&
-        Objects.equals(this.posterSizes, configImageTypes.posterSizes) &&
-        Objects.equals(this.profileSizes, configImageTypes.profileSizes) &&
-        Objects.equals(this.secureBaseUrl, configImageTypes.secureBaseUrl) &&
-        Objects.equals(this.stillSizes, configImageTypes.stillSizes);
+    return equalsNullable(this.backdropSizes, configImageTypes.backdropSizes) &&
+        equalsNullable(this.baseUrl, configImageTypes.baseUrl) &&
+        equalsNullable(this.logoSizes, configImageTypes.logoSizes) &&
+        equalsNullable(this.posterSizes, configImageTypes.posterSizes) &&
+        equalsNullable(this.profileSizes, configImageTypes.profileSizes) &&
+        equalsNullable(this.secureBaseUrl, configImageTypes.secureBaseUrl) &&
+        equalsNullable(this.stillSizes, configImageTypes.stillSizes);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -289,7 +384,7 @@ public class ConfigImageTypes {
 
   @Override
   public int hashCode() {
-    return Objects.hash(backdropSizes, baseUrl, logoSizes, posterSizes, profileSizes, secureBaseUrl, stillSizes);
+    return Objects.hash(hashCodeNullable(backdropSizes), hashCodeNullable(baseUrl), hashCodeNullable(logoSizes), hashCodeNullable(posterSizes), hashCodeNullable(profileSizes), hashCodeNullable(secureBaseUrl), hashCodeNullable(stillSizes));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -325,121 +420,94 @@ public class ConfigImageTypes {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("BackdropSizes");
-    openapiFields.add("BaseUrl");
-    openapiFields.add("LogoSizes");
-    openapiFields.add("PosterSizes");
-    openapiFields.add("ProfileSizes");
-    openapiFields.add("SecureBaseUrl");
-    openapiFields.add("StillSizes");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to ConfigImageTypes
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!ConfigImageTypes.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in ConfigImageTypes is not found in the empty JSON string", ConfigImageTypes.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!ConfigImageTypes.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `ConfigImageTypes` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("BackdropSizes") != null && !jsonObj.get("BackdropSizes").isJsonNull() && !jsonObj.get("BackdropSizes").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `BackdropSizes` to be an array in the JSON string but got `%s`", jsonObj.get("BackdropSizes").toString()));
-      }
-      if ((jsonObj.get("BaseUrl") != null && !jsonObj.get("BaseUrl").isJsonNull()) && !jsonObj.get("BaseUrl").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `BaseUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("BaseUrl").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("LogoSizes") != null && !jsonObj.get("LogoSizes").isJsonNull() && !jsonObj.get("LogoSizes").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `LogoSizes` to be an array in the JSON string but got `%s`", jsonObj.get("LogoSizes").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("PosterSizes") != null && !jsonObj.get("PosterSizes").isJsonNull() && !jsonObj.get("PosterSizes").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `PosterSizes` to be an array in the JSON string but got `%s`", jsonObj.get("PosterSizes").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("ProfileSizes") != null && !jsonObj.get("ProfileSizes").isJsonNull() && !jsonObj.get("ProfileSizes").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ProfileSizes` to be an array in the JSON string but got `%s`", jsonObj.get("ProfileSizes").toString()));
-      }
-      if ((jsonObj.get("SecureBaseUrl") != null && !jsonObj.get("SecureBaseUrl").isJsonNull()) && !jsonObj.get("SecureBaseUrl").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SecureBaseUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("SecureBaseUrl").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("StillSizes") != null && !jsonObj.get("StillSizes").isJsonNull() && !jsonObj.get("StillSizes").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `StillSizes` to be an array in the JSON string but got `%s`", jsonObj.get("StillSizes").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!ConfigImageTypes.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'ConfigImageTypes' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<ConfigImageTypes> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(ConfigImageTypes.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<ConfigImageTypes>() {
-           @Override
-           public void write(JsonWriter out, ConfigImageTypes value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public ConfigImageTypes read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of ConfigImageTypes given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of ConfigImageTypes
-   * @throws IOException if the JSON string is invalid with respect to ConfigImageTypes
-   */
-  public static ConfigImageTypes fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, ConfigImageTypes.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of ConfigImageTypes to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `BackdropSizes` to the URL query string
+    if (getBackdropSizes() != null) {
+      for (int i = 0; i < getBackdropSizes().size(); i++) {
+        joiner.add(String.format("%sBackdropSizes%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getBackdropSizes().get(i)))));
+      }
+    }
+
+    // add `BaseUrl` to the URL query string
+    if (getBaseUrl() != null) {
+      joiner.add(String.format("%sBaseUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBaseUrl()))));
+    }
+
+    // add `LogoSizes` to the URL query string
+    if (getLogoSizes() != null) {
+      for (int i = 0; i < getLogoSizes().size(); i++) {
+        joiner.add(String.format("%sLogoSizes%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getLogoSizes().get(i)))));
+      }
+    }
+
+    // add `PosterSizes` to the URL query string
+    if (getPosterSizes() != null) {
+      for (int i = 0; i < getPosterSizes().size(); i++) {
+        joiner.add(String.format("%sPosterSizes%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getPosterSizes().get(i)))));
+      }
+    }
+
+    // add `ProfileSizes` to the URL query string
+    if (getProfileSizes() != null) {
+      for (int i = 0; i < getProfileSizes().size(); i++) {
+        joiner.add(String.format("%sProfileSizes%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getProfileSizes().get(i)))));
+      }
+    }
+
+    // add `SecureBaseUrl` to the URL query string
+    if (getSecureBaseUrl() != null) {
+      joiner.add(String.format("%sSecureBaseUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSecureBaseUrl()))));
+    }
+
+    // add `StillSizes` to the URL query string
+    if (getStillSizes() != null) {
+      for (int i = 0; i < getStillSizes().size(); i++) {
+        joiner.add(String.format("%sStillSizes%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getStillSizes().get(i)))));
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

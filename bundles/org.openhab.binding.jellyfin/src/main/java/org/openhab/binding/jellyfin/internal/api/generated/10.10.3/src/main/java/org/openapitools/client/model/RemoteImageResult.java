@@ -13,75 +13,66 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.client.model.RemoteImageInfo;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class RemoteImageResult.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  RemoteImageResult.JSON_PROPERTY_IMAGES,
+  RemoteImageResult.JSON_PROPERTY_TOTAL_RECORD_COUNT,
+  RemoteImageResult.JSON_PROPERTY_PROVIDERS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class RemoteImageResult {
-  public static final String SERIALIZED_NAME_IMAGES = "Images";
-  @SerializedName(SERIALIZED_NAME_IMAGES)
-  @javax.annotation.Nullable
-  private List<RemoteImageInfo> images;
+  public static final String JSON_PROPERTY_IMAGES = "Images";
+  private JsonNullable<List<RemoteImageInfo>> images = JsonNullable.<List<RemoteImageInfo>>undefined();
 
-  public static final String SERIALIZED_NAME_TOTAL_RECORD_COUNT = "TotalRecordCount";
-  @SerializedName(SERIALIZED_NAME_TOTAL_RECORD_COUNT)
+  public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
   @javax.annotation.Nullable
   private Integer totalRecordCount;
 
-  public static final String SERIALIZED_NAME_PROVIDERS = "Providers";
-  @SerializedName(SERIALIZED_NAME_PROVIDERS)
-  @javax.annotation.Nullable
-  private List<String> providers;
+  public static final String JSON_PROPERTY_PROVIDERS = "Providers";
+  private JsonNullable<List<String>> providers = JsonNullable.<List<String>>undefined();
 
-  public RemoteImageResult() {
+  public RemoteImageResult() { 
   }
 
   public RemoteImageResult images(@javax.annotation.Nullable List<RemoteImageInfo> images) {
-    this.images = images;
+    this.images = JsonNullable.<List<RemoteImageInfo>>of(images);
     return this;
   }
 
   public RemoteImageResult addImagesItem(RemoteImageInfo imagesItem) {
-    if (this.images == null) {
-      this.images = new ArrayList<>();
+    if (this.images == null || !this.images.isPresent()) {
+      this.images = JsonNullable.<List<RemoteImageInfo>>of(new ArrayList<>());
     }
-    this.images.add(imagesItem);
+    try {
+      this.images.get().add(imagesItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -90,12 +81,25 @@ public class RemoteImageResult {
    * @return images
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<RemoteImageInfo> getImages() {
+        return images.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_IMAGES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<RemoteImageInfo>> getImages_JsonNullable() {
     return images;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IMAGES)
+  public void setImages_JsonNullable(JsonNullable<List<RemoteImageInfo>> images) {
+    this.images = images;
   }
 
   public void setImages(@javax.annotation.Nullable List<RemoteImageInfo> images) {
-    this.images = images;
+    this.images = JsonNullable.<List<RemoteImageInfo>>of(images);
   }
 
 
@@ -109,25 +113,34 @@ public class RemoteImageResult {
    * @return totalRecordCount
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getTotalRecordCount() {
     return totalRecordCount;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTotalRecordCount(@javax.annotation.Nullable Integer totalRecordCount) {
     this.totalRecordCount = totalRecordCount;
   }
 
 
   public RemoteImageResult providers(@javax.annotation.Nullable List<String> providers) {
-    this.providers = providers;
+    this.providers = JsonNullable.<List<String>>of(providers);
     return this;
   }
 
   public RemoteImageResult addProvidersItem(String providersItem) {
-    if (this.providers == null) {
-      this.providers = new ArrayList<>();
+    if (this.providers == null || !this.providers.isPresent()) {
+      this.providers = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.providers.add(providersItem);
+    try {
+      this.providers.get().add(providersItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -136,16 +149,31 @@ public class RemoteImageResult {
    * @return providers
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getProviders() {
-    return providers;
+        return providers.orElse(null);
   }
 
-  public void setProviders(@javax.annotation.Nullable List<String> providers) {
+  @JsonProperty(JSON_PROPERTY_PROVIDERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getProviders_JsonNullable() {
+    return providers;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PROVIDERS)
+  public void setProviders_JsonNullable(JsonNullable<List<String>> providers) {
     this.providers = providers;
   }
 
+  public void setProviders(@javax.annotation.Nullable List<String> providers) {
+    this.providers = JsonNullable.<List<String>>of(providers);
+  }
 
 
+  /**
+   * Return true if this RemoteImageResult object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -155,9 +183,9 @@ public class RemoteImageResult {
       return false;
     }
     RemoteImageResult remoteImageResult = (RemoteImageResult) o;
-    return Objects.equals(this.images, remoteImageResult.images) &&
+    return equalsNullable(this.images, remoteImageResult.images) &&
         Objects.equals(this.totalRecordCount, remoteImageResult.totalRecordCount) &&
-        Objects.equals(this.providers, remoteImageResult.providers);
+        equalsNullable(this.providers, remoteImageResult.providers);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -166,7 +194,7 @@ public class RemoteImageResult {
 
   @Override
   public int hashCode() {
-    return Objects.hash(images, totalRecordCount, providers);
+    return Objects.hash(hashCodeNullable(images), totalRecordCount, hashCodeNullable(providers));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -198,109 +226,63 @@ public class RemoteImageResult {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Images");
-    openapiFields.add("TotalRecordCount");
-    openapiFields.add("Providers");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to RemoteImageResult
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!RemoteImageResult.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in RemoteImageResult is not found in the empty JSON string", RemoteImageResult.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!RemoteImageResult.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `RemoteImageResult` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (jsonObj.get("Images") != null && !jsonObj.get("Images").isJsonNull()) {
-        JsonArray jsonArrayimages = jsonObj.getAsJsonArray("Images");
-        if (jsonArrayimages != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("Images").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `Images` to be an array in the JSON string but got `%s`", jsonObj.get("Images").toString()));
-          }
-
-          // validate the optional field `Images` (array)
-          for (int i = 0; i < jsonArrayimages.size(); i++) {
-            RemoteImageInfo.validateJsonElement(jsonArrayimages.get(i));
-          };
-        }
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("Providers") != null && !jsonObj.get("Providers").isJsonNull() && !jsonObj.get("Providers").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Providers` to be an array in the JSON string but got `%s`", jsonObj.get("Providers").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!RemoteImageResult.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'RemoteImageResult' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<RemoteImageResult> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(RemoteImageResult.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<RemoteImageResult>() {
-           @Override
-           public void write(JsonWriter out, RemoteImageResult value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public RemoteImageResult read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of RemoteImageResult given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of RemoteImageResult
-   * @throws IOException if the JSON string is invalid with respect to RemoteImageResult
-   */
-  public static RemoteImageResult fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, RemoteImageResult.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of RemoteImageResult to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Images` to the URL query string
+    if (getImages() != null) {
+      for (int i = 0; i < getImages().size(); i++) {
+        if (getImages().get(i) != null) {
+          joiner.add(getImages().get(i).toUrlQueryString(String.format("%sImages%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `TotalRecordCount` to the URL query string
+    if (getTotalRecordCount() != null) {
+      joiner.add(String.format("%sTotalRecordCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTotalRecordCount()))));
+    }
+
+    // add `Providers` to the URL query string
+    if (getProviders() != null) {
+      for (int i = 0; i < getProviders().size(); i++) {
+        joiner.add(String.format("%sProviders%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getProviders().get(i)))));
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

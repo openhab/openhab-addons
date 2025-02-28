@@ -13,13 +13,17 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,246 +38,204 @@ import org.openapitools.client.model.TransportStreamTimestamp;
 import org.openapitools.client.model.Video3DFormat;
 import org.openapitools.client.model.VideoType;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * MediaSourceInfo
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  MediaSourceInfo.JSON_PROPERTY_PROTOCOL,
+  MediaSourceInfo.JSON_PROPERTY_ID,
+  MediaSourceInfo.JSON_PROPERTY_PATH,
+  MediaSourceInfo.JSON_PROPERTY_ENCODER_PATH,
+  MediaSourceInfo.JSON_PROPERTY_ENCODER_PROTOCOL,
+  MediaSourceInfo.JSON_PROPERTY_TYPE,
+  MediaSourceInfo.JSON_PROPERTY_CONTAINER,
+  MediaSourceInfo.JSON_PROPERTY_SIZE,
+  MediaSourceInfo.JSON_PROPERTY_NAME,
+  MediaSourceInfo.JSON_PROPERTY_IS_REMOTE,
+  MediaSourceInfo.JSON_PROPERTY_ETAG,
+  MediaSourceInfo.JSON_PROPERTY_RUN_TIME_TICKS,
+  MediaSourceInfo.JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE,
+  MediaSourceInfo.JSON_PROPERTY_IGNORE_DTS,
+  MediaSourceInfo.JSON_PROPERTY_IGNORE_INDEX,
+  MediaSourceInfo.JSON_PROPERTY_GEN_PTS_INPUT,
+  MediaSourceInfo.JSON_PROPERTY_SUPPORTS_TRANSCODING,
+  MediaSourceInfo.JSON_PROPERTY_SUPPORTS_DIRECT_STREAM,
+  MediaSourceInfo.JSON_PROPERTY_SUPPORTS_DIRECT_PLAY,
+  MediaSourceInfo.JSON_PROPERTY_IS_INFINITE_STREAM,
+  MediaSourceInfo.JSON_PROPERTY_REQUIRES_OPENING,
+  MediaSourceInfo.JSON_PROPERTY_OPEN_TOKEN,
+  MediaSourceInfo.JSON_PROPERTY_REQUIRES_CLOSING,
+  MediaSourceInfo.JSON_PROPERTY_LIVE_STREAM_ID,
+  MediaSourceInfo.JSON_PROPERTY_BUFFER_MS,
+  MediaSourceInfo.JSON_PROPERTY_REQUIRES_LOOPING,
+  MediaSourceInfo.JSON_PROPERTY_SUPPORTS_PROBING,
+  MediaSourceInfo.JSON_PROPERTY_VIDEO_TYPE,
+  MediaSourceInfo.JSON_PROPERTY_ISO_TYPE,
+  MediaSourceInfo.JSON_PROPERTY_VIDEO3_D_FORMAT,
+  MediaSourceInfo.JSON_PROPERTY_MEDIA_STREAMS,
+  MediaSourceInfo.JSON_PROPERTY_MEDIA_ATTACHMENTS,
+  MediaSourceInfo.JSON_PROPERTY_FORMATS,
+  MediaSourceInfo.JSON_PROPERTY_BITRATE,
+  MediaSourceInfo.JSON_PROPERTY_TIMESTAMP,
+  MediaSourceInfo.JSON_PROPERTY_REQUIRED_HTTP_HEADERS,
+  MediaSourceInfo.JSON_PROPERTY_TRANSCODING_URL,
+  MediaSourceInfo.JSON_PROPERTY_TRANSCODING_SUB_PROTOCOL,
+  MediaSourceInfo.JSON_PROPERTY_TRANSCODING_CONTAINER,
+  MediaSourceInfo.JSON_PROPERTY_ANALYZE_DURATION_MS,
+  MediaSourceInfo.JSON_PROPERTY_DEFAULT_AUDIO_STREAM_INDEX,
+  MediaSourceInfo.JSON_PROPERTY_DEFAULT_SUBTITLE_STREAM_INDEX
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class MediaSourceInfo {
-  public static final String SERIALIZED_NAME_PROTOCOL = "Protocol";
-  @SerializedName(SERIALIZED_NAME_PROTOCOL)
+  public static final String JSON_PROPERTY_PROTOCOL = "Protocol";
   @javax.annotation.Nullable
   private MediaProtocol protocol;
 
-  public static final String SERIALIZED_NAME_ID = "Id";
-  @SerializedName(SERIALIZED_NAME_ID)
-  @javax.annotation.Nullable
-  private String id;
+  public static final String JSON_PROPERTY_ID = "Id";
+  private JsonNullable<String> id = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PATH = "Path";
-  @SerializedName(SERIALIZED_NAME_PATH)
-  @javax.annotation.Nullable
-  private String path;
+  public static final String JSON_PROPERTY_PATH = "Path";
+  private JsonNullable<String> path = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ENCODER_PATH = "EncoderPath";
-  @SerializedName(SERIALIZED_NAME_ENCODER_PATH)
-  @javax.annotation.Nullable
-  private String encoderPath;
+  public static final String JSON_PROPERTY_ENCODER_PATH = "EncoderPath";
+  private JsonNullable<String> encoderPath = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ENCODER_PROTOCOL = "EncoderProtocol";
-  @SerializedName(SERIALIZED_NAME_ENCODER_PROTOCOL)
-  @javax.annotation.Nullable
-  private MediaProtocol encoderProtocol;
+  public static final String JSON_PROPERTY_ENCODER_PROTOCOL = "EncoderProtocol";
+  private JsonNullable<MediaProtocol> encoderProtocol = JsonNullable.<MediaProtocol>undefined();
 
-  public static final String SERIALIZED_NAME_TYPE = "Type";
-  @SerializedName(SERIALIZED_NAME_TYPE)
+  public static final String JSON_PROPERTY_TYPE = "Type";
   @javax.annotation.Nullable
   private MediaSourceType type;
 
-  public static final String SERIALIZED_NAME_CONTAINER = "Container";
-  @SerializedName(SERIALIZED_NAME_CONTAINER)
-  @javax.annotation.Nullable
-  private String container;
+  public static final String JSON_PROPERTY_CONTAINER = "Container";
+  private JsonNullable<String> container = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_SIZE = "Size";
-  @SerializedName(SERIALIZED_NAME_SIZE)
-  @javax.annotation.Nullable
-  private Long size;
+  public static final String JSON_PROPERTY_SIZE = "Size";
+  private JsonNullable<Long> size = JsonNullable.<Long>undefined();
 
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_IS_REMOTE = "IsRemote";
-  @SerializedName(SERIALIZED_NAME_IS_REMOTE)
+  public static final String JSON_PROPERTY_IS_REMOTE = "IsRemote";
   @javax.annotation.Nullable
   private Boolean isRemote;
 
-  public static final String SERIALIZED_NAME_ETAG = "ETag";
-  @SerializedName(SERIALIZED_NAME_ETAG)
-  @javax.annotation.Nullable
-  private String etag;
+  public static final String JSON_PROPERTY_ETAG = "ETag";
+  private JsonNullable<String> etag = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_RUN_TIME_TICKS = "RunTimeTicks";
-  @SerializedName(SERIALIZED_NAME_RUN_TIME_TICKS)
-  @javax.annotation.Nullable
-  private Long runTimeTicks;
+  public static final String JSON_PROPERTY_RUN_TIME_TICKS = "RunTimeTicks";
+  private JsonNullable<Long> runTimeTicks = JsonNullable.<Long>undefined();
 
-  public static final String SERIALIZED_NAME_READ_AT_NATIVE_FRAMERATE = "ReadAtNativeFramerate";
-  @SerializedName(SERIALIZED_NAME_READ_AT_NATIVE_FRAMERATE)
+  public static final String JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE = "ReadAtNativeFramerate";
   @javax.annotation.Nullable
   private Boolean readAtNativeFramerate;
 
-  public static final String SERIALIZED_NAME_IGNORE_DTS = "IgnoreDts";
-  @SerializedName(SERIALIZED_NAME_IGNORE_DTS)
+  public static final String JSON_PROPERTY_IGNORE_DTS = "IgnoreDts";
   @javax.annotation.Nullable
   private Boolean ignoreDts;
 
-  public static final String SERIALIZED_NAME_IGNORE_INDEX = "IgnoreIndex";
-  @SerializedName(SERIALIZED_NAME_IGNORE_INDEX)
+  public static final String JSON_PROPERTY_IGNORE_INDEX = "IgnoreIndex";
   @javax.annotation.Nullable
   private Boolean ignoreIndex;
 
-  public static final String SERIALIZED_NAME_GEN_PTS_INPUT = "GenPtsInput";
-  @SerializedName(SERIALIZED_NAME_GEN_PTS_INPUT)
+  public static final String JSON_PROPERTY_GEN_PTS_INPUT = "GenPtsInput";
   @javax.annotation.Nullable
   private Boolean genPtsInput;
 
-  public static final String SERIALIZED_NAME_SUPPORTS_TRANSCODING = "SupportsTranscoding";
-  @SerializedName(SERIALIZED_NAME_SUPPORTS_TRANSCODING)
+  public static final String JSON_PROPERTY_SUPPORTS_TRANSCODING = "SupportsTranscoding";
   @javax.annotation.Nullable
   private Boolean supportsTranscoding;
 
-  public static final String SERIALIZED_NAME_SUPPORTS_DIRECT_STREAM = "SupportsDirectStream";
-  @SerializedName(SERIALIZED_NAME_SUPPORTS_DIRECT_STREAM)
+  public static final String JSON_PROPERTY_SUPPORTS_DIRECT_STREAM = "SupportsDirectStream";
   @javax.annotation.Nullable
   private Boolean supportsDirectStream;
 
-  public static final String SERIALIZED_NAME_SUPPORTS_DIRECT_PLAY = "SupportsDirectPlay";
-  @SerializedName(SERIALIZED_NAME_SUPPORTS_DIRECT_PLAY)
+  public static final String JSON_PROPERTY_SUPPORTS_DIRECT_PLAY = "SupportsDirectPlay";
   @javax.annotation.Nullable
   private Boolean supportsDirectPlay;
 
-  public static final String SERIALIZED_NAME_IS_INFINITE_STREAM = "IsInfiniteStream";
-  @SerializedName(SERIALIZED_NAME_IS_INFINITE_STREAM)
+  public static final String JSON_PROPERTY_IS_INFINITE_STREAM = "IsInfiniteStream";
   @javax.annotation.Nullable
   private Boolean isInfiniteStream;
 
-  public static final String SERIALIZED_NAME_REQUIRES_OPENING = "RequiresOpening";
-  @SerializedName(SERIALIZED_NAME_REQUIRES_OPENING)
+  public static final String JSON_PROPERTY_REQUIRES_OPENING = "RequiresOpening";
   @javax.annotation.Nullable
   private Boolean requiresOpening;
 
-  public static final String SERIALIZED_NAME_OPEN_TOKEN = "OpenToken";
-  @SerializedName(SERIALIZED_NAME_OPEN_TOKEN)
-  @javax.annotation.Nullable
-  private String openToken;
+  public static final String JSON_PROPERTY_OPEN_TOKEN = "OpenToken";
+  private JsonNullable<String> openToken = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_REQUIRES_CLOSING = "RequiresClosing";
-  @SerializedName(SERIALIZED_NAME_REQUIRES_CLOSING)
+  public static final String JSON_PROPERTY_REQUIRES_CLOSING = "RequiresClosing";
   @javax.annotation.Nullable
   private Boolean requiresClosing;
 
-  public static final String SERIALIZED_NAME_LIVE_STREAM_ID = "LiveStreamId";
-  @SerializedName(SERIALIZED_NAME_LIVE_STREAM_ID)
-  @javax.annotation.Nullable
-  private String liveStreamId;
+  public static final String JSON_PROPERTY_LIVE_STREAM_ID = "LiveStreamId";
+  private JsonNullable<String> liveStreamId = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_BUFFER_MS = "BufferMs";
-  @SerializedName(SERIALIZED_NAME_BUFFER_MS)
-  @javax.annotation.Nullable
-  private Integer bufferMs;
+  public static final String JSON_PROPERTY_BUFFER_MS = "BufferMs";
+  private JsonNullable<Integer> bufferMs = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_REQUIRES_LOOPING = "RequiresLooping";
-  @SerializedName(SERIALIZED_NAME_REQUIRES_LOOPING)
+  public static final String JSON_PROPERTY_REQUIRES_LOOPING = "RequiresLooping";
   @javax.annotation.Nullable
   private Boolean requiresLooping;
 
-  public static final String SERIALIZED_NAME_SUPPORTS_PROBING = "SupportsProbing";
-  @SerializedName(SERIALIZED_NAME_SUPPORTS_PROBING)
+  public static final String JSON_PROPERTY_SUPPORTS_PROBING = "SupportsProbing";
   @javax.annotation.Nullable
   private Boolean supportsProbing;
 
-  public static final String SERIALIZED_NAME_VIDEO_TYPE = "VideoType";
-  @SerializedName(SERIALIZED_NAME_VIDEO_TYPE)
-  @javax.annotation.Nullable
-  private VideoType videoType;
+  public static final String JSON_PROPERTY_VIDEO_TYPE = "VideoType";
+  private JsonNullable<VideoType> videoType = JsonNullable.<VideoType>undefined();
 
-  public static final String SERIALIZED_NAME_ISO_TYPE = "IsoType";
-  @SerializedName(SERIALIZED_NAME_ISO_TYPE)
-  @javax.annotation.Nullable
-  private IsoType isoType;
+  public static final String JSON_PROPERTY_ISO_TYPE = "IsoType";
+  private JsonNullable<IsoType> isoType = JsonNullable.<IsoType>undefined();
 
-  public static final String SERIALIZED_NAME_VIDEO3_D_FORMAT = "Video3DFormat";
-  @SerializedName(SERIALIZED_NAME_VIDEO3_D_FORMAT)
-  @javax.annotation.Nullable
-  private Video3DFormat video3DFormat;
+  public static final String JSON_PROPERTY_VIDEO3_D_FORMAT = "Video3DFormat";
+  private JsonNullable<Video3DFormat> video3DFormat = JsonNullable.<Video3DFormat>undefined();
 
-  public static final String SERIALIZED_NAME_MEDIA_STREAMS = "MediaStreams";
-  @SerializedName(SERIALIZED_NAME_MEDIA_STREAMS)
-  @javax.annotation.Nullable
-  private List<MediaStream> mediaStreams;
+  public static final String JSON_PROPERTY_MEDIA_STREAMS = "MediaStreams";
+  private JsonNullable<List<MediaStream>> mediaStreams = JsonNullable.<List<MediaStream>>undefined();
 
-  public static final String SERIALIZED_NAME_MEDIA_ATTACHMENTS = "MediaAttachments";
-  @SerializedName(SERIALIZED_NAME_MEDIA_ATTACHMENTS)
-  @javax.annotation.Nullable
-  private List<MediaAttachment> mediaAttachments;
+  public static final String JSON_PROPERTY_MEDIA_ATTACHMENTS = "MediaAttachments";
+  private JsonNullable<List<MediaAttachment>> mediaAttachments = JsonNullable.<List<MediaAttachment>>undefined();
 
-  public static final String SERIALIZED_NAME_FORMATS = "Formats";
-  @SerializedName(SERIALIZED_NAME_FORMATS)
-  @javax.annotation.Nullable
-  private List<String> formats;
+  public static final String JSON_PROPERTY_FORMATS = "Formats";
+  private JsonNullable<List<String>> formats = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_BITRATE = "Bitrate";
-  @SerializedName(SERIALIZED_NAME_BITRATE)
-  @javax.annotation.Nullable
-  private Integer bitrate;
+  public static final String JSON_PROPERTY_BITRATE = "Bitrate";
+  private JsonNullable<Integer> bitrate = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_TIMESTAMP = "Timestamp";
-  @SerializedName(SERIALIZED_NAME_TIMESTAMP)
-  @javax.annotation.Nullable
-  private TransportStreamTimestamp timestamp;
+  public static final String JSON_PROPERTY_TIMESTAMP = "Timestamp";
+  private JsonNullable<TransportStreamTimestamp> timestamp = JsonNullable.<TransportStreamTimestamp>undefined();
 
-  public static final String SERIALIZED_NAME_REQUIRED_HTTP_HEADERS = "RequiredHttpHeaders";
-  @SerializedName(SERIALIZED_NAME_REQUIRED_HTTP_HEADERS)
-  @javax.annotation.Nullable
-  private Map<String, String> requiredHttpHeaders;
+  public static final String JSON_PROPERTY_REQUIRED_HTTP_HEADERS = "RequiredHttpHeaders";
+  private JsonNullable<Map<String, String>> requiredHttpHeaders = JsonNullable.<Map<String, String>>undefined();
 
-  public static final String SERIALIZED_NAME_TRANSCODING_URL = "TranscodingUrl";
-  @SerializedName(SERIALIZED_NAME_TRANSCODING_URL)
-  @javax.annotation.Nullable
-  private String transcodingUrl;
+  public static final String JSON_PROPERTY_TRANSCODING_URL = "TranscodingUrl";
+  private JsonNullable<String> transcodingUrl = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TRANSCODING_SUB_PROTOCOL = "TranscodingSubProtocol";
-  @SerializedName(SERIALIZED_NAME_TRANSCODING_SUB_PROTOCOL)
-  @javax.annotation.Nullable
-  private String transcodingSubProtocol;
+  public static final String JSON_PROPERTY_TRANSCODING_SUB_PROTOCOL = "TranscodingSubProtocol";
+  private JsonNullable<String> transcodingSubProtocol = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TRANSCODING_CONTAINER = "TranscodingContainer";
-  @SerializedName(SERIALIZED_NAME_TRANSCODING_CONTAINER)
-  @javax.annotation.Nullable
-  private String transcodingContainer;
+  public static final String JSON_PROPERTY_TRANSCODING_CONTAINER = "TranscodingContainer";
+  private JsonNullable<String> transcodingContainer = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ANALYZE_DURATION_MS = "AnalyzeDurationMs";
-  @SerializedName(SERIALIZED_NAME_ANALYZE_DURATION_MS)
-  @javax.annotation.Nullable
-  private Integer analyzeDurationMs;
+  public static final String JSON_PROPERTY_ANALYZE_DURATION_MS = "AnalyzeDurationMs";
+  private JsonNullable<Integer> analyzeDurationMs = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_DEFAULT_AUDIO_STREAM_INDEX = "DefaultAudioStreamIndex";
-  @SerializedName(SERIALIZED_NAME_DEFAULT_AUDIO_STREAM_INDEX)
-  @javax.annotation.Nullable
-  private Integer defaultAudioStreamIndex;
+  public static final String JSON_PROPERTY_DEFAULT_AUDIO_STREAM_INDEX = "DefaultAudioStreamIndex";
+  private JsonNullable<Integer> defaultAudioStreamIndex = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_DEFAULT_SUBTITLE_STREAM_INDEX = "DefaultSubtitleStreamIndex";
-  @SerializedName(SERIALIZED_NAME_DEFAULT_SUBTITLE_STREAM_INDEX)
-  @javax.annotation.Nullable
-  private Integer defaultSubtitleStreamIndex;
+  public static final String JSON_PROPERTY_DEFAULT_SUBTITLE_STREAM_INDEX = "DefaultSubtitleStreamIndex";
+  private JsonNullable<Integer> defaultSubtitleStreamIndex = JsonNullable.<Integer>undefined();
 
-  public MediaSourceInfo() {
+  public MediaSourceInfo() { 
   }
 
   public MediaSourceInfo protocol(@javax.annotation.Nullable MediaProtocol protocol) {
@@ -286,17 +248,22 @@ public class MediaSourceInfo {
    * @return protocol
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PROTOCOL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public MediaProtocol getProtocol() {
     return protocol;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PROTOCOL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProtocol(@javax.annotation.Nullable MediaProtocol protocol) {
     this.protocol = protocol;
   }
 
 
   public MediaSourceInfo id(@javax.annotation.Nullable String id) {
-    this.id = id;
+    this.id = JsonNullable.<String>of(id);
     return this;
   }
 
@@ -305,17 +272,30 @@ public class MediaSourceInfo {
    * @return id
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getId() {
+        return id.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getId_JsonNullable() {
     return id;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ID)
+  public void setId_JsonNullable(JsonNullable<String> id) {
+    this.id = id;
   }
 
   public void setId(@javax.annotation.Nullable String id) {
-    this.id = id;
+    this.id = JsonNullable.<String>of(id);
   }
 
 
   public MediaSourceInfo path(@javax.annotation.Nullable String path) {
-    this.path = path;
+    this.path = JsonNullable.<String>of(path);
     return this;
   }
 
@@ -324,17 +304,30 @@ public class MediaSourceInfo {
    * @return path
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPath() {
+        return path.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPath_JsonNullable() {
     return path;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PATH)
+  public void setPath_JsonNullable(JsonNullable<String> path) {
+    this.path = path;
   }
 
   public void setPath(@javax.annotation.Nullable String path) {
-    this.path = path;
+    this.path = JsonNullable.<String>of(path);
   }
 
 
   public MediaSourceInfo encoderPath(@javax.annotation.Nullable String encoderPath) {
-    this.encoderPath = encoderPath;
+    this.encoderPath = JsonNullable.<String>of(encoderPath);
     return this;
   }
 
@@ -343,17 +336,30 @@ public class MediaSourceInfo {
    * @return encoderPath
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getEncoderPath() {
+        return encoderPath.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ENCODER_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getEncoderPath_JsonNullable() {
     return encoderPath;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ENCODER_PATH)
+  public void setEncoderPath_JsonNullable(JsonNullable<String> encoderPath) {
+    this.encoderPath = encoderPath;
   }
 
   public void setEncoderPath(@javax.annotation.Nullable String encoderPath) {
-    this.encoderPath = encoderPath;
+    this.encoderPath = JsonNullable.<String>of(encoderPath);
   }
 
 
   public MediaSourceInfo encoderProtocol(@javax.annotation.Nullable MediaProtocol encoderProtocol) {
-    this.encoderProtocol = encoderProtocol;
+    this.encoderProtocol = JsonNullable.<MediaProtocol>of(encoderProtocol);
     return this;
   }
 
@@ -362,12 +368,25 @@ public class MediaSourceInfo {
    * @return encoderProtocol
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public MediaProtocol getEncoderProtocol() {
+        return encoderProtocol.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ENCODER_PROTOCOL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<MediaProtocol> getEncoderProtocol_JsonNullable() {
     return encoderProtocol;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ENCODER_PROTOCOL)
+  public void setEncoderProtocol_JsonNullable(JsonNullable<MediaProtocol> encoderProtocol) {
+    this.encoderProtocol = encoderProtocol;
   }
 
   public void setEncoderProtocol(@javax.annotation.Nullable MediaProtocol encoderProtocol) {
-    this.encoderProtocol = encoderProtocol;
+    this.encoderProtocol = JsonNullable.<MediaProtocol>of(encoderProtocol);
   }
 
 
@@ -381,17 +400,22 @@ public class MediaSourceInfo {
    * @return type
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public MediaSourceType getType() {
     return type;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@javax.annotation.Nullable MediaSourceType type) {
     this.type = type;
   }
 
 
   public MediaSourceInfo container(@javax.annotation.Nullable String container) {
-    this.container = container;
+    this.container = JsonNullable.<String>of(container);
     return this;
   }
 
@@ -400,17 +424,30 @@ public class MediaSourceInfo {
    * @return container
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getContainer() {
+        return container.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getContainer_JsonNullable() {
     return container;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  public void setContainer_JsonNullable(JsonNullable<String> container) {
+    this.container = container;
   }
 
   public void setContainer(@javax.annotation.Nullable String container) {
-    this.container = container;
+    this.container = JsonNullable.<String>of(container);
   }
 
 
   public MediaSourceInfo size(@javax.annotation.Nullable Long size) {
-    this.size = size;
+    this.size = JsonNullable.<Long>of(size);
     return this;
   }
 
@@ -419,17 +456,30 @@ public class MediaSourceInfo {
    * @return size
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Long getSize() {
+        return size.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Long> getSize_JsonNullable() {
     return size;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SIZE)
+  public void setSize_JsonNullable(JsonNullable<Long> size) {
+    this.size = size;
   }
 
   public void setSize(@javax.annotation.Nullable Long size) {
-    this.size = size;
+    this.size = JsonNullable.<Long>of(size);
   }
 
 
   public MediaSourceInfo name(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
     return this;
   }
 
@@ -438,12 +488,25 @@ public class MediaSourceInfo {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
   }
 
 
@@ -457,17 +520,22 @@ public class MediaSourceInfo {
    * @return isRemote
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_REMOTE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsRemote() {
     return isRemote;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_REMOTE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsRemote(@javax.annotation.Nullable Boolean isRemote) {
     this.isRemote = isRemote;
   }
 
 
   public MediaSourceInfo etag(@javax.annotation.Nullable String etag) {
-    this.etag = etag;
+    this.etag = JsonNullable.<String>of(etag);
     return this;
   }
 
@@ -476,17 +544,30 @@ public class MediaSourceInfo {
    * @return etag
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getEtag() {
+        return etag.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ETAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getEtag_JsonNullable() {
     return etag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ETAG)
+  public void setEtag_JsonNullable(JsonNullable<String> etag) {
+    this.etag = etag;
   }
 
   public void setEtag(@javax.annotation.Nullable String etag) {
-    this.etag = etag;
+    this.etag = JsonNullable.<String>of(etag);
   }
 
 
   public MediaSourceInfo runTimeTicks(@javax.annotation.Nullable Long runTimeTicks) {
-    this.runTimeTicks = runTimeTicks;
+    this.runTimeTicks = JsonNullable.<Long>of(runTimeTicks);
     return this;
   }
 
@@ -495,12 +576,25 @@ public class MediaSourceInfo {
    * @return runTimeTicks
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Long getRunTimeTicks() {
+        return runTimeTicks.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Long> getRunTimeTicks_JsonNullable() {
     return runTimeTicks;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
+  public void setRunTimeTicks_JsonNullable(JsonNullable<Long> runTimeTicks) {
+    this.runTimeTicks = runTimeTicks;
   }
 
   public void setRunTimeTicks(@javax.annotation.Nullable Long runTimeTicks) {
-    this.runTimeTicks = runTimeTicks;
+    this.runTimeTicks = JsonNullable.<Long>of(runTimeTicks);
   }
 
 
@@ -514,10 +608,15 @@ public class MediaSourceInfo {
    * @return readAtNativeFramerate
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getReadAtNativeFramerate() {
     return readAtNativeFramerate;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setReadAtNativeFramerate(@javax.annotation.Nullable Boolean readAtNativeFramerate) {
     this.readAtNativeFramerate = readAtNativeFramerate;
   }
@@ -533,10 +632,15 @@ public class MediaSourceInfo {
    * @return ignoreDts
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IGNORE_DTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIgnoreDts() {
     return ignoreDts;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IGNORE_DTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIgnoreDts(@javax.annotation.Nullable Boolean ignoreDts) {
     this.ignoreDts = ignoreDts;
   }
@@ -552,10 +656,15 @@ public class MediaSourceInfo {
    * @return ignoreIndex
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IGNORE_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIgnoreIndex() {
     return ignoreIndex;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IGNORE_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIgnoreIndex(@javax.annotation.Nullable Boolean ignoreIndex) {
     this.ignoreIndex = ignoreIndex;
   }
@@ -571,10 +680,15 @@ public class MediaSourceInfo {
    * @return genPtsInput
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_GEN_PTS_INPUT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getGenPtsInput() {
     return genPtsInput;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_GEN_PTS_INPUT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGenPtsInput(@javax.annotation.Nullable Boolean genPtsInput) {
     this.genPtsInput = genPtsInput;
   }
@@ -590,10 +704,15 @@ public class MediaSourceInfo {
    * @return supportsTranscoding
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_TRANSCODING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSupportsTranscoding() {
     return supportsTranscoding;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_TRANSCODING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSupportsTranscoding(@javax.annotation.Nullable Boolean supportsTranscoding) {
     this.supportsTranscoding = supportsTranscoding;
   }
@@ -609,10 +728,15 @@ public class MediaSourceInfo {
    * @return supportsDirectStream
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_DIRECT_STREAM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSupportsDirectStream() {
     return supportsDirectStream;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_DIRECT_STREAM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSupportsDirectStream(@javax.annotation.Nullable Boolean supportsDirectStream) {
     this.supportsDirectStream = supportsDirectStream;
   }
@@ -628,10 +752,15 @@ public class MediaSourceInfo {
    * @return supportsDirectPlay
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_DIRECT_PLAY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSupportsDirectPlay() {
     return supportsDirectPlay;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_DIRECT_PLAY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSupportsDirectPlay(@javax.annotation.Nullable Boolean supportsDirectPlay) {
     this.supportsDirectPlay = supportsDirectPlay;
   }
@@ -647,10 +776,15 @@ public class MediaSourceInfo {
    * @return isInfiniteStream
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_INFINITE_STREAM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsInfiniteStream() {
     return isInfiniteStream;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_INFINITE_STREAM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsInfiniteStream(@javax.annotation.Nullable Boolean isInfiniteStream) {
     this.isInfiniteStream = isInfiniteStream;
   }
@@ -666,17 +800,22 @@ public class MediaSourceInfo {
    * @return requiresOpening
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REQUIRES_OPENING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getRequiresOpening() {
     return requiresOpening;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REQUIRES_OPENING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRequiresOpening(@javax.annotation.Nullable Boolean requiresOpening) {
     this.requiresOpening = requiresOpening;
   }
 
 
   public MediaSourceInfo openToken(@javax.annotation.Nullable String openToken) {
-    this.openToken = openToken;
+    this.openToken = JsonNullable.<String>of(openToken);
     return this;
   }
 
@@ -685,12 +824,25 @@ public class MediaSourceInfo {
    * @return openToken
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getOpenToken() {
+        return openToken.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_OPEN_TOKEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getOpenToken_JsonNullable() {
     return openToken;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_OPEN_TOKEN)
+  public void setOpenToken_JsonNullable(JsonNullable<String> openToken) {
+    this.openToken = openToken;
   }
 
   public void setOpenToken(@javax.annotation.Nullable String openToken) {
-    this.openToken = openToken;
+    this.openToken = JsonNullable.<String>of(openToken);
   }
 
 
@@ -704,17 +856,22 @@ public class MediaSourceInfo {
    * @return requiresClosing
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REQUIRES_CLOSING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getRequiresClosing() {
     return requiresClosing;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REQUIRES_CLOSING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRequiresClosing(@javax.annotation.Nullable Boolean requiresClosing) {
     this.requiresClosing = requiresClosing;
   }
 
 
   public MediaSourceInfo liveStreamId(@javax.annotation.Nullable String liveStreamId) {
-    this.liveStreamId = liveStreamId;
+    this.liveStreamId = JsonNullable.<String>of(liveStreamId);
     return this;
   }
 
@@ -723,17 +880,30 @@ public class MediaSourceInfo {
    * @return liveStreamId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getLiveStreamId() {
+        return liveStreamId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getLiveStreamId_JsonNullable() {
     return liveStreamId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
+  public void setLiveStreamId_JsonNullable(JsonNullable<String> liveStreamId) {
+    this.liveStreamId = liveStreamId;
   }
 
   public void setLiveStreamId(@javax.annotation.Nullable String liveStreamId) {
-    this.liveStreamId = liveStreamId;
+    this.liveStreamId = JsonNullable.<String>of(liveStreamId);
   }
 
 
   public MediaSourceInfo bufferMs(@javax.annotation.Nullable Integer bufferMs) {
-    this.bufferMs = bufferMs;
+    this.bufferMs = JsonNullable.<Integer>of(bufferMs);
     return this;
   }
 
@@ -742,12 +912,25 @@ public class MediaSourceInfo {
    * @return bufferMs
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getBufferMs() {
+        return bufferMs.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_BUFFER_MS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getBufferMs_JsonNullable() {
     return bufferMs;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_BUFFER_MS)
+  public void setBufferMs_JsonNullable(JsonNullable<Integer> bufferMs) {
+    this.bufferMs = bufferMs;
   }
 
   public void setBufferMs(@javax.annotation.Nullable Integer bufferMs) {
-    this.bufferMs = bufferMs;
+    this.bufferMs = JsonNullable.<Integer>of(bufferMs);
   }
 
 
@@ -761,10 +944,15 @@ public class MediaSourceInfo {
    * @return requiresLooping
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REQUIRES_LOOPING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getRequiresLooping() {
     return requiresLooping;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REQUIRES_LOOPING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRequiresLooping(@javax.annotation.Nullable Boolean requiresLooping) {
     this.requiresLooping = requiresLooping;
   }
@@ -780,17 +968,22 @@ public class MediaSourceInfo {
    * @return supportsProbing
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_PROBING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSupportsProbing() {
     return supportsProbing;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_PROBING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSupportsProbing(@javax.annotation.Nullable Boolean supportsProbing) {
     this.supportsProbing = supportsProbing;
   }
 
 
   public MediaSourceInfo videoType(@javax.annotation.Nullable VideoType videoType) {
-    this.videoType = videoType;
+    this.videoType = JsonNullable.<VideoType>of(videoType);
     return this;
   }
 
@@ -799,17 +992,30 @@ public class MediaSourceInfo {
    * @return videoType
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public VideoType getVideoType() {
+        return videoType.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_VIDEO_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<VideoType> getVideoType_JsonNullable() {
     return videoType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VIDEO_TYPE)
+  public void setVideoType_JsonNullable(JsonNullable<VideoType> videoType) {
+    this.videoType = videoType;
   }
 
   public void setVideoType(@javax.annotation.Nullable VideoType videoType) {
-    this.videoType = videoType;
+    this.videoType = JsonNullable.<VideoType>of(videoType);
   }
 
 
   public MediaSourceInfo isoType(@javax.annotation.Nullable IsoType isoType) {
-    this.isoType = isoType;
+    this.isoType = JsonNullable.<IsoType>of(isoType);
     return this;
   }
 
@@ -818,17 +1024,30 @@ public class MediaSourceInfo {
    * @return isoType
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public IsoType getIsoType() {
+        return isoType.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ISO_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<IsoType> getIsoType_JsonNullable() {
     return isoType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ISO_TYPE)
+  public void setIsoType_JsonNullable(JsonNullable<IsoType> isoType) {
+    this.isoType = isoType;
   }
 
   public void setIsoType(@javax.annotation.Nullable IsoType isoType) {
-    this.isoType = isoType;
+    this.isoType = JsonNullable.<IsoType>of(isoType);
   }
 
 
   public MediaSourceInfo video3DFormat(@javax.annotation.Nullable Video3DFormat video3DFormat) {
-    this.video3DFormat = video3DFormat;
+    this.video3DFormat = JsonNullable.<Video3DFormat>of(video3DFormat);
     return this;
   }
 
@@ -837,25 +1056,42 @@ public class MediaSourceInfo {
    * @return video3DFormat
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Video3DFormat getVideo3DFormat() {
+        return video3DFormat.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_VIDEO3_D_FORMAT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Video3DFormat> getVideo3DFormat_JsonNullable() {
     return video3DFormat;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VIDEO3_D_FORMAT)
+  public void setVideo3DFormat_JsonNullable(JsonNullable<Video3DFormat> video3DFormat) {
+    this.video3DFormat = video3DFormat;
   }
 
   public void setVideo3DFormat(@javax.annotation.Nullable Video3DFormat video3DFormat) {
-    this.video3DFormat = video3DFormat;
+    this.video3DFormat = JsonNullable.<Video3DFormat>of(video3DFormat);
   }
 
 
   public MediaSourceInfo mediaStreams(@javax.annotation.Nullable List<MediaStream> mediaStreams) {
-    this.mediaStreams = mediaStreams;
+    this.mediaStreams = JsonNullable.<List<MediaStream>>of(mediaStreams);
     return this;
   }
 
   public MediaSourceInfo addMediaStreamsItem(MediaStream mediaStreamsItem) {
-    if (this.mediaStreams == null) {
-      this.mediaStreams = new ArrayList<>();
+    if (this.mediaStreams == null || !this.mediaStreams.isPresent()) {
+      this.mediaStreams = JsonNullable.<List<MediaStream>>of(new ArrayList<>());
     }
-    this.mediaStreams.add(mediaStreamsItem);
+    try {
+      this.mediaStreams.get().add(mediaStreamsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -864,25 +1100,42 @@ public class MediaSourceInfo {
    * @return mediaStreams
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<MediaStream> getMediaStreams() {
+        return mediaStreams.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MEDIA_STREAMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<MediaStream>> getMediaStreams_JsonNullable() {
     return mediaStreams;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MEDIA_STREAMS)
+  public void setMediaStreams_JsonNullable(JsonNullable<List<MediaStream>> mediaStreams) {
+    this.mediaStreams = mediaStreams;
   }
 
   public void setMediaStreams(@javax.annotation.Nullable List<MediaStream> mediaStreams) {
-    this.mediaStreams = mediaStreams;
+    this.mediaStreams = JsonNullable.<List<MediaStream>>of(mediaStreams);
   }
 
 
   public MediaSourceInfo mediaAttachments(@javax.annotation.Nullable List<MediaAttachment> mediaAttachments) {
-    this.mediaAttachments = mediaAttachments;
+    this.mediaAttachments = JsonNullable.<List<MediaAttachment>>of(mediaAttachments);
     return this;
   }
 
   public MediaSourceInfo addMediaAttachmentsItem(MediaAttachment mediaAttachmentsItem) {
-    if (this.mediaAttachments == null) {
-      this.mediaAttachments = new ArrayList<>();
+    if (this.mediaAttachments == null || !this.mediaAttachments.isPresent()) {
+      this.mediaAttachments = JsonNullable.<List<MediaAttachment>>of(new ArrayList<>());
     }
-    this.mediaAttachments.add(mediaAttachmentsItem);
+    try {
+      this.mediaAttachments.get().add(mediaAttachmentsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -891,25 +1144,42 @@ public class MediaSourceInfo {
    * @return mediaAttachments
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<MediaAttachment> getMediaAttachments() {
+        return mediaAttachments.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MEDIA_ATTACHMENTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<MediaAttachment>> getMediaAttachments_JsonNullable() {
     return mediaAttachments;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MEDIA_ATTACHMENTS)
+  public void setMediaAttachments_JsonNullable(JsonNullable<List<MediaAttachment>> mediaAttachments) {
+    this.mediaAttachments = mediaAttachments;
   }
 
   public void setMediaAttachments(@javax.annotation.Nullable List<MediaAttachment> mediaAttachments) {
-    this.mediaAttachments = mediaAttachments;
+    this.mediaAttachments = JsonNullable.<List<MediaAttachment>>of(mediaAttachments);
   }
 
 
   public MediaSourceInfo formats(@javax.annotation.Nullable List<String> formats) {
-    this.formats = formats;
+    this.formats = JsonNullable.<List<String>>of(formats);
     return this;
   }
 
   public MediaSourceInfo addFormatsItem(String formatsItem) {
-    if (this.formats == null) {
-      this.formats = new ArrayList<>();
+    if (this.formats == null || !this.formats.isPresent()) {
+      this.formats = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.formats.add(formatsItem);
+    try {
+      this.formats.get().add(formatsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -918,17 +1188,30 @@ public class MediaSourceInfo {
    * @return formats
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getFormats() {
+        return formats.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_FORMATS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getFormats_JsonNullable() {
     return formats;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_FORMATS)
+  public void setFormats_JsonNullable(JsonNullable<List<String>> formats) {
+    this.formats = formats;
   }
 
   public void setFormats(@javax.annotation.Nullable List<String> formats) {
-    this.formats = formats;
+    this.formats = JsonNullable.<List<String>>of(formats);
   }
 
 
   public MediaSourceInfo bitrate(@javax.annotation.Nullable Integer bitrate) {
-    this.bitrate = bitrate;
+    this.bitrate = JsonNullable.<Integer>of(bitrate);
     return this;
   }
 
@@ -937,17 +1220,30 @@ public class MediaSourceInfo {
    * @return bitrate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getBitrate() {
+        return bitrate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_BITRATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getBitrate_JsonNullable() {
     return bitrate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_BITRATE)
+  public void setBitrate_JsonNullable(JsonNullable<Integer> bitrate) {
+    this.bitrate = bitrate;
   }
 
   public void setBitrate(@javax.annotation.Nullable Integer bitrate) {
-    this.bitrate = bitrate;
+    this.bitrate = JsonNullable.<Integer>of(bitrate);
   }
 
 
   public MediaSourceInfo timestamp(@javax.annotation.Nullable TransportStreamTimestamp timestamp) {
-    this.timestamp = timestamp;
+    this.timestamp = JsonNullable.<TransportStreamTimestamp>of(timestamp);
     return this;
   }
 
@@ -956,25 +1252,42 @@ public class MediaSourceInfo {
    * @return timestamp
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public TransportStreamTimestamp getTimestamp() {
+        return timestamp.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TIMESTAMP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<TransportStreamTimestamp> getTimestamp_JsonNullable() {
     return timestamp;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TIMESTAMP)
+  public void setTimestamp_JsonNullable(JsonNullable<TransportStreamTimestamp> timestamp) {
+    this.timestamp = timestamp;
   }
 
   public void setTimestamp(@javax.annotation.Nullable TransportStreamTimestamp timestamp) {
-    this.timestamp = timestamp;
+    this.timestamp = JsonNullable.<TransportStreamTimestamp>of(timestamp);
   }
 
 
   public MediaSourceInfo requiredHttpHeaders(@javax.annotation.Nullable Map<String, String> requiredHttpHeaders) {
-    this.requiredHttpHeaders = requiredHttpHeaders;
+    this.requiredHttpHeaders = JsonNullable.<Map<String, String>>of(requiredHttpHeaders);
     return this;
   }
 
   public MediaSourceInfo putRequiredHttpHeadersItem(String key, String requiredHttpHeadersItem) {
-    if (this.requiredHttpHeaders == null) {
-      this.requiredHttpHeaders = new HashMap<>();
+    if (this.requiredHttpHeaders == null || !this.requiredHttpHeaders.isPresent()) {
+      this.requiredHttpHeaders = JsonNullable.<Map<String, String>>of(new HashMap<>());
     }
-    this.requiredHttpHeaders.put(key, requiredHttpHeadersItem);
+    try {
+      this.requiredHttpHeaders.get().put(key, requiredHttpHeadersItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -983,17 +1296,30 @@ public class MediaSourceInfo {
    * @return requiredHttpHeaders
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Map<String, String> getRequiredHttpHeaders() {
+        return requiredHttpHeaders.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_REQUIRED_HTTP_HEADERS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Map<String, String>> getRequiredHttpHeaders_JsonNullable() {
     return requiredHttpHeaders;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_REQUIRED_HTTP_HEADERS)
+  public void setRequiredHttpHeaders_JsonNullable(JsonNullable<Map<String, String>> requiredHttpHeaders) {
+    this.requiredHttpHeaders = requiredHttpHeaders;
   }
 
   public void setRequiredHttpHeaders(@javax.annotation.Nullable Map<String, String> requiredHttpHeaders) {
-    this.requiredHttpHeaders = requiredHttpHeaders;
+    this.requiredHttpHeaders = JsonNullable.<Map<String, String>>of(requiredHttpHeaders);
   }
 
 
   public MediaSourceInfo transcodingUrl(@javax.annotation.Nullable String transcodingUrl) {
-    this.transcodingUrl = transcodingUrl;
+    this.transcodingUrl = JsonNullable.<String>of(transcodingUrl);
     return this;
   }
 
@@ -1002,17 +1328,30 @@ public class MediaSourceInfo {
    * @return transcodingUrl
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getTranscodingUrl() {
+        return transcodingUrl.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TRANSCODING_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getTranscodingUrl_JsonNullable() {
     return transcodingUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TRANSCODING_URL)
+  public void setTranscodingUrl_JsonNullable(JsonNullable<String> transcodingUrl) {
+    this.transcodingUrl = transcodingUrl;
   }
 
   public void setTranscodingUrl(@javax.annotation.Nullable String transcodingUrl) {
-    this.transcodingUrl = transcodingUrl;
+    this.transcodingUrl = JsonNullable.<String>of(transcodingUrl);
   }
 
 
   public MediaSourceInfo transcodingSubProtocol(@javax.annotation.Nullable String transcodingSubProtocol) {
-    this.transcodingSubProtocol = transcodingSubProtocol;
+    this.transcodingSubProtocol = JsonNullable.<String>of(transcodingSubProtocol);
     return this;
   }
 
@@ -1021,17 +1360,30 @@ public class MediaSourceInfo {
    * @return transcodingSubProtocol
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getTranscodingSubProtocol() {
+        return transcodingSubProtocol.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TRANSCODING_SUB_PROTOCOL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getTranscodingSubProtocol_JsonNullable() {
     return transcodingSubProtocol;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TRANSCODING_SUB_PROTOCOL)
+  public void setTranscodingSubProtocol_JsonNullable(JsonNullable<String> transcodingSubProtocol) {
+    this.transcodingSubProtocol = transcodingSubProtocol;
   }
 
   public void setTranscodingSubProtocol(@javax.annotation.Nullable String transcodingSubProtocol) {
-    this.transcodingSubProtocol = transcodingSubProtocol;
+    this.transcodingSubProtocol = JsonNullable.<String>of(transcodingSubProtocol);
   }
 
 
   public MediaSourceInfo transcodingContainer(@javax.annotation.Nullable String transcodingContainer) {
-    this.transcodingContainer = transcodingContainer;
+    this.transcodingContainer = JsonNullable.<String>of(transcodingContainer);
     return this;
   }
 
@@ -1040,17 +1392,30 @@ public class MediaSourceInfo {
    * @return transcodingContainer
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getTranscodingContainer() {
+        return transcodingContainer.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TRANSCODING_CONTAINER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getTranscodingContainer_JsonNullable() {
     return transcodingContainer;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TRANSCODING_CONTAINER)
+  public void setTranscodingContainer_JsonNullable(JsonNullable<String> transcodingContainer) {
+    this.transcodingContainer = transcodingContainer;
   }
 
   public void setTranscodingContainer(@javax.annotation.Nullable String transcodingContainer) {
-    this.transcodingContainer = transcodingContainer;
+    this.transcodingContainer = JsonNullable.<String>of(transcodingContainer);
   }
 
 
   public MediaSourceInfo analyzeDurationMs(@javax.annotation.Nullable Integer analyzeDurationMs) {
-    this.analyzeDurationMs = analyzeDurationMs;
+    this.analyzeDurationMs = JsonNullable.<Integer>of(analyzeDurationMs);
     return this;
   }
 
@@ -1059,17 +1424,30 @@ public class MediaSourceInfo {
    * @return analyzeDurationMs
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getAnalyzeDurationMs() {
+        return analyzeDurationMs.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ANALYZE_DURATION_MS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getAnalyzeDurationMs_JsonNullable() {
     return analyzeDurationMs;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ANALYZE_DURATION_MS)
+  public void setAnalyzeDurationMs_JsonNullable(JsonNullable<Integer> analyzeDurationMs) {
+    this.analyzeDurationMs = analyzeDurationMs;
   }
 
   public void setAnalyzeDurationMs(@javax.annotation.Nullable Integer analyzeDurationMs) {
-    this.analyzeDurationMs = analyzeDurationMs;
+    this.analyzeDurationMs = JsonNullable.<Integer>of(analyzeDurationMs);
   }
 
 
   public MediaSourceInfo defaultAudioStreamIndex(@javax.annotation.Nullable Integer defaultAudioStreamIndex) {
-    this.defaultAudioStreamIndex = defaultAudioStreamIndex;
+    this.defaultAudioStreamIndex = JsonNullable.<Integer>of(defaultAudioStreamIndex);
     return this;
   }
 
@@ -1078,17 +1456,30 @@ public class MediaSourceInfo {
    * @return defaultAudioStreamIndex
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getDefaultAudioStreamIndex() {
+        return defaultAudioStreamIndex.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DEFAULT_AUDIO_STREAM_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getDefaultAudioStreamIndex_JsonNullable() {
     return defaultAudioStreamIndex;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DEFAULT_AUDIO_STREAM_INDEX)
+  public void setDefaultAudioStreamIndex_JsonNullable(JsonNullable<Integer> defaultAudioStreamIndex) {
+    this.defaultAudioStreamIndex = defaultAudioStreamIndex;
   }
 
   public void setDefaultAudioStreamIndex(@javax.annotation.Nullable Integer defaultAudioStreamIndex) {
-    this.defaultAudioStreamIndex = defaultAudioStreamIndex;
+    this.defaultAudioStreamIndex = JsonNullable.<Integer>of(defaultAudioStreamIndex);
   }
 
 
   public MediaSourceInfo defaultSubtitleStreamIndex(@javax.annotation.Nullable Integer defaultSubtitleStreamIndex) {
-    this.defaultSubtitleStreamIndex = defaultSubtitleStreamIndex;
+    this.defaultSubtitleStreamIndex = JsonNullable.<Integer>of(defaultSubtitleStreamIndex);
     return this;
   }
 
@@ -1097,16 +1488,31 @@ public class MediaSourceInfo {
    * @return defaultSubtitleStreamIndex
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getDefaultSubtitleStreamIndex() {
-    return defaultSubtitleStreamIndex;
+        return defaultSubtitleStreamIndex.orElse(null);
   }
 
-  public void setDefaultSubtitleStreamIndex(@javax.annotation.Nullable Integer defaultSubtitleStreamIndex) {
+  @JsonProperty(JSON_PROPERTY_DEFAULT_SUBTITLE_STREAM_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getDefaultSubtitleStreamIndex_JsonNullable() {
+    return defaultSubtitleStreamIndex;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DEFAULT_SUBTITLE_STREAM_INDEX)
+  public void setDefaultSubtitleStreamIndex_JsonNullable(JsonNullable<Integer> defaultSubtitleStreamIndex) {
     this.defaultSubtitleStreamIndex = defaultSubtitleStreamIndex;
   }
 
+  public void setDefaultSubtitleStreamIndex(@javax.annotation.Nullable Integer defaultSubtitleStreamIndex) {
+    this.defaultSubtitleStreamIndex = JsonNullable.<Integer>of(defaultSubtitleStreamIndex);
+  }
 
 
+  /**
+   * Return true if this MediaSourceInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -1117,17 +1523,17 @@ public class MediaSourceInfo {
     }
     MediaSourceInfo mediaSourceInfo = (MediaSourceInfo) o;
     return Objects.equals(this.protocol, mediaSourceInfo.protocol) &&
-        Objects.equals(this.id, mediaSourceInfo.id) &&
-        Objects.equals(this.path, mediaSourceInfo.path) &&
-        Objects.equals(this.encoderPath, mediaSourceInfo.encoderPath) &&
-        Objects.equals(this.encoderProtocol, mediaSourceInfo.encoderProtocol) &&
+        equalsNullable(this.id, mediaSourceInfo.id) &&
+        equalsNullable(this.path, mediaSourceInfo.path) &&
+        equalsNullable(this.encoderPath, mediaSourceInfo.encoderPath) &&
+        equalsNullable(this.encoderProtocol, mediaSourceInfo.encoderProtocol) &&
         Objects.equals(this.type, mediaSourceInfo.type) &&
-        Objects.equals(this.container, mediaSourceInfo.container) &&
-        Objects.equals(this.size, mediaSourceInfo.size) &&
-        Objects.equals(this.name, mediaSourceInfo.name) &&
+        equalsNullable(this.container, mediaSourceInfo.container) &&
+        equalsNullable(this.size, mediaSourceInfo.size) &&
+        equalsNullable(this.name, mediaSourceInfo.name) &&
         Objects.equals(this.isRemote, mediaSourceInfo.isRemote) &&
-        Objects.equals(this.etag, mediaSourceInfo.etag) &&
-        Objects.equals(this.runTimeTicks, mediaSourceInfo.runTimeTicks) &&
+        equalsNullable(this.etag, mediaSourceInfo.etag) &&
+        equalsNullable(this.runTimeTicks, mediaSourceInfo.runTimeTicks) &&
         Objects.equals(this.readAtNativeFramerate, mediaSourceInfo.readAtNativeFramerate) &&
         Objects.equals(this.ignoreDts, mediaSourceInfo.ignoreDts) &&
         Objects.equals(this.ignoreIndex, mediaSourceInfo.ignoreIndex) &&
@@ -1137,27 +1543,27 @@ public class MediaSourceInfo {
         Objects.equals(this.supportsDirectPlay, mediaSourceInfo.supportsDirectPlay) &&
         Objects.equals(this.isInfiniteStream, mediaSourceInfo.isInfiniteStream) &&
         Objects.equals(this.requiresOpening, mediaSourceInfo.requiresOpening) &&
-        Objects.equals(this.openToken, mediaSourceInfo.openToken) &&
+        equalsNullable(this.openToken, mediaSourceInfo.openToken) &&
         Objects.equals(this.requiresClosing, mediaSourceInfo.requiresClosing) &&
-        Objects.equals(this.liveStreamId, mediaSourceInfo.liveStreamId) &&
-        Objects.equals(this.bufferMs, mediaSourceInfo.bufferMs) &&
+        equalsNullable(this.liveStreamId, mediaSourceInfo.liveStreamId) &&
+        equalsNullable(this.bufferMs, mediaSourceInfo.bufferMs) &&
         Objects.equals(this.requiresLooping, mediaSourceInfo.requiresLooping) &&
         Objects.equals(this.supportsProbing, mediaSourceInfo.supportsProbing) &&
-        Objects.equals(this.videoType, mediaSourceInfo.videoType) &&
-        Objects.equals(this.isoType, mediaSourceInfo.isoType) &&
-        Objects.equals(this.video3DFormat, mediaSourceInfo.video3DFormat) &&
-        Objects.equals(this.mediaStreams, mediaSourceInfo.mediaStreams) &&
-        Objects.equals(this.mediaAttachments, mediaSourceInfo.mediaAttachments) &&
-        Objects.equals(this.formats, mediaSourceInfo.formats) &&
-        Objects.equals(this.bitrate, mediaSourceInfo.bitrate) &&
-        Objects.equals(this.timestamp, mediaSourceInfo.timestamp) &&
-        Objects.equals(this.requiredHttpHeaders, mediaSourceInfo.requiredHttpHeaders) &&
-        Objects.equals(this.transcodingUrl, mediaSourceInfo.transcodingUrl) &&
-        Objects.equals(this.transcodingSubProtocol, mediaSourceInfo.transcodingSubProtocol) &&
-        Objects.equals(this.transcodingContainer, mediaSourceInfo.transcodingContainer) &&
-        Objects.equals(this.analyzeDurationMs, mediaSourceInfo.analyzeDurationMs) &&
-        Objects.equals(this.defaultAudioStreamIndex, mediaSourceInfo.defaultAudioStreamIndex) &&
-        Objects.equals(this.defaultSubtitleStreamIndex, mediaSourceInfo.defaultSubtitleStreamIndex);
+        equalsNullable(this.videoType, mediaSourceInfo.videoType) &&
+        equalsNullable(this.isoType, mediaSourceInfo.isoType) &&
+        equalsNullable(this.video3DFormat, mediaSourceInfo.video3DFormat) &&
+        equalsNullable(this.mediaStreams, mediaSourceInfo.mediaStreams) &&
+        equalsNullable(this.mediaAttachments, mediaSourceInfo.mediaAttachments) &&
+        equalsNullable(this.formats, mediaSourceInfo.formats) &&
+        equalsNullable(this.bitrate, mediaSourceInfo.bitrate) &&
+        equalsNullable(this.timestamp, mediaSourceInfo.timestamp) &&
+        equalsNullable(this.requiredHttpHeaders, mediaSourceInfo.requiredHttpHeaders) &&
+        equalsNullable(this.transcodingUrl, mediaSourceInfo.transcodingUrl) &&
+        equalsNullable(this.transcodingSubProtocol, mediaSourceInfo.transcodingSubProtocol) &&
+        equalsNullable(this.transcodingContainer, mediaSourceInfo.transcodingContainer) &&
+        equalsNullable(this.analyzeDurationMs, mediaSourceInfo.analyzeDurationMs) &&
+        equalsNullable(this.defaultAudioStreamIndex, mediaSourceInfo.defaultAudioStreamIndex) &&
+        equalsNullable(this.defaultSubtitleStreamIndex, mediaSourceInfo.defaultSubtitleStreamIndex);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -1166,7 +1572,7 @@ public class MediaSourceInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(protocol, id, path, encoderPath, encoderProtocol, type, container, size, name, isRemote, etag, runTimeTicks, readAtNativeFramerate, ignoreDts, ignoreIndex, genPtsInput, supportsTranscoding, supportsDirectStream, supportsDirectPlay, isInfiniteStream, requiresOpening, openToken, requiresClosing, liveStreamId, bufferMs, requiresLooping, supportsProbing, videoType, isoType, video3DFormat, mediaStreams, mediaAttachments, formats, bitrate, timestamp, requiredHttpHeaders, transcodingUrl, transcodingSubProtocol, transcodingContainer, analyzeDurationMs, defaultAudioStreamIndex, defaultSubtitleStreamIndex);
+    return Objects.hash(protocol, hashCodeNullable(id), hashCodeNullable(path), hashCodeNullable(encoderPath), hashCodeNullable(encoderProtocol), type, hashCodeNullable(container), hashCodeNullable(size), hashCodeNullable(name), isRemote, hashCodeNullable(etag), hashCodeNullable(runTimeTicks), readAtNativeFramerate, ignoreDts, ignoreIndex, genPtsInput, supportsTranscoding, supportsDirectStream, supportsDirectPlay, isInfiniteStream, requiresOpening, hashCodeNullable(openToken), requiresClosing, hashCodeNullable(liveStreamId), hashCodeNullable(bufferMs), requiresLooping, supportsProbing, hashCodeNullable(videoType), hashCodeNullable(isoType), hashCodeNullable(video3DFormat), hashCodeNullable(mediaStreams), hashCodeNullable(mediaAttachments), hashCodeNullable(formats), hashCodeNullable(bitrate), hashCodeNullable(timestamp), hashCodeNullable(requiredHttpHeaders), hashCodeNullable(transcodingUrl), hashCodeNullable(transcodingSubProtocol), hashCodeNullable(transcodingContainer), hashCodeNullable(analyzeDurationMs), hashCodeNullable(defaultAudioStreamIndex), hashCodeNullable(defaultSubtitleStreamIndex));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -1237,223 +1643,267 @@ public class MediaSourceInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Protocol");
-    openapiFields.add("Id");
-    openapiFields.add("Path");
-    openapiFields.add("EncoderPath");
-    openapiFields.add("EncoderProtocol");
-    openapiFields.add("Type");
-    openapiFields.add("Container");
-    openapiFields.add("Size");
-    openapiFields.add("Name");
-    openapiFields.add("IsRemote");
-    openapiFields.add("ETag");
-    openapiFields.add("RunTimeTicks");
-    openapiFields.add("ReadAtNativeFramerate");
-    openapiFields.add("IgnoreDts");
-    openapiFields.add("IgnoreIndex");
-    openapiFields.add("GenPtsInput");
-    openapiFields.add("SupportsTranscoding");
-    openapiFields.add("SupportsDirectStream");
-    openapiFields.add("SupportsDirectPlay");
-    openapiFields.add("IsInfiniteStream");
-    openapiFields.add("RequiresOpening");
-    openapiFields.add("OpenToken");
-    openapiFields.add("RequiresClosing");
-    openapiFields.add("LiveStreamId");
-    openapiFields.add("BufferMs");
-    openapiFields.add("RequiresLooping");
-    openapiFields.add("SupportsProbing");
-    openapiFields.add("VideoType");
-    openapiFields.add("IsoType");
-    openapiFields.add("Video3DFormat");
-    openapiFields.add("MediaStreams");
-    openapiFields.add("MediaAttachments");
-    openapiFields.add("Formats");
-    openapiFields.add("Bitrate");
-    openapiFields.add("Timestamp");
-    openapiFields.add("RequiredHttpHeaders");
-    openapiFields.add("TranscodingUrl");
-    openapiFields.add("TranscodingSubProtocol");
-    openapiFields.add("TranscodingContainer");
-    openapiFields.add("AnalyzeDurationMs");
-    openapiFields.add("DefaultAudioStreamIndex");
-    openapiFields.add("DefaultSubtitleStreamIndex");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to MediaSourceInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!MediaSourceInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in MediaSourceInfo is not found in the empty JSON string", MediaSourceInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!MediaSourceInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `MediaSourceInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // validate the optional field `Protocol`
-      if (jsonObj.get("Protocol") != null && !jsonObj.get("Protocol").isJsonNull()) {
-        MediaProtocol.validateJsonElement(jsonObj.get("Protocol"));
-      }
-      if ((jsonObj.get("Id") != null && !jsonObj.get("Id").isJsonNull()) && !jsonObj.get("Id").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Id").toString()));
-      }
-      if ((jsonObj.get("Path") != null && !jsonObj.get("Path").isJsonNull()) && !jsonObj.get("Path").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Path` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Path").toString()));
-      }
-      if ((jsonObj.get("EncoderPath") != null && !jsonObj.get("EncoderPath").isJsonNull()) && !jsonObj.get("EncoderPath").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `EncoderPath` to be a primitive type in the JSON string but got `%s`", jsonObj.get("EncoderPath").toString()));
-      }
-      // validate the optional field `EncoderProtocol`
-      if (jsonObj.get("EncoderProtocol") != null && !jsonObj.get("EncoderProtocol").isJsonNull()) {
-        MediaProtocol.validateJsonElement(jsonObj.get("EncoderProtocol"));
-      }
-      // validate the optional field `Type`
-      if (jsonObj.get("Type") != null && !jsonObj.get("Type").isJsonNull()) {
-        MediaSourceType.validateJsonElement(jsonObj.get("Type"));
-      }
-      if ((jsonObj.get("Container") != null && !jsonObj.get("Container").isJsonNull()) && !jsonObj.get("Container").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Container` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Container").toString()));
-      }
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("ETag") != null && !jsonObj.get("ETag").isJsonNull()) && !jsonObj.get("ETag").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ETag` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ETag").toString()));
-      }
-      if ((jsonObj.get("OpenToken") != null && !jsonObj.get("OpenToken").isJsonNull()) && !jsonObj.get("OpenToken").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `OpenToken` to be a primitive type in the JSON string but got `%s`", jsonObj.get("OpenToken").toString()));
-      }
-      if ((jsonObj.get("LiveStreamId") != null && !jsonObj.get("LiveStreamId").isJsonNull()) && !jsonObj.get("LiveStreamId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `LiveStreamId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("LiveStreamId").toString()));
-      }
-      // validate the optional field `VideoType`
-      if (jsonObj.get("VideoType") != null && !jsonObj.get("VideoType").isJsonNull()) {
-        VideoType.validateJsonElement(jsonObj.get("VideoType"));
-      }
-      // validate the optional field `IsoType`
-      if (jsonObj.get("IsoType") != null && !jsonObj.get("IsoType").isJsonNull()) {
-        IsoType.validateJsonElement(jsonObj.get("IsoType"));
-      }
-      // validate the optional field `Video3DFormat`
-      if (jsonObj.get("Video3DFormat") != null && !jsonObj.get("Video3DFormat").isJsonNull()) {
-        Video3DFormat.validateJsonElement(jsonObj.get("Video3DFormat"));
-      }
-      if (jsonObj.get("MediaStreams") != null && !jsonObj.get("MediaStreams").isJsonNull()) {
-        JsonArray jsonArraymediaStreams = jsonObj.getAsJsonArray("MediaStreams");
-        if (jsonArraymediaStreams != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("MediaStreams").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `MediaStreams` to be an array in the JSON string but got `%s`", jsonObj.get("MediaStreams").toString()));
-          }
-
-          // validate the optional field `MediaStreams` (array)
-          for (int i = 0; i < jsonArraymediaStreams.size(); i++) {
-            MediaStream.validateJsonElement(jsonArraymediaStreams.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("MediaAttachments") != null && !jsonObj.get("MediaAttachments").isJsonNull()) {
-        JsonArray jsonArraymediaAttachments = jsonObj.getAsJsonArray("MediaAttachments");
-        if (jsonArraymediaAttachments != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("MediaAttachments").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `MediaAttachments` to be an array in the JSON string but got `%s`", jsonObj.get("MediaAttachments").toString()));
-          }
-
-          // validate the optional field `MediaAttachments` (array)
-          for (int i = 0; i < jsonArraymediaAttachments.size(); i++) {
-            MediaAttachment.validateJsonElement(jsonArraymediaAttachments.get(i));
-          };
-        }
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("Formats") != null && !jsonObj.get("Formats").isJsonNull() && !jsonObj.get("Formats").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Formats` to be an array in the JSON string but got `%s`", jsonObj.get("Formats").toString()));
-      }
-      // validate the optional field `Timestamp`
-      if (jsonObj.get("Timestamp") != null && !jsonObj.get("Timestamp").isJsonNull()) {
-        TransportStreamTimestamp.validateJsonElement(jsonObj.get("Timestamp"));
-      }
-      if ((jsonObj.get("TranscodingUrl") != null && !jsonObj.get("TranscodingUrl").isJsonNull()) && !jsonObj.get("TranscodingUrl").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `TranscodingUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("TranscodingUrl").toString()));
-      }
-      if ((jsonObj.get("TranscodingSubProtocol") != null && !jsonObj.get("TranscodingSubProtocol").isJsonNull()) && !jsonObj.get("TranscodingSubProtocol").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `TranscodingSubProtocol` to be a primitive type in the JSON string but got `%s`", jsonObj.get("TranscodingSubProtocol").toString()));
-      }
-      if ((jsonObj.get("TranscodingContainer") != null && !jsonObj.get("TranscodingContainer").isJsonNull()) && !jsonObj.get("TranscodingContainer").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `TranscodingContainer` to be a primitive type in the JSON string but got `%s`", jsonObj.get("TranscodingContainer").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!MediaSourceInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'MediaSourceInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<MediaSourceInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(MediaSourceInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<MediaSourceInfo>() {
-           @Override
-           public void write(JsonWriter out, MediaSourceInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public MediaSourceInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of MediaSourceInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of MediaSourceInfo
-   * @throws IOException if the JSON string is invalid with respect to MediaSourceInfo
-   */
-  public static MediaSourceInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, MediaSourceInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of MediaSourceInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Protocol` to the URL query string
+    if (getProtocol() != null) {
+      joiner.add(String.format("%sProtocol%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProtocol()))));
+    }
+
+    // add `Id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+    }
+
+    // add `Path` to the URL query string
+    if (getPath() != null) {
+      joiner.add(String.format("%sPath%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
+    }
+
+    // add `EncoderPath` to the URL query string
+    if (getEncoderPath() != null) {
+      joiner.add(String.format("%sEncoderPath%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEncoderPath()))));
+    }
+
+    // add `EncoderProtocol` to the URL query string
+    if (getEncoderProtocol() != null) {
+      joiner.add(String.format("%sEncoderProtocol%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEncoderProtocol()))));
+    }
+
+    // add `Type` to the URL query string
+    if (getType() != null) {
+      joiner.add(String.format("%sType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+    }
+
+    // add `Container` to the URL query string
+    if (getContainer() != null) {
+      joiner.add(String.format("%sContainer%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
+    }
+
+    // add `Size` to the URL query string
+    if (getSize() != null) {
+      joiner.add(String.format("%sSize%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSize()))));
+    }
+
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `IsRemote` to the URL query string
+    if (getIsRemote() != null) {
+      joiner.add(String.format("%sIsRemote%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsRemote()))));
+    }
+
+    // add `ETag` to the URL query string
+    if (getEtag() != null) {
+      joiner.add(String.format("%sETag%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEtag()))));
+    }
+
+    // add `RunTimeTicks` to the URL query string
+    if (getRunTimeTicks() != null) {
+      joiner.add(String.format("%sRunTimeTicks%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRunTimeTicks()))));
+    }
+
+    // add `ReadAtNativeFramerate` to the URL query string
+    if (getReadAtNativeFramerate() != null) {
+      joiner.add(String.format("%sReadAtNativeFramerate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getReadAtNativeFramerate()))));
+    }
+
+    // add `IgnoreDts` to the URL query string
+    if (getIgnoreDts() != null) {
+      joiner.add(String.format("%sIgnoreDts%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIgnoreDts()))));
+    }
+
+    // add `IgnoreIndex` to the URL query string
+    if (getIgnoreIndex() != null) {
+      joiner.add(String.format("%sIgnoreIndex%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIgnoreIndex()))));
+    }
+
+    // add `GenPtsInput` to the URL query string
+    if (getGenPtsInput() != null) {
+      joiner.add(String.format("%sGenPtsInput%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getGenPtsInput()))));
+    }
+
+    // add `SupportsTranscoding` to the URL query string
+    if (getSupportsTranscoding() != null) {
+      joiner.add(String.format("%sSupportsTranscoding%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSupportsTranscoding()))));
+    }
+
+    // add `SupportsDirectStream` to the URL query string
+    if (getSupportsDirectStream() != null) {
+      joiner.add(String.format("%sSupportsDirectStream%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSupportsDirectStream()))));
+    }
+
+    // add `SupportsDirectPlay` to the URL query string
+    if (getSupportsDirectPlay() != null) {
+      joiner.add(String.format("%sSupportsDirectPlay%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSupportsDirectPlay()))));
+    }
+
+    // add `IsInfiniteStream` to the URL query string
+    if (getIsInfiniteStream() != null) {
+      joiner.add(String.format("%sIsInfiniteStream%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsInfiniteStream()))));
+    }
+
+    // add `RequiresOpening` to the URL query string
+    if (getRequiresOpening() != null) {
+      joiner.add(String.format("%sRequiresOpening%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRequiresOpening()))));
+    }
+
+    // add `OpenToken` to the URL query string
+    if (getOpenToken() != null) {
+      joiner.add(String.format("%sOpenToken%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOpenToken()))));
+    }
+
+    // add `RequiresClosing` to the URL query string
+    if (getRequiresClosing() != null) {
+      joiner.add(String.format("%sRequiresClosing%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRequiresClosing()))));
+    }
+
+    // add `LiveStreamId` to the URL query string
+    if (getLiveStreamId() != null) {
+      joiner.add(String.format("%sLiveStreamId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLiveStreamId()))));
+    }
+
+    // add `BufferMs` to the URL query string
+    if (getBufferMs() != null) {
+      joiner.add(String.format("%sBufferMs%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBufferMs()))));
+    }
+
+    // add `RequiresLooping` to the URL query string
+    if (getRequiresLooping() != null) {
+      joiner.add(String.format("%sRequiresLooping%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRequiresLooping()))));
+    }
+
+    // add `SupportsProbing` to the URL query string
+    if (getSupportsProbing() != null) {
+      joiner.add(String.format("%sSupportsProbing%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSupportsProbing()))));
+    }
+
+    // add `VideoType` to the URL query string
+    if (getVideoType() != null) {
+      joiner.add(String.format("%sVideoType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVideoType()))));
+    }
+
+    // add `IsoType` to the URL query string
+    if (getIsoType() != null) {
+      joiner.add(String.format("%sIsoType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsoType()))));
+    }
+
+    // add `Video3DFormat` to the URL query string
+    if (getVideo3DFormat() != null) {
+      joiner.add(String.format("%sVideo3DFormat%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVideo3DFormat()))));
+    }
+
+    // add `MediaStreams` to the URL query string
+    if (getMediaStreams() != null) {
+      for (int i = 0; i < getMediaStreams().size(); i++) {
+        if (getMediaStreams().get(i) != null) {
+          joiner.add(getMediaStreams().get(i).toUrlQueryString(String.format("%sMediaStreams%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `MediaAttachments` to the URL query string
+    if (getMediaAttachments() != null) {
+      for (int i = 0; i < getMediaAttachments().size(); i++) {
+        if (getMediaAttachments().get(i) != null) {
+          joiner.add(getMediaAttachments().get(i).toUrlQueryString(String.format("%sMediaAttachments%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `Formats` to the URL query string
+    if (getFormats() != null) {
+      for (int i = 0; i < getFormats().size(); i++) {
+        joiner.add(String.format("%sFormats%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getFormats().get(i)))));
+      }
+    }
+
+    // add `Bitrate` to the URL query string
+    if (getBitrate() != null) {
+      joiner.add(String.format("%sBitrate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBitrate()))));
+    }
+
+    // add `Timestamp` to the URL query string
+    if (getTimestamp() != null) {
+      joiner.add(String.format("%sTimestamp%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTimestamp()))));
+    }
+
+    // add `RequiredHttpHeaders` to the URL query string
+    if (getRequiredHttpHeaders() != null) {
+      for (String _key : getRequiredHttpHeaders().keySet()) {
+        joiner.add(String.format("%sRequiredHttpHeaders%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+            getRequiredHttpHeaders().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getRequiredHttpHeaders().get(_key)))));
+      }
+    }
+
+    // add `TranscodingUrl` to the URL query string
+    if (getTranscodingUrl() != null) {
+      joiner.add(String.format("%sTranscodingUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTranscodingUrl()))));
+    }
+
+    // add `TranscodingSubProtocol` to the URL query string
+    if (getTranscodingSubProtocol() != null) {
+      joiner.add(String.format("%sTranscodingSubProtocol%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTranscodingSubProtocol()))));
+    }
+
+    // add `TranscodingContainer` to the URL query string
+    if (getTranscodingContainer() != null) {
+      joiner.add(String.format("%sTranscodingContainer%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTranscodingContainer()))));
+    }
+
+    // add `AnalyzeDurationMs` to the URL query string
+    if (getAnalyzeDurationMs() != null) {
+      joiner.add(String.format("%sAnalyzeDurationMs%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAnalyzeDurationMs()))));
+    }
+
+    // add `DefaultAudioStreamIndex` to the URL query string
+    if (getDefaultAudioStreamIndex() != null) {
+      joiner.add(String.format("%sDefaultAudioStreamIndex%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDefaultAudioStreamIndex()))));
+    }
+
+    // add `DefaultSubtitleStreamIndex` to the URL query string
+    if (getDefaultSubtitleStreamIndex() != null) {
+      joiner.add(String.format("%sDefaultSubtitleStreamIndex%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDefaultSubtitleStreamIndex()))));
+    }
+
+    return joiner.toString();
   }
 }
 

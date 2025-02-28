@@ -13,161 +13,147 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Defines the MediaBrowser.Common.Net.NetworkConfiguration.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  NetworkConfiguration.JSON_PROPERTY_BASE_URL,
+  NetworkConfiguration.JSON_PROPERTY_ENABLE_HTTPS,
+  NetworkConfiguration.JSON_PROPERTY_REQUIRE_HTTPS,
+  NetworkConfiguration.JSON_PROPERTY_CERTIFICATE_PATH,
+  NetworkConfiguration.JSON_PROPERTY_CERTIFICATE_PASSWORD,
+  NetworkConfiguration.JSON_PROPERTY_INTERNAL_HTTP_PORT,
+  NetworkConfiguration.JSON_PROPERTY_INTERNAL_HTTPS_PORT,
+  NetworkConfiguration.JSON_PROPERTY_PUBLIC_HTTP_PORT,
+  NetworkConfiguration.JSON_PROPERTY_PUBLIC_HTTPS_PORT,
+  NetworkConfiguration.JSON_PROPERTY_AUTO_DISCOVERY,
+  NetworkConfiguration.JSON_PROPERTY_ENABLE_U_PN_P,
+  NetworkConfiguration.JSON_PROPERTY_ENABLE_I_PV4,
+  NetworkConfiguration.JSON_PROPERTY_ENABLE_I_PV6,
+  NetworkConfiguration.JSON_PROPERTY_ENABLE_REMOTE_ACCESS,
+  NetworkConfiguration.JSON_PROPERTY_LOCAL_NETWORK_SUBNETS,
+  NetworkConfiguration.JSON_PROPERTY_LOCAL_NETWORK_ADDRESSES,
+  NetworkConfiguration.JSON_PROPERTY_KNOWN_PROXIES,
+  NetworkConfiguration.JSON_PROPERTY_IGNORE_VIRTUAL_INTERFACES,
+  NetworkConfiguration.JSON_PROPERTY_VIRTUAL_INTERFACE_NAMES,
+  NetworkConfiguration.JSON_PROPERTY_ENABLE_PUBLISHED_SERVER_URI_BY_REQUEST,
+  NetworkConfiguration.JSON_PROPERTY_PUBLISHED_SERVER_URI_BY_SUBNET,
+  NetworkConfiguration.JSON_PROPERTY_REMOTE_I_P_FILTER,
+  NetworkConfiguration.JSON_PROPERTY_IS_REMOTE_I_P_FILTER_BLACKLIST
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class NetworkConfiguration {
-  public static final String SERIALIZED_NAME_BASE_URL = "BaseUrl";
-  @SerializedName(SERIALIZED_NAME_BASE_URL)
+  public static final String JSON_PROPERTY_BASE_URL = "BaseUrl";
   @javax.annotation.Nullable
   private String baseUrl;
 
-  public static final String SERIALIZED_NAME_ENABLE_HTTPS = "EnableHttps";
-  @SerializedName(SERIALIZED_NAME_ENABLE_HTTPS)
+  public static final String JSON_PROPERTY_ENABLE_HTTPS = "EnableHttps";
   @javax.annotation.Nullable
   private Boolean enableHttps;
 
-  public static final String SERIALIZED_NAME_REQUIRE_HTTPS = "RequireHttps";
-  @SerializedName(SERIALIZED_NAME_REQUIRE_HTTPS)
+  public static final String JSON_PROPERTY_REQUIRE_HTTPS = "RequireHttps";
   @javax.annotation.Nullable
   private Boolean requireHttps;
 
-  public static final String SERIALIZED_NAME_CERTIFICATE_PATH = "CertificatePath";
-  @SerializedName(SERIALIZED_NAME_CERTIFICATE_PATH)
+  public static final String JSON_PROPERTY_CERTIFICATE_PATH = "CertificatePath";
   @javax.annotation.Nullable
   private String certificatePath;
 
-  public static final String SERIALIZED_NAME_CERTIFICATE_PASSWORD = "CertificatePassword";
-  @SerializedName(SERIALIZED_NAME_CERTIFICATE_PASSWORD)
+  public static final String JSON_PROPERTY_CERTIFICATE_PASSWORD = "CertificatePassword";
   @javax.annotation.Nullable
   private String certificatePassword;
 
-  public static final String SERIALIZED_NAME_INTERNAL_HTTP_PORT = "InternalHttpPort";
-  @SerializedName(SERIALIZED_NAME_INTERNAL_HTTP_PORT)
+  public static final String JSON_PROPERTY_INTERNAL_HTTP_PORT = "InternalHttpPort";
   @javax.annotation.Nullable
   private Integer internalHttpPort;
 
-  public static final String SERIALIZED_NAME_INTERNAL_HTTPS_PORT = "InternalHttpsPort";
-  @SerializedName(SERIALIZED_NAME_INTERNAL_HTTPS_PORT)
+  public static final String JSON_PROPERTY_INTERNAL_HTTPS_PORT = "InternalHttpsPort";
   @javax.annotation.Nullable
   private Integer internalHttpsPort;
 
-  public static final String SERIALIZED_NAME_PUBLIC_HTTP_PORT = "PublicHttpPort";
-  @SerializedName(SERIALIZED_NAME_PUBLIC_HTTP_PORT)
+  public static final String JSON_PROPERTY_PUBLIC_HTTP_PORT = "PublicHttpPort";
   @javax.annotation.Nullable
   private Integer publicHttpPort;
 
-  public static final String SERIALIZED_NAME_PUBLIC_HTTPS_PORT = "PublicHttpsPort";
-  @SerializedName(SERIALIZED_NAME_PUBLIC_HTTPS_PORT)
+  public static final String JSON_PROPERTY_PUBLIC_HTTPS_PORT = "PublicHttpsPort";
   @javax.annotation.Nullable
   private Integer publicHttpsPort;
 
-  public static final String SERIALIZED_NAME_AUTO_DISCOVERY = "AutoDiscovery";
-  @SerializedName(SERIALIZED_NAME_AUTO_DISCOVERY)
+  public static final String JSON_PROPERTY_AUTO_DISCOVERY = "AutoDiscovery";
   @javax.annotation.Nullable
   private Boolean autoDiscovery;
 
-  public static final String SERIALIZED_NAME_ENABLE_U_PN_P = "EnableUPnP";
-  @SerializedName(SERIALIZED_NAME_ENABLE_U_PN_P)
+  public static final String JSON_PROPERTY_ENABLE_U_PN_P = "EnableUPnP";
   @javax.annotation.Nullable
   private Boolean enableUPnP;
 
-  public static final String SERIALIZED_NAME_ENABLE_I_PV4 = "EnableIPv4";
-  @SerializedName(SERIALIZED_NAME_ENABLE_I_PV4)
+  public static final String JSON_PROPERTY_ENABLE_I_PV4 = "EnableIPv4";
   @javax.annotation.Nullable
   private Boolean enableIPv4;
 
-  public static final String SERIALIZED_NAME_ENABLE_I_PV6 = "EnableIPv6";
-  @SerializedName(SERIALIZED_NAME_ENABLE_I_PV6)
+  public static final String JSON_PROPERTY_ENABLE_I_PV6 = "EnableIPv6";
   @javax.annotation.Nullable
   private Boolean enableIPv6;
 
-  public static final String SERIALIZED_NAME_ENABLE_REMOTE_ACCESS = "EnableRemoteAccess";
-  @SerializedName(SERIALIZED_NAME_ENABLE_REMOTE_ACCESS)
+  public static final String JSON_PROPERTY_ENABLE_REMOTE_ACCESS = "EnableRemoteAccess";
   @javax.annotation.Nullable
   private Boolean enableRemoteAccess;
 
-  public static final String SERIALIZED_NAME_LOCAL_NETWORK_SUBNETS = "LocalNetworkSubnets";
-  @SerializedName(SERIALIZED_NAME_LOCAL_NETWORK_SUBNETS)
+  public static final String JSON_PROPERTY_LOCAL_NETWORK_SUBNETS = "LocalNetworkSubnets";
   @javax.annotation.Nullable
   private List<String> localNetworkSubnets = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_LOCAL_NETWORK_ADDRESSES = "LocalNetworkAddresses";
-  @SerializedName(SERIALIZED_NAME_LOCAL_NETWORK_ADDRESSES)
+  public static final String JSON_PROPERTY_LOCAL_NETWORK_ADDRESSES = "LocalNetworkAddresses";
   @javax.annotation.Nullable
   private List<String> localNetworkAddresses = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_KNOWN_PROXIES = "KnownProxies";
-  @SerializedName(SERIALIZED_NAME_KNOWN_PROXIES)
+  public static final String JSON_PROPERTY_KNOWN_PROXIES = "KnownProxies";
   @javax.annotation.Nullable
   private List<String> knownProxies = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_IGNORE_VIRTUAL_INTERFACES = "IgnoreVirtualInterfaces";
-  @SerializedName(SERIALIZED_NAME_IGNORE_VIRTUAL_INTERFACES)
+  public static final String JSON_PROPERTY_IGNORE_VIRTUAL_INTERFACES = "IgnoreVirtualInterfaces";
   @javax.annotation.Nullable
   private Boolean ignoreVirtualInterfaces;
 
-  public static final String SERIALIZED_NAME_VIRTUAL_INTERFACE_NAMES = "VirtualInterfaceNames";
-  @SerializedName(SERIALIZED_NAME_VIRTUAL_INTERFACE_NAMES)
+  public static final String JSON_PROPERTY_VIRTUAL_INTERFACE_NAMES = "VirtualInterfaceNames";
   @javax.annotation.Nullable
   private List<String> virtualInterfaceNames = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_ENABLE_PUBLISHED_SERVER_URI_BY_REQUEST = "EnablePublishedServerUriByRequest";
-  @SerializedName(SERIALIZED_NAME_ENABLE_PUBLISHED_SERVER_URI_BY_REQUEST)
+  public static final String JSON_PROPERTY_ENABLE_PUBLISHED_SERVER_URI_BY_REQUEST = "EnablePublishedServerUriByRequest";
   @javax.annotation.Nullable
   private Boolean enablePublishedServerUriByRequest;
 
-  public static final String SERIALIZED_NAME_PUBLISHED_SERVER_URI_BY_SUBNET = "PublishedServerUriBySubnet";
-  @SerializedName(SERIALIZED_NAME_PUBLISHED_SERVER_URI_BY_SUBNET)
+  public static final String JSON_PROPERTY_PUBLISHED_SERVER_URI_BY_SUBNET = "PublishedServerUriBySubnet";
   @javax.annotation.Nullable
   private List<String> publishedServerUriBySubnet = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_REMOTE_I_P_FILTER = "RemoteIPFilter";
-  @SerializedName(SERIALIZED_NAME_REMOTE_I_P_FILTER)
+  public static final String JSON_PROPERTY_REMOTE_I_P_FILTER = "RemoteIPFilter";
   @javax.annotation.Nullable
   private List<String> remoteIPFilter = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_IS_REMOTE_I_P_FILTER_BLACKLIST = "IsRemoteIPFilterBlacklist";
-  @SerializedName(SERIALIZED_NAME_IS_REMOTE_I_P_FILTER_BLACKLIST)
+  public static final String JSON_PROPERTY_IS_REMOTE_I_P_FILTER_BLACKLIST = "IsRemoteIPFilterBlacklist";
   @javax.annotation.Nullable
   private Boolean isRemoteIPFilterBlacklist;
 
-  public NetworkConfiguration() {
+  public NetworkConfiguration() { 
   }
 
   public NetworkConfiguration baseUrl(@javax.annotation.Nullable String baseUrl) {
@@ -180,10 +166,15 @@ public class NetworkConfiguration {
    * @return baseUrl
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_BASE_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getBaseUrl() {
     return baseUrl;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_BASE_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBaseUrl(@javax.annotation.Nullable String baseUrl) {
     this.baseUrl = baseUrl;
   }
@@ -199,10 +190,15 @@ public class NetworkConfiguration {
    * @return enableHttps
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_HTTPS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableHttps() {
     return enableHttps;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_HTTPS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableHttps(@javax.annotation.Nullable Boolean enableHttps) {
     this.enableHttps = enableHttps;
   }
@@ -218,10 +214,15 @@ public class NetworkConfiguration {
    * @return requireHttps
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REQUIRE_HTTPS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getRequireHttps() {
     return requireHttps;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REQUIRE_HTTPS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRequireHttps(@javax.annotation.Nullable Boolean requireHttps) {
     this.requireHttps = requireHttps;
   }
@@ -237,10 +238,15 @@ public class NetworkConfiguration {
    * @return certificatePath
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CERTIFICATE_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCertificatePath() {
     return certificatePath;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CERTIFICATE_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCertificatePath(@javax.annotation.Nullable String certificatePath) {
     this.certificatePath = certificatePath;
   }
@@ -256,10 +262,15 @@ public class NetworkConfiguration {
    * @return certificatePassword
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CERTIFICATE_PASSWORD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCertificatePassword() {
     return certificatePassword;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CERTIFICATE_PASSWORD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCertificatePassword(@javax.annotation.Nullable String certificatePassword) {
     this.certificatePassword = certificatePassword;
   }
@@ -275,10 +286,15 @@ public class NetworkConfiguration {
    * @return internalHttpPort
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_INTERNAL_HTTP_PORT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getInternalHttpPort() {
     return internalHttpPort;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_INTERNAL_HTTP_PORT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setInternalHttpPort(@javax.annotation.Nullable Integer internalHttpPort) {
     this.internalHttpPort = internalHttpPort;
   }
@@ -294,10 +310,15 @@ public class NetworkConfiguration {
    * @return internalHttpsPort
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_INTERNAL_HTTPS_PORT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getInternalHttpsPort() {
     return internalHttpsPort;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_INTERNAL_HTTPS_PORT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setInternalHttpsPort(@javax.annotation.Nullable Integer internalHttpsPort) {
     this.internalHttpsPort = internalHttpsPort;
   }
@@ -313,10 +334,15 @@ public class NetworkConfiguration {
    * @return publicHttpPort
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PUBLIC_HTTP_PORT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getPublicHttpPort() {
     return publicHttpPort;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PUBLIC_HTTP_PORT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPublicHttpPort(@javax.annotation.Nullable Integer publicHttpPort) {
     this.publicHttpPort = publicHttpPort;
   }
@@ -332,10 +358,15 @@ public class NetworkConfiguration {
    * @return publicHttpsPort
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PUBLIC_HTTPS_PORT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getPublicHttpsPort() {
     return publicHttpsPort;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PUBLIC_HTTPS_PORT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPublicHttpsPort(@javax.annotation.Nullable Integer publicHttpsPort) {
     this.publicHttpsPort = publicHttpsPort;
   }
@@ -351,10 +382,15 @@ public class NetworkConfiguration {
    * @return autoDiscovery
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_AUTO_DISCOVERY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getAutoDiscovery() {
     return autoDiscovery;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_AUTO_DISCOVERY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAutoDiscovery(@javax.annotation.Nullable Boolean autoDiscovery) {
     this.autoDiscovery = autoDiscovery;
   }
@@ -370,10 +406,15 @@ public class NetworkConfiguration {
    * @return enableUPnP
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_U_PN_P)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableUPnP() {
     return enableUPnP;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_U_PN_P)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableUPnP(@javax.annotation.Nullable Boolean enableUPnP) {
     this.enableUPnP = enableUPnP;
   }
@@ -389,10 +430,15 @@ public class NetworkConfiguration {
    * @return enableIPv4
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_I_PV4)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableIPv4() {
     return enableIPv4;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_I_PV4)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableIPv4(@javax.annotation.Nullable Boolean enableIPv4) {
     this.enableIPv4 = enableIPv4;
   }
@@ -408,10 +454,15 @@ public class NetworkConfiguration {
    * @return enableIPv6
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_I_PV6)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableIPv6() {
     return enableIPv6;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_I_PV6)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableIPv6(@javax.annotation.Nullable Boolean enableIPv6) {
     this.enableIPv6 = enableIPv6;
   }
@@ -427,10 +478,15 @@ public class NetworkConfiguration {
    * @return enableRemoteAccess
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_REMOTE_ACCESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableRemoteAccess() {
     return enableRemoteAccess;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_REMOTE_ACCESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableRemoteAccess(@javax.annotation.Nullable Boolean enableRemoteAccess) {
     this.enableRemoteAccess = enableRemoteAccess;
   }
@@ -454,10 +510,15 @@ public class NetworkConfiguration {
    * @return localNetworkSubnets
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_LOCAL_NETWORK_SUBNETS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getLocalNetworkSubnets() {
     return localNetworkSubnets;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_LOCAL_NETWORK_SUBNETS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLocalNetworkSubnets(@javax.annotation.Nullable List<String> localNetworkSubnets) {
     this.localNetworkSubnets = localNetworkSubnets;
   }
@@ -481,10 +542,15 @@ public class NetworkConfiguration {
    * @return localNetworkAddresses
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_LOCAL_NETWORK_ADDRESSES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getLocalNetworkAddresses() {
     return localNetworkAddresses;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_LOCAL_NETWORK_ADDRESSES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLocalNetworkAddresses(@javax.annotation.Nullable List<String> localNetworkAddresses) {
     this.localNetworkAddresses = localNetworkAddresses;
   }
@@ -508,10 +574,15 @@ public class NetworkConfiguration {
    * @return knownProxies
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_KNOWN_PROXIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getKnownProxies() {
     return knownProxies;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_KNOWN_PROXIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setKnownProxies(@javax.annotation.Nullable List<String> knownProxies) {
     this.knownProxies = knownProxies;
   }
@@ -527,10 +598,15 @@ public class NetworkConfiguration {
    * @return ignoreVirtualInterfaces
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IGNORE_VIRTUAL_INTERFACES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIgnoreVirtualInterfaces() {
     return ignoreVirtualInterfaces;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IGNORE_VIRTUAL_INTERFACES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIgnoreVirtualInterfaces(@javax.annotation.Nullable Boolean ignoreVirtualInterfaces) {
     this.ignoreVirtualInterfaces = ignoreVirtualInterfaces;
   }
@@ -554,10 +630,15 @@ public class NetworkConfiguration {
    * @return virtualInterfaceNames
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_VIRTUAL_INTERFACE_NAMES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getVirtualInterfaceNames() {
     return virtualInterfaceNames;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_VIRTUAL_INTERFACE_NAMES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVirtualInterfaceNames(@javax.annotation.Nullable List<String> virtualInterfaceNames) {
     this.virtualInterfaceNames = virtualInterfaceNames;
   }
@@ -573,10 +654,15 @@ public class NetworkConfiguration {
    * @return enablePublishedServerUriByRequest
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_PUBLISHED_SERVER_URI_BY_REQUEST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnablePublishedServerUriByRequest() {
     return enablePublishedServerUriByRequest;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_PUBLISHED_SERVER_URI_BY_REQUEST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnablePublishedServerUriByRequest(@javax.annotation.Nullable Boolean enablePublishedServerUriByRequest) {
     this.enablePublishedServerUriByRequest = enablePublishedServerUriByRequest;
   }
@@ -600,10 +686,15 @@ public class NetworkConfiguration {
    * @return publishedServerUriBySubnet
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PUBLISHED_SERVER_URI_BY_SUBNET)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getPublishedServerUriBySubnet() {
     return publishedServerUriBySubnet;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PUBLISHED_SERVER_URI_BY_SUBNET)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPublishedServerUriBySubnet(@javax.annotation.Nullable List<String> publishedServerUriBySubnet) {
     this.publishedServerUriBySubnet = publishedServerUriBySubnet;
   }
@@ -627,10 +718,15 @@ public class NetworkConfiguration {
    * @return remoteIPFilter
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REMOTE_I_P_FILTER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getRemoteIPFilter() {
     return remoteIPFilter;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REMOTE_I_P_FILTER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRemoteIPFilter(@javax.annotation.Nullable List<String> remoteIPFilter) {
     this.remoteIPFilter = remoteIPFilter;
   }
@@ -646,16 +742,23 @@ public class NetworkConfiguration {
    * @return isRemoteIPFilterBlacklist
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_REMOTE_I_P_FILTER_BLACKLIST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsRemoteIPFilterBlacklist() {
     return isRemoteIPFilterBlacklist;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_REMOTE_I_P_FILTER_BLACKLIST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsRemoteIPFilterBlacklist(@javax.annotation.Nullable Boolean isRemoteIPFilterBlacklist) {
     this.isRemoteIPFilterBlacklist = isRemoteIPFilterBlacklist;
   }
 
 
-
+  /**
+   * Return true if this NetworkConfiguration object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -737,144 +840,178 @@ public class NetworkConfiguration {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("BaseUrl");
-    openapiFields.add("EnableHttps");
-    openapiFields.add("RequireHttps");
-    openapiFields.add("CertificatePath");
-    openapiFields.add("CertificatePassword");
-    openapiFields.add("InternalHttpPort");
-    openapiFields.add("InternalHttpsPort");
-    openapiFields.add("PublicHttpPort");
-    openapiFields.add("PublicHttpsPort");
-    openapiFields.add("AutoDiscovery");
-    openapiFields.add("EnableUPnP");
-    openapiFields.add("EnableIPv4");
-    openapiFields.add("EnableIPv6");
-    openapiFields.add("EnableRemoteAccess");
-    openapiFields.add("LocalNetworkSubnets");
-    openapiFields.add("LocalNetworkAddresses");
-    openapiFields.add("KnownProxies");
-    openapiFields.add("IgnoreVirtualInterfaces");
-    openapiFields.add("VirtualInterfaceNames");
-    openapiFields.add("EnablePublishedServerUriByRequest");
-    openapiFields.add("PublishedServerUriBySubnet");
-    openapiFields.add("RemoteIPFilter");
-    openapiFields.add("IsRemoteIPFilterBlacklist");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to NetworkConfiguration
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!NetworkConfiguration.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in NetworkConfiguration is not found in the empty JSON string", NetworkConfiguration.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!NetworkConfiguration.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `NetworkConfiguration` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("BaseUrl") != null && !jsonObj.get("BaseUrl").isJsonNull()) && !jsonObj.get("BaseUrl").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `BaseUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("BaseUrl").toString()));
-      }
-      if ((jsonObj.get("CertificatePath") != null && !jsonObj.get("CertificatePath").isJsonNull()) && !jsonObj.get("CertificatePath").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `CertificatePath` to be a primitive type in the JSON string but got `%s`", jsonObj.get("CertificatePath").toString()));
-      }
-      if ((jsonObj.get("CertificatePassword") != null && !jsonObj.get("CertificatePassword").isJsonNull()) && !jsonObj.get("CertificatePassword").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `CertificatePassword` to be a primitive type in the JSON string but got `%s`", jsonObj.get("CertificatePassword").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("LocalNetworkSubnets") != null && !jsonObj.get("LocalNetworkSubnets").isJsonNull() && !jsonObj.get("LocalNetworkSubnets").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `LocalNetworkSubnets` to be an array in the JSON string but got `%s`", jsonObj.get("LocalNetworkSubnets").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("LocalNetworkAddresses") != null && !jsonObj.get("LocalNetworkAddresses").isJsonNull() && !jsonObj.get("LocalNetworkAddresses").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `LocalNetworkAddresses` to be an array in the JSON string but got `%s`", jsonObj.get("LocalNetworkAddresses").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("KnownProxies") != null && !jsonObj.get("KnownProxies").isJsonNull() && !jsonObj.get("KnownProxies").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `KnownProxies` to be an array in the JSON string but got `%s`", jsonObj.get("KnownProxies").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("VirtualInterfaceNames") != null && !jsonObj.get("VirtualInterfaceNames").isJsonNull() && !jsonObj.get("VirtualInterfaceNames").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `VirtualInterfaceNames` to be an array in the JSON string but got `%s`", jsonObj.get("VirtualInterfaceNames").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("PublishedServerUriBySubnet") != null && !jsonObj.get("PublishedServerUriBySubnet").isJsonNull() && !jsonObj.get("PublishedServerUriBySubnet").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `PublishedServerUriBySubnet` to be an array in the JSON string but got `%s`", jsonObj.get("PublishedServerUriBySubnet").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("RemoteIPFilter") != null && !jsonObj.get("RemoteIPFilter").isJsonNull() && !jsonObj.get("RemoteIPFilter").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `RemoteIPFilter` to be an array in the JSON string but got `%s`", jsonObj.get("RemoteIPFilter").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!NetworkConfiguration.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'NetworkConfiguration' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<NetworkConfiguration> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(NetworkConfiguration.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<NetworkConfiguration>() {
-           @Override
-           public void write(JsonWriter out, NetworkConfiguration value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public NetworkConfiguration read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of NetworkConfiguration given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of NetworkConfiguration
-   * @throws IOException if the JSON string is invalid with respect to NetworkConfiguration
-   */
-  public static NetworkConfiguration fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, NetworkConfiguration.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of NetworkConfiguration to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `BaseUrl` to the URL query string
+    if (getBaseUrl() != null) {
+      joiner.add(String.format("%sBaseUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBaseUrl()))));
+    }
+
+    // add `EnableHttps` to the URL query string
+    if (getEnableHttps() != null) {
+      joiner.add(String.format("%sEnableHttps%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableHttps()))));
+    }
+
+    // add `RequireHttps` to the URL query string
+    if (getRequireHttps() != null) {
+      joiner.add(String.format("%sRequireHttps%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRequireHttps()))));
+    }
+
+    // add `CertificatePath` to the URL query string
+    if (getCertificatePath() != null) {
+      joiner.add(String.format("%sCertificatePath%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCertificatePath()))));
+    }
+
+    // add `CertificatePassword` to the URL query string
+    if (getCertificatePassword() != null) {
+      joiner.add(String.format("%sCertificatePassword%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCertificatePassword()))));
+    }
+
+    // add `InternalHttpPort` to the URL query string
+    if (getInternalHttpPort() != null) {
+      joiner.add(String.format("%sInternalHttpPort%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getInternalHttpPort()))));
+    }
+
+    // add `InternalHttpsPort` to the URL query string
+    if (getInternalHttpsPort() != null) {
+      joiner.add(String.format("%sInternalHttpsPort%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getInternalHttpsPort()))));
+    }
+
+    // add `PublicHttpPort` to the URL query string
+    if (getPublicHttpPort() != null) {
+      joiner.add(String.format("%sPublicHttpPort%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPublicHttpPort()))));
+    }
+
+    // add `PublicHttpsPort` to the URL query string
+    if (getPublicHttpsPort() != null) {
+      joiner.add(String.format("%sPublicHttpsPort%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPublicHttpsPort()))));
+    }
+
+    // add `AutoDiscovery` to the URL query string
+    if (getAutoDiscovery() != null) {
+      joiner.add(String.format("%sAutoDiscovery%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAutoDiscovery()))));
+    }
+
+    // add `EnableUPnP` to the URL query string
+    if (getEnableUPnP() != null) {
+      joiner.add(String.format("%sEnableUPnP%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableUPnP()))));
+    }
+
+    // add `EnableIPv4` to the URL query string
+    if (getEnableIPv4() != null) {
+      joiner.add(String.format("%sEnableIPv4%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableIPv4()))));
+    }
+
+    // add `EnableIPv6` to the URL query string
+    if (getEnableIPv6() != null) {
+      joiner.add(String.format("%sEnableIPv6%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableIPv6()))));
+    }
+
+    // add `EnableRemoteAccess` to the URL query string
+    if (getEnableRemoteAccess() != null) {
+      joiner.add(String.format("%sEnableRemoteAccess%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableRemoteAccess()))));
+    }
+
+    // add `LocalNetworkSubnets` to the URL query string
+    if (getLocalNetworkSubnets() != null) {
+      for (int i = 0; i < getLocalNetworkSubnets().size(); i++) {
+        joiner.add(String.format("%sLocalNetworkSubnets%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getLocalNetworkSubnets().get(i)))));
+      }
+    }
+
+    // add `LocalNetworkAddresses` to the URL query string
+    if (getLocalNetworkAddresses() != null) {
+      for (int i = 0; i < getLocalNetworkAddresses().size(); i++) {
+        joiner.add(String.format("%sLocalNetworkAddresses%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getLocalNetworkAddresses().get(i)))));
+      }
+    }
+
+    // add `KnownProxies` to the URL query string
+    if (getKnownProxies() != null) {
+      for (int i = 0; i < getKnownProxies().size(); i++) {
+        joiner.add(String.format("%sKnownProxies%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getKnownProxies().get(i)))));
+      }
+    }
+
+    // add `IgnoreVirtualInterfaces` to the URL query string
+    if (getIgnoreVirtualInterfaces() != null) {
+      joiner.add(String.format("%sIgnoreVirtualInterfaces%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIgnoreVirtualInterfaces()))));
+    }
+
+    // add `VirtualInterfaceNames` to the URL query string
+    if (getVirtualInterfaceNames() != null) {
+      for (int i = 0; i < getVirtualInterfaceNames().size(); i++) {
+        joiner.add(String.format("%sVirtualInterfaceNames%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getVirtualInterfaceNames().get(i)))));
+      }
+    }
+
+    // add `EnablePublishedServerUriByRequest` to the URL query string
+    if (getEnablePublishedServerUriByRequest() != null) {
+      joiner.add(String.format("%sEnablePublishedServerUriByRequest%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnablePublishedServerUriByRequest()))));
+    }
+
+    // add `PublishedServerUriBySubnet` to the URL query string
+    if (getPublishedServerUriBySubnet() != null) {
+      for (int i = 0; i < getPublishedServerUriBySubnet().size(); i++) {
+        joiner.add(String.format("%sPublishedServerUriBySubnet%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getPublishedServerUriBySubnet().get(i)))));
+      }
+    }
+
+    // add `RemoteIPFilter` to the URL query string
+    if (getRemoteIPFilter() != null) {
+      for (int i = 0; i < getRemoteIPFilter().size(); i++) {
+        joiner.add(String.format("%sRemoteIPFilter%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getRemoteIPFilter().get(i)))));
+      }
+    }
+
+    // add `IsRemoteIPFilterBlacklist` to the URL query string
+    if (getIsRemoteIPFilterBlacklist() != null) {
+      joiner.add(String.format("%sIsRemoteIPFilterBlacklist%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsRemoteIPFilterBlacklist()))));
+    }
+
+    return joiner.toString();
   }
 }
 

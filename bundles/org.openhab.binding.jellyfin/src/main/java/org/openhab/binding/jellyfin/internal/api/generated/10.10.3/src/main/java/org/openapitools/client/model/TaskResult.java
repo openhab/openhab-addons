@@ -13,87 +13,71 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import org.openapitools.client.model.TaskCompletionStatus;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class TaskExecutionInfo.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  TaskResult.JSON_PROPERTY_START_TIME_UTC,
+  TaskResult.JSON_PROPERTY_END_TIME_UTC,
+  TaskResult.JSON_PROPERTY_STATUS,
+  TaskResult.JSON_PROPERTY_NAME,
+  TaskResult.JSON_PROPERTY_KEY,
+  TaskResult.JSON_PROPERTY_ID,
+  TaskResult.JSON_PROPERTY_ERROR_MESSAGE,
+  TaskResult.JSON_PROPERTY_LONG_ERROR_MESSAGE
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class TaskResult {
-  public static final String SERIALIZED_NAME_START_TIME_UTC = "StartTimeUtc";
-  @SerializedName(SERIALIZED_NAME_START_TIME_UTC)
+  public static final String JSON_PROPERTY_START_TIME_UTC = "StartTimeUtc";
   @javax.annotation.Nullable
   private OffsetDateTime startTimeUtc;
 
-  public static final String SERIALIZED_NAME_END_TIME_UTC = "EndTimeUtc";
-  @SerializedName(SERIALIZED_NAME_END_TIME_UTC)
+  public static final String JSON_PROPERTY_END_TIME_UTC = "EndTimeUtc";
   @javax.annotation.Nullable
   private OffsetDateTime endTimeUtc;
 
-  public static final String SERIALIZED_NAME_STATUS = "Status";
-  @SerializedName(SERIALIZED_NAME_STATUS)
+  public static final String JSON_PROPERTY_STATUS = "Status";
   @javax.annotation.Nullable
   private TaskCompletionStatus status;
 
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_KEY = "Key";
-  @SerializedName(SERIALIZED_NAME_KEY)
-  @javax.annotation.Nullable
-  private String key;
+  public static final String JSON_PROPERTY_KEY = "Key";
+  private JsonNullable<String> key = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ID = "Id";
-  @SerializedName(SERIALIZED_NAME_ID)
-  @javax.annotation.Nullable
-  private String id;
+  public static final String JSON_PROPERTY_ID = "Id";
+  private JsonNullable<String> id = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ERROR_MESSAGE = "ErrorMessage";
-  @SerializedName(SERIALIZED_NAME_ERROR_MESSAGE)
-  @javax.annotation.Nullable
-  private String errorMessage;
+  public static final String JSON_PROPERTY_ERROR_MESSAGE = "ErrorMessage";
+  private JsonNullable<String> errorMessage = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_LONG_ERROR_MESSAGE = "LongErrorMessage";
-  @SerializedName(SERIALIZED_NAME_LONG_ERROR_MESSAGE)
-  @javax.annotation.Nullable
-  private String longErrorMessage;
+  public static final String JSON_PROPERTY_LONG_ERROR_MESSAGE = "LongErrorMessage";
+  private JsonNullable<String> longErrorMessage = JsonNullable.<String>undefined();
 
-  public TaskResult() {
+  public TaskResult() { 
   }
 
   public TaskResult startTimeUtc(@javax.annotation.Nullable OffsetDateTime startTimeUtc) {
@@ -106,10 +90,15 @@ public class TaskResult {
    * @return startTimeUtc
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_START_TIME_UTC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getStartTimeUtc() {
     return startTimeUtc;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_START_TIME_UTC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartTimeUtc(@javax.annotation.Nullable OffsetDateTime startTimeUtc) {
     this.startTimeUtc = startTimeUtc;
   }
@@ -125,10 +114,15 @@ public class TaskResult {
    * @return endTimeUtc
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_END_TIME_UTC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getEndTimeUtc() {
     return endTimeUtc;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_END_TIME_UTC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEndTimeUtc(@javax.annotation.Nullable OffsetDateTime endTimeUtc) {
     this.endTimeUtc = endTimeUtc;
   }
@@ -144,17 +138,22 @@ public class TaskResult {
    * @return status
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_STATUS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public TaskCompletionStatus getStatus() {
     return status;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_STATUS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStatus(@javax.annotation.Nullable TaskCompletionStatus status) {
     this.status = status;
   }
 
 
   public TaskResult name(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
     return this;
   }
 
@@ -163,17 +162,30 @@ public class TaskResult {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
   }
 
 
   public TaskResult key(@javax.annotation.Nullable String key) {
-    this.key = key;
+    this.key = JsonNullable.<String>of(key);
     return this;
   }
 
@@ -182,17 +194,30 @@ public class TaskResult {
    * @return key
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getKey() {
+        return key.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_KEY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getKey_JsonNullable() {
     return key;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_KEY)
+  public void setKey_JsonNullable(JsonNullable<String> key) {
+    this.key = key;
   }
 
   public void setKey(@javax.annotation.Nullable String key) {
-    this.key = key;
+    this.key = JsonNullable.<String>of(key);
   }
 
 
   public TaskResult id(@javax.annotation.Nullable String id) {
-    this.id = id;
+    this.id = JsonNullable.<String>of(id);
     return this;
   }
 
@@ -201,17 +226,30 @@ public class TaskResult {
    * @return id
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getId() {
+        return id.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getId_JsonNullable() {
     return id;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ID)
+  public void setId_JsonNullable(JsonNullable<String> id) {
+    this.id = id;
   }
 
   public void setId(@javax.annotation.Nullable String id) {
-    this.id = id;
+    this.id = JsonNullable.<String>of(id);
   }
 
 
   public TaskResult errorMessage(@javax.annotation.Nullable String errorMessage) {
-    this.errorMessage = errorMessage;
+    this.errorMessage = JsonNullable.<String>of(errorMessage);
     return this;
   }
 
@@ -220,17 +258,30 @@ public class TaskResult {
    * @return errorMessage
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getErrorMessage() {
+        return errorMessage.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ERROR_MESSAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getErrorMessage_JsonNullable() {
     return errorMessage;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ERROR_MESSAGE)
+  public void setErrorMessage_JsonNullable(JsonNullable<String> errorMessage) {
+    this.errorMessage = errorMessage;
   }
 
   public void setErrorMessage(@javax.annotation.Nullable String errorMessage) {
-    this.errorMessage = errorMessage;
+    this.errorMessage = JsonNullable.<String>of(errorMessage);
   }
 
 
   public TaskResult longErrorMessage(@javax.annotation.Nullable String longErrorMessage) {
-    this.longErrorMessage = longErrorMessage;
+    this.longErrorMessage = JsonNullable.<String>of(longErrorMessage);
     return this;
   }
 
@@ -239,16 +290,31 @@ public class TaskResult {
    * @return longErrorMessage
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getLongErrorMessage() {
-    return longErrorMessage;
+        return longErrorMessage.orElse(null);
   }
 
-  public void setLongErrorMessage(@javax.annotation.Nullable String longErrorMessage) {
+  @JsonProperty(JSON_PROPERTY_LONG_ERROR_MESSAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getLongErrorMessage_JsonNullable() {
+    return longErrorMessage;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LONG_ERROR_MESSAGE)
+  public void setLongErrorMessage_JsonNullable(JsonNullable<String> longErrorMessage) {
     this.longErrorMessage = longErrorMessage;
   }
 
+  public void setLongErrorMessage(@javax.annotation.Nullable String longErrorMessage) {
+    this.longErrorMessage = JsonNullable.<String>of(longErrorMessage);
+  }
 
 
+  /**
+   * Return true if this TaskResult object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -261,11 +327,11 @@ public class TaskResult {
     return Objects.equals(this.startTimeUtc, taskResult.startTimeUtc) &&
         Objects.equals(this.endTimeUtc, taskResult.endTimeUtc) &&
         Objects.equals(this.status, taskResult.status) &&
-        Objects.equals(this.name, taskResult.name) &&
-        Objects.equals(this.key, taskResult.key) &&
-        Objects.equals(this.id, taskResult.id) &&
-        Objects.equals(this.errorMessage, taskResult.errorMessage) &&
-        Objects.equals(this.longErrorMessage, taskResult.longErrorMessage);
+        equalsNullable(this.name, taskResult.name) &&
+        equalsNullable(this.key, taskResult.key) &&
+        equalsNullable(this.id, taskResult.id) &&
+        equalsNullable(this.errorMessage, taskResult.errorMessage) &&
+        equalsNullable(this.longErrorMessage, taskResult.longErrorMessage);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -274,7 +340,7 @@ public class TaskResult {
 
   @Override
   public int hashCode() {
-    return Objects.hash(startTimeUtc, endTimeUtc, status, name, key, id, errorMessage, longErrorMessage);
+    return Objects.hash(startTimeUtc, endTimeUtc, status, hashCodeNullable(name), hashCodeNullable(key), hashCodeNullable(id), hashCodeNullable(errorMessage), hashCodeNullable(longErrorMessage));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -311,115 +377,79 @@ public class TaskResult {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("StartTimeUtc");
-    openapiFields.add("EndTimeUtc");
-    openapiFields.add("Status");
-    openapiFields.add("Name");
-    openapiFields.add("Key");
-    openapiFields.add("Id");
-    openapiFields.add("ErrorMessage");
-    openapiFields.add("LongErrorMessage");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to TaskResult
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!TaskResult.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in TaskResult is not found in the empty JSON string", TaskResult.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!TaskResult.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `TaskResult` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // validate the optional field `Status`
-      if (jsonObj.get("Status") != null && !jsonObj.get("Status").isJsonNull()) {
-        TaskCompletionStatus.validateJsonElement(jsonObj.get("Status"));
-      }
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("Key") != null && !jsonObj.get("Key").isJsonNull()) && !jsonObj.get("Key").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Key` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Key").toString()));
-      }
-      if ((jsonObj.get("Id") != null && !jsonObj.get("Id").isJsonNull()) && !jsonObj.get("Id").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Id").toString()));
-      }
-      if ((jsonObj.get("ErrorMessage") != null && !jsonObj.get("ErrorMessage").isJsonNull()) && !jsonObj.get("ErrorMessage").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ErrorMessage` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ErrorMessage").toString()));
-      }
-      if ((jsonObj.get("LongErrorMessage") != null && !jsonObj.get("LongErrorMessage").isJsonNull()) && !jsonObj.get("LongErrorMessage").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `LongErrorMessage` to be a primitive type in the JSON string but got `%s`", jsonObj.get("LongErrorMessage").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!TaskResult.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'TaskResult' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<TaskResult> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(TaskResult.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<TaskResult>() {
-           @Override
-           public void write(JsonWriter out, TaskResult value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public TaskResult read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of TaskResult given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of TaskResult
-   * @throws IOException if the JSON string is invalid with respect to TaskResult
-   */
-  public static TaskResult fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, TaskResult.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of TaskResult to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `StartTimeUtc` to the URL query string
+    if (getStartTimeUtc() != null) {
+      joiner.add(String.format("%sStartTimeUtc%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStartTimeUtc()))));
+    }
+
+    // add `EndTimeUtc` to the URL query string
+    if (getEndTimeUtc() != null) {
+      joiner.add(String.format("%sEndTimeUtc%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEndTimeUtc()))));
+    }
+
+    // add `Status` to the URL query string
+    if (getStatus() != null) {
+      joiner.add(String.format("%sStatus%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
+    }
+
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `Key` to the URL query string
+    if (getKey() != null) {
+      joiner.add(String.format("%sKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
+    }
+
+    // add `Id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+    }
+
+    // add `ErrorMessage` to the URL query string
+    if (getErrorMessage() != null) {
+      joiner.add(String.format("%sErrorMessage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getErrorMessage()))));
+    }
+
+    // add `LongErrorMessage` to the URL query string
+    if (getLongErrorMessage() != null) {
+      joiner.add(String.format("%sLongErrorMessage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLongErrorMessage()))));
+    }
+
+    return joiner.toString();
   }
 }
 

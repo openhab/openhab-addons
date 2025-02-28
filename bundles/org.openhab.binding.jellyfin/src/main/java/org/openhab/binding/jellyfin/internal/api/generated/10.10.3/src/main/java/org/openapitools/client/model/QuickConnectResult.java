@@ -13,85 +13,71 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Stores the state of an quick connect request.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  QuickConnectResult.JSON_PROPERTY_AUTHENTICATED,
+  QuickConnectResult.JSON_PROPERTY_SECRET,
+  QuickConnectResult.JSON_PROPERTY_CODE,
+  QuickConnectResult.JSON_PROPERTY_DEVICE_ID,
+  QuickConnectResult.JSON_PROPERTY_DEVICE_NAME,
+  QuickConnectResult.JSON_PROPERTY_APP_NAME,
+  QuickConnectResult.JSON_PROPERTY_APP_VERSION,
+  QuickConnectResult.JSON_PROPERTY_DATE_ADDED
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class QuickConnectResult {
-  public static final String SERIALIZED_NAME_AUTHENTICATED = "Authenticated";
-  @SerializedName(SERIALIZED_NAME_AUTHENTICATED)
+  public static final String JSON_PROPERTY_AUTHENTICATED = "Authenticated";
   @javax.annotation.Nullable
   private Boolean authenticated;
 
-  public static final String SERIALIZED_NAME_SECRET = "Secret";
-  @SerializedName(SERIALIZED_NAME_SECRET)
+  public static final String JSON_PROPERTY_SECRET = "Secret";
   @javax.annotation.Nullable
   private String secret;
 
-  public static final String SERIALIZED_NAME_CODE = "Code";
-  @SerializedName(SERIALIZED_NAME_CODE)
+  public static final String JSON_PROPERTY_CODE = "Code";
   @javax.annotation.Nullable
   private String code;
 
-  public static final String SERIALIZED_NAME_DEVICE_ID = "DeviceId";
-  @SerializedName(SERIALIZED_NAME_DEVICE_ID)
+  public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
   @javax.annotation.Nullable
   private String deviceId;
 
-  public static final String SERIALIZED_NAME_DEVICE_NAME = "DeviceName";
-  @SerializedName(SERIALIZED_NAME_DEVICE_NAME)
+  public static final String JSON_PROPERTY_DEVICE_NAME = "DeviceName";
   @javax.annotation.Nullable
   private String deviceName;
 
-  public static final String SERIALIZED_NAME_APP_NAME = "AppName";
-  @SerializedName(SERIALIZED_NAME_APP_NAME)
+  public static final String JSON_PROPERTY_APP_NAME = "AppName";
   @javax.annotation.Nullable
   private String appName;
 
-  public static final String SERIALIZED_NAME_APP_VERSION = "AppVersion";
-  @SerializedName(SERIALIZED_NAME_APP_VERSION)
+  public static final String JSON_PROPERTY_APP_VERSION = "AppVersion";
   @javax.annotation.Nullable
   private String appVersion;
 
-  public static final String SERIALIZED_NAME_DATE_ADDED = "DateAdded";
-  @SerializedName(SERIALIZED_NAME_DATE_ADDED)
+  public static final String JSON_PROPERTY_DATE_ADDED = "DateAdded";
   @javax.annotation.Nullable
   private OffsetDateTime dateAdded;
 
-  public QuickConnectResult() {
+  public QuickConnectResult() { 
   }
 
   public QuickConnectResult authenticated(@javax.annotation.Nullable Boolean authenticated) {
@@ -104,10 +90,15 @@ public class QuickConnectResult {
    * @return authenticated
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_AUTHENTICATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getAuthenticated() {
     return authenticated;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_AUTHENTICATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAuthenticated(@javax.annotation.Nullable Boolean authenticated) {
     this.authenticated = authenticated;
   }
@@ -123,10 +114,15 @@ public class QuickConnectResult {
    * @return secret
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SECRET)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSecret() {
     return secret;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SECRET)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSecret(@javax.annotation.Nullable String secret) {
     this.secret = secret;
   }
@@ -142,10 +138,15 @@ public class QuickConnectResult {
    * @return code
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCode() {
     return code;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCode(@javax.annotation.Nullable String code) {
     this.code = code;
   }
@@ -161,10 +162,15 @@ public class QuickConnectResult {
    * @return deviceId
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DEVICE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDeviceId() {
     return deviceId;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DEVICE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDeviceId(@javax.annotation.Nullable String deviceId) {
     this.deviceId = deviceId;
   }
@@ -180,10 +186,15 @@ public class QuickConnectResult {
    * @return deviceName
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DEVICE_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDeviceName() {
     return deviceName;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DEVICE_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDeviceName(@javax.annotation.Nullable String deviceName) {
     this.deviceName = deviceName;
   }
@@ -199,10 +210,15 @@ public class QuickConnectResult {
    * @return appName
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_APP_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAppName() {
     return appName;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_APP_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAppName(@javax.annotation.Nullable String appName) {
     this.appName = appName;
   }
@@ -218,10 +234,15 @@ public class QuickConnectResult {
    * @return appVersion
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_APP_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAppVersion() {
     return appVersion;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_APP_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAppVersion(@javax.annotation.Nullable String appVersion) {
     this.appVersion = appVersion;
   }
@@ -237,16 +258,23 @@ public class QuickConnectResult {
    * @return dateAdded
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DATE_ADDED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getDateAdded() {
     return dateAdded;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DATE_ADDED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDateAdded(@javax.annotation.Nullable OffsetDateTime dateAdded) {
     this.dateAdded = dateAdded;
   }
 
 
-
+  /**
+   * Return true if this QuickConnectResult object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -298,114 +326,79 @@ public class QuickConnectResult {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Authenticated");
-    openapiFields.add("Secret");
-    openapiFields.add("Code");
-    openapiFields.add("DeviceId");
-    openapiFields.add("DeviceName");
-    openapiFields.add("AppName");
-    openapiFields.add("AppVersion");
-    openapiFields.add("DateAdded");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to QuickConnectResult
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!QuickConnectResult.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in QuickConnectResult is not found in the empty JSON string", QuickConnectResult.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!QuickConnectResult.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `QuickConnectResult` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Secret") != null && !jsonObj.get("Secret").isJsonNull()) && !jsonObj.get("Secret").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Secret` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Secret").toString()));
-      }
-      if ((jsonObj.get("Code") != null && !jsonObj.get("Code").isJsonNull()) && !jsonObj.get("Code").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Code` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Code").toString()));
-      }
-      if ((jsonObj.get("DeviceId") != null && !jsonObj.get("DeviceId").isJsonNull()) && !jsonObj.get("DeviceId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `DeviceId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("DeviceId").toString()));
-      }
-      if ((jsonObj.get("DeviceName") != null && !jsonObj.get("DeviceName").isJsonNull()) && !jsonObj.get("DeviceName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `DeviceName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("DeviceName").toString()));
-      }
-      if ((jsonObj.get("AppName") != null && !jsonObj.get("AppName").isJsonNull()) && !jsonObj.get("AppName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `AppName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("AppName").toString()));
-      }
-      if ((jsonObj.get("AppVersion") != null && !jsonObj.get("AppVersion").isJsonNull()) && !jsonObj.get("AppVersion").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `AppVersion` to be a primitive type in the JSON string but got `%s`", jsonObj.get("AppVersion").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!QuickConnectResult.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'QuickConnectResult' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<QuickConnectResult> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(QuickConnectResult.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<QuickConnectResult>() {
-           @Override
-           public void write(JsonWriter out, QuickConnectResult value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public QuickConnectResult read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of QuickConnectResult given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of QuickConnectResult
-   * @throws IOException if the JSON string is invalid with respect to QuickConnectResult
-   */
-  public static QuickConnectResult fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, QuickConnectResult.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of QuickConnectResult to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Authenticated` to the URL query string
+    if (getAuthenticated() != null) {
+      joiner.add(String.format("%sAuthenticated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAuthenticated()))));
+    }
+
+    // add `Secret` to the URL query string
+    if (getSecret() != null) {
+      joiner.add(String.format("%sSecret%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSecret()))));
+    }
+
+    // add `Code` to the URL query string
+    if (getCode() != null) {
+      joiner.add(String.format("%sCode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCode()))));
+    }
+
+    // add `DeviceId` to the URL query string
+    if (getDeviceId() != null) {
+      joiner.add(String.format("%sDeviceId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDeviceId()))));
+    }
+
+    // add `DeviceName` to the URL query string
+    if (getDeviceName() != null) {
+      joiner.add(String.format("%sDeviceName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDeviceName()))));
+    }
+
+    // add `AppName` to the URL query string
+    if (getAppName() != null) {
+      joiner.add(String.format("%sAppName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAppName()))));
+    }
+
+    // add `AppVersion` to the URL query string
+    if (getAppVersion() != null) {
+      joiner.add(String.format("%sAppVersion%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAppVersion()))));
+    }
+
+    // add `DateAdded` to the URL query string
+    if (getDateAdded() != null) {
+      joiner.add(String.format("%sDateAdded%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDateAdded()))));
+    }
+
+    return joiner.toString();
   }
 }
 

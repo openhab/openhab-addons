@@ -13,96 +13,81 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Defines the MediaBrowser.Model.Updates.VersionInfo class.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  VersionInfo.JSON_PROPERTY_VERSION,
+  VersionInfo.JSON_PROPERTY_VERSION_NUMBER,
+  VersionInfo.JSON_PROPERTY_CHANGELOG,
+  VersionInfo.JSON_PROPERTY_TARGET_ABI,
+  VersionInfo.JSON_PROPERTY_SOURCE_URL,
+  VersionInfo.JSON_PROPERTY_CHECKSUM,
+  VersionInfo.JSON_PROPERTY_TIMESTAMP,
+  VersionInfo.JSON_PROPERTY_REPOSITORY_NAME,
+  VersionInfo.JSON_PROPERTY_REPOSITORY_URL
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class VersionInfo {
-  public static final String SERIALIZED_NAME_VERSION = "version";
-  @SerializedName(SERIALIZED_NAME_VERSION)
+  public static final String JSON_PROPERTY_VERSION = "version";
   @javax.annotation.Nullable
   private String version;
 
-  public static final String SERIALIZED_NAME_VERSION_NUMBER = "VersionNumber";
-  @SerializedName(SERIALIZED_NAME_VERSION_NUMBER)
+  public static final String JSON_PROPERTY_VERSION_NUMBER = "VersionNumber";
   @javax.annotation.Nullable
   private String versionNumber;
 
-  public static final String SERIALIZED_NAME_CHANGELOG = "changelog";
-  @SerializedName(SERIALIZED_NAME_CHANGELOG)
-  @javax.annotation.Nullable
-  private String changelog;
+  public static final String JSON_PROPERTY_CHANGELOG = "changelog";
+  private JsonNullable<String> changelog = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TARGET_ABI = "targetAbi";
-  @SerializedName(SERIALIZED_NAME_TARGET_ABI)
-  @javax.annotation.Nullable
-  private String targetAbi;
+  public static final String JSON_PROPERTY_TARGET_ABI = "targetAbi";
+  private JsonNullable<String> targetAbi = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_SOURCE_URL = "sourceUrl";
-  @SerializedName(SERIALIZED_NAME_SOURCE_URL)
-  @javax.annotation.Nullable
-  private String sourceUrl;
+  public static final String JSON_PROPERTY_SOURCE_URL = "sourceUrl";
+  private JsonNullable<String> sourceUrl = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_CHECKSUM = "checksum";
-  @SerializedName(SERIALIZED_NAME_CHECKSUM)
-  @javax.annotation.Nullable
-  private String checksum;
+  public static final String JSON_PROPERTY_CHECKSUM = "checksum";
+  private JsonNullable<String> checksum = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TIMESTAMP = "timestamp";
-  @SerializedName(SERIALIZED_NAME_TIMESTAMP)
-  @javax.annotation.Nullable
-  private String timestamp;
+  public static final String JSON_PROPERTY_TIMESTAMP = "timestamp";
+  private JsonNullable<String> timestamp = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_REPOSITORY_NAME = "repositoryName";
-  @SerializedName(SERIALIZED_NAME_REPOSITORY_NAME)
+  public static final String JSON_PROPERTY_REPOSITORY_NAME = "repositoryName";
   @javax.annotation.Nullable
   private String repositoryName;
 
-  public static final String SERIALIZED_NAME_REPOSITORY_URL = "repositoryUrl";
-  @SerializedName(SERIALIZED_NAME_REPOSITORY_URL)
+  public static final String JSON_PROPERTY_REPOSITORY_URL = "repositoryUrl";
   @javax.annotation.Nullable
   private String repositoryUrl;
 
-  public VersionInfo() {
+  public VersionInfo() { 
   }
 
+  @JsonCreator
   public VersionInfo(
-     String versionNumber
+    @JsonProperty(JSON_PROPERTY_VERSION_NUMBER) String versionNumber
   ) {
-    this();
+  this();
     this.versionNumber = versionNumber;
   }
 
@@ -116,10 +101,15 @@ public class VersionInfo {
    * @return version
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getVersion() {
     return version;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVersion(@javax.annotation.Nullable String version) {
     this.version = version;
   }
@@ -130,14 +120,17 @@ public class VersionInfo {
    * @return versionNumber
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_VERSION_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getVersionNumber() {
     return versionNumber;
   }
 
 
 
+
   public VersionInfo changelog(@javax.annotation.Nullable String changelog) {
-    this.changelog = changelog;
+    this.changelog = JsonNullable.<String>of(changelog);
     return this;
   }
 
@@ -146,17 +139,30 @@ public class VersionInfo {
    * @return changelog
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getChangelog() {
+        return changelog.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CHANGELOG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getChangelog_JsonNullable() {
     return changelog;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CHANGELOG)
+  public void setChangelog_JsonNullable(JsonNullable<String> changelog) {
+    this.changelog = changelog;
   }
 
   public void setChangelog(@javax.annotation.Nullable String changelog) {
-    this.changelog = changelog;
+    this.changelog = JsonNullable.<String>of(changelog);
   }
 
 
   public VersionInfo targetAbi(@javax.annotation.Nullable String targetAbi) {
-    this.targetAbi = targetAbi;
+    this.targetAbi = JsonNullable.<String>of(targetAbi);
     return this;
   }
 
@@ -165,17 +171,30 @@ public class VersionInfo {
    * @return targetAbi
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getTargetAbi() {
+        return targetAbi.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TARGET_ABI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getTargetAbi_JsonNullable() {
     return targetAbi;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TARGET_ABI)
+  public void setTargetAbi_JsonNullable(JsonNullable<String> targetAbi) {
+    this.targetAbi = targetAbi;
   }
 
   public void setTargetAbi(@javax.annotation.Nullable String targetAbi) {
-    this.targetAbi = targetAbi;
+    this.targetAbi = JsonNullable.<String>of(targetAbi);
   }
 
 
   public VersionInfo sourceUrl(@javax.annotation.Nullable String sourceUrl) {
-    this.sourceUrl = sourceUrl;
+    this.sourceUrl = JsonNullable.<String>of(sourceUrl);
     return this;
   }
 
@@ -184,17 +203,30 @@ public class VersionInfo {
    * @return sourceUrl
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getSourceUrl() {
+        return sourceUrl.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SOURCE_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getSourceUrl_JsonNullable() {
     return sourceUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SOURCE_URL)
+  public void setSourceUrl_JsonNullable(JsonNullable<String> sourceUrl) {
+    this.sourceUrl = sourceUrl;
   }
 
   public void setSourceUrl(@javax.annotation.Nullable String sourceUrl) {
-    this.sourceUrl = sourceUrl;
+    this.sourceUrl = JsonNullable.<String>of(sourceUrl);
   }
 
 
   public VersionInfo checksum(@javax.annotation.Nullable String checksum) {
-    this.checksum = checksum;
+    this.checksum = JsonNullable.<String>of(checksum);
     return this;
   }
 
@@ -203,17 +235,30 @@ public class VersionInfo {
    * @return checksum
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getChecksum() {
+        return checksum.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CHECKSUM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getChecksum_JsonNullable() {
     return checksum;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CHECKSUM)
+  public void setChecksum_JsonNullable(JsonNullable<String> checksum) {
+    this.checksum = checksum;
   }
 
   public void setChecksum(@javax.annotation.Nullable String checksum) {
-    this.checksum = checksum;
+    this.checksum = JsonNullable.<String>of(checksum);
   }
 
 
   public VersionInfo timestamp(@javax.annotation.Nullable String timestamp) {
-    this.timestamp = timestamp;
+    this.timestamp = JsonNullable.<String>of(timestamp);
     return this;
   }
 
@@ -222,12 +267,25 @@ public class VersionInfo {
    * @return timestamp
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getTimestamp() {
+        return timestamp.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TIMESTAMP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getTimestamp_JsonNullable() {
     return timestamp;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TIMESTAMP)
+  public void setTimestamp_JsonNullable(JsonNullable<String> timestamp) {
+    this.timestamp = timestamp;
   }
 
   public void setTimestamp(@javax.annotation.Nullable String timestamp) {
-    this.timestamp = timestamp;
+    this.timestamp = JsonNullable.<String>of(timestamp);
   }
 
 
@@ -241,10 +299,15 @@ public class VersionInfo {
    * @return repositoryName
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REPOSITORY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getRepositoryName() {
     return repositoryName;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REPOSITORY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRepositoryName(@javax.annotation.Nullable String repositoryName) {
     this.repositoryName = repositoryName;
   }
@@ -260,16 +323,23 @@ public class VersionInfo {
    * @return repositoryUrl
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REPOSITORY_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getRepositoryUrl() {
     return repositoryUrl;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REPOSITORY_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRepositoryUrl(@javax.annotation.Nullable String repositoryUrl) {
     this.repositoryUrl = repositoryUrl;
   }
 
 
-
+  /**
+   * Return true if this VersionInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -281,11 +351,11 @@ public class VersionInfo {
     VersionInfo versionInfo = (VersionInfo) o;
     return Objects.equals(this.version, versionInfo.version) &&
         Objects.equals(this.versionNumber, versionInfo.versionNumber) &&
-        Objects.equals(this.changelog, versionInfo.changelog) &&
-        Objects.equals(this.targetAbi, versionInfo.targetAbi) &&
-        Objects.equals(this.sourceUrl, versionInfo.sourceUrl) &&
-        Objects.equals(this.checksum, versionInfo.checksum) &&
-        Objects.equals(this.timestamp, versionInfo.timestamp) &&
+        equalsNullable(this.changelog, versionInfo.changelog) &&
+        equalsNullable(this.targetAbi, versionInfo.targetAbi) &&
+        equalsNullable(this.sourceUrl, versionInfo.sourceUrl) &&
+        equalsNullable(this.checksum, versionInfo.checksum) &&
+        equalsNullable(this.timestamp, versionInfo.timestamp) &&
         Objects.equals(this.repositoryName, versionInfo.repositoryName) &&
         Objects.equals(this.repositoryUrl, versionInfo.repositoryUrl);
   }
@@ -296,7 +366,7 @@ public class VersionInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(version, versionNumber, changelog, targetAbi, sourceUrl, checksum, timestamp, repositoryName, repositoryUrl);
+    return Objects.hash(version, versionNumber, hashCodeNullable(changelog), hashCodeNullable(targetAbi), hashCodeNullable(sourceUrl), hashCodeNullable(checksum), hashCodeNullable(timestamp), repositoryName, repositoryUrl);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -334,124 +404,84 @@ public class VersionInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("version");
-    openapiFields.add("VersionNumber");
-    openapiFields.add("changelog");
-    openapiFields.add("targetAbi");
-    openapiFields.add("sourceUrl");
-    openapiFields.add("checksum");
-    openapiFields.add("timestamp");
-    openapiFields.add("repositoryName");
-    openapiFields.add("repositoryUrl");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to VersionInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!VersionInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in VersionInfo is not found in the empty JSON string", VersionInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!VersionInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `VersionInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("version") != null && !jsonObj.get("version").isJsonNull()) && !jsonObj.get("version").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `version` to be a primitive type in the JSON string but got `%s`", jsonObj.get("version").toString()));
-      }
-      if ((jsonObj.get("VersionNumber") != null && !jsonObj.get("VersionNumber").isJsonNull()) && !jsonObj.get("VersionNumber").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `VersionNumber` to be a primitive type in the JSON string but got `%s`", jsonObj.get("VersionNumber").toString()));
-      }
-      if ((jsonObj.get("changelog") != null && !jsonObj.get("changelog").isJsonNull()) && !jsonObj.get("changelog").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `changelog` to be a primitive type in the JSON string but got `%s`", jsonObj.get("changelog").toString()));
-      }
-      if ((jsonObj.get("targetAbi") != null && !jsonObj.get("targetAbi").isJsonNull()) && !jsonObj.get("targetAbi").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `targetAbi` to be a primitive type in the JSON string but got `%s`", jsonObj.get("targetAbi").toString()));
-      }
-      if ((jsonObj.get("sourceUrl") != null && !jsonObj.get("sourceUrl").isJsonNull()) && !jsonObj.get("sourceUrl").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `sourceUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("sourceUrl").toString()));
-      }
-      if ((jsonObj.get("checksum") != null && !jsonObj.get("checksum").isJsonNull()) && !jsonObj.get("checksum").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `checksum` to be a primitive type in the JSON string but got `%s`", jsonObj.get("checksum").toString()));
-      }
-      if ((jsonObj.get("timestamp") != null && !jsonObj.get("timestamp").isJsonNull()) && !jsonObj.get("timestamp").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `timestamp` to be a primitive type in the JSON string but got `%s`", jsonObj.get("timestamp").toString()));
-      }
-      if ((jsonObj.get("repositoryName") != null && !jsonObj.get("repositoryName").isJsonNull()) && !jsonObj.get("repositoryName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `repositoryName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("repositoryName").toString()));
-      }
-      if ((jsonObj.get("repositoryUrl") != null && !jsonObj.get("repositoryUrl").isJsonNull()) && !jsonObj.get("repositoryUrl").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `repositoryUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("repositoryUrl").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!VersionInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'VersionInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<VersionInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(VersionInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<VersionInfo>() {
-           @Override
-           public void write(JsonWriter out, VersionInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public VersionInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of VersionInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of VersionInfo
-   * @throws IOException if the JSON string is invalid with respect to VersionInfo
-   */
-  public static VersionInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, VersionInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of VersionInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `version` to the URL query string
+    if (getVersion() != null) {
+      joiner.add(String.format("%sversion%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
+    }
+
+    // add `VersionNumber` to the URL query string
+    if (getVersionNumber() != null) {
+      joiner.add(String.format("%sVersionNumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVersionNumber()))));
+    }
+
+    // add `changelog` to the URL query string
+    if (getChangelog() != null) {
+      joiner.add(String.format("%schangelog%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getChangelog()))));
+    }
+
+    // add `targetAbi` to the URL query string
+    if (getTargetAbi() != null) {
+      joiner.add(String.format("%stargetAbi%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTargetAbi()))));
+    }
+
+    // add `sourceUrl` to the URL query string
+    if (getSourceUrl() != null) {
+      joiner.add(String.format("%ssourceUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSourceUrl()))));
+    }
+
+    // add `checksum` to the URL query string
+    if (getChecksum() != null) {
+      joiner.add(String.format("%schecksum%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getChecksum()))));
+    }
+
+    // add `timestamp` to the URL query string
+    if (getTimestamp() != null) {
+      joiner.add(String.format("%stimestamp%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTimestamp()))));
+    }
+
+    // add `repositoryName` to the URL query string
+    if (getRepositoryName() != null) {
+      joiner.add(String.format("%srepositoryName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRepositoryName()))));
+    }
+
+    // add `repositoryUrl` to the URL query string
+    if (getRepositoryUrl() != null) {
+      joiner.add(String.format("%srepositoryUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRepositoryUrl()))));
+    }
+
+    return joiner.toString();
   }
 }
 

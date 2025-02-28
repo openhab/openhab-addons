@@ -13,93 +13,74 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.client.model.CollectionTypeOptions;
 import org.openapitools.client.model.LibraryOptions;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Used to hold information about a user&#39;s list of configured virtual folders.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  VirtualFolderInfo.JSON_PROPERTY_NAME,
+  VirtualFolderInfo.JSON_PROPERTY_LOCATIONS,
+  VirtualFolderInfo.JSON_PROPERTY_COLLECTION_TYPE,
+  VirtualFolderInfo.JSON_PROPERTY_LIBRARY_OPTIONS,
+  VirtualFolderInfo.JSON_PROPERTY_ITEM_ID,
+  VirtualFolderInfo.JSON_PROPERTY_PRIMARY_IMAGE_ITEM_ID,
+  VirtualFolderInfo.JSON_PROPERTY_REFRESH_PROGRESS,
+  VirtualFolderInfo.JSON_PROPERTY_REFRESH_STATUS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class VirtualFolderInfo {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_LOCATIONS = "Locations";
-  @SerializedName(SERIALIZED_NAME_LOCATIONS)
-  @javax.annotation.Nullable
-  private List<String> locations;
+  public static final String JSON_PROPERTY_LOCATIONS = "Locations";
+  private JsonNullable<List<String>> locations = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_COLLECTION_TYPE = "CollectionType";
-  @SerializedName(SERIALIZED_NAME_COLLECTION_TYPE)
-  @javax.annotation.Nullable
-  private CollectionTypeOptions collectionType;
+  public static final String JSON_PROPERTY_COLLECTION_TYPE = "CollectionType";
+  private JsonNullable<CollectionTypeOptions> collectionType = JsonNullable.<CollectionTypeOptions>undefined();
 
-  public static final String SERIALIZED_NAME_LIBRARY_OPTIONS = "LibraryOptions";
-  @SerializedName(SERIALIZED_NAME_LIBRARY_OPTIONS)
-  @javax.annotation.Nullable
-  private LibraryOptions libraryOptions;
+  public static final String JSON_PROPERTY_LIBRARY_OPTIONS = "LibraryOptions";
+  private JsonNullable<LibraryOptions> libraryOptions = JsonNullable.<LibraryOptions>undefined();
 
-  public static final String SERIALIZED_NAME_ITEM_ID = "ItemId";
-  @SerializedName(SERIALIZED_NAME_ITEM_ID)
-  @javax.annotation.Nullable
-  private String itemId;
+  public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
+  private JsonNullable<String> itemId = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PRIMARY_IMAGE_ITEM_ID = "PrimaryImageItemId";
-  @SerializedName(SERIALIZED_NAME_PRIMARY_IMAGE_ITEM_ID)
-  @javax.annotation.Nullable
-  private String primaryImageItemId;
+  public static final String JSON_PROPERTY_PRIMARY_IMAGE_ITEM_ID = "PrimaryImageItemId";
+  private JsonNullable<String> primaryImageItemId = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_REFRESH_PROGRESS = "RefreshProgress";
-  @SerializedName(SERIALIZED_NAME_REFRESH_PROGRESS)
-  @javax.annotation.Nullable
-  private Double refreshProgress;
+  public static final String JSON_PROPERTY_REFRESH_PROGRESS = "RefreshProgress";
+  private JsonNullable<Double> refreshProgress = JsonNullable.<Double>undefined();
 
-  public static final String SERIALIZED_NAME_REFRESH_STATUS = "RefreshStatus";
-  @SerializedName(SERIALIZED_NAME_REFRESH_STATUS)
-  @javax.annotation.Nullable
-  private String refreshStatus;
+  public static final String JSON_PROPERTY_REFRESH_STATUS = "RefreshStatus";
+  private JsonNullable<String> refreshStatus = JsonNullable.<String>undefined();
 
-  public VirtualFolderInfo() {
+  public VirtualFolderInfo() { 
   }
 
   public VirtualFolderInfo name(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
     return this;
   }
 
@@ -108,25 +89,42 @@ public class VirtualFolderInfo {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
   }
 
 
   public VirtualFolderInfo locations(@javax.annotation.Nullable List<String> locations) {
-    this.locations = locations;
+    this.locations = JsonNullable.<List<String>>of(locations);
     return this;
   }
 
   public VirtualFolderInfo addLocationsItem(String locationsItem) {
-    if (this.locations == null) {
-      this.locations = new ArrayList<>();
+    if (this.locations == null || !this.locations.isPresent()) {
+      this.locations = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.locations.add(locationsItem);
+    try {
+      this.locations.get().add(locationsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -135,17 +133,30 @@ public class VirtualFolderInfo {
    * @return locations
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getLocations() {
+        return locations.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LOCATIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getLocations_JsonNullable() {
     return locations;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LOCATIONS)
+  public void setLocations_JsonNullable(JsonNullable<List<String>> locations) {
+    this.locations = locations;
   }
 
   public void setLocations(@javax.annotation.Nullable List<String> locations) {
-    this.locations = locations;
+    this.locations = JsonNullable.<List<String>>of(locations);
   }
 
 
   public VirtualFolderInfo collectionType(@javax.annotation.Nullable CollectionTypeOptions collectionType) {
-    this.collectionType = collectionType;
+    this.collectionType = JsonNullable.<CollectionTypeOptions>of(collectionType);
     return this;
   }
 
@@ -154,17 +165,30 @@ public class VirtualFolderInfo {
    * @return collectionType
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public CollectionTypeOptions getCollectionType() {
+        return collectionType.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_COLLECTION_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<CollectionTypeOptions> getCollectionType_JsonNullable() {
     return collectionType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_COLLECTION_TYPE)
+  public void setCollectionType_JsonNullable(JsonNullable<CollectionTypeOptions> collectionType) {
+    this.collectionType = collectionType;
   }
 
   public void setCollectionType(@javax.annotation.Nullable CollectionTypeOptions collectionType) {
-    this.collectionType = collectionType;
+    this.collectionType = JsonNullable.<CollectionTypeOptions>of(collectionType);
   }
 
 
   public VirtualFolderInfo libraryOptions(@javax.annotation.Nullable LibraryOptions libraryOptions) {
-    this.libraryOptions = libraryOptions;
+    this.libraryOptions = JsonNullable.<LibraryOptions>of(libraryOptions);
     return this;
   }
 
@@ -173,17 +197,30 @@ public class VirtualFolderInfo {
    * @return libraryOptions
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public LibraryOptions getLibraryOptions() {
+        return libraryOptions.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LIBRARY_OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<LibraryOptions> getLibraryOptions_JsonNullable() {
     return libraryOptions;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LIBRARY_OPTIONS)
+  public void setLibraryOptions_JsonNullable(JsonNullable<LibraryOptions> libraryOptions) {
+    this.libraryOptions = libraryOptions;
   }
 
   public void setLibraryOptions(@javax.annotation.Nullable LibraryOptions libraryOptions) {
-    this.libraryOptions = libraryOptions;
+    this.libraryOptions = JsonNullable.<LibraryOptions>of(libraryOptions);
   }
 
 
   public VirtualFolderInfo itemId(@javax.annotation.Nullable String itemId) {
-    this.itemId = itemId;
+    this.itemId = JsonNullable.<String>of(itemId);
     return this;
   }
 
@@ -192,17 +229,30 @@ public class VirtualFolderInfo {
    * @return itemId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getItemId() {
+        return itemId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getItemId_JsonNullable() {
     return itemId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ITEM_ID)
+  public void setItemId_JsonNullable(JsonNullable<String> itemId) {
+    this.itemId = itemId;
   }
 
   public void setItemId(@javax.annotation.Nullable String itemId) {
-    this.itemId = itemId;
+    this.itemId = JsonNullable.<String>of(itemId);
   }
 
 
   public VirtualFolderInfo primaryImageItemId(@javax.annotation.Nullable String primaryImageItemId) {
-    this.primaryImageItemId = primaryImageItemId;
+    this.primaryImageItemId = JsonNullable.<String>of(primaryImageItemId);
     return this;
   }
 
@@ -211,17 +261,30 @@ public class VirtualFolderInfo {
    * @return primaryImageItemId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPrimaryImageItemId() {
+        return primaryImageItemId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPrimaryImageItemId_JsonNullable() {
     return primaryImageItemId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ITEM_ID)
+  public void setPrimaryImageItemId_JsonNullable(JsonNullable<String> primaryImageItemId) {
+    this.primaryImageItemId = primaryImageItemId;
   }
 
   public void setPrimaryImageItemId(@javax.annotation.Nullable String primaryImageItemId) {
-    this.primaryImageItemId = primaryImageItemId;
+    this.primaryImageItemId = JsonNullable.<String>of(primaryImageItemId);
   }
 
 
   public VirtualFolderInfo refreshProgress(@javax.annotation.Nullable Double refreshProgress) {
-    this.refreshProgress = refreshProgress;
+    this.refreshProgress = JsonNullable.<Double>of(refreshProgress);
     return this;
   }
 
@@ -230,17 +293,30 @@ public class VirtualFolderInfo {
    * @return refreshProgress
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Double getRefreshProgress() {
+        return refreshProgress.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_REFRESH_PROGRESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Double> getRefreshProgress_JsonNullable() {
     return refreshProgress;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_REFRESH_PROGRESS)
+  public void setRefreshProgress_JsonNullable(JsonNullable<Double> refreshProgress) {
+    this.refreshProgress = refreshProgress;
   }
 
   public void setRefreshProgress(@javax.annotation.Nullable Double refreshProgress) {
-    this.refreshProgress = refreshProgress;
+    this.refreshProgress = JsonNullable.<Double>of(refreshProgress);
   }
 
 
   public VirtualFolderInfo refreshStatus(@javax.annotation.Nullable String refreshStatus) {
-    this.refreshStatus = refreshStatus;
+    this.refreshStatus = JsonNullable.<String>of(refreshStatus);
     return this;
   }
 
@@ -249,16 +325,31 @@ public class VirtualFolderInfo {
    * @return refreshStatus
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getRefreshStatus() {
-    return refreshStatus;
+        return refreshStatus.orElse(null);
   }
 
-  public void setRefreshStatus(@javax.annotation.Nullable String refreshStatus) {
+  @JsonProperty(JSON_PROPERTY_REFRESH_STATUS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getRefreshStatus_JsonNullable() {
+    return refreshStatus;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_REFRESH_STATUS)
+  public void setRefreshStatus_JsonNullable(JsonNullable<String> refreshStatus) {
     this.refreshStatus = refreshStatus;
   }
 
+  public void setRefreshStatus(@javax.annotation.Nullable String refreshStatus) {
+    this.refreshStatus = JsonNullable.<String>of(refreshStatus);
+  }
 
 
+  /**
+   * Return true if this VirtualFolderInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -268,14 +359,14 @@ public class VirtualFolderInfo {
       return false;
     }
     VirtualFolderInfo virtualFolderInfo = (VirtualFolderInfo) o;
-    return Objects.equals(this.name, virtualFolderInfo.name) &&
-        Objects.equals(this.locations, virtualFolderInfo.locations) &&
-        Objects.equals(this.collectionType, virtualFolderInfo.collectionType) &&
-        Objects.equals(this.libraryOptions, virtualFolderInfo.libraryOptions) &&
-        Objects.equals(this.itemId, virtualFolderInfo.itemId) &&
-        Objects.equals(this.primaryImageItemId, virtualFolderInfo.primaryImageItemId) &&
-        Objects.equals(this.refreshProgress, virtualFolderInfo.refreshProgress) &&
-        Objects.equals(this.refreshStatus, virtualFolderInfo.refreshStatus);
+    return equalsNullable(this.name, virtualFolderInfo.name) &&
+        equalsNullable(this.locations, virtualFolderInfo.locations) &&
+        equalsNullable(this.collectionType, virtualFolderInfo.collectionType) &&
+        equalsNullable(this.libraryOptions, virtualFolderInfo.libraryOptions) &&
+        equalsNullable(this.itemId, virtualFolderInfo.itemId) &&
+        equalsNullable(this.primaryImageItemId, virtualFolderInfo.primaryImageItemId) &&
+        equalsNullable(this.refreshProgress, virtualFolderInfo.refreshProgress) &&
+        equalsNullable(this.refreshStatus, virtualFolderInfo.refreshStatus);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -284,7 +375,7 @@ public class VirtualFolderInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, locations, collectionType, libraryOptions, itemId, primaryImageItemId, refreshProgress, refreshStatus);
+    return Objects.hash(hashCodeNullable(name), hashCodeNullable(locations), hashCodeNullable(collectionType), hashCodeNullable(libraryOptions), hashCodeNullable(itemId), hashCodeNullable(primaryImageItemId), hashCodeNullable(refreshProgress), hashCodeNullable(refreshStatus));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -321,120 +412,83 @@ public class VirtualFolderInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("Locations");
-    openapiFields.add("CollectionType");
-    openapiFields.add("LibraryOptions");
-    openapiFields.add("ItemId");
-    openapiFields.add("PrimaryImageItemId");
-    openapiFields.add("RefreshProgress");
-    openapiFields.add("RefreshStatus");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to VirtualFolderInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!VirtualFolderInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in VirtualFolderInfo is not found in the empty JSON string", VirtualFolderInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!VirtualFolderInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `VirtualFolderInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("Locations") != null && !jsonObj.get("Locations").isJsonNull() && !jsonObj.get("Locations").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Locations` to be an array in the JSON string but got `%s`", jsonObj.get("Locations").toString()));
-      }
-      // validate the optional field `CollectionType`
-      if (jsonObj.get("CollectionType") != null && !jsonObj.get("CollectionType").isJsonNull()) {
-        CollectionTypeOptions.validateJsonElement(jsonObj.get("CollectionType"));
-      }
-      // validate the optional field `LibraryOptions`
-      if (jsonObj.get("LibraryOptions") != null && !jsonObj.get("LibraryOptions").isJsonNull()) {
-        LibraryOptions.validateJsonElement(jsonObj.get("LibraryOptions"));
-      }
-      if ((jsonObj.get("ItemId") != null && !jsonObj.get("ItemId").isJsonNull()) && !jsonObj.get("ItemId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ItemId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ItemId").toString()));
-      }
-      if ((jsonObj.get("PrimaryImageItemId") != null && !jsonObj.get("PrimaryImageItemId").isJsonNull()) && !jsonObj.get("PrimaryImageItemId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `PrimaryImageItemId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("PrimaryImageItemId").toString()));
-      }
-      if ((jsonObj.get("RefreshStatus") != null && !jsonObj.get("RefreshStatus").isJsonNull()) && !jsonObj.get("RefreshStatus").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `RefreshStatus` to be a primitive type in the JSON string but got `%s`", jsonObj.get("RefreshStatus").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!VirtualFolderInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'VirtualFolderInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<VirtualFolderInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(VirtualFolderInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<VirtualFolderInfo>() {
-           @Override
-           public void write(JsonWriter out, VirtualFolderInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public VirtualFolderInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of VirtualFolderInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of VirtualFolderInfo
-   * @throws IOException if the JSON string is invalid with respect to VirtualFolderInfo
-   */
-  public static VirtualFolderInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, VirtualFolderInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of VirtualFolderInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `Locations` to the URL query string
+    if (getLocations() != null) {
+      for (int i = 0; i < getLocations().size(); i++) {
+        joiner.add(String.format("%sLocations%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getLocations().get(i)))));
+      }
+    }
+
+    // add `CollectionType` to the URL query string
+    if (getCollectionType() != null) {
+      joiner.add(String.format("%sCollectionType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCollectionType()))));
+    }
+
+    // add `LibraryOptions` to the URL query string
+    if (getLibraryOptions() != null) {
+      joiner.add(getLibraryOptions().toUrlQueryString(prefix + "LibraryOptions" + suffix));
+    }
+
+    // add `ItemId` to the URL query string
+    if (getItemId() != null) {
+      joiner.add(String.format("%sItemId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
+    }
+
+    // add `PrimaryImageItemId` to the URL query string
+    if (getPrimaryImageItemId() != null) {
+      joiner.add(String.format("%sPrimaryImageItemId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageItemId()))));
+    }
+
+    // add `RefreshProgress` to the URL query string
+    if (getRefreshProgress() != null) {
+      joiner.add(String.format("%sRefreshProgress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRefreshProgress()))));
+    }
+
+    // add `RefreshStatus` to the URL query string
+    if (getRefreshStatus() != null) {
+      joiner.add(String.format("%sRefreshStatus%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRefreshStatus()))));
+    }
+
+    return joiner.toString();
   }
 }
 

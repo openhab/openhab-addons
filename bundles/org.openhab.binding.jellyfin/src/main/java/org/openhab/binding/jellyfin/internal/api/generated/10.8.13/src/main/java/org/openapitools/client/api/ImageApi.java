@@ -10,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import java.io.File;
 import org.openapitools.client.model.ImageFormat;
@@ -34,9963 +25,6220 @@ import org.openapitools.client.model.ImageType;
 import org.openapitools.client.model.ProblemDetails;
 import java.util.UUID;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ImageApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+
+  public ImageApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public ImageApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Delete a custom splashscreen.
+   * 
+   * @throws ApiException if fails to make API call
+   */
+  public void deleteCustomSplashscreen() throws ApiException {
+    deleteCustomSplashscreenWithHttpInfo();
+  }
+
+  /**
+   * Delete a custom splashscreen.
+   * 
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> deleteCustomSplashscreenWithHttpInfo() throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = deleteCustomSplashscreenRequestBuilder();
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("deleteCustomSplashscreen", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder deleteCustomSplashscreenRequestBuilder() throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Branding/Splashscreen";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Delete an item&#39;s image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex The image index. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void deleteItemImage(UUID itemId, ImageType imageType, Integer imageIndex) throws ApiException {
+    deleteItemImageWithHttpInfo(itemId, imageType, imageIndex);
+  }
+
+  /**
+   * Delete an item&#39;s image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex The image index. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> deleteItemImageWithHttpInfo(UUID itemId, ImageType imageType, Integer imageIndex) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = deleteItemImageRequestBuilder(itemId, imageType, imageIndex);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("deleteItemImage", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder deleteItemImageRequestBuilder(UUID itemId, ImageType imageType, Integer imageIndex) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling deleteItemImage");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling deleteItemImage");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/Images/{imageType}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "imageIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Delete an item&#39;s image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex The image index. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void deleteItemImageByIndex(UUID itemId, ImageType imageType, Integer imageIndex) throws ApiException {
+    deleteItemImageByIndexWithHttpInfo(itemId, imageType, imageIndex);
+  }
+
+  /**
+   * Delete an item&#39;s image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex The image index. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> deleteItemImageByIndexWithHttpInfo(UUID itemId, ImageType imageType, Integer imageIndex) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = deleteItemImageByIndexRequestBuilder(itemId, imageType, imageIndex);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("deleteItemImageByIndex", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder deleteItemImageByIndexRequestBuilder(UUID itemId, ImageType imageType, Integer imageIndex) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling deleteItemImageByIndex");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling deleteItemImageByIndex");
+    }
+    // verify the required parameter 'imageIndex' is set
+    if (imageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling deleteItemImageByIndex");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Delete the user&#39;s image.
+   * 
+   * @param userId User Id. (required)
+   * @param imageType (Unused) Image type. (required)
+   * @param index (Unused) Image index. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void deleteUserImage(UUID userId, ImageType imageType, Integer index) throws ApiException {
+    deleteUserImageWithHttpInfo(userId, imageType, index);
+  }
+
+  /**
+   * Delete the user&#39;s image.
+   * 
+   * @param userId User Id. (required)
+   * @param imageType (Unused) Image type. (required)
+   * @param index (Unused) Image index. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> deleteUserImageWithHttpInfo(UUID userId, ImageType imageType, Integer index) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = deleteUserImageRequestBuilder(userId, imageType, index);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("deleteUserImage", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder deleteUserImageRequestBuilder(UUID userId, ImageType imageType, Integer index) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling deleteUserImage");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling deleteUserImage");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/{userId}/Images/{imageType}"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "index";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("index", index));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Delete the user&#39;s image.
+   * 
+   * @param userId User Id. (required)
+   * @param imageType (Unused) Image type. (required)
+   * @param index (Unused) Image index. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void deleteUserImageByIndex(UUID userId, ImageType imageType, Integer index) throws ApiException {
+    deleteUserImageByIndexWithHttpInfo(userId, imageType, index);
+  }
+
+  /**
+   * Delete the user&#39;s image.
+   * 
+   * @param userId User Id. (required)
+   * @param imageType (Unused) Image type. (required)
+   * @param index (Unused) Image index. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> deleteUserImageByIndexWithHttpInfo(UUID userId, ImageType imageType, Integer index) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = deleteUserImageByIndexRequestBuilder(userId, imageType, index);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("deleteUserImageByIndex", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder deleteUserImageByIndexRequestBuilder(UUID userId, ImageType imageType, Integer index) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling deleteUserImageByIndex");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling deleteUserImageByIndex");
+    }
+    // verify the required parameter 'index' is set
+    if (index == null) {
+      throw new ApiException(400, "Missing the required parameter 'index' when calling deleteUserImageByIndex");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/{userId}/Images/{imageType}/{index}"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{index}", ApiClient.urlEncode(index.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get artist image by name.
+   * 
+   * @param name Artist name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getArtistImage(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    ApiResponse<File> localVarResponse = getArtistImageWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get artist image by name.
+   * 
+   * @param name Artist name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getArtistImageWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getArtistImageRequestBuilder(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getArtistImage", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getArtistImageRequestBuilder(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling getArtistImage");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling getArtistImage");
+    }
+    // verify the required parameter 'imageIndex' is set
+    if (imageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling getArtistImage");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Artists/{name}/Images/{imageType}/{imageIndex}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get genre image by name.
+   * 
+   * @param name Genre name. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getGenreImage(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    ApiResponse<File> localVarResponse = getGenreImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get genre image by name.
+   * 
+   * @param name Genre name. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getGenreImageWithHttpInfo(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getGenreImageRequestBuilder(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getGenreImage", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getGenreImageRequestBuilder(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling getGenreImage");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling getGenreImage");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Genres/{name}/Images/{imageType}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+    localVarQueryParameterBaseName = "imageIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get genre image by name.
+   * 
+   * @param name Genre name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getGenreImageByIndex(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    ApiResponse<File> localVarResponse = getGenreImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get genre image by name.
+   * 
+   * @param name Genre name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getGenreImageByIndexWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getGenreImageByIndexRequestBuilder(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getGenreImageByIndex", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getGenreImageByIndexRequestBuilder(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling getGenreImageByIndex");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling getGenreImageByIndex");
+    }
+    // verify the required parameter 'imageIndex' is set
+    if (imageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling getGenreImageByIndex");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Genres/{name}/Images/{imageType}/{imageIndex}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets the item&#39;s image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getItemImage(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    ApiResponse<File> localVarResponse = getItemImageWithHttpInfo(itemId, imageType, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer, imageIndex);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets the item&#39;s image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getItemImageWithHttpInfo(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getItemImageRequestBuilder(itemId, imageType, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer, imageIndex);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getItemImage", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getItemImageRequestBuilder(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getItemImage");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling getItemImage");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/Images/{imageType}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+    localVarQueryParameterBaseName = "imageIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets the item&#39;s image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param maxWidth The maximum image width to return. (required)
+   * @param maxHeight The maximum image height to return. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (required)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (required)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (required)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (required)
+   * @param imageIndex Image index. (required)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getItemImage2(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, String tag, ImageFormat format, Double percentPlayed, Integer unplayedCount, Integer imageIndex, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    ApiResponse<File> localVarResponse = getItemImage2WithHttpInfo(itemId, imageType, maxWidth, maxHeight, tag, format, percentPlayed, unplayedCount, imageIndex, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets the item&#39;s image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param maxWidth The maximum image width to return. (required)
+   * @param maxHeight The maximum image height to return. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (required)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (required)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (required)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (required)
+   * @param imageIndex Image index. (required)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getItemImage2WithHttpInfo(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, String tag, ImageFormat format, Double percentPlayed, Integer unplayedCount, Integer imageIndex, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getItemImage2RequestBuilder(itemId, imageType, maxWidth, maxHeight, tag, format, percentPlayed, unplayedCount, imageIndex, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getItemImage2", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getItemImage2RequestBuilder(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, String tag, ImageFormat format, Double percentPlayed, Integer unplayedCount, Integer imageIndex, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getItemImage2");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling getItemImage2");
+    }
+    // verify the required parameter 'maxWidth' is set
+    if (maxWidth == null) {
+      throw new ApiException(400, "Missing the required parameter 'maxWidth' when calling getItemImage2");
+    }
+    // verify the required parameter 'maxHeight' is set
+    if (maxHeight == null) {
+      throw new ApiException(400, "Missing the required parameter 'maxHeight' when calling getItemImage2");
+    }
+    // verify the required parameter 'tag' is set
+    if (tag == null) {
+      throw new ApiException(400, "Missing the required parameter 'tag' when calling getItemImage2");
+    }
+    // verify the required parameter 'format' is set
+    if (format == null) {
+      throw new ApiException(400, "Missing the required parameter 'format' when calling getItemImage2");
+    }
+    // verify the required parameter 'percentPlayed' is set
+    if (percentPlayed == null) {
+      throw new ApiException(400, "Missing the required parameter 'percentPlayed' when calling getItemImage2");
+    }
+    // verify the required parameter 'unplayedCount' is set
+    if (unplayedCount == null) {
+      throw new ApiException(400, "Missing the required parameter 'unplayedCount' when calling getItemImage2");
+    }
+    // verify the required parameter 'imageIndex' is set
+    if (imageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling getItemImage2");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}/{tag}/{format}/{maxWidth}/{maxHeight}/{percentPlayed}/{unplayedCount}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{maxWidth}", ApiClient.urlEncode(maxWidth.toString()))
+        .replace("{maxHeight}", ApiClient.urlEncode(maxHeight.toString()))
+        .replace("{tag}", ApiClient.urlEncode(tag.toString()))
+        .replace("{format}", ApiClient.urlEncode(format.toString()))
+        .replace("{percentPlayed}", ApiClient.urlEncode(percentPlayed.toString()))
+        .replace("{unplayedCount}", ApiClient.urlEncode(unplayedCount.toString()))
+        .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets the item&#39;s image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getItemImageByIndex(UUID itemId, ImageType imageType, Integer imageIndex, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    ApiResponse<File> localVarResponse = getItemImageByIndexWithHttpInfo(itemId, imageType, imageIndex, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets the item&#39;s image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getItemImageByIndexWithHttpInfo(UUID itemId, ImageType imageType, Integer imageIndex, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getItemImageByIndexRequestBuilder(itemId, imageType, imageIndex, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getItemImageByIndex", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getItemImageByIndexRequestBuilder(UUID itemId, ImageType imageType, Integer imageIndex, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getItemImageByIndex");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling getItemImageByIndex");
+    }
+    // verify the required parameter 'imageIndex' is set
+    if (imageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling getItemImageByIndex");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get item image infos.
+   * 
+   * @param itemId Item id. (required)
+   * @return List&lt;ImageInfo&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<ImageInfo> getItemImageInfos(UUID itemId) throws ApiException {
+    ApiResponse<List<ImageInfo>> localVarResponse = getItemImageInfosWithHttpInfo(itemId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get item image infos.
+   * 
+   * @param itemId Item id. (required)
+   * @return ApiResponse&lt;List&lt;ImageInfo&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<ImageInfo>> getItemImageInfosWithHttpInfo(UUID itemId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getItemImageInfosRequestBuilder(itemId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getItemImageInfos", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<ImageInfo>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<ImageInfo>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<ImageInfo>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getItemImageInfosRequestBuilder(UUID itemId) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getItemImageInfos");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/Images"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get music genre image by name.
+   * 
+   * @param name Music genre name. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getMusicGenreImage(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    ApiResponse<File> localVarResponse = getMusicGenreImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get music genre image by name.
+   * 
+   * @param name Music genre name. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getMusicGenreImageWithHttpInfo(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getMusicGenreImageRequestBuilder(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getMusicGenreImage", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getMusicGenreImageRequestBuilder(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling getMusicGenreImage");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling getMusicGenreImage");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/MusicGenres/{name}/Images/{imageType}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+    localVarQueryParameterBaseName = "imageIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get music genre image by name.
+   * 
+   * @param name Music genre name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getMusicGenreImageByIndex(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    ApiResponse<File> localVarResponse = getMusicGenreImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get music genre image by name.
+   * 
+   * @param name Music genre name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getMusicGenreImageByIndexWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getMusicGenreImageByIndexRequestBuilder(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getMusicGenreImageByIndex", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getMusicGenreImageByIndexRequestBuilder(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling getMusicGenreImageByIndex");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling getMusicGenreImageByIndex");
+    }
+    // verify the required parameter 'imageIndex' is set
+    if (imageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling getMusicGenreImageByIndex");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/MusicGenres/{name}/Images/{imageType}/{imageIndex}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get person image by name.
+   * 
+   * @param name Person name. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getPersonImage(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    ApiResponse<File> localVarResponse = getPersonImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get person image by name.
+   * 
+   * @param name Person name. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getPersonImageWithHttpInfo(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getPersonImageRequestBuilder(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getPersonImage", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getPersonImageRequestBuilder(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling getPersonImage");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling getPersonImage");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Persons/{name}/Images/{imageType}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+    localVarQueryParameterBaseName = "imageIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get person image by name.
+   * 
+   * @param name Person name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getPersonImageByIndex(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    ApiResponse<File> localVarResponse = getPersonImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get person image by name.
+   * 
+   * @param name Person name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getPersonImageByIndexWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getPersonImageByIndexRequestBuilder(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getPersonImageByIndex", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getPersonImageByIndexRequestBuilder(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling getPersonImageByIndex");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling getPersonImageByIndex");
+    }
+    // verify the required parameter 'imageIndex' is set
+    if (imageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling getPersonImageByIndex");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Persons/{name}/Images/{imageType}/{imageIndex}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Generates or gets the splashscreen.
+   * 
+   * @param tag Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param blur Blur image. (optional)
+   * @param backgroundColor Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Apply a foreground layer on top of the image. (optional)
+   * @param quality Quality setting, from 0-100. (optional, default to 90)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getSplashscreen(String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer fillWidth, Integer fillHeight, Integer blur, String backgroundColor, String foregroundLayer, Integer quality) throws ApiException {
+    ApiResponse<File> localVarResponse = getSplashscreenWithHttpInfo(tag, format, maxWidth, maxHeight, width, height, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer, quality);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Generates or gets the splashscreen.
+   * 
+   * @param tag Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param blur Blur image. (optional)
+   * @param backgroundColor Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Apply a foreground layer on top of the image. (optional)
+   * @param quality Quality setting, from 0-100. (optional, default to 90)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getSplashscreenWithHttpInfo(String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer fillWidth, Integer fillHeight, Integer blur, String backgroundColor, String foregroundLayer, Integer quality) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getSplashscreenRequestBuilder(tag, format, maxWidth, maxHeight, width, height, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer, quality);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getSplashscreen", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getSplashscreenRequestBuilder(String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer fillWidth, Integer fillHeight, Integer blur, String backgroundColor, String foregroundLayer, Integer quality) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Branding/Splashscreen";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get studio image by name.
+   * 
+   * @param name Studio name. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getStudioImage(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    ApiResponse<File> localVarResponse = getStudioImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get studio image by name.
+   * 
+   * @param name Studio name. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getStudioImageWithHttpInfo(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getStudioImageRequestBuilder(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getStudioImage", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getStudioImageRequestBuilder(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling getStudioImage");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling getStudioImage");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Studios/{name}/Images/{imageType}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+    localVarQueryParameterBaseName = "imageIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get studio image by name.
+   * 
+   * @param name Studio name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getStudioImageByIndex(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    ApiResponse<File> localVarResponse = getStudioImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get studio image by name.
+   * 
+   * @param name Studio name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getStudioImageByIndexWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getStudioImageByIndexRequestBuilder(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getStudioImageByIndex", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getStudioImageByIndexRequestBuilder(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling getStudioImageByIndex");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling getStudioImageByIndex");
+    }
+    // verify the required parameter 'imageIndex' is set
+    if (imageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling getStudioImageByIndex");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Studios/{name}/Images/{imageType}/{imageIndex}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get user profile image.
+   * 
+   * @param userId User id. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getUserImage(UUID userId, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    ApiResponse<File> localVarResponse = getUserImageWithHttpInfo(userId, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get user profile image.
+   * 
+   * @param userId User id. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getUserImageWithHttpInfo(UUID userId, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getUserImageRequestBuilder(userId, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getUserImage", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getUserImageRequestBuilder(UUID userId, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling getUserImage");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling getUserImage");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/{userId}/Images/{imageType}"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+    localVarQueryParameterBaseName = "imageIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get user profile image.
+   * 
+   * @param userId User id. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getUserImageByIndex(UUID userId, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    ApiResponse<File> localVarResponse = getUserImageByIndexWithHttpInfo(userId, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get user profile image.
+   * 
+   * @param userId User id. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getUserImageByIndexWithHttpInfo(UUID userId, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getUserImageByIndexRequestBuilder(userId, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getUserImageByIndex", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getUserImageByIndexRequestBuilder(UUID userId, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling getUserImageByIndex");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling getUserImageByIndex");
+    }
+    // verify the required parameter 'imageIndex' is set
+    if (imageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling getUserImageByIndex");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/{userId}/Images/{imageType}/{imageIndex}"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get artist image by name.
+   * 
+   * @param name Artist name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File headArtistImage(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    ApiResponse<File> localVarResponse = headArtistImageWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get artist image by name.
+   * 
+   * @param name Artist name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> headArtistImageWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = headArtistImageRequestBuilder(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("headArtistImage", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder headArtistImageRequestBuilder(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling headArtistImage");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling headArtistImage");
+    }
+    // verify the required parameter 'imageIndex' is set
+    if (imageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling headArtistImage");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Artists/{name}/Images/{imageType}/{imageIndex}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get genre image by name.
+   * 
+   * @param name Genre name. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File headGenreImage(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    ApiResponse<File> localVarResponse = headGenreImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get genre image by name.
+   * 
+   * @param name Genre name. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> headGenreImageWithHttpInfo(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = headGenreImageRequestBuilder(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("headGenreImage", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder headGenreImageRequestBuilder(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling headGenreImage");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling headGenreImage");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Genres/{name}/Images/{imageType}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+    localVarQueryParameterBaseName = "imageIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get genre image by name.
+   * 
+   * @param name Genre name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File headGenreImageByIndex(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    ApiResponse<File> localVarResponse = headGenreImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get genre image by name.
+   * 
+   * @param name Genre name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> headGenreImageByIndexWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = headGenreImageByIndexRequestBuilder(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("headGenreImageByIndex", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder headGenreImageByIndexRequestBuilder(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling headGenreImageByIndex");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling headGenreImageByIndex");
+    }
+    // verify the required parameter 'imageIndex' is set
+    if (imageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling headGenreImageByIndex");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Genres/{name}/Images/{imageType}/{imageIndex}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets the item&#39;s image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File headItemImage(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    ApiResponse<File> localVarResponse = headItemImageWithHttpInfo(itemId, imageType, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer, imageIndex);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets the item&#39;s image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> headItemImageWithHttpInfo(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = headItemImageRequestBuilder(itemId, imageType, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer, imageIndex);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("headItemImage", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder headItemImageRequestBuilder(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling headItemImage");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling headItemImage");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/Images/{imageType}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+    localVarQueryParameterBaseName = "imageIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets the item&#39;s image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param maxWidth The maximum image width to return. (required)
+   * @param maxHeight The maximum image height to return. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (required)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (required)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (required)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (required)
+   * @param imageIndex Image index. (required)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File headItemImage2(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, String tag, ImageFormat format, Double percentPlayed, Integer unplayedCount, Integer imageIndex, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    ApiResponse<File> localVarResponse = headItemImage2WithHttpInfo(itemId, imageType, maxWidth, maxHeight, tag, format, percentPlayed, unplayedCount, imageIndex, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets the item&#39;s image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param maxWidth The maximum image width to return. (required)
+   * @param maxHeight The maximum image height to return. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (required)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (required)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (required)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (required)
+   * @param imageIndex Image index. (required)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> headItemImage2WithHttpInfo(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, String tag, ImageFormat format, Double percentPlayed, Integer unplayedCount, Integer imageIndex, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = headItemImage2RequestBuilder(itemId, imageType, maxWidth, maxHeight, tag, format, percentPlayed, unplayedCount, imageIndex, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("headItemImage2", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder headItemImage2RequestBuilder(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, String tag, ImageFormat format, Double percentPlayed, Integer unplayedCount, Integer imageIndex, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling headItemImage2");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling headItemImage2");
+    }
+    // verify the required parameter 'maxWidth' is set
+    if (maxWidth == null) {
+      throw new ApiException(400, "Missing the required parameter 'maxWidth' when calling headItemImage2");
+    }
+    // verify the required parameter 'maxHeight' is set
+    if (maxHeight == null) {
+      throw new ApiException(400, "Missing the required parameter 'maxHeight' when calling headItemImage2");
+    }
+    // verify the required parameter 'tag' is set
+    if (tag == null) {
+      throw new ApiException(400, "Missing the required parameter 'tag' when calling headItemImage2");
+    }
+    // verify the required parameter 'format' is set
+    if (format == null) {
+      throw new ApiException(400, "Missing the required parameter 'format' when calling headItemImage2");
+    }
+    // verify the required parameter 'percentPlayed' is set
+    if (percentPlayed == null) {
+      throw new ApiException(400, "Missing the required parameter 'percentPlayed' when calling headItemImage2");
+    }
+    // verify the required parameter 'unplayedCount' is set
+    if (unplayedCount == null) {
+      throw new ApiException(400, "Missing the required parameter 'unplayedCount' when calling headItemImage2");
+    }
+    // verify the required parameter 'imageIndex' is set
+    if (imageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling headItemImage2");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}/{tag}/{format}/{maxWidth}/{maxHeight}/{percentPlayed}/{unplayedCount}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{maxWidth}", ApiClient.urlEncode(maxWidth.toString()))
+        .replace("{maxHeight}", ApiClient.urlEncode(maxHeight.toString()))
+        .replace("{tag}", ApiClient.urlEncode(tag.toString()))
+        .replace("{format}", ApiClient.urlEncode(format.toString()))
+        .replace("{percentPlayed}", ApiClient.urlEncode(percentPlayed.toString()))
+        .replace("{unplayedCount}", ApiClient.urlEncode(unplayedCount.toString()))
+        .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets the item&#39;s image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File headItemImageByIndex(UUID itemId, ImageType imageType, Integer imageIndex, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    ApiResponse<File> localVarResponse = headItemImageByIndexWithHttpInfo(itemId, imageType, imageIndex, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets the item&#39;s image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> headItemImageByIndexWithHttpInfo(UUID itemId, ImageType imageType, Integer imageIndex, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = headItemImageByIndexRequestBuilder(itemId, imageType, imageIndex, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("headItemImageByIndex", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder headItemImageByIndexRequestBuilder(UUID itemId, ImageType imageType, Integer imageIndex, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling headItemImageByIndex");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling headItemImageByIndex");
+    }
+    // verify the required parameter 'imageIndex' is set
+    if (imageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling headItemImageByIndex");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get music genre image by name.
+   * 
+   * @param name Music genre name. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File headMusicGenreImage(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    ApiResponse<File> localVarResponse = headMusicGenreImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get music genre image by name.
+   * 
+   * @param name Music genre name. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> headMusicGenreImageWithHttpInfo(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = headMusicGenreImageRequestBuilder(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("headMusicGenreImage", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder headMusicGenreImageRequestBuilder(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling headMusicGenreImage");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling headMusicGenreImage");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/MusicGenres/{name}/Images/{imageType}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+    localVarQueryParameterBaseName = "imageIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get music genre image by name.
+   * 
+   * @param name Music genre name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File headMusicGenreImageByIndex(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    ApiResponse<File> localVarResponse = headMusicGenreImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get music genre image by name.
+   * 
+   * @param name Music genre name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> headMusicGenreImageByIndexWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = headMusicGenreImageByIndexRequestBuilder(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("headMusicGenreImageByIndex", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder headMusicGenreImageByIndexRequestBuilder(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling headMusicGenreImageByIndex");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling headMusicGenreImageByIndex");
+    }
+    // verify the required parameter 'imageIndex' is set
+    if (imageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling headMusicGenreImageByIndex");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/MusicGenres/{name}/Images/{imageType}/{imageIndex}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get person image by name.
+   * 
+   * @param name Person name. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File headPersonImage(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    ApiResponse<File> localVarResponse = headPersonImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get person image by name.
+   * 
+   * @param name Person name. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> headPersonImageWithHttpInfo(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = headPersonImageRequestBuilder(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("headPersonImage", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder headPersonImageRequestBuilder(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling headPersonImage");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling headPersonImage");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Persons/{name}/Images/{imageType}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+    localVarQueryParameterBaseName = "imageIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get person image by name.
+   * 
+   * @param name Person name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File headPersonImageByIndex(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    ApiResponse<File> localVarResponse = headPersonImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get person image by name.
+   * 
+   * @param name Person name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> headPersonImageByIndexWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = headPersonImageByIndexRequestBuilder(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("headPersonImageByIndex", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder headPersonImageByIndexRequestBuilder(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling headPersonImageByIndex");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling headPersonImageByIndex");
+    }
+    // verify the required parameter 'imageIndex' is set
+    if (imageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling headPersonImageByIndex");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Persons/{name}/Images/{imageType}/{imageIndex}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get studio image by name.
+   * 
+   * @param name Studio name. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File headStudioImage(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    ApiResponse<File> localVarResponse = headStudioImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get studio image by name.
+   * 
+   * @param name Studio name. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> headStudioImageWithHttpInfo(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = headStudioImageRequestBuilder(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("headStudioImage", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder headStudioImageRequestBuilder(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling headStudioImage");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling headStudioImage");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Studios/{name}/Images/{imageType}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+    localVarQueryParameterBaseName = "imageIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get studio image by name.
+   * 
+   * @param name Studio name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File headStudioImageByIndex(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    ApiResponse<File> localVarResponse = headStudioImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get studio image by name.
+   * 
+   * @param name Studio name. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> headStudioImageByIndexWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = headStudioImageByIndexRequestBuilder(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("headStudioImageByIndex", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder headStudioImageByIndexRequestBuilder(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling headStudioImageByIndex");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling headStudioImageByIndex");
+    }
+    // verify the required parameter 'imageIndex' is set
+    if (imageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling headStudioImageByIndex");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Studios/{name}/Images/{imageType}/{imageIndex}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get user profile image.
+   * 
+   * @param userId User id. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File headUserImage(UUID userId, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    ApiResponse<File> localVarResponse = headUserImageWithHttpInfo(userId, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get user profile image.
+   * 
+   * @param userId User id. (required)
+   * @param imageType Image type. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @param imageIndex Image index. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> headUserImageWithHttpInfo(UUID userId, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = headUserImageRequestBuilder(userId, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("headUserImage", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder headUserImageRequestBuilder(UUID userId, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling headUserImage");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling headUserImage");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/{userId}/Images/{imageType}"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+    localVarQueryParameterBaseName = "imageIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get user profile image.
+   * 
+   * @param userId User id. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File headUserImageByIndex(UUID userId, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    ApiResponse<File> localVarResponse = headUserImageByIndexWithHttpInfo(userId, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get user profile image.
+   * 
+   * @param userId User id. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Image index. (required)
+   * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
+   * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
+   * @param maxWidth The maximum image width to return. (optional)
+   * @param maxHeight The maximum image height to return. (optional)
+   * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
+   * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
+   * @param width The fixed image width to return. (optional)
+   * @param height The fixed image height to return. (optional)
+   * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
+   * @param fillWidth Width of box to fill. (optional)
+   * @param fillHeight Height of box to fill. (optional)
+   * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
+   * @param addPlayedIndicator Optional. Add a played indicator. (optional)
+   * @param blur Optional. Blur image. (optional)
+   * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
+   * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> headUserImageByIndexWithHttpInfo(UUID userId, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = headUserImageByIndexRequestBuilder(userId, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("headUserImageByIndex", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder headUserImageByIndexRequestBuilder(UUID userId, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling headUserImageByIndex");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling headUserImageByIndex");
+    }
+    // verify the required parameter 'imageIndex' is set
+    if (imageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling headUserImageByIndex");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/{userId}/Images/{imageType}/{imageIndex}"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tag";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "maxWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
+    localVarQueryParameterBaseName = "maxHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
+    localVarQueryParameterBaseName = "percentPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
+    localVarQueryParameterBaseName = "unplayedCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
+    localVarQueryParameterBaseName = "width";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
+    localVarQueryParameterBaseName = "height";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
+    localVarQueryParameterBaseName = "quality";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
+    localVarQueryParameterBaseName = "fillWidth";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
+    localVarQueryParameterBaseName = "fillHeight";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
+    localVarQueryParameterBaseName = "cropWhitespace";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("cropWhitespace", cropWhitespace));
+    localVarQueryParameterBaseName = "addPlayedIndicator";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addPlayedIndicator", addPlayedIndicator));
+    localVarQueryParameterBaseName = "blur";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
+    localVarQueryParameterBaseName = "backgroundColor";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
+    localVarQueryParameterBaseName = "foregroundLayer";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Sets the user image.
+   * 
+   * @param userId User Id. (required)
+   * @param imageType (Unused) Image type. (required)
+   * @param index (Unused) Image index. (optional)
+   * @param body  (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void postUserImage(UUID userId, ImageType imageType, Integer index, File body) throws ApiException {
+    postUserImageWithHttpInfo(userId, imageType, index, body);
+  }
+
+  /**
+   * Sets the user image.
+   * 
+   * @param userId User Id. (required)
+   * @param imageType (Unused) Image type. (required)
+   * @param index (Unused) Image index. (optional)
+   * @param body  (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> postUserImageWithHttpInfo(UUID userId, ImageType imageType, Integer index, File body) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = postUserImageRequestBuilder(userId, imageType, index, body);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("postUserImage", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder postUserImageRequestBuilder(UUID userId, ImageType imageType, Integer index, File body) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling postUserImage");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling postUserImage");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/{userId}/Images/{imageType}"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "index";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("index", index));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Content-Type", "image/*");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Sets the user image.
+   * 
+   * @param userId User Id. (required)
+   * @param imageType (Unused) Image type. (required)
+   * @param index (Unused) Image index. (required)
+   * @param body  (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void postUserImageByIndex(UUID userId, ImageType imageType, Integer index, File body) throws ApiException {
+    postUserImageByIndexWithHttpInfo(userId, imageType, index, body);
+  }
+
+  /**
+   * Sets the user image.
+   * 
+   * @param userId User Id. (required)
+   * @param imageType (Unused) Image type. (required)
+   * @param index (Unused) Image index. (required)
+   * @param body  (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> postUserImageByIndexWithHttpInfo(UUID userId, ImageType imageType, Integer index, File body) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = postUserImageByIndexRequestBuilder(userId, imageType, index, body);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("postUserImageByIndex", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder postUserImageByIndexRequestBuilder(UUID userId, ImageType imageType, Integer index, File body) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling postUserImageByIndex");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling postUserImageByIndex");
+    }
+    // verify the required parameter 'index' is set
+    if (index == null) {
+      throw new ApiException(400, "Missing the required parameter 'index' when calling postUserImageByIndex");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/{userId}/Images/{imageType}/{index}"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{index}", ApiClient.urlEncode(index.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "image/*");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Set item image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param body  (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void setItemImage(UUID itemId, ImageType imageType, File body) throws ApiException {
+    setItemImageWithHttpInfo(itemId, imageType, body);
+  }
+
+  /**
+   * Set item image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param body  (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> setItemImageWithHttpInfo(UUID itemId, ImageType imageType, File body) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = setItemImageRequestBuilder(itemId, imageType, body);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("setItemImage", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder setItemImageRequestBuilder(UUID itemId, ImageType imageType, File body) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling setItemImage");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling setItemImage");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/Images/{imageType}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "image/*");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Set item image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex (Unused) Image index. (required)
+   * @param body  (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void setItemImageByIndex(UUID itemId, ImageType imageType, Integer imageIndex, File body) throws ApiException {
+    setItemImageByIndexWithHttpInfo(itemId, imageType, imageIndex, body);
+  }
+
+  /**
+   * Set item image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex (Unused) Image index. (required)
+   * @param body  (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> setItemImageByIndexWithHttpInfo(UUID itemId, ImageType imageType, Integer imageIndex, File body) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = setItemImageByIndexRequestBuilder(itemId, imageType, imageIndex, body);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("setItemImageByIndex", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder setItemImageByIndexRequestBuilder(UUID itemId, ImageType imageType, Integer imageIndex, File body) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling setItemImageByIndex");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling setItemImageByIndex");
+    }
+    // verify the required parameter 'imageIndex' is set
+    if (imageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling setItemImageByIndex");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "image/*");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Updates the index for an item image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Old image index. (required)
+   * @param newIndex New image index. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void updateItemImageIndex(UUID itemId, ImageType imageType, Integer imageIndex, Integer newIndex) throws ApiException {
+    updateItemImageIndexWithHttpInfo(itemId, imageType, imageIndex, newIndex);
+  }
+
+  /**
+   * Updates the index for an item image.
+   * 
+   * @param itemId Item id. (required)
+   * @param imageType Image type. (required)
+   * @param imageIndex Old image index. (required)
+   * @param newIndex New image index. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> updateItemImageIndexWithHttpInfo(UUID itemId, ImageType imageType, Integer imageIndex, Integer newIndex) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = updateItemImageIndexRequestBuilder(itemId, imageType, imageIndex, newIndex);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("updateItemImageIndex", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder updateItemImageIndexRequestBuilder(UUID itemId, ImageType imageType, Integer imageIndex, Integer newIndex) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling updateItemImageIndex");
+    }
+    // verify the required parameter 'imageType' is set
+    if (imageType == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageType' when calling updateItemImageIndex");
+    }
+    // verify the required parameter 'imageIndex' is set
+    if (imageIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'imageIndex' when calling updateItemImageIndex");
+    }
+    // verify the required parameter 'newIndex' is set
+    if (newIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'newIndex' when calling updateItemImageIndex");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}/Index"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{imageType}", ApiClient.urlEncode(imageType.toString()))
+        .replace("{imageIndex}", ApiClient.urlEncode(imageIndex.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "newIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("newIndex", newIndex));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Uploads a custom splashscreen.  The body is expected to the image contents base64 encoded.
+   * 
+   * @param body  (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void uploadCustomSplashscreen(File body) throws ApiException {
+    uploadCustomSplashscreenWithHttpInfo(body);
+  }
+
+  /**
+   * Uploads a custom splashscreen.  The body is expected to the image contents base64 encoded.
+   * 
+   * @param body  (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> uploadCustomSplashscreenWithHttpInfo(File body) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = uploadCustomSplashscreenRequestBuilder(body);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("uploadCustomSplashscreen", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder uploadCustomSplashscreenRequestBuilder(File body) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Branding/Splashscreen";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "image/*");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
 
-    public ImageApi() {
-        this(Configuration.getDefaultApiClient());
-    }
-
-    public ImageApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
-
-    public ApiClient getApiClient() {
-        return localVarApiClient;
-    }
-
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
-
-    public int getHostIndex() {
-        return localHostIndex;
-    }
-
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
-    }
-
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for deleteCustomSplashscreen
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Successfully deleted the custom splashscreen. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete splashscreen.. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteCustomSplashscreenCall(final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Branding/Splashscreen";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call deleteCustomSplashscreenValidateBeforeCall(final ApiCallback _callback) throws ApiException {
-        return deleteCustomSplashscreenCall(_callback);
-
-    }
-
-    /**
-     * Delete a custom splashscreen.
-     * 
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Successfully deleted the custom splashscreen. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete splashscreen.. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public void deleteCustomSplashscreen() throws ApiException {
-        deleteCustomSplashscreenWithHttpInfo();
-    }
-
-    /**
-     * Delete a custom splashscreen.
-     * 
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Successfully deleted the custom splashscreen. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete splashscreen.. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> deleteCustomSplashscreenWithHttpInfo() throws ApiException {
-        okhttp3.Call localVarCall = deleteCustomSplashscreenValidateBeforeCall(null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Delete a custom splashscreen. (asynchronously)
-     * 
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Successfully deleted the custom splashscreen. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete splashscreen.. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteCustomSplashscreenAsync(final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = deleteCustomSplashscreenValidateBeforeCall(_callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for deleteItemImage
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex The image index. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image deleted. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteItemImageCall(UUID itemId, ImageType imageType, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/Images/{imageType}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (imageIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageIndex", imageIndex));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call deleteItemImageValidateBeforeCall(UUID itemId, ImageType imageType, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling deleteItemImage(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling deleteItemImage(Async)");
-        }
-
-        return deleteItemImageCall(itemId, imageType, imageIndex, _callback);
-
-    }
-
-    /**
-     * Delete an item&#39;s image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex The image index. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image deleted. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void deleteItemImage(UUID itemId, ImageType imageType, Integer imageIndex) throws ApiException {
-        deleteItemImageWithHttpInfo(itemId, imageType, imageIndex);
-    }
-
-    /**
-     * Delete an item&#39;s image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex The image index. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image deleted. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> deleteItemImageWithHttpInfo(UUID itemId, ImageType imageType, Integer imageIndex) throws ApiException {
-        okhttp3.Call localVarCall = deleteItemImageValidateBeforeCall(itemId, imageType, imageIndex, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Delete an item&#39;s image. (asynchronously)
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex The image index. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image deleted. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteItemImageAsync(UUID itemId, ImageType imageType, Integer imageIndex, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = deleteItemImageValidateBeforeCall(itemId, imageType, imageIndex, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for deleteItemImageByIndex
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex The image index. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image deleted. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteItemImageByIndexCall(UUID itemId, ImageType imageType, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "imageIndex" + "}", localVarApiClient.escapeString(imageIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call deleteItemImageByIndexValidateBeforeCall(UUID itemId, ImageType imageType, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling deleteItemImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling deleteItemImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageIndex' is set
-        if (imageIndex == null) {
-            throw new ApiException("Missing the required parameter 'imageIndex' when calling deleteItemImageByIndex(Async)");
-        }
-
-        return deleteItemImageByIndexCall(itemId, imageType, imageIndex, _callback);
-
-    }
-
-    /**
-     * Delete an item&#39;s image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex The image index. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image deleted. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void deleteItemImageByIndex(UUID itemId, ImageType imageType, Integer imageIndex) throws ApiException {
-        deleteItemImageByIndexWithHttpInfo(itemId, imageType, imageIndex);
-    }
-
-    /**
-     * Delete an item&#39;s image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex The image index. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image deleted. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> deleteItemImageByIndexWithHttpInfo(UUID itemId, ImageType imageType, Integer imageIndex) throws ApiException {
-        okhttp3.Call localVarCall = deleteItemImageByIndexValidateBeforeCall(itemId, imageType, imageIndex, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Delete an item&#39;s image. (asynchronously)
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex The image index. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image deleted. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteItemImageByIndexAsync(UUID itemId, ImageType imageType, Integer imageIndex, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = deleteItemImageByIndexValidateBeforeCall(itemId, imageType, imageIndex, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for deleteUserImage
-     * @param userId User Id. (required)
-     * @param imageType (Unused) Image type. (required)
-     * @param index (Unused) Image index. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image deleted. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete the image. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteUserImageCall(UUID userId, ImageType imageType, Integer index, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Users/{userId}/Images/{imageType}"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (index != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("index", index));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call deleteUserImageValidateBeforeCall(UUID userId, ImageType imageType, Integer index, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling deleteUserImage(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling deleteUserImage(Async)");
-        }
-
-        return deleteUserImageCall(userId, imageType, index, _callback);
-
-    }
-
-    /**
-     * Delete the user&#39;s image.
-     * 
-     * @param userId User Id. (required)
-     * @param imageType (Unused) Image type. (required)
-     * @param index (Unused) Image index. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image deleted. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete the image. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public void deleteUserImage(UUID userId, ImageType imageType, Integer index) throws ApiException {
-        deleteUserImageWithHttpInfo(userId, imageType, index);
-    }
-
-    /**
-     * Delete the user&#39;s image.
-     * 
-     * @param userId User Id. (required)
-     * @param imageType (Unused) Image type. (required)
-     * @param index (Unused) Image index. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image deleted. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete the image. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> deleteUserImageWithHttpInfo(UUID userId, ImageType imageType, Integer index) throws ApiException {
-        okhttp3.Call localVarCall = deleteUserImageValidateBeforeCall(userId, imageType, index, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Delete the user&#39;s image. (asynchronously)
-     * 
-     * @param userId User Id. (required)
-     * @param imageType (Unused) Image type. (required)
-     * @param index (Unused) Image index. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image deleted. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete the image. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteUserImageAsync(UUID userId, ImageType imageType, Integer index, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = deleteUserImageValidateBeforeCall(userId, imageType, index, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for deleteUserImageByIndex
-     * @param userId User Id. (required)
-     * @param imageType (Unused) Image type. (required)
-     * @param index (Unused) Image index. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image deleted. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete the image. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteUserImageByIndexCall(UUID userId, ImageType imageType, Integer index, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Users/{userId}/Images/{imageType}/{index}"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "index" + "}", localVarApiClient.escapeString(index.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call deleteUserImageByIndexValidateBeforeCall(UUID userId, ImageType imageType, Integer index, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling deleteUserImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling deleteUserImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'index' is set
-        if (index == null) {
-            throw new ApiException("Missing the required parameter 'index' when calling deleteUserImageByIndex(Async)");
-        }
-
-        return deleteUserImageByIndexCall(userId, imageType, index, _callback);
-
-    }
-
-    /**
-     * Delete the user&#39;s image.
-     * 
-     * @param userId User Id. (required)
-     * @param imageType (Unused) Image type. (required)
-     * @param index (Unused) Image index. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image deleted. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete the image. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public void deleteUserImageByIndex(UUID userId, ImageType imageType, Integer index) throws ApiException {
-        deleteUserImageByIndexWithHttpInfo(userId, imageType, index);
-    }
-
-    /**
-     * Delete the user&#39;s image.
-     * 
-     * @param userId User Id. (required)
-     * @param imageType (Unused) Image type. (required)
-     * @param index (Unused) Image index. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image deleted. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete the image. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> deleteUserImageByIndexWithHttpInfo(UUID userId, ImageType imageType, Integer index) throws ApiException {
-        okhttp3.Call localVarCall = deleteUserImageByIndexValidateBeforeCall(userId, imageType, index, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Delete the user&#39;s image. (asynchronously)
-     * 
-     * @param userId User Id. (required)
-     * @param imageType (Unused) Image type. (required)
-     * @param index (Unused) Image index. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image deleted. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete the image. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteUserImageByIndexAsync(UUID userId, ImageType imageType, Integer index, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = deleteUserImageByIndexValidateBeforeCall(userId, imageType, index, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getArtistImage
-     * @param name Artist name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getArtistImageCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Artists/{name}/Images/{imageType}/{imageIndex}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "imageIndex" + "}", localVarApiClient.escapeString(imageIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getArtistImageValidateBeforeCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling getArtistImage(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling getArtistImage(Async)");
-        }
-
-        // verify the required parameter 'imageIndex' is set
-        if (imageIndex == null) {
-            throw new ApiException("Missing the required parameter 'imageIndex' when calling getArtistImage(Async)");
-        }
-
-        return getArtistImageCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-
-    }
-
-    /**
-     * Get artist image by name.
-     * 
-     * @param name Artist name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getArtistImage(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResp = getArtistImageWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get artist image by name.
-     * 
-     * @param name Artist name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getArtistImageWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        okhttp3.Call localVarCall = getArtistImageValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get artist image by name. (asynchronously)
-     * 
-     * @param name Artist name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getArtistImageAsync(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getArtistImageValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getGenreImage
-     * @param name Genre name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getGenreImageCall(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Genres/{name}/Images/{imageType}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        if (imageIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageIndex", imageIndex));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getGenreImageValidateBeforeCall(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling getGenreImage(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling getGenreImage(Async)");
-        }
-
-        return getGenreImageCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-
-    }
-
-    /**
-     * Get genre image by name.
-     * 
-     * @param name Genre name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getGenreImage(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResp = getGenreImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get genre image by name.
-     * 
-     * @param name Genre name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getGenreImageWithHttpInfo(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        okhttp3.Call localVarCall = getGenreImageValidateBeforeCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get genre image by name. (asynchronously)
-     * 
-     * @param name Genre name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getGenreImageAsync(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getGenreImageValidateBeforeCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getGenreImageByIndex
-     * @param name Genre name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getGenreImageByIndexCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Genres/{name}/Images/{imageType}/{imageIndex}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "imageIndex" + "}", localVarApiClient.escapeString(imageIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getGenreImageByIndexValidateBeforeCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling getGenreImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling getGenreImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageIndex' is set
-        if (imageIndex == null) {
-            throw new ApiException("Missing the required parameter 'imageIndex' when calling getGenreImageByIndex(Async)");
-        }
-
-        return getGenreImageByIndexCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-
-    }
-
-    /**
-     * Get genre image by name.
-     * 
-     * @param name Genre name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getGenreImageByIndex(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResp = getGenreImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get genre image by name.
-     * 
-     * @param name Genre name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getGenreImageByIndexWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        okhttp3.Call localVarCall = getGenreImageByIndexValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get genre image by name. (asynchronously)
-     * 
-     * @param name Genre name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getGenreImageByIndexAsync(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getGenreImageByIndexValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getItemImage
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getItemImageCall(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/Images/{imageType}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        if (imageIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageIndex", imageIndex));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getItemImageValidateBeforeCall(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getItemImage(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling getItemImage(Async)");
-        }
-
-        return getItemImageCall(itemId, imageType, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-
-    }
-
-    /**
-     * Gets the item&#39;s image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getItemImage(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResp = getItemImageWithHttpInfo(itemId, imageType, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer, imageIndex);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets the item&#39;s image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getItemImageWithHttpInfo(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        okhttp3.Call localVarCall = getItemImageValidateBeforeCall(itemId, imageType, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer, imageIndex, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets the item&#39;s image. (asynchronously)
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getItemImageAsync(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getItemImageValidateBeforeCall(itemId, imageType, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getItemImage2
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param maxWidth The maximum image width to return. (required)
-     * @param maxHeight The maximum image height to return. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (required)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (required)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (required)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (required)
-     * @param imageIndex Image index. (required)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getItemImage2Call(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, String tag, ImageFormat format, Double percentPlayed, Integer unplayedCount, Integer imageIndex, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}/{tag}/{format}/{maxWidth}/{maxHeight}/{percentPlayed}/{unplayedCount}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "maxWidth" + "}", localVarApiClient.escapeString(maxWidth.toString()))
-            .replace("{" + "maxHeight" + "}", localVarApiClient.escapeString(maxHeight.toString()))
-            .replace("{" + "tag" + "}", localVarApiClient.escapeString(tag.toString()))
-            .replace("{" + "format" + "}", localVarApiClient.escapeString(format.toString()))
-            .replace("{" + "percentPlayed" + "}", localVarApiClient.escapeString(percentPlayed.toString()))
-            .replace("{" + "unplayedCount" + "}", localVarApiClient.escapeString(unplayedCount.toString()))
-            .replace("{" + "imageIndex" + "}", localVarApiClient.escapeString(imageIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getItemImage2ValidateBeforeCall(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, String tag, ImageFormat format, Double percentPlayed, Integer unplayedCount, Integer imageIndex, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getItemImage2(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling getItemImage2(Async)");
-        }
-
-        // verify the required parameter 'maxWidth' is set
-        if (maxWidth == null) {
-            throw new ApiException("Missing the required parameter 'maxWidth' when calling getItemImage2(Async)");
-        }
-
-        // verify the required parameter 'maxHeight' is set
-        if (maxHeight == null) {
-            throw new ApiException("Missing the required parameter 'maxHeight' when calling getItemImage2(Async)");
-        }
-
-        // verify the required parameter 'tag' is set
-        if (tag == null) {
-            throw new ApiException("Missing the required parameter 'tag' when calling getItemImage2(Async)");
-        }
-
-        // verify the required parameter 'format' is set
-        if (format == null) {
-            throw new ApiException("Missing the required parameter 'format' when calling getItemImage2(Async)");
-        }
-
-        // verify the required parameter 'percentPlayed' is set
-        if (percentPlayed == null) {
-            throw new ApiException("Missing the required parameter 'percentPlayed' when calling getItemImage2(Async)");
-        }
-
-        // verify the required parameter 'unplayedCount' is set
-        if (unplayedCount == null) {
-            throw new ApiException("Missing the required parameter 'unplayedCount' when calling getItemImage2(Async)");
-        }
-
-        // verify the required parameter 'imageIndex' is set
-        if (imageIndex == null) {
-            throw new ApiException("Missing the required parameter 'imageIndex' when calling getItemImage2(Async)");
-        }
-
-        return getItemImage2Call(itemId, imageType, maxWidth, maxHeight, tag, format, percentPlayed, unplayedCount, imageIndex, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-
-    }
-
-    /**
-     * Gets the item&#39;s image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param maxWidth The maximum image width to return. (required)
-     * @param maxHeight The maximum image height to return. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (required)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (required)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (required)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (required)
-     * @param imageIndex Image index. (required)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getItemImage2(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, String tag, ImageFormat format, Double percentPlayed, Integer unplayedCount, Integer imageIndex, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResp = getItemImage2WithHttpInfo(itemId, imageType, maxWidth, maxHeight, tag, format, percentPlayed, unplayedCount, imageIndex, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets the item&#39;s image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param maxWidth The maximum image width to return. (required)
-     * @param maxHeight The maximum image height to return. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (required)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (required)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (required)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (required)
-     * @param imageIndex Image index. (required)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getItemImage2WithHttpInfo(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, String tag, ImageFormat format, Double percentPlayed, Integer unplayedCount, Integer imageIndex, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        okhttp3.Call localVarCall = getItemImage2ValidateBeforeCall(itemId, imageType, maxWidth, maxHeight, tag, format, percentPlayed, unplayedCount, imageIndex, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets the item&#39;s image. (asynchronously)
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param maxWidth The maximum image width to return. (required)
-     * @param maxHeight The maximum image height to return. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (required)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (required)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (required)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (required)
-     * @param imageIndex Image index. (required)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getItemImage2Async(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, String tag, ImageFormat format, Double percentPlayed, Integer unplayedCount, Integer imageIndex, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getItemImage2ValidateBeforeCall(itemId, imageType, maxWidth, maxHeight, tag, format, percentPlayed, unplayedCount, imageIndex, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getItemImageByIndex
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getItemImageByIndexCall(UUID itemId, ImageType imageType, Integer imageIndex, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "imageIndex" + "}", localVarApiClient.escapeString(imageIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getItemImageByIndexValidateBeforeCall(UUID itemId, ImageType imageType, Integer imageIndex, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getItemImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling getItemImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageIndex' is set
-        if (imageIndex == null) {
-            throw new ApiException("Missing the required parameter 'imageIndex' when calling getItemImageByIndex(Async)");
-        }
-
-        return getItemImageByIndexCall(itemId, imageType, imageIndex, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer, _callback);
-
-    }
-
-    /**
-     * Gets the item&#39;s image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getItemImageByIndex(UUID itemId, ImageType imageType, Integer imageIndex, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResp = getItemImageByIndexWithHttpInfo(itemId, imageType, imageIndex, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets the item&#39;s image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getItemImageByIndexWithHttpInfo(UUID itemId, ImageType imageType, Integer imageIndex, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        okhttp3.Call localVarCall = getItemImageByIndexValidateBeforeCall(itemId, imageType, imageIndex, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets the item&#39;s image. (asynchronously)
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getItemImageByIndexAsync(UUID itemId, ImageType imageType, Integer imageIndex, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getItemImageByIndexValidateBeforeCall(itemId, imageType, imageIndex, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getItemImageInfos
-     * @param itemId Item id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item images returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getItemImageInfosCall(UUID itemId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/Images"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getItemImageInfosValidateBeforeCall(UUID itemId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getItemImageInfos(Async)");
-        }
-
-        return getItemImageInfosCall(itemId, _callback);
-
-    }
-
-    /**
-     * Get item image infos.
-     * 
-     * @param itemId Item id. (required)
-     * @return List&lt;ImageInfo&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item images returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<ImageInfo> getItemImageInfos(UUID itemId) throws ApiException {
-        ApiResponse<List<ImageInfo>> localVarResp = getItemImageInfosWithHttpInfo(itemId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get item image infos.
-     * 
-     * @param itemId Item id. (required)
-     * @return ApiResponse&lt;List&lt;ImageInfo&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item images returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<ImageInfo>> getItemImageInfosWithHttpInfo(UUID itemId) throws ApiException {
-        okhttp3.Call localVarCall = getItemImageInfosValidateBeforeCall(itemId, null);
-        Type localVarReturnType = new TypeToken<List<ImageInfo>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get item image infos. (asynchronously)
-     * 
-     * @param itemId Item id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item images returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getItemImageInfosAsync(UUID itemId, final ApiCallback<List<ImageInfo>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getItemImageInfosValidateBeforeCall(itemId, _callback);
-        Type localVarReturnType = new TypeToken<List<ImageInfo>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getMusicGenreImage
-     * @param name Music genre name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMusicGenreImageCall(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/MusicGenres/{name}/Images/{imageType}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        if (imageIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageIndex", imageIndex));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getMusicGenreImageValidateBeforeCall(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling getMusicGenreImage(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling getMusicGenreImage(Async)");
-        }
-
-        return getMusicGenreImageCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-
-    }
-
-    /**
-     * Get music genre image by name.
-     * 
-     * @param name Music genre name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getMusicGenreImage(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResp = getMusicGenreImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get music genre image by name.
-     * 
-     * @param name Music genre name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getMusicGenreImageWithHttpInfo(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        okhttp3.Call localVarCall = getMusicGenreImageValidateBeforeCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get music genre image by name. (asynchronously)
-     * 
-     * @param name Music genre name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMusicGenreImageAsync(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getMusicGenreImageValidateBeforeCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getMusicGenreImageByIndex
-     * @param name Music genre name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMusicGenreImageByIndexCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/MusicGenres/{name}/Images/{imageType}/{imageIndex}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "imageIndex" + "}", localVarApiClient.escapeString(imageIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getMusicGenreImageByIndexValidateBeforeCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling getMusicGenreImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling getMusicGenreImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageIndex' is set
-        if (imageIndex == null) {
-            throw new ApiException("Missing the required parameter 'imageIndex' when calling getMusicGenreImageByIndex(Async)");
-        }
-
-        return getMusicGenreImageByIndexCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-
-    }
-
-    /**
-     * Get music genre image by name.
-     * 
-     * @param name Music genre name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getMusicGenreImageByIndex(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResp = getMusicGenreImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get music genre image by name.
-     * 
-     * @param name Music genre name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getMusicGenreImageByIndexWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        okhttp3.Call localVarCall = getMusicGenreImageByIndexValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get music genre image by name. (asynchronously)
-     * 
-     * @param name Music genre name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMusicGenreImageByIndexAsync(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getMusicGenreImageByIndexValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getPersonImage
-     * @param name Person name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPersonImageCall(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Persons/{name}/Images/{imageType}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        if (imageIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageIndex", imageIndex));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getPersonImageValidateBeforeCall(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling getPersonImage(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling getPersonImage(Async)");
-        }
-
-        return getPersonImageCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-
-    }
-
-    /**
-     * Get person image by name.
-     * 
-     * @param name Person name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getPersonImage(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResp = getPersonImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get person image by name.
-     * 
-     * @param name Person name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getPersonImageWithHttpInfo(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        okhttp3.Call localVarCall = getPersonImageValidateBeforeCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get person image by name. (asynchronously)
-     * 
-     * @param name Person name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPersonImageAsync(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getPersonImageValidateBeforeCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getPersonImageByIndex
-     * @param name Person name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPersonImageByIndexCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Persons/{name}/Images/{imageType}/{imageIndex}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "imageIndex" + "}", localVarApiClient.escapeString(imageIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getPersonImageByIndexValidateBeforeCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling getPersonImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling getPersonImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageIndex' is set
-        if (imageIndex == null) {
-            throw new ApiException("Missing the required parameter 'imageIndex' when calling getPersonImageByIndex(Async)");
-        }
-
-        return getPersonImageByIndexCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-
-    }
-
-    /**
-     * Get person image by name.
-     * 
-     * @param name Person name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getPersonImageByIndex(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResp = getPersonImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get person image by name.
-     * 
-     * @param name Person name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getPersonImageByIndexWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        okhttp3.Call localVarCall = getPersonImageByIndexValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get person image by name. (asynchronously)
-     * 
-     * @param name Person name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPersonImageByIndexAsync(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getPersonImageByIndexValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getSplashscreen
-     * @param tag Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param blur Blur image. (optional)
-     * @param backgroundColor Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Apply a foreground layer on top of the image. (optional)
-     * @param quality Quality setting, from 0-100. (optional, default to 90)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Splashscreen returned successfully. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSplashscreenCall(String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer fillWidth, Integer fillHeight, Integer blur, String backgroundColor, String foregroundLayer, Integer quality, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Branding/Splashscreen";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getSplashscreenValidateBeforeCall(String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer fillWidth, Integer fillHeight, Integer blur, String backgroundColor, String foregroundLayer, Integer quality, final ApiCallback _callback) throws ApiException {
-        return getSplashscreenCall(tag, format, maxWidth, maxHeight, width, height, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer, quality, _callback);
-
-    }
-
-    /**
-     * Generates or gets the splashscreen.
-     * 
-     * @param tag Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param blur Blur image. (optional)
-     * @param backgroundColor Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Apply a foreground layer on top of the image. (optional)
-     * @param quality Quality setting, from 0-100. (optional, default to 90)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Splashscreen returned successfully. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getSplashscreen(String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer fillWidth, Integer fillHeight, Integer blur, String backgroundColor, String foregroundLayer, Integer quality) throws ApiException {
-        ApiResponse<File> localVarResp = getSplashscreenWithHttpInfo(tag, format, maxWidth, maxHeight, width, height, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer, quality);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Generates or gets the splashscreen.
-     * 
-     * @param tag Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param blur Blur image. (optional)
-     * @param backgroundColor Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Apply a foreground layer on top of the image. (optional)
-     * @param quality Quality setting, from 0-100. (optional, default to 90)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Splashscreen returned successfully. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getSplashscreenWithHttpInfo(String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer fillWidth, Integer fillHeight, Integer blur, String backgroundColor, String foregroundLayer, Integer quality) throws ApiException {
-        okhttp3.Call localVarCall = getSplashscreenValidateBeforeCall(tag, format, maxWidth, maxHeight, width, height, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer, quality, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Generates or gets the splashscreen. (asynchronously)
-     * 
-     * @param tag Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param blur Blur image. (optional)
-     * @param backgroundColor Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Apply a foreground layer on top of the image. (optional)
-     * @param quality Quality setting, from 0-100. (optional, default to 90)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Splashscreen returned successfully. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSplashscreenAsync(String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer fillWidth, Integer fillHeight, Integer blur, String backgroundColor, String foregroundLayer, Integer quality, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getSplashscreenValidateBeforeCall(tag, format, maxWidth, maxHeight, width, height, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer, quality, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getStudioImage
-     * @param name Studio name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getStudioImageCall(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Studios/{name}/Images/{imageType}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        if (imageIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageIndex", imageIndex));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getStudioImageValidateBeforeCall(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling getStudioImage(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling getStudioImage(Async)");
-        }
-
-        return getStudioImageCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-
-    }
-
-    /**
-     * Get studio image by name.
-     * 
-     * @param name Studio name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getStudioImage(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResp = getStudioImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get studio image by name.
-     * 
-     * @param name Studio name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getStudioImageWithHttpInfo(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        okhttp3.Call localVarCall = getStudioImageValidateBeforeCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get studio image by name. (asynchronously)
-     * 
-     * @param name Studio name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getStudioImageAsync(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getStudioImageValidateBeforeCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getStudioImageByIndex
-     * @param name Studio name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getStudioImageByIndexCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Studios/{name}/Images/{imageType}/{imageIndex}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "imageIndex" + "}", localVarApiClient.escapeString(imageIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getStudioImageByIndexValidateBeforeCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling getStudioImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling getStudioImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageIndex' is set
-        if (imageIndex == null) {
-            throw new ApiException("Missing the required parameter 'imageIndex' when calling getStudioImageByIndex(Async)");
-        }
-
-        return getStudioImageByIndexCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-
-    }
-
-    /**
-     * Get studio image by name.
-     * 
-     * @param name Studio name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getStudioImageByIndex(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResp = getStudioImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get studio image by name.
-     * 
-     * @param name Studio name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getStudioImageByIndexWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        okhttp3.Call localVarCall = getStudioImageByIndexValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get studio image by name. (asynchronously)
-     * 
-     * @param name Studio name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getStudioImageByIndexAsync(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getStudioImageByIndexValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getUserImage
-     * @param userId User id. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getUserImageCall(UUID userId, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Users/{userId}/Images/{imageType}"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        if (imageIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageIndex", imageIndex));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getUserImageValidateBeforeCall(UUID userId, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling getUserImage(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling getUserImage(Async)");
-        }
-
-        return getUserImageCall(userId, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-
-    }
-
-    /**
-     * Get user profile image.
-     * 
-     * @param userId User id. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getUserImage(UUID userId, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResp = getUserImageWithHttpInfo(userId, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get user profile image.
-     * 
-     * @param userId User id. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getUserImageWithHttpInfo(UUID userId, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        okhttp3.Call localVarCall = getUserImageValidateBeforeCall(userId, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get user profile image. (asynchronously)
-     * 
-     * @param userId User id. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getUserImageAsync(UUID userId, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getUserImageValidateBeforeCall(userId, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getUserImageByIndex
-     * @param userId User id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getUserImageByIndexCall(UUID userId, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Users/{userId}/Images/{imageType}/{imageIndex}"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "imageIndex" + "}", localVarApiClient.escapeString(imageIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getUserImageByIndexValidateBeforeCall(UUID userId, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling getUserImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling getUserImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageIndex' is set
-        if (imageIndex == null) {
-            throw new ApiException("Missing the required parameter 'imageIndex' when calling getUserImageByIndex(Async)");
-        }
-
-        return getUserImageByIndexCall(userId, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-
-    }
-
-    /**
-     * Get user profile image.
-     * 
-     * @param userId User id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getUserImageByIndex(UUID userId, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResp = getUserImageByIndexWithHttpInfo(userId, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get user profile image.
-     * 
-     * @param userId User id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getUserImageByIndexWithHttpInfo(UUID userId, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        okhttp3.Call localVarCall = getUserImageByIndexValidateBeforeCall(userId, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get user profile image. (asynchronously)
-     * 
-     * @param userId User id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getUserImageByIndexAsync(UUID userId, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getUserImageByIndexValidateBeforeCall(userId, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for headArtistImage
-     * @param name Artist name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headArtistImageCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Artists/{name}/Images/{imageType}/{imageIndex}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "imageIndex" + "}", localVarApiClient.escapeString(imageIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "HEAD", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call headArtistImageValidateBeforeCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling headArtistImage(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling headArtistImage(Async)");
-        }
-
-        // verify the required parameter 'imageIndex' is set
-        if (imageIndex == null) {
-            throw new ApiException("Missing the required parameter 'imageIndex' when calling headArtistImage(Async)");
-        }
-
-        return headArtistImageCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-
-    }
-
-    /**
-     * Get artist image by name.
-     * 
-     * @param name Artist name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File headArtistImage(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResp = headArtistImageWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get artist image by name.
-     * 
-     * @param name Artist name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> headArtistImageWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        okhttp3.Call localVarCall = headArtistImageValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get artist image by name. (asynchronously)
-     * 
-     * @param name Artist name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headArtistImageAsync(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = headArtistImageValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for headGenreImage
-     * @param name Genre name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headGenreImageCall(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Genres/{name}/Images/{imageType}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        if (imageIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageIndex", imageIndex));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "HEAD", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call headGenreImageValidateBeforeCall(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling headGenreImage(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling headGenreImage(Async)");
-        }
-
-        return headGenreImageCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-
-    }
-
-    /**
-     * Get genre image by name.
-     * 
-     * @param name Genre name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File headGenreImage(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResp = headGenreImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get genre image by name.
-     * 
-     * @param name Genre name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> headGenreImageWithHttpInfo(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        okhttp3.Call localVarCall = headGenreImageValidateBeforeCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get genre image by name. (asynchronously)
-     * 
-     * @param name Genre name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headGenreImageAsync(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = headGenreImageValidateBeforeCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for headGenreImageByIndex
-     * @param name Genre name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headGenreImageByIndexCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Genres/{name}/Images/{imageType}/{imageIndex}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "imageIndex" + "}", localVarApiClient.escapeString(imageIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "HEAD", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call headGenreImageByIndexValidateBeforeCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling headGenreImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling headGenreImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageIndex' is set
-        if (imageIndex == null) {
-            throw new ApiException("Missing the required parameter 'imageIndex' when calling headGenreImageByIndex(Async)");
-        }
-
-        return headGenreImageByIndexCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-
-    }
-
-    /**
-     * Get genre image by name.
-     * 
-     * @param name Genre name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File headGenreImageByIndex(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResp = headGenreImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get genre image by name.
-     * 
-     * @param name Genre name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> headGenreImageByIndexWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        okhttp3.Call localVarCall = headGenreImageByIndexValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get genre image by name. (asynchronously)
-     * 
-     * @param name Genre name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headGenreImageByIndexAsync(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = headGenreImageByIndexValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for headItemImage
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headItemImageCall(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/Images/{imageType}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        if (imageIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageIndex", imageIndex));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "HEAD", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call headItemImageValidateBeforeCall(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling headItemImage(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling headItemImage(Async)");
-        }
-
-        return headItemImageCall(itemId, imageType, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-
-    }
-
-    /**
-     * Gets the item&#39;s image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File headItemImage(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResp = headItemImageWithHttpInfo(itemId, imageType, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer, imageIndex);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets the item&#39;s image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> headItemImageWithHttpInfo(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        okhttp3.Call localVarCall = headItemImageValidateBeforeCall(itemId, imageType, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer, imageIndex, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets the item&#39;s image. (asynchronously)
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headItemImageAsync(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = headItemImageValidateBeforeCall(itemId, imageType, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for headItemImage2
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param maxWidth The maximum image width to return. (required)
-     * @param maxHeight The maximum image height to return. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (required)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (required)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (required)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (required)
-     * @param imageIndex Image index. (required)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headItemImage2Call(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, String tag, ImageFormat format, Double percentPlayed, Integer unplayedCount, Integer imageIndex, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}/{tag}/{format}/{maxWidth}/{maxHeight}/{percentPlayed}/{unplayedCount}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "maxWidth" + "}", localVarApiClient.escapeString(maxWidth.toString()))
-            .replace("{" + "maxHeight" + "}", localVarApiClient.escapeString(maxHeight.toString()))
-            .replace("{" + "tag" + "}", localVarApiClient.escapeString(tag.toString()))
-            .replace("{" + "format" + "}", localVarApiClient.escapeString(format.toString()))
-            .replace("{" + "percentPlayed" + "}", localVarApiClient.escapeString(percentPlayed.toString()))
-            .replace("{" + "unplayedCount" + "}", localVarApiClient.escapeString(unplayedCount.toString()))
-            .replace("{" + "imageIndex" + "}", localVarApiClient.escapeString(imageIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "HEAD", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call headItemImage2ValidateBeforeCall(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, String tag, ImageFormat format, Double percentPlayed, Integer unplayedCount, Integer imageIndex, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling headItemImage2(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling headItemImage2(Async)");
-        }
-
-        // verify the required parameter 'maxWidth' is set
-        if (maxWidth == null) {
-            throw new ApiException("Missing the required parameter 'maxWidth' when calling headItemImage2(Async)");
-        }
-
-        // verify the required parameter 'maxHeight' is set
-        if (maxHeight == null) {
-            throw new ApiException("Missing the required parameter 'maxHeight' when calling headItemImage2(Async)");
-        }
-
-        // verify the required parameter 'tag' is set
-        if (tag == null) {
-            throw new ApiException("Missing the required parameter 'tag' when calling headItemImage2(Async)");
-        }
-
-        // verify the required parameter 'format' is set
-        if (format == null) {
-            throw new ApiException("Missing the required parameter 'format' when calling headItemImage2(Async)");
-        }
-
-        // verify the required parameter 'percentPlayed' is set
-        if (percentPlayed == null) {
-            throw new ApiException("Missing the required parameter 'percentPlayed' when calling headItemImage2(Async)");
-        }
-
-        // verify the required parameter 'unplayedCount' is set
-        if (unplayedCount == null) {
-            throw new ApiException("Missing the required parameter 'unplayedCount' when calling headItemImage2(Async)");
-        }
-
-        // verify the required parameter 'imageIndex' is set
-        if (imageIndex == null) {
-            throw new ApiException("Missing the required parameter 'imageIndex' when calling headItemImage2(Async)");
-        }
-
-        return headItemImage2Call(itemId, imageType, maxWidth, maxHeight, tag, format, percentPlayed, unplayedCount, imageIndex, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-
-    }
-
-    /**
-     * Gets the item&#39;s image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param maxWidth The maximum image width to return. (required)
-     * @param maxHeight The maximum image height to return. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (required)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (required)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (required)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (required)
-     * @param imageIndex Image index. (required)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File headItemImage2(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, String tag, ImageFormat format, Double percentPlayed, Integer unplayedCount, Integer imageIndex, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResp = headItemImage2WithHttpInfo(itemId, imageType, maxWidth, maxHeight, tag, format, percentPlayed, unplayedCount, imageIndex, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets the item&#39;s image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param maxWidth The maximum image width to return. (required)
-     * @param maxHeight The maximum image height to return. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (required)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (required)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (required)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (required)
-     * @param imageIndex Image index. (required)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> headItemImage2WithHttpInfo(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, String tag, ImageFormat format, Double percentPlayed, Integer unplayedCount, Integer imageIndex, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        okhttp3.Call localVarCall = headItemImage2ValidateBeforeCall(itemId, imageType, maxWidth, maxHeight, tag, format, percentPlayed, unplayedCount, imageIndex, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets the item&#39;s image. (asynchronously)
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param maxWidth The maximum image width to return. (required)
-     * @param maxHeight The maximum image height to return. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (required)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (required)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (required)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (required)
-     * @param imageIndex Image index. (required)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headItemImage2Async(UUID itemId, ImageType imageType, Integer maxWidth, Integer maxHeight, String tag, ImageFormat format, Double percentPlayed, Integer unplayedCount, Integer imageIndex, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = headItemImage2ValidateBeforeCall(itemId, imageType, maxWidth, maxHeight, tag, format, percentPlayed, unplayedCount, imageIndex, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for headItemImageByIndex
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headItemImageByIndexCall(UUID itemId, ImageType imageType, Integer imageIndex, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "imageIndex" + "}", localVarApiClient.escapeString(imageIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "HEAD", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call headItemImageByIndexValidateBeforeCall(UUID itemId, ImageType imageType, Integer imageIndex, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling headItemImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling headItemImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageIndex' is set
-        if (imageIndex == null) {
-            throw new ApiException("Missing the required parameter 'imageIndex' when calling headItemImageByIndex(Async)");
-        }
-
-        return headItemImageByIndexCall(itemId, imageType, imageIndex, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer, _callback);
-
-    }
-
-    /**
-     * Gets the item&#39;s image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File headItemImageByIndex(UUID itemId, ImageType imageType, Integer imageIndex, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResp = headItemImageByIndexWithHttpInfo(itemId, imageType, imageIndex, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets the item&#39;s image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> headItemImageByIndexWithHttpInfo(UUID itemId, ImageType imageType, Integer imageIndex, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        okhttp3.Call localVarCall = headItemImageByIndexValidateBeforeCall(itemId, imageType, imageIndex, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets the item&#39;s image. (asynchronously)
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param format Optional. The MediaBrowser.Model.Drawing.ImageFormat of the returned image. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headItemImageByIndexAsync(UUID itemId, ImageType imageType, Integer imageIndex, Integer maxWidth, Integer maxHeight, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, String tag, Boolean cropWhitespace, ImageFormat format, Boolean addPlayedIndicator, Double percentPlayed, Integer unplayedCount, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = headItemImageByIndexValidateBeforeCall(itemId, imageType, imageIndex, maxWidth, maxHeight, width, height, quality, fillWidth, fillHeight, tag, cropWhitespace, format, addPlayedIndicator, percentPlayed, unplayedCount, blur, backgroundColor, foregroundLayer, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for headMusicGenreImage
-     * @param name Music genre name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headMusicGenreImageCall(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/MusicGenres/{name}/Images/{imageType}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        if (imageIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageIndex", imageIndex));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "HEAD", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call headMusicGenreImageValidateBeforeCall(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling headMusicGenreImage(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling headMusicGenreImage(Async)");
-        }
-
-        return headMusicGenreImageCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-
-    }
-
-    /**
-     * Get music genre image by name.
-     * 
-     * @param name Music genre name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File headMusicGenreImage(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResp = headMusicGenreImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get music genre image by name.
-     * 
-     * @param name Music genre name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> headMusicGenreImageWithHttpInfo(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        okhttp3.Call localVarCall = headMusicGenreImageValidateBeforeCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get music genre image by name. (asynchronously)
-     * 
-     * @param name Music genre name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headMusicGenreImageAsync(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = headMusicGenreImageValidateBeforeCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for headMusicGenreImageByIndex
-     * @param name Music genre name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headMusicGenreImageByIndexCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/MusicGenres/{name}/Images/{imageType}/{imageIndex}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "imageIndex" + "}", localVarApiClient.escapeString(imageIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "HEAD", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call headMusicGenreImageByIndexValidateBeforeCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling headMusicGenreImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling headMusicGenreImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageIndex' is set
-        if (imageIndex == null) {
-            throw new ApiException("Missing the required parameter 'imageIndex' when calling headMusicGenreImageByIndex(Async)");
-        }
-
-        return headMusicGenreImageByIndexCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-
-    }
-
-    /**
-     * Get music genre image by name.
-     * 
-     * @param name Music genre name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File headMusicGenreImageByIndex(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResp = headMusicGenreImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get music genre image by name.
-     * 
-     * @param name Music genre name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> headMusicGenreImageByIndexWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        okhttp3.Call localVarCall = headMusicGenreImageByIndexValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get music genre image by name. (asynchronously)
-     * 
-     * @param name Music genre name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headMusicGenreImageByIndexAsync(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = headMusicGenreImageByIndexValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for headPersonImage
-     * @param name Person name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headPersonImageCall(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Persons/{name}/Images/{imageType}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        if (imageIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageIndex", imageIndex));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "HEAD", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call headPersonImageValidateBeforeCall(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling headPersonImage(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling headPersonImage(Async)");
-        }
-
-        return headPersonImageCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-
-    }
-
-    /**
-     * Get person image by name.
-     * 
-     * @param name Person name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File headPersonImage(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResp = headPersonImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get person image by name.
-     * 
-     * @param name Person name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> headPersonImageWithHttpInfo(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        okhttp3.Call localVarCall = headPersonImageValidateBeforeCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get person image by name. (asynchronously)
-     * 
-     * @param name Person name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headPersonImageAsync(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = headPersonImageValidateBeforeCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for headPersonImageByIndex
-     * @param name Person name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headPersonImageByIndexCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Persons/{name}/Images/{imageType}/{imageIndex}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "imageIndex" + "}", localVarApiClient.escapeString(imageIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "HEAD", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call headPersonImageByIndexValidateBeforeCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling headPersonImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling headPersonImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageIndex' is set
-        if (imageIndex == null) {
-            throw new ApiException("Missing the required parameter 'imageIndex' when calling headPersonImageByIndex(Async)");
-        }
-
-        return headPersonImageByIndexCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-
-    }
-
-    /**
-     * Get person image by name.
-     * 
-     * @param name Person name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File headPersonImageByIndex(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResp = headPersonImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get person image by name.
-     * 
-     * @param name Person name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> headPersonImageByIndexWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        okhttp3.Call localVarCall = headPersonImageByIndexValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get person image by name. (asynchronously)
-     * 
-     * @param name Person name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headPersonImageByIndexAsync(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = headPersonImageByIndexValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for headStudioImage
-     * @param name Studio name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headStudioImageCall(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Studios/{name}/Images/{imageType}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        if (imageIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageIndex", imageIndex));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "HEAD", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call headStudioImageValidateBeforeCall(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling headStudioImage(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling headStudioImage(Async)");
-        }
-
-        return headStudioImageCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-
-    }
-
-    /**
-     * Get studio image by name.
-     * 
-     * @param name Studio name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File headStudioImage(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResp = headStudioImageWithHttpInfo(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get studio image by name.
-     * 
-     * @param name Studio name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> headStudioImageWithHttpInfo(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        okhttp3.Call localVarCall = headStudioImageValidateBeforeCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get studio image by name. (asynchronously)
-     * 
-     * @param name Studio name. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headStudioImageAsync(String name, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = headStudioImageValidateBeforeCall(name, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for headStudioImageByIndex
-     * @param name Studio name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headStudioImageByIndexCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Studios/{name}/Images/{imageType}/{imageIndex}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "imageIndex" + "}", localVarApiClient.escapeString(imageIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "HEAD", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call headStudioImageByIndexValidateBeforeCall(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling headStudioImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling headStudioImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageIndex' is set
-        if (imageIndex == null) {
-            throw new ApiException("Missing the required parameter 'imageIndex' when calling headStudioImageByIndex(Async)");
-        }
-
-        return headStudioImageByIndexCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-
-    }
-
-    /**
-     * Get studio image by name.
-     * 
-     * @param name Studio name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File headStudioImageByIndex(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResp = headStudioImageByIndexWithHttpInfo(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get studio image by name.
-     * 
-     * @param name Studio name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> headStudioImageByIndexWithHttpInfo(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        okhttp3.Call localVarCall = headStudioImageByIndexValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get studio image by name. (asynchronously)
-     * 
-     * @param name Studio name. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headStudioImageByIndexAsync(String name, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = headStudioImageByIndexValidateBeforeCall(name, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for headUserImage
-     * @param userId User id. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headUserImageCall(UUID userId, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Users/{userId}/Images/{imageType}"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        if (imageIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageIndex", imageIndex));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "HEAD", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call headUserImageValidateBeforeCall(UUID userId, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling headUserImage(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling headUserImage(Async)");
-        }
-
-        return headUserImageCall(userId, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-
-    }
-
-    /**
-     * Get user profile image.
-     * 
-     * @param userId User id. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File headUserImage(UUID userId, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        ApiResponse<File> localVarResp = headUserImageWithHttpInfo(userId, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get user profile image.
-     * 
-     * @param userId User id. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> headUserImageWithHttpInfo(UUID userId, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex) throws ApiException {
-        okhttp3.Call localVarCall = headUserImageValidateBeforeCall(userId, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get user profile image. (asynchronously)
-     * 
-     * @param userId User id. (required)
-     * @param imageType Image type. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headUserImageAsync(UUID userId, ImageType imageType, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, Integer imageIndex, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = headUserImageValidateBeforeCall(userId, imageType, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, imageIndex, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for headUserImageByIndex
-     * @param userId User id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headUserImageByIndexCall(UUID userId, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Users/{userId}/Images/{imageType}/{imageIndex}"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "imageIndex" + "}", localVarApiClient.escapeString(imageIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tag != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tag", tag));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (maxWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxWidth", maxWidth));
-        }
-
-        if (maxHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxHeight", maxHeight));
-        }
-
-        if (percentPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("percentPlayed", percentPlayed));
-        }
-
-        if (unplayedCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("unplayedCount", unplayedCount));
-        }
-
-        if (width != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("width", width));
-        }
-
-        if (height != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("height", height));
-        }
-
-        if (quality != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("quality", quality));
-        }
-
-        if (fillWidth != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillWidth", fillWidth));
-        }
-
-        if (fillHeight != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fillHeight", fillHeight));
-        }
-
-        if (cropWhitespace != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cropWhitespace", cropWhitespace));
-        }
-
-        if (addPlayedIndicator != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addPlayedIndicator", addPlayedIndicator));
-        }
-
-        if (blur != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("blur", blur));
-        }
-
-        if (backgroundColor != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("backgroundColor", backgroundColor));
-        }
-
-        if (foregroundLayer != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("foregroundLayer", foregroundLayer));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "HEAD", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call headUserImageByIndexValidateBeforeCall(UUID userId, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling headUserImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling headUserImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageIndex' is set
-        if (imageIndex == null) {
-            throw new ApiException("Missing the required parameter 'imageIndex' when calling headUserImageByIndex(Async)");
-        }
-
-        return headUserImageByIndexCall(userId, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-
-    }
-
-    /**
-     * Get user profile image.
-     * 
-     * @param userId User id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File headUserImageByIndex(UUID userId, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        ApiResponse<File> localVarResp = headUserImageByIndexWithHttpInfo(userId, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get user profile image.
-     * 
-     * @param userId User id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> headUserImageByIndexWithHttpInfo(UUID userId, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer) throws ApiException {
-        okhttp3.Call localVarCall = headUserImageByIndexValidateBeforeCall(userId, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get user profile image. (asynchronously)
-     * 
-     * @param userId User id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Image index. (required)
-     * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
-     * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param cropWhitespace Optional. Specify if whitespace should be cropped out of the image. True/False. If unspecified, whitespace will be cropped from logos and clear art. (optional)
-     * @param addPlayedIndicator Optional. Add a played indicator. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Image stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call headUserImageByIndexAsync(UUID userId, ImageType imageType, Integer imageIndex, String tag, ImageFormat format, Integer maxWidth, Integer maxHeight, Double percentPlayed, Integer unplayedCount, Integer width, Integer height, Integer quality, Integer fillWidth, Integer fillHeight, Boolean cropWhitespace, Boolean addPlayedIndicator, Integer blur, String backgroundColor, String foregroundLayer, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = headUserImageByIndexValidateBeforeCall(userId, imageType, imageIndex, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, cropWhitespace, addPlayedIndicator, blur, backgroundColor, foregroundLayer, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for postUserImage
-     * @param userId User Id. (required)
-     * @param imageType (Unused) Image type. (required)
-     * @param index (Unused) Image index. (optional)
-     * @param body  (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image updated. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete the image. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call postUserImageCall(UUID userId, ImageType imageType, Integer index, File body, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = body;
-
-        // create path and map variables
-        String localVarPath = "/Users/{userId}/Images/{imageType}"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (index != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("index", index));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "image/*"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call postUserImageValidateBeforeCall(UUID userId, ImageType imageType, Integer index, File body, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling postUserImage(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling postUserImage(Async)");
-        }
-
-        return postUserImageCall(userId, imageType, index, body, _callback);
-
-    }
-
-    /**
-     * Sets the user image.
-     * 
-     * @param userId User Id. (required)
-     * @param imageType (Unused) Image type. (required)
-     * @param index (Unused) Image index. (optional)
-     * @param body  (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image updated. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete the image. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public void postUserImage(UUID userId, ImageType imageType, Integer index, File body) throws ApiException {
-        postUserImageWithHttpInfo(userId, imageType, index, body);
-    }
-
-    /**
-     * Sets the user image.
-     * 
-     * @param userId User Id. (required)
-     * @param imageType (Unused) Image type. (required)
-     * @param index (Unused) Image index. (optional)
-     * @param body  (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image updated. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete the image. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> postUserImageWithHttpInfo(UUID userId, ImageType imageType, Integer index, File body) throws ApiException {
-        okhttp3.Call localVarCall = postUserImageValidateBeforeCall(userId, imageType, index, body, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Sets the user image. (asynchronously)
-     * 
-     * @param userId User Id. (required)
-     * @param imageType (Unused) Image type. (required)
-     * @param index (Unused) Image index. (optional)
-     * @param body  (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image updated. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete the image. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call postUserImageAsync(UUID userId, ImageType imageType, Integer index, File body, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = postUserImageValidateBeforeCall(userId, imageType, index, body, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for postUserImageByIndex
-     * @param userId User Id. (required)
-     * @param imageType (Unused) Image type. (required)
-     * @param index (Unused) Image index. (required)
-     * @param body  (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image updated. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete the image. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call postUserImageByIndexCall(UUID userId, ImageType imageType, Integer index, File body, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = body;
-
-        // create path and map variables
-        String localVarPath = "/Users/{userId}/Images/{imageType}/{index}"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "index" + "}", localVarApiClient.escapeString(index.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "image/*"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call postUserImageByIndexValidateBeforeCall(UUID userId, ImageType imageType, Integer index, File body, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling postUserImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling postUserImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'index' is set
-        if (index == null) {
-            throw new ApiException("Missing the required parameter 'index' when calling postUserImageByIndex(Async)");
-        }
-
-        return postUserImageByIndexCall(userId, imageType, index, body, _callback);
-
-    }
-
-    /**
-     * Sets the user image.
-     * 
-     * @param userId User Id. (required)
-     * @param imageType (Unused) Image type. (required)
-     * @param index (Unused) Image index. (required)
-     * @param body  (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image updated. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete the image. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public void postUserImageByIndex(UUID userId, ImageType imageType, Integer index, File body) throws ApiException {
-        postUserImageByIndexWithHttpInfo(userId, imageType, index, body);
-    }
-
-    /**
-     * Sets the user image.
-     * 
-     * @param userId User Id. (required)
-     * @param imageType (Unused) Image type. (required)
-     * @param index (Unused) Image index. (required)
-     * @param body  (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image updated. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete the image. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> postUserImageByIndexWithHttpInfo(UUID userId, ImageType imageType, Integer index, File body) throws ApiException {
-        okhttp3.Call localVarCall = postUserImageByIndexValidateBeforeCall(userId, imageType, index, body, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Sets the user image. (asynchronously)
-     * 
-     * @param userId User Id. (required)
-     * @param imageType (Unused) Image type. (required)
-     * @param index (Unused) Image index. (required)
-     * @param body  (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image updated. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to delete the image. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call postUserImageByIndexAsync(UUID userId, ImageType imageType, Integer index, File body, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = postUserImageByIndexValidateBeforeCall(userId, imageType, index, body, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for setItemImage
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param body  (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image saved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call setItemImageCall(UUID itemId, ImageType imageType, File body, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = body;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/Images/{imageType}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "image/*"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call setItemImageValidateBeforeCall(UUID itemId, ImageType imageType, File body, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling setItemImage(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling setItemImage(Async)");
-        }
-
-        return setItemImageCall(itemId, imageType, body, _callback);
-
-    }
-
-    /**
-     * Set item image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param body  (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image saved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void setItemImage(UUID itemId, ImageType imageType, File body) throws ApiException {
-        setItemImageWithHttpInfo(itemId, imageType, body);
-    }
-
-    /**
-     * Set item image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param body  (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image saved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> setItemImageWithHttpInfo(UUID itemId, ImageType imageType, File body) throws ApiException {
-        okhttp3.Call localVarCall = setItemImageValidateBeforeCall(itemId, imageType, body, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Set item image. (asynchronously)
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param body  (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image saved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call setItemImageAsync(UUID itemId, ImageType imageType, File body, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = setItemImageValidateBeforeCall(itemId, imageType, body, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for setItemImageByIndex
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex (Unused) Image index. (required)
-     * @param body  (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image saved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call setItemImageByIndexCall(UUID itemId, ImageType imageType, Integer imageIndex, File body, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = body;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "imageIndex" + "}", localVarApiClient.escapeString(imageIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "image/*"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call setItemImageByIndexValidateBeforeCall(UUID itemId, ImageType imageType, Integer imageIndex, File body, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling setItemImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling setItemImageByIndex(Async)");
-        }
-
-        // verify the required parameter 'imageIndex' is set
-        if (imageIndex == null) {
-            throw new ApiException("Missing the required parameter 'imageIndex' when calling setItemImageByIndex(Async)");
-        }
-
-        return setItemImageByIndexCall(itemId, imageType, imageIndex, body, _callback);
-
-    }
-
-    /**
-     * Set item image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex (Unused) Image index. (required)
-     * @param body  (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image saved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void setItemImageByIndex(UUID itemId, ImageType imageType, Integer imageIndex, File body) throws ApiException {
-        setItemImageByIndexWithHttpInfo(itemId, imageType, imageIndex, body);
-    }
-
-    /**
-     * Set item image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex (Unused) Image index. (required)
-     * @param body  (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image saved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> setItemImageByIndexWithHttpInfo(UUID itemId, ImageType imageType, Integer imageIndex, File body) throws ApiException {
-        okhttp3.Call localVarCall = setItemImageByIndexValidateBeforeCall(itemId, imageType, imageIndex, body, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Set item image. (asynchronously)
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex (Unused) Image index. (required)
-     * @param body  (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image saved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call setItemImageByIndexAsync(UUID itemId, ImageType imageType, Integer imageIndex, File body, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = setItemImageByIndexValidateBeforeCall(itemId, imageType, imageIndex, body, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for updateItemImageIndex
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Old image index. (required)
-     * @param newIndex New image index. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image index updated. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updateItemImageIndexCall(UUID itemId, ImageType imageType, Integer imageIndex, Integer newIndex, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/Images/{imageType}/{imageIndex}/Index"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "imageType" + "}", localVarApiClient.escapeString(imageType.toString()))
-            .replace("{" + "imageIndex" + "}", localVarApiClient.escapeString(imageIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (newIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("newIndex", newIndex));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call updateItemImageIndexValidateBeforeCall(UUID itemId, ImageType imageType, Integer imageIndex, Integer newIndex, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling updateItemImageIndex(Async)");
-        }
-
-        // verify the required parameter 'imageType' is set
-        if (imageType == null) {
-            throw new ApiException("Missing the required parameter 'imageType' when calling updateItemImageIndex(Async)");
-        }
-
-        // verify the required parameter 'imageIndex' is set
-        if (imageIndex == null) {
-            throw new ApiException("Missing the required parameter 'imageIndex' when calling updateItemImageIndex(Async)");
-        }
-
-        // verify the required parameter 'newIndex' is set
-        if (newIndex == null) {
-            throw new ApiException("Missing the required parameter 'newIndex' when calling updateItemImageIndex(Async)");
-        }
-
-        return updateItemImageIndexCall(itemId, imageType, imageIndex, newIndex, _callback);
-
-    }
-
-    /**
-     * Updates the index for an item image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Old image index. (required)
-     * @param newIndex New image index. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image index updated. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void updateItemImageIndex(UUID itemId, ImageType imageType, Integer imageIndex, Integer newIndex) throws ApiException {
-        updateItemImageIndexWithHttpInfo(itemId, imageType, imageIndex, newIndex);
-    }
-
-    /**
-     * Updates the index for an item image.
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Old image index. (required)
-     * @param newIndex New image index. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image index updated. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> updateItemImageIndexWithHttpInfo(UUID itemId, ImageType imageType, Integer imageIndex, Integer newIndex) throws ApiException {
-        okhttp3.Call localVarCall = updateItemImageIndexValidateBeforeCall(itemId, imageType, imageIndex, newIndex, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Updates the index for an item image. (asynchronously)
-     * 
-     * @param itemId Item id. (required)
-     * @param imageType Image type. (required)
-     * @param imageIndex Old image index. (required)
-     * @param newIndex New image index. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Image index updated. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updateItemImageIndexAsync(UUID itemId, ImageType imageType, Integer imageIndex, Integer newIndex, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = updateItemImageIndexValidateBeforeCall(itemId, imageType, imageIndex, newIndex, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for uploadCustomSplashscreen
-     * @param body  (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Successfully uploaded new splashscreen. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> Error reading MimeType from uploaded image. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to upload splashscreen.. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call uploadCustomSplashscreenCall(File body, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = body;
-
-        // create path and map variables
-        String localVarPath = "/Branding/Splashscreen";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "image/*"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call uploadCustomSplashscreenValidateBeforeCall(File body, final ApiCallback _callback) throws ApiException {
-        return uploadCustomSplashscreenCall(body, _callback);
-
-    }
-
-    /**
-     * Uploads a custom splashscreen.  The body is expected to the image contents base64 encoded.
-     * 
-     * @param body  (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Successfully uploaded new splashscreen. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> Error reading MimeType from uploaded image. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to upload splashscreen.. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public void uploadCustomSplashscreen(File body) throws ApiException {
-        uploadCustomSplashscreenWithHttpInfo(body);
-    }
-
-    /**
-     * Uploads a custom splashscreen.  The body is expected to the image contents base64 encoded.
-     * 
-     * @param body  (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Successfully uploaded new splashscreen. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> Error reading MimeType from uploaded image. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to upload splashscreen.. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> uploadCustomSplashscreenWithHttpInfo(File body) throws ApiException {
-        okhttp3.Call localVarCall = uploadCustomSplashscreenValidateBeforeCall(body, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Uploads a custom splashscreen.  The body is expected to the image contents base64 encoded. (asynchronously)
-     * 
-     * @param body  (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Successfully uploaded new splashscreen. </td><td>  -  </td></tr>
-        <tr><td> 400 </td><td> Error reading MimeType from uploaded image. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> User does not have permission to upload splashscreen.. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call uploadCustomSplashscreenAsync(File body, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = uploadCustomSplashscreenValidateBeforeCall(body, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
 }

@@ -13,92 +13,78 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.client.model.HttpHeaderInfo;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * DeviceIdentification
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  DeviceIdentification.JSON_PROPERTY_FRIENDLY_NAME,
+  DeviceIdentification.JSON_PROPERTY_MODEL_NUMBER,
+  DeviceIdentification.JSON_PROPERTY_SERIAL_NUMBER,
+  DeviceIdentification.JSON_PROPERTY_MODEL_NAME,
+  DeviceIdentification.JSON_PROPERTY_MODEL_DESCRIPTION,
+  DeviceIdentification.JSON_PROPERTY_MODEL_URL,
+  DeviceIdentification.JSON_PROPERTY_MANUFACTURER,
+  DeviceIdentification.JSON_PROPERTY_MANUFACTURER_URL,
+  DeviceIdentification.JSON_PROPERTY_HEADERS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class DeviceIdentification {
-  public static final String SERIALIZED_NAME_FRIENDLY_NAME = "FriendlyName";
-  @SerializedName(SERIALIZED_NAME_FRIENDLY_NAME)
+  public static final String JSON_PROPERTY_FRIENDLY_NAME = "FriendlyName";
   @javax.annotation.Nullable
   private String friendlyName;
 
-  public static final String SERIALIZED_NAME_MODEL_NUMBER = "ModelNumber";
-  @SerializedName(SERIALIZED_NAME_MODEL_NUMBER)
+  public static final String JSON_PROPERTY_MODEL_NUMBER = "ModelNumber";
   @javax.annotation.Nullable
   private String modelNumber;
 
-  public static final String SERIALIZED_NAME_SERIAL_NUMBER = "SerialNumber";
-  @SerializedName(SERIALIZED_NAME_SERIAL_NUMBER)
+  public static final String JSON_PROPERTY_SERIAL_NUMBER = "SerialNumber";
   @javax.annotation.Nullable
   private String serialNumber;
 
-  public static final String SERIALIZED_NAME_MODEL_NAME = "ModelName";
-  @SerializedName(SERIALIZED_NAME_MODEL_NAME)
+  public static final String JSON_PROPERTY_MODEL_NAME = "ModelName";
   @javax.annotation.Nullable
   private String modelName;
 
-  public static final String SERIALIZED_NAME_MODEL_DESCRIPTION = "ModelDescription";
-  @SerializedName(SERIALIZED_NAME_MODEL_DESCRIPTION)
+  public static final String JSON_PROPERTY_MODEL_DESCRIPTION = "ModelDescription";
   @javax.annotation.Nullable
   private String modelDescription;
 
-  public static final String SERIALIZED_NAME_MODEL_URL = "ModelUrl";
-  @SerializedName(SERIALIZED_NAME_MODEL_URL)
+  public static final String JSON_PROPERTY_MODEL_URL = "ModelUrl";
   @javax.annotation.Nullable
   private String modelUrl;
 
-  public static final String SERIALIZED_NAME_MANUFACTURER = "Manufacturer";
-  @SerializedName(SERIALIZED_NAME_MANUFACTURER)
+  public static final String JSON_PROPERTY_MANUFACTURER = "Manufacturer";
   @javax.annotation.Nullable
   private String manufacturer;
 
-  public static final String SERIALIZED_NAME_MANUFACTURER_URL = "ManufacturerUrl";
-  @SerializedName(SERIALIZED_NAME_MANUFACTURER_URL)
+  public static final String JSON_PROPERTY_MANUFACTURER_URL = "ManufacturerUrl";
   @javax.annotation.Nullable
   private String manufacturerUrl;
 
-  public static final String SERIALIZED_NAME_HEADERS = "Headers";
-  @SerializedName(SERIALIZED_NAME_HEADERS)
+  public static final String JSON_PROPERTY_HEADERS = "Headers";
   @javax.annotation.Nullable
   private List<HttpHeaderInfo> headers = new ArrayList<>();
 
-  public DeviceIdentification() {
+  public DeviceIdentification() { 
   }
 
   public DeviceIdentification friendlyName(@javax.annotation.Nullable String friendlyName) {
@@ -111,10 +97,15 @@ public class DeviceIdentification {
    * @return friendlyName
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_FRIENDLY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getFriendlyName() {
     return friendlyName;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_FRIENDLY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFriendlyName(@javax.annotation.Nullable String friendlyName) {
     this.friendlyName = friendlyName;
   }
@@ -130,10 +121,15 @@ public class DeviceIdentification {
    * @return modelNumber
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MODEL_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getModelNumber() {
     return modelNumber;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MODEL_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setModelNumber(@javax.annotation.Nullable String modelNumber) {
     this.modelNumber = modelNumber;
   }
@@ -149,10 +145,15 @@ public class DeviceIdentification {
    * @return serialNumber
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SERIAL_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSerialNumber() {
     return serialNumber;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SERIAL_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSerialNumber(@javax.annotation.Nullable String serialNumber) {
     this.serialNumber = serialNumber;
   }
@@ -168,10 +169,15 @@ public class DeviceIdentification {
    * @return modelName
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MODEL_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getModelName() {
     return modelName;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MODEL_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setModelName(@javax.annotation.Nullable String modelName) {
     this.modelName = modelName;
   }
@@ -187,10 +193,15 @@ public class DeviceIdentification {
    * @return modelDescription
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MODEL_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getModelDescription() {
     return modelDescription;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MODEL_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setModelDescription(@javax.annotation.Nullable String modelDescription) {
     this.modelDescription = modelDescription;
   }
@@ -206,10 +217,15 @@ public class DeviceIdentification {
    * @return modelUrl
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MODEL_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getModelUrl() {
     return modelUrl;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MODEL_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setModelUrl(@javax.annotation.Nullable String modelUrl) {
     this.modelUrl = modelUrl;
   }
@@ -225,10 +241,15 @@ public class DeviceIdentification {
    * @return manufacturer
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MANUFACTURER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getManufacturer() {
     return manufacturer;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MANUFACTURER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setManufacturer(@javax.annotation.Nullable String manufacturer) {
     this.manufacturer = manufacturer;
   }
@@ -244,10 +265,15 @@ public class DeviceIdentification {
    * @return manufacturerUrl
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MANUFACTURER_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getManufacturerUrl() {
     return manufacturerUrl;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MANUFACTURER_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setManufacturerUrl(@javax.annotation.Nullable String manufacturerUrl) {
     this.manufacturerUrl = manufacturerUrl;
   }
@@ -271,16 +297,23 @@ public class DeviceIdentification {
    * @return headers
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_HEADERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<HttpHeaderInfo> getHeaders() {
     return headers;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_HEADERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setHeaders(@javax.annotation.Nullable List<HttpHeaderInfo> headers) {
     this.headers = headers;
   }
 
 
-
+  /**
+   * Return true if this DeviceIdentification object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -334,135 +367,89 @@ public class DeviceIdentification {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("FriendlyName");
-    openapiFields.add("ModelNumber");
-    openapiFields.add("SerialNumber");
-    openapiFields.add("ModelName");
-    openapiFields.add("ModelDescription");
-    openapiFields.add("ModelUrl");
-    openapiFields.add("Manufacturer");
-    openapiFields.add("ManufacturerUrl");
-    openapiFields.add("Headers");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to DeviceIdentification
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!DeviceIdentification.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in DeviceIdentification is not found in the empty JSON string", DeviceIdentification.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!DeviceIdentification.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `DeviceIdentification` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("FriendlyName") != null && !jsonObj.get("FriendlyName").isJsonNull()) && !jsonObj.get("FriendlyName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `FriendlyName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("FriendlyName").toString()));
-      }
-      if ((jsonObj.get("ModelNumber") != null && !jsonObj.get("ModelNumber").isJsonNull()) && !jsonObj.get("ModelNumber").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ModelNumber` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ModelNumber").toString()));
-      }
-      if ((jsonObj.get("SerialNumber") != null && !jsonObj.get("SerialNumber").isJsonNull()) && !jsonObj.get("SerialNumber").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SerialNumber` to be a primitive type in the JSON string but got `%s`", jsonObj.get("SerialNumber").toString()));
-      }
-      if ((jsonObj.get("ModelName") != null && !jsonObj.get("ModelName").isJsonNull()) && !jsonObj.get("ModelName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ModelName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ModelName").toString()));
-      }
-      if ((jsonObj.get("ModelDescription") != null && !jsonObj.get("ModelDescription").isJsonNull()) && !jsonObj.get("ModelDescription").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ModelDescription` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ModelDescription").toString()));
-      }
-      if ((jsonObj.get("ModelUrl") != null && !jsonObj.get("ModelUrl").isJsonNull()) && !jsonObj.get("ModelUrl").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ModelUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ModelUrl").toString()));
-      }
-      if ((jsonObj.get("Manufacturer") != null && !jsonObj.get("Manufacturer").isJsonNull()) && !jsonObj.get("Manufacturer").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Manufacturer` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Manufacturer").toString()));
-      }
-      if ((jsonObj.get("ManufacturerUrl") != null && !jsonObj.get("ManufacturerUrl").isJsonNull()) && !jsonObj.get("ManufacturerUrl").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ManufacturerUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ManufacturerUrl").toString()));
-      }
-      if (jsonObj.get("Headers") != null && !jsonObj.get("Headers").isJsonNull()) {
-        JsonArray jsonArrayheaders = jsonObj.getAsJsonArray("Headers");
-        if (jsonArrayheaders != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("Headers").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `Headers` to be an array in the JSON string but got `%s`", jsonObj.get("Headers").toString()));
-          }
-
-          // validate the optional field `Headers` (array)
-          for (int i = 0; i < jsonArrayheaders.size(); i++) {
-            HttpHeaderInfo.validateJsonElement(jsonArrayheaders.get(i));
-          };
-        }
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!DeviceIdentification.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'DeviceIdentification' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<DeviceIdentification> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(DeviceIdentification.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<DeviceIdentification>() {
-           @Override
-           public void write(JsonWriter out, DeviceIdentification value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public DeviceIdentification read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of DeviceIdentification given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of DeviceIdentification
-   * @throws IOException if the JSON string is invalid with respect to DeviceIdentification
-   */
-  public static DeviceIdentification fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, DeviceIdentification.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of DeviceIdentification to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `FriendlyName` to the URL query string
+    if (getFriendlyName() != null) {
+      joiner.add(String.format("%sFriendlyName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFriendlyName()))));
+    }
+
+    // add `ModelNumber` to the URL query string
+    if (getModelNumber() != null) {
+      joiner.add(String.format("%sModelNumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getModelNumber()))));
+    }
+
+    // add `SerialNumber` to the URL query string
+    if (getSerialNumber() != null) {
+      joiner.add(String.format("%sSerialNumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSerialNumber()))));
+    }
+
+    // add `ModelName` to the URL query string
+    if (getModelName() != null) {
+      joiner.add(String.format("%sModelName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getModelName()))));
+    }
+
+    // add `ModelDescription` to the URL query string
+    if (getModelDescription() != null) {
+      joiner.add(String.format("%sModelDescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getModelDescription()))));
+    }
+
+    // add `ModelUrl` to the URL query string
+    if (getModelUrl() != null) {
+      joiner.add(String.format("%sModelUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getModelUrl()))));
+    }
+
+    // add `Manufacturer` to the URL query string
+    if (getManufacturer() != null) {
+      joiner.add(String.format("%sManufacturer%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getManufacturer()))));
+    }
+
+    // add `ManufacturerUrl` to the URL query string
+    if (getManufacturerUrl() != null) {
+      joiner.add(String.format("%sManufacturerUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getManufacturerUrl()))));
+    }
+
+    // add `Headers` to the URL query string
+    if (getHeaders() != null) {
+      for (int i = 0; i < getHeaders().size(); i++) {
+        if (getHeaders().get(i) != null) {
+          joiner.add(getHeaders().get(i).toUrlQueryString(String.format("%sHeaders%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

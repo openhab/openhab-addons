@@ -13,13 +13,17 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,65 +31,49 @@ import org.openapitools.client.model.ImageOption;
 import org.openapitools.client.model.ImageType;
 import org.openapitools.client.model.LibraryOptionInfoDto;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Library type options dto.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  LibraryTypeOptionsDto.JSON_PROPERTY_TYPE,
+  LibraryTypeOptionsDto.JSON_PROPERTY_METADATA_FETCHERS,
+  LibraryTypeOptionsDto.JSON_PROPERTY_IMAGE_FETCHERS,
+  LibraryTypeOptionsDto.JSON_PROPERTY_SUPPORTED_IMAGE_TYPES,
+  LibraryTypeOptionsDto.JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class LibraryTypeOptionsDto {
-  public static final String SERIALIZED_NAME_TYPE = "Type";
-  @SerializedName(SERIALIZED_NAME_TYPE)
-  @javax.annotation.Nullable
-  private String type;
+  public static final String JSON_PROPERTY_TYPE = "Type";
+  private JsonNullable<String> type = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_METADATA_FETCHERS = "MetadataFetchers";
-  @SerializedName(SERIALIZED_NAME_METADATA_FETCHERS)
+  public static final String JSON_PROPERTY_METADATA_FETCHERS = "MetadataFetchers";
   @javax.annotation.Nullable
   private List<LibraryOptionInfoDto> metadataFetchers = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_IMAGE_FETCHERS = "ImageFetchers";
-  @SerializedName(SERIALIZED_NAME_IMAGE_FETCHERS)
+  public static final String JSON_PROPERTY_IMAGE_FETCHERS = "ImageFetchers";
   @javax.annotation.Nullable
   private List<LibraryOptionInfoDto> imageFetchers = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_SUPPORTED_IMAGE_TYPES = "SupportedImageTypes";
-  @SerializedName(SERIALIZED_NAME_SUPPORTED_IMAGE_TYPES)
+  public static final String JSON_PROPERTY_SUPPORTED_IMAGE_TYPES = "SupportedImageTypes";
   @javax.annotation.Nullable
   private List<ImageType> supportedImageTypes = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_DEFAULT_IMAGE_OPTIONS = "DefaultImageOptions";
-  @SerializedName(SERIALIZED_NAME_DEFAULT_IMAGE_OPTIONS)
+  public static final String JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS = "DefaultImageOptions";
   @javax.annotation.Nullable
   private List<ImageOption> defaultImageOptions = new ArrayList<>();
 
-  public LibraryTypeOptionsDto() {
+  public LibraryTypeOptionsDto() { 
   }
 
   public LibraryTypeOptionsDto type(@javax.annotation.Nullable String type) {
-    this.type = type;
+    this.type = JsonNullable.<String>of(type);
     return this;
   }
 
@@ -94,12 +82,25 @@ public class LibraryTypeOptionsDto {
    * @return type
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getType() {
+        return type.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getType_JsonNullable() {
     return type;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  public void setType_JsonNullable(JsonNullable<String> type) {
+    this.type = type;
   }
 
   public void setType(@javax.annotation.Nullable String type) {
-    this.type = type;
+    this.type = JsonNullable.<String>of(type);
   }
 
 
@@ -121,10 +122,15 @@ public class LibraryTypeOptionsDto {
    * @return metadataFetchers
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_METADATA_FETCHERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<LibraryOptionInfoDto> getMetadataFetchers() {
     return metadataFetchers;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_METADATA_FETCHERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMetadataFetchers(@javax.annotation.Nullable List<LibraryOptionInfoDto> metadataFetchers) {
     this.metadataFetchers = metadataFetchers;
   }
@@ -148,10 +154,15 @@ public class LibraryTypeOptionsDto {
    * @return imageFetchers
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IMAGE_FETCHERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<LibraryOptionInfoDto> getImageFetchers() {
     return imageFetchers;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IMAGE_FETCHERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setImageFetchers(@javax.annotation.Nullable List<LibraryOptionInfoDto> imageFetchers) {
     this.imageFetchers = imageFetchers;
   }
@@ -175,10 +186,15 @@ public class LibraryTypeOptionsDto {
    * @return supportedImageTypes
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUPPORTED_IMAGE_TYPES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ImageType> getSupportedImageTypes() {
     return supportedImageTypes;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SUPPORTED_IMAGE_TYPES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSupportedImageTypes(@javax.annotation.Nullable List<ImageType> supportedImageTypes) {
     this.supportedImageTypes = supportedImageTypes;
   }
@@ -202,16 +218,23 @@ public class LibraryTypeOptionsDto {
    * @return defaultImageOptions
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ImageOption> getDefaultImageOptions() {
     return defaultImageOptions;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDefaultImageOptions(@javax.annotation.Nullable List<ImageOption> defaultImageOptions) {
     this.defaultImageOptions = defaultImageOptions;
   }
 
 
-
+  /**
+   * Return true if this LibraryTypeOptionsDto object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -221,7 +244,7 @@ public class LibraryTypeOptionsDto {
       return false;
     }
     LibraryTypeOptionsDto libraryTypeOptionsDto = (LibraryTypeOptionsDto) o;
-    return Objects.equals(this.type, libraryTypeOptionsDto.type) &&
+    return equalsNullable(this.type, libraryTypeOptionsDto.type) &&
         Objects.equals(this.metadataFetchers, libraryTypeOptionsDto.metadataFetchers) &&
         Objects.equals(this.imageFetchers, libraryTypeOptionsDto.imageFetchers) &&
         Objects.equals(this.supportedImageTypes, libraryTypeOptionsDto.supportedImageTypes) &&
@@ -234,7 +257,7 @@ public class LibraryTypeOptionsDto {
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, metadataFetchers, imageFetchers, supportedImageTypes, defaultImageOptions);
+    return Objects.hash(hashCodeNullable(type), metadataFetchers, imageFetchers, supportedImageTypes, defaultImageOptions);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -268,142 +291,85 @@ public class LibraryTypeOptionsDto {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Type");
-    openapiFields.add("MetadataFetchers");
-    openapiFields.add("ImageFetchers");
-    openapiFields.add("SupportedImageTypes");
-    openapiFields.add("DefaultImageOptions");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to LibraryTypeOptionsDto
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!LibraryTypeOptionsDto.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in LibraryTypeOptionsDto is not found in the empty JSON string", LibraryTypeOptionsDto.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!LibraryTypeOptionsDto.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `LibraryTypeOptionsDto` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Type") != null && !jsonObj.get("Type").isJsonNull()) && !jsonObj.get("Type").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Type").toString()));
-      }
-      if (jsonObj.get("MetadataFetchers") != null && !jsonObj.get("MetadataFetchers").isJsonNull()) {
-        JsonArray jsonArraymetadataFetchers = jsonObj.getAsJsonArray("MetadataFetchers");
-        if (jsonArraymetadataFetchers != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("MetadataFetchers").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `MetadataFetchers` to be an array in the JSON string but got `%s`", jsonObj.get("MetadataFetchers").toString()));
-          }
-
-          // validate the optional field `MetadataFetchers` (array)
-          for (int i = 0; i < jsonArraymetadataFetchers.size(); i++) {
-            LibraryOptionInfoDto.validateJsonElement(jsonArraymetadataFetchers.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("ImageFetchers") != null && !jsonObj.get("ImageFetchers").isJsonNull()) {
-        JsonArray jsonArrayimageFetchers = jsonObj.getAsJsonArray("ImageFetchers");
-        if (jsonArrayimageFetchers != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("ImageFetchers").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `ImageFetchers` to be an array in the JSON string but got `%s`", jsonObj.get("ImageFetchers").toString()));
-          }
-
-          // validate the optional field `ImageFetchers` (array)
-          for (int i = 0; i < jsonArrayimageFetchers.size(); i++) {
-            LibraryOptionInfoDto.validateJsonElement(jsonArrayimageFetchers.get(i));
-          };
-        }
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("SupportedImageTypes") != null && !jsonObj.get("SupportedImageTypes").isJsonNull() && !jsonObj.get("SupportedImageTypes").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SupportedImageTypes` to be an array in the JSON string but got `%s`", jsonObj.get("SupportedImageTypes").toString()));
-      }
-      if (jsonObj.get("DefaultImageOptions") != null && !jsonObj.get("DefaultImageOptions").isJsonNull()) {
-        JsonArray jsonArraydefaultImageOptions = jsonObj.getAsJsonArray("DefaultImageOptions");
-        if (jsonArraydefaultImageOptions != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("DefaultImageOptions").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `DefaultImageOptions` to be an array in the JSON string but got `%s`", jsonObj.get("DefaultImageOptions").toString()));
-          }
-
-          // validate the optional field `DefaultImageOptions` (array)
-          for (int i = 0; i < jsonArraydefaultImageOptions.size(); i++) {
-            ImageOption.validateJsonElement(jsonArraydefaultImageOptions.get(i));
-          };
-        }
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!LibraryTypeOptionsDto.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'LibraryTypeOptionsDto' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<LibraryTypeOptionsDto> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(LibraryTypeOptionsDto.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<LibraryTypeOptionsDto>() {
-           @Override
-           public void write(JsonWriter out, LibraryTypeOptionsDto value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public LibraryTypeOptionsDto read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of LibraryTypeOptionsDto given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of LibraryTypeOptionsDto
-   * @throws IOException if the JSON string is invalid with respect to LibraryTypeOptionsDto
-   */
-  public static LibraryTypeOptionsDto fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, LibraryTypeOptionsDto.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of LibraryTypeOptionsDto to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Type` to the URL query string
+    if (getType() != null) {
+      joiner.add(String.format("%sType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+    }
+
+    // add `MetadataFetchers` to the URL query string
+    if (getMetadataFetchers() != null) {
+      for (int i = 0; i < getMetadataFetchers().size(); i++) {
+        if (getMetadataFetchers().get(i) != null) {
+          joiner.add(getMetadataFetchers().get(i).toUrlQueryString(String.format("%sMetadataFetchers%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `ImageFetchers` to the URL query string
+    if (getImageFetchers() != null) {
+      for (int i = 0; i < getImageFetchers().size(); i++) {
+        if (getImageFetchers().get(i) != null) {
+          joiner.add(getImageFetchers().get(i).toUrlQueryString(String.format("%sImageFetchers%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `SupportedImageTypes` to the URL query string
+    if (getSupportedImageTypes() != null) {
+      for (int i = 0; i < getSupportedImageTypes().size(); i++) {
+        if (getSupportedImageTypes().get(i) != null) {
+          joiner.add(String.format("%sSupportedImageTypes%s%s=%s", prefix, suffix,
+              "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+              ApiClient.urlEncode(ApiClient.valueToString(getSupportedImageTypes().get(i)))));
+        }
+      }
+    }
+
+    // add `DefaultImageOptions` to the URL query string
+    if (getDefaultImageOptions() != null) {
+      for (int i = 0; i < getDefaultImageOptions().size(); i++) {
+        if (getDefaultImageOptions().get(i) != null) {
+          joiner.add(getDefaultImageOptions().get(i).toUrlQueryString(String.format("%sDefaultImageOptions%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

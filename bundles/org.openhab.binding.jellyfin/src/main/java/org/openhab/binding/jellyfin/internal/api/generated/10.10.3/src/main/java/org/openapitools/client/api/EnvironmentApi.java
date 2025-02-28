@@ -10,894 +10,599 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import org.openapitools.client.model.DefaultDirectoryBrowserInfoDto;
 import org.openapitools.client.model.FileSystemEntryInfo;
 import org.openapitools.client.model.ProblemDetails;
 import org.openapitools.client.model.ValidatePathDto;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class EnvironmentApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public EnvironmentApi() {
-        this(Configuration.getDefaultApiClient());
+  public EnvironmentApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public EnvironmentApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
     }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
 
-    public EnvironmentApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
+  /**
+   * Get Default directory browser.
+   * 
+   * @return DefaultDirectoryBrowserInfoDto
+   * @throws ApiException if fails to make API call
+   */
+  public DefaultDirectoryBrowserInfoDto getDefaultDirectoryBrowser() throws ApiException {
+    ApiResponse<DefaultDirectoryBrowserInfoDto> localVarResponse = getDefaultDirectoryBrowserWithHttpInfo();
+    return localVarResponse.getData();
+  }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
-    }
-
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
-
-    public int getHostIndex() {
-        return localHostIndex;
-    }
-
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
-    }
-
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for getDefaultDirectoryBrowser
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Default directory browser returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getDefaultDirectoryBrowserCall(final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Get Default directory browser.
+   * 
+   * @return ApiResponse&lt;DefaultDirectoryBrowserInfoDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<DefaultDirectoryBrowserInfoDto> getDefaultDirectoryBrowserWithHttpInfo() throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getDefaultDirectoryBrowserRequestBuilder();
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getDefaultDirectoryBrowser", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<DefaultDirectoryBrowserInfoDto>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = null;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/Environment/DefaultDirectoryBrowser";
+        return new ApiResponse<DefaultDirectoryBrowserInfoDto>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<DefaultDirectoryBrowserInfoDto>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+  private HttpRequest.Builder getDefaultDirectoryBrowserRequestBuilder() throws ApiException {
 
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Environment/DefaultDirectoryBrowser";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets the contents of a given directory in the file system.
+   * 
+   * @param path The path. (required)
+   * @param includeFiles An optional filter to include or exclude files from the results. true/false. (optional, default to false)
+   * @param includeDirectories An optional filter to include or exclude folders from the results. true/false. (optional, default to false)
+   * @return List&lt;FileSystemEntryInfo&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<FileSystemEntryInfo> getDirectoryContents(String path, Boolean includeFiles, Boolean includeDirectories) throws ApiException {
+    ApiResponse<List<FileSystemEntryInfo>> localVarResponse = getDirectoryContentsWithHttpInfo(path, includeFiles, includeDirectories);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets the contents of a given directory in the file system.
+   * 
+   * @param path The path. (required)
+   * @param includeFiles An optional filter to include or exclude files from the results. true/false. (optional, default to false)
+   * @param includeDirectories An optional filter to include or exclude folders from the results. true/false. (optional, default to false)
+   * @return ApiResponse&lt;List&lt;FileSystemEntryInfo&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<FileSystemEntryInfo>> getDirectoryContentsWithHttpInfo(String path, Boolean includeFiles, Boolean includeDirectories) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getDirectoryContentsRequestBuilder(path, includeFiles, includeDirectories);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getDirectoryContents", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<FileSystemEntryInfo>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<FileSystemEntryInfo>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<FileSystemEntryInfo>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getDirectoryContentsRequestBuilder(String path, Boolean includeFiles, Boolean includeDirectories) throws ApiException {
+    // verify the required parameter 'path' is set
+    if (path == null) {
+      throw new ApiException(400, "Missing the required parameter 'path' when calling getDirectoryContents");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Environment/DirectoryContents";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "path";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("path", path));
+    localVarQueryParameterBaseName = "includeFiles";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("includeFiles", includeFiles));
+    localVarQueryParameterBaseName = "includeDirectories";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("includeDirectories", includeDirectories));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets available drives from the server&#39;s file system.
+   * 
+   * @return List&lt;FileSystemEntryInfo&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<FileSystemEntryInfo> getDrives() throws ApiException {
+    ApiResponse<List<FileSystemEntryInfo>> localVarResponse = getDrivesWithHttpInfo();
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets available drives from the server&#39;s file system.
+   * 
+   * @return ApiResponse&lt;List&lt;FileSystemEntryInfo&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<FileSystemEntryInfo>> getDrivesWithHttpInfo() throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getDrivesRequestBuilder();
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getDrives", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<FileSystemEntryInfo>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<FileSystemEntryInfo>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<FileSystemEntryInfo>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
     }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getDefaultDirectoryBrowserValidateBeforeCall(final ApiCallback _callback) throws ApiException {
-        return getDefaultDirectoryBrowserCall(_callback);
-
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
     }
+  }
 
-    /**
-     * Get Default directory browser.
-     * 
-     * @return DefaultDirectoryBrowserInfoDto
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Default directory browser returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public DefaultDirectoryBrowserInfoDto getDefaultDirectoryBrowser() throws ApiException {
-        ApiResponse<DefaultDirectoryBrowserInfoDto> localVarResp = getDefaultDirectoryBrowserWithHttpInfo();
-        return localVarResp.getData();
+  private HttpRequest.Builder getDrivesRequestBuilder() throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Environment/Drives";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Get Default directory browser.
-     * 
-     * @return ApiResponse&lt;DefaultDirectoryBrowserInfoDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Default directory browser returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<DefaultDirectoryBrowserInfoDto> getDefaultDirectoryBrowserWithHttpInfo() throws ApiException {
-        okhttp3.Call localVarCall = getDefaultDirectoryBrowserValidateBeforeCall(null);
-        Type localVarReturnType = new TypeToken<DefaultDirectoryBrowserInfoDto>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    /**
-     * Get Default directory browser. (asynchronously)
-     * 
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Default directory browser returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getDefaultDirectoryBrowserAsync(final ApiCallback<DefaultDirectoryBrowserInfoDto> _callback) throws ApiException {
+  /**
+   * Gets network paths.
+   * 
+   * @return List&lt;FileSystemEntryInfo&gt;
+   * @throws ApiException if fails to make API call
+   * @deprecated
+   */
+  @Deprecated
+  public List<FileSystemEntryInfo> getNetworkShares() throws ApiException {
+    ApiResponse<List<FileSystemEntryInfo>> localVarResponse = getNetworkSharesWithHttpInfo();
+    return localVarResponse.getData();
+  }
 
-        okhttp3.Call localVarCall = getDefaultDirectoryBrowserValidateBeforeCall(_callback);
-        Type localVarReturnType = new TypeToken<DefaultDirectoryBrowserInfoDto>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getDirectoryContents
-     * @param path The path. (required)
-     * @param includeFiles An optional filter to include or exclude files from the results. true/false. (optional, default to false)
-     * @param includeDirectories An optional filter to include or exclude folders from the results. true/false. (optional, default to false)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Directory contents returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getDirectoryContentsCall(String path, Boolean includeFiles, Boolean includeDirectories, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Gets network paths.
+   * 
+   * @return ApiResponse&lt;List&lt;FileSystemEntryInfo&gt;&gt;
+   * @throws ApiException if fails to make API call
+   * @deprecated
+   */
+  @Deprecated
+  public ApiResponse<List<FileSystemEntryInfo>> getNetworkSharesWithHttpInfo() throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getNetworkSharesRequestBuilder();
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getNetworkShares", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<FileSystemEntryInfo>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = null;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/Environment/DirectoryContents";
+        return new ApiResponse<List<FileSystemEntryInfo>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<FileSystemEntryInfo>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+  private HttpRequest.Builder getNetworkSharesRequestBuilder() throws ApiException {
 
-        if (path != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("path", path));
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Environment/NetworkShares";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets the parent path of a given path.
+   * 
+   * @param path The path. (required)
+   * @return String
+   * @throws ApiException if fails to make API call
+   */
+  public String getParentPath(String path) throws ApiException {
+    ApiResponse<String> localVarResponse = getParentPathWithHttpInfo(path);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets the parent path of a given path.
+   * 
+   * @param path The path. (required)
+   * @return ApiResponse&lt;String&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<String> getParentPathWithHttpInfo(String path) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getParentPathRequestBuilder(path);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getParentPath", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<String>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        if (includeFiles != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("includeFiles", includeFiles));
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<String>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<String>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getParentPathRequestBuilder(String path) throws ApiException {
+    // verify the required parameter 'path' is set
+    if (path == null) {
+      throw new ApiException(400, "Missing the required parameter 'path' when calling getParentPath");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Environment/ParentPath";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "path";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("path", path));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Validates path.
+   * 
+   * @param validatePathDto Validate request object. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void validatePath(ValidatePathDto validatePathDto) throws ApiException {
+    validatePathWithHttpInfo(validatePathDto);
+  }
+
+  /**
+   * Validates path.
+   * 
+   * @param validatePathDto Validate request object. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> validatePathWithHttpInfo(ValidatePathDto validatePathDto) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = validatePathRequestBuilder(validatePathDto);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("validatePath", localVarResponse);
         }
-
-        if (includeDirectories != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("includeDirectories", includeDirectories));
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
         }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+  private HttpRequest.Builder validatePathRequestBuilder(ValidatePathDto validatePathDto) throws ApiException {
+    // verify the required parameter 'validatePathDto' is set
+    if (validatePathDto == null) {
+      throw new ApiException(400, "Missing the required parameter 'validatePathDto' when calling validatePath");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getDirectoryContentsValidateBeforeCall(String path, Boolean includeFiles, Boolean includeDirectories, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'path' is set
-        if (path == null) {
-            throw new ApiException("Missing the required parameter 'path' when calling getDirectoryContents(Async)");
-        }
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
-        return getDirectoryContentsCall(path, includeFiles, includeDirectories, _callback);
+    String localVarPath = "/Environment/ValidatePath";
 
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(validatePathDto);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
     }
-
-    /**
-     * Gets the contents of a given directory in the file system.
-     * 
-     * @param path The path. (required)
-     * @param includeFiles An optional filter to include or exclude files from the results. true/false. (optional, default to false)
-     * @param includeDirectories An optional filter to include or exclude folders from the results. true/false. (optional, default to false)
-     * @return List&lt;FileSystemEntryInfo&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Directory contents returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<FileSystemEntryInfo> getDirectoryContents(String path, Boolean includeFiles, Boolean includeDirectories) throws ApiException {
-        ApiResponse<List<FileSystemEntryInfo>> localVarResp = getDirectoryContentsWithHttpInfo(path, includeFiles, includeDirectories);
-        return localVarResp.getData();
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Gets the contents of a given directory in the file system.
-     * 
-     * @param path The path. (required)
-     * @param includeFiles An optional filter to include or exclude files from the results. true/false. (optional, default to false)
-     * @param includeDirectories An optional filter to include or exclude folders from the results. true/false. (optional, default to false)
-     * @return ApiResponse&lt;List&lt;FileSystemEntryInfo&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Directory contents returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<FileSystemEntryInfo>> getDirectoryContentsWithHttpInfo(String path, Boolean includeFiles, Boolean includeDirectories) throws ApiException {
-        okhttp3.Call localVarCall = getDirectoryContentsValidateBeforeCall(path, includeFiles, includeDirectories, null);
-        Type localVarReturnType = new TypeToken<List<FileSystemEntryInfo>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    /**
-     * Gets the contents of a given directory in the file system. (asynchronously)
-     * 
-     * @param path The path. (required)
-     * @param includeFiles An optional filter to include or exclude files from the results. true/false. (optional, default to false)
-     * @param includeDirectories An optional filter to include or exclude folders from the results. true/false. (optional, default to false)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Directory contents returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getDirectoryContentsAsync(String path, Boolean includeFiles, Boolean includeDirectories, final ApiCallback<List<FileSystemEntryInfo>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getDirectoryContentsValidateBeforeCall(path, includeFiles, includeDirectories, _callback);
-        Type localVarReturnType = new TypeToken<List<FileSystemEntryInfo>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getDrives
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> List of entries returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getDrivesCall(final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Environment/Drives";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getDrivesValidateBeforeCall(final ApiCallback _callback) throws ApiException {
-        return getDrivesCall(_callback);
-
-    }
-
-    /**
-     * Gets available drives from the server&#39;s file system.
-     * 
-     * @return List&lt;FileSystemEntryInfo&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> List of entries returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<FileSystemEntryInfo> getDrives() throws ApiException {
-        ApiResponse<List<FileSystemEntryInfo>> localVarResp = getDrivesWithHttpInfo();
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets available drives from the server&#39;s file system.
-     * 
-     * @return ApiResponse&lt;List&lt;FileSystemEntryInfo&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> List of entries returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<FileSystemEntryInfo>> getDrivesWithHttpInfo() throws ApiException {
-        okhttp3.Call localVarCall = getDrivesValidateBeforeCall(null);
-        Type localVarReturnType = new TypeToken<List<FileSystemEntryInfo>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets available drives from the server&#39;s file system. (asynchronously)
-     * 
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> List of entries returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getDrivesAsync(final ApiCallback<List<FileSystemEntryInfo>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getDrivesValidateBeforeCall(_callback);
-        Type localVarReturnType = new TypeToken<List<FileSystemEntryInfo>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getNetworkShares
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Empty array returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public okhttp3.Call getNetworkSharesCall(final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Environment/NetworkShares";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @Deprecated
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getNetworkSharesValidateBeforeCall(final ApiCallback _callback) throws ApiException {
-        return getNetworkSharesCall(_callback);
-
-    }
-
-    /**
-     * Gets network paths.
-     * 
-     * @return List&lt;FileSystemEntryInfo&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Empty array returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public List<FileSystemEntryInfo> getNetworkShares() throws ApiException {
-        ApiResponse<List<FileSystemEntryInfo>> localVarResp = getNetworkSharesWithHttpInfo();
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets network paths.
-     * 
-     * @return ApiResponse&lt;List&lt;FileSystemEntryInfo&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Empty array returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public ApiResponse<List<FileSystemEntryInfo>> getNetworkSharesWithHttpInfo() throws ApiException {
-        okhttp3.Call localVarCall = getNetworkSharesValidateBeforeCall(null);
-        Type localVarReturnType = new TypeToken<List<FileSystemEntryInfo>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets network paths. (asynchronously)
-     * 
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Empty array returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public okhttp3.Call getNetworkSharesAsync(final ApiCallback<List<FileSystemEntryInfo>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getNetworkSharesValidateBeforeCall(_callback);
-        Type localVarReturnType = new TypeToken<List<FileSystemEntryInfo>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getParentPath
-     * @param path The path. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Success </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getParentPathCall(String path, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Environment/ParentPath";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (path != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("path", path));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getParentPathValidateBeforeCall(String path, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'path' is set
-        if (path == null) {
-            throw new ApiException("Missing the required parameter 'path' when calling getParentPath(Async)");
-        }
-
-        return getParentPathCall(path, _callback);
-
-    }
-
-    /**
-     * Gets the parent path of a given path.
-     * 
-     * @param path The path. (required)
-     * @return String
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Success </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public String getParentPath(String path) throws ApiException {
-        ApiResponse<String> localVarResp = getParentPathWithHttpInfo(path);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets the parent path of a given path.
-     * 
-     * @param path The path. (required)
-     * @return ApiResponse&lt;String&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Success </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<String> getParentPathWithHttpInfo(String path) throws ApiException {
-        okhttp3.Call localVarCall = getParentPathValidateBeforeCall(path, null);
-        Type localVarReturnType = new TypeToken<String>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets the parent path of a given path. (asynchronously)
-     * 
-     * @param path The path. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Success </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getParentPathAsync(String path, final ApiCallback<String> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getParentPathValidateBeforeCall(path, _callback);
-        Type localVarReturnType = new TypeToken<String>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for validatePath
-     * @param validatePathDto Validate request object. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Path validated. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Path not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call validatePathCall(ValidatePathDto validatePathDto, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = validatePathDto;
-
-        // create path and map variables
-        String localVarPath = "/Environment/ValidatePath";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call validatePathValidateBeforeCall(ValidatePathDto validatePathDto, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'validatePathDto' is set
-        if (validatePathDto == null) {
-            throw new ApiException("Missing the required parameter 'validatePathDto' when calling validatePath(Async)");
-        }
-
-        return validatePathCall(validatePathDto, _callback);
-
-    }
-
-    /**
-     * Validates path.
-     * 
-     * @param validatePathDto Validate request object. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Path validated. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Path not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void validatePath(ValidatePathDto validatePathDto) throws ApiException {
-        validatePathWithHttpInfo(validatePathDto);
-    }
-
-    /**
-     * Validates path.
-     * 
-     * @param validatePathDto Validate request object. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Path validated. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Path not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> validatePathWithHttpInfo(ValidatePathDto validatePathDto) throws ApiException {
-        okhttp3.Call localVarCall = validatePathValidateBeforeCall(validatePathDto, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Validates path. (asynchronously)
-     * 
-     * @param validatePathDto Validate request object. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Path validated. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Path not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call validatePathAsync(ValidatePathDto validatePathDto, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = validatePathValidateBeforeCall(validatePathDto, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
 }

@@ -10,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import org.openapitools.client.model.AddVirtualFolderDto;
 import org.openapitools.client.model.CollectionTypeOptions;
@@ -35,1167 +26,783 @@ import org.openapitools.client.model.UpdateLibraryOptionsDto;
 import org.openapitools.client.model.UpdateMediaPathRequestDto;
 import org.openapitools.client.model.VirtualFolderInfo;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class LibraryStructureApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public LibraryStructureApi() {
-        this(Configuration.getDefaultApiClient());
+  public LibraryStructureApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public LibraryStructureApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Add a media path to a library.
+   * 
+   * @param mediaPathDto The media path dto. (required)
+   * @param refreshLibrary Whether to refresh the library. (optional, default to false)
+   * @throws ApiException if fails to make API call
+   */
+  public void addMediaPath(MediaPathDto mediaPathDto, Boolean refreshLibrary) throws ApiException {
+    addMediaPathWithHttpInfo(mediaPathDto, refreshLibrary);
+  }
+
+  /**
+   * Add a media path to a library.
+   * 
+   * @param mediaPathDto The media path dto. (required)
+   * @param refreshLibrary Whether to refresh the library. (optional, default to false)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> addMediaPathWithHttpInfo(MediaPathDto mediaPathDto, Boolean refreshLibrary) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = addMediaPathRequestBuilder(mediaPathDto, refreshLibrary);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("addMediaPath", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder addMediaPathRequestBuilder(MediaPathDto mediaPathDto, Boolean refreshLibrary) throws ApiException {
+    // verify the required parameter 'mediaPathDto' is set
+    if (mediaPathDto == null) {
+      throw new ApiException(400, "Missing the required parameter 'mediaPathDto' when calling addMediaPath");
     }
 
-    public LibraryStructureApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Library/VirtualFolders/Paths";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "refreshLibrary";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("refreshLibrary", refreshLibrary));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(mediaPathDto);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Adds a virtual folder.
+   * 
+   * @param name The name of the virtual folder. (optional)
+   * @param collectionType The type of the collection. (optional)
+   * @param paths The paths of the virtual folder. (optional)
+   * @param refreshLibrary Whether to refresh the library. (optional, default to false)
+   * @param addVirtualFolderDto The library options. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void addVirtualFolder(String name, CollectionTypeOptions collectionType, List<String> paths, Boolean refreshLibrary, AddVirtualFolderDto addVirtualFolderDto) throws ApiException {
+    addVirtualFolderWithHttpInfo(name, collectionType, paths, refreshLibrary, addVirtualFolderDto);
+  }
+
+  /**
+   * Adds a virtual folder.
+   * 
+   * @param name The name of the virtual folder. (optional)
+   * @param collectionType The type of the collection. (optional)
+   * @param paths The paths of the virtual folder. (optional)
+   * @param refreshLibrary Whether to refresh the library. (optional, default to false)
+   * @param addVirtualFolderDto The library options. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> addVirtualFolderWithHttpInfo(String name, CollectionTypeOptions collectionType, List<String> paths, Boolean refreshLibrary, AddVirtualFolderDto addVirtualFolderDto) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = addVirtualFolderRequestBuilder(name, collectionType, paths, refreshLibrary, addVirtualFolderDto);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("addVirtualFolder", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder addVirtualFolderRequestBuilder(String name, CollectionTypeOptions collectionType, List<String> paths, Boolean refreshLibrary, AddVirtualFolderDto addVirtualFolderDto) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Library/VirtualFolders";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "name";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("name", name));
+    localVarQueryParameterBaseName = "collectionType";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("collectionType", collectionType));
+    localVarQueryParameterBaseName = "paths";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "paths", paths));
+    localVarQueryParameterBaseName = "refreshLibrary";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("refreshLibrary", refreshLibrary));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(addVirtualFolderDto);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
     }
-
-    public int getHostIndex() {
-        return localHostIndex;
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
+  /**
+   * Gets all virtual folders.
+   * 
+   * @return List&lt;VirtualFolderInfo&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<VirtualFolderInfo> getVirtualFolders() throws ApiException {
+    ApiResponse<List<VirtualFolderInfo>> localVarResponse = getVirtualFoldersWithHttpInfo();
+    return localVarResponse.getData();
+  }
 
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for addMediaPath
-     * @param mediaPathDto The media path dto. (required)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Media path added. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call addMediaPathCall(MediaPathDto mediaPathDto, Boolean refreshLibrary, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Gets all virtual folders.
+   * 
+   * @return ApiResponse&lt;List&lt;VirtualFolderInfo&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<VirtualFolderInfo>> getVirtualFoldersWithHttpInfo() throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getVirtualFoldersRequestBuilder();
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getVirtualFolders", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<VirtualFolderInfo>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = mediaPathDto;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/Library/VirtualFolders/Paths";
+        return new ApiResponse<List<VirtualFolderInfo>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<VirtualFolderInfo>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+  private HttpRequest.Builder getVirtualFoldersRequestBuilder() throws ApiException {
 
-        if (refreshLibrary != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("refreshLibrary", refreshLibrary));
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Library/VirtualFolders";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Remove a media path.
+   * 
+   * @param name The name of the library. (optional)
+   * @param path The path to remove. (optional)
+   * @param refreshLibrary Whether to refresh the library. (optional, default to false)
+   * @throws ApiException if fails to make API call
+   */
+  public void removeMediaPath(String name, String path, Boolean refreshLibrary) throws ApiException {
+    removeMediaPathWithHttpInfo(name, path, refreshLibrary);
+  }
+
+  /**
+   * Remove a media path.
+   * 
+   * @param name The name of the library. (optional)
+   * @param path The path to remove. (optional)
+   * @param refreshLibrary Whether to refresh the library. (optional, default to false)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> removeMediaPathWithHttpInfo(String name, String path, Boolean refreshLibrary) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = removeMediaPathRequestBuilder(name, path, refreshLibrary);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("removeMediaPath", localVarResponse);
         }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
         }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
+  private HttpRequest.Builder removeMediaPathRequestBuilder(String name, String path, Boolean refreshLibrary) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Library/VirtualFolders/Paths";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "name";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("name", name));
+    localVarQueryParameterBaseName = "path";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("path", path));
+    localVarQueryParameterBaseName = "refreshLibrary";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("refreshLibrary", refreshLibrary));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Removes a virtual folder.
+   * 
+   * @param name The name of the folder. (optional)
+   * @param refreshLibrary Whether to refresh the library. (optional, default to false)
+   * @throws ApiException if fails to make API call
+   */
+  public void removeVirtualFolder(String name, Boolean refreshLibrary) throws ApiException {
+    removeVirtualFolderWithHttpInfo(name, refreshLibrary);
+  }
+
+  /**
+   * Removes a virtual folder.
+   * 
+   * @param name The name of the folder. (optional)
+   * @param refreshLibrary Whether to refresh the library. (optional, default to false)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> removeVirtualFolderWithHttpInfo(String name, Boolean refreshLibrary) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = removeVirtualFolderRequestBuilder(name, refreshLibrary);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("removeVirtualFolder", localVarResponse);
         }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call addMediaPathValidateBeforeCall(MediaPathDto mediaPathDto, Boolean refreshLibrary, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'mediaPathDto' is set
-        if (mediaPathDto == null) {
-            throw new ApiException("Missing the required parameter 'mediaPathDto' when calling addMediaPath(Async)");
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
         }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        return addMediaPathCall(mediaPathDto, refreshLibrary, _callback);
+  private HttpRequest.Builder removeVirtualFolderRequestBuilder(String name, Boolean refreshLibrary) throws ApiException {
 
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Library/VirtualFolders";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "name";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("name", name));
+    localVarQueryParameterBaseName = "refreshLibrary";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("refreshLibrary", refreshLibrary));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Add a media path to a library.
-     * 
-     * @param mediaPathDto The media path dto. (required)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Media path added. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void addMediaPath(MediaPathDto mediaPathDto, Boolean refreshLibrary) throws ApiException {
-        addMediaPathWithHttpInfo(mediaPathDto, refreshLibrary);
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Add a media path to a library.
-     * 
-     * @param mediaPathDto The media path dto. (required)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Media path added. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> addMediaPathWithHttpInfo(MediaPathDto mediaPathDto, Boolean refreshLibrary) throws ApiException {
-        okhttp3.Call localVarCall = addMediaPathValidateBeforeCall(mediaPathDto, refreshLibrary, null);
-        return localVarApiClient.execute(localVarCall);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    /**
-     * Add a media path to a library. (asynchronously)
-     * 
-     * @param mediaPathDto The media path dto. (required)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Media path added. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call addMediaPathAsync(MediaPathDto mediaPathDto, Boolean refreshLibrary, final ApiCallback<Void> _callback) throws ApiException {
+  /**
+   * Renames a virtual folder.
+   * 
+   * @param name The name of the virtual folder. (optional)
+   * @param newName The new name. (optional)
+   * @param refreshLibrary Whether to refresh the library. (optional, default to false)
+   * @throws ApiException if fails to make API call
+   */
+  public void renameVirtualFolder(String name, String newName, Boolean refreshLibrary) throws ApiException {
+    renameVirtualFolderWithHttpInfo(name, newName, refreshLibrary);
+  }
 
-        okhttp3.Call localVarCall = addMediaPathValidateBeforeCall(mediaPathDto, refreshLibrary, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for addVirtualFolder
-     * @param name The name of the virtual folder. (optional)
-     * @param collectionType The type of the collection. (optional)
-     * @param paths The paths of the virtual folder. (optional)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @param addVirtualFolderDto The library options. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Folder added. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call addVirtualFolderCall(String name, CollectionTypeOptions collectionType, List<String> paths, Boolean refreshLibrary, AddVirtualFolderDto addVirtualFolderDto, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Renames a virtual folder.
+   * 
+   * @param name The name of the virtual folder. (optional)
+   * @param newName The new name. (optional)
+   * @param refreshLibrary Whether to refresh the library. (optional, default to false)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> renameVirtualFolderWithHttpInfo(String name, String newName, Boolean refreshLibrary) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = renameVirtualFolderRequestBuilder(name, newName, refreshLibrary);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("renameVirtualFolder", localVarResponse);
         }
-
-        Object localVarPostBody = addVirtualFolderDto;
-
-        // create path and map variables
-        String localVarPath = "/Library/VirtualFolders";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (name != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("name", name));
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
         }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        if (collectionType != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("collectionType", collectionType));
+  private HttpRequest.Builder renameVirtualFolderRequestBuilder(String name, String newName, Boolean refreshLibrary) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Library/VirtualFolders/Name";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "name";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("name", name));
+    localVarQueryParameterBaseName = "newName";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("newName", newName));
+    localVarQueryParameterBaseName = "refreshLibrary";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("refreshLibrary", refreshLibrary));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Update library options.
+   * 
+   * @param updateLibraryOptionsDto The library name and options. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void updateLibraryOptions(UpdateLibraryOptionsDto updateLibraryOptionsDto) throws ApiException {
+    updateLibraryOptionsWithHttpInfo(updateLibraryOptionsDto);
+  }
+
+  /**
+   * Update library options.
+   * 
+   * @param updateLibraryOptionsDto The library name and options. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> updateLibraryOptionsWithHttpInfo(UpdateLibraryOptionsDto updateLibraryOptionsDto) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = updateLibraryOptionsRequestBuilder(updateLibraryOptionsDto);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("updateLibraryOptions", localVarResponse);
         }
-
-        if (paths != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "paths", paths));
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
         }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        if (refreshLibrary != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("refreshLibrary", refreshLibrary));
+  private HttpRequest.Builder updateLibraryOptionsRequestBuilder(UpdateLibraryOptionsDto updateLibraryOptionsDto) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Library/VirtualFolders/LibraryOptions";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(updateLibraryOptionsDto);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Updates a media path.
+   * 
+   * @param updateMediaPathRequestDto The name of the library and path infos. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void updateMediaPath(UpdateMediaPathRequestDto updateMediaPathRequestDto) throws ApiException {
+    updateMediaPathWithHttpInfo(updateMediaPathRequestDto);
+  }
+
+  /**
+   * Updates a media path.
+   * 
+   * @param updateMediaPathRequestDto The name of the library and path infos. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> updateMediaPathWithHttpInfo(UpdateMediaPathRequestDto updateMediaPathRequestDto) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = updateMediaPathRequestBuilder(updateMediaPathRequestDto);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("updateMediaPath", localVarResponse);
         }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
         }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+  private HttpRequest.Builder updateMediaPathRequestBuilder(UpdateMediaPathRequestDto updateMediaPathRequestDto) throws ApiException {
+    // verify the required parameter 'updateMediaPathRequestDto' is set
+    if (updateMediaPathRequestDto == null) {
+      throw new ApiException(400, "Missing the required parameter 'updateMediaPathRequestDto' when calling updateMediaPath");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call addVirtualFolderValidateBeforeCall(String name, CollectionTypeOptions collectionType, List<String> paths, Boolean refreshLibrary, AddVirtualFolderDto addVirtualFolderDto, final ApiCallback _callback) throws ApiException {
-        return addVirtualFolderCall(name, collectionType, paths, refreshLibrary, addVirtualFolderDto, _callback);
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
+    String localVarPath = "/Library/VirtualFolders/Paths/Update";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(updateMediaPathRequestDto);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
     }
-
-    /**
-     * Adds a virtual folder.
-     * 
-     * @param name The name of the virtual folder. (optional)
-     * @param collectionType The type of the collection. (optional)
-     * @param paths The paths of the virtual folder. (optional)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @param addVirtualFolderDto The library options. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Folder added. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void addVirtualFolder(String name, CollectionTypeOptions collectionType, List<String> paths, Boolean refreshLibrary, AddVirtualFolderDto addVirtualFolderDto) throws ApiException {
-        addVirtualFolderWithHttpInfo(name, collectionType, paths, refreshLibrary, addVirtualFolderDto);
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Adds a virtual folder.
-     * 
-     * @param name The name of the virtual folder. (optional)
-     * @param collectionType The type of the collection. (optional)
-     * @param paths The paths of the virtual folder. (optional)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @param addVirtualFolderDto The library options. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Folder added. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> addVirtualFolderWithHttpInfo(String name, CollectionTypeOptions collectionType, List<String> paths, Boolean refreshLibrary, AddVirtualFolderDto addVirtualFolderDto) throws ApiException {
-        okhttp3.Call localVarCall = addVirtualFolderValidateBeforeCall(name, collectionType, paths, refreshLibrary, addVirtualFolderDto, null);
-        return localVarApiClient.execute(localVarCall);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    /**
-     * Adds a virtual folder. (asynchronously)
-     * 
-     * @param name The name of the virtual folder. (optional)
-     * @param collectionType The type of the collection. (optional)
-     * @param paths The paths of the virtual folder. (optional)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @param addVirtualFolderDto The library options. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Folder added. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call addVirtualFolderAsync(String name, CollectionTypeOptions collectionType, List<String> paths, Boolean refreshLibrary, AddVirtualFolderDto addVirtualFolderDto, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = addVirtualFolderValidateBeforeCall(name, collectionType, paths, refreshLibrary, addVirtualFolderDto, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getVirtualFolders
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Virtual folders retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getVirtualFoldersCall(final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Library/VirtualFolders";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getVirtualFoldersValidateBeforeCall(final ApiCallback _callback) throws ApiException {
-        return getVirtualFoldersCall(_callback);
-
-    }
-
-    /**
-     * Gets all virtual folders.
-     * 
-     * @return List&lt;VirtualFolderInfo&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Virtual folders retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<VirtualFolderInfo> getVirtualFolders() throws ApiException {
-        ApiResponse<List<VirtualFolderInfo>> localVarResp = getVirtualFoldersWithHttpInfo();
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets all virtual folders.
-     * 
-     * @return ApiResponse&lt;List&lt;VirtualFolderInfo&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Virtual folders retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<VirtualFolderInfo>> getVirtualFoldersWithHttpInfo() throws ApiException {
-        okhttp3.Call localVarCall = getVirtualFoldersValidateBeforeCall(null);
-        Type localVarReturnType = new TypeToken<List<VirtualFolderInfo>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets all virtual folders. (asynchronously)
-     * 
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Virtual folders retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getVirtualFoldersAsync(final ApiCallback<List<VirtualFolderInfo>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getVirtualFoldersValidateBeforeCall(_callback);
-        Type localVarReturnType = new TypeToken<List<VirtualFolderInfo>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for removeMediaPath
-     * @param name The name of the library. (optional)
-     * @param path The path to remove. (optional)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Media path removed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call removeMediaPathCall(String name, String path, Boolean refreshLibrary, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Library/VirtualFolders/Paths";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (name != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("name", name));
-        }
-
-        if (path != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("path", path));
-        }
-
-        if (refreshLibrary != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("refreshLibrary", refreshLibrary));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call removeMediaPathValidateBeforeCall(String name, String path, Boolean refreshLibrary, final ApiCallback _callback) throws ApiException {
-        return removeMediaPathCall(name, path, refreshLibrary, _callback);
-
-    }
-
-    /**
-     * Remove a media path.
-     * 
-     * @param name The name of the library. (optional)
-     * @param path The path to remove. (optional)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Media path removed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void removeMediaPath(String name, String path, Boolean refreshLibrary) throws ApiException {
-        removeMediaPathWithHttpInfo(name, path, refreshLibrary);
-    }
-
-    /**
-     * Remove a media path.
-     * 
-     * @param name The name of the library. (optional)
-     * @param path The path to remove. (optional)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Media path removed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> removeMediaPathWithHttpInfo(String name, String path, Boolean refreshLibrary) throws ApiException {
-        okhttp3.Call localVarCall = removeMediaPathValidateBeforeCall(name, path, refreshLibrary, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Remove a media path. (asynchronously)
-     * 
-     * @param name The name of the library. (optional)
-     * @param path The path to remove. (optional)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Media path removed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call removeMediaPathAsync(String name, String path, Boolean refreshLibrary, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = removeMediaPathValidateBeforeCall(name, path, refreshLibrary, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for removeVirtualFolder
-     * @param name The name of the folder. (optional)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Folder removed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call removeVirtualFolderCall(String name, Boolean refreshLibrary, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Library/VirtualFolders";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (name != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("name", name));
-        }
-
-        if (refreshLibrary != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("refreshLibrary", refreshLibrary));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call removeVirtualFolderValidateBeforeCall(String name, Boolean refreshLibrary, final ApiCallback _callback) throws ApiException {
-        return removeVirtualFolderCall(name, refreshLibrary, _callback);
-
-    }
-
-    /**
-     * Removes a virtual folder.
-     * 
-     * @param name The name of the folder. (optional)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Folder removed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void removeVirtualFolder(String name, Boolean refreshLibrary) throws ApiException {
-        removeVirtualFolderWithHttpInfo(name, refreshLibrary);
-    }
-
-    /**
-     * Removes a virtual folder.
-     * 
-     * @param name The name of the folder. (optional)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Folder removed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> removeVirtualFolderWithHttpInfo(String name, Boolean refreshLibrary) throws ApiException {
-        okhttp3.Call localVarCall = removeVirtualFolderValidateBeforeCall(name, refreshLibrary, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Removes a virtual folder. (asynchronously)
-     * 
-     * @param name The name of the folder. (optional)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Folder removed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call removeVirtualFolderAsync(String name, Boolean refreshLibrary, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = removeVirtualFolderValidateBeforeCall(name, refreshLibrary, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for renameVirtualFolder
-     * @param name The name of the virtual folder. (optional)
-     * @param newName The new name. (optional)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Folder renamed. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Library doesn&#39;t exist. </td><td>  -  </td></tr>
-        <tr><td> 409 </td><td> Library already exists. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call renameVirtualFolderCall(String name, String newName, Boolean refreshLibrary, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Library/VirtualFolders/Name";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (name != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("name", name));
-        }
-
-        if (newName != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("newName", newName));
-        }
-
-        if (refreshLibrary != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("refreshLibrary", refreshLibrary));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call renameVirtualFolderValidateBeforeCall(String name, String newName, Boolean refreshLibrary, final ApiCallback _callback) throws ApiException {
-        return renameVirtualFolderCall(name, newName, refreshLibrary, _callback);
-
-    }
-
-    /**
-     * Renames a virtual folder.
-     * 
-     * @param name The name of the virtual folder. (optional)
-     * @param newName The new name. (optional)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Folder renamed. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Library doesn&#39;t exist. </td><td>  -  </td></tr>
-        <tr><td> 409 </td><td> Library already exists. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void renameVirtualFolder(String name, String newName, Boolean refreshLibrary) throws ApiException {
-        renameVirtualFolderWithHttpInfo(name, newName, refreshLibrary);
-    }
-
-    /**
-     * Renames a virtual folder.
-     * 
-     * @param name The name of the virtual folder. (optional)
-     * @param newName The new name. (optional)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Folder renamed. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Library doesn&#39;t exist. </td><td>  -  </td></tr>
-        <tr><td> 409 </td><td> Library already exists. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> renameVirtualFolderWithHttpInfo(String name, String newName, Boolean refreshLibrary) throws ApiException {
-        okhttp3.Call localVarCall = renameVirtualFolderValidateBeforeCall(name, newName, refreshLibrary, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Renames a virtual folder. (asynchronously)
-     * 
-     * @param name The name of the virtual folder. (optional)
-     * @param newName The new name. (optional)
-     * @param refreshLibrary Whether to refresh the library. (optional, default to false)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Folder renamed. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Library doesn&#39;t exist. </td><td>  -  </td></tr>
-        <tr><td> 409 </td><td> Library already exists. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call renameVirtualFolderAsync(String name, String newName, Boolean refreshLibrary, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = renameVirtualFolderValidateBeforeCall(name, newName, refreshLibrary, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for updateLibraryOptions
-     * @param updateLibraryOptionsDto The library name and options. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Library updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updateLibraryOptionsCall(UpdateLibraryOptionsDto updateLibraryOptionsDto, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = updateLibraryOptionsDto;
-
-        // create path and map variables
-        String localVarPath = "/Library/VirtualFolders/LibraryOptions";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call updateLibraryOptionsValidateBeforeCall(UpdateLibraryOptionsDto updateLibraryOptionsDto, final ApiCallback _callback) throws ApiException {
-        return updateLibraryOptionsCall(updateLibraryOptionsDto, _callback);
-
-    }
-
-    /**
-     * Update library options.
-     * 
-     * @param updateLibraryOptionsDto The library name and options. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Library updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void updateLibraryOptions(UpdateLibraryOptionsDto updateLibraryOptionsDto) throws ApiException {
-        updateLibraryOptionsWithHttpInfo(updateLibraryOptionsDto);
-    }
-
-    /**
-     * Update library options.
-     * 
-     * @param updateLibraryOptionsDto The library name and options. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Library updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> updateLibraryOptionsWithHttpInfo(UpdateLibraryOptionsDto updateLibraryOptionsDto) throws ApiException {
-        okhttp3.Call localVarCall = updateLibraryOptionsValidateBeforeCall(updateLibraryOptionsDto, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Update library options. (asynchronously)
-     * 
-     * @param updateLibraryOptionsDto The library name and options. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Library updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updateLibraryOptionsAsync(UpdateLibraryOptionsDto updateLibraryOptionsDto, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = updateLibraryOptionsValidateBeforeCall(updateLibraryOptionsDto, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for updateMediaPath
-     * @param updateMediaPathRequestDto The name of the library and path infos. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Media path updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updateMediaPathCall(UpdateMediaPathRequestDto updateMediaPathRequestDto, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = updateMediaPathRequestDto;
-
-        // create path and map variables
-        String localVarPath = "/Library/VirtualFolders/Paths/Update";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call updateMediaPathValidateBeforeCall(UpdateMediaPathRequestDto updateMediaPathRequestDto, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'updateMediaPathRequestDto' is set
-        if (updateMediaPathRequestDto == null) {
-            throw new ApiException("Missing the required parameter 'updateMediaPathRequestDto' when calling updateMediaPath(Async)");
-        }
-
-        return updateMediaPathCall(updateMediaPathRequestDto, _callback);
-
-    }
-
-    /**
-     * Updates a media path.
-     * 
-     * @param updateMediaPathRequestDto The name of the library and path infos. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Media path updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void updateMediaPath(UpdateMediaPathRequestDto updateMediaPathRequestDto) throws ApiException {
-        updateMediaPathWithHttpInfo(updateMediaPathRequestDto);
-    }
-
-    /**
-     * Updates a media path.
-     * 
-     * @param updateMediaPathRequestDto The name of the library and path infos. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Media path updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> updateMediaPathWithHttpInfo(UpdateMediaPathRequestDto updateMediaPathRequestDto) throws ApiException {
-        okhttp3.Call localVarCall = updateMediaPathValidateBeforeCall(updateMediaPathRequestDto, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Updates a media path. (asynchronously)
-     * 
-     * @param updateMediaPathRequestDto The name of the library and path infos. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Media path updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updateMediaPathAsync(UpdateMediaPathRequestDto updateMediaPathRequestDto, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = updateMediaPathValidateBeforeCall(updateMediaPathRequestDto, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
 }

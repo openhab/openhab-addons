@@ -13,69 +13,54 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * TunerChannelMapping
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  TunerChannelMapping.JSON_PROPERTY_NAME,
+  TunerChannelMapping.JSON_PROPERTY_PROVIDER_CHANNEL_NAME,
+  TunerChannelMapping.JSON_PROPERTY_PROVIDER_CHANNEL_ID,
+  TunerChannelMapping.JSON_PROPERTY_ID
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class TunerChannelMapping {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PROVIDER_CHANNEL_NAME = "ProviderChannelName";
-  @SerializedName(SERIALIZED_NAME_PROVIDER_CHANNEL_NAME)
-  @javax.annotation.Nullable
-  private String providerChannelName;
+  public static final String JSON_PROPERTY_PROVIDER_CHANNEL_NAME = "ProviderChannelName";
+  private JsonNullable<String> providerChannelName = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PROVIDER_CHANNEL_ID = "ProviderChannelId";
-  @SerializedName(SERIALIZED_NAME_PROVIDER_CHANNEL_ID)
-  @javax.annotation.Nullable
-  private String providerChannelId;
+  public static final String JSON_PROPERTY_PROVIDER_CHANNEL_ID = "ProviderChannelId";
+  private JsonNullable<String> providerChannelId = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ID = "Id";
-  @SerializedName(SERIALIZED_NAME_ID)
-  @javax.annotation.Nullable
-  private String id;
+  public static final String JSON_PROPERTY_ID = "Id";
+  private JsonNullable<String> id = JsonNullable.<String>undefined();
 
-  public TunerChannelMapping() {
+  public TunerChannelMapping() { 
   }
 
   public TunerChannelMapping name(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
     return this;
   }
 
@@ -84,17 +69,30 @@ public class TunerChannelMapping {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
   }
 
 
   public TunerChannelMapping providerChannelName(@javax.annotation.Nullable String providerChannelName) {
-    this.providerChannelName = providerChannelName;
+    this.providerChannelName = JsonNullable.<String>of(providerChannelName);
     return this;
   }
 
@@ -103,17 +101,30 @@ public class TunerChannelMapping {
    * @return providerChannelName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getProviderChannelName() {
+        return providerChannelName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNEL_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getProviderChannelName_JsonNullable() {
     return providerChannelName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNEL_NAME)
+  public void setProviderChannelName_JsonNullable(JsonNullable<String> providerChannelName) {
+    this.providerChannelName = providerChannelName;
   }
 
   public void setProviderChannelName(@javax.annotation.Nullable String providerChannelName) {
-    this.providerChannelName = providerChannelName;
+    this.providerChannelName = JsonNullable.<String>of(providerChannelName);
   }
 
 
   public TunerChannelMapping providerChannelId(@javax.annotation.Nullable String providerChannelId) {
-    this.providerChannelId = providerChannelId;
+    this.providerChannelId = JsonNullable.<String>of(providerChannelId);
     return this;
   }
 
@@ -122,17 +133,30 @@ public class TunerChannelMapping {
    * @return providerChannelId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getProviderChannelId() {
+        return providerChannelId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNEL_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getProviderChannelId_JsonNullable() {
     return providerChannelId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNEL_ID)
+  public void setProviderChannelId_JsonNullable(JsonNullable<String> providerChannelId) {
+    this.providerChannelId = providerChannelId;
   }
 
   public void setProviderChannelId(@javax.annotation.Nullable String providerChannelId) {
-    this.providerChannelId = providerChannelId;
+    this.providerChannelId = JsonNullable.<String>of(providerChannelId);
   }
 
 
   public TunerChannelMapping id(@javax.annotation.Nullable String id) {
-    this.id = id;
+    this.id = JsonNullable.<String>of(id);
     return this;
   }
 
@@ -141,16 +165,31 @@ public class TunerChannelMapping {
    * @return id
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getId() {
-    return id;
+        return id.orElse(null);
   }
 
-  public void setId(@javax.annotation.Nullable String id) {
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getId_JsonNullable() {
+    return id;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ID)
+  public void setId_JsonNullable(JsonNullable<String> id) {
     this.id = id;
   }
 
+  public void setId(@javax.annotation.Nullable String id) {
+    this.id = JsonNullable.<String>of(id);
+  }
 
 
+  /**
+   * Return true if this TunerChannelMapping object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -160,10 +199,10 @@ public class TunerChannelMapping {
       return false;
     }
     TunerChannelMapping tunerChannelMapping = (TunerChannelMapping) o;
-    return Objects.equals(this.name, tunerChannelMapping.name) &&
-        Objects.equals(this.providerChannelName, tunerChannelMapping.providerChannelName) &&
-        Objects.equals(this.providerChannelId, tunerChannelMapping.providerChannelId) &&
-        Objects.equals(this.id, tunerChannelMapping.id);
+    return equalsNullable(this.name, tunerChannelMapping.name) &&
+        equalsNullable(this.providerChannelName, tunerChannelMapping.providerChannelName) &&
+        equalsNullable(this.providerChannelId, tunerChannelMapping.providerChannelId) &&
+        equalsNullable(this.id, tunerChannelMapping.id);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -172,7 +211,7 @@ public class TunerChannelMapping {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, providerChannelName, providerChannelId, id);
+    return Objects.hash(hashCodeNullable(name), hashCodeNullable(providerChannelName), hashCodeNullable(providerChannelId), hashCodeNullable(id));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -205,104 +244,59 @@ public class TunerChannelMapping {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("ProviderChannelName");
-    openapiFields.add("ProviderChannelId");
-    openapiFields.add("Id");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to TunerChannelMapping
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!TunerChannelMapping.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in TunerChannelMapping is not found in the empty JSON string", TunerChannelMapping.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!TunerChannelMapping.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `TunerChannelMapping` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("ProviderChannelName") != null && !jsonObj.get("ProviderChannelName").isJsonNull()) && !jsonObj.get("ProviderChannelName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ProviderChannelName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ProviderChannelName").toString()));
-      }
-      if ((jsonObj.get("ProviderChannelId") != null && !jsonObj.get("ProviderChannelId").isJsonNull()) && !jsonObj.get("ProviderChannelId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ProviderChannelId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ProviderChannelId").toString()));
-      }
-      if ((jsonObj.get("Id") != null && !jsonObj.get("Id").isJsonNull()) && !jsonObj.get("Id").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Id").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!TunerChannelMapping.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'TunerChannelMapping' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<TunerChannelMapping> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(TunerChannelMapping.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<TunerChannelMapping>() {
-           @Override
-           public void write(JsonWriter out, TunerChannelMapping value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public TunerChannelMapping read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of TunerChannelMapping given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of TunerChannelMapping
-   * @throws IOException if the JSON string is invalid with respect to TunerChannelMapping
-   */
-  public static TunerChannelMapping fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, TunerChannelMapping.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of TunerChannelMapping to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `ProviderChannelName` to the URL query string
+    if (getProviderChannelName() != null) {
+      joiner.add(String.format("%sProviderChannelName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProviderChannelName()))));
+    }
+
+    // add `ProviderChannelId` to the URL query string
+    if (getProviderChannelId() != null) {
+      joiner.add(String.format("%sProviderChannelId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProviderChannelId()))));
+    }
+
+    // add `Id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+    }
+
+    return joiner.toString();
   }
 }
 

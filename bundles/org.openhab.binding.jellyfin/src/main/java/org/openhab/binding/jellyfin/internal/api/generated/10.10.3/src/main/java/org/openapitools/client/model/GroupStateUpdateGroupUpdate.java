@@ -13,68 +13,55 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import java.util.UUID;
 import org.openapitools.client.model.GroupStateUpdate;
 import org.openapitools.client.model.GroupUpdateType;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class GroupUpdate.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  GroupStateUpdateGroupUpdate.JSON_PROPERTY_GROUP_ID,
+  GroupStateUpdateGroupUpdate.JSON_PROPERTY_TYPE,
+  GroupStateUpdateGroupUpdate.JSON_PROPERTY_DATA
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class GroupStateUpdateGroupUpdate {
-  public static final String SERIALIZED_NAME_GROUP_ID = "GroupId";
-  @SerializedName(SERIALIZED_NAME_GROUP_ID)
+  public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
   @javax.annotation.Nullable
   private UUID groupId;
 
-  public static final String SERIALIZED_NAME_TYPE = "Type";
-  @SerializedName(SERIALIZED_NAME_TYPE)
+  public static final String JSON_PROPERTY_TYPE = "Type";
   @javax.annotation.Nullable
   private GroupUpdateType type;
 
-  public static final String SERIALIZED_NAME_DATA = "Data";
-  @SerializedName(SERIALIZED_NAME_DATA)
+  public static final String JSON_PROPERTY_DATA = "Data";
   @javax.annotation.Nullable
   private GroupStateUpdate data;
 
-  public GroupStateUpdateGroupUpdate() {
+  public GroupStateUpdateGroupUpdate() { 
   }
 
+  @JsonCreator
   public GroupStateUpdateGroupUpdate(
-     UUID groupId
+    @JsonProperty(JSON_PROPERTY_GROUP_ID) UUID groupId
   ) {
-    this();
+  this();
     this.groupId = groupId;
   }
 
@@ -83,9 +70,12 @@ public class GroupStateUpdateGroupUpdate {
    * @return groupId
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_GROUP_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getGroupId() {
     return groupId;
   }
+
 
 
 
@@ -99,10 +89,15 @@ public class GroupStateUpdateGroupUpdate {
    * @return type
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public GroupUpdateType getType() {
     return type;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@javax.annotation.Nullable GroupUpdateType type) {
     this.type = type;
   }
@@ -118,16 +113,23 @@ public class GroupStateUpdateGroupUpdate {
    * @return data
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public GroupStateUpdate getData() {
     return data;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setData(@javax.annotation.Nullable GroupStateUpdate data) {
     this.data = data;
   }
 
 
-
+  /**
+   * Return true if this GroupStateUpdateGroupUpdate object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -169,102 +171,54 @@ public class GroupStateUpdateGroupUpdate {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("GroupId");
-    openapiFields.add("Type");
-    openapiFields.add("Data");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to GroupStateUpdateGroupUpdate
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!GroupStateUpdateGroupUpdate.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in GroupStateUpdateGroupUpdate is not found in the empty JSON string", GroupStateUpdateGroupUpdate.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!GroupStateUpdateGroupUpdate.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `GroupStateUpdateGroupUpdate` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("GroupId") != null && !jsonObj.get("GroupId").isJsonNull()) && !jsonObj.get("GroupId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `GroupId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("GroupId").toString()));
-      }
-      // validate the optional field `Type`
-      if (jsonObj.get("Type") != null && !jsonObj.get("Type").isJsonNull()) {
-        GroupUpdateType.validateJsonElement(jsonObj.get("Type"));
-      }
-      // validate the optional field `Data`
-      if (jsonObj.get("Data") != null && !jsonObj.get("Data").isJsonNull()) {
-        GroupStateUpdate.validateJsonElement(jsonObj.get("Data"));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!GroupStateUpdateGroupUpdate.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'GroupStateUpdateGroupUpdate' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<GroupStateUpdateGroupUpdate> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(GroupStateUpdateGroupUpdate.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<GroupStateUpdateGroupUpdate>() {
-           @Override
-           public void write(JsonWriter out, GroupStateUpdateGroupUpdate value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public GroupStateUpdateGroupUpdate read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of GroupStateUpdateGroupUpdate given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of GroupStateUpdateGroupUpdate
-   * @throws IOException if the JSON string is invalid with respect to GroupStateUpdateGroupUpdate
-   */
-  public static GroupStateUpdateGroupUpdate fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, GroupStateUpdateGroupUpdate.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of GroupStateUpdateGroupUpdate to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `GroupId` to the URL query string
+    if (getGroupId() != null) {
+      joiner.add(String.format("%sGroupId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getGroupId()))));
+    }
+
+    // add `Type` to the URL query string
+    if (getType() != null) {
+      joiner.add(String.format("%sType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+    }
+
+    // add `Data` to the URL query string
+    if (getData() != null) {
+      joiner.add(getData().toUrlQueryString(prefix + "Data" + suffix));
+    }
+
+    return joiner.toString();
   }
 }
 

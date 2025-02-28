@@ -13,13 +13,17 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,90 +31,67 @@ import org.openapitools.client.model.TaskResult;
 import org.openapitools.client.model.TaskState;
 import org.openapitools.client.model.TaskTriggerInfo;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class TaskInfo.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  TaskInfo.JSON_PROPERTY_NAME,
+  TaskInfo.JSON_PROPERTY_STATE,
+  TaskInfo.JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE,
+  TaskInfo.JSON_PROPERTY_ID,
+  TaskInfo.JSON_PROPERTY_LAST_EXECUTION_RESULT,
+  TaskInfo.JSON_PROPERTY_TRIGGERS,
+  TaskInfo.JSON_PROPERTY_DESCRIPTION,
+  TaskInfo.JSON_PROPERTY_CATEGORY,
+  TaskInfo.JSON_PROPERTY_IS_HIDDEN,
+  TaskInfo.JSON_PROPERTY_KEY
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class TaskInfo {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_STATE = "State";
-  @SerializedName(SERIALIZED_NAME_STATE)
+  public static final String JSON_PROPERTY_STATE = "State";
   @javax.annotation.Nullable
   private TaskState state;
 
-  public static final String SERIALIZED_NAME_CURRENT_PROGRESS_PERCENTAGE = "CurrentProgressPercentage";
-  @SerializedName(SERIALIZED_NAME_CURRENT_PROGRESS_PERCENTAGE)
-  @javax.annotation.Nullable
-  private Double currentProgressPercentage;
+  public static final String JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE = "CurrentProgressPercentage";
+  private JsonNullable<Double> currentProgressPercentage = JsonNullable.<Double>undefined();
 
-  public static final String SERIALIZED_NAME_ID = "Id";
-  @SerializedName(SERIALIZED_NAME_ID)
-  @javax.annotation.Nullable
-  private String id;
+  public static final String JSON_PROPERTY_ID = "Id";
+  private JsonNullable<String> id = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_LAST_EXECUTION_RESULT = "LastExecutionResult";
-  @SerializedName(SERIALIZED_NAME_LAST_EXECUTION_RESULT)
-  @javax.annotation.Nullable
-  private TaskResult lastExecutionResult;
+  public static final String JSON_PROPERTY_LAST_EXECUTION_RESULT = "LastExecutionResult";
+  private JsonNullable<TaskResult> lastExecutionResult = JsonNullable.<TaskResult>undefined();
 
-  public static final String SERIALIZED_NAME_TRIGGERS = "Triggers";
-  @SerializedName(SERIALIZED_NAME_TRIGGERS)
-  @javax.annotation.Nullable
-  private List<TaskTriggerInfo> triggers;
+  public static final String JSON_PROPERTY_TRIGGERS = "Triggers";
+  private JsonNullable<List<TaskTriggerInfo>> triggers = JsonNullable.<List<TaskTriggerInfo>>undefined();
 
-  public static final String SERIALIZED_NAME_DESCRIPTION = "Description";
-  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
-  @javax.annotation.Nullable
-  private String description;
+  public static final String JSON_PROPERTY_DESCRIPTION = "Description";
+  private JsonNullable<String> description = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_CATEGORY = "Category";
-  @SerializedName(SERIALIZED_NAME_CATEGORY)
-  @javax.annotation.Nullable
-  private String category;
+  public static final String JSON_PROPERTY_CATEGORY = "Category";
+  private JsonNullable<String> category = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_IS_HIDDEN = "IsHidden";
-  @SerializedName(SERIALIZED_NAME_IS_HIDDEN)
+  public static final String JSON_PROPERTY_IS_HIDDEN = "IsHidden";
   @javax.annotation.Nullable
   private Boolean isHidden;
 
-  public static final String SERIALIZED_NAME_KEY = "Key";
-  @SerializedName(SERIALIZED_NAME_KEY)
-  @javax.annotation.Nullable
-  private String key;
+  public static final String JSON_PROPERTY_KEY = "Key";
+  private JsonNullable<String> key = JsonNullable.<String>undefined();
 
-  public TaskInfo() {
+  public TaskInfo() { 
   }
 
   public TaskInfo name(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
     return this;
   }
 
@@ -119,12 +100,25 @@ public class TaskInfo {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
   }
 
 
@@ -138,17 +132,22 @@ public class TaskInfo {
    * @return state
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_STATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public TaskState getState() {
     return state;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_STATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setState(@javax.annotation.Nullable TaskState state) {
     this.state = state;
   }
 
 
   public TaskInfo currentProgressPercentage(@javax.annotation.Nullable Double currentProgressPercentage) {
-    this.currentProgressPercentage = currentProgressPercentage;
+    this.currentProgressPercentage = JsonNullable.<Double>of(currentProgressPercentage);
     return this;
   }
 
@@ -157,17 +156,30 @@ public class TaskInfo {
    * @return currentProgressPercentage
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Double getCurrentProgressPercentage() {
+        return currentProgressPercentage.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Double> getCurrentProgressPercentage_JsonNullable() {
     return currentProgressPercentage;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE)
+  public void setCurrentProgressPercentage_JsonNullable(JsonNullable<Double> currentProgressPercentage) {
+    this.currentProgressPercentage = currentProgressPercentage;
   }
 
   public void setCurrentProgressPercentage(@javax.annotation.Nullable Double currentProgressPercentage) {
-    this.currentProgressPercentage = currentProgressPercentage;
+    this.currentProgressPercentage = JsonNullable.<Double>of(currentProgressPercentage);
   }
 
 
   public TaskInfo id(@javax.annotation.Nullable String id) {
-    this.id = id;
+    this.id = JsonNullable.<String>of(id);
     return this;
   }
 
@@ -176,17 +188,30 @@ public class TaskInfo {
    * @return id
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getId() {
+        return id.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getId_JsonNullable() {
     return id;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ID)
+  public void setId_JsonNullable(JsonNullable<String> id) {
+    this.id = id;
   }
 
   public void setId(@javax.annotation.Nullable String id) {
-    this.id = id;
+    this.id = JsonNullable.<String>of(id);
   }
 
 
   public TaskInfo lastExecutionResult(@javax.annotation.Nullable TaskResult lastExecutionResult) {
-    this.lastExecutionResult = lastExecutionResult;
+    this.lastExecutionResult = JsonNullable.<TaskResult>of(lastExecutionResult);
     return this;
   }
 
@@ -195,25 +220,42 @@ public class TaskInfo {
    * @return lastExecutionResult
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public TaskResult getLastExecutionResult() {
+        return lastExecutionResult.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LAST_EXECUTION_RESULT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<TaskResult> getLastExecutionResult_JsonNullable() {
     return lastExecutionResult;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LAST_EXECUTION_RESULT)
+  public void setLastExecutionResult_JsonNullable(JsonNullable<TaskResult> lastExecutionResult) {
+    this.lastExecutionResult = lastExecutionResult;
   }
 
   public void setLastExecutionResult(@javax.annotation.Nullable TaskResult lastExecutionResult) {
-    this.lastExecutionResult = lastExecutionResult;
+    this.lastExecutionResult = JsonNullable.<TaskResult>of(lastExecutionResult);
   }
 
 
   public TaskInfo triggers(@javax.annotation.Nullable List<TaskTriggerInfo> triggers) {
-    this.triggers = triggers;
+    this.triggers = JsonNullable.<List<TaskTriggerInfo>>of(triggers);
     return this;
   }
 
   public TaskInfo addTriggersItem(TaskTriggerInfo triggersItem) {
-    if (this.triggers == null) {
-      this.triggers = new ArrayList<>();
+    if (this.triggers == null || !this.triggers.isPresent()) {
+      this.triggers = JsonNullable.<List<TaskTriggerInfo>>of(new ArrayList<>());
     }
-    this.triggers.add(triggersItem);
+    try {
+      this.triggers.get().add(triggersItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -222,17 +264,30 @@ public class TaskInfo {
    * @return triggers
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<TaskTriggerInfo> getTriggers() {
+        return triggers.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TRIGGERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<TaskTriggerInfo>> getTriggers_JsonNullable() {
     return triggers;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TRIGGERS)
+  public void setTriggers_JsonNullable(JsonNullable<List<TaskTriggerInfo>> triggers) {
+    this.triggers = triggers;
   }
 
   public void setTriggers(@javax.annotation.Nullable List<TaskTriggerInfo> triggers) {
-    this.triggers = triggers;
+    this.triggers = JsonNullable.<List<TaskTriggerInfo>>of(triggers);
   }
 
 
   public TaskInfo description(@javax.annotation.Nullable String description) {
-    this.description = description;
+    this.description = JsonNullable.<String>of(description);
     return this;
   }
 
@@ -241,17 +296,30 @@ public class TaskInfo {
    * @return description
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getDescription() {
+        return description.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getDescription_JsonNullable() {
     return description;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  public void setDescription_JsonNullable(JsonNullable<String> description) {
+    this.description = description;
   }
 
   public void setDescription(@javax.annotation.Nullable String description) {
-    this.description = description;
+    this.description = JsonNullable.<String>of(description);
   }
 
 
   public TaskInfo category(@javax.annotation.Nullable String category) {
-    this.category = category;
+    this.category = JsonNullable.<String>of(category);
     return this;
   }
 
@@ -260,12 +328,25 @@ public class TaskInfo {
    * @return category
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getCategory() {
+        return category.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CATEGORY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getCategory_JsonNullable() {
     return category;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CATEGORY)
+  public void setCategory_JsonNullable(JsonNullable<String> category) {
+    this.category = category;
   }
 
   public void setCategory(@javax.annotation.Nullable String category) {
-    this.category = category;
+    this.category = JsonNullable.<String>of(category);
   }
 
 
@@ -279,17 +360,22 @@ public class TaskInfo {
    * @return isHidden
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_HIDDEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsHidden() {
     return isHidden;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_HIDDEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsHidden(@javax.annotation.Nullable Boolean isHidden) {
     this.isHidden = isHidden;
   }
 
 
   public TaskInfo key(@javax.annotation.Nullable String key) {
-    this.key = key;
+    this.key = JsonNullable.<String>of(key);
     return this;
   }
 
@@ -298,16 +384,31 @@ public class TaskInfo {
    * @return key
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getKey() {
-    return key;
+        return key.orElse(null);
   }
 
-  public void setKey(@javax.annotation.Nullable String key) {
+  @JsonProperty(JSON_PROPERTY_KEY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getKey_JsonNullable() {
+    return key;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_KEY)
+  public void setKey_JsonNullable(JsonNullable<String> key) {
     this.key = key;
   }
 
+  public void setKey(@javax.annotation.Nullable String key) {
+    this.key = JsonNullable.<String>of(key);
+  }
 
 
+  /**
+   * Return true if this TaskInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -317,16 +418,16 @@ public class TaskInfo {
       return false;
     }
     TaskInfo taskInfo = (TaskInfo) o;
-    return Objects.equals(this.name, taskInfo.name) &&
+    return equalsNullable(this.name, taskInfo.name) &&
         Objects.equals(this.state, taskInfo.state) &&
-        Objects.equals(this.currentProgressPercentage, taskInfo.currentProgressPercentage) &&
-        Objects.equals(this.id, taskInfo.id) &&
-        Objects.equals(this.lastExecutionResult, taskInfo.lastExecutionResult) &&
-        Objects.equals(this.triggers, taskInfo.triggers) &&
-        Objects.equals(this.description, taskInfo.description) &&
-        Objects.equals(this.category, taskInfo.category) &&
+        equalsNullable(this.currentProgressPercentage, taskInfo.currentProgressPercentage) &&
+        equalsNullable(this.id, taskInfo.id) &&
+        equalsNullable(this.lastExecutionResult, taskInfo.lastExecutionResult) &&
+        equalsNullable(this.triggers, taskInfo.triggers) &&
+        equalsNullable(this.description, taskInfo.description) &&
+        equalsNullable(this.category, taskInfo.category) &&
         Objects.equals(this.isHidden, taskInfo.isHidden) &&
-        Objects.equals(this.key, taskInfo.key);
+        equalsNullable(this.key, taskInfo.key);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -335,7 +436,7 @@ public class TaskInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, state, currentProgressPercentage, id, lastExecutionResult, triggers, description, category, isHidden, key);
+    return Objects.hash(hashCodeNullable(name), state, hashCodeNullable(currentProgressPercentage), hashCodeNullable(id), hashCodeNullable(lastExecutionResult), hashCodeNullable(triggers), hashCodeNullable(description), hashCodeNullable(category), isHidden, hashCodeNullable(key));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -374,135 +475,94 @@ public class TaskInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("State");
-    openapiFields.add("CurrentProgressPercentage");
-    openapiFields.add("Id");
-    openapiFields.add("LastExecutionResult");
-    openapiFields.add("Triggers");
-    openapiFields.add("Description");
-    openapiFields.add("Category");
-    openapiFields.add("IsHidden");
-    openapiFields.add("Key");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to TaskInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!TaskInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in TaskInfo is not found in the empty JSON string", TaskInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!TaskInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `TaskInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      // validate the optional field `State`
-      if (jsonObj.get("State") != null && !jsonObj.get("State").isJsonNull()) {
-        TaskState.validateJsonElement(jsonObj.get("State"));
-      }
-      if ((jsonObj.get("Id") != null && !jsonObj.get("Id").isJsonNull()) && !jsonObj.get("Id").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Id").toString()));
-      }
-      // validate the optional field `LastExecutionResult`
-      if (jsonObj.get("LastExecutionResult") != null && !jsonObj.get("LastExecutionResult").isJsonNull()) {
-        TaskResult.validateJsonElement(jsonObj.get("LastExecutionResult"));
-      }
-      if (jsonObj.get("Triggers") != null && !jsonObj.get("Triggers").isJsonNull()) {
-        JsonArray jsonArraytriggers = jsonObj.getAsJsonArray("Triggers");
-        if (jsonArraytriggers != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("Triggers").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `Triggers` to be an array in the JSON string but got `%s`", jsonObj.get("Triggers").toString()));
-          }
-
-          // validate the optional field `Triggers` (array)
-          for (int i = 0; i < jsonArraytriggers.size(); i++) {
-            TaskTriggerInfo.validateJsonElement(jsonArraytriggers.get(i));
-          };
-        }
-      }
-      if ((jsonObj.get("Description") != null && !jsonObj.get("Description").isJsonNull()) && !jsonObj.get("Description").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Description").toString()));
-      }
-      if ((jsonObj.get("Category") != null && !jsonObj.get("Category").isJsonNull()) && !jsonObj.get("Category").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Category` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Category").toString()));
-      }
-      if ((jsonObj.get("Key") != null && !jsonObj.get("Key").isJsonNull()) && !jsonObj.get("Key").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Key` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Key").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!TaskInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'TaskInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<TaskInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(TaskInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<TaskInfo>() {
-           @Override
-           public void write(JsonWriter out, TaskInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public TaskInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of TaskInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of TaskInfo
-   * @throws IOException if the JSON string is invalid with respect to TaskInfo
-   */
-  public static TaskInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, TaskInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of TaskInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `State` to the URL query string
+    if (getState() != null) {
+      joiner.add(String.format("%sState%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getState()))));
+    }
+
+    // add `CurrentProgressPercentage` to the URL query string
+    if (getCurrentProgressPercentage() != null) {
+      joiner.add(String.format("%sCurrentProgressPercentage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCurrentProgressPercentage()))));
+    }
+
+    // add `Id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+    }
+
+    // add `LastExecutionResult` to the URL query string
+    if (getLastExecutionResult() != null) {
+      joiner.add(getLastExecutionResult().toUrlQueryString(prefix + "LastExecutionResult" + suffix));
+    }
+
+    // add `Triggers` to the URL query string
+    if (getTriggers() != null) {
+      for (int i = 0; i < getTriggers().size(); i++) {
+        if (getTriggers().get(i) != null) {
+          joiner.add(getTriggers().get(i).toUrlQueryString(String.format("%sTriggers%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `Description` to the URL query string
+    if (getDescription() != null) {
+      joiner.add(String.format("%sDescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
+    }
+
+    // add `Category` to the URL query string
+    if (getCategory() != null) {
+      joiner.add(String.format("%sCategory%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCategory()))));
+    }
+
+    // add `IsHidden` to the URL query string
+    if (getIsHidden() != null) {
+      joiner.add(String.format("%sIsHidden%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsHidden()))));
+    }
+
+    // add `Key` to the URL query string
+    if (getKey() != null) {
+      joiner.add(String.format("%sKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
+    }
+
+    return joiner.toString();
   }
 }
 

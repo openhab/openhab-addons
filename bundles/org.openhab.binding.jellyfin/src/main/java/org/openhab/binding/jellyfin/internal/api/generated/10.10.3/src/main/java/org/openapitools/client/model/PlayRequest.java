@@ -13,101 +13,88 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.openapitools.client.model.PlayCommand;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class PlayRequest.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  PlayRequest.JSON_PROPERTY_ITEM_IDS,
+  PlayRequest.JSON_PROPERTY_START_POSITION_TICKS,
+  PlayRequest.JSON_PROPERTY_PLAY_COMMAND,
+  PlayRequest.JSON_PROPERTY_CONTROLLING_USER_ID,
+  PlayRequest.JSON_PROPERTY_SUBTITLE_STREAM_INDEX,
+  PlayRequest.JSON_PROPERTY_AUDIO_STREAM_INDEX,
+  PlayRequest.JSON_PROPERTY_MEDIA_SOURCE_ID,
+  PlayRequest.JSON_PROPERTY_START_INDEX
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PlayRequest {
-  public static final String SERIALIZED_NAME_ITEM_IDS = "ItemIds";
-  @SerializedName(SERIALIZED_NAME_ITEM_IDS)
-  @javax.annotation.Nullable
-  private List<UUID> itemIds;
+  public static final String JSON_PROPERTY_ITEM_IDS = "ItemIds";
+  private JsonNullable<List<UUID>> itemIds = JsonNullable.<List<UUID>>undefined();
 
-  public static final String SERIALIZED_NAME_START_POSITION_TICKS = "StartPositionTicks";
-  @SerializedName(SERIALIZED_NAME_START_POSITION_TICKS)
-  @javax.annotation.Nullable
-  private Long startPositionTicks;
+  public static final String JSON_PROPERTY_START_POSITION_TICKS = "StartPositionTicks";
+  private JsonNullable<Long> startPositionTicks = JsonNullable.<Long>undefined();
 
-  public static final String SERIALIZED_NAME_PLAY_COMMAND = "PlayCommand";
-  @SerializedName(SERIALIZED_NAME_PLAY_COMMAND)
+  public static final String JSON_PROPERTY_PLAY_COMMAND = "PlayCommand";
   @javax.annotation.Nullable
   private PlayCommand playCommand;
 
-  public static final String SERIALIZED_NAME_CONTROLLING_USER_ID = "ControllingUserId";
-  @SerializedName(SERIALIZED_NAME_CONTROLLING_USER_ID)
+  public static final String JSON_PROPERTY_CONTROLLING_USER_ID = "ControllingUserId";
   @javax.annotation.Nullable
   private UUID controllingUserId;
 
-  public static final String SERIALIZED_NAME_SUBTITLE_STREAM_INDEX = "SubtitleStreamIndex";
-  @SerializedName(SERIALIZED_NAME_SUBTITLE_STREAM_INDEX)
-  @javax.annotation.Nullable
-  private Integer subtitleStreamIndex;
+  public static final String JSON_PROPERTY_SUBTITLE_STREAM_INDEX = "SubtitleStreamIndex";
+  private JsonNullable<Integer> subtitleStreamIndex = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_AUDIO_STREAM_INDEX = "AudioStreamIndex";
-  @SerializedName(SERIALIZED_NAME_AUDIO_STREAM_INDEX)
-  @javax.annotation.Nullable
-  private Integer audioStreamIndex;
+  public static final String JSON_PROPERTY_AUDIO_STREAM_INDEX = "AudioStreamIndex";
+  private JsonNullable<Integer> audioStreamIndex = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_MEDIA_SOURCE_ID = "MediaSourceId";
-  @SerializedName(SERIALIZED_NAME_MEDIA_SOURCE_ID)
-  @javax.annotation.Nullable
-  private String mediaSourceId;
+  public static final String JSON_PROPERTY_MEDIA_SOURCE_ID = "MediaSourceId";
+  private JsonNullable<String> mediaSourceId = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_START_INDEX = "StartIndex";
-  @SerializedName(SERIALIZED_NAME_START_INDEX)
-  @javax.annotation.Nullable
-  private Integer startIndex;
+  public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
+  private JsonNullable<Integer> startIndex = JsonNullable.<Integer>undefined();
 
-  public PlayRequest() {
+  public PlayRequest() { 
   }
 
   public PlayRequest itemIds(@javax.annotation.Nullable List<UUID> itemIds) {
-    this.itemIds = itemIds;
+    this.itemIds = JsonNullable.<List<UUID>>of(itemIds);
     return this;
   }
 
   public PlayRequest addItemIdsItem(UUID itemIdsItem) {
-    if (this.itemIds == null) {
-      this.itemIds = new ArrayList<>();
+    if (this.itemIds == null || !this.itemIds.isPresent()) {
+      this.itemIds = JsonNullable.<List<UUID>>of(new ArrayList<>());
     }
-    this.itemIds.add(itemIdsItem);
+    try {
+      this.itemIds.get().add(itemIdsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -116,17 +103,30 @@ public class PlayRequest {
    * @return itemIds
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<UUID> getItemIds() {
+        return itemIds.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ITEM_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<UUID>> getItemIds_JsonNullable() {
     return itemIds;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ITEM_IDS)
+  public void setItemIds_JsonNullable(JsonNullable<List<UUID>> itemIds) {
+    this.itemIds = itemIds;
   }
 
   public void setItemIds(@javax.annotation.Nullable List<UUID> itemIds) {
-    this.itemIds = itemIds;
+    this.itemIds = JsonNullable.<List<UUID>>of(itemIds);
   }
 
 
   public PlayRequest startPositionTicks(@javax.annotation.Nullable Long startPositionTicks) {
-    this.startPositionTicks = startPositionTicks;
+    this.startPositionTicks = JsonNullable.<Long>of(startPositionTicks);
     return this;
   }
 
@@ -135,12 +135,25 @@ public class PlayRequest {
    * @return startPositionTicks
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Long getStartPositionTicks() {
+        return startPositionTicks.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Long> getStartPositionTicks_JsonNullable() {
     return startPositionTicks;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
+  public void setStartPositionTicks_JsonNullable(JsonNullable<Long> startPositionTicks) {
+    this.startPositionTicks = startPositionTicks;
   }
 
   public void setStartPositionTicks(@javax.annotation.Nullable Long startPositionTicks) {
-    this.startPositionTicks = startPositionTicks;
+    this.startPositionTicks = JsonNullable.<Long>of(startPositionTicks);
   }
 
 
@@ -154,10 +167,15 @@ public class PlayRequest {
    * @return playCommand
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLAY_COMMAND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PlayCommand getPlayCommand() {
     return playCommand;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PLAY_COMMAND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlayCommand(@javax.annotation.Nullable PlayCommand playCommand) {
     this.playCommand = playCommand;
   }
@@ -173,17 +191,22 @@ public class PlayRequest {
    * @return controllingUserId
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CONTROLLING_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getControllingUserId() {
     return controllingUserId;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CONTROLLING_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setControllingUserId(@javax.annotation.Nullable UUID controllingUserId) {
     this.controllingUserId = controllingUserId;
   }
 
 
   public PlayRequest subtitleStreamIndex(@javax.annotation.Nullable Integer subtitleStreamIndex) {
-    this.subtitleStreamIndex = subtitleStreamIndex;
+    this.subtitleStreamIndex = JsonNullable.<Integer>of(subtitleStreamIndex);
     return this;
   }
 
@@ -192,17 +215,30 @@ public class PlayRequest {
    * @return subtitleStreamIndex
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getSubtitleStreamIndex() {
+        return subtitleStreamIndex.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getSubtitleStreamIndex_JsonNullable() {
     return subtitleStreamIndex;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
+  public void setSubtitleStreamIndex_JsonNullable(JsonNullable<Integer> subtitleStreamIndex) {
+    this.subtitleStreamIndex = subtitleStreamIndex;
   }
 
   public void setSubtitleStreamIndex(@javax.annotation.Nullable Integer subtitleStreamIndex) {
-    this.subtitleStreamIndex = subtitleStreamIndex;
+    this.subtitleStreamIndex = JsonNullable.<Integer>of(subtitleStreamIndex);
   }
 
 
   public PlayRequest audioStreamIndex(@javax.annotation.Nullable Integer audioStreamIndex) {
-    this.audioStreamIndex = audioStreamIndex;
+    this.audioStreamIndex = JsonNullable.<Integer>of(audioStreamIndex);
     return this;
   }
 
@@ -211,17 +247,30 @@ public class PlayRequest {
    * @return audioStreamIndex
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getAudioStreamIndex() {
+        return audioStreamIndex.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getAudioStreamIndex_JsonNullable() {
     return audioStreamIndex;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
+  public void setAudioStreamIndex_JsonNullable(JsonNullable<Integer> audioStreamIndex) {
+    this.audioStreamIndex = audioStreamIndex;
   }
 
   public void setAudioStreamIndex(@javax.annotation.Nullable Integer audioStreamIndex) {
-    this.audioStreamIndex = audioStreamIndex;
+    this.audioStreamIndex = JsonNullable.<Integer>of(audioStreamIndex);
   }
 
 
   public PlayRequest mediaSourceId(@javax.annotation.Nullable String mediaSourceId) {
-    this.mediaSourceId = mediaSourceId;
+    this.mediaSourceId = JsonNullable.<String>of(mediaSourceId);
     return this;
   }
 
@@ -230,17 +279,30 @@ public class PlayRequest {
    * @return mediaSourceId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getMediaSourceId() {
+        return mediaSourceId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getMediaSourceId_JsonNullable() {
     return mediaSourceId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
+  public void setMediaSourceId_JsonNullable(JsonNullable<String> mediaSourceId) {
+    this.mediaSourceId = mediaSourceId;
   }
 
   public void setMediaSourceId(@javax.annotation.Nullable String mediaSourceId) {
-    this.mediaSourceId = mediaSourceId;
+    this.mediaSourceId = JsonNullable.<String>of(mediaSourceId);
   }
 
 
   public PlayRequest startIndex(@javax.annotation.Nullable Integer startIndex) {
-    this.startIndex = startIndex;
+    this.startIndex = JsonNullable.<Integer>of(startIndex);
     return this;
   }
 
@@ -249,16 +311,31 @@ public class PlayRequest {
    * @return startIndex
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getStartIndex() {
-    return startIndex;
+        return startIndex.orElse(null);
   }
 
-  public void setStartIndex(@javax.annotation.Nullable Integer startIndex) {
+  @JsonProperty(JSON_PROPERTY_START_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getStartIndex_JsonNullable() {
+    return startIndex;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_START_INDEX)
+  public void setStartIndex_JsonNullable(JsonNullable<Integer> startIndex) {
     this.startIndex = startIndex;
   }
 
+  public void setStartIndex(@javax.annotation.Nullable Integer startIndex) {
+    this.startIndex = JsonNullable.<Integer>of(startIndex);
+  }
 
 
+  /**
+   * Return true if this PlayRequest object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -268,14 +345,14 @@ public class PlayRequest {
       return false;
     }
     PlayRequest playRequest = (PlayRequest) o;
-    return Objects.equals(this.itemIds, playRequest.itemIds) &&
-        Objects.equals(this.startPositionTicks, playRequest.startPositionTicks) &&
+    return equalsNullable(this.itemIds, playRequest.itemIds) &&
+        equalsNullable(this.startPositionTicks, playRequest.startPositionTicks) &&
         Objects.equals(this.playCommand, playRequest.playCommand) &&
         Objects.equals(this.controllingUserId, playRequest.controllingUserId) &&
-        Objects.equals(this.subtitleStreamIndex, playRequest.subtitleStreamIndex) &&
-        Objects.equals(this.audioStreamIndex, playRequest.audioStreamIndex) &&
-        Objects.equals(this.mediaSourceId, playRequest.mediaSourceId) &&
-        Objects.equals(this.startIndex, playRequest.startIndex);
+        equalsNullable(this.subtitleStreamIndex, playRequest.subtitleStreamIndex) &&
+        equalsNullable(this.audioStreamIndex, playRequest.audioStreamIndex) &&
+        equalsNullable(this.mediaSourceId, playRequest.mediaSourceId) &&
+        equalsNullable(this.startIndex, playRequest.startIndex);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -284,7 +361,7 @@ public class PlayRequest {
 
   @Override
   public int hashCode() {
-    return Objects.hash(itemIds, startPositionTicks, playCommand, controllingUserId, subtitleStreamIndex, audioStreamIndex, mediaSourceId, startIndex);
+    return Objects.hash(hashCodeNullable(itemIds), hashCodeNullable(startPositionTicks), playCommand, controllingUserId, hashCodeNullable(subtitleStreamIndex), hashCodeNullable(audioStreamIndex), hashCodeNullable(mediaSourceId), hashCodeNullable(startIndex));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -321,110 +398,85 @@ public class PlayRequest {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("ItemIds");
-    openapiFields.add("StartPositionTicks");
-    openapiFields.add("PlayCommand");
-    openapiFields.add("ControllingUserId");
-    openapiFields.add("SubtitleStreamIndex");
-    openapiFields.add("AudioStreamIndex");
-    openapiFields.add("MediaSourceId");
-    openapiFields.add("StartIndex");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to PlayRequest
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!PlayRequest.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in PlayRequest is not found in the empty JSON string", PlayRequest.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!PlayRequest.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `PlayRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("ItemIds") != null && !jsonObj.get("ItemIds").isJsonNull() && !jsonObj.get("ItemIds").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ItemIds` to be an array in the JSON string but got `%s`", jsonObj.get("ItemIds").toString()));
-      }
-      // validate the optional field `PlayCommand`
-      if (jsonObj.get("PlayCommand") != null && !jsonObj.get("PlayCommand").isJsonNull()) {
-        PlayCommand.validateJsonElement(jsonObj.get("PlayCommand"));
-      }
-      if ((jsonObj.get("ControllingUserId") != null && !jsonObj.get("ControllingUserId").isJsonNull()) && !jsonObj.get("ControllingUserId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ControllingUserId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ControllingUserId").toString()));
-      }
-      if ((jsonObj.get("MediaSourceId") != null && !jsonObj.get("MediaSourceId").isJsonNull()) && !jsonObj.get("MediaSourceId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MediaSourceId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("MediaSourceId").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!PlayRequest.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'PlayRequest' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<PlayRequest> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(PlayRequest.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<PlayRequest>() {
-           @Override
-           public void write(JsonWriter out, PlayRequest value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public PlayRequest read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of PlayRequest given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of PlayRequest
-   * @throws IOException if the JSON string is invalid with respect to PlayRequest
-   */
-  public static PlayRequest fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, PlayRequest.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of PlayRequest to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `ItemIds` to the URL query string
+    if (getItemIds() != null) {
+      for (int i = 0; i < getItemIds().size(); i++) {
+        if (getItemIds().get(i) != null) {
+          joiner.add(String.format("%sItemIds%s%s=%s", prefix, suffix,
+              "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+              ApiClient.urlEncode(ApiClient.valueToString(getItemIds().get(i)))));
+        }
+      }
+    }
+
+    // add `StartPositionTicks` to the URL query string
+    if (getStartPositionTicks() != null) {
+      joiner.add(String.format("%sStartPositionTicks%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStartPositionTicks()))));
+    }
+
+    // add `PlayCommand` to the URL query string
+    if (getPlayCommand() != null) {
+      joiner.add(String.format("%sPlayCommand%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlayCommand()))));
+    }
+
+    // add `ControllingUserId` to the URL query string
+    if (getControllingUserId() != null) {
+      joiner.add(String.format("%sControllingUserId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getControllingUserId()))));
+    }
+
+    // add `SubtitleStreamIndex` to the URL query string
+    if (getSubtitleStreamIndex() != null) {
+      joiner.add(String.format("%sSubtitleStreamIndex%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSubtitleStreamIndex()))));
+    }
+
+    // add `AudioStreamIndex` to the URL query string
+    if (getAudioStreamIndex() != null) {
+      joiner.add(String.format("%sAudioStreamIndex%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAudioStreamIndex()))));
+    }
+
+    // add `MediaSourceId` to the URL query string
+    if (getMediaSourceId() != null) {
+      joiner.add(String.format("%sMediaSourceId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMediaSourceId()))));
+    }
+
+    // add `StartIndex` to the URL query string
+    if (getStartIndex() != null) {
+      joiner.add(String.format("%sStartIndex%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStartIndex()))));
+    }
+
+    return joiner.toString();
   }
 }
 

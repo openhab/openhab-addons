@@ -13,69 +13,56 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.client.model.DlnaProfileType;
 import org.openapitools.client.model.ProfileCondition;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Defines the MediaBrowser.Model.Dlna.ContainerProfile.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  ContainerProfile.JSON_PROPERTY_TYPE,
+  ContainerProfile.JSON_PROPERTY_CONDITIONS,
+  ContainerProfile.JSON_PROPERTY_CONTAINER,
+  ContainerProfile.JSON_PROPERTY_SUB_CONTAINER
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ContainerProfile {
-  public static final String SERIALIZED_NAME_TYPE = "Type";
-  @SerializedName(SERIALIZED_NAME_TYPE)
+  public static final String JSON_PROPERTY_TYPE = "Type";
   @javax.annotation.Nullable
   private DlnaProfileType type;
 
-  public static final String SERIALIZED_NAME_CONDITIONS = "Conditions";
-  @SerializedName(SERIALIZED_NAME_CONDITIONS)
+  public static final String JSON_PROPERTY_CONDITIONS = "Conditions";
   @javax.annotation.Nullable
   private List<ProfileCondition> conditions = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_CONTAINER = "Container";
-  @SerializedName(SERIALIZED_NAME_CONTAINER)
-  @javax.annotation.Nullable
-  private String container;
+  public static final String JSON_PROPERTY_CONTAINER = "Container";
+  private JsonNullable<String> container = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_SUB_CONTAINER = "SubContainer";
-  @SerializedName(SERIALIZED_NAME_SUB_CONTAINER)
-  @javax.annotation.Nullable
-  private String subContainer;
+  public static final String JSON_PROPERTY_SUB_CONTAINER = "SubContainer";
+  private JsonNullable<String> subContainer = JsonNullable.<String>undefined();
 
-  public ContainerProfile() {
+  public ContainerProfile() { 
   }
 
   public ContainerProfile type(@javax.annotation.Nullable DlnaProfileType type) {
@@ -88,10 +75,15 @@ public class ContainerProfile {
    * @return type
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public DlnaProfileType getType() {
     return type;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@javax.annotation.Nullable DlnaProfileType type) {
     this.type = type;
   }
@@ -115,17 +107,22 @@ public class ContainerProfile {
    * @return conditions
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CONDITIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ProfileCondition> getConditions() {
     return conditions;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CONDITIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setConditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
     this.conditions = conditions;
   }
 
 
   public ContainerProfile container(@javax.annotation.Nullable String container) {
-    this.container = container;
+    this.container = JsonNullable.<String>of(container);
     return this;
   }
 
@@ -134,17 +131,30 @@ public class ContainerProfile {
    * @return container
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getContainer() {
+        return container.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getContainer_JsonNullable() {
     return container;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  public void setContainer_JsonNullable(JsonNullable<String> container) {
+    this.container = container;
   }
 
   public void setContainer(@javax.annotation.Nullable String container) {
-    this.container = container;
+    this.container = JsonNullable.<String>of(container);
   }
 
 
   public ContainerProfile subContainer(@javax.annotation.Nullable String subContainer) {
-    this.subContainer = subContainer;
+    this.subContainer = JsonNullable.<String>of(subContainer);
     return this;
   }
 
@@ -153,16 +163,31 @@ public class ContainerProfile {
    * @return subContainer
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getSubContainer() {
-    return subContainer;
+        return subContainer.orElse(null);
   }
 
-  public void setSubContainer(@javax.annotation.Nullable String subContainer) {
+  @JsonProperty(JSON_PROPERTY_SUB_CONTAINER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getSubContainer_JsonNullable() {
+    return subContainer;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SUB_CONTAINER)
+  public void setSubContainer_JsonNullable(JsonNullable<String> subContainer) {
     this.subContainer = subContainer;
   }
 
+  public void setSubContainer(@javax.annotation.Nullable String subContainer) {
+    this.subContainer = JsonNullable.<String>of(subContainer);
+  }
 
 
+  /**
+   * Return true if this ContainerProfile object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -174,8 +199,8 @@ public class ContainerProfile {
     ContainerProfile containerProfile = (ContainerProfile) o;
     return Objects.equals(this.type, containerProfile.type) &&
         Objects.equals(this.conditions, containerProfile.conditions) &&
-        Objects.equals(this.container, containerProfile.container) &&
-        Objects.equals(this.subContainer, containerProfile.subContainer);
+        equalsNullable(this.container, containerProfile.container) &&
+        equalsNullable(this.subContainer, containerProfile.subContainer);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -184,7 +209,7 @@ public class ContainerProfile {
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, conditions, container, subContainer);
+    return Objects.hash(type, conditions, hashCodeNullable(container), hashCodeNullable(subContainer));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -217,116 +242,64 @@ public class ContainerProfile {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Type");
-    openapiFields.add("Conditions");
-    openapiFields.add("Container");
-    openapiFields.add("SubContainer");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to ContainerProfile
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!ContainerProfile.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in ContainerProfile is not found in the empty JSON string", ContainerProfile.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!ContainerProfile.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `ContainerProfile` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // validate the optional field `Type`
-      if (jsonObj.get("Type") != null && !jsonObj.get("Type").isJsonNull()) {
-        DlnaProfileType.validateJsonElement(jsonObj.get("Type"));
-      }
-      if (jsonObj.get("Conditions") != null && !jsonObj.get("Conditions").isJsonNull()) {
-        JsonArray jsonArrayconditions = jsonObj.getAsJsonArray("Conditions");
-        if (jsonArrayconditions != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("Conditions").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `Conditions` to be an array in the JSON string but got `%s`", jsonObj.get("Conditions").toString()));
-          }
-
-          // validate the optional field `Conditions` (array)
-          for (int i = 0; i < jsonArrayconditions.size(); i++) {
-            ProfileCondition.validateJsonElement(jsonArrayconditions.get(i));
-          };
-        }
-      }
-      if ((jsonObj.get("Container") != null && !jsonObj.get("Container").isJsonNull()) && !jsonObj.get("Container").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Container` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Container").toString()));
-      }
-      if ((jsonObj.get("SubContainer") != null && !jsonObj.get("SubContainer").isJsonNull()) && !jsonObj.get("SubContainer").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SubContainer` to be a primitive type in the JSON string but got `%s`", jsonObj.get("SubContainer").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!ContainerProfile.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'ContainerProfile' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<ContainerProfile> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(ContainerProfile.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<ContainerProfile>() {
-           @Override
-           public void write(JsonWriter out, ContainerProfile value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public ContainerProfile read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of ContainerProfile given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of ContainerProfile
-   * @throws IOException if the JSON string is invalid with respect to ContainerProfile
-   */
-  public static ContainerProfile fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, ContainerProfile.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of ContainerProfile to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Type` to the URL query string
+    if (getType() != null) {
+      joiner.add(String.format("%sType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+    }
+
+    // add `Conditions` to the URL query string
+    if (getConditions() != null) {
+      for (int i = 0; i < getConditions().size(); i++) {
+        if (getConditions().get(i) != null) {
+          joiner.add(getConditions().get(i).toUrlQueryString(String.format("%sConditions%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `Container` to the URL query string
+    if (getContainer() != null) {
+      joiner.add(String.format("%sContainer%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
+    }
+
+    // add `SubContainer` to the URL query string
+    if (getSubContainer() != null) {
+      joiner.add(String.format("%sSubContainer%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSubContainer()))));
+    }
+
+    return joiner.toString();
   }
 }
 

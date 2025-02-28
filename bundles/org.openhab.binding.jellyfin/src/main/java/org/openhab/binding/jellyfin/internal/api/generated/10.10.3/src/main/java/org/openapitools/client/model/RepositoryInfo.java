@@ -13,64 +13,51 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class RepositoryInfo.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  RepositoryInfo.JSON_PROPERTY_NAME,
+  RepositoryInfo.JSON_PROPERTY_URL,
+  RepositoryInfo.JSON_PROPERTY_ENABLED
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class RepositoryInfo {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_URL = "Url";
-  @SerializedName(SERIALIZED_NAME_URL)
-  @javax.annotation.Nullable
-  private String url;
+  public static final String JSON_PROPERTY_URL = "Url";
+  private JsonNullable<String> url = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ENABLED = "Enabled";
-  @SerializedName(SERIALIZED_NAME_ENABLED)
+  public static final String JSON_PROPERTY_ENABLED = "Enabled";
   @javax.annotation.Nullable
   private Boolean enabled;
 
-  public RepositoryInfo() {
+  public RepositoryInfo() { 
   }
 
   public RepositoryInfo name(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
     return this;
   }
 
@@ -79,17 +66,30 @@ public class RepositoryInfo {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
   }
 
 
   public RepositoryInfo url(@javax.annotation.Nullable String url) {
-    this.url = url;
+    this.url = JsonNullable.<String>of(url);
     return this;
   }
 
@@ -98,12 +98,25 @@ public class RepositoryInfo {
    * @return url
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getUrl() {
+        return url.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getUrl_JsonNullable() {
     return url;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_URL)
+  public void setUrl_JsonNullable(JsonNullable<String> url) {
+    this.url = url;
   }
 
   public void setUrl(@javax.annotation.Nullable String url) {
-    this.url = url;
+    this.url = JsonNullable.<String>of(url);
   }
 
 
@@ -117,16 +130,23 @@ public class RepositoryInfo {
    * @return enabled
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnabled() {
     return enabled;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnabled(@javax.annotation.Nullable Boolean enabled) {
     this.enabled = enabled;
   }
 
 
-
+  /**
+   * Return true if this RepositoryInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -136,8 +156,8 @@ public class RepositoryInfo {
       return false;
     }
     RepositoryInfo repositoryInfo = (RepositoryInfo) o;
-    return Objects.equals(this.name, repositoryInfo.name) &&
-        Objects.equals(this.url, repositoryInfo.url) &&
+    return equalsNullable(this.name, repositoryInfo.name) &&
+        equalsNullable(this.url, repositoryInfo.url) &&
         Objects.equals(this.enabled, repositoryInfo.enabled);
   }
 
@@ -147,7 +167,7 @@ public class RepositoryInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, url, enabled);
+    return Objects.hash(hashCodeNullable(name), hashCodeNullable(url), enabled);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -179,97 +199,54 @@ public class RepositoryInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("Url");
-    openapiFields.add("Enabled");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to RepositoryInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!RepositoryInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in RepositoryInfo is not found in the empty JSON string", RepositoryInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!RepositoryInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `RepositoryInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("Url") != null && !jsonObj.get("Url").isJsonNull()) && !jsonObj.get("Url").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Url` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Url").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!RepositoryInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'RepositoryInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<RepositoryInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(RepositoryInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<RepositoryInfo>() {
-           @Override
-           public void write(JsonWriter out, RepositoryInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public RepositoryInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of RepositoryInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of RepositoryInfo
-   * @throws IOException if the JSON string is invalid with respect to RepositoryInfo
-   */
-  public static RepositoryInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, RepositoryInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of RepositoryInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `Url` to the URL query string
+    if (getUrl() != null) {
+      joiner.add(String.format("%sUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
+    }
+
+    // add `Enabled` to the URL query string
+    if (getEnabled() != null) {
+      joiner.add(String.format("%sEnabled%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnabled()))));
+    }
+
+    return joiner.toString();
   }
 }
 

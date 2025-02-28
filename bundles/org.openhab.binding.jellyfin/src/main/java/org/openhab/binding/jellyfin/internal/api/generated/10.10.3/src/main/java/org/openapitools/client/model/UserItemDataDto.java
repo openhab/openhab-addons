@@ -13,106 +13,90 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.UUID;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class UserItemDataDto.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  UserItemDataDto.JSON_PROPERTY_RATING,
+  UserItemDataDto.JSON_PROPERTY_PLAYED_PERCENTAGE,
+  UserItemDataDto.JSON_PROPERTY_UNPLAYED_ITEM_COUNT,
+  UserItemDataDto.JSON_PROPERTY_PLAYBACK_POSITION_TICKS,
+  UserItemDataDto.JSON_PROPERTY_PLAY_COUNT,
+  UserItemDataDto.JSON_PROPERTY_IS_FAVORITE,
+  UserItemDataDto.JSON_PROPERTY_LIKES,
+  UserItemDataDto.JSON_PROPERTY_LAST_PLAYED_DATE,
+  UserItemDataDto.JSON_PROPERTY_PLAYED,
+  UserItemDataDto.JSON_PROPERTY_KEY,
+  UserItemDataDto.JSON_PROPERTY_ITEM_ID
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class UserItemDataDto {
-  public static final String SERIALIZED_NAME_RATING = "Rating";
-  @SerializedName(SERIALIZED_NAME_RATING)
-  @javax.annotation.Nullable
-  private Double rating;
+  public static final String JSON_PROPERTY_RATING = "Rating";
+  private JsonNullable<Double> rating = JsonNullable.<Double>undefined();
 
-  public static final String SERIALIZED_NAME_PLAYED_PERCENTAGE = "PlayedPercentage";
-  @SerializedName(SERIALIZED_NAME_PLAYED_PERCENTAGE)
-  @javax.annotation.Nullable
-  private Double playedPercentage;
+  public static final String JSON_PROPERTY_PLAYED_PERCENTAGE = "PlayedPercentage";
+  private JsonNullable<Double> playedPercentage = JsonNullable.<Double>undefined();
 
-  public static final String SERIALIZED_NAME_UNPLAYED_ITEM_COUNT = "UnplayedItemCount";
-  @SerializedName(SERIALIZED_NAME_UNPLAYED_ITEM_COUNT)
-  @javax.annotation.Nullable
-  private Integer unplayedItemCount;
+  public static final String JSON_PROPERTY_UNPLAYED_ITEM_COUNT = "UnplayedItemCount";
+  private JsonNullable<Integer> unplayedItemCount = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_PLAYBACK_POSITION_TICKS = "PlaybackPositionTicks";
-  @SerializedName(SERIALIZED_NAME_PLAYBACK_POSITION_TICKS)
+  public static final String JSON_PROPERTY_PLAYBACK_POSITION_TICKS = "PlaybackPositionTicks";
   @javax.annotation.Nullable
   private Long playbackPositionTicks;
 
-  public static final String SERIALIZED_NAME_PLAY_COUNT = "PlayCount";
-  @SerializedName(SERIALIZED_NAME_PLAY_COUNT)
+  public static final String JSON_PROPERTY_PLAY_COUNT = "PlayCount";
   @javax.annotation.Nullable
   private Integer playCount;
 
-  public static final String SERIALIZED_NAME_IS_FAVORITE = "IsFavorite";
-  @SerializedName(SERIALIZED_NAME_IS_FAVORITE)
+  public static final String JSON_PROPERTY_IS_FAVORITE = "IsFavorite";
   @javax.annotation.Nullable
   private Boolean isFavorite;
 
-  public static final String SERIALIZED_NAME_LIKES = "Likes";
-  @SerializedName(SERIALIZED_NAME_LIKES)
-  @javax.annotation.Nullable
-  private Boolean likes;
+  public static final String JSON_PROPERTY_LIKES = "Likes";
+  private JsonNullable<Boolean> likes = JsonNullable.<Boolean>undefined();
 
-  public static final String SERIALIZED_NAME_LAST_PLAYED_DATE = "LastPlayedDate";
-  @SerializedName(SERIALIZED_NAME_LAST_PLAYED_DATE)
-  @javax.annotation.Nullable
-  private OffsetDateTime lastPlayedDate;
+  public static final String JSON_PROPERTY_LAST_PLAYED_DATE = "LastPlayedDate";
+  private JsonNullable<OffsetDateTime> lastPlayedDate = JsonNullable.<OffsetDateTime>undefined();
 
-  public static final String SERIALIZED_NAME_PLAYED = "Played";
-  @SerializedName(SERIALIZED_NAME_PLAYED)
+  public static final String JSON_PROPERTY_PLAYED = "Played";
   @javax.annotation.Nullable
   private Boolean played;
 
-  public static final String SERIALIZED_NAME_KEY = "Key";
-  @SerializedName(SERIALIZED_NAME_KEY)
+  public static final String JSON_PROPERTY_KEY = "Key";
   @javax.annotation.Nullable
   private String key;
 
-  public static final String SERIALIZED_NAME_ITEM_ID = "ItemId";
-  @SerializedName(SERIALIZED_NAME_ITEM_ID)
+  public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
   @javax.annotation.Nullable
   private UUID itemId;
 
-  public UserItemDataDto() {
+  public UserItemDataDto() { 
   }
 
   public UserItemDataDto rating(@javax.annotation.Nullable Double rating) {
-    this.rating = rating;
+    this.rating = JsonNullable.<Double>of(rating);
     return this;
   }
 
@@ -121,17 +105,30 @@ public class UserItemDataDto {
    * @return rating
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Double getRating() {
+        return rating.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_RATING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Double> getRating_JsonNullable() {
     return rating;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_RATING)
+  public void setRating_JsonNullable(JsonNullable<Double> rating) {
+    this.rating = rating;
   }
 
   public void setRating(@javax.annotation.Nullable Double rating) {
-    this.rating = rating;
+    this.rating = JsonNullable.<Double>of(rating);
   }
 
 
   public UserItemDataDto playedPercentage(@javax.annotation.Nullable Double playedPercentage) {
-    this.playedPercentage = playedPercentage;
+    this.playedPercentage = JsonNullable.<Double>of(playedPercentage);
     return this;
   }
 
@@ -140,17 +137,30 @@ public class UserItemDataDto {
    * @return playedPercentage
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Double getPlayedPercentage() {
+        return playedPercentage.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PLAYED_PERCENTAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Double> getPlayedPercentage_JsonNullable() {
     return playedPercentage;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PLAYED_PERCENTAGE)
+  public void setPlayedPercentage_JsonNullable(JsonNullable<Double> playedPercentage) {
+    this.playedPercentage = playedPercentage;
   }
 
   public void setPlayedPercentage(@javax.annotation.Nullable Double playedPercentage) {
-    this.playedPercentage = playedPercentage;
+    this.playedPercentage = JsonNullable.<Double>of(playedPercentage);
   }
 
 
   public UserItemDataDto unplayedItemCount(@javax.annotation.Nullable Integer unplayedItemCount) {
-    this.unplayedItemCount = unplayedItemCount;
+    this.unplayedItemCount = JsonNullable.<Integer>of(unplayedItemCount);
     return this;
   }
 
@@ -159,12 +169,25 @@ public class UserItemDataDto {
    * @return unplayedItemCount
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getUnplayedItemCount() {
+        return unplayedItemCount.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_UNPLAYED_ITEM_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getUnplayedItemCount_JsonNullable() {
     return unplayedItemCount;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_UNPLAYED_ITEM_COUNT)
+  public void setUnplayedItemCount_JsonNullable(JsonNullable<Integer> unplayedItemCount) {
+    this.unplayedItemCount = unplayedItemCount;
   }
 
   public void setUnplayedItemCount(@javax.annotation.Nullable Integer unplayedItemCount) {
-    this.unplayedItemCount = unplayedItemCount;
+    this.unplayedItemCount = JsonNullable.<Integer>of(unplayedItemCount);
   }
 
 
@@ -178,10 +201,15 @@ public class UserItemDataDto {
    * @return playbackPositionTicks
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLAYBACK_POSITION_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getPlaybackPositionTicks() {
     return playbackPositionTicks;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PLAYBACK_POSITION_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlaybackPositionTicks(@javax.annotation.Nullable Long playbackPositionTicks) {
     this.playbackPositionTicks = playbackPositionTicks;
   }
@@ -197,10 +225,15 @@ public class UserItemDataDto {
    * @return playCount
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLAY_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getPlayCount() {
     return playCount;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PLAY_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlayCount(@javax.annotation.Nullable Integer playCount) {
     this.playCount = playCount;
   }
@@ -216,17 +249,22 @@ public class UserItemDataDto {
    * @return isFavorite
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_FAVORITE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsFavorite() {
     return isFavorite;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_FAVORITE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsFavorite(@javax.annotation.Nullable Boolean isFavorite) {
     this.isFavorite = isFavorite;
   }
 
 
   public UserItemDataDto likes(@javax.annotation.Nullable Boolean likes) {
-    this.likes = likes;
+    this.likes = JsonNullable.<Boolean>of(likes);
     return this;
   }
 
@@ -235,17 +273,30 @@ public class UserItemDataDto {
    * @return likes
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Boolean getLikes() {
+        return likes.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LIKES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Boolean> getLikes_JsonNullable() {
     return likes;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LIKES)
+  public void setLikes_JsonNullable(JsonNullable<Boolean> likes) {
+    this.likes = likes;
   }
 
   public void setLikes(@javax.annotation.Nullable Boolean likes) {
-    this.likes = likes;
+    this.likes = JsonNullable.<Boolean>of(likes);
   }
 
 
   public UserItemDataDto lastPlayedDate(@javax.annotation.Nullable OffsetDateTime lastPlayedDate) {
-    this.lastPlayedDate = lastPlayedDate;
+    this.lastPlayedDate = JsonNullable.<OffsetDateTime>of(lastPlayedDate);
     return this;
   }
 
@@ -254,12 +305,25 @@ public class UserItemDataDto {
    * @return lastPlayedDate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public OffsetDateTime getLastPlayedDate() {
+        return lastPlayedDate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LAST_PLAYED_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<OffsetDateTime> getLastPlayedDate_JsonNullable() {
     return lastPlayedDate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LAST_PLAYED_DATE)
+  public void setLastPlayedDate_JsonNullable(JsonNullable<OffsetDateTime> lastPlayedDate) {
+    this.lastPlayedDate = lastPlayedDate;
   }
 
   public void setLastPlayedDate(@javax.annotation.Nullable OffsetDateTime lastPlayedDate) {
-    this.lastPlayedDate = lastPlayedDate;
+    this.lastPlayedDate = JsonNullable.<OffsetDateTime>of(lastPlayedDate);
   }
 
 
@@ -273,10 +337,15 @@ public class UserItemDataDto {
    * @return played
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLAYED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getPlayed() {
     return played;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PLAYED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlayed(@javax.annotation.Nullable Boolean played) {
     this.played = played;
   }
@@ -292,10 +361,15 @@ public class UserItemDataDto {
    * @return key
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_KEY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getKey() {
     return key;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_KEY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setKey(@javax.annotation.Nullable String key) {
     this.key = key;
   }
@@ -311,16 +385,23 @@ public class UserItemDataDto {
    * @return itemId
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getItemId() {
     return itemId;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemId(@javax.annotation.Nullable UUID itemId) {
     this.itemId = itemId;
   }
 
 
-
+  /**
+   * Return true if this UserItemDataDto object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -330,14 +411,14 @@ public class UserItemDataDto {
       return false;
     }
     UserItemDataDto userItemDataDto = (UserItemDataDto) o;
-    return Objects.equals(this.rating, userItemDataDto.rating) &&
-        Objects.equals(this.playedPercentage, userItemDataDto.playedPercentage) &&
-        Objects.equals(this.unplayedItemCount, userItemDataDto.unplayedItemCount) &&
+    return equalsNullable(this.rating, userItemDataDto.rating) &&
+        equalsNullable(this.playedPercentage, userItemDataDto.playedPercentage) &&
+        equalsNullable(this.unplayedItemCount, userItemDataDto.unplayedItemCount) &&
         Objects.equals(this.playbackPositionTicks, userItemDataDto.playbackPositionTicks) &&
         Objects.equals(this.playCount, userItemDataDto.playCount) &&
         Objects.equals(this.isFavorite, userItemDataDto.isFavorite) &&
-        Objects.equals(this.likes, userItemDataDto.likes) &&
-        Objects.equals(this.lastPlayedDate, userItemDataDto.lastPlayedDate) &&
+        equalsNullable(this.likes, userItemDataDto.likes) &&
+        equalsNullable(this.lastPlayedDate, userItemDataDto.lastPlayedDate) &&
         Objects.equals(this.played, userItemDataDto.played) &&
         Objects.equals(this.key, userItemDataDto.key) &&
         Objects.equals(this.itemId, userItemDataDto.itemId);
@@ -349,7 +430,7 @@ public class UserItemDataDto {
 
   @Override
   public int hashCode() {
-    return Objects.hash(rating, playedPercentage, unplayedItemCount, playbackPositionTicks, playCount, isFavorite, likes, lastPlayedDate, played, key, itemId);
+    return Objects.hash(hashCodeNullable(rating), hashCodeNullable(playedPercentage), hashCodeNullable(unplayedItemCount), playbackPositionTicks, playCount, isFavorite, hashCodeNullable(likes), hashCodeNullable(lastPlayedDate), played, key, itemId);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -389,105 +470,94 @@ public class UserItemDataDto {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Rating");
-    openapiFields.add("PlayedPercentage");
-    openapiFields.add("UnplayedItemCount");
-    openapiFields.add("PlaybackPositionTicks");
-    openapiFields.add("PlayCount");
-    openapiFields.add("IsFavorite");
-    openapiFields.add("Likes");
-    openapiFields.add("LastPlayedDate");
-    openapiFields.add("Played");
-    openapiFields.add("Key");
-    openapiFields.add("ItemId");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to UserItemDataDto
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!UserItemDataDto.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in UserItemDataDto is not found in the empty JSON string", UserItemDataDto.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!UserItemDataDto.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `UserItemDataDto` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Key") != null && !jsonObj.get("Key").isJsonNull()) && !jsonObj.get("Key").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Key` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Key").toString()));
-      }
-      if ((jsonObj.get("ItemId") != null && !jsonObj.get("ItemId").isJsonNull()) && !jsonObj.get("ItemId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ItemId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ItemId").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!UserItemDataDto.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'UserItemDataDto' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<UserItemDataDto> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(UserItemDataDto.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<UserItemDataDto>() {
-           @Override
-           public void write(JsonWriter out, UserItemDataDto value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public UserItemDataDto read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of UserItemDataDto given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of UserItemDataDto
-   * @throws IOException if the JSON string is invalid with respect to UserItemDataDto
-   */
-  public static UserItemDataDto fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, UserItemDataDto.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of UserItemDataDto to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Rating` to the URL query string
+    if (getRating() != null) {
+      joiner.add(String.format("%sRating%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRating()))));
+    }
+
+    // add `PlayedPercentage` to the URL query string
+    if (getPlayedPercentage() != null) {
+      joiner.add(String.format("%sPlayedPercentage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlayedPercentage()))));
+    }
+
+    // add `UnplayedItemCount` to the URL query string
+    if (getUnplayedItemCount() != null) {
+      joiner.add(String.format("%sUnplayedItemCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUnplayedItemCount()))));
+    }
+
+    // add `PlaybackPositionTicks` to the URL query string
+    if (getPlaybackPositionTicks() != null) {
+      joiner.add(String.format("%sPlaybackPositionTicks%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlaybackPositionTicks()))));
+    }
+
+    // add `PlayCount` to the URL query string
+    if (getPlayCount() != null) {
+      joiner.add(String.format("%sPlayCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlayCount()))));
+    }
+
+    // add `IsFavorite` to the URL query string
+    if (getIsFavorite() != null) {
+      joiner.add(String.format("%sIsFavorite%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsFavorite()))));
+    }
+
+    // add `Likes` to the URL query string
+    if (getLikes() != null) {
+      joiner.add(String.format("%sLikes%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLikes()))));
+    }
+
+    // add `LastPlayedDate` to the URL query string
+    if (getLastPlayedDate() != null) {
+      joiner.add(String.format("%sLastPlayedDate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLastPlayedDate()))));
+    }
+
+    // add `Played` to the URL query string
+    if (getPlayed() != null) {
+      joiner.add(String.format("%sPlayed%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlayed()))));
+    }
+
+    // add `Key` to the URL query string
+    if (getKey() != null) {
+      joiner.add(String.format("%sKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
+    }
+
+    // add `ItemId` to the URL query string
+    if (getItemId() != null) {
+      joiner.add(String.format("%sItemId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
+    }
+
+    return joiner.toString();
   }
 }
 

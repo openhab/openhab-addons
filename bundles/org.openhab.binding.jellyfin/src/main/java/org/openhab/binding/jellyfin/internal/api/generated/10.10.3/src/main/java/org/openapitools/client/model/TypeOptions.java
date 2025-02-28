@@ -13,82 +13,65 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.client.model.ImageOption;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * TypeOptions
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  TypeOptions.JSON_PROPERTY_TYPE,
+  TypeOptions.JSON_PROPERTY_METADATA_FETCHERS,
+  TypeOptions.JSON_PROPERTY_METADATA_FETCHER_ORDER,
+  TypeOptions.JSON_PROPERTY_IMAGE_FETCHERS,
+  TypeOptions.JSON_PROPERTY_IMAGE_FETCHER_ORDER,
+  TypeOptions.JSON_PROPERTY_IMAGE_OPTIONS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class TypeOptions {
-  public static final String SERIALIZED_NAME_TYPE = "Type";
-  @SerializedName(SERIALIZED_NAME_TYPE)
-  @javax.annotation.Nullable
-  private String type;
+  public static final String JSON_PROPERTY_TYPE = "Type";
+  private JsonNullable<String> type = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_METADATA_FETCHERS = "MetadataFetchers";
-  @SerializedName(SERIALIZED_NAME_METADATA_FETCHERS)
-  @javax.annotation.Nullable
-  private List<String> metadataFetchers;
+  public static final String JSON_PROPERTY_METADATA_FETCHERS = "MetadataFetchers";
+  private JsonNullable<List<String>> metadataFetchers = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_METADATA_FETCHER_ORDER = "MetadataFetcherOrder";
-  @SerializedName(SERIALIZED_NAME_METADATA_FETCHER_ORDER)
-  @javax.annotation.Nullable
-  private List<String> metadataFetcherOrder;
+  public static final String JSON_PROPERTY_METADATA_FETCHER_ORDER = "MetadataFetcherOrder";
+  private JsonNullable<List<String>> metadataFetcherOrder = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_IMAGE_FETCHERS = "ImageFetchers";
-  @SerializedName(SERIALIZED_NAME_IMAGE_FETCHERS)
-  @javax.annotation.Nullable
-  private List<String> imageFetchers;
+  public static final String JSON_PROPERTY_IMAGE_FETCHERS = "ImageFetchers";
+  private JsonNullable<List<String>> imageFetchers = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_IMAGE_FETCHER_ORDER = "ImageFetcherOrder";
-  @SerializedName(SERIALIZED_NAME_IMAGE_FETCHER_ORDER)
-  @javax.annotation.Nullable
-  private List<String> imageFetcherOrder;
+  public static final String JSON_PROPERTY_IMAGE_FETCHER_ORDER = "ImageFetcherOrder";
+  private JsonNullable<List<String>> imageFetcherOrder = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_IMAGE_OPTIONS = "ImageOptions";
-  @SerializedName(SERIALIZED_NAME_IMAGE_OPTIONS)
-  @javax.annotation.Nullable
-  private List<ImageOption> imageOptions;
+  public static final String JSON_PROPERTY_IMAGE_OPTIONS = "ImageOptions";
+  private JsonNullable<List<ImageOption>> imageOptions = JsonNullable.<List<ImageOption>>undefined();
 
-  public TypeOptions() {
+  public TypeOptions() { 
   }
 
   public TypeOptions type(@javax.annotation.Nullable String type) {
-    this.type = type;
+    this.type = JsonNullable.<String>of(type);
     return this;
   }
 
@@ -97,25 +80,42 @@ public class TypeOptions {
    * @return type
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getType() {
+        return type.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getType_JsonNullable() {
     return type;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  public void setType_JsonNullable(JsonNullable<String> type) {
+    this.type = type;
   }
 
   public void setType(@javax.annotation.Nullable String type) {
-    this.type = type;
+    this.type = JsonNullable.<String>of(type);
   }
 
 
   public TypeOptions metadataFetchers(@javax.annotation.Nullable List<String> metadataFetchers) {
-    this.metadataFetchers = metadataFetchers;
+    this.metadataFetchers = JsonNullable.<List<String>>of(metadataFetchers);
     return this;
   }
 
   public TypeOptions addMetadataFetchersItem(String metadataFetchersItem) {
-    if (this.metadataFetchers == null) {
-      this.metadataFetchers = new ArrayList<>();
+    if (this.metadataFetchers == null || !this.metadataFetchers.isPresent()) {
+      this.metadataFetchers = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.metadataFetchers.add(metadataFetchersItem);
+    try {
+      this.metadataFetchers.get().add(metadataFetchersItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -124,25 +124,42 @@ public class TypeOptions {
    * @return metadataFetchers
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getMetadataFetchers() {
+        return metadataFetchers.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_METADATA_FETCHERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getMetadataFetchers_JsonNullable() {
     return metadataFetchers;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_METADATA_FETCHERS)
+  public void setMetadataFetchers_JsonNullable(JsonNullable<List<String>> metadataFetchers) {
+    this.metadataFetchers = metadataFetchers;
   }
 
   public void setMetadataFetchers(@javax.annotation.Nullable List<String> metadataFetchers) {
-    this.metadataFetchers = metadataFetchers;
+    this.metadataFetchers = JsonNullable.<List<String>>of(metadataFetchers);
   }
 
 
   public TypeOptions metadataFetcherOrder(@javax.annotation.Nullable List<String> metadataFetcherOrder) {
-    this.metadataFetcherOrder = metadataFetcherOrder;
+    this.metadataFetcherOrder = JsonNullable.<List<String>>of(metadataFetcherOrder);
     return this;
   }
 
   public TypeOptions addMetadataFetcherOrderItem(String metadataFetcherOrderItem) {
-    if (this.metadataFetcherOrder == null) {
-      this.metadataFetcherOrder = new ArrayList<>();
+    if (this.metadataFetcherOrder == null || !this.metadataFetcherOrder.isPresent()) {
+      this.metadataFetcherOrder = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.metadataFetcherOrder.add(metadataFetcherOrderItem);
+    try {
+      this.metadataFetcherOrder.get().add(metadataFetcherOrderItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -151,25 +168,42 @@ public class TypeOptions {
    * @return metadataFetcherOrder
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getMetadataFetcherOrder() {
+        return metadataFetcherOrder.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_METADATA_FETCHER_ORDER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getMetadataFetcherOrder_JsonNullable() {
     return metadataFetcherOrder;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_METADATA_FETCHER_ORDER)
+  public void setMetadataFetcherOrder_JsonNullable(JsonNullable<List<String>> metadataFetcherOrder) {
+    this.metadataFetcherOrder = metadataFetcherOrder;
   }
 
   public void setMetadataFetcherOrder(@javax.annotation.Nullable List<String> metadataFetcherOrder) {
-    this.metadataFetcherOrder = metadataFetcherOrder;
+    this.metadataFetcherOrder = JsonNullable.<List<String>>of(metadataFetcherOrder);
   }
 
 
   public TypeOptions imageFetchers(@javax.annotation.Nullable List<String> imageFetchers) {
-    this.imageFetchers = imageFetchers;
+    this.imageFetchers = JsonNullable.<List<String>>of(imageFetchers);
     return this;
   }
 
   public TypeOptions addImageFetchersItem(String imageFetchersItem) {
-    if (this.imageFetchers == null) {
-      this.imageFetchers = new ArrayList<>();
+    if (this.imageFetchers == null || !this.imageFetchers.isPresent()) {
+      this.imageFetchers = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.imageFetchers.add(imageFetchersItem);
+    try {
+      this.imageFetchers.get().add(imageFetchersItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -178,25 +212,42 @@ public class TypeOptions {
    * @return imageFetchers
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getImageFetchers() {
+        return imageFetchers.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_IMAGE_FETCHERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getImageFetchers_JsonNullable() {
     return imageFetchers;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IMAGE_FETCHERS)
+  public void setImageFetchers_JsonNullable(JsonNullable<List<String>> imageFetchers) {
+    this.imageFetchers = imageFetchers;
   }
 
   public void setImageFetchers(@javax.annotation.Nullable List<String> imageFetchers) {
-    this.imageFetchers = imageFetchers;
+    this.imageFetchers = JsonNullable.<List<String>>of(imageFetchers);
   }
 
 
   public TypeOptions imageFetcherOrder(@javax.annotation.Nullable List<String> imageFetcherOrder) {
-    this.imageFetcherOrder = imageFetcherOrder;
+    this.imageFetcherOrder = JsonNullable.<List<String>>of(imageFetcherOrder);
     return this;
   }
 
   public TypeOptions addImageFetcherOrderItem(String imageFetcherOrderItem) {
-    if (this.imageFetcherOrder == null) {
-      this.imageFetcherOrder = new ArrayList<>();
+    if (this.imageFetcherOrder == null || !this.imageFetcherOrder.isPresent()) {
+      this.imageFetcherOrder = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.imageFetcherOrder.add(imageFetcherOrderItem);
+    try {
+      this.imageFetcherOrder.get().add(imageFetcherOrderItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -205,25 +256,42 @@ public class TypeOptions {
    * @return imageFetcherOrder
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getImageFetcherOrder() {
+        return imageFetcherOrder.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_IMAGE_FETCHER_ORDER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getImageFetcherOrder_JsonNullable() {
     return imageFetcherOrder;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IMAGE_FETCHER_ORDER)
+  public void setImageFetcherOrder_JsonNullable(JsonNullable<List<String>> imageFetcherOrder) {
+    this.imageFetcherOrder = imageFetcherOrder;
   }
 
   public void setImageFetcherOrder(@javax.annotation.Nullable List<String> imageFetcherOrder) {
-    this.imageFetcherOrder = imageFetcherOrder;
+    this.imageFetcherOrder = JsonNullable.<List<String>>of(imageFetcherOrder);
   }
 
 
   public TypeOptions imageOptions(@javax.annotation.Nullable List<ImageOption> imageOptions) {
-    this.imageOptions = imageOptions;
+    this.imageOptions = JsonNullable.<List<ImageOption>>of(imageOptions);
     return this;
   }
 
   public TypeOptions addImageOptionsItem(ImageOption imageOptionsItem) {
-    if (this.imageOptions == null) {
-      this.imageOptions = new ArrayList<>();
+    if (this.imageOptions == null || !this.imageOptions.isPresent()) {
+      this.imageOptions = JsonNullable.<List<ImageOption>>of(new ArrayList<>());
     }
-    this.imageOptions.add(imageOptionsItem);
+    try {
+      this.imageOptions.get().add(imageOptionsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -232,16 +300,31 @@ public class TypeOptions {
    * @return imageOptions
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<ImageOption> getImageOptions() {
-    return imageOptions;
+        return imageOptions.orElse(null);
   }
 
-  public void setImageOptions(@javax.annotation.Nullable List<ImageOption> imageOptions) {
+  @JsonProperty(JSON_PROPERTY_IMAGE_OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<ImageOption>> getImageOptions_JsonNullable() {
+    return imageOptions;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IMAGE_OPTIONS)
+  public void setImageOptions_JsonNullable(JsonNullable<List<ImageOption>> imageOptions) {
     this.imageOptions = imageOptions;
   }
 
+  public void setImageOptions(@javax.annotation.Nullable List<ImageOption> imageOptions) {
+    this.imageOptions = JsonNullable.<List<ImageOption>>of(imageOptions);
+  }
 
 
+  /**
+   * Return true if this TypeOptions object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -251,12 +334,12 @@ public class TypeOptions {
       return false;
     }
     TypeOptions typeOptions = (TypeOptions) o;
-    return Objects.equals(this.type, typeOptions.type) &&
-        Objects.equals(this.metadataFetchers, typeOptions.metadataFetchers) &&
-        Objects.equals(this.metadataFetcherOrder, typeOptions.metadataFetcherOrder) &&
-        Objects.equals(this.imageFetchers, typeOptions.imageFetchers) &&
-        Objects.equals(this.imageFetcherOrder, typeOptions.imageFetcherOrder) &&
-        Objects.equals(this.imageOptions, typeOptions.imageOptions);
+    return equalsNullable(this.type, typeOptions.type) &&
+        equalsNullable(this.metadataFetchers, typeOptions.metadataFetchers) &&
+        equalsNullable(this.metadataFetcherOrder, typeOptions.metadataFetcherOrder) &&
+        equalsNullable(this.imageFetchers, typeOptions.imageFetchers) &&
+        equalsNullable(this.imageFetcherOrder, typeOptions.imageFetcherOrder) &&
+        equalsNullable(this.imageOptions, typeOptions.imageOptions);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -265,7 +348,7 @@ public class TypeOptions {
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, metadataFetchers, metadataFetcherOrder, imageFetchers, imageFetcherOrder, imageOptions);
+    return Objects.hash(hashCodeNullable(type), hashCodeNullable(metadataFetchers), hashCodeNullable(metadataFetcherOrder), hashCodeNullable(imageFetchers), hashCodeNullable(imageFetcherOrder), hashCodeNullable(imageOptions));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -300,127 +383,90 @@ public class TypeOptions {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Type");
-    openapiFields.add("MetadataFetchers");
-    openapiFields.add("MetadataFetcherOrder");
-    openapiFields.add("ImageFetchers");
-    openapiFields.add("ImageFetcherOrder");
-    openapiFields.add("ImageOptions");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to TypeOptions
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!TypeOptions.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in TypeOptions is not found in the empty JSON string", TypeOptions.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!TypeOptions.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `TypeOptions` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Type") != null && !jsonObj.get("Type").isJsonNull()) && !jsonObj.get("Type").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Type").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("MetadataFetchers") != null && !jsonObj.get("MetadataFetchers").isJsonNull() && !jsonObj.get("MetadataFetchers").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MetadataFetchers` to be an array in the JSON string but got `%s`", jsonObj.get("MetadataFetchers").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("MetadataFetcherOrder") != null && !jsonObj.get("MetadataFetcherOrder").isJsonNull() && !jsonObj.get("MetadataFetcherOrder").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MetadataFetcherOrder` to be an array in the JSON string but got `%s`", jsonObj.get("MetadataFetcherOrder").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("ImageFetchers") != null && !jsonObj.get("ImageFetchers").isJsonNull() && !jsonObj.get("ImageFetchers").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ImageFetchers` to be an array in the JSON string but got `%s`", jsonObj.get("ImageFetchers").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("ImageFetcherOrder") != null && !jsonObj.get("ImageFetcherOrder").isJsonNull() && !jsonObj.get("ImageFetcherOrder").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ImageFetcherOrder` to be an array in the JSON string but got `%s`", jsonObj.get("ImageFetcherOrder").toString()));
-      }
-      if (jsonObj.get("ImageOptions") != null && !jsonObj.get("ImageOptions").isJsonNull()) {
-        JsonArray jsonArrayimageOptions = jsonObj.getAsJsonArray("ImageOptions");
-        if (jsonArrayimageOptions != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("ImageOptions").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `ImageOptions` to be an array in the JSON string but got `%s`", jsonObj.get("ImageOptions").toString()));
-          }
-
-          // validate the optional field `ImageOptions` (array)
-          for (int i = 0; i < jsonArrayimageOptions.size(); i++) {
-            ImageOption.validateJsonElement(jsonArrayimageOptions.get(i));
-          };
-        }
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!TypeOptions.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'TypeOptions' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<TypeOptions> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(TypeOptions.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<TypeOptions>() {
-           @Override
-           public void write(JsonWriter out, TypeOptions value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public TypeOptions read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of TypeOptions given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of TypeOptions
-   * @throws IOException if the JSON string is invalid with respect to TypeOptions
-   */
-  public static TypeOptions fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, TypeOptions.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of TypeOptions to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Type` to the URL query string
+    if (getType() != null) {
+      joiner.add(String.format("%sType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+    }
+
+    // add `MetadataFetchers` to the URL query string
+    if (getMetadataFetchers() != null) {
+      for (int i = 0; i < getMetadataFetchers().size(); i++) {
+        joiner.add(String.format("%sMetadataFetchers%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getMetadataFetchers().get(i)))));
+      }
+    }
+
+    // add `MetadataFetcherOrder` to the URL query string
+    if (getMetadataFetcherOrder() != null) {
+      for (int i = 0; i < getMetadataFetcherOrder().size(); i++) {
+        joiner.add(String.format("%sMetadataFetcherOrder%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getMetadataFetcherOrder().get(i)))));
+      }
+    }
+
+    // add `ImageFetchers` to the URL query string
+    if (getImageFetchers() != null) {
+      for (int i = 0; i < getImageFetchers().size(); i++) {
+        joiner.add(String.format("%sImageFetchers%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getImageFetchers().get(i)))));
+      }
+    }
+
+    // add `ImageFetcherOrder` to the URL query string
+    if (getImageFetcherOrder() != null) {
+      for (int i = 0; i < getImageFetcherOrder().size(); i++) {
+        joiner.add(String.format("%sImageFetcherOrder%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getImageFetcherOrder().get(i)))));
+      }
+    }
+
+    // add `ImageOptions` to the URL query string
+    if (getImageOptions() != null) {
+      for (int i = 0; i < getImageOptions().size(); i++) {
+        if (getImageOptions().get(i) != null) {
+          joiner.add(getImageOptions().get(i).toUrlQueryString(String.format("%sImageOptions%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

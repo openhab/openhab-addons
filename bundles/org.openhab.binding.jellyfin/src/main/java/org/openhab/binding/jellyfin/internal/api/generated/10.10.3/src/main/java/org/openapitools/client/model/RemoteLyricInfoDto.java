@@ -13,60 +13,46 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.client.model.LyricDto;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * The remote lyric info dto.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  RemoteLyricInfoDto.JSON_PROPERTY_ID,
+  RemoteLyricInfoDto.JSON_PROPERTY_PROVIDER_NAME,
+  RemoteLyricInfoDto.JSON_PROPERTY_LYRICS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class RemoteLyricInfoDto {
-  public static final String SERIALIZED_NAME_ID = "Id";
-  @SerializedName(SERIALIZED_NAME_ID)
+  public static final String JSON_PROPERTY_ID = "Id";
   @javax.annotation.Nullable
   private String id;
 
-  public static final String SERIALIZED_NAME_PROVIDER_NAME = "ProviderName";
-  @SerializedName(SERIALIZED_NAME_PROVIDER_NAME)
+  public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
   @javax.annotation.Nullable
   private String providerName;
 
-  public static final String SERIALIZED_NAME_LYRICS = "Lyrics";
-  @SerializedName(SERIALIZED_NAME_LYRICS)
+  public static final String JSON_PROPERTY_LYRICS = "Lyrics";
   @javax.annotation.Nullable
   private LyricDto lyrics;
 
-  public RemoteLyricInfoDto() {
+  public RemoteLyricInfoDto() { 
   }
 
   public RemoteLyricInfoDto id(@javax.annotation.Nullable String id) {
@@ -79,10 +65,15 @@ public class RemoteLyricInfoDto {
    * @return id
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable String id) {
     this.id = id;
   }
@@ -98,10 +89,15 @@ public class RemoteLyricInfoDto {
    * @return providerName
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getProviderName() {
     return providerName;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProviderName(@javax.annotation.Nullable String providerName) {
     this.providerName = providerName;
   }
@@ -117,16 +113,23 @@ public class RemoteLyricInfoDto {
    * @return lyrics
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_LYRICS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public LyricDto getLyrics() {
     return lyrics;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_LYRICS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLyrics(@javax.annotation.Nullable LyricDto lyrics) {
     this.lyrics = lyrics;
   }
 
 
-
+  /**
+   * Return true if this RemoteLyricInfoDto object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -168,101 +171,54 @@ public class RemoteLyricInfoDto {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Id");
-    openapiFields.add("ProviderName");
-    openapiFields.add("Lyrics");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to RemoteLyricInfoDto
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!RemoteLyricInfoDto.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in RemoteLyricInfoDto is not found in the empty JSON string", RemoteLyricInfoDto.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!RemoteLyricInfoDto.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `RemoteLyricInfoDto` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Id") != null && !jsonObj.get("Id").isJsonNull()) && !jsonObj.get("Id").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Id").toString()));
-      }
-      if ((jsonObj.get("ProviderName") != null && !jsonObj.get("ProviderName").isJsonNull()) && !jsonObj.get("ProviderName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ProviderName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ProviderName").toString()));
-      }
-      // validate the optional field `Lyrics`
-      if (jsonObj.get("Lyrics") != null && !jsonObj.get("Lyrics").isJsonNull()) {
-        LyricDto.validateJsonElement(jsonObj.get("Lyrics"));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!RemoteLyricInfoDto.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'RemoteLyricInfoDto' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<RemoteLyricInfoDto> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(RemoteLyricInfoDto.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<RemoteLyricInfoDto>() {
-           @Override
-           public void write(JsonWriter out, RemoteLyricInfoDto value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public RemoteLyricInfoDto read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of RemoteLyricInfoDto given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of RemoteLyricInfoDto
-   * @throws IOException if the JSON string is invalid with respect to RemoteLyricInfoDto
-   */
-  public static RemoteLyricInfoDto fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, RemoteLyricInfoDto.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of RemoteLyricInfoDto to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+    }
+
+    // add `ProviderName` to the URL query string
+    if (getProviderName() != null) {
+      joiner.add(String.format("%sProviderName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProviderName()))));
+    }
+
+    // add `Lyrics` to the URL query string
+    if (getLyrics() != null) {
+      joiner.add(getLyrics().toUrlQueryString(prefix + "Lyrics" + suffix));
+    }
+
+    return joiner.toString();
   }
 }
 

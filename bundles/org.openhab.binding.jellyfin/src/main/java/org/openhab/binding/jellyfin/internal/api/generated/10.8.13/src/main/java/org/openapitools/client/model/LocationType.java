@@ -13,20 +13,21 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.annotations.SerializedName;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import java.io.IOException;
-import com.google.gson.TypeAdapter;
-import com.google.gson.JsonElement;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Enum LocationType.
  */
-@JsonAdapter(LocationType.Adapter.class)
 public enum LocationType {
   
   FILE_SYSTEM("FileSystem"),
@@ -43,6 +44,7 @@ public enum LocationType {
     this.value = value;
   }
 
+  @JsonValue
   public String getValue() {
     return value;
   }
@@ -52,6 +54,7 @@ public enum LocationType {
     return String.valueOf(value);
   }
 
+  @JsonCreator
   public static LocationType fromValue(String value) {
     for (LocationType b : LocationType.values()) {
       if (b.value.equals(value)) {
@@ -61,22 +64,19 @@ public enum LocationType {
     throw new IllegalArgumentException("Unexpected value '" + value + "'");
   }
 
-  public static class Adapter extends TypeAdapter<LocationType> {
-    @Override
-    public void write(final JsonWriter jsonWriter, final LocationType enumeration) throws IOException {
-      jsonWriter.value(enumeration.getValue());
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @param prefix prefix of the query string
+   * @return URL query string
+   */
+  public String toUrlQueryString(String prefix) {
+    if (prefix == null) {
+      prefix = "";
     }
 
-    @Override
-    public LocationType read(final JsonReader jsonReader) throws IOException {
-      String value = jsonReader.nextString();
-      return LocationType.fromValue(value);
-    }
+    return String.format("%s=%s", prefix, this.toString());
   }
 
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-    String value = jsonElement.getAsString();
-    LocationType.fromValue(value);
-  }
 }
 

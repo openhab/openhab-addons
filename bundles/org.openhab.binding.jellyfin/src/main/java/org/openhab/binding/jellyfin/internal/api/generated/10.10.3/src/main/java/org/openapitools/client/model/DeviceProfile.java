@@ -13,13 +13,17 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,95 +34,74 @@ import org.openapitools.client.model.DirectPlayProfile;
 import org.openapitools.client.model.SubtitleProfile;
 import org.openapitools.client.model.TranscodingProfile;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * A MediaBrowser.Model.Dlna.DeviceProfile represents a set of metadata which determines which content a certain device is able to play.  &lt;br /&gt;  Specifically, it defines the supported &lt;see cref&#x3D;\&quot;P:MediaBrowser.Model.Dlna.DeviceProfile.ContainerProfiles\&quot;&gt;containers&lt;/see&gt; and  &lt;see cref&#x3D;\&quot;P:MediaBrowser.Model.Dlna.DeviceProfile.CodecProfiles\&quot;&gt;codecs&lt;/see&gt; (video and/or audio, including codec profiles and levels)  the device is able to direct play (without transcoding or remuxing),  as well as which &lt;see cref&#x3D;\&quot;P:MediaBrowser.Model.Dlna.DeviceProfile.TranscodingProfiles\&quot;&gt;containers/codecs to transcode to&lt;/see&gt; in case it isn&#39;t.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  DeviceProfile.JSON_PROPERTY_NAME,
+  DeviceProfile.JSON_PROPERTY_ID,
+  DeviceProfile.JSON_PROPERTY_MAX_STREAMING_BITRATE,
+  DeviceProfile.JSON_PROPERTY_MAX_STATIC_BITRATE,
+  DeviceProfile.JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE,
+  DeviceProfile.JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE,
+  DeviceProfile.JSON_PROPERTY_DIRECT_PLAY_PROFILES,
+  DeviceProfile.JSON_PROPERTY_TRANSCODING_PROFILES,
+  DeviceProfile.JSON_PROPERTY_CONTAINER_PROFILES,
+  DeviceProfile.JSON_PROPERTY_CODEC_PROFILES,
+  DeviceProfile.JSON_PROPERTY_SUBTITLE_PROFILES
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class DeviceProfile {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ID = "Id";
-  @SerializedName(SERIALIZED_NAME_ID)
-  @javax.annotation.Nullable
-  private UUID id;
+  public static final String JSON_PROPERTY_ID = "Id";
+  private JsonNullable<UUID> id = JsonNullable.<UUID>undefined();
 
-  public static final String SERIALIZED_NAME_MAX_STREAMING_BITRATE = "MaxStreamingBitrate";
-  @SerializedName(SERIALIZED_NAME_MAX_STREAMING_BITRATE)
-  @javax.annotation.Nullable
-  private Integer maxStreamingBitrate;
+  public static final String JSON_PROPERTY_MAX_STREAMING_BITRATE = "MaxStreamingBitrate";
+  private JsonNullable<Integer> maxStreamingBitrate = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_MAX_STATIC_BITRATE = "MaxStaticBitrate";
-  @SerializedName(SERIALIZED_NAME_MAX_STATIC_BITRATE)
-  @javax.annotation.Nullable
-  private Integer maxStaticBitrate;
+  public static final String JSON_PROPERTY_MAX_STATIC_BITRATE = "MaxStaticBitrate";
+  private JsonNullable<Integer> maxStaticBitrate = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_MUSIC_STREAMING_TRANSCODING_BITRATE = "MusicStreamingTranscodingBitrate";
-  @SerializedName(SERIALIZED_NAME_MUSIC_STREAMING_TRANSCODING_BITRATE)
-  @javax.annotation.Nullable
-  private Integer musicStreamingTranscodingBitrate;
+  public static final String JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE = "MusicStreamingTranscodingBitrate";
+  private JsonNullable<Integer> musicStreamingTranscodingBitrate = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_MAX_STATIC_MUSIC_BITRATE = "MaxStaticMusicBitrate";
-  @SerializedName(SERIALIZED_NAME_MAX_STATIC_MUSIC_BITRATE)
-  @javax.annotation.Nullable
-  private Integer maxStaticMusicBitrate;
+  public static final String JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE = "MaxStaticMusicBitrate";
+  private JsonNullable<Integer> maxStaticMusicBitrate = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_DIRECT_PLAY_PROFILES = "DirectPlayProfiles";
-  @SerializedName(SERIALIZED_NAME_DIRECT_PLAY_PROFILES)
+  public static final String JSON_PROPERTY_DIRECT_PLAY_PROFILES = "DirectPlayProfiles";
   @javax.annotation.Nullable
   private List<DirectPlayProfile> directPlayProfiles = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_TRANSCODING_PROFILES = "TranscodingProfiles";
-  @SerializedName(SERIALIZED_NAME_TRANSCODING_PROFILES)
+  public static final String JSON_PROPERTY_TRANSCODING_PROFILES = "TranscodingProfiles";
   @javax.annotation.Nullable
   private List<TranscodingProfile> transcodingProfiles = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_CONTAINER_PROFILES = "ContainerProfiles";
-  @SerializedName(SERIALIZED_NAME_CONTAINER_PROFILES)
+  public static final String JSON_PROPERTY_CONTAINER_PROFILES = "ContainerProfiles";
   @javax.annotation.Nullable
   private List<ContainerProfile> containerProfiles = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_CODEC_PROFILES = "CodecProfiles";
-  @SerializedName(SERIALIZED_NAME_CODEC_PROFILES)
+  public static final String JSON_PROPERTY_CODEC_PROFILES = "CodecProfiles";
   @javax.annotation.Nullable
   private List<CodecProfile> codecProfiles = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_SUBTITLE_PROFILES = "SubtitleProfiles";
-  @SerializedName(SERIALIZED_NAME_SUBTITLE_PROFILES)
+  public static final String JSON_PROPERTY_SUBTITLE_PROFILES = "SubtitleProfiles";
   @javax.annotation.Nullable
   private List<SubtitleProfile> subtitleProfiles = new ArrayList<>();
 
-  public DeviceProfile() {
+  public DeviceProfile() { 
   }
 
   public DeviceProfile name(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
     return this;
   }
 
@@ -127,17 +110,30 @@ public class DeviceProfile {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
   }
 
 
   public DeviceProfile id(@javax.annotation.Nullable UUID id) {
-    this.id = id;
+    this.id = JsonNullable.<UUID>of(id);
     return this;
   }
 
@@ -146,17 +142,30 @@ public class DeviceProfile {
    * @return id
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public UUID getId() {
+        return id.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<UUID> getId_JsonNullable() {
     return id;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ID)
+  public void setId_JsonNullable(JsonNullable<UUID> id) {
+    this.id = id;
   }
 
   public void setId(@javax.annotation.Nullable UUID id) {
-    this.id = id;
+    this.id = JsonNullable.<UUID>of(id);
   }
 
 
   public DeviceProfile maxStreamingBitrate(@javax.annotation.Nullable Integer maxStreamingBitrate) {
-    this.maxStreamingBitrate = maxStreamingBitrate;
+    this.maxStreamingBitrate = JsonNullable.<Integer>of(maxStreamingBitrate);
     return this;
   }
 
@@ -165,17 +174,30 @@ public class DeviceProfile {
    * @return maxStreamingBitrate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getMaxStreamingBitrate() {
+        return maxStreamingBitrate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getMaxStreamingBitrate_JsonNullable() {
     return maxStreamingBitrate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
+  public void setMaxStreamingBitrate_JsonNullable(JsonNullable<Integer> maxStreamingBitrate) {
+    this.maxStreamingBitrate = maxStreamingBitrate;
   }
 
   public void setMaxStreamingBitrate(@javax.annotation.Nullable Integer maxStreamingBitrate) {
-    this.maxStreamingBitrate = maxStreamingBitrate;
+    this.maxStreamingBitrate = JsonNullable.<Integer>of(maxStreamingBitrate);
   }
 
 
   public DeviceProfile maxStaticBitrate(@javax.annotation.Nullable Integer maxStaticBitrate) {
-    this.maxStaticBitrate = maxStaticBitrate;
+    this.maxStaticBitrate = JsonNullable.<Integer>of(maxStaticBitrate);
     return this;
   }
 
@@ -184,17 +206,30 @@ public class DeviceProfile {
    * @return maxStaticBitrate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getMaxStaticBitrate() {
+        return maxStaticBitrate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MAX_STATIC_BITRATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getMaxStaticBitrate_JsonNullable() {
     return maxStaticBitrate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAX_STATIC_BITRATE)
+  public void setMaxStaticBitrate_JsonNullable(JsonNullable<Integer> maxStaticBitrate) {
+    this.maxStaticBitrate = maxStaticBitrate;
   }
 
   public void setMaxStaticBitrate(@javax.annotation.Nullable Integer maxStaticBitrate) {
-    this.maxStaticBitrate = maxStaticBitrate;
+    this.maxStaticBitrate = JsonNullable.<Integer>of(maxStaticBitrate);
   }
 
 
   public DeviceProfile musicStreamingTranscodingBitrate(@javax.annotation.Nullable Integer musicStreamingTranscodingBitrate) {
-    this.musicStreamingTranscodingBitrate = musicStreamingTranscodingBitrate;
+    this.musicStreamingTranscodingBitrate = JsonNullable.<Integer>of(musicStreamingTranscodingBitrate);
     return this;
   }
 
@@ -203,17 +238,30 @@ public class DeviceProfile {
    * @return musicStreamingTranscodingBitrate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getMusicStreamingTranscodingBitrate() {
+        return musicStreamingTranscodingBitrate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getMusicStreamingTranscodingBitrate_JsonNullable() {
     return musicStreamingTranscodingBitrate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE)
+  public void setMusicStreamingTranscodingBitrate_JsonNullable(JsonNullable<Integer> musicStreamingTranscodingBitrate) {
+    this.musicStreamingTranscodingBitrate = musicStreamingTranscodingBitrate;
   }
 
   public void setMusicStreamingTranscodingBitrate(@javax.annotation.Nullable Integer musicStreamingTranscodingBitrate) {
-    this.musicStreamingTranscodingBitrate = musicStreamingTranscodingBitrate;
+    this.musicStreamingTranscodingBitrate = JsonNullable.<Integer>of(musicStreamingTranscodingBitrate);
   }
 
 
   public DeviceProfile maxStaticMusicBitrate(@javax.annotation.Nullable Integer maxStaticMusicBitrate) {
-    this.maxStaticMusicBitrate = maxStaticMusicBitrate;
+    this.maxStaticMusicBitrate = JsonNullable.<Integer>of(maxStaticMusicBitrate);
     return this;
   }
 
@@ -222,12 +270,25 @@ public class DeviceProfile {
    * @return maxStaticMusicBitrate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getMaxStaticMusicBitrate() {
+        return maxStaticMusicBitrate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getMaxStaticMusicBitrate_JsonNullable() {
     return maxStaticMusicBitrate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE)
+  public void setMaxStaticMusicBitrate_JsonNullable(JsonNullable<Integer> maxStaticMusicBitrate) {
+    this.maxStaticMusicBitrate = maxStaticMusicBitrate;
   }
 
   public void setMaxStaticMusicBitrate(@javax.annotation.Nullable Integer maxStaticMusicBitrate) {
-    this.maxStaticMusicBitrate = maxStaticMusicBitrate;
+    this.maxStaticMusicBitrate = JsonNullable.<Integer>of(maxStaticMusicBitrate);
   }
 
 
@@ -249,10 +310,15 @@ public class DeviceProfile {
    * @return directPlayProfiles
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DIRECT_PLAY_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<DirectPlayProfile> getDirectPlayProfiles() {
     return directPlayProfiles;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DIRECT_PLAY_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDirectPlayProfiles(@javax.annotation.Nullable List<DirectPlayProfile> directPlayProfiles) {
     this.directPlayProfiles = directPlayProfiles;
   }
@@ -276,10 +342,15 @@ public class DeviceProfile {
    * @return transcodingProfiles
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TRANSCODING_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<TranscodingProfile> getTranscodingProfiles() {
     return transcodingProfiles;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TRANSCODING_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTranscodingProfiles(@javax.annotation.Nullable List<TranscodingProfile> transcodingProfiles) {
     this.transcodingProfiles = transcodingProfiles;
   }
@@ -303,10 +374,15 @@ public class DeviceProfile {
    * @return containerProfiles
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CONTAINER_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ContainerProfile> getContainerProfiles() {
     return containerProfiles;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CONTAINER_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setContainerProfiles(@javax.annotation.Nullable List<ContainerProfile> containerProfiles) {
     this.containerProfiles = containerProfiles;
   }
@@ -330,10 +406,15 @@ public class DeviceProfile {
    * @return codecProfiles
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CODEC_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<CodecProfile> getCodecProfiles() {
     return codecProfiles;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CODEC_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCodecProfiles(@javax.annotation.Nullable List<CodecProfile> codecProfiles) {
     this.codecProfiles = codecProfiles;
   }
@@ -357,16 +438,23 @@ public class DeviceProfile {
    * @return subtitleProfiles
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<SubtitleProfile> getSubtitleProfiles() {
     return subtitleProfiles;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubtitleProfiles(@javax.annotation.Nullable List<SubtitleProfile> subtitleProfiles) {
     this.subtitleProfiles = subtitleProfiles;
   }
 
 
-
+  /**
+   * Return true if this DeviceProfile object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -376,12 +464,12 @@ public class DeviceProfile {
       return false;
     }
     DeviceProfile deviceProfile = (DeviceProfile) o;
-    return Objects.equals(this.name, deviceProfile.name) &&
-        Objects.equals(this.id, deviceProfile.id) &&
-        Objects.equals(this.maxStreamingBitrate, deviceProfile.maxStreamingBitrate) &&
-        Objects.equals(this.maxStaticBitrate, deviceProfile.maxStaticBitrate) &&
-        Objects.equals(this.musicStreamingTranscodingBitrate, deviceProfile.musicStreamingTranscodingBitrate) &&
-        Objects.equals(this.maxStaticMusicBitrate, deviceProfile.maxStaticMusicBitrate) &&
+    return equalsNullable(this.name, deviceProfile.name) &&
+        equalsNullable(this.id, deviceProfile.id) &&
+        equalsNullable(this.maxStreamingBitrate, deviceProfile.maxStreamingBitrate) &&
+        equalsNullable(this.maxStaticBitrate, deviceProfile.maxStaticBitrate) &&
+        equalsNullable(this.musicStreamingTranscodingBitrate, deviceProfile.musicStreamingTranscodingBitrate) &&
+        equalsNullable(this.maxStaticMusicBitrate, deviceProfile.maxStaticMusicBitrate) &&
         Objects.equals(this.directPlayProfiles, deviceProfile.directPlayProfiles) &&
         Objects.equals(this.transcodingProfiles, deviceProfile.transcodingProfiles) &&
         Objects.equals(this.containerProfiles, deviceProfile.containerProfiles) &&
@@ -395,7 +483,7 @@ public class DeviceProfile {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, id, maxStreamingBitrate, maxStaticBitrate, musicStreamingTranscodingBitrate, maxStaticMusicBitrate, directPlayProfiles, transcodingProfiles, containerProfiles, codecProfiles, subtitleProfiles);
+    return Objects.hash(hashCodeNullable(name), hashCodeNullable(id), hashCodeNullable(maxStreamingBitrate), hashCodeNullable(maxStaticBitrate), hashCodeNullable(musicStreamingTranscodingBitrate), hashCodeNullable(maxStaticMusicBitrate), directPlayProfiles, transcodingProfiles, containerProfiles, codecProfiles, subtitleProfiles);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -435,175 +523,119 @@ public class DeviceProfile {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("Id");
-    openapiFields.add("MaxStreamingBitrate");
-    openapiFields.add("MaxStaticBitrate");
-    openapiFields.add("MusicStreamingTranscodingBitrate");
-    openapiFields.add("MaxStaticMusicBitrate");
-    openapiFields.add("DirectPlayProfiles");
-    openapiFields.add("TranscodingProfiles");
-    openapiFields.add("ContainerProfiles");
-    openapiFields.add("CodecProfiles");
-    openapiFields.add("SubtitleProfiles");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to DeviceProfile
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!DeviceProfile.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in DeviceProfile is not found in the empty JSON string", DeviceProfile.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!DeviceProfile.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `DeviceProfile` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("Id") != null && !jsonObj.get("Id").isJsonNull()) && !jsonObj.get("Id").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Id").toString()));
-      }
-      if (jsonObj.get("DirectPlayProfiles") != null && !jsonObj.get("DirectPlayProfiles").isJsonNull()) {
-        JsonArray jsonArraydirectPlayProfiles = jsonObj.getAsJsonArray("DirectPlayProfiles");
-        if (jsonArraydirectPlayProfiles != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("DirectPlayProfiles").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `DirectPlayProfiles` to be an array in the JSON string but got `%s`", jsonObj.get("DirectPlayProfiles").toString()));
-          }
-
-          // validate the optional field `DirectPlayProfiles` (array)
-          for (int i = 0; i < jsonArraydirectPlayProfiles.size(); i++) {
-            DirectPlayProfile.validateJsonElement(jsonArraydirectPlayProfiles.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("TranscodingProfiles") != null && !jsonObj.get("TranscodingProfiles").isJsonNull()) {
-        JsonArray jsonArraytranscodingProfiles = jsonObj.getAsJsonArray("TranscodingProfiles");
-        if (jsonArraytranscodingProfiles != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("TranscodingProfiles").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `TranscodingProfiles` to be an array in the JSON string but got `%s`", jsonObj.get("TranscodingProfiles").toString()));
-          }
-
-          // validate the optional field `TranscodingProfiles` (array)
-          for (int i = 0; i < jsonArraytranscodingProfiles.size(); i++) {
-            TranscodingProfile.validateJsonElement(jsonArraytranscodingProfiles.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("ContainerProfiles") != null && !jsonObj.get("ContainerProfiles").isJsonNull()) {
-        JsonArray jsonArraycontainerProfiles = jsonObj.getAsJsonArray("ContainerProfiles");
-        if (jsonArraycontainerProfiles != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("ContainerProfiles").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `ContainerProfiles` to be an array in the JSON string but got `%s`", jsonObj.get("ContainerProfiles").toString()));
-          }
-
-          // validate the optional field `ContainerProfiles` (array)
-          for (int i = 0; i < jsonArraycontainerProfiles.size(); i++) {
-            ContainerProfile.validateJsonElement(jsonArraycontainerProfiles.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("CodecProfiles") != null && !jsonObj.get("CodecProfiles").isJsonNull()) {
-        JsonArray jsonArraycodecProfiles = jsonObj.getAsJsonArray("CodecProfiles");
-        if (jsonArraycodecProfiles != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("CodecProfiles").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `CodecProfiles` to be an array in the JSON string but got `%s`", jsonObj.get("CodecProfiles").toString()));
-          }
-
-          // validate the optional field `CodecProfiles` (array)
-          for (int i = 0; i < jsonArraycodecProfiles.size(); i++) {
-            CodecProfile.validateJsonElement(jsonArraycodecProfiles.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("SubtitleProfiles") != null && !jsonObj.get("SubtitleProfiles").isJsonNull()) {
-        JsonArray jsonArraysubtitleProfiles = jsonObj.getAsJsonArray("SubtitleProfiles");
-        if (jsonArraysubtitleProfiles != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("SubtitleProfiles").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `SubtitleProfiles` to be an array in the JSON string but got `%s`", jsonObj.get("SubtitleProfiles").toString()));
-          }
-
-          // validate the optional field `SubtitleProfiles` (array)
-          for (int i = 0; i < jsonArraysubtitleProfiles.size(); i++) {
-            SubtitleProfile.validateJsonElement(jsonArraysubtitleProfiles.get(i));
-          };
-        }
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!DeviceProfile.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'DeviceProfile' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<DeviceProfile> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(DeviceProfile.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<DeviceProfile>() {
-           @Override
-           public void write(JsonWriter out, DeviceProfile value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public DeviceProfile read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of DeviceProfile given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of DeviceProfile
-   * @throws IOException if the JSON string is invalid with respect to DeviceProfile
-   */
-  public static DeviceProfile fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, DeviceProfile.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of DeviceProfile to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `Id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+    }
+
+    // add `MaxStreamingBitrate` to the URL query string
+    if (getMaxStreamingBitrate() != null) {
+      joiner.add(String.format("%sMaxStreamingBitrate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxStreamingBitrate()))));
+    }
+
+    // add `MaxStaticBitrate` to the URL query string
+    if (getMaxStaticBitrate() != null) {
+      joiner.add(String.format("%sMaxStaticBitrate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxStaticBitrate()))));
+    }
+
+    // add `MusicStreamingTranscodingBitrate` to the URL query string
+    if (getMusicStreamingTranscodingBitrate() != null) {
+      joiner.add(String.format("%sMusicStreamingTranscodingBitrate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMusicStreamingTranscodingBitrate()))));
+    }
+
+    // add `MaxStaticMusicBitrate` to the URL query string
+    if (getMaxStaticMusicBitrate() != null) {
+      joiner.add(String.format("%sMaxStaticMusicBitrate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxStaticMusicBitrate()))));
+    }
+
+    // add `DirectPlayProfiles` to the URL query string
+    if (getDirectPlayProfiles() != null) {
+      for (int i = 0; i < getDirectPlayProfiles().size(); i++) {
+        if (getDirectPlayProfiles().get(i) != null) {
+          joiner.add(getDirectPlayProfiles().get(i).toUrlQueryString(String.format("%sDirectPlayProfiles%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `TranscodingProfiles` to the URL query string
+    if (getTranscodingProfiles() != null) {
+      for (int i = 0; i < getTranscodingProfiles().size(); i++) {
+        if (getTranscodingProfiles().get(i) != null) {
+          joiner.add(getTranscodingProfiles().get(i).toUrlQueryString(String.format("%sTranscodingProfiles%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `ContainerProfiles` to the URL query string
+    if (getContainerProfiles() != null) {
+      for (int i = 0; i < getContainerProfiles().size(); i++) {
+        if (getContainerProfiles().get(i) != null) {
+          joiner.add(getContainerProfiles().get(i).toUrlQueryString(String.format("%sContainerProfiles%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `CodecProfiles` to the URL query string
+    if (getCodecProfiles() != null) {
+      for (int i = 0; i < getCodecProfiles().size(); i++) {
+        if (getCodecProfiles().get(i) != null) {
+          joiner.add(getCodecProfiles().get(i).toUrlQueryString(String.format("%sCodecProfiles%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `SubtitleProfiles` to the URL query string
+    if (getSubtitleProfiles() != null) {
+      for (int i = 0; i < getSubtitleProfiles().size(); i++) {
+        if (getSubtitleProfiles().get(i) != null) {
+          joiner.add(getSubtitleProfiles().get(i).toUrlQueryString(String.format("%sSubtitleProfiles%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

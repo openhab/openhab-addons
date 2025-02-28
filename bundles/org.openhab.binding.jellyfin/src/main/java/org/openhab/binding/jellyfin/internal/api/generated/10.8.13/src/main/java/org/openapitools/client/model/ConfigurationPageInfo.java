@@ -13,76 +13,61 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import java.util.UUID;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * The configuration page info.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  ConfigurationPageInfo.JSON_PROPERTY_NAME,
+  ConfigurationPageInfo.JSON_PROPERTY_ENABLE_IN_MAIN_MENU,
+  ConfigurationPageInfo.JSON_PROPERTY_MENU_SECTION,
+  ConfigurationPageInfo.JSON_PROPERTY_MENU_ICON,
+  ConfigurationPageInfo.JSON_PROPERTY_DISPLAY_NAME,
+  ConfigurationPageInfo.JSON_PROPERTY_PLUGIN_ID
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ConfigurationPageInfo {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
+  public static final String JSON_PROPERTY_NAME = "Name";
   @javax.annotation.Nullable
   private String name;
 
-  public static final String SERIALIZED_NAME_ENABLE_IN_MAIN_MENU = "EnableInMainMenu";
-  @SerializedName(SERIALIZED_NAME_ENABLE_IN_MAIN_MENU)
+  public static final String JSON_PROPERTY_ENABLE_IN_MAIN_MENU = "EnableInMainMenu";
   @javax.annotation.Nullable
   private Boolean enableInMainMenu;
 
-  public static final String SERIALIZED_NAME_MENU_SECTION = "MenuSection";
-  @SerializedName(SERIALIZED_NAME_MENU_SECTION)
-  @javax.annotation.Nullable
-  private String menuSection;
+  public static final String JSON_PROPERTY_MENU_SECTION = "MenuSection";
+  private JsonNullable<String> menuSection = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_MENU_ICON = "MenuIcon";
-  @SerializedName(SERIALIZED_NAME_MENU_ICON)
-  @javax.annotation.Nullable
-  private String menuIcon;
+  public static final String JSON_PROPERTY_MENU_ICON = "MenuIcon";
+  private JsonNullable<String> menuIcon = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_DISPLAY_NAME = "DisplayName";
-  @SerializedName(SERIALIZED_NAME_DISPLAY_NAME)
-  @javax.annotation.Nullable
-  private String displayName;
+  public static final String JSON_PROPERTY_DISPLAY_NAME = "DisplayName";
+  private JsonNullable<String> displayName = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PLUGIN_ID = "PluginId";
-  @SerializedName(SERIALIZED_NAME_PLUGIN_ID)
-  @javax.annotation.Nullable
-  private UUID pluginId;
+  public static final String JSON_PROPERTY_PLUGIN_ID = "PluginId";
+  private JsonNullable<UUID> pluginId = JsonNullable.<UUID>undefined();
 
-  public ConfigurationPageInfo() {
+  public ConfigurationPageInfo() { 
   }
 
   public ConfigurationPageInfo name(@javax.annotation.Nullable String name) {
@@ -95,10 +80,15 @@ public class ConfigurationPageInfo {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -114,17 +104,22 @@ public class ConfigurationPageInfo {
    * @return enableInMainMenu
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_IN_MAIN_MENU)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableInMainMenu() {
     return enableInMainMenu;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_IN_MAIN_MENU)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableInMainMenu(@javax.annotation.Nullable Boolean enableInMainMenu) {
     this.enableInMainMenu = enableInMainMenu;
   }
 
 
   public ConfigurationPageInfo menuSection(@javax.annotation.Nullable String menuSection) {
-    this.menuSection = menuSection;
+    this.menuSection = JsonNullable.<String>of(menuSection);
     return this;
   }
 
@@ -133,17 +128,30 @@ public class ConfigurationPageInfo {
    * @return menuSection
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getMenuSection() {
+        return menuSection.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MENU_SECTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getMenuSection_JsonNullable() {
     return menuSection;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MENU_SECTION)
+  public void setMenuSection_JsonNullable(JsonNullable<String> menuSection) {
+    this.menuSection = menuSection;
   }
 
   public void setMenuSection(@javax.annotation.Nullable String menuSection) {
-    this.menuSection = menuSection;
+    this.menuSection = JsonNullable.<String>of(menuSection);
   }
 
 
   public ConfigurationPageInfo menuIcon(@javax.annotation.Nullable String menuIcon) {
-    this.menuIcon = menuIcon;
+    this.menuIcon = JsonNullable.<String>of(menuIcon);
     return this;
   }
 
@@ -152,17 +160,30 @@ public class ConfigurationPageInfo {
    * @return menuIcon
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getMenuIcon() {
+        return menuIcon.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MENU_ICON)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getMenuIcon_JsonNullable() {
     return menuIcon;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MENU_ICON)
+  public void setMenuIcon_JsonNullable(JsonNullable<String> menuIcon) {
+    this.menuIcon = menuIcon;
   }
 
   public void setMenuIcon(@javax.annotation.Nullable String menuIcon) {
-    this.menuIcon = menuIcon;
+    this.menuIcon = JsonNullable.<String>of(menuIcon);
   }
 
 
   public ConfigurationPageInfo displayName(@javax.annotation.Nullable String displayName) {
-    this.displayName = displayName;
+    this.displayName = JsonNullable.<String>of(displayName);
     return this;
   }
 
@@ -171,17 +192,30 @@ public class ConfigurationPageInfo {
    * @return displayName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getDisplayName() {
+        return displayName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getDisplayName_JsonNullable() {
     return displayName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
+  public void setDisplayName_JsonNullable(JsonNullable<String> displayName) {
+    this.displayName = displayName;
   }
 
   public void setDisplayName(@javax.annotation.Nullable String displayName) {
-    this.displayName = displayName;
+    this.displayName = JsonNullable.<String>of(displayName);
   }
 
 
   public ConfigurationPageInfo pluginId(@javax.annotation.Nullable UUID pluginId) {
-    this.pluginId = pluginId;
+    this.pluginId = JsonNullable.<UUID>of(pluginId);
     return this;
   }
 
@@ -190,16 +224,31 @@ public class ConfigurationPageInfo {
    * @return pluginId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public UUID getPluginId() {
-    return pluginId;
+        return pluginId.orElse(null);
   }
 
-  public void setPluginId(@javax.annotation.Nullable UUID pluginId) {
+  @JsonProperty(JSON_PROPERTY_PLUGIN_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<UUID> getPluginId_JsonNullable() {
+    return pluginId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PLUGIN_ID)
+  public void setPluginId_JsonNullable(JsonNullable<UUID> pluginId) {
     this.pluginId = pluginId;
   }
 
+  public void setPluginId(@javax.annotation.Nullable UUID pluginId) {
+    this.pluginId = JsonNullable.<UUID>of(pluginId);
+  }
 
 
+  /**
+   * Return true if this ConfigurationPageInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -211,10 +260,10 @@ public class ConfigurationPageInfo {
     ConfigurationPageInfo configurationPageInfo = (ConfigurationPageInfo) o;
     return Objects.equals(this.name, configurationPageInfo.name) &&
         Objects.equals(this.enableInMainMenu, configurationPageInfo.enableInMainMenu) &&
-        Objects.equals(this.menuSection, configurationPageInfo.menuSection) &&
-        Objects.equals(this.menuIcon, configurationPageInfo.menuIcon) &&
-        Objects.equals(this.displayName, configurationPageInfo.displayName) &&
-        Objects.equals(this.pluginId, configurationPageInfo.pluginId);
+        equalsNullable(this.menuSection, configurationPageInfo.menuSection) &&
+        equalsNullable(this.menuIcon, configurationPageInfo.menuIcon) &&
+        equalsNullable(this.displayName, configurationPageInfo.displayName) &&
+        equalsNullable(this.pluginId, configurationPageInfo.pluginId);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -223,7 +272,7 @@ public class ConfigurationPageInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, enableInMainMenu, menuSection, menuIcon, displayName, pluginId);
+    return Objects.hash(name, enableInMainMenu, hashCodeNullable(menuSection), hashCodeNullable(menuIcon), hashCodeNullable(displayName), hashCodeNullable(pluginId));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -258,109 +307,69 @@ public class ConfigurationPageInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("EnableInMainMenu");
-    openapiFields.add("MenuSection");
-    openapiFields.add("MenuIcon");
-    openapiFields.add("DisplayName");
-    openapiFields.add("PluginId");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to ConfigurationPageInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!ConfigurationPageInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in ConfigurationPageInfo is not found in the empty JSON string", ConfigurationPageInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!ConfigurationPageInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `ConfigurationPageInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("MenuSection") != null && !jsonObj.get("MenuSection").isJsonNull()) && !jsonObj.get("MenuSection").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MenuSection` to be a primitive type in the JSON string but got `%s`", jsonObj.get("MenuSection").toString()));
-      }
-      if ((jsonObj.get("MenuIcon") != null && !jsonObj.get("MenuIcon").isJsonNull()) && !jsonObj.get("MenuIcon").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MenuIcon` to be a primitive type in the JSON string but got `%s`", jsonObj.get("MenuIcon").toString()));
-      }
-      if ((jsonObj.get("DisplayName") != null && !jsonObj.get("DisplayName").isJsonNull()) && !jsonObj.get("DisplayName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `DisplayName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("DisplayName").toString()));
-      }
-      if ((jsonObj.get("PluginId") != null && !jsonObj.get("PluginId").isJsonNull()) && !jsonObj.get("PluginId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `PluginId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("PluginId").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!ConfigurationPageInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'ConfigurationPageInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<ConfigurationPageInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(ConfigurationPageInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<ConfigurationPageInfo>() {
-           @Override
-           public void write(JsonWriter out, ConfigurationPageInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public ConfigurationPageInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of ConfigurationPageInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of ConfigurationPageInfo
-   * @throws IOException if the JSON string is invalid with respect to ConfigurationPageInfo
-   */
-  public static ConfigurationPageInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, ConfigurationPageInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of ConfigurationPageInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `EnableInMainMenu` to the URL query string
+    if (getEnableInMainMenu() != null) {
+      joiner.add(String.format("%sEnableInMainMenu%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableInMainMenu()))));
+    }
+
+    // add `MenuSection` to the URL query string
+    if (getMenuSection() != null) {
+      joiner.add(String.format("%sMenuSection%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMenuSection()))));
+    }
+
+    // add `MenuIcon` to the URL query string
+    if (getMenuIcon() != null) {
+      joiner.add(String.format("%sMenuIcon%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMenuIcon()))));
+    }
+
+    // add `DisplayName` to the URL query string
+    if (getDisplayName() != null) {
+      joiner.add(String.format("%sDisplayName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDisplayName()))));
+    }
+
+    // add `PluginId` to the URL query string
+    if (getPluginId() != null) {
+      joiner.add(String.format("%sPluginId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPluginId()))));
+    }
+
+    return joiner.toString();
   }
 }
 

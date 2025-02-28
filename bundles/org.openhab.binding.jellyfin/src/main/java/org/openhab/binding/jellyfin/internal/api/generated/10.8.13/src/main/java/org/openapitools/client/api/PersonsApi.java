@@ -10,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import org.openapitools.client.model.BaseItemDto;
 import org.openapitools.client.model.BaseItemDtoQueryResult;
@@ -35,427 +26,309 @@ import org.openapitools.client.model.ItemFilter;
 import org.openapitools.client.model.ProblemDetails;
 import java.util.UUID;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PersonsApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public PersonsApi() {
-        this(Configuration.getDefaultApiClient());
+  public PersonsApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public PersonsApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Get person by name.
+   * 
+   * @param name Person name. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @return BaseItemDto
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDto getPerson(String name, UUID userId) throws ApiException {
+    ApiResponse<BaseItemDto> localVarResponse = getPersonWithHttpInfo(name, userId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get person by name.
+   * 
+   * @param name Person name. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @return ApiResponse&lt;BaseItemDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDto> getPersonWithHttpInfo(String name, UUID userId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getPersonRequestBuilder(name, userId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getPerson", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDto>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDto>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getPersonRequestBuilder(String name, UUID userId) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling getPerson");
     }
 
-    public PersonsApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Persons/{name}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets all persons.
+   * 
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param searchTerm The search term. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param filters Optional. Specify additional filters to apply. (optional)
+   * @param isFavorite Optional filter by items that are marked as favorite, or not. userId is required. (optional)
+   * @param enableUserData Optional, include user data. (optional)
+   * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @param excludePersonTypes Optional. If specified results will be filtered to exclude those containing the specified PersonType. Allows multiple, comma-delimited. (optional)
+   * @param personTypes Optional. If specified results will be filtered to include only those containing the specified PersonType. Allows multiple, comma-delimited. (optional)
+   * @param appearsInItemId Optional. If specified, person results will be filtered on items related to said persons. (optional)
+   * @param userId User id. (optional)
+   * @param enableImages Optional, include image information in output. (optional, default to true)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getPersons(Integer limit, String searchTerm, List<ItemFields> fields, List<ItemFilter> filters, Boolean isFavorite, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, List<String> excludePersonTypes, List<String> personTypes, UUID appearsInItemId, UUID userId, Boolean enableImages) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getPersonsWithHttpInfo(limit, searchTerm, fields, filters, isFavorite, enableUserData, imageTypeLimit, enableImageTypes, excludePersonTypes, personTypes, appearsInItemId, userId, enableImages);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets all persons.
+   * 
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param searchTerm The search term. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param filters Optional. Specify additional filters to apply. (optional)
+   * @param isFavorite Optional filter by items that are marked as favorite, or not. userId is required. (optional)
+   * @param enableUserData Optional, include user data. (optional)
+   * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @param excludePersonTypes Optional. If specified results will be filtered to exclude those containing the specified PersonType. Allows multiple, comma-delimited. (optional)
+   * @param personTypes Optional. If specified results will be filtered to include only those containing the specified PersonType. Allows multiple, comma-delimited. (optional)
+   * @param appearsInItemId Optional. If specified, person results will be filtered on items related to said persons. (optional)
+   * @param userId User id. (optional)
+   * @param enableImages Optional, include image information in output. (optional, default to true)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getPersonsWithHttpInfo(Integer limit, String searchTerm, List<ItemFields> fields, List<ItemFilter> filters, Boolean isFavorite, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, List<String> excludePersonTypes, List<String> personTypes, UUID appearsInItemId, UUID userId, Boolean enableImages) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getPersonsRequestBuilder(limit, searchTerm, fields, filters, isFavorite, enableUserData, imageTypeLimit, enableImageTypes, excludePersonTypes, personTypes, appearsInItemId, userId, enableImages);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getPersons", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getPersonsRequestBuilder(Integer limit, String searchTerm, List<ItemFields> fields, List<ItemFilter> filters, Boolean isFavorite, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, List<String> excludePersonTypes, List<String> personTypes, UUID appearsInItemId, UUID userId, Boolean enableImages) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Persons";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "searchTerm";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("searchTerm", searchTerm));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+    localVarQueryParameterBaseName = "filters";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "filters", filters));
+    localVarQueryParameterBaseName = "isFavorite";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isFavorite", isFavorite));
+    localVarQueryParameterBaseName = "enableUserData";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
+    localVarQueryParameterBaseName = "imageTypeLimit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
+    localVarQueryParameterBaseName = "enableImageTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+    localVarQueryParameterBaseName = "excludePersonTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "excludePersonTypes", excludePersonTypes));
+    localVarQueryParameterBaseName = "personTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "personTypes", personTypes));
+    localVarQueryParameterBaseName = "appearsInItemId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("appearsInItemId", appearsInItemId));
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "enableImages";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    public int getHostIndex() {
-        return localHostIndex;
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
-    }
-
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for getPerson
-     * @param name Person name. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Person returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Person not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPersonCall(String name, UUID userId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Persons/{name}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getPersonValidateBeforeCall(String name, UUID userId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling getPerson(Async)");
-        }
-
-        return getPersonCall(name, userId, _callback);
-
-    }
-
-    /**
-     * Get person by name.
-     * 
-     * @param name Person name. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @return BaseItemDto
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Person returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Person not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDto getPerson(String name, UUID userId) throws ApiException {
-        ApiResponse<BaseItemDto> localVarResp = getPersonWithHttpInfo(name, userId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get person by name.
-     * 
-     * @param name Person name. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @return ApiResponse&lt;BaseItemDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Person returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Person not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDto> getPersonWithHttpInfo(String name, UUID userId) throws ApiException {
-        okhttp3.Call localVarCall = getPersonValidateBeforeCall(name, userId, null);
-        Type localVarReturnType = new TypeToken<BaseItemDto>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get person by name. (asynchronously)
-     * 
-     * @param name Person name. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Person returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Person not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPersonAsync(String name, UUID userId, final ApiCallback<BaseItemDto> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getPersonValidateBeforeCall(name, userId, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDto>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getPersons
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param searchTerm The search term. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param isFavorite Optional filter by items that are marked as favorite, or not. userId is required. (optional)
-     * @param enableUserData Optional, include user data. (optional)
-     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param excludePersonTypes Optional. If specified results will be filtered to exclude those containing the specified PersonType. Allows multiple, comma-delimited. (optional)
-     * @param personTypes Optional. If specified results will be filtered to include only those containing the specified PersonType. Allows multiple, comma-delimited. (optional)
-     * @param appearsInItemId Optional. If specified, person results will be filtered on items related to said persons. (optional)
-     * @param userId User id. (optional)
-     * @param enableImages Optional, include image information in output. (optional, default to true)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Persons returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPersonsCall(Integer limit, String searchTerm, List<ItemFields> fields, List<ItemFilter> filters, Boolean isFavorite, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, List<String> excludePersonTypes, List<String> personTypes, UUID appearsInItemId, UUID userId, Boolean enableImages, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Persons";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (searchTerm != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("searchTerm", searchTerm));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        if (filters != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "filters", filters));
-        }
-
-        if (isFavorite != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isFavorite", isFavorite));
-        }
-
-        if (enableUserData != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableUserData", enableUserData));
-        }
-
-        if (imageTypeLimit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageTypeLimit", imageTypeLimit));
-        }
-
-        if (enableImageTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        }
-
-        if (excludePersonTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "excludePersonTypes", excludePersonTypes));
-        }
-
-        if (personTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "personTypes", personTypes));
-        }
-
-        if (appearsInItemId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("appearsInItemId", appearsInItemId));
-        }
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (enableImages != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableImages", enableImages));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getPersonsValidateBeforeCall(Integer limit, String searchTerm, List<ItemFields> fields, List<ItemFilter> filters, Boolean isFavorite, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, List<String> excludePersonTypes, List<String> personTypes, UUID appearsInItemId, UUID userId, Boolean enableImages, final ApiCallback _callback) throws ApiException {
-        return getPersonsCall(limit, searchTerm, fields, filters, isFavorite, enableUserData, imageTypeLimit, enableImageTypes, excludePersonTypes, personTypes, appearsInItemId, userId, enableImages, _callback);
-
-    }
-
-    /**
-     * Gets all persons.
-     * 
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param searchTerm The search term. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param isFavorite Optional filter by items that are marked as favorite, or not. userId is required. (optional)
-     * @param enableUserData Optional, include user data. (optional)
-     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param excludePersonTypes Optional. If specified results will be filtered to exclude those containing the specified PersonType. Allows multiple, comma-delimited. (optional)
-     * @param personTypes Optional. If specified results will be filtered to include only those containing the specified PersonType. Allows multiple, comma-delimited. (optional)
-     * @param appearsInItemId Optional. If specified, person results will be filtered on items related to said persons. (optional)
-     * @param userId User id. (optional)
-     * @param enableImages Optional, include image information in output. (optional, default to true)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Persons returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getPersons(Integer limit, String searchTerm, List<ItemFields> fields, List<ItemFilter> filters, Boolean isFavorite, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, List<String> excludePersonTypes, List<String> personTypes, UUID appearsInItemId, UUID userId, Boolean enableImages) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getPersonsWithHttpInfo(limit, searchTerm, fields, filters, isFavorite, enableUserData, imageTypeLimit, enableImageTypes, excludePersonTypes, personTypes, appearsInItemId, userId, enableImages);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets all persons.
-     * 
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param searchTerm The search term. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param isFavorite Optional filter by items that are marked as favorite, or not. userId is required. (optional)
-     * @param enableUserData Optional, include user data. (optional)
-     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param excludePersonTypes Optional. If specified results will be filtered to exclude those containing the specified PersonType. Allows multiple, comma-delimited. (optional)
-     * @param personTypes Optional. If specified results will be filtered to include only those containing the specified PersonType. Allows multiple, comma-delimited. (optional)
-     * @param appearsInItemId Optional. If specified, person results will be filtered on items related to said persons. (optional)
-     * @param userId User id. (optional)
-     * @param enableImages Optional, include image information in output. (optional, default to true)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Persons returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getPersonsWithHttpInfo(Integer limit, String searchTerm, List<ItemFields> fields, List<ItemFilter> filters, Boolean isFavorite, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, List<String> excludePersonTypes, List<String> personTypes, UUID appearsInItemId, UUID userId, Boolean enableImages) throws ApiException {
-        okhttp3.Call localVarCall = getPersonsValidateBeforeCall(limit, searchTerm, fields, filters, isFavorite, enableUserData, imageTypeLimit, enableImageTypes, excludePersonTypes, personTypes, appearsInItemId, userId, enableImages, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets all persons. (asynchronously)
-     * 
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param searchTerm The search term. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param isFavorite Optional filter by items that are marked as favorite, or not. userId is required. (optional)
-     * @param enableUserData Optional, include user data. (optional)
-     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param excludePersonTypes Optional. If specified results will be filtered to exclude those containing the specified PersonType. Allows multiple, comma-delimited. (optional)
-     * @param personTypes Optional. If specified results will be filtered to include only those containing the specified PersonType. Allows multiple, comma-delimited. (optional)
-     * @param appearsInItemId Optional. If specified, person results will be filtered on items related to said persons. (optional)
-     * @param userId User id. (optional)
-     * @param enableImages Optional, include image information in output. (optional, default to true)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Persons returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPersonsAsync(Integer limit, String searchTerm, List<ItemFields> fields, List<ItemFilter> filters, Boolean isFavorite, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, List<String> excludePersonTypes, List<String> personTypes, UUID appearsInItemId, UUID userId, Boolean enableImages, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getPersonsValidateBeforeCall(limit, searchTerm, fields, filters, isFavorite, enableUserData, imageTypeLimit, enableImageTypes, excludePersonTypes, personTypes, appearsInItemId, userId, enableImages, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
 }

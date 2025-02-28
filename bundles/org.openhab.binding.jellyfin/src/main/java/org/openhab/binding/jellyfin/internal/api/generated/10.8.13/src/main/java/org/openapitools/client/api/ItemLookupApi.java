@@ -10,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import org.openapitools.client.model.AlbumInfoRemoteSearchQuery;
 import org.openapitools.client.model.ArtistInfoRemoteSearchQuery;
@@ -41,1589 +32,1056 @@ import org.openapitools.client.model.SeriesInfoRemoteSearchQuery;
 import org.openapitools.client.model.TrailerInfoRemoteSearchQuery;
 import java.util.UUID;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ItemLookupApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public ItemLookupApi() {
-        this(Configuration.getDefaultApiClient());
+  public ItemLookupApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public ItemLookupApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Applies search criteria to an item and refreshes metadata.
+   * 
+   * @param itemId Item id. (required)
+   * @param remoteSearchResult The remote search result. (required)
+   * @param replaceAllImages Optional. Whether or not to replace all images. Default: True. (optional, default to true)
+   * @throws ApiException if fails to make API call
+   */
+  public void applySearchCriteria(UUID itemId, RemoteSearchResult remoteSearchResult, Boolean replaceAllImages) throws ApiException {
+    applySearchCriteriaWithHttpInfo(itemId, remoteSearchResult, replaceAllImages);
+  }
+
+  /**
+   * Applies search criteria to an item and refreshes metadata.
+   * 
+   * @param itemId Item id. (required)
+   * @param remoteSearchResult The remote search result. (required)
+   * @param replaceAllImages Optional. Whether or not to replace all images. Default: True. (optional, default to true)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> applySearchCriteriaWithHttpInfo(UUID itemId, RemoteSearchResult remoteSearchResult, Boolean replaceAllImages) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = applySearchCriteriaRequestBuilder(itemId, remoteSearchResult, replaceAllImages);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("applySearchCriteria", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder applySearchCriteriaRequestBuilder(UUID itemId, RemoteSearchResult remoteSearchResult, Boolean replaceAllImages) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling applySearchCriteria");
+    }
+    // verify the required parameter 'remoteSearchResult' is set
+    if (remoteSearchResult == null) {
+      throw new ApiException(400, "Missing the required parameter 'remoteSearchResult' when calling applySearchCriteria");
     }
 
-    public ItemLookupApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/RemoteSearch/Apply/{itemId}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "replaceAllImages";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("replaceAllImages", replaceAllImages));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(remoteSearchResult);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
     }
-
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    public int getHostIndex() {
-        return localHostIndex;
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
-    }
+  /**
+   * Get book remote search.
+   * 
+   * @param bookInfoRemoteSearchQuery Remote search query. (required)
+   * @return List&lt;RemoteSearchResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<RemoteSearchResult> getBookRemoteSearchResults(BookInfoRemoteSearchQuery bookInfoRemoteSearchQuery) throws ApiException {
+    ApiResponse<List<RemoteSearchResult>> localVarResponse = getBookRemoteSearchResultsWithHttpInfo(bookInfoRemoteSearchQuery);
+    return localVarResponse.getData();
+  }
 
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for applySearchCriteria
-     * @param itemId Item id. (required)
-     * @param remoteSearchResult The remote search result. (required)
-     * @param replaceAllImages Optional. Whether or not to replace all images. Default: True. (optional, default to true)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Item metadata refreshed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call applySearchCriteriaCall(UUID itemId, RemoteSearchResult remoteSearchResult, Boolean replaceAllImages, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Get book remote search.
+   * 
+   * @param bookInfoRemoteSearchQuery Remote search query. (required)
+   * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<RemoteSearchResult>> getBookRemoteSearchResultsWithHttpInfo(BookInfoRemoteSearchQuery bookInfoRemoteSearchQuery) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getBookRemoteSearchResultsRequestBuilder(bookInfoRemoteSearchQuery);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getBookRemoteSearchResults", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<RemoteSearchResult>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = remoteSearchResult;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/Items/RemoteSearch/Apply/{itemId}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
+        return new ApiResponse<List<RemoteSearchResult>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteSearchResult>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+  private HttpRequest.Builder getBookRemoteSearchResultsRequestBuilder(BookInfoRemoteSearchQuery bookInfoRemoteSearchQuery) throws ApiException {
+    // verify the required parameter 'bookInfoRemoteSearchQuery' is set
+    if (bookInfoRemoteSearchQuery == null) {
+      throw new ApiException(400, "Missing the required parameter 'bookInfoRemoteSearchQuery' when calling getBookRemoteSearchResults");
+    }
 
-        if (replaceAllImages != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("replaceAllImages", replaceAllImages));
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/RemoteSearch/Book";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(bookInfoRemoteSearchQuery);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get box set remote search.
+   * 
+   * @param boxSetInfoRemoteSearchQuery Remote search query. (required)
+   * @return List&lt;RemoteSearchResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<RemoteSearchResult> getBoxSetRemoteSearchResults(BoxSetInfoRemoteSearchQuery boxSetInfoRemoteSearchQuery) throws ApiException {
+    ApiResponse<List<RemoteSearchResult>> localVarResponse = getBoxSetRemoteSearchResultsWithHttpInfo(boxSetInfoRemoteSearchQuery);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get box set remote search.
+   * 
+   * @param boxSetInfoRemoteSearchQuery Remote search query. (required)
+   * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<RemoteSearchResult>> getBoxSetRemoteSearchResultsWithHttpInfo(BoxSetInfoRemoteSearchQuery boxSetInfoRemoteSearchQuery) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getBoxSetRemoteSearchResultsRequestBuilder(boxSetInfoRemoteSearchQuery);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getBoxSetRemoteSearchResults", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<RemoteSearchResult>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<RemoteSearchResult>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteSearchResult>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getBoxSetRemoteSearchResultsRequestBuilder(BoxSetInfoRemoteSearchQuery boxSetInfoRemoteSearchQuery) throws ApiException {
+    // verify the required parameter 'boxSetInfoRemoteSearchQuery' is set
+    if (boxSetInfoRemoteSearchQuery == null) {
+      throw new ApiException(400, "Missing the required parameter 'boxSetInfoRemoteSearchQuery' when calling getBoxSetRemoteSearchResults");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/RemoteSearch/BoxSet";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(boxSetInfoRemoteSearchQuery);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get the item&#39;s external id info.
+   * 
+   * @param itemId Item id. (required)
+   * @return List&lt;ExternalIdInfo&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<ExternalIdInfo> getExternalIdInfos(UUID itemId) throws ApiException {
+    ApiResponse<List<ExternalIdInfo>> localVarResponse = getExternalIdInfosWithHttpInfo(itemId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get the item&#39;s external id info.
+   * 
+   * @param itemId Item id. (required)
+   * @return ApiResponse&lt;List&lt;ExternalIdInfo&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<ExternalIdInfo>> getExternalIdInfosWithHttpInfo(UUID itemId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getExternalIdInfosRequestBuilder(itemId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getExternalIdInfos", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<ExternalIdInfo>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<ExternalIdInfo>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<ExternalIdInfo>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getExternalIdInfosRequestBuilder(UUID itemId) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getExternalIdInfos");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/ExternalIdInfos"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get movie remote search.
+   * 
+   * @param movieInfoRemoteSearchQuery Remote search query. (required)
+   * @return List&lt;RemoteSearchResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<RemoteSearchResult> getMovieRemoteSearchResults(MovieInfoRemoteSearchQuery movieInfoRemoteSearchQuery) throws ApiException {
+    ApiResponse<List<RemoteSearchResult>> localVarResponse = getMovieRemoteSearchResultsWithHttpInfo(movieInfoRemoteSearchQuery);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get movie remote search.
+   * 
+   * @param movieInfoRemoteSearchQuery Remote search query. (required)
+   * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<RemoteSearchResult>> getMovieRemoteSearchResultsWithHttpInfo(MovieInfoRemoteSearchQuery movieInfoRemoteSearchQuery) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getMovieRemoteSearchResultsRequestBuilder(movieInfoRemoteSearchQuery);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getMovieRemoteSearchResults", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<RemoteSearchResult>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<RemoteSearchResult>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteSearchResult>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getMovieRemoteSearchResultsRequestBuilder(MovieInfoRemoteSearchQuery movieInfoRemoteSearchQuery) throws ApiException {
+    // verify the required parameter 'movieInfoRemoteSearchQuery' is set
+    if (movieInfoRemoteSearchQuery == null) {
+      throw new ApiException(400, "Missing the required parameter 'movieInfoRemoteSearchQuery' when calling getMovieRemoteSearchResults");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call applySearchCriteriaValidateBeforeCall(UUID itemId, RemoteSearchResult remoteSearchResult, Boolean replaceAllImages, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling applySearchCriteria(Async)");
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/RemoteSearch/Movie";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(movieInfoRemoteSearchQuery);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get music album remote search.
+   * 
+   * @param albumInfoRemoteSearchQuery Remote search query. (required)
+   * @return List&lt;RemoteSearchResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<RemoteSearchResult> getMusicAlbumRemoteSearchResults(AlbumInfoRemoteSearchQuery albumInfoRemoteSearchQuery) throws ApiException {
+    ApiResponse<List<RemoteSearchResult>> localVarResponse = getMusicAlbumRemoteSearchResultsWithHttpInfo(albumInfoRemoteSearchQuery);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get music album remote search.
+   * 
+   * @param albumInfoRemoteSearchQuery Remote search query. (required)
+   * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<RemoteSearchResult>> getMusicAlbumRemoteSearchResultsWithHttpInfo(AlbumInfoRemoteSearchQuery albumInfoRemoteSearchQuery) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getMusicAlbumRemoteSearchResultsRequestBuilder(albumInfoRemoteSearchQuery);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getMusicAlbumRemoteSearchResults", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<RemoteSearchResult>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        // verify the required parameter 'remoteSearchResult' is set
-        if (remoteSearchResult == null) {
-            throw new ApiException("Missing the required parameter 'remoteSearchResult' when calling applySearchCriteria(Async)");
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<RemoteSearchResult>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteSearchResult>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getMusicAlbumRemoteSearchResultsRequestBuilder(AlbumInfoRemoteSearchQuery albumInfoRemoteSearchQuery) throws ApiException {
+    // verify the required parameter 'albumInfoRemoteSearchQuery' is set
+    if (albumInfoRemoteSearchQuery == null) {
+      throw new ApiException(400, "Missing the required parameter 'albumInfoRemoteSearchQuery' when calling getMusicAlbumRemoteSearchResults");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/RemoteSearch/MusicAlbum";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(albumInfoRemoteSearchQuery);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get music artist remote search.
+   * 
+   * @param artistInfoRemoteSearchQuery Remote search query. (required)
+   * @return List&lt;RemoteSearchResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<RemoteSearchResult> getMusicArtistRemoteSearchResults(ArtistInfoRemoteSearchQuery artistInfoRemoteSearchQuery) throws ApiException {
+    ApiResponse<List<RemoteSearchResult>> localVarResponse = getMusicArtistRemoteSearchResultsWithHttpInfo(artistInfoRemoteSearchQuery);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get music artist remote search.
+   * 
+   * @param artistInfoRemoteSearchQuery Remote search query. (required)
+   * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<RemoteSearchResult>> getMusicArtistRemoteSearchResultsWithHttpInfo(ArtistInfoRemoteSearchQuery artistInfoRemoteSearchQuery) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getMusicArtistRemoteSearchResultsRequestBuilder(artistInfoRemoteSearchQuery);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getMusicArtistRemoteSearchResults", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<RemoteSearchResult>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        return applySearchCriteriaCall(itemId, remoteSearchResult, replaceAllImages, _callback);
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
+        return new ApiResponse<List<RemoteSearchResult>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteSearchResult>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getMusicArtistRemoteSearchResultsRequestBuilder(ArtistInfoRemoteSearchQuery artistInfoRemoteSearchQuery) throws ApiException {
+    // verify the required parameter 'artistInfoRemoteSearchQuery' is set
+    if (artistInfoRemoteSearchQuery == null) {
+      throw new ApiException(400, "Missing the required parameter 'artistInfoRemoteSearchQuery' when calling getMusicArtistRemoteSearchResults");
     }
 
-    /**
-     * Applies search criteria to an item and refreshes metadata.
-     * 
-     * @param itemId Item id. (required)
-     * @param remoteSearchResult The remote search result. (required)
-     * @param replaceAllImages Optional. Whether or not to replace all images. Default: True. (optional, default to true)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Item metadata refreshed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void applySearchCriteria(UUID itemId, RemoteSearchResult remoteSearchResult, Boolean replaceAllImages) throws ApiException {
-        applySearchCriteriaWithHttpInfo(itemId, remoteSearchResult, replaceAllImages);
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/RemoteSearch/MusicArtist";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(artistInfoRemoteSearchQuery);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
     }
-
-    /**
-     * Applies search criteria to an item and refreshes metadata.
-     * 
-     * @param itemId Item id. (required)
-     * @param remoteSearchResult The remote search result. (required)
-     * @param replaceAllImages Optional. Whether or not to replace all images. Default: True. (optional, default to true)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Item metadata refreshed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> applySearchCriteriaWithHttpInfo(UUID itemId, RemoteSearchResult remoteSearchResult, Boolean replaceAllImages) throws ApiException {
-        okhttp3.Call localVarCall = applySearchCriteriaValidateBeforeCall(itemId, remoteSearchResult, replaceAllImages, null);
-        return localVarApiClient.execute(localVarCall);
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Applies search criteria to an item and refreshes metadata. (asynchronously)
-     * 
-     * @param itemId Item id. (required)
-     * @param remoteSearchResult The remote search result. (required)
-     * @param replaceAllImages Optional. Whether or not to replace all images. Default: True. (optional, default to true)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Item metadata refreshed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call applySearchCriteriaAsync(UUID itemId, RemoteSearchResult remoteSearchResult, Boolean replaceAllImages, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = applySearchCriteriaValidateBeforeCall(itemId, remoteSearchResult, replaceAllImages, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
-    /**
-     * Build call for getBookRemoteSearchResults
-     * @param bookInfoRemoteSearchQuery Remote search query. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Book remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getBookRemoteSearchResultsCall(BookInfoRemoteSearchQuery bookInfoRemoteSearchQuery, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
+    return localVarRequestBuilder;
+  }
 
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Get music video remote search.
+   * 
+   * @param musicVideoInfoRemoteSearchQuery Remote search query. (required)
+   * @return List&lt;RemoteSearchResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<RemoteSearchResult> getMusicVideoRemoteSearchResults(MusicVideoInfoRemoteSearchQuery musicVideoInfoRemoteSearchQuery) throws ApiException {
+    ApiResponse<List<RemoteSearchResult>> localVarResponse = getMusicVideoRemoteSearchResultsWithHttpInfo(musicVideoInfoRemoteSearchQuery);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get music video remote search.
+   * 
+   * @param musicVideoInfoRemoteSearchQuery Remote search query. (required)
+   * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<RemoteSearchResult>> getMusicVideoRemoteSearchResultsWithHttpInfo(MusicVideoInfoRemoteSearchQuery musicVideoInfoRemoteSearchQuery) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getMusicVideoRemoteSearchResultsRequestBuilder(musicVideoInfoRemoteSearchQuery);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getMusicVideoRemoteSearchResults", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<RemoteSearchResult>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = bookInfoRemoteSearchQuery;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/Items/RemoteSearch/Book";
+        return new ApiResponse<List<RemoteSearchResult>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteSearchResult>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+  private HttpRequest.Builder getMusicVideoRemoteSearchResultsRequestBuilder(MusicVideoInfoRemoteSearchQuery musicVideoInfoRemoteSearchQuery) throws ApiException {
+    // verify the required parameter 'musicVideoInfoRemoteSearchQuery' is set
+    if (musicVideoInfoRemoteSearchQuery == null) {
+      throw new ApiException(400, "Missing the required parameter 'musicVideoInfoRemoteSearchQuery' when calling getMusicVideoRemoteSearchResults");
+    }
 
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/RemoteSearch/MusicVideo";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(musicVideoInfoRemoteSearchQuery);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get person remote search.
+   * 
+   * @param personLookupInfoRemoteSearchQuery Remote search query. (required)
+   * @return List&lt;RemoteSearchResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<RemoteSearchResult> getPersonRemoteSearchResults(PersonLookupInfoRemoteSearchQuery personLookupInfoRemoteSearchQuery) throws ApiException {
+    ApiResponse<List<RemoteSearchResult>> localVarResponse = getPersonRemoteSearchResultsWithHttpInfo(personLookupInfoRemoteSearchQuery);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get person remote search.
+   * 
+   * @param personLookupInfoRemoteSearchQuery Remote search query. (required)
+   * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<RemoteSearchResult>> getPersonRemoteSearchResultsWithHttpInfo(PersonLookupInfoRemoteSearchQuery personLookupInfoRemoteSearchQuery) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getPersonRemoteSearchResultsRequestBuilder(personLookupInfoRemoteSearchQuery);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getPersonRemoteSearchResults", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<RemoteSearchResult>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<RemoteSearchResult>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteSearchResult>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getPersonRemoteSearchResultsRequestBuilder(PersonLookupInfoRemoteSearchQuery personLookupInfoRemoteSearchQuery) throws ApiException {
+    // verify the required parameter 'personLookupInfoRemoteSearchQuery' is set
+    if (personLookupInfoRemoteSearchQuery == null) {
+      throw new ApiException(400, "Missing the required parameter 'personLookupInfoRemoteSearchQuery' when calling getPersonRemoteSearchResults");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/RemoteSearch/Person";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(personLookupInfoRemoteSearchQuery);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get series remote search.
+   * 
+   * @param seriesInfoRemoteSearchQuery Remote search query. (required)
+   * @return List&lt;RemoteSearchResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<RemoteSearchResult> getSeriesRemoteSearchResults(SeriesInfoRemoteSearchQuery seriesInfoRemoteSearchQuery) throws ApiException {
+    ApiResponse<List<RemoteSearchResult>> localVarResponse = getSeriesRemoteSearchResultsWithHttpInfo(seriesInfoRemoteSearchQuery);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get series remote search.
+   * 
+   * @param seriesInfoRemoteSearchQuery Remote search query. (required)
+   * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<RemoteSearchResult>> getSeriesRemoteSearchResultsWithHttpInfo(SeriesInfoRemoteSearchQuery seriesInfoRemoteSearchQuery) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getSeriesRemoteSearchResultsRequestBuilder(seriesInfoRemoteSearchQuery);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getSeriesRemoteSearchResults", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<RemoteSearchResult>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<RemoteSearchResult>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteSearchResult>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getSeriesRemoteSearchResultsRequestBuilder(SeriesInfoRemoteSearchQuery seriesInfoRemoteSearchQuery) throws ApiException {
+    // verify the required parameter 'seriesInfoRemoteSearchQuery' is set
+    if (seriesInfoRemoteSearchQuery == null) {
+      throw new ApiException(400, "Missing the required parameter 'seriesInfoRemoteSearchQuery' when calling getSeriesRemoteSearchResults");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getBookRemoteSearchResultsValidateBeforeCall(BookInfoRemoteSearchQuery bookInfoRemoteSearchQuery, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'bookInfoRemoteSearchQuery' is set
-        if (bookInfoRemoteSearchQuery == null) {
-            throw new ApiException("Missing the required parameter 'bookInfoRemoteSearchQuery' when calling getBookRemoteSearchResults(Async)");
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/RemoteSearch/Series";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(seriesInfoRemoteSearchQuery);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get trailer remote search.
+   * 
+   * @param trailerInfoRemoteSearchQuery Remote search query. (required)
+   * @return List&lt;RemoteSearchResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<RemoteSearchResult> getTrailerRemoteSearchResults(TrailerInfoRemoteSearchQuery trailerInfoRemoteSearchQuery) throws ApiException {
+    ApiResponse<List<RemoteSearchResult>> localVarResponse = getTrailerRemoteSearchResultsWithHttpInfo(trailerInfoRemoteSearchQuery);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get trailer remote search.
+   * 
+   * @param trailerInfoRemoteSearchQuery Remote search query. (required)
+   * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<RemoteSearchResult>> getTrailerRemoteSearchResultsWithHttpInfo(TrailerInfoRemoteSearchQuery trailerInfoRemoteSearchQuery) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getTrailerRemoteSearchResultsRequestBuilder(trailerInfoRemoteSearchQuery);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getTrailerRemoteSearchResults", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<RemoteSearchResult>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        return getBookRemoteSearchResultsCall(bookInfoRemoteSearchQuery, _callback);
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
+        return new ApiResponse<List<RemoteSearchResult>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteSearchResult>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getTrailerRemoteSearchResultsRequestBuilder(TrailerInfoRemoteSearchQuery trailerInfoRemoteSearchQuery) throws ApiException {
+    // verify the required parameter 'trailerInfoRemoteSearchQuery' is set
+    if (trailerInfoRemoteSearchQuery == null) {
+      throw new ApiException(400, "Missing the required parameter 'trailerInfoRemoteSearchQuery' when calling getTrailerRemoteSearchResults");
     }
 
-    /**
-     * Get book remote search.
-     * 
-     * @param bookInfoRemoteSearchQuery Remote search query. (required)
-     * @return List&lt;RemoteSearchResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Book remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<RemoteSearchResult> getBookRemoteSearchResults(BookInfoRemoteSearchQuery bookInfoRemoteSearchQuery) throws ApiException {
-        ApiResponse<List<RemoteSearchResult>> localVarResp = getBookRemoteSearchResultsWithHttpInfo(bookInfoRemoteSearchQuery);
-        return localVarResp.getData();
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/RemoteSearch/Trailer";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(trailerInfoRemoteSearchQuery);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
     }
-
-    /**
-     * Get book remote search.
-     * 
-     * @param bookInfoRemoteSearchQuery Remote search query. (required)
-     * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Book remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<RemoteSearchResult>> getBookRemoteSearchResultsWithHttpInfo(BookInfoRemoteSearchQuery bookInfoRemoteSearchQuery) throws ApiException {
-        okhttp3.Call localVarCall = getBookRemoteSearchResultsValidateBeforeCall(bookInfoRemoteSearchQuery, null);
-        Type localVarReturnType = new TypeToken<List<RemoteSearchResult>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Get book remote search. (asynchronously)
-     * 
-     * @param bookInfoRemoteSearchQuery Remote search query. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Book remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getBookRemoteSearchResultsAsync(BookInfoRemoteSearchQuery bookInfoRemoteSearchQuery, final ApiCallback<List<RemoteSearchResult>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getBookRemoteSearchResultsValidateBeforeCall(bookInfoRemoteSearchQuery, _callback);
-        Type localVarReturnType = new TypeToken<List<RemoteSearchResult>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
-    /**
-     * Build call for getBoxSetRemoteSearchResults
-     * @param boxSetInfoRemoteSearchQuery Remote search query. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Box set remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getBoxSetRemoteSearchResultsCall(BoxSetInfoRemoteSearchQuery boxSetInfoRemoteSearchQuery, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
+    return localVarRequestBuilder;
+  }
 
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = boxSetInfoRemoteSearchQuery;
-
-        // create path and map variables
-        String localVarPath = "/Items/RemoteSearch/BoxSet";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getBoxSetRemoteSearchResultsValidateBeforeCall(BoxSetInfoRemoteSearchQuery boxSetInfoRemoteSearchQuery, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'boxSetInfoRemoteSearchQuery' is set
-        if (boxSetInfoRemoteSearchQuery == null) {
-            throw new ApiException("Missing the required parameter 'boxSetInfoRemoteSearchQuery' when calling getBoxSetRemoteSearchResults(Async)");
-        }
-
-        return getBoxSetRemoteSearchResultsCall(boxSetInfoRemoteSearchQuery, _callback);
-
-    }
-
-    /**
-     * Get box set remote search.
-     * 
-     * @param boxSetInfoRemoteSearchQuery Remote search query. (required)
-     * @return List&lt;RemoteSearchResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Box set remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<RemoteSearchResult> getBoxSetRemoteSearchResults(BoxSetInfoRemoteSearchQuery boxSetInfoRemoteSearchQuery) throws ApiException {
-        ApiResponse<List<RemoteSearchResult>> localVarResp = getBoxSetRemoteSearchResultsWithHttpInfo(boxSetInfoRemoteSearchQuery);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get box set remote search.
-     * 
-     * @param boxSetInfoRemoteSearchQuery Remote search query. (required)
-     * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Box set remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<RemoteSearchResult>> getBoxSetRemoteSearchResultsWithHttpInfo(BoxSetInfoRemoteSearchQuery boxSetInfoRemoteSearchQuery) throws ApiException {
-        okhttp3.Call localVarCall = getBoxSetRemoteSearchResultsValidateBeforeCall(boxSetInfoRemoteSearchQuery, null);
-        Type localVarReturnType = new TypeToken<List<RemoteSearchResult>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get box set remote search. (asynchronously)
-     * 
-     * @param boxSetInfoRemoteSearchQuery Remote search query. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Box set remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getBoxSetRemoteSearchResultsAsync(BoxSetInfoRemoteSearchQuery boxSetInfoRemoteSearchQuery, final ApiCallback<List<RemoteSearchResult>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getBoxSetRemoteSearchResultsValidateBeforeCall(boxSetInfoRemoteSearchQuery, _callback);
-        Type localVarReturnType = new TypeToken<List<RemoteSearchResult>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getExternalIdInfos
-     * @param itemId Item id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> External id info retrieved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getExternalIdInfosCall(UUID itemId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/ExternalIdInfos"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getExternalIdInfosValidateBeforeCall(UUID itemId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getExternalIdInfos(Async)");
-        }
-
-        return getExternalIdInfosCall(itemId, _callback);
-
-    }
-
-    /**
-     * Get the item&#39;s external id info.
-     * 
-     * @param itemId Item id. (required)
-     * @return List&lt;ExternalIdInfo&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> External id info retrieved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<ExternalIdInfo> getExternalIdInfos(UUID itemId) throws ApiException {
-        ApiResponse<List<ExternalIdInfo>> localVarResp = getExternalIdInfosWithHttpInfo(itemId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get the item&#39;s external id info.
-     * 
-     * @param itemId Item id. (required)
-     * @return ApiResponse&lt;List&lt;ExternalIdInfo&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> External id info retrieved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<ExternalIdInfo>> getExternalIdInfosWithHttpInfo(UUID itemId) throws ApiException {
-        okhttp3.Call localVarCall = getExternalIdInfosValidateBeforeCall(itemId, null);
-        Type localVarReturnType = new TypeToken<List<ExternalIdInfo>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get the item&#39;s external id info. (asynchronously)
-     * 
-     * @param itemId Item id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> External id info retrieved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getExternalIdInfosAsync(UUID itemId, final ApiCallback<List<ExternalIdInfo>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getExternalIdInfosValidateBeforeCall(itemId, _callback);
-        Type localVarReturnType = new TypeToken<List<ExternalIdInfo>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getMovieRemoteSearchResults
-     * @param movieInfoRemoteSearchQuery Remote search query. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Movie remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMovieRemoteSearchResultsCall(MovieInfoRemoteSearchQuery movieInfoRemoteSearchQuery, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = movieInfoRemoteSearchQuery;
-
-        // create path and map variables
-        String localVarPath = "/Items/RemoteSearch/Movie";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getMovieRemoteSearchResultsValidateBeforeCall(MovieInfoRemoteSearchQuery movieInfoRemoteSearchQuery, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'movieInfoRemoteSearchQuery' is set
-        if (movieInfoRemoteSearchQuery == null) {
-            throw new ApiException("Missing the required parameter 'movieInfoRemoteSearchQuery' when calling getMovieRemoteSearchResults(Async)");
-        }
-
-        return getMovieRemoteSearchResultsCall(movieInfoRemoteSearchQuery, _callback);
-
-    }
-
-    /**
-     * Get movie remote search.
-     * 
-     * @param movieInfoRemoteSearchQuery Remote search query. (required)
-     * @return List&lt;RemoteSearchResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Movie remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<RemoteSearchResult> getMovieRemoteSearchResults(MovieInfoRemoteSearchQuery movieInfoRemoteSearchQuery) throws ApiException {
-        ApiResponse<List<RemoteSearchResult>> localVarResp = getMovieRemoteSearchResultsWithHttpInfo(movieInfoRemoteSearchQuery);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get movie remote search.
-     * 
-     * @param movieInfoRemoteSearchQuery Remote search query. (required)
-     * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Movie remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<RemoteSearchResult>> getMovieRemoteSearchResultsWithHttpInfo(MovieInfoRemoteSearchQuery movieInfoRemoteSearchQuery) throws ApiException {
-        okhttp3.Call localVarCall = getMovieRemoteSearchResultsValidateBeforeCall(movieInfoRemoteSearchQuery, null);
-        Type localVarReturnType = new TypeToken<List<RemoteSearchResult>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get movie remote search. (asynchronously)
-     * 
-     * @param movieInfoRemoteSearchQuery Remote search query. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Movie remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMovieRemoteSearchResultsAsync(MovieInfoRemoteSearchQuery movieInfoRemoteSearchQuery, final ApiCallback<List<RemoteSearchResult>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getMovieRemoteSearchResultsValidateBeforeCall(movieInfoRemoteSearchQuery, _callback);
-        Type localVarReturnType = new TypeToken<List<RemoteSearchResult>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getMusicAlbumRemoteSearchResults
-     * @param albumInfoRemoteSearchQuery Remote search query. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Music album remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMusicAlbumRemoteSearchResultsCall(AlbumInfoRemoteSearchQuery albumInfoRemoteSearchQuery, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = albumInfoRemoteSearchQuery;
-
-        // create path and map variables
-        String localVarPath = "/Items/RemoteSearch/MusicAlbum";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getMusicAlbumRemoteSearchResultsValidateBeforeCall(AlbumInfoRemoteSearchQuery albumInfoRemoteSearchQuery, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'albumInfoRemoteSearchQuery' is set
-        if (albumInfoRemoteSearchQuery == null) {
-            throw new ApiException("Missing the required parameter 'albumInfoRemoteSearchQuery' when calling getMusicAlbumRemoteSearchResults(Async)");
-        }
-
-        return getMusicAlbumRemoteSearchResultsCall(albumInfoRemoteSearchQuery, _callback);
-
-    }
-
-    /**
-     * Get music album remote search.
-     * 
-     * @param albumInfoRemoteSearchQuery Remote search query. (required)
-     * @return List&lt;RemoteSearchResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Music album remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<RemoteSearchResult> getMusicAlbumRemoteSearchResults(AlbumInfoRemoteSearchQuery albumInfoRemoteSearchQuery) throws ApiException {
-        ApiResponse<List<RemoteSearchResult>> localVarResp = getMusicAlbumRemoteSearchResultsWithHttpInfo(albumInfoRemoteSearchQuery);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get music album remote search.
-     * 
-     * @param albumInfoRemoteSearchQuery Remote search query. (required)
-     * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Music album remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<RemoteSearchResult>> getMusicAlbumRemoteSearchResultsWithHttpInfo(AlbumInfoRemoteSearchQuery albumInfoRemoteSearchQuery) throws ApiException {
-        okhttp3.Call localVarCall = getMusicAlbumRemoteSearchResultsValidateBeforeCall(albumInfoRemoteSearchQuery, null);
-        Type localVarReturnType = new TypeToken<List<RemoteSearchResult>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get music album remote search. (asynchronously)
-     * 
-     * @param albumInfoRemoteSearchQuery Remote search query. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Music album remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMusicAlbumRemoteSearchResultsAsync(AlbumInfoRemoteSearchQuery albumInfoRemoteSearchQuery, final ApiCallback<List<RemoteSearchResult>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getMusicAlbumRemoteSearchResultsValidateBeforeCall(albumInfoRemoteSearchQuery, _callback);
-        Type localVarReturnType = new TypeToken<List<RemoteSearchResult>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getMusicArtistRemoteSearchResults
-     * @param artistInfoRemoteSearchQuery Remote search query. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Music artist remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMusicArtistRemoteSearchResultsCall(ArtistInfoRemoteSearchQuery artistInfoRemoteSearchQuery, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = artistInfoRemoteSearchQuery;
-
-        // create path and map variables
-        String localVarPath = "/Items/RemoteSearch/MusicArtist";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getMusicArtistRemoteSearchResultsValidateBeforeCall(ArtistInfoRemoteSearchQuery artistInfoRemoteSearchQuery, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'artistInfoRemoteSearchQuery' is set
-        if (artistInfoRemoteSearchQuery == null) {
-            throw new ApiException("Missing the required parameter 'artistInfoRemoteSearchQuery' when calling getMusicArtistRemoteSearchResults(Async)");
-        }
-
-        return getMusicArtistRemoteSearchResultsCall(artistInfoRemoteSearchQuery, _callback);
-
-    }
-
-    /**
-     * Get music artist remote search.
-     * 
-     * @param artistInfoRemoteSearchQuery Remote search query. (required)
-     * @return List&lt;RemoteSearchResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Music artist remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<RemoteSearchResult> getMusicArtistRemoteSearchResults(ArtistInfoRemoteSearchQuery artistInfoRemoteSearchQuery) throws ApiException {
-        ApiResponse<List<RemoteSearchResult>> localVarResp = getMusicArtistRemoteSearchResultsWithHttpInfo(artistInfoRemoteSearchQuery);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get music artist remote search.
-     * 
-     * @param artistInfoRemoteSearchQuery Remote search query. (required)
-     * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Music artist remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<RemoteSearchResult>> getMusicArtistRemoteSearchResultsWithHttpInfo(ArtistInfoRemoteSearchQuery artistInfoRemoteSearchQuery) throws ApiException {
-        okhttp3.Call localVarCall = getMusicArtistRemoteSearchResultsValidateBeforeCall(artistInfoRemoteSearchQuery, null);
-        Type localVarReturnType = new TypeToken<List<RemoteSearchResult>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get music artist remote search. (asynchronously)
-     * 
-     * @param artistInfoRemoteSearchQuery Remote search query. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Music artist remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMusicArtistRemoteSearchResultsAsync(ArtistInfoRemoteSearchQuery artistInfoRemoteSearchQuery, final ApiCallback<List<RemoteSearchResult>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getMusicArtistRemoteSearchResultsValidateBeforeCall(artistInfoRemoteSearchQuery, _callback);
-        Type localVarReturnType = new TypeToken<List<RemoteSearchResult>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getMusicVideoRemoteSearchResults
-     * @param musicVideoInfoRemoteSearchQuery Remote search query. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Music video remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMusicVideoRemoteSearchResultsCall(MusicVideoInfoRemoteSearchQuery musicVideoInfoRemoteSearchQuery, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = musicVideoInfoRemoteSearchQuery;
-
-        // create path and map variables
-        String localVarPath = "/Items/RemoteSearch/MusicVideo";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getMusicVideoRemoteSearchResultsValidateBeforeCall(MusicVideoInfoRemoteSearchQuery musicVideoInfoRemoteSearchQuery, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'musicVideoInfoRemoteSearchQuery' is set
-        if (musicVideoInfoRemoteSearchQuery == null) {
-            throw new ApiException("Missing the required parameter 'musicVideoInfoRemoteSearchQuery' when calling getMusicVideoRemoteSearchResults(Async)");
-        }
-
-        return getMusicVideoRemoteSearchResultsCall(musicVideoInfoRemoteSearchQuery, _callback);
-
-    }
-
-    /**
-     * Get music video remote search.
-     * 
-     * @param musicVideoInfoRemoteSearchQuery Remote search query. (required)
-     * @return List&lt;RemoteSearchResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Music video remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<RemoteSearchResult> getMusicVideoRemoteSearchResults(MusicVideoInfoRemoteSearchQuery musicVideoInfoRemoteSearchQuery) throws ApiException {
-        ApiResponse<List<RemoteSearchResult>> localVarResp = getMusicVideoRemoteSearchResultsWithHttpInfo(musicVideoInfoRemoteSearchQuery);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get music video remote search.
-     * 
-     * @param musicVideoInfoRemoteSearchQuery Remote search query. (required)
-     * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Music video remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<RemoteSearchResult>> getMusicVideoRemoteSearchResultsWithHttpInfo(MusicVideoInfoRemoteSearchQuery musicVideoInfoRemoteSearchQuery) throws ApiException {
-        okhttp3.Call localVarCall = getMusicVideoRemoteSearchResultsValidateBeforeCall(musicVideoInfoRemoteSearchQuery, null);
-        Type localVarReturnType = new TypeToken<List<RemoteSearchResult>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get music video remote search. (asynchronously)
-     * 
-     * @param musicVideoInfoRemoteSearchQuery Remote search query. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Music video remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMusicVideoRemoteSearchResultsAsync(MusicVideoInfoRemoteSearchQuery musicVideoInfoRemoteSearchQuery, final ApiCallback<List<RemoteSearchResult>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getMusicVideoRemoteSearchResultsValidateBeforeCall(musicVideoInfoRemoteSearchQuery, _callback);
-        Type localVarReturnType = new TypeToken<List<RemoteSearchResult>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getPersonRemoteSearchResults
-     * @param personLookupInfoRemoteSearchQuery Remote search query. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Person remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPersonRemoteSearchResultsCall(PersonLookupInfoRemoteSearchQuery personLookupInfoRemoteSearchQuery, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = personLookupInfoRemoteSearchQuery;
-
-        // create path and map variables
-        String localVarPath = "/Items/RemoteSearch/Person";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getPersonRemoteSearchResultsValidateBeforeCall(PersonLookupInfoRemoteSearchQuery personLookupInfoRemoteSearchQuery, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'personLookupInfoRemoteSearchQuery' is set
-        if (personLookupInfoRemoteSearchQuery == null) {
-            throw new ApiException("Missing the required parameter 'personLookupInfoRemoteSearchQuery' when calling getPersonRemoteSearchResults(Async)");
-        }
-
-        return getPersonRemoteSearchResultsCall(personLookupInfoRemoteSearchQuery, _callback);
-
-    }
-
-    /**
-     * Get person remote search.
-     * 
-     * @param personLookupInfoRemoteSearchQuery Remote search query. (required)
-     * @return List&lt;RemoteSearchResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Person remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<RemoteSearchResult> getPersonRemoteSearchResults(PersonLookupInfoRemoteSearchQuery personLookupInfoRemoteSearchQuery) throws ApiException {
-        ApiResponse<List<RemoteSearchResult>> localVarResp = getPersonRemoteSearchResultsWithHttpInfo(personLookupInfoRemoteSearchQuery);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get person remote search.
-     * 
-     * @param personLookupInfoRemoteSearchQuery Remote search query. (required)
-     * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Person remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<RemoteSearchResult>> getPersonRemoteSearchResultsWithHttpInfo(PersonLookupInfoRemoteSearchQuery personLookupInfoRemoteSearchQuery) throws ApiException {
-        okhttp3.Call localVarCall = getPersonRemoteSearchResultsValidateBeforeCall(personLookupInfoRemoteSearchQuery, null);
-        Type localVarReturnType = new TypeToken<List<RemoteSearchResult>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get person remote search. (asynchronously)
-     * 
-     * @param personLookupInfoRemoteSearchQuery Remote search query. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Person remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPersonRemoteSearchResultsAsync(PersonLookupInfoRemoteSearchQuery personLookupInfoRemoteSearchQuery, final ApiCallback<List<RemoteSearchResult>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getPersonRemoteSearchResultsValidateBeforeCall(personLookupInfoRemoteSearchQuery, _callback);
-        Type localVarReturnType = new TypeToken<List<RemoteSearchResult>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getSeriesRemoteSearchResults
-     * @param seriesInfoRemoteSearchQuery Remote search query. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Series remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSeriesRemoteSearchResultsCall(SeriesInfoRemoteSearchQuery seriesInfoRemoteSearchQuery, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = seriesInfoRemoteSearchQuery;
-
-        // create path and map variables
-        String localVarPath = "/Items/RemoteSearch/Series";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getSeriesRemoteSearchResultsValidateBeforeCall(SeriesInfoRemoteSearchQuery seriesInfoRemoteSearchQuery, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'seriesInfoRemoteSearchQuery' is set
-        if (seriesInfoRemoteSearchQuery == null) {
-            throw new ApiException("Missing the required parameter 'seriesInfoRemoteSearchQuery' when calling getSeriesRemoteSearchResults(Async)");
-        }
-
-        return getSeriesRemoteSearchResultsCall(seriesInfoRemoteSearchQuery, _callback);
-
-    }
-
-    /**
-     * Get series remote search.
-     * 
-     * @param seriesInfoRemoteSearchQuery Remote search query. (required)
-     * @return List&lt;RemoteSearchResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Series remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<RemoteSearchResult> getSeriesRemoteSearchResults(SeriesInfoRemoteSearchQuery seriesInfoRemoteSearchQuery) throws ApiException {
-        ApiResponse<List<RemoteSearchResult>> localVarResp = getSeriesRemoteSearchResultsWithHttpInfo(seriesInfoRemoteSearchQuery);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get series remote search.
-     * 
-     * @param seriesInfoRemoteSearchQuery Remote search query. (required)
-     * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Series remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<RemoteSearchResult>> getSeriesRemoteSearchResultsWithHttpInfo(SeriesInfoRemoteSearchQuery seriesInfoRemoteSearchQuery) throws ApiException {
-        okhttp3.Call localVarCall = getSeriesRemoteSearchResultsValidateBeforeCall(seriesInfoRemoteSearchQuery, null);
-        Type localVarReturnType = new TypeToken<List<RemoteSearchResult>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get series remote search. (asynchronously)
-     * 
-     * @param seriesInfoRemoteSearchQuery Remote search query. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Series remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSeriesRemoteSearchResultsAsync(SeriesInfoRemoteSearchQuery seriesInfoRemoteSearchQuery, final ApiCallback<List<RemoteSearchResult>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getSeriesRemoteSearchResultsValidateBeforeCall(seriesInfoRemoteSearchQuery, _callback);
-        Type localVarReturnType = new TypeToken<List<RemoteSearchResult>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getTrailerRemoteSearchResults
-     * @param trailerInfoRemoteSearchQuery Remote search query. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Trailer remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getTrailerRemoteSearchResultsCall(TrailerInfoRemoteSearchQuery trailerInfoRemoteSearchQuery, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = trailerInfoRemoteSearchQuery;
-
-        // create path and map variables
-        String localVarPath = "/Items/RemoteSearch/Trailer";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getTrailerRemoteSearchResultsValidateBeforeCall(TrailerInfoRemoteSearchQuery trailerInfoRemoteSearchQuery, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'trailerInfoRemoteSearchQuery' is set
-        if (trailerInfoRemoteSearchQuery == null) {
-            throw new ApiException("Missing the required parameter 'trailerInfoRemoteSearchQuery' when calling getTrailerRemoteSearchResults(Async)");
-        }
-
-        return getTrailerRemoteSearchResultsCall(trailerInfoRemoteSearchQuery, _callback);
-
-    }
-
-    /**
-     * Get trailer remote search.
-     * 
-     * @param trailerInfoRemoteSearchQuery Remote search query. (required)
-     * @return List&lt;RemoteSearchResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Trailer remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<RemoteSearchResult> getTrailerRemoteSearchResults(TrailerInfoRemoteSearchQuery trailerInfoRemoteSearchQuery) throws ApiException {
-        ApiResponse<List<RemoteSearchResult>> localVarResp = getTrailerRemoteSearchResultsWithHttpInfo(trailerInfoRemoteSearchQuery);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get trailer remote search.
-     * 
-     * @param trailerInfoRemoteSearchQuery Remote search query. (required)
-     * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Trailer remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<RemoteSearchResult>> getTrailerRemoteSearchResultsWithHttpInfo(TrailerInfoRemoteSearchQuery trailerInfoRemoteSearchQuery) throws ApiException {
-        okhttp3.Call localVarCall = getTrailerRemoteSearchResultsValidateBeforeCall(trailerInfoRemoteSearchQuery, null);
-        Type localVarReturnType = new TypeToken<List<RemoteSearchResult>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get trailer remote search. (asynchronously)
-     * 
-     * @param trailerInfoRemoteSearchQuery Remote search query. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Trailer remote search executed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getTrailerRemoteSearchResultsAsync(TrailerInfoRemoteSearchQuery trailerInfoRemoteSearchQuery, final ApiCallback<List<RemoteSearchResult>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getTrailerRemoteSearchResultsValidateBeforeCall(trailerInfoRemoteSearchQuery, _callback);
-        Type localVarReturnType = new TypeToken<List<RemoteSearchResult>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
 }

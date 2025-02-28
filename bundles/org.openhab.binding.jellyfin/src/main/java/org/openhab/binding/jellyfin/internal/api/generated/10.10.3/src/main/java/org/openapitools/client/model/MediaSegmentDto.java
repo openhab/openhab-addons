@@ -13,71 +13,57 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import java.util.UUID;
 import org.openapitools.client.model.MediaSegmentType;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Api model for MediaSegment&#39;s.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  MediaSegmentDto.JSON_PROPERTY_ID,
+  MediaSegmentDto.JSON_PROPERTY_ITEM_ID,
+  MediaSegmentDto.JSON_PROPERTY_TYPE,
+  MediaSegmentDto.JSON_PROPERTY_START_TICKS,
+  MediaSegmentDto.JSON_PROPERTY_END_TICKS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class MediaSegmentDto {
-  public static final String SERIALIZED_NAME_ID = "Id";
-  @SerializedName(SERIALIZED_NAME_ID)
+  public static final String JSON_PROPERTY_ID = "Id";
   @javax.annotation.Nullable
   private UUID id;
 
-  public static final String SERIALIZED_NAME_ITEM_ID = "ItemId";
-  @SerializedName(SERIALIZED_NAME_ITEM_ID)
+  public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
   @javax.annotation.Nullable
   private UUID itemId;
 
-  public static final String SERIALIZED_NAME_TYPE = "Type";
-  @SerializedName(SERIALIZED_NAME_TYPE)
+  public static final String JSON_PROPERTY_TYPE = "Type";
   @javax.annotation.Nullable
   private MediaSegmentType type;
 
-  public static final String SERIALIZED_NAME_START_TICKS = "StartTicks";
-  @SerializedName(SERIALIZED_NAME_START_TICKS)
+  public static final String JSON_PROPERTY_START_TICKS = "StartTicks";
   @javax.annotation.Nullable
   private Long startTicks;
 
-  public static final String SERIALIZED_NAME_END_TICKS = "EndTicks";
-  @SerializedName(SERIALIZED_NAME_END_TICKS)
+  public static final String JSON_PROPERTY_END_TICKS = "EndTicks";
   @javax.annotation.Nullable
   private Long endTicks;
 
-  public MediaSegmentDto() {
+  public MediaSegmentDto() { 
   }
 
   public MediaSegmentDto id(@javax.annotation.Nullable UUID id) {
@@ -90,10 +76,15 @@ public class MediaSegmentDto {
    * @return id
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getId() {
     return id;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable UUID id) {
     this.id = id;
   }
@@ -109,10 +100,15 @@ public class MediaSegmentDto {
    * @return itemId
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getItemId() {
     return itemId;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemId(@javax.annotation.Nullable UUID itemId) {
     this.itemId = itemId;
   }
@@ -128,10 +124,15 @@ public class MediaSegmentDto {
    * @return type
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public MediaSegmentType getType() {
     return type;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@javax.annotation.Nullable MediaSegmentType type) {
     this.type = type;
   }
@@ -147,10 +148,15 @@ public class MediaSegmentDto {
    * @return startTicks
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_START_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getStartTicks() {
     return startTicks;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_START_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartTicks(@javax.annotation.Nullable Long startTicks) {
     this.startTicks = startTicks;
   }
@@ -166,16 +172,23 @@ public class MediaSegmentDto {
    * @return endTicks
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_END_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getEndTicks() {
     return endTicks;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_END_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEndTicks(@javax.annotation.Nullable Long endTicks) {
     this.endTicks = endTicks;
   }
 
 
-
+  /**
+   * Return true if this MediaSegmentDto object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -221,103 +234,64 @@ public class MediaSegmentDto {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Id");
-    openapiFields.add("ItemId");
-    openapiFields.add("Type");
-    openapiFields.add("StartTicks");
-    openapiFields.add("EndTicks");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to MediaSegmentDto
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!MediaSegmentDto.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in MediaSegmentDto is not found in the empty JSON string", MediaSegmentDto.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!MediaSegmentDto.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `MediaSegmentDto` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Id") != null && !jsonObj.get("Id").isJsonNull()) && !jsonObj.get("Id").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Id").toString()));
-      }
-      if ((jsonObj.get("ItemId") != null && !jsonObj.get("ItemId").isJsonNull()) && !jsonObj.get("ItemId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ItemId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ItemId").toString()));
-      }
-      // validate the optional field `Type`
-      if (jsonObj.get("Type") != null && !jsonObj.get("Type").isJsonNull()) {
-        MediaSegmentType.validateJsonElement(jsonObj.get("Type"));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!MediaSegmentDto.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'MediaSegmentDto' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<MediaSegmentDto> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(MediaSegmentDto.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<MediaSegmentDto>() {
-           @Override
-           public void write(JsonWriter out, MediaSegmentDto value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public MediaSegmentDto read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of MediaSegmentDto given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of MediaSegmentDto
-   * @throws IOException if the JSON string is invalid with respect to MediaSegmentDto
-   */
-  public static MediaSegmentDto fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, MediaSegmentDto.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of MediaSegmentDto to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+    }
+
+    // add `ItemId` to the URL query string
+    if (getItemId() != null) {
+      joiner.add(String.format("%sItemId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
+    }
+
+    // add `Type` to the URL query string
+    if (getType() != null) {
+      joiner.add(String.format("%sType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+    }
+
+    // add `StartTicks` to the URL query string
+    if (getStartTicks() != null) {
+      joiner.add(String.format("%sStartTicks%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStartTicks()))));
+    }
+
+    // add `EndTicks` to the URL query string
+    if (getEndTicks() != null) {
+      joiner.add(String.format("%sEndTicks%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEndTicks()))));
+    }
+
+    return joiner.toString();
   }
 }
 

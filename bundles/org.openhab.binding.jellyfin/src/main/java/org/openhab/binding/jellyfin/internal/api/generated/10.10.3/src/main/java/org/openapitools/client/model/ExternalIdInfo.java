@@ -13,67 +13,53 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.client.model.ExternalIdMediaType;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Represents the external id information for serialization to the client.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  ExternalIdInfo.JSON_PROPERTY_NAME,
+  ExternalIdInfo.JSON_PROPERTY_KEY,
+  ExternalIdInfo.JSON_PROPERTY_TYPE,
+  ExternalIdInfo.JSON_PROPERTY_URL_FORMAT_STRING
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ExternalIdInfo {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
+  public static final String JSON_PROPERTY_NAME = "Name";
   @javax.annotation.Nullable
   private String name;
 
-  public static final String SERIALIZED_NAME_KEY = "Key";
-  @SerializedName(SERIALIZED_NAME_KEY)
+  public static final String JSON_PROPERTY_KEY = "Key";
   @javax.annotation.Nullable
   private String key;
 
-  public static final String SERIALIZED_NAME_TYPE = "Type";
-  @SerializedName(SERIALIZED_NAME_TYPE)
-  @javax.annotation.Nullable
-  private ExternalIdMediaType type;
+  public static final String JSON_PROPERTY_TYPE = "Type";
+  private JsonNullable<ExternalIdMediaType> type = JsonNullable.<ExternalIdMediaType>undefined();
 
-  public static final String SERIALIZED_NAME_URL_FORMAT_STRING = "UrlFormatString";
-  @Deprecated
-  @SerializedName(SERIALIZED_NAME_URL_FORMAT_STRING)
-  @javax.annotation.Nullable
-  private String urlFormatString;
+  public static final String JSON_PROPERTY_URL_FORMAT_STRING = "UrlFormatString";
+  private JsonNullable<String> urlFormatString = JsonNullable.<String>undefined();
 
-  public ExternalIdInfo() {
+  public ExternalIdInfo() { 
   }
 
   public ExternalIdInfo name(@javax.annotation.Nullable String name) {
@@ -86,10 +72,15 @@ public class ExternalIdInfo {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -105,17 +96,22 @@ public class ExternalIdInfo {
    * @return key
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_KEY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getKey() {
     return key;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_KEY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setKey(@javax.annotation.Nullable String key) {
     this.key = key;
   }
 
 
   public ExternalIdInfo type(@javax.annotation.Nullable ExternalIdMediaType type) {
-    this.type = type;
+    this.type = JsonNullable.<ExternalIdMediaType>of(type);
     return this;
   }
 
@@ -124,18 +120,30 @@ public class ExternalIdInfo {
    * @return type
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public ExternalIdMediaType getType() {
-    return type;
+        return type.orElse(null);
   }
 
-  public void setType(@javax.annotation.Nullable ExternalIdMediaType type) {
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<ExternalIdMediaType> getType_JsonNullable() {
+    return type;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  public void setType_JsonNullable(JsonNullable<ExternalIdMediaType> type) {
     this.type = type;
   }
 
+  public void setType(@javax.annotation.Nullable ExternalIdMediaType type) {
+    this.type = JsonNullable.<ExternalIdMediaType>of(type);
+  }
 
-  @Deprecated
+
   public ExternalIdInfo urlFormatString(@javax.annotation.Nullable String urlFormatString) {
-    this.urlFormatString = urlFormatString;
+    this.urlFormatString = JsonNullable.<String>of(urlFormatString);
     return this;
   }
 
@@ -146,17 +154,31 @@ public class ExternalIdInfo {
    */
   @Deprecated
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getUrlFormatString() {
-    return urlFormatString;
+        return urlFormatString.orElse(null);
   }
 
-  @Deprecated
-  public void setUrlFormatString(@javax.annotation.Nullable String urlFormatString) {
+  @JsonProperty(JSON_PROPERTY_URL_FORMAT_STRING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getUrlFormatString_JsonNullable() {
+    return urlFormatString;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_URL_FORMAT_STRING)
+  public void setUrlFormatString_JsonNullable(JsonNullable<String> urlFormatString) {
     this.urlFormatString = urlFormatString;
   }
 
+  public void setUrlFormatString(@javax.annotation.Nullable String urlFormatString) {
+    this.urlFormatString = JsonNullable.<String>of(urlFormatString);
+  }
 
 
+  /**
+   * Return true if this ExternalIdInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -168,8 +190,8 @@ public class ExternalIdInfo {
     ExternalIdInfo externalIdInfo = (ExternalIdInfo) o;
     return Objects.equals(this.name, externalIdInfo.name) &&
         Objects.equals(this.key, externalIdInfo.key) &&
-        Objects.equals(this.type, externalIdInfo.type) &&
-        Objects.equals(this.urlFormatString, externalIdInfo.urlFormatString);
+        equalsNullable(this.type, externalIdInfo.type) &&
+        equalsNullable(this.urlFormatString, externalIdInfo.urlFormatString);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -178,7 +200,7 @@ public class ExternalIdInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, key, type, urlFormatString);
+    return Objects.hash(name, key, hashCodeNullable(type), hashCodeNullable(urlFormatString));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -211,105 +233,59 @@ public class ExternalIdInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("Key");
-    openapiFields.add("Type");
-    openapiFields.add("UrlFormatString");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to ExternalIdInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!ExternalIdInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in ExternalIdInfo is not found in the empty JSON string", ExternalIdInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!ExternalIdInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `ExternalIdInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("Key") != null && !jsonObj.get("Key").isJsonNull()) && !jsonObj.get("Key").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Key` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Key").toString()));
-      }
-      // validate the optional field `Type`
-      if (jsonObj.get("Type") != null && !jsonObj.get("Type").isJsonNull()) {
-        ExternalIdMediaType.validateJsonElement(jsonObj.get("Type"));
-      }
-      if ((jsonObj.get("UrlFormatString") != null && !jsonObj.get("UrlFormatString").isJsonNull()) && !jsonObj.get("UrlFormatString").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `UrlFormatString` to be a primitive type in the JSON string but got `%s`", jsonObj.get("UrlFormatString").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!ExternalIdInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'ExternalIdInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<ExternalIdInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(ExternalIdInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<ExternalIdInfo>() {
-           @Override
-           public void write(JsonWriter out, ExternalIdInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public ExternalIdInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of ExternalIdInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of ExternalIdInfo
-   * @throws IOException if the JSON string is invalid with respect to ExternalIdInfo
-   */
-  public static ExternalIdInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, ExternalIdInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of ExternalIdInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `Key` to the URL query string
+    if (getKey() != null) {
+      joiner.add(String.format("%sKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
+    }
+
+    // add `Type` to the URL query string
+    if (getType() != null) {
+      joiner.add(String.format("%sType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+    }
+
+    // add `UrlFormatString` to the URL query string
+    if (getUrlFormatString() != null) {
+      joiner.add(String.format("%sUrlFormatString%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUrlFormatString()))));
+    }
+
+    return joiner.toString();
   }
 }
 

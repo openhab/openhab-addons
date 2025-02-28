@@ -13,56 +13,42 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * PinRedeemResult
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  PinRedeemResult.JSON_PROPERTY_SUCCESS,
+  PinRedeemResult.JSON_PROPERTY_USERS_RESET
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PinRedeemResult {
-  public static final String SERIALIZED_NAME_SUCCESS = "Success";
-  @SerializedName(SERIALIZED_NAME_SUCCESS)
+  public static final String JSON_PROPERTY_SUCCESS = "Success";
   @javax.annotation.Nullable
   private Boolean success;
 
-  public static final String SERIALIZED_NAME_USERS_RESET = "UsersReset";
-  @SerializedName(SERIALIZED_NAME_USERS_RESET)
+  public static final String JSON_PROPERTY_USERS_RESET = "UsersReset";
   @javax.annotation.Nullable
   private List<String> usersReset = new ArrayList<>();
 
-  public PinRedeemResult() {
+  public PinRedeemResult() { 
   }
 
   public PinRedeemResult success(@javax.annotation.Nullable Boolean success) {
@@ -75,10 +61,15 @@ public class PinRedeemResult {
    * @return success
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUCCESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSuccess() {
     return success;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SUCCESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSuccess(@javax.annotation.Nullable Boolean success) {
     this.success = success;
   }
@@ -102,16 +93,23 @@ public class PinRedeemResult {
    * @return usersReset
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_USERS_RESET)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getUsersReset() {
     return usersReset;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_USERS_RESET)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUsersReset(@javax.annotation.Nullable List<String> usersReset) {
     this.usersReset = usersReset;
   }
 
 
-
+  /**
+   * Return true if this PinRedeemResult object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -151,94 +149,53 @@ public class PinRedeemResult {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Success");
-    openapiFields.add("UsersReset");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to PinRedeemResult
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!PinRedeemResult.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in PinRedeemResult is not found in the empty JSON string", PinRedeemResult.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!PinRedeemResult.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `PinRedeemResult` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("UsersReset") != null && !jsonObj.get("UsersReset").isJsonNull() && !jsonObj.get("UsersReset").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `UsersReset` to be an array in the JSON string but got `%s`", jsonObj.get("UsersReset").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!PinRedeemResult.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'PinRedeemResult' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<PinRedeemResult> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(PinRedeemResult.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<PinRedeemResult>() {
-           @Override
-           public void write(JsonWriter out, PinRedeemResult value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public PinRedeemResult read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of PinRedeemResult given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of PinRedeemResult
-   * @throws IOException if the JSON string is invalid with respect to PinRedeemResult
-   */
-  public static PinRedeemResult fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, PinRedeemResult.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of PinRedeemResult to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Success` to the URL query string
+    if (getSuccess() != null) {
+      joiner.add(String.format("%sSuccess%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSuccess()))));
+    }
+
+    // add `UsersReset` to the URL query string
+    if (getUsersReset() != null) {
+      for (int i = 0; i < getUsersReset().size(); i++) {
+        joiner.add(String.format("%sUsersReset%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getUsersReset().get(i)))));
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

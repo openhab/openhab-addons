@@ -10,2315 +10,1428 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import java.io.File;
 import org.openapitools.client.model.ProblemDetails;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class DlnaServerApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+
+  public DlnaServerApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public DlnaServerApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Gets Dlna media receiver registrar xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getConnectionManager(String serverId) throws ApiException {
+    ApiResponse<File> localVarResponse = getConnectionManagerWithHttpInfo(serverId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets Dlna media receiver registrar xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getConnectionManagerWithHttpInfo(String serverId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getConnectionManagerRequestBuilder(serverId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getConnectionManager", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getConnectionManagerRequestBuilder(String serverId) throws ApiException {
+    // verify the required parameter 'serverId' is set
+    if (serverId == null) {
+      throw new ApiException(400, "Missing the required parameter 'serverId' when calling getConnectionManager");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Dlna/{serverId}/ConnectionManager"
+        .replace("{serverId}", ApiClient.urlEncode(serverId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "text/xml");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets Dlna media receiver registrar xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getConnectionManager2(String serverId) throws ApiException {
+    ApiResponse<File> localVarResponse = getConnectionManager2WithHttpInfo(serverId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets Dlna media receiver registrar xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getConnectionManager2WithHttpInfo(String serverId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getConnectionManager2RequestBuilder(serverId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getConnectionManager2", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getConnectionManager2RequestBuilder(String serverId) throws ApiException {
+    // verify the required parameter 'serverId' is set
+    if (serverId == null) {
+      throw new ApiException(400, "Missing the required parameter 'serverId' when calling getConnectionManager2");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Dlna/{serverId}/ConnectionManager/ConnectionManager"
+        .replace("{serverId}", ApiClient.urlEncode(serverId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "text/xml");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets Dlna media receiver registrar xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getConnectionManager3(String serverId) throws ApiException {
+    ApiResponse<File> localVarResponse = getConnectionManager3WithHttpInfo(serverId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets Dlna media receiver registrar xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getConnectionManager3WithHttpInfo(String serverId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getConnectionManager3RequestBuilder(serverId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getConnectionManager3", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getConnectionManager3RequestBuilder(String serverId) throws ApiException {
+    // verify the required parameter 'serverId' is set
+    if (serverId == null) {
+      throw new ApiException(400, "Missing the required parameter 'serverId' when calling getConnectionManager3");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Dlna/{serverId}/ConnectionManager/ConnectionManager.xml"
+        .replace("{serverId}", ApiClient.urlEncode(serverId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "text/xml");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets Dlna content directory xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getContentDirectory(String serverId) throws ApiException {
+    ApiResponse<File> localVarResponse = getContentDirectoryWithHttpInfo(serverId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets Dlna content directory xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getContentDirectoryWithHttpInfo(String serverId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getContentDirectoryRequestBuilder(serverId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getContentDirectory", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getContentDirectoryRequestBuilder(String serverId) throws ApiException {
+    // verify the required parameter 'serverId' is set
+    if (serverId == null) {
+      throw new ApiException(400, "Missing the required parameter 'serverId' when calling getContentDirectory");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Dlna/{serverId}/ContentDirectory"
+        .replace("{serverId}", ApiClient.urlEncode(serverId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "text/xml");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets Dlna content directory xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getContentDirectory2(String serverId) throws ApiException {
+    ApiResponse<File> localVarResponse = getContentDirectory2WithHttpInfo(serverId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets Dlna content directory xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getContentDirectory2WithHttpInfo(String serverId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getContentDirectory2RequestBuilder(serverId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getContentDirectory2", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getContentDirectory2RequestBuilder(String serverId) throws ApiException {
+    // verify the required parameter 'serverId' is set
+    if (serverId == null) {
+      throw new ApiException(400, "Missing the required parameter 'serverId' when calling getContentDirectory2");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Dlna/{serverId}/ContentDirectory/ContentDirectory"
+        .replace("{serverId}", ApiClient.urlEncode(serverId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "text/xml");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets Dlna content directory xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getContentDirectory3(String serverId) throws ApiException {
+    ApiResponse<File> localVarResponse = getContentDirectory3WithHttpInfo(serverId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets Dlna content directory xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getContentDirectory3WithHttpInfo(String serverId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getContentDirectory3RequestBuilder(serverId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getContentDirectory3", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getContentDirectory3RequestBuilder(String serverId) throws ApiException {
+    // verify the required parameter 'serverId' is set
+    if (serverId == null) {
+      throw new ApiException(400, "Missing the required parameter 'serverId' when calling getContentDirectory3");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Dlna/{serverId}/ContentDirectory/ContentDirectory.xml"
+        .replace("{serverId}", ApiClient.urlEncode(serverId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "text/xml");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get Description Xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getDescriptionXml(String serverId) throws ApiException {
+    ApiResponse<File> localVarResponse = getDescriptionXmlWithHttpInfo(serverId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get Description Xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getDescriptionXmlWithHttpInfo(String serverId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getDescriptionXmlRequestBuilder(serverId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getDescriptionXml", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getDescriptionXmlRequestBuilder(String serverId) throws ApiException {
+    // verify the required parameter 'serverId' is set
+    if (serverId == null) {
+      throw new ApiException(400, "Missing the required parameter 'serverId' when calling getDescriptionXml");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Dlna/{serverId}/description"
+        .replace("{serverId}", ApiClient.urlEncode(serverId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "text/xml");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get Description Xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getDescriptionXml2(String serverId) throws ApiException {
+    ApiResponse<File> localVarResponse = getDescriptionXml2WithHttpInfo(serverId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get Description Xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getDescriptionXml2WithHttpInfo(String serverId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getDescriptionXml2RequestBuilder(serverId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getDescriptionXml2", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getDescriptionXml2RequestBuilder(String serverId) throws ApiException {
+    // verify the required parameter 'serverId' is set
+    if (serverId == null) {
+      throw new ApiException(400, "Missing the required parameter 'serverId' when calling getDescriptionXml2");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Dlna/{serverId}/description.xml"
+        .replace("{serverId}", ApiClient.urlEncode(serverId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "text/xml");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets a server icon.
+   * 
+   * @param fileName The icon filename. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getIcon(String fileName) throws ApiException {
+    ApiResponse<File> localVarResponse = getIconWithHttpInfo(fileName);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets a server icon.
+   * 
+   * @param fileName The icon filename. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getIconWithHttpInfo(String fileName) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getIconRequestBuilder(fileName);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getIcon", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getIconRequestBuilder(String fileName) throws ApiException {
+    // verify the required parameter 'fileName' is set
+    if (fileName == null) {
+      throw new ApiException(400, "Missing the required parameter 'fileName' when calling getIcon");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Dlna/icons/{fileName}"
+        .replace("{fileName}", ApiClient.urlEncode(fileName.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets a server icon.
+   * 
+   * @param serverId Server UUID. (required)
+   * @param fileName The icon filename. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getIconId(String serverId, String fileName) throws ApiException {
+    ApiResponse<File> localVarResponse = getIconIdWithHttpInfo(serverId, fileName);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets a server icon.
+   * 
+   * @param serverId Server UUID. (required)
+   * @param fileName The icon filename. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getIconIdWithHttpInfo(String serverId, String fileName) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getIconIdRequestBuilder(serverId, fileName);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getIconId", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getIconIdRequestBuilder(String serverId, String fileName) throws ApiException {
+    // verify the required parameter 'serverId' is set
+    if (serverId == null) {
+      throw new ApiException(400, "Missing the required parameter 'serverId' when calling getIconId");
+    }
+    // verify the required parameter 'fileName' is set
+    if (fileName == null) {
+      throw new ApiException(400, "Missing the required parameter 'fileName' when calling getIconId");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Dlna/{serverId}/icons/{fileName}"
+        .replace("{serverId}", ApiClient.urlEncode(serverId.toString()))
+        .replace("{fileName}", ApiClient.urlEncode(fileName.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets Dlna media receiver registrar xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getMediaReceiverRegistrar(String serverId) throws ApiException {
+    ApiResponse<File> localVarResponse = getMediaReceiverRegistrarWithHttpInfo(serverId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets Dlna media receiver registrar xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getMediaReceiverRegistrarWithHttpInfo(String serverId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getMediaReceiverRegistrarRequestBuilder(serverId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getMediaReceiverRegistrar", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getMediaReceiverRegistrarRequestBuilder(String serverId) throws ApiException {
+    // verify the required parameter 'serverId' is set
+    if (serverId == null) {
+      throw new ApiException(400, "Missing the required parameter 'serverId' when calling getMediaReceiverRegistrar");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Dlna/{serverId}/MediaReceiverRegistrar"
+        .replace("{serverId}", ApiClient.urlEncode(serverId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "text/xml");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets Dlna media receiver registrar xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getMediaReceiverRegistrar2(String serverId) throws ApiException {
+    ApiResponse<File> localVarResponse = getMediaReceiverRegistrar2WithHttpInfo(serverId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets Dlna media receiver registrar xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getMediaReceiverRegistrar2WithHttpInfo(String serverId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getMediaReceiverRegistrar2RequestBuilder(serverId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getMediaReceiverRegistrar2", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getMediaReceiverRegistrar2RequestBuilder(String serverId) throws ApiException {
+    // verify the required parameter 'serverId' is set
+    if (serverId == null) {
+      throw new ApiException(400, "Missing the required parameter 'serverId' when calling getMediaReceiverRegistrar2");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Dlna/{serverId}/MediaReceiverRegistrar/MediaReceiverRegistrar"
+        .replace("{serverId}", ApiClient.urlEncode(serverId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "text/xml");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets Dlna media receiver registrar xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getMediaReceiverRegistrar3(String serverId) throws ApiException {
+    ApiResponse<File> localVarResponse = getMediaReceiverRegistrar3WithHttpInfo(serverId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets Dlna media receiver registrar xml.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getMediaReceiverRegistrar3WithHttpInfo(String serverId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getMediaReceiverRegistrar3RequestBuilder(serverId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getMediaReceiverRegistrar3", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getMediaReceiverRegistrar3RequestBuilder(String serverId) throws ApiException {
+    // verify the required parameter 'serverId' is set
+    if (serverId == null) {
+      throw new ApiException(400, "Missing the required parameter 'serverId' when calling getMediaReceiverRegistrar3");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Dlna/{serverId}/MediaReceiverRegistrar/MediaReceiverRegistrar.xml"
+        .replace("{serverId}", ApiClient.urlEncode(serverId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "text/xml");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Process a connection manager control request.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File processConnectionManagerControlRequest(String serverId) throws ApiException {
+    ApiResponse<File> localVarResponse = processConnectionManagerControlRequestWithHttpInfo(serverId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Process a connection manager control request.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> processConnectionManagerControlRequestWithHttpInfo(String serverId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = processConnectionManagerControlRequestRequestBuilder(serverId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("processConnectionManagerControlRequest", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder processConnectionManagerControlRequestRequestBuilder(String serverId) throws ApiException {
+    // verify the required parameter 'serverId' is set
+    if (serverId == null) {
+      throw new ApiException(400, "Missing the required parameter 'serverId' when calling processConnectionManagerControlRequest");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Dlna/{serverId}/ConnectionManager/Control"
+        .replace("{serverId}", ApiClient.urlEncode(serverId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "text/xml");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Process a content directory control request.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File processContentDirectoryControlRequest(String serverId) throws ApiException {
+    ApiResponse<File> localVarResponse = processContentDirectoryControlRequestWithHttpInfo(serverId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Process a content directory control request.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> processContentDirectoryControlRequestWithHttpInfo(String serverId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = processContentDirectoryControlRequestRequestBuilder(serverId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("processContentDirectoryControlRequest", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder processContentDirectoryControlRequestRequestBuilder(String serverId) throws ApiException {
+    // verify the required parameter 'serverId' is set
+    if (serverId == null) {
+      throw new ApiException(400, "Missing the required parameter 'serverId' when calling processContentDirectoryControlRequest");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Dlna/{serverId}/ContentDirectory/Control"
+        .replace("{serverId}", ApiClient.urlEncode(serverId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "text/xml");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Process a media receiver registrar control request.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File processMediaReceiverRegistrarControlRequest(String serverId) throws ApiException {
+    ApiResponse<File> localVarResponse = processMediaReceiverRegistrarControlRequestWithHttpInfo(serverId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Process a media receiver registrar control request.
+   * 
+   * @param serverId Server UUID. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> processMediaReceiverRegistrarControlRequestWithHttpInfo(String serverId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = processMediaReceiverRegistrarControlRequestRequestBuilder(serverId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("processMediaReceiverRegistrarControlRequest", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder processMediaReceiverRegistrarControlRequestRequestBuilder(String serverId) throws ApiException {
+    // verify the required parameter 'serverId' is set
+    if (serverId == null) {
+      throw new ApiException(400, "Missing the required parameter 'serverId' when calling processMediaReceiverRegistrarControlRequest");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Dlna/{serverId}/MediaReceiverRegistrar/Control"
+        .replace("{serverId}", ApiClient.urlEncode(serverId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "text/xml");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
 
-    public DlnaServerApi() {
-        this(Configuration.getDefaultApiClient());
-    }
-
-    public DlnaServerApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
-
-    public ApiClient getApiClient() {
-        return localVarApiClient;
-    }
-
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
-
-    public int getHostIndex() {
-        return localHostIndex;
-    }
-
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
-    }
-
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for getConnectionManager
-     * @param serverId Server UUID. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getConnectionManagerCall(String serverId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Dlna/{serverId}/ConnectionManager"
-            .replace("{" + "serverId" + "}", localVarApiClient.escapeString(serverId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "text/xml"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getConnectionManagerValidateBeforeCall(String serverId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'serverId' is set
-        if (serverId == null) {
-            throw new ApiException("Missing the required parameter 'serverId' when calling getConnectionManager(Async)");
-        }
-
-        return getConnectionManagerCall(serverId, _callback);
-
-    }
-
-    /**
-     * Gets Dlna media receiver registrar xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getConnectionManager(String serverId) throws ApiException {
-        ApiResponse<File> localVarResp = getConnectionManagerWithHttpInfo(serverId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets Dlna media receiver registrar xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getConnectionManagerWithHttpInfo(String serverId) throws ApiException {
-        okhttp3.Call localVarCall = getConnectionManagerValidateBeforeCall(serverId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets Dlna media receiver registrar xml. (asynchronously)
-     * 
-     * @param serverId Server UUID. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getConnectionManagerAsync(String serverId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getConnectionManagerValidateBeforeCall(serverId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getConnectionManager2
-     * @param serverId Server UUID. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getConnectionManager2Call(String serverId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Dlna/{serverId}/ConnectionManager/ConnectionManager"
-            .replace("{" + "serverId" + "}", localVarApiClient.escapeString(serverId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "text/xml"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getConnectionManager2ValidateBeforeCall(String serverId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'serverId' is set
-        if (serverId == null) {
-            throw new ApiException("Missing the required parameter 'serverId' when calling getConnectionManager2(Async)");
-        }
-
-        return getConnectionManager2Call(serverId, _callback);
-
-    }
-
-    /**
-     * Gets Dlna media receiver registrar xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getConnectionManager2(String serverId) throws ApiException {
-        ApiResponse<File> localVarResp = getConnectionManager2WithHttpInfo(serverId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets Dlna media receiver registrar xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getConnectionManager2WithHttpInfo(String serverId) throws ApiException {
-        okhttp3.Call localVarCall = getConnectionManager2ValidateBeforeCall(serverId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets Dlna media receiver registrar xml. (asynchronously)
-     * 
-     * @param serverId Server UUID. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getConnectionManager2Async(String serverId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getConnectionManager2ValidateBeforeCall(serverId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getConnectionManager3
-     * @param serverId Server UUID. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getConnectionManager3Call(String serverId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Dlna/{serverId}/ConnectionManager/ConnectionManager.xml"
-            .replace("{" + "serverId" + "}", localVarApiClient.escapeString(serverId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "text/xml"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getConnectionManager3ValidateBeforeCall(String serverId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'serverId' is set
-        if (serverId == null) {
-            throw new ApiException("Missing the required parameter 'serverId' when calling getConnectionManager3(Async)");
-        }
-
-        return getConnectionManager3Call(serverId, _callback);
-
-    }
-
-    /**
-     * Gets Dlna media receiver registrar xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getConnectionManager3(String serverId) throws ApiException {
-        ApiResponse<File> localVarResp = getConnectionManager3WithHttpInfo(serverId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets Dlna media receiver registrar xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getConnectionManager3WithHttpInfo(String serverId) throws ApiException {
-        okhttp3.Call localVarCall = getConnectionManager3ValidateBeforeCall(serverId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets Dlna media receiver registrar xml. (asynchronously)
-     * 
-     * @param serverId Server UUID. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getConnectionManager3Async(String serverId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getConnectionManager3ValidateBeforeCall(serverId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getContentDirectory
-     * @param serverId Server UUID. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna content directory returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getContentDirectoryCall(String serverId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Dlna/{serverId}/ContentDirectory"
-            .replace("{" + "serverId" + "}", localVarApiClient.escapeString(serverId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "text/xml"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getContentDirectoryValidateBeforeCall(String serverId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'serverId' is set
-        if (serverId == null) {
-            throw new ApiException("Missing the required parameter 'serverId' when calling getContentDirectory(Async)");
-        }
-
-        return getContentDirectoryCall(serverId, _callback);
-
-    }
-
-    /**
-     * Gets Dlna content directory xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna content directory returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getContentDirectory(String serverId) throws ApiException {
-        ApiResponse<File> localVarResp = getContentDirectoryWithHttpInfo(serverId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets Dlna content directory xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna content directory returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getContentDirectoryWithHttpInfo(String serverId) throws ApiException {
-        okhttp3.Call localVarCall = getContentDirectoryValidateBeforeCall(serverId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets Dlna content directory xml. (asynchronously)
-     * 
-     * @param serverId Server UUID. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna content directory returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getContentDirectoryAsync(String serverId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getContentDirectoryValidateBeforeCall(serverId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getContentDirectory2
-     * @param serverId Server UUID. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna content directory returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getContentDirectory2Call(String serverId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Dlna/{serverId}/ContentDirectory/ContentDirectory"
-            .replace("{" + "serverId" + "}", localVarApiClient.escapeString(serverId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "text/xml"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getContentDirectory2ValidateBeforeCall(String serverId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'serverId' is set
-        if (serverId == null) {
-            throw new ApiException("Missing the required parameter 'serverId' when calling getContentDirectory2(Async)");
-        }
-
-        return getContentDirectory2Call(serverId, _callback);
-
-    }
-
-    /**
-     * Gets Dlna content directory xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna content directory returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getContentDirectory2(String serverId) throws ApiException {
-        ApiResponse<File> localVarResp = getContentDirectory2WithHttpInfo(serverId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets Dlna content directory xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna content directory returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getContentDirectory2WithHttpInfo(String serverId) throws ApiException {
-        okhttp3.Call localVarCall = getContentDirectory2ValidateBeforeCall(serverId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets Dlna content directory xml. (asynchronously)
-     * 
-     * @param serverId Server UUID. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna content directory returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getContentDirectory2Async(String serverId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getContentDirectory2ValidateBeforeCall(serverId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getContentDirectory3
-     * @param serverId Server UUID. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna content directory returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getContentDirectory3Call(String serverId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Dlna/{serverId}/ContentDirectory/ContentDirectory.xml"
-            .replace("{" + "serverId" + "}", localVarApiClient.escapeString(serverId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "text/xml"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getContentDirectory3ValidateBeforeCall(String serverId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'serverId' is set
-        if (serverId == null) {
-            throw new ApiException("Missing the required parameter 'serverId' when calling getContentDirectory3(Async)");
-        }
-
-        return getContentDirectory3Call(serverId, _callback);
-
-    }
-
-    /**
-     * Gets Dlna content directory xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna content directory returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getContentDirectory3(String serverId) throws ApiException {
-        ApiResponse<File> localVarResp = getContentDirectory3WithHttpInfo(serverId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets Dlna content directory xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna content directory returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getContentDirectory3WithHttpInfo(String serverId) throws ApiException {
-        okhttp3.Call localVarCall = getContentDirectory3ValidateBeforeCall(serverId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets Dlna content directory xml. (asynchronously)
-     * 
-     * @param serverId Server UUID. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna content directory returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getContentDirectory3Async(String serverId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getContentDirectory3ValidateBeforeCall(serverId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getDescriptionXml
-     * @param serverId Server UUID. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Description xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getDescriptionXmlCall(String serverId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Dlna/{serverId}/description"
-            .replace("{" + "serverId" + "}", localVarApiClient.escapeString(serverId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "text/xml"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getDescriptionXmlValidateBeforeCall(String serverId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'serverId' is set
-        if (serverId == null) {
-            throw new ApiException("Missing the required parameter 'serverId' when calling getDescriptionXml(Async)");
-        }
-
-        return getDescriptionXmlCall(serverId, _callback);
-
-    }
-
-    /**
-     * Get Description Xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Description xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getDescriptionXml(String serverId) throws ApiException {
-        ApiResponse<File> localVarResp = getDescriptionXmlWithHttpInfo(serverId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get Description Xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Description xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getDescriptionXmlWithHttpInfo(String serverId) throws ApiException {
-        okhttp3.Call localVarCall = getDescriptionXmlValidateBeforeCall(serverId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get Description Xml. (asynchronously)
-     * 
-     * @param serverId Server UUID. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Description xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getDescriptionXmlAsync(String serverId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getDescriptionXmlValidateBeforeCall(serverId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getDescriptionXml2
-     * @param serverId Server UUID. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Description xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getDescriptionXml2Call(String serverId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Dlna/{serverId}/description.xml"
-            .replace("{" + "serverId" + "}", localVarApiClient.escapeString(serverId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "text/xml"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getDescriptionXml2ValidateBeforeCall(String serverId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'serverId' is set
-        if (serverId == null) {
-            throw new ApiException("Missing the required parameter 'serverId' when calling getDescriptionXml2(Async)");
-        }
-
-        return getDescriptionXml2Call(serverId, _callback);
-
-    }
-
-    /**
-     * Get Description Xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Description xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getDescriptionXml2(String serverId) throws ApiException {
-        ApiResponse<File> localVarResp = getDescriptionXml2WithHttpInfo(serverId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get Description Xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Description xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getDescriptionXml2WithHttpInfo(String serverId) throws ApiException {
-        okhttp3.Call localVarCall = getDescriptionXml2ValidateBeforeCall(serverId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get Description Xml. (asynchronously)
-     * 
-     * @param serverId Server UUID. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Description xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getDescriptionXml2Async(String serverId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getDescriptionXml2ValidateBeforeCall(serverId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getIcon
-     * @param fileName The icon filename. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getIconCall(String fileName, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Dlna/icons/{fileName}"
-            .replace("{" + "fileName" + "}", localVarApiClient.escapeString(fileName.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getIconValidateBeforeCall(String fileName, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'fileName' is set
-        if (fileName == null) {
-            throw new ApiException("Missing the required parameter 'fileName' when calling getIcon(Async)");
-        }
-
-        return getIconCall(fileName, _callback);
-
-    }
-
-    /**
-     * Gets a server icon.
-     * 
-     * @param fileName The icon filename. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getIcon(String fileName) throws ApiException {
-        ApiResponse<File> localVarResp = getIconWithHttpInfo(fileName);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets a server icon.
-     * 
-     * @param fileName The icon filename. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getIconWithHttpInfo(String fileName) throws ApiException {
-        okhttp3.Call localVarCall = getIconValidateBeforeCall(fileName, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets a server icon. (asynchronously)
-     * 
-     * @param fileName The icon filename. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getIconAsync(String fileName, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getIconValidateBeforeCall(fileName, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getIconId
-     * @param serverId Server UUID. (required)
-     * @param fileName The icon filename. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getIconIdCall(String serverId, String fileName, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Dlna/{serverId}/icons/{fileName}"
-            .replace("{" + "serverId" + "}", localVarApiClient.escapeString(serverId.toString()))
-            .replace("{" + "fileName" + "}", localVarApiClient.escapeString(fileName.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getIconIdValidateBeforeCall(String serverId, String fileName, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'serverId' is set
-        if (serverId == null) {
-            throw new ApiException("Missing the required parameter 'serverId' when calling getIconId(Async)");
-        }
-
-        // verify the required parameter 'fileName' is set
-        if (fileName == null) {
-            throw new ApiException("Missing the required parameter 'fileName' when calling getIconId(Async)");
-        }
-
-        return getIconIdCall(serverId, fileName, _callback);
-
-    }
-
-    /**
-     * Gets a server icon.
-     * 
-     * @param serverId Server UUID. (required)
-     * @param fileName The icon filename. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getIconId(String serverId, String fileName) throws ApiException {
-        ApiResponse<File> localVarResp = getIconIdWithHttpInfo(serverId, fileName);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets a server icon.
-     * 
-     * @param serverId Server UUID. (required)
-     * @param fileName The icon filename. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getIconIdWithHttpInfo(String serverId, String fileName) throws ApiException {
-        okhttp3.Call localVarCall = getIconIdValidateBeforeCall(serverId, fileName, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets a server icon. (asynchronously)
-     * 
-     * @param serverId Server UUID. (required)
-     * @param fileName The icon filename. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getIconIdAsync(String serverId, String fileName, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getIconIdValidateBeforeCall(serverId, fileName, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getMediaReceiverRegistrar
-     * @param serverId Server UUID. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMediaReceiverRegistrarCall(String serverId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Dlna/{serverId}/MediaReceiverRegistrar"
-            .replace("{" + "serverId" + "}", localVarApiClient.escapeString(serverId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "text/xml"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getMediaReceiverRegistrarValidateBeforeCall(String serverId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'serverId' is set
-        if (serverId == null) {
-            throw new ApiException("Missing the required parameter 'serverId' when calling getMediaReceiverRegistrar(Async)");
-        }
-
-        return getMediaReceiverRegistrarCall(serverId, _callback);
-
-    }
-
-    /**
-     * Gets Dlna media receiver registrar xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getMediaReceiverRegistrar(String serverId) throws ApiException {
-        ApiResponse<File> localVarResp = getMediaReceiverRegistrarWithHttpInfo(serverId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets Dlna media receiver registrar xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getMediaReceiverRegistrarWithHttpInfo(String serverId) throws ApiException {
-        okhttp3.Call localVarCall = getMediaReceiverRegistrarValidateBeforeCall(serverId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets Dlna media receiver registrar xml. (asynchronously)
-     * 
-     * @param serverId Server UUID. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMediaReceiverRegistrarAsync(String serverId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getMediaReceiverRegistrarValidateBeforeCall(serverId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getMediaReceiverRegistrar2
-     * @param serverId Server UUID. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMediaReceiverRegistrar2Call(String serverId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Dlna/{serverId}/MediaReceiverRegistrar/MediaReceiverRegistrar"
-            .replace("{" + "serverId" + "}", localVarApiClient.escapeString(serverId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "text/xml"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getMediaReceiverRegistrar2ValidateBeforeCall(String serverId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'serverId' is set
-        if (serverId == null) {
-            throw new ApiException("Missing the required parameter 'serverId' when calling getMediaReceiverRegistrar2(Async)");
-        }
-
-        return getMediaReceiverRegistrar2Call(serverId, _callback);
-
-    }
-
-    /**
-     * Gets Dlna media receiver registrar xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getMediaReceiverRegistrar2(String serverId) throws ApiException {
-        ApiResponse<File> localVarResp = getMediaReceiverRegistrar2WithHttpInfo(serverId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets Dlna media receiver registrar xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getMediaReceiverRegistrar2WithHttpInfo(String serverId) throws ApiException {
-        okhttp3.Call localVarCall = getMediaReceiverRegistrar2ValidateBeforeCall(serverId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets Dlna media receiver registrar xml. (asynchronously)
-     * 
-     * @param serverId Server UUID. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMediaReceiverRegistrar2Async(String serverId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getMediaReceiverRegistrar2ValidateBeforeCall(serverId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getMediaReceiverRegistrar3
-     * @param serverId Server UUID. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMediaReceiverRegistrar3Call(String serverId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Dlna/{serverId}/MediaReceiverRegistrar/MediaReceiverRegistrar.xml"
-            .replace("{" + "serverId" + "}", localVarApiClient.escapeString(serverId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "text/xml"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getMediaReceiverRegistrar3ValidateBeforeCall(String serverId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'serverId' is set
-        if (serverId == null) {
-            throw new ApiException("Missing the required parameter 'serverId' when calling getMediaReceiverRegistrar3(Async)");
-        }
-
-        return getMediaReceiverRegistrar3Call(serverId, _callback);
-
-    }
-
-    /**
-     * Gets Dlna media receiver registrar xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getMediaReceiverRegistrar3(String serverId) throws ApiException {
-        ApiResponse<File> localVarResp = getMediaReceiverRegistrar3WithHttpInfo(serverId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets Dlna media receiver registrar xml.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getMediaReceiverRegistrar3WithHttpInfo(String serverId) throws ApiException {
-        okhttp3.Call localVarCall = getMediaReceiverRegistrar3ValidateBeforeCall(serverId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets Dlna media receiver registrar xml. (asynchronously)
-     * 
-     * @param serverId Server UUID. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Dlna media receiver registrar xml returned. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMediaReceiverRegistrar3Async(String serverId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getMediaReceiverRegistrar3ValidateBeforeCall(serverId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for processConnectionManagerControlRequest
-     * @param serverId Server UUID. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call processConnectionManagerControlRequestCall(String serverId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Dlna/{serverId}/ConnectionManager/Control"
-            .replace("{" + "serverId" + "}", localVarApiClient.escapeString(serverId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "text/xml"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call processConnectionManagerControlRequestValidateBeforeCall(String serverId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'serverId' is set
-        if (serverId == null) {
-            throw new ApiException("Missing the required parameter 'serverId' when calling processConnectionManagerControlRequest(Async)");
-        }
-
-        return processConnectionManagerControlRequestCall(serverId, _callback);
-
-    }
-
-    /**
-     * Process a connection manager control request.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File processConnectionManagerControlRequest(String serverId) throws ApiException {
-        ApiResponse<File> localVarResp = processConnectionManagerControlRequestWithHttpInfo(serverId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Process a connection manager control request.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> processConnectionManagerControlRequestWithHttpInfo(String serverId) throws ApiException {
-        okhttp3.Call localVarCall = processConnectionManagerControlRequestValidateBeforeCall(serverId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Process a connection manager control request. (asynchronously)
-     * 
-     * @param serverId Server UUID. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call processConnectionManagerControlRequestAsync(String serverId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = processConnectionManagerControlRequestValidateBeforeCall(serverId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for processContentDirectoryControlRequest
-     * @param serverId Server UUID. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call processContentDirectoryControlRequestCall(String serverId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Dlna/{serverId}/ContentDirectory/Control"
-            .replace("{" + "serverId" + "}", localVarApiClient.escapeString(serverId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "text/xml"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call processContentDirectoryControlRequestValidateBeforeCall(String serverId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'serverId' is set
-        if (serverId == null) {
-            throw new ApiException("Missing the required parameter 'serverId' when calling processContentDirectoryControlRequest(Async)");
-        }
-
-        return processContentDirectoryControlRequestCall(serverId, _callback);
-
-    }
-
-    /**
-     * Process a content directory control request.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File processContentDirectoryControlRequest(String serverId) throws ApiException {
-        ApiResponse<File> localVarResp = processContentDirectoryControlRequestWithHttpInfo(serverId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Process a content directory control request.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> processContentDirectoryControlRequestWithHttpInfo(String serverId) throws ApiException {
-        okhttp3.Call localVarCall = processContentDirectoryControlRequestValidateBeforeCall(serverId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Process a content directory control request. (asynchronously)
-     * 
-     * @param serverId Server UUID. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call processContentDirectoryControlRequestAsync(String serverId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = processContentDirectoryControlRequestValidateBeforeCall(serverId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for processMediaReceiverRegistrarControlRequest
-     * @param serverId Server UUID. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call processMediaReceiverRegistrarControlRequestCall(String serverId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Dlna/{serverId}/MediaReceiverRegistrar/Control"
-            .replace("{" + "serverId" + "}", localVarApiClient.escapeString(serverId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "text/xml"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call processMediaReceiverRegistrarControlRequestValidateBeforeCall(String serverId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'serverId' is set
-        if (serverId == null) {
-            throw new ApiException("Missing the required parameter 'serverId' when calling processMediaReceiverRegistrarControlRequest(Async)");
-        }
-
-        return processMediaReceiverRegistrarControlRequestCall(serverId, _callback);
-
-    }
-
-    /**
-     * Process a media receiver registrar control request.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File processMediaReceiverRegistrarControlRequest(String serverId) throws ApiException {
-        ApiResponse<File> localVarResp = processMediaReceiverRegistrarControlRequestWithHttpInfo(serverId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Process a media receiver registrar control request.
-     * 
-     * @param serverId Server UUID. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> processMediaReceiverRegistrarControlRequestWithHttpInfo(String serverId) throws ApiException {
-        okhttp3.Call localVarCall = processMediaReceiverRegistrarControlRequestValidateBeforeCall(serverId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Process a media receiver registrar control request. (asynchronously)
-     * 
-     * @param serverId Server UUID. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Request processed. </td><td>  -  </td></tr>
-        <tr><td> 503 </td><td> DLNA is disabled. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call processMediaReceiverRegistrarControlRequestAsync(String serverId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = processMediaReceiverRegistrarControlRequestValidateBeforeCall(serverId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
 }

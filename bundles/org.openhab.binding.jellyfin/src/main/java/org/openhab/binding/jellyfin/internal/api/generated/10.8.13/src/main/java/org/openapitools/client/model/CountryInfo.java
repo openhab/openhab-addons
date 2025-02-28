@@ -13,69 +13,54 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class CountryInfo.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  CountryInfo.JSON_PROPERTY_NAME,
+  CountryInfo.JSON_PROPERTY_DISPLAY_NAME,
+  CountryInfo.JSON_PROPERTY_TWO_LETTER_I_S_O_REGION_NAME,
+  CountryInfo.JSON_PROPERTY_THREE_LETTER_I_S_O_REGION_NAME
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class CountryInfo {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_DISPLAY_NAME = "DisplayName";
-  @SerializedName(SERIALIZED_NAME_DISPLAY_NAME)
-  @javax.annotation.Nullable
-  private String displayName;
+  public static final String JSON_PROPERTY_DISPLAY_NAME = "DisplayName";
+  private JsonNullable<String> displayName = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TWO_LETTER_I_S_O_REGION_NAME = "TwoLetterISORegionName";
-  @SerializedName(SERIALIZED_NAME_TWO_LETTER_I_S_O_REGION_NAME)
-  @javax.annotation.Nullable
-  private String twoLetterISORegionName;
+  public static final String JSON_PROPERTY_TWO_LETTER_I_S_O_REGION_NAME = "TwoLetterISORegionName";
+  private JsonNullable<String> twoLetterISORegionName = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_THREE_LETTER_I_S_O_REGION_NAME = "ThreeLetterISORegionName";
-  @SerializedName(SERIALIZED_NAME_THREE_LETTER_I_S_O_REGION_NAME)
-  @javax.annotation.Nullable
-  private String threeLetterISORegionName;
+  public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_REGION_NAME = "ThreeLetterISORegionName";
+  private JsonNullable<String> threeLetterISORegionName = JsonNullable.<String>undefined();
 
-  public CountryInfo() {
+  public CountryInfo() { 
   }
 
   public CountryInfo name(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
     return this;
   }
 
@@ -84,17 +69,30 @@ public class CountryInfo {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
   }
 
 
   public CountryInfo displayName(@javax.annotation.Nullable String displayName) {
-    this.displayName = displayName;
+    this.displayName = JsonNullable.<String>of(displayName);
     return this;
   }
 
@@ -103,17 +101,30 @@ public class CountryInfo {
    * @return displayName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getDisplayName() {
+        return displayName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getDisplayName_JsonNullable() {
     return displayName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
+  public void setDisplayName_JsonNullable(JsonNullable<String> displayName) {
+    this.displayName = displayName;
   }
 
   public void setDisplayName(@javax.annotation.Nullable String displayName) {
-    this.displayName = displayName;
+    this.displayName = JsonNullable.<String>of(displayName);
   }
 
 
   public CountryInfo twoLetterISORegionName(@javax.annotation.Nullable String twoLetterISORegionName) {
-    this.twoLetterISORegionName = twoLetterISORegionName;
+    this.twoLetterISORegionName = JsonNullable.<String>of(twoLetterISORegionName);
     return this;
   }
 
@@ -122,17 +133,30 @@ public class CountryInfo {
    * @return twoLetterISORegionName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getTwoLetterISORegionName() {
+        return twoLetterISORegionName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TWO_LETTER_I_S_O_REGION_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getTwoLetterISORegionName_JsonNullable() {
     return twoLetterISORegionName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TWO_LETTER_I_S_O_REGION_NAME)
+  public void setTwoLetterISORegionName_JsonNullable(JsonNullable<String> twoLetterISORegionName) {
+    this.twoLetterISORegionName = twoLetterISORegionName;
   }
 
   public void setTwoLetterISORegionName(@javax.annotation.Nullable String twoLetterISORegionName) {
-    this.twoLetterISORegionName = twoLetterISORegionName;
+    this.twoLetterISORegionName = JsonNullable.<String>of(twoLetterISORegionName);
   }
 
 
   public CountryInfo threeLetterISORegionName(@javax.annotation.Nullable String threeLetterISORegionName) {
-    this.threeLetterISORegionName = threeLetterISORegionName;
+    this.threeLetterISORegionName = JsonNullable.<String>of(threeLetterISORegionName);
     return this;
   }
 
@@ -141,16 +165,31 @@ public class CountryInfo {
    * @return threeLetterISORegionName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getThreeLetterISORegionName() {
-    return threeLetterISORegionName;
+        return threeLetterISORegionName.orElse(null);
   }
 
-  public void setThreeLetterISORegionName(@javax.annotation.Nullable String threeLetterISORegionName) {
+  @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_REGION_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getThreeLetterISORegionName_JsonNullable() {
+    return threeLetterISORegionName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_REGION_NAME)
+  public void setThreeLetterISORegionName_JsonNullable(JsonNullable<String> threeLetterISORegionName) {
     this.threeLetterISORegionName = threeLetterISORegionName;
   }
 
+  public void setThreeLetterISORegionName(@javax.annotation.Nullable String threeLetterISORegionName) {
+    this.threeLetterISORegionName = JsonNullable.<String>of(threeLetterISORegionName);
+  }
 
 
+  /**
+   * Return true if this CountryInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -160,10 +199,10 @@ public class CountryInfo {
       return false;
     }
     CountryInfo countryInfo = (CountryInfo) o;
-    return Objects.equals(this.name, countryInfo.name) &&
-        Objects.equals(this.displayName, countryInfo.displayName) &&
-        Objects.equals(this.twoLetterISORegionName, countryInfo.twoLetterISORegionName) &&
-        Objects.equals(this.threeLetterISORegionName, countryInfo.threeLetterISORegionName);
+    return equalsNullable(this.name, countryInfo.name) &&
+        equalsNullable(this.displayName, countryInfo.displayName) &&
+        equalsNullable(this.twoLetterISORegionName, countryInfo.twoLetterISORegionName) &&
+        equalsNullable(this.threeLetterISORegionName, countryInfo.threeLetterISORegionName);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -172,7 +211,7 @@ public class CountryInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, displayName, twoLetterISORegionName, threeLetterISORegionName);
+    return Objects.hash(hashCodeNullable(name), hashCodeNullable(displayName), hashCodeNullable(twoLetterISORegionName), hashCodeNullable(threeLetterISORegionName));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -205,104 +244,59 @@ public class CountryInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("DisplayName");
-    openapiFields.add("TwoLetterISORegionName");
-    openapiFields.add("ThreeLetterISORegionName");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to CountryInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!CountryInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in CountryInfo is not found in the empty JSON string", CountryInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!CountryInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `CountryInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("DisplayName") != null && !jsonObj.get("DisplayName").isJsonNull()) && !jsonObj.get("DisplayName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `DisplayName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("DisplayName").toString()));
-      }
-      if ((jsonObj.get("TwoLetterISORegionName") != null && !jsonObj.get("TwoLetterISORegionName").isJsonNull()) && !jsonObj.get("TwoLetterISORegionName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `TwoLetterISORegionName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("TwoLetterISORegionName").toString()));
-      }
-      if ((jsonObj.get("ThreeLetterISORegionName") != null && !jsonObj.get("ThreeLetterISORegionName").isJsonNull()) && !jsonObj.get("ThreeLetterISORegionName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ThreeLetterISORegionName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ThreeLetterISORegionName").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!CountryInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'CountryInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<CountryInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(CountryInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<CountryInfo>() {
-           @Override
-           public void write(JsonWriter out, CountryInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public CountryInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of CountryInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of CountryInfo
-   * @throws IOException if the JSON string is invalid with respect to CountryInfo
-   */
-  public static CountryInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, CountryInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of CountryInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `DisplayName` to the URL query string
+    if (getDisplayName() != null) {
+      joiner.add(String.format("%sDisplayName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDisplayName()))));
+    }
+
+    // add `TwoLetterISORegionName` to the URL query string
+    if (getTwoLetterISORegionName() != null) {
+      joiner.add(String.format("%sTwoLetterISORegionName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTwoLetterISORegionName()))));
+    }
+
+    // add `ThreeLetterISORegionName` to the URL query string
+    if (getThreeLetterISORegionName() != null) {
+      joiner.add(String.format("%sThreeLetterISORegionName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getThreeLetterISORegionName()))));
+    }
+
+    return joiner.toString();
   }
 }
 

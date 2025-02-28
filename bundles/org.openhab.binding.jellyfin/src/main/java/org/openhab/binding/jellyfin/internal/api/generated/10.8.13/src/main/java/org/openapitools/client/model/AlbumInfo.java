@@ -13,13 +13,17 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,110 +32,85 @@ import java.util.List;
 import java.util.Map;
 import org.openapitools.client.model.SongInfo;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * AlbumInfo
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  AlbumInfo.JSON_PROPERTY_NAME,
+  AlbumInfo.JSON_PROPERTY_ORIGINAL_TITLE,
+  AlbumInfo.JSON_PROPERTY_PATH,
+  AlbumInfo.JSON_PROPERTY_METADATA_LANGUAGE,
+  AlbumInfo.JSON_PROPERTY_METADATA_COUNTRY_CODE,
+  AlbumInfo.JSON_PROPERTY_PROVIDER_IDS,
+  AlbumInfo.JSON_PROPERTY_YEAR,
+  AlbumInfo.JSON_PROPERTY_INDEX_NUMBER,
+  AlbumInfo.JSON_PROPERTY_PARENT_INDEX_NUMBER,
+  AlbumInfo.JSON_PROPERTY_PREMIERE_DATE,
+  AlbumInfo.JSON_PROPERTY_IS_AUTOMATED,
+  AlbumInfo.JSON_PROPERTY_ALBUM_ARTISTS,
+  AlbumInfo.JSON_PROPERTY_ARTIST_PROVIDER_IDS,
+  AlbumInfo.JSON_PROPERTY_SONG_INFOS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class AlbumInfo {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ORIGINAL_TITLE = "OriginalTitle";
-  @SerializedName(SERIALIZED_NAME_ORIGINAL_TITLE)
-  @javax.annotation.Nullable
-  private String originalTitle;
+  public static final String JSON_PROPERTY_ORIGINAL_TITLE = "OriginalTitle";
+  private JsonNullable<String> originalTitle = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PATH = "Path";
-  @SerializedName(SERIALIZED_NAME_PATH)
-  @javax.annotation.Nullable
-  private String path;
+  public static final String JSON_PROPERTY_PATH = "Path";
+  private JsonNullable<String> path = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_METADATA_LANGUAGE = "MetadataLanguage";
-  @SerializedName(SERIALIZED_NAME_METADATA_LANGUAGE)
-  @javax.annotation.Nullable
-  private String metadataLanguage;
+  public static final String JSON_PROPERTY_METADATA_LANGUAGE = "MetadataLanguage";
+  private JsonNullable<String> metadataLanguage = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_METADATA_COUNTRY_CODE = "MetadataCountryCode";
-  @SerializedName(SERIALIZED_NAME_METADATA_COUNTRY_CODE)
-  @javax.annotation.Nullable
-  private String metadataCountryCode;
+  public static final String JSON_PROPERTY_METADATA_COUNTRY_CODE = "MetadataCountryCode";
+  private JsonNullable<String> metadataCountryCode = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PROVIDER_IDS = "ProviderIds";
-  @SerializedName(SERIALIZED_NAME_PROVIDER_IDS)
-  @javax.annotation.Nullable
-  private Map<String, String> providerIds;
+  public static final String JSON_PROPERTY_PROVIDER_IDS = "ProviderIds";
+  private JsonNullable<Map<String, String>> providerIds = JsonNullable.<Map<String, String>>undefined();
 
-  public static final String SERIALIZED_NAME_YEAR = "Year";
-  @SerializedName(SERIALIZED_NAME_YEAR)
-  @javax.annotation.Nullable
-  private Integer year;
+  public static final String JSON_PROPERTY_YEAR = "Year";
+  private JsonNullable<Integer> year = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_INDEX_NUMBER = "IndexNumber";
-  @SerializedName(SERIALIZED_NAME_INDEX_NUMBER)
-  @javax.annotation.Nullable
-  private Integer indexNumber;
+  public static final String JSON_PROPERTY_INDEX_NUMBER = "IndexNumber";
+  private JsonNullable<Integer> indexNumber = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_PARENT_INDEX_NUMBER = "ParentIndexNumber";
-  @SerializedName(SERIALIZED_NAME_PARENT_INDEX_NUMBER)
-  @javax.annotation.Nullable
-  private Integer parentIndexNumber;
+  public static final String JSON_PROPERTY_PARENT_INDEX_NUMBER = "ParentIndexNumber";
+  private JsonNullable<Integer> parentIndexNumber = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_PREMIERE_DATE = "PremiereDate";
-  @SerializedName(SERIALIZED_NAME_PREMIERE_DATE)
-  @javax.annotation.Nullable
-  private OffsetDateTime premiereDate;
+  public static final String JSON_PROPERTY_PREMIERE_DATE = "PremiereDate";
+  private JsonNullable<OffsetDateTime> premiereDate = JsonNullable.<OffsetDateTime>undefined();
 
-  public static final String SERIALIZED_NAME_IS_AUTOMATED = "IsAutomated";
-  @SerializedName(SERIALIZED_NAME_IS_AUTOMATED)
+  public static final String JSON_PROPERTY_IS_AUTOMATED = "IsAutomated";
   @javax.annotation.Nullable
   private Boolean isAutomated;
 
-  public static final String SERIALIZED_NAME_ALBUM_ARTISTS = "AlbumArtists";
-  @SerializedName(SERIALIZED_NAME_ALBUM_ARTISTS)
+  public static final String JSON_PROPERTY_ALBUM_ARTISTS = "AlbumArtists";
   @javax.annotation.Nullable
   private List<String> albumArtists = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_ARTIST_PROVIDER_IDS = "ArtistProviderIds";
-  @SerializedName(SERIALIZED_NAME_ARTIST_PROVIDER_IDS)
+  public static final String JSON_PROPERTY_ARTIST_PROVIDER_IDS = "ArtistProviderIds";
   @javax.annotation.Nullable
   private Map<String, String> artistProviderIds = new HashMap<>();
 
-  public static final String SERIALIZED_NAME_SONG_INFOS = "SongInfos";
-  @SerializedName(SERIALIZED_NAME_SONG_INFOS)
+  public static final String JSON_PROPERTY_SONG_INFOS = "SongInfos";
   @javax.annotation.Nullable
   private List<SongInfo> songInfos = new ArrayList<>();
 
-  public AlbumInfo() {
+  public AlbumInfo() { 
   }
 
   public AlbumInfo name(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
     return this;
   }
 
@@ -140,17 +119,30 @@ public class AlbumInfo {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
   }
 
 
   public AlbumInfo originalTitle(@javax.annotation.Nullable String originalTitle) {
-    this.originalTitle = originalTitle;
+    this.originalTitle = JsonNullable.<String>of(originalTitle);
     return this;
   }
 
@@ -159,17 +151,30 @@ public class AlbumInfo {
    * @return originalTitle
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getOriginalTitle() {
+        return originalTitle.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ORIGINAL_TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getOriginalTitle_JsonNullable() {
     return originalTitle;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ORIGINAL_TITLE)
+  public void setOriginalTitle_JsonNullable(JsonNullable<String> originalTitle) {
+    this.originalTitle = originalTitle;
   }
 
   public void setOriginalTitle(@javax.annotation.Nullable String originalTitle) {
-    this.originalTitle = originalTitle;
+    this.originalTitle = JsonNullable.<String>of(originalTitle);
   }
 
 
   public AlbumInfo path(@javax.annotation.Nullable String path) {
-    this.path = path;
+    this.path = JsonNullable.<String>of(path);
     return this;
   }
 
@@ -178,17 +183,30 @@ public class AlbumInfo {
    * @return path
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPath() {
+        return path.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPath_JsonNullable() {
     return path;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PATH)
+  public void setPath_JsonNullable(JsonNullable<String> path) {
+    this.path = path;
   }
 
   public void setPath(@javax.annotation.Nullable String path) {
-    this.path = path;
+    this.path = JsonNullable.<String>of(path);
   }
 
 
   public AlbumInfo metadataLanguage(@javax.annotation.Nullable String metadataLanguage) {
-    this.metadataLanguage = metadataLanguage;
+    this.metadataLanguage = JsonNullable.<String>of(metadataLanguage);
     return this;
   }
 
@@ -197,17 +215,30 @@ public class AlbumInfo {
    * @return metadataLanguage
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getMetadataLanguage() {
+        return metadataLanguage.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_METADATA_LANGUAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getMetadataLanguage_JsonNullable() {
     return metadataLanguage;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_METADATA_LANGUAGE)
+  public void setMetadataLanguage_JsonNullable(JsonNullable<String> metadataLanguage) {
+    this.metadataLanguage = metadataLanguage;
   }
 
   public void setMetadataLanguage(@javax.annotation.Nullable String metadataLanguage) {
-    this.metadataLanguage = metadataLanguage;
+    this.metadataLanguage = JsonNullable.<String>of(metadataLanguage);
   }
 
 
   public AlbumInfo metadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
-    this.metadataCountryCode = metadataCountryCode;
+    this.metadataCountryCode = JsonNullable.<String>of(metadataCountryCode);
     return this;
   }
 
@@ -216,25 +247,42 @@ public class AlbumInfo {
    * @return metadataCountryCode
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getMetadataCountryCode() {
+        return metadataCountryCode.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getMetadataCountryCode_JsonNullable() {
     return metadataCountryCode;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
+  public void setMetadataCountryCode_JsonNullable(JsonNullable<String> metadataCountryCode) {
+    this.metadataCountryCode = metadataCountryCode;
   }
 
   public void setMetadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
-    this.metadataCountryCode = metadataCountryCode;
+    this.metadataCountryCode = JsonNullable.<String>of(metadataCountryCode);
   }
 
 
   public AlbumInfo providerIds(@javax.annotation.Nullable Map<String, String> providerIds) {
-    this.providerIds = providerIds;
+    this.providerIds = JsonNullable.<Map<String, String>>of(providerIds);
     return this;
   }
 
   public AlbumInfo putProviderIdsItem(String key, String providerIdsItem) {
-    if (this.providerIds == null) {
-      this.providerIds = new HashMap<>();
+    if (this.providerIds == null || !this.providerIds.isPresent()) {
+      this.providerIds = JsonNullable.<Map<String, String>>of(new HashMap<>());
     }
-    this.providerIds.put(key, providerIdsItem);
+    try {
+      this.providerIds.get().put(key, providerIdsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -243,17 +291,30 @@ public class AlbumInfo {
    * @return providerIds
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Map<String, String> getProviderIds() {
+        return providerIds.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Map<String, String>> getProviderIds_JsonNullable() {
     return providerIds;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
+  public void setProviderIds_JsonNullable(JsonNullable<Map<String, String>> providerIds) {
+    this.providerIds = providerIds;
   }
 
   public void setProviderIds(@javax.annotation.Nullable Map<String, String> providerIds) {
-    this.providerIds = providerIds;
+    this.providerIds = JsonNullable.<Map<String, String>>of(providerIds);
   }
 
 
   public AlbumInfo year(@javax.annotation.Nullable Integer year) {
-    this.year = year;
+    this.year = JsonNullable.<Integer>of(year);
     return this;
   }
 
@@ -262,17 +323,30 @@ public class AlbumInfo {
    * @return year
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getYear() {
+        return year.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_YEAR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getYear_JsonNullable() {
     return year;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_YEAR)
+  public void setYear_JsonNullable(JsonNullable<Integer> year) {
+    this.year = year;
   }
 
   public void setYear(@javax.annotation.Nullable Integer year) {
-    this.year = year;
+    this.year = JsonNullable.<Integer>of(year);
   }
 
 
   public AlbumInfo indexNumber(@javax.annotation.Nullable Integer indexNumber) {
-    this.indexNumber = indexNumber;
+    this.indexNumber = JsonNullable.<Integer>of(indexNumber);
     return this;
   }
 
@@ -281,17 +355,30 @@ public class AlbumInfo {
    * @return indexNumber
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getIndexNumber() {
+        return indexNumber.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getIndexNumber_JsonNullable() {
     return indexNumber;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
+  public void setIndexNumber_JsonNullable(JsonNullable<Integer> indexNumber) {
+    this.indexNumber = indexNumber;
   }
 
   public void setIndexNumber(@javax.annotation.Nullable Integer indexNumber) {
-    this.indexNumber = indexNumber;
+    this.indexNumber = JsonNullable.<Integer>of(indexNumber);
   }
 
 
   public AlbumInfo parentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
-    this.parentIndexNumber = parentIndexNumber;
+    this.parentIndexNumber = JsonNullable.<Integer>of(parentIndexNumber);
     return this;
   }
 
@@ -300,17 +387,30 @@ public class AlbumInfo {
    * @return parentIndexNumber
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getParentIndexNumber() {
+        return parentIndexNumber.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getParentIndexNumber_JsonNullable() {
     return parentIndexNumber;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
+  public void setParentIndexNumber_JsonNullable(JsonNullable<Integer> parentIndexNumber) {
+    this.parentIndexNumber = parentIndexNumber;
   }
 
   public void setParentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
-    this.parentIndexNumber = parentIndexNumber;
+    this.parentIndexNumber = JsonNullable.<Integer>of(parentIndexNumber);
   }
 
 
   public AlbumInfo premiereDate(@javax.annotation.Nullable OffsetDateTime premiereDate) {
-    this.premiereDate = premiereDate;
+    this.premiereDate = JsonNullable.<OffsetDateTime>of(premiereDate);
     return this;
   }
 
@@ -319,12 +419,25 @@ public class AlbumInfo {
    * @return premiereDate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public OffsetDateTime getPremiereDate() {
+        return premiereDate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<OffsetDateTime> getPremiereDate_JsonNullable() {
     return premiereDate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
+  public void setPremiereDate_JsonNullable(JsonNullable<OffsetDateTime> premiereDate) {
+    this.premiereDate = premiereDate;
   }
 
   public void setPremiereDate(@javax.annotation.Nullable OffsetDateTime premiereDate) {
-    this.premiereDate = premiereDate;
+    this.premiereDate = JsonNullable.<OffsetDateTime>of(premiereDate);
   }
 
 
@@ -338,10 +451,15 @@ public class AlbumInfo {
    * @return isAutomated
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_AUTOMATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsAutomated() {
     return isAutomated;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_AUTOMATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsAutomated(@javax.annotation.Nullable Boolean isAutomated) {
     this.isAutomated = isAutomated;
   }
@@ -365,10 +483,15 @@ public class AlbumInfo {
    * @return albumArtists
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ALBUM_ARTISTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getAlbumArtists() {
     return albumArtists;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ALBUM_ARTISTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAlbumArtists(@javax.annotation.Nullable List<String> albumArtists) {
     this.albumArtists = albumArtists;
   }
@@ -392,10 +515,15 @@ public class AlbumInfo {
    * @return artistProviderIds
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ARTIST_PROVIDER_IDS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getArtistProviderIds() {
     return artistProviderIds;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ARTIST_PROVIDER_IDS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public void setArtistProviderIds(@javax.annotation.Nullable Map<String, String> artistProviderIds) {
     this.artistProviderIds = artistProviderIds;
   }
@@ -419,16 +547,23 @@ public class AlbumInfo {
    * @return songInfos
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SONG_INFOS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<SongInfo> getSongInfos() {
     return songInfos;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SONG_INFOS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSongInfos(@javax.annotation.Nullable List<SongInfo> songInfos) {
     this.songInfos = songInfos;
   }
 
 
-
+  /**
+   * Return true if this AlbumInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -438,16 +573,16 @@ public class AlbumInfo {
       return false;
     }
     AlbumInfo albumInfo = (AlbumInfo) o;
-    return Objects.equals(this.name, albumInfo.name) &&
-        Objects.equals(this.originalTitle, albumInfo.originalTitle) &&
-        Objects.equals(this.path, albumInfo.path) &&
-        Objects.equals(this.metadataLanguage, albumInfo.metadataLanguage) &&
-        Objects.equals(this.metadataCountryCode, albumInfo.metadataCountryCode) &&
-        Objects.equals(this.providerIds, albumInfo.providerIds) &&
-        Objects.equals(this.year, albumInfo.year) &&
-        Objects.equals(this.indexNumber, albumInfo.indexNumber) &&
-        Objects.equals(this.parentIndexNumber, albumInfo.parentIndexNumber) &&
-        Objects.equals(this.premiereDate, albumInfo.premiereDate) &&
+    return equalsNullable(this.name, albumInfo.name) &&
+        equalsNullable(this.originalTitle, albumInfo.originalTitle) &&
+        equalsNullable(this.path, albumInfo.path) &&
+        equalsNullable(this.metadataLanguage, albumInfo.metadataLanguage) &&
+        equalsNullable(this.metadataCountryCode, albumInfo.metadataCountryCode) &&
+        equalsNullable(this.providerIds, albumInfo.providerIds) &&
+        equalsNullable(this.year, albumInfo.year) &&
+        equalsNullable(this.indexNumber, albumInfo.indexNumber) &&
+        equalsNullable(this.parentIndexNumber, albumInfo.parentIndexNumber) &&
+        equalsNullable(this.premiereDate, albumInfo.premiereDate) &&
         Objects.equals(this.isAutomated, albumInfo.isAutomated) &&
         Objects.equals(this.albumArtists, albumInfo.albumArtists) &&
         Objects.equals(this.artistProviderIds, albumInfo.artistProviderIds) &&
@@ -460,7 +595,7 @@ public class AlbumInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, originalTitle, path, metadataLanguage, metadataCountryCode, providerIds, year, indexNumber, parentIndexNumber, premiereDate, isAutomated, albumArtists, artistProviderIds, songInfos);
+    return Objects.hash(hashCodeNullable(name), hashCodeNullable(originalTitle), hashCodeNullable(path), hashCodeNullable(metadataLanguage), hashCodeNullable(metadataCountryCode), hashCodeNullable(providerIds), hashCodeNullable(year), hashCodeNullable(indexNumber), hashCodeNullable(parentIndexNumber), hashCodeNullable(premiereDate), isAutomated, albumArtists, artistProviderIds, songInfos);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -503,135 +638,126 @@ public class AlbumInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("OriginalTitle");
-    openapiFields.add("Path");
-    openapiFields.add("MetadataLanguage");
-    openapiFields.add("MetadataCountryCode");
-    openapiFields.add("ProviderIds");
-    openapiFields.add("Year");
-    openapiFields.add("IndexNumber");
-    openapiFields.add("ParentIndexNumber");
-    openapiFields.add("PremiereDate");
-    openapiFields.add("IsAutomated");
-    openapiFields.add("AlbumArtists");
-    openapiFields.add("ArtistProviderIds");
-    openapiFields.add("SongInfos");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to AlbumInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!AlbumInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in AlbumInfo is not found in the empty JSON string", AlbumInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!AlbumInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `AlbumInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("OriginalTitle") != null && !jsonObj.get("OriginalTitle").isJsonNull()) && !jsonObj.get("OriginalTitle").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `OriginalTitle` to be a primitive type in the JSON string but got `%s`", jsonObj.get("OriginalTitle").toString()));
-      }
-      if ((jsonObj.get("Path") != null && !jsonObj.get("Path").isJsonNull()) && !jsonObj.get("Path").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Path` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Path").toString()));
-      }
-      if ((jsonObj.get("MetadataLanguage") != null && !jsonObj.get("MetadataLanguage").isJsonNull()) && !jsonObj.get("MetadataLanguage").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MetadataLanguage` to be a primitive type in the JSON string but got `%s`", jsonObj.get("MetadataLanguage").toString()));
-      }
-      if ((jsonObj.get("MetadataCountryCode") != null && !jsonObj.get("MetadataCountryCode").isJsonNull()) && !jsonObj.get("MetadataCountryCode").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MetadataCountryCode` to be a primitive type in the JSON string but got `%s`", jsonObj.get("MetadataCountryCode").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("AlbumArtists") != null && !jsonObj.get("AlbumArtists").isJsonNull() && !jsonObj.get("AlbumArtists").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `AlbumArtists` to be an array in the JSON string but got `%s`", jsonObj.get("AlbumArtists").toString()));
-      }
-      if (jsonObj.get("SongInfos") != null && !jsonObj.get("SongInfos").isJsonNull()) {
-        JsonArray jsonArraysongInfos = jsonObj.getAsJsonArray("SongInfos");
-        if (jsonArraysongInfos != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("SongInfos").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `SongInfos` to be an array in the JSON string but got `%s`", jsonObj.get("SongInfos").toString()));
-          }
-
-          // validate the optional field `SongInfos` (array)
-          for (int i = 0; i < jsonArraysongInfos.size(); i++) {
-            SongInfo.validateJsonElement(jsonArraysongInfos.get(i));
-          };
-        }
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!AlbumInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'AlbumInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<AlbumInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(AlbumInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<AlbumInfo>() {
-           @Override
-           public void write(JsonWriter out, AlbumInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public AlbumInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of AlbumInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of AlbumInfo
-   * @throws IOException if the JSON string is invalid with respect to AlbumInfo
-   */
-  public static AlbumInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, AlbumInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of AlbumInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `OriginalTitle` to the URL query string
+    if (getOriginalTitle() != null) {
+      joiner.add(String.format("%sOriginalTitle%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOriginalTitle()))));
+    }
+
+    // add `Path` to the URL query string
+    if (getPath() != null) {
+      joiner.add(String.format("%sPath%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
+    }
+
+    // add `MetadataLanguage` to the URL query string
+    if (getMetadataLanguage() != null) {
+      joiner.add(String.format("%sMetadataLanguage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMetadataLanguage()))));
+    }
+
+    // add `MetadataCountryCode` to the URL query string
+    if (getMetadataCountryCode() != null) {
+      joiner.add(String.format("%sMetadataCountryCode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMetadataCountryCode()))));
+    }
+
+    // add `ProviderIds` to the URL query string
+    if (getProviderIds() != null) {
+      for (String _key : getProviderIds().keySet()) {
+        joiner.add(String.format("%sProviderIds%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+            getProviderIds().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getProviderIds().get(_key)))));
+      }
+    }
+
+    // add `Year` to the URL query string
+    if (getYear() != null) {
+      joiner.add(String.format("%sYear%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getYear()))));
+    }
+
+    // add `IndexNumber` to the URL query string
+    if (getIndexNumber() != null) {
+      joiner.add(String.format("%sIndexNumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIndexNumber()))));
+    }
+
+    // add `ParentIndexNumber` to the URL query string
+    if (getParentIndexNumber() != null) {
+      joiner.add(String.format("%sParentIndexNumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getParentIndexNumber()))));
+    }
+
+    // add `PremiereDate` to the URL query string
+    if (getPremiereDate() != null) {
+      joiner.add(String.format("%sPremiereDate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPremiereDate()))));
+    }
+
+    // add `IsAutomated` to the URL query string
+    if (getIsAutomated() != null) {
+      joiner.add(String.format("%sIsAutomated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsAutomated()))));
+    }
+
+    // add `AlbumArtists` to the URL query string
+    if (getAlbumArtists() != null) {
+      for (int i = 0; i < getAlbumArtists().size(); i++) {
+        joiner.add(String.format("%sAlbumArtists%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getAlbumArtists().get(i)))));
+      }
+    }
+
+    // add `ArtistProviderIds` to the URL query string
+    if (getArtistProviderIds() != null) {
+      for (String _key : getArtistProviderIds().keySet()) {
+        joiner.add(String.format("%sArtistProviderIds%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+            getArtistProviderIds().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getArtistProviderIds().get(_key)))));
+      }
+    }
+
+    // add `SongInfos` to the URL query string
+    if (getSongInfos() != null) {
+      for (int i = 0; i < getSongInfos().size(); i++) {
+        if (getSongInfos().get(i) != null) {
+          joiner.add(getSongInfos().get(i).toUrlQueryString(String.format("%sSongInfos%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

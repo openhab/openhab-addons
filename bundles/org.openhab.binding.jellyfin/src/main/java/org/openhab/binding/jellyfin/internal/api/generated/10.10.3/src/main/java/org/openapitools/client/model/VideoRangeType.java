@@ -13,20 +13,21 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.annotations.SerializedName;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import java.io.IOException;
-import com.google.gson.TypeAdapter;
-import com.google.gson.JsonElement;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * An enum representing types of video ranges.
  */
-@JsonAdapter(VideoRangeType.Adapter.class)
 public enum VideoRangeType {
   
   UNKNOWN("Unknown"),
@@ -53,6 +54,7 @@ public enum VideoRangeType {
     this.value = value;
   }
 
+  @JsonValue
   public String getValue() {
     return value;
   }
@@ -62,6 +64,7 @@ public enum VideoRangeType {
     return String.valueOf(value);
   }
 
+  @JsonCreator
   public static VideoRangeType fromValue(String value) {
     for (VideoRangeType b : VideoRangeType.values()) {
       if (b.value.equals(value)) {
@@ -71,22 +74,19 @@ public enum VideoRangeType {
     throw new IllegalArgumentException("Unexpected value '" + value + "'");
   }
 
-  public static class Adapter extends TypeAdapter<VideoRangeType> {
-    @Override
-    public void write(final JsonWriter jsonWriter, final VideoRangeType enumeration) throws IOException {
-      jsonWriter.value(enumeration.getValue());
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @param prefix prefix of the query string
+   * @return URL query string
+   */
+  public String toUrlQueryString(String prefix) {
+    if (prefix == null) {
+      prefix = "";
     }
 
-    @Override
-    public VideoRangeType read(final JsonReader jsonReader) throws IOException {
-      String value = jsonReader.nextString();
-      return VideoRangeType.fromValue(value);
-    }
+    return String.format("%s=%s", prefix, this.toString());
   }
 
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-    String value = jsonElement.getAsString();
-    VideoRangeType.fromValue(value);
-  }
 }
 

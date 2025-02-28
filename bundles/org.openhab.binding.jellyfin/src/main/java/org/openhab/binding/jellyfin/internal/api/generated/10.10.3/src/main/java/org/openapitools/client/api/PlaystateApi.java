@@ -10,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import java.time.OffsetDateTime;
 import org.openapitools.client.model.PlayMethod;
@@ -37,1441 +28,952 @@ import org.openapitools.client.model.RepeatMode;
 import java.util.UUID;
 import org.openapitools.client.model.UserItemDataDto;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PlaystateApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public PlaystateApi() {
-        this(Configuration.getDefaultApiClient());
+  public PlaystateApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public PlaystateApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Marks an item as played for user.
+   * 
+   * @param itemId Item id. (required)
+   * @param userId User id. (optional)
+   * @param datePlayed Optional. The date the item was played. (optional)
+   * @return UserItemDataDto
+   * @throws ApiException if fails to make API call
+   */
+  public UserItemDataDto markPlayedItem(UUID itemId, UUID userId, OffsetDateTime datePlayed) throws ApiException {
+    ApiResponse<UserItemDataDto> localVarResponse = markPlayedItemWithHttpInfo(itemId, userId, datePlayed);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Marks an item as played for user.
+   * 
+   * @param itemId Item id. (required)
+   * @param userId User id. (optional)
+   * @param datePlayed Optional. The date the item was played. (optional)
+   * @return ApiResponse&lt;UserItemDataDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<UserItemDataDto> markPlayedItemWithHttpInfo(UUID itemId, UUID userId, OffsetDateTime datePlayed) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = markPlayedItemRequestBuilder(itemId, userId, datePlayed);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("markPlayedItem", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<UserItemDataDto>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<UserItemDataDto>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder markPlayedItemRequestBuilder(UUID itemId, UUID userId, OffsetDateTime datePlayed) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling markPlayedItem");
     }
 
-    public PlaystateApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/UserPlayedItems/{itemId}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "datePlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("datePlayed", datePlayed));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Marks an item as unplayed for user.
+   * 
+   * @param itemId Item id. (required)
+   * @param userId User id. (optional)
+   * @return UserItemDataDto
+   * @throws ApiException if fails to make API call
+   */
+  public UserItemDataDto markUnplayedItem(UUID itemId, UUID userId) throws ApiException {
+    ApiResponse<UserItemDataDto> localVarResponse = markUnplayedItemWithHttpInfo(itemId, userId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Marks an item as unplayed for user.
+   * 
+   * @param itemId Item id. (required)
+   * @param userId User id. (optional)
+   * @return ApiResponse&lt;UserItemDataDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<UserItemDataDto> markUnplayedItemWithHttpInfo(UUID itemId, UUID userId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = markUnplayedItemRequestBuilder(itemId, userId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("markUnplayedItem", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<UserItemDataDto>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<UserItemDataDto>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder markUnplayedItemRequestBuilder(UUID itemId, UUID userId) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling markUnplayedItem");
     }
 
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/UserPlayedItems/{itemId}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public int getHostIndex() {
-        return localHostIndex;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Reports a session&#39;s playback progress.
+   * 
+   * @param itemId Item id. (required)
+   * @param mediaSourceId The id of the MediaSource. (optional)
+   * @param positionTicks Optional. The current position, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+   * @param audioStreamIndex The audio stream index. (optional)
+   * @param subtitleStreamIndex The subtitle stream index. (optional)
+   * @param volumeLevel Scale of 0-100. (optional)
+   * @param playMethod The play method. (optional)
+   * @param liveStreamId The live stream id. (optional)
+   * @param playSessionId The play session id. (optional)
+   * @param repeatMode The repeat mode. (optional)
+   * @param isPaused Indicates if the player is paused. (optional, default to false)
+   * @param isMuted Indicates if the player is muted. (optional, default to false)
+   * @throws ApiException if fails to make API call
+   */
+  public void onPlaybackProgress(UUID itemId, String mediaSourceId, Long positionTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer volumeLevel, PlayMethod playMethod, String liveStreamId, String playSessionId, RepeatMode repeatMode, Boolean isPaused, Boolean isMuted) throws ApiException {
+    onPlaybackProgressWithHttpInfo(itemId, mediaSourceId, positionTicks, audioStreamIndex, subtitleStreamIndex, volumeLevel, playMethod, liveStreamId, playSessionId, repeatMode, isPaused, isMuted);
+  }
+
+  /**
+   * Reports a session&#39;s playback progress.
+   * 
+   * @param itemId Item id. (required)
+   * @param mediaSourceId The id of the MediaSource. (optional)
+   * @param positionTicks Optional. The current position, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+   * @param audioStreamIndex The audio stream index. (optional)
+   * @param subtitleStreamIndex The subtitle stream index. (optional)
+   * @param volumeLevel Scale of 0-100. (optional)
+   * @param playMethod The play method. (optional)
+   * @param liveStreamId The live stream id. (optional)
+   * @param playSessionId The play session id. (optional)
+   * @param repeatMode The repeat mode. (optional)
+   * @param isPaused Indicates if the player is paused. (optional, default to false)
+   * @param isMuted Indicates if the player is muted. (optional, default to false)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> onPlaybackProgressWithHttpInfo(UUID itemId, String mediaSourceId, Long positionTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer volumeLevel, PlayMethod playMethod, String liveStreamId, String playSessionId, RepeatMode repeatMode, Boolean isPaused, Boolean isMuted) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = onPlaybackProgressRequestBuilder(itemId, mediaSourceId, positionTicks, audioStreamIndex, subtitleStreamIndex, volumeLevel, playMethod, liveStreamId, playSessionId, repeatMode, isPaused, isMuted);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("onPlaybackProgress", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder onPlaybackProgressRequestBuilder(UUID itemId, String mediaSourceId, Long positionTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer volumeLevel, PlayMethod playMethod, String liveStreamId, String playSessionId, RepeatMode repeatMode, Boolean isPaused, Boolean isMuted) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling onPlaybackProgress");
     }
 
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/PlayingItems/{itemId}/Progress"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "mediaSourceId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("mediaSourceId", mediaSourceId));
+    localVarQueryParameterBaseName = "positionTicks";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("positionTicks", positionTicks));
+    localVarQueryParameterBaseName = "audioStreamIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("audioStreamIndex", audioStreamIndex));
+    localVarQueryParameterBaseName = "subtitleStreamIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("subtitleStreamIndex", subtitleStreamIndex));
+    localVarQueryParameterBaseName = "volumeLevel";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("volumeLevel", volumeLevel));
+    localVarQueryParameterBaseName = "playMethod";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("playMethod", playMethod));
+    localVarQueryParameterBaseName = "liveStreamId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("liveStreamId", liveStreamId));
+    localVarQueryParameterBaseName = "playSessionId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("playSessionId", playSessionId));
+    localVarQueryParameterBaseName = "repeatMode";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("repeatMode", repeatMode));
+    localVarQueryParameterBaseName = "isPaused";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isPaused", isPaused));
+    localVarQueryParameterBaseName = "isMuted";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isMuted", isMuted));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Reports that a session has begun playing an item.
+   * 
+   * @param itemId Item id. (required)
+   * @param mediaSourceId The id of the MediaSource. (optional)
+   * @param audioStreamIndex The audio stream index. (optional)
+   * @param subtitleStreamIndex The subtitle stream index. (optional)
+   * @param playMethod The play method. (optional)
+   * @param liveStreamId The live stream id. (optional)
+   * @param playSessionId The play session id. (optional)
+   * @param canSeek Indicates if the client can seek. (optional, default to false)
+   * @throws ApiException if fails to make API call
+   */
+  public void onPlaybackStart(UUID itemId, String mediaSourceId, Integer audioStreamIndex, Integer subtitleStreamIndex, PlayMethod playMethod, String liveStreamId, String playSessionId, Boolean canSeek) throws ApiException {
+    onPlaybackStartWithHttpInfo(itemId, mediaSourceId, audioStreamIndex, subtitleStreamIndex, playMethod, liveStreamId, playSessionId, canSeek);
+  }
+
+  /**
+   * Reports that a session has begun playing an item.
+   * 
+   * @param itemId Item id. (required)
+   * @param mediaSourceId The id of the MediaSource. (optional)
+   * @param audioStreamIndex The audio stream index. (optional)
+   * @param subtitleStreamIndex The subtitle stream index. (optional)
+   * @param playMethod The play method. (optional)
+   * @param liveStreamId The live stream id. (optional)
+   * @param playSessionId The play session id. (optional)
+   * @param canSeek Indicates if the client can seek. (optional, default to false)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> onPlaybackStartWithHttpInfo(UUID itemId, String mediaSourceId, Integer audioStreamIndex, Integer subtitleStreamIndex, PlayMethod playMethod, String liveStreamId, String playSessionId, Boolean canSeek) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = onPlaybackStartRequestBuilder(itemId, mediaSourceId, audioStreamIndex, subtitleStreamIndex, playMethod, liveStreamId, playSessionId, canSeek);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("onPlaybackStart", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder onPlaybackStartRequestBuilder(UUID itemId, String mediaSourceId, Integer audioStreamIndex, Integer subtitleStreamIndex, PlayMethod playMethod, String liveStreamId, String playSessionId, Boolean canSeek) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling onPlaybackStart");
     }
 
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/PlayingItems/{itemId}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "mediaSourceId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("mediaSourceId", mediaSourceId));
+    localVarQueryParameterBaseName = "audioStreamIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("audioStreamIndex", audioStreamIndex));
+    localVarQueryParameterBaseName = "subtitleStreamIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("subtitleStreamIndex", subtitleStreamIndex));
+    localVarQueryParameterBaseName = "playMethod";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("playMethod", playMethod));
+    localVarQueryParameterBaseName = "liveStreamId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("liveStreamId", liveStreamId));
+    localVarQueryParameterBaseName = "playSessionId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("playSessionId", playSessionId));
+    localVarQueryParameterBaseName = "canSeek";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("canSeek", canSeek));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Build call for markPlayedItem
-     * @param itemId Item id. (required)
-     * @param userId User id. (optional)
-     * @param datePlayed Optional. The date the item was played. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item marked as played. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call markPlayedItemCall(UUID itemId, UUID userId, OffsetDateTime datePlayed, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
+    localVarRequestBuilder.header("Accept", "application/json");
 
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Reports that a session has stopped playing an item.
+   * 
+   * @param itemId Item id. (required)
+   * @param mediaSourceId The id of the MediaSource. (optional)
+   * @param nextMediaType The next media type that will play. (optional)
+   * @param positionTicks Optional. The position, in ticks, where playback stopped. 1 tick &#x3D; 10000 ms. (optional)
+   * @param liveStreamId The live stream id. (optional)
+   * @param playSessionId The play session id. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void onPlaybackStopped(UUID itemId, String mediaSourceId, String nextMediaType, Long positionTicks, String liveStreamId, String playSessionId) throws ApiException {
+    onPlaybackStoppedWithHttpInfo(itemId, mediaSourceId, nextMediaType, positionTicks, liveStreamId, playSessionId);
+  }
+
+  /**
+   * Reports that a session has stopped playing an item.
+   * 
+   * @param itemId Item id. (required)
+   * @param mediaSourceId The id of the MediaSource. (optional)
+   * @param nextMediaType The next media type that will play. (optional)
+   * @param positionTicks Optional. The position, in ticks, where playback stopped. 1 tick &#x3D; 10000 ms. (optional)
+   * @param liveStreamId The live stream id. (optional)
+   * @param playSessionId The play session id. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> onPlaybackStoppedWithHttpInfo(UUID itemId, String mediaSourceId, String nextMediaType, Long positionTicks, String liveStreamId, String playSessionId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = onPlaybackStoppedRequestBuilder(itemId, mediaSourceId, nextMediaType, positionTicks, liveStreamId, playSessionId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("onPlaybackStopped", localVarResponse);
         }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/UserPlayedItems/{itemId}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
         }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        if (datePlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("datePlayed", datePlayed));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+  private HttpRequest.Builder onPlaybackStoppedRequestBuilder(UUID itemId, String mediaSourceId, String nextMediaType, Long positionTicks, String liveStreamId, String playSessionId) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling onPlaybackStopped");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call markPlayedItemValidateBeforeCall(UUID itemId, UUID userId, OffsetDateTime datePlayed, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling markPlayedItem(Async)");
-        }
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
-        return markPlayedItemCall(itemId, userId, datePlayed, _callback);
+    String localVarPath = "/PlayingItems/{itemId}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
 
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "mediaSourceId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("mediaSourceId", mediaSourceId));
+    localVarQueryParameterBaseName = "nextMediaType";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("nextMediaType", nextMediaType));
+    localVarQueryParameterBaseName = "positionTicks";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("positionTicks", positionTicks));
+    localVarQueryParameterBaseName = "liveStreamId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("liveStreamId", liveStreamId));
+    localVarQueryParameterBaseName = "playSessionId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("playSessionId", playSessionId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Marks an item as played for user.
-     * 
-     * @param itemId Item id. (required)
-     * @param userId User id. (optional)
-     * @param datePlayed Optional. The date the item was played. (optional)
-     * @return UserItemDataDto
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item marked as played. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public UserItemDataDto markPlayedItem(UUID itemId, UUID userId, OffsetDateTime datePlayed) throws ApiException {
-        ApiResponse<UserItemDataDto> localVarResp = markPlayedItemWithHttpInfo(itemId, userId, datePlayed);
-        return localVarResp.getData();
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Pings a playback session.
+   * 
+   * @param playSessionId Playback session id. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void pingPlaybackSession(String playSessionId) throws ApiException {
+    pingPlaybackSessionWithHttpInfo(playSessionId);
+  }
+
+  /**
+   * Pings a playback session.
+   * 
+   * @param playSessionId Playback session id. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> pingPlaybackSessionWithHttpInfo(String playSessionId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = pingPlaybackSessionRequestBuilder(playSessionId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("pingPlaybackSession", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder pingPlaybackSessionRequestBuilder(String playSessionId) throws ApiException {
+    // verify the required parameter 'playSessionId' is set
+    if (playSessionId == null) {
+      throw new ApiException(400, "Missing the required parameter 'playSessionId' when calling pingPlaybackSession");
     }
 
-    /**
-     * Marks an item as played for user.
-     * 
-     * @param itemId Item id. (required)
-     * @param userId User id. (optional)
-     * @param datePlayed Optional. The date the item was played. (optional)
-     * @return ApiResponse&lt;UserItemDataDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item marked as played. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<UserItemDataDto> markPlayedItemWithHttpInfo(UUID itemId, UUID userId, OffsetDateTime datePlayed) throws ApiException {
-        okhttp3.Call localVarCall = markPlayedItemValidateBeforeCall(itemId, userId, datePlayed, null);
-        Type localVarReturnType = new TypeToken<UserItemDataDto>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Sessions/Playing/Ping";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "playSessionId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("playSessionId", playSessionId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Marks an item as played for user. (asynchronously)
-     * 
-     * @param itemId Item id. (required)
-     * @param userId User id. (optional)
-     * @param datePlayed Optional. The date the item was played. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item marked as played. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call markPlayedItemAsync(UUID itemId, UUID userId, OffsetDateTime datePlayed, final ApiCallback<UserItemDataDto> _callback) throws ApiException {
+    localVarRequestBuilder.header("Accept", "application/json");
 
-        okhttp3.Call localVarCall = markPlayedItemValidateBeforeCall(itemId, userId, datePlayed, _callback);
-        Type localVarReturnType = new TypeToken<UserItemDataDto>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-    /**
-     * Build call for markUnplayedItem
-     * @param itemId Item id. (required)
-     * @param userId User id. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item marked as unplayed. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call markUnplayedItemCall(UUID itemId, UUID userId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/UserPlayedItems/{itemId}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call markUnplayedItemValidateBeforeCall(UUID itemId, UUID userId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling markUnplayedItem(Async)");
+  /**
+   * Reports playback progress within a session.
+   * 
+   * @param playbackProgressInfo The playback progress info. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void reportPlaybackProgress(PlaybackProgressInfo playbackProgressInfo) throws ApiException {
+    reportPlaybackProgressWithHttpInfo(playbackProgressInfo);
+  }
+
+  /**
+   * Reports playback progress within a session.
+   * 
+   * @param playbackProgressInfo The playback progress info. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> reportPlaybackProgressWithHttpInfo(PlaybackProgressInfo playbackProgressInfo) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = reportPlaybackProgressRequestBuilder(playbackProgressInfo);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("reportPlaybackProgress", localVarResponse);
         }
-
-        return markUnplayedItemCall(itemId, userId, _callback);
-
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
     }
-
-    /**
-     * Marks an item as unplayed for user.
-     * 
-     * @param itemId Item id. (required)
-     * @param userId User id. (optional)
-     * @return UserItemDataDto
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item marked as unplayed. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public UserItemDataDto markUnplayedItem(UUID itemId, UUID userId) throws ApiException {
-        ApiResponse<UserItemDataDto> localVarResp = markUnplayedItemWithHttpInfo(itemId, userId);
-        return localVarResp.getData();
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
     }
+  }
 
-    /**
-     * Marks an item as unplayed for user.
-     * 
-     * @param itemId Item id. (required)
-     * @param userId User id. (optional)
-     * @return ApiResponse&lt;UserItemDataDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item marked as unplayed. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<UserItemDataDto> markUnplayedItemWithHttpInfo(UUID itemId, UUID userId) throws ApiException {
-        okhttp3.Call localVarCall = markUnplayedItemValidateBeforeCall(itemId, userId, null);
-        Type localVarReturnType = new TypeToken<UserItemDataDto>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
+  private HttpRequest.Builder reportPlaybackProgressRequestBuilder(PlaybackProgressInfo playbackProgressInfo) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Sessions/Playing/Progress";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(playbackProgressInfo);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
     }
-
-    /**
-     * Marks an item as unplayed for user. (asynchronously)
-     * 
-     * @param itemId Item id. (required)
-     * @param userId User id. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item marked as unplayed. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call markUnplayedItemAsync(UUID itemId, UUID userId, final ApiCallback<UserItemDataDto> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = markUnplayedItemValidateBeforeCall(itemId, userId, _callback);
-        Type localVarReturnType = new TypeToken<UserItemDataDto>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-    /**
-     * Build call for onPlaybackProgress
-     * @param itemId Item id. (required)
-     * @param mediaSourceId The id of the MediaSource. (optional)
-     * @param positionTicks Optional. The current position, in ticks. 1 tick &#x3D; 10000 ms. (optional)
-     * @param audioStreamIndex The audio stream index. (optional)
-     * @param subtitleStreamIndex The subtitle stream index. (optional)
-     * @param volumeLevel Scale of 0-100. (optional)
-     * @param playMethod The play method. (optional)
-     * @param liveStreamId The live stream id. (optional)
-     * @param playSessionId The play session id. (optional)
-     * @param repeatMode The repeat mode. (optional)
-     * @param isPaused Indicates if the player is paused. (optional, default to false)
-     * @param isMuted Indicates if the player is muted. (optional, default to false)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Play progress recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call onPlaybackProgressCall(UUID itemId, String mediaSourceId, Long positionTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer volumeLevel, PlayMethod playMethod, String liveStreamId, String playSessionId, RepeatMode repeatMode, Boolean isPaused, Boolean isMuted, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/PlayingItems/{itemId}/Progress"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (mediaSourceId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("mediaSourceId", mediaSourceId));
-        }
-
-        if (positionTicks != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("positionTicks", positionTicks));
-        }
-
-        if (audioStreamIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("audioStreamIndex", audioStreamIndex));
-        }
-
-        if (subtitleStreamIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("subtitleStreamIndex", subtitleStreamIndex));
-        }
-
-        if (volumeLevel != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("volumeLevel", volumeLevel));
-        }
-
-        if (playMethod != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("playMethod", playMethod));
-        }
-
-        if (liveStreamId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("liveStreamId", liveStreamId));
-        }
-
-        if (playSessionId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("playSessionId", playSessionId));
-        }
-
-        if (repeatMode != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("repeatMode", repeatMode));
-        }
-
-        if (isPaused != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isPaused", isPaused));
-        }
-
-        if (isMuted != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isMuted", isMuted));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call onPlaybackProgressValidateBeforeCall(UUID itemId, String mediaSourceId, Long positionTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer volumeLevel, PlayMethod playMethod, String liveStreamId, String playSessionId, RepeatMode repeatMode, Boolean isPaused, Boolean isMuted, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling onPlaybackProgress(Async)");
+  /**
+   * Reports playback has started within a session.
+   * 
+   * @param playbackStartInfo The playback start info. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void reportPlaybackStart(PlaybackStartInfo playbackStartInfo) throws ApiException {
+    reportPlaybackStartWithHttpInfo(playbackStartInfo);
+  }
+
+  /**
+   * Reports playback has started within a session.
+   * 
+   * @param playbackStartInfo The playback start info. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> reportPlaybackStartWithHttpInfo(PlaybackStartInfo playbackStartInfo) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = reportPlaybackStartRequestBuilder(playbackStartInfo);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("reportPlaybackStart", localVarResponse);
         }
-
-        return onPlaybackProgressCall(itemId, mediaSourceId, positionTicks, audioStreamIndex, subtitleStreamIndex, volumeLevel, playMethod, liveStreamId, playSessionId, repeatMode, isPaused, isMuted, _callback);
-
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
     }
-
-    /**
-     * Reports a session&#39;s playback progress.
-     * 
-     * @param itemId Item id. (required)
-     * @param mediaSourceId The id of the MediaSource. (optional)
-     * @param positionTicks Optional. The current position, in ticks. 1 tick &#x3D; 10000 ms. (optional)
-     * @param audioStreamIndex The audio stream index. (optional)
-     * @param subtitleStreamIndex The subtitle stream index. (optional)
-     * @param volumeLevel Scale of 0-100. (optional)
-     * @param playMethod The play method. (optional)
-     * @param liveStreamId The live stream id. (optional)
-     * @param playSessionId The play session id. (optional)
-     * @param repeatMode The repeat mode. (optional)
-     * @param isPaused Indicates if the player is paused. (optional, default to false)
-     * @param isMuted Indicates if the player is muted. (optional, default to false)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Play progress recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void onPlaybackProgress(UUID itemId, String mediaSourceId, Long positionTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer volumeLevel, PlayMethod playMethod, String liveStreamId, String playSessionId, RepeatMode repeatMode, Boolean isPaused, Boolean isMuted) throws ApiException {
-        onPlaybackProgressWithHttpInfo(itemId, mediaSourceId, positionTicks, audioStreamIndex, subtitleStreamIndex, volumeLevel, playMethod, liveStreamId, playSessionId, repeatMode, isPaused, isMuted);
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
     }
+  }
 
-    /**
-     * Reports a session&#39;s playback progress.
-     * 
-     * @param itemId Item id. (required)
-     * @param mediaSourceId The id of the MediaSource. (optional)
-     * @param positionTicks Optional. The current position, in ticks. 1 tick &#x3D; 10000 ms. (optional)
-     * @param audioStreamIndex The audio stream index. (optional)
-     * @param subtitleStreamIndex The subtitle stream index. (optional)
-     * @param volumeLevel Scale of 0-100. (optional)
-     * @param playMethod The play method. (optional)
-     * @param liveStreamId The live stream id. (optional)
-     * @param playSessionId The play session id. (optional)
-     * @param repeatMode The repeat mode. (optional)
-     * @param isPaused Indicates if the player is paused. (optional, default to false)
-     * @param isMuted Indicates if the player is muted. (optional, default to false)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Play progress recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> onPlaybackProgressWithHttpInfo(UUID itemId, String mediaSourceId, Long positionTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer volumeLevel, PlayMethod playMethod, String liveStreamId, String playSessionId, RepeatMode repeatMode, Boolean isPaused, Boolean isMuted) throws ApiException {
-        okhttp3.Call localVarCall = onPlaybackProgressValidateBeforeCall(itemId, mediaSourceId, positionTicks, audioStreamIndex, subtitleStreamIndex, volumeLevel, playMethod, liveStreamId, playSessionId, repeatMode, isPaused, isMuted, null);
-        return localVarApiClient.execute(localVarCall);
+  private HttpRequest.Builder reportPlaybackStartRequestBuilder(PlaybackStartInfo playbackStartInfo) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Sessions/Playing";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(playbackStartInfo);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
     }
-
-    /**
-     * Reports a session&#39;s playback progress. (asynchronously)
-     * 
-     * @param itemId Item id. (required)
-     * @param mediaSourceId The id of the MediaSource. (optional)
-     * @param positionTicks Optional. The current position, in ticks. 1 tick &#x3D; 10000 ms. (optional)
-     * @param audioStreamIndex The audio stream index. (optional)
-     * @param subtitleStreamIndex The subtitle stream index. (optional)
-     * @param volumeLevel Scale of 0-100. (optional)
-     * @param playMethod The play method. (optional)
-     * @param liveStreamId The live stream id. (optional)
-     * @param playSessionId The play session id. (optional)
-     * @param repeatMode The repeat mode. (optional)
-     * @param isPaused Indicates if the player is paused. (optional, default to false)
-     * @param isMuted Indicates if the player is muted. (optional, default to false)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Play progress recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call onPlaybackProgressAsync(UUID itemId, String mediaSourceId, Long positionTicks, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer volumeLevel, PlayMethod playMethod, String liveStreamId, String playSessionId, RepeatMode repeatMode, Boolean isPaused, Boolean isMuted, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = onPlaybackProgressValidateBeforeCall(itemId, mediaSourceId, positionTicks, audioStreamIndex, subtitleStreamIndex, volumeLevel, playMethod, liveStreamId, playSessionId, repeatMode, isPaused, isMuted, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-    /**
-     * Build call for onPlaybackStart
-     * @param itemId Item id. (required)
-     * @param mediaSourceId The id of the MediaSource. (optional)
-     * @param audioStreamIndex The audio stream index. (optional)
-     * @param subtitleStreamIndex The subtitle stream index. (optional)
-     * @param playMethod The play method. (optional)
-     * @param liveStreamId The live stream id. (optional)
-     * @param playSessionId The play session id. (optional)
-     * @param canSeek Indicates if the client can seek. (optional, default to false)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Play start recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call onPlaybackStartCall(UUID itemId, String mediaSourceId, Integer audioStreamIndex, Integer subtitleStreamIndex, PlayMethod playMethod, String liveStreamId, String playSessionId, Boolean canSeek, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/PlayingItems/{itemId}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (mediaSourceId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("mediaSourceId", mediaSourceId));
-        }
-
-        if (audioStreamIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("audioStreamIndex", audioStreamIndex));
-        }
-
-        if (subtitleStreamIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("subtitleStreamIndex", subtitleStreamIndex));
-        }
-
-        if (playMethod != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("playMethod", playMethod));
-        }
-
-        if (liveStreamId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("liveStreamId", liveStreamId));
-        }
-
-        if (playSessionId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("playSessionId", playSessionId));
-        }
-
-        if (canSeek != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("canSeek", canSeek));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call onPlaybackStartValidateBeforeCall(UUID itemId, String mediaSourceId, Integer audioStreamIndex, Integer subtitleStreamIndex, PlayMethod playMethod, String liveStreamId, String playSessionId, Boolean canSeek, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling onPlaybackStart(Async)");
+  /**
+   * Reports playback has stopped within a session.
+   * 
+   * @param playbackStopInfo The playback stop info. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void reportPlaybackStopped(PlaybackStopInfo playbackStopInfo) throws ApiException {
+    reportPlaybackStoppedWithHttpInfo(playbackStopInfo);
+  }
+
+  /**
+   * Reports playback has stopped within a session.
+   * 
+   * @param playbackStopInfo The playback stop info. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> reportPlaybackStoppedWithHttpInfo(PlaybackStopInfo playbackStopInfo) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = reportPlaybackStoppedRequestBuilder(playbackStopInfo);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("reportPlaybackStopped", localVarResponse);
         }
-
-        return onPlaybackStartCall(itemId, mediaSourceId, audioStreamIndex, subtitleStreamIndex, playMethod, liveStreamId, playSessionId, canSeek, _callback);
-
-    }
-
-    /**
-     * Reports that a session has begun playing an item.
-     * 
-     * @param itemId Item id. (required)
-     * @param mediaSourceId The id of the MediaSource. (optional)
-     * @param audioStreamIndex The audio stream index. (optional)
-     * @param subtitleStreamIndex The subtitle stream index. (optional)
-     * @param playMethod The play method. (optional)
-     * @param liveStreamId The live stream id. (optional)
-     * @param playSessionId The play session id. (optional)
-     * @param canSeek Indicates if the client can seek. (optional, default to false)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Play start recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void onPlaybackStart(UUID itemId, String mediaSourceId, Integer audioStreamIndex, Integer subtitleStreamIndex, PlayMethod playMethod, String liveStreamId, String playSessionId, Boolean canSeek) throws ApiException {
-        onPlaybackStartWithHttpInfo(itemId, mediaSourceId, audioStreamIndex, subtitleStreamIndex, playMethod, liveStreamId, playSessionId, canSeek);
-    }
-
-    /**
-     * Reports that a session has begun playing an item.
-     * 
-     * @param itemId Item id. (required)
-     * @param mediaSourceId The id of the MediaSource. (optional)
-     * @param audioStreamIndex The audio stream index. (optional)
-     * @param subtitleStreamIndex The subtitle stream index. (optional)
-     * @param playMethod The play method. (optional)
-     * @param liveStreamId The live stream id. (optional)
-     * @param playSessionId The play session id. (optional)
-     * @param canSeek Indicates if the client can seek. (optional, default to false)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Play start recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> onPlaybackStartWithHttpInfo(UUID itemId, String mediaSourceId, Integer audioStreamIndex, Integer subtitleStreamIndex, PlayMethod playMethod, String liveStreamId, String playSessionId, Boolean canSeek) throws ApiException {
-        okhttp3.Call localVarCall = onPlaybackStartValidateBeforeCall(itemId, mediaSourceId, audioStreamIndex, subtitleStreamIndex, playMethod, liveStreamId, playSessionId, canSeek, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Reports that a session has begun playing an item. (asynchronously)
-     * 
-     * @param itemId Item id. (required)
-     * @param mediaSourceId The id of the MediaSource. (optional)
-     * @param audioStreamIndex The audio stream index. (optional)
-     * @param subtitleStreamIndex The subtitle stream index. (optional)
-     * @param playMethod The play method. (optional)
-     * @param liveStreamId The live stream id. (optional)
-     * @param playSessionId The play session id. (optional)
-     * @param canSeek Indicates if the client can seek. (optional, default to false)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Play start recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call onPlaybackStartAsync(UUID itemId, String mediaSourceId, Integer audioStreamIndex, Integer subtitleStreamIndex, PlayMethod playMethod, String liveStreamId, String playSessionId, Boolean canSeek, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = onPlaybackStartValidateBeforeCall(itemId, mediaSourceId, audioStreamIndex, subtitleStreamIndex, playMethod, liveStreamId, playSessionId, canSeek, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for onPlaybackStopped
-     * @param itemId Item id. (required)
-     * @param mediaSourceId The id of the MediaSource. (optional)
-     * @param nextMediaType The next media type that will play. (optional)
-     * @param positionTicks Optional. The position, in ticks, where playback stopped. 1 tick &#x3D; 10000 ms. (optional)
-     * @param liveStreamId The live stream id. (optional)
-     * @param playSessionId The play session id. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback stop recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call onPlaybackStoppedCall(UUID itemId, String mediaSourceId, String nextMediaType, Long positionTicks, String liveStreamId, String playSessionId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
         }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/PlayingItems/{itemId}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (mediaSourceId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("mediaSourceId", mediaSourceId));
-        }
-
-        if (nextMediaType != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("nextMediaType", nextMediaType));
-        }
-
-        if (positionTicks != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("positionTicks", positionTicks));
-        }
-
-        if (liveStreamId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("liveStreamId", liveStreamId));
-        }
-
-        if (playSessionId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("playSessionId", playSessionId));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
     }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call onPlaybackStoppedValidateBeforeCall(UUID itemId, String mediaSourceId, String nextMediaType, Long positionTicks, String liveStreamId, String playSessionId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling onPlaybackStopped(Async)");
-        }
-
-        return onPlaybackStoppedCall(itemId, mediaSourceId, nextMediaType, positionTicks, liveStreamId, playSessionId, _callback);
-
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
     }
+  }
 
-    /**
-     * Reports that a session has stopped playing an item.
-     * 
-     * @param itemId Item id. (required)
-     * @param mediaSourceId The id of the MediaSource. (optional)
-     * @param nextMediaType The next media type that will play. (optional)
-     * @param positionTicks Optional. The position, in ticks, where playback stopped. 1 tick &#x3D; 10000 ms. (optional)
-     * @param liveStreamId The live stream id. (optional)
-     * @param playSessionId The play session id. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback stop recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void onPlaybackStopped(UUID itemId, String mediaSourceId, String nextMediaType, Long positionTicks, String liveStreamId, String playSessionId) throws ApiException {
-        onPlaybackStoppedWithHttpInfo(itemId, mediaSourceId, nextMediaType, positionTicks, liveStreamId, playSessionId);
+  private HttpRequest.Builder reportPlaybackStoppedRequestBuilder(PlaybackStopInfo playbackStopInfo) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Sessions/Playing/Stopped";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(playbackStopInfo);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
     }
-
-    /**
-     * Reports that a session has stopped playing an item.
-     * 
-     * @param itemId Item id. (required)
-     * @param mediaSourceId The id of the MediaSource. (optional)
-     * @param nextMediaType The next media type that will play. (optional)
-     * @param positionTicks Optional. The position, in ticks, where playback stopped. 1 tick &#x3D; 10000 ms. (optional)
-     * @param liveStreamId The live stream id. (optional)
-     * @param playSessionId The play session id. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback stop recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> onPlaybackStoppedWithHttpInfo(UUID itemId, String mediaSourceId, String nextMediaType, Long positionTicks, String liveStreamId, String playSessionId) throws ApiException {
-        okhttp3.Call localVarCall = onPlaybackStoppedValidateBeforeCall(itemId, mediaSourceId, nextMediaType, positionTicks, liveStreamId, playSessionId, null);
-        return localVarApiClient.execute(localVarCall);
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Reports that a session has stopped playing an item. (asynchronously)
-     * 
-     * @param itemId Item id. (required)
-     * @param mediaSourceId The id of the MediaSource. (optional)
-     * @param nextMediaType The next media type that will play. (optional)
-     * @param positionTicks Optional. The position, in ticks, where playback stopped. 1 tick &#x3D; 10000 ms. (optional)
-     * @param liveStreamId The live stream id. (optional)
-     * @param playSessionId The play session id. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback stop recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call onPlaybackStoppedAsync(UUID itemId, String mediaSourceId, String nextMediaType, Long positionTicks, String liveStreamId, String playSessionId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = onPlaybackStoppedValidateBeforeCall(itemId, mediaSourceId, nextMediaType, positionTicks, liveStreamId, playSessionId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
-    /**
-     * Build call for pingPlaybackSession
-     * @param playSessionId Playback session id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback session pinged. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call pingPlaybackSessionCall(String playSessionId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
+    return localVarRequestBuilder;
+  }
 
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Sessions/Playing/Ping";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (playSessionId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("playSessionId", playSessionId));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call pingPlaybackSessionValidateBeforeCall(String playSessionId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'playSessionId' is set
-        if (playSessionId == null) {
-            throw new ApiException("Missing the required parameter 'playSessionId' when calling pingPlaybackSession(Async)");
-        }
-
-        return pingPlaybackSessionCall(playSessionId, _callback);
-
-    }
-
-    /**
-     * Pings a playback session.
-     * 
-     * @param playSessionId Playback session id. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback session pinged. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void pingPlaybackSession(String playSessionId) throws ApiException {
-        pingPlaybackSessionWithHttpInfo(playSessionId);
-    }
-
-    /**
-     * Pings a playback session.
-     * 
-     * @param playSessionId Playback session id. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback session pinged. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> pingPlaybackSessionWithHttpInfo(String playSessionId) throws ApiException {
-        okhttp3.Call localVarCall = pingPlaybackSessionValidateBeforeCall(playSessionId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Pings a playback session. (asynchronously)
-     * 
-     * @param playSessionId Playback session id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback session pinged. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call pingPlaybackSessionAsync(String playSessionId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = pingPlaybackSessionValidateBeforeCall(playSessionId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for reportPlaybackProgress
-     * @param playbackProgressInfo The playback progress info. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback progress recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call reportPlaybackProgressCall(PlaybackProgressInfo playbackProgressInfo, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = playbackProgressInfo;
-
-        // create path and map variables
-        String localVarPath = "/Sessions/Playing/Progress";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call reportPlaybackProgressValidateBeforeCall(PlaybackProgressInfo playbackProgressInfo, final ApiCallback _callback) throws ApiException {
-        return reportPlaybackProgressCall(playbackProgressInfo, _callback);
-
-    }
-
-    /**
-     * Reports playback progress within a session.
-     * 
-     * @param playbackProgressInfo The playback progress info. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback progress recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void reportPlaybackProgress(PlaybackProgressInfo playbackProgressInfo) throws ApiException {
-        reportPlaybackProgressWithHttpInfo(playbackProgressInfo);
-    }
-
-    /**
-     * Reports playback progress within a session.
-     * 
-     * @param playbackProgressInfo The playback progress info. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback progress recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> reportPlaybackProgressWithHttpInfo(PlaybackProgressInfo playbackProgressInfo) throws ApiException {
-        okhttp3.Call localVarCall = reportPlaybackProgressValidateBeforeCall(playbackProgressInfo, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Reports playback progress within a session. (asynchronously)
-     * 
-     * @param playbackProgressInfo The playback progress info. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback progress recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call reportPlaybackProgressAsync(PlaybackProgressInfo playbackProgressInfo, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = reportPlaybackProgressValidateBeforeCall(playbackProgressInfo, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for reportPlaybackStart
-     * @param playbackStartInfo The playback start info. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback start recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call reportPlaybackStartCall(PlaybackStartInfo playbackStartInfo, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = playbackStartInfo;
-
-        // create path and map variables
-        String localVarPath = "/Sessions/Playing";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call reportPlaybackStartValidateBeforeCall(PlaybackStartInfo playbackStartInfo, final ApiCallback _callback) throws ApiException {
-        return reportPlaybackStartCall(playbackStartInfo, _callback);
-
-    }
-
-    /**
-     * Reports playback has started within a session.
-     * 
-     * @param playbackStartInfo The playback start info. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback start recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void reportPlaybackStart(PlaybackStartInfo playbackStartInfo) throws ApiException {
-        reportPlaybackStartWithHttpInfo(playbackStartInfo);
-    }
-
-    /**
-     * Reports playback has started within a session.
-     * 
-     * @param playbackStartInfo The playback start info. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback start recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> reportPlaybackStartWithHttpInfo(PlaybackStartInfo playbackStartInfo) throws ApiException {
-        okhttp3.Call localVarCall = reportPlaybackStartValidateBeforeCall(playbackStartInfo, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Reports playback has started within a session. (asynchronously)
-     * 
-     * @param playbackStartInfo The playback start info. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback start recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call reportPlaybackStartAsync(PlaybackStartInfo playbackStartInfo, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = reportPlaybackStartValidateBeforeCall(playbackStartInfo, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for reportPlaybackStopped
-     * @param playbackStopInfo The playback stop info. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback stop recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call reportPlaybackStoppedCall(PlaybackStopInfo playbackStopInfo, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = playbackStopInfo;
-
-        // create path and map variables
-        String localVarPath = "/Sessions/Playing/Stopped";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call reportPlaybackStoppedValidateBeforeCall(PlaybackStopInfo playbackStopInfo, final ApiCallback _callback) throws ApiException {
-        return reportPlaybackStoppedCall(playbackStopInfo, _callback);
-
-    }
-
-    /**
-     * Reports playback has stopped within a session.
-     * 
-     * @param playbackStopInfo The playback stop info. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback stop recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void reportPlaybackStopped(PlaybackStopInfo playbackStopInfo) throws ApiException {
-        reportPlaybackStoppedWithHttpInfo(playbackStopInfo);
-    }
-
-    /**
-     * Reports playback has stopped within a session.
-     * 
-     * @param playbackStopInfo The playback stop info. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback stop recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> reportPlaybackStoppedWithHttpInfo(PlaybackStopInfo playbackStopInfo) throws ApiException {
-        okhttp3.Call localVarCall = reportPlaybackStoppedValidateBeforeCall(playbackStopInfo, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Reports playback has stopped within a session. (asynchronously)
-     * 
-     * @param playbackStopInfo The playback stop info. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playback stop recorded. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call reportPlaybackStoppedAsync(PlaybackStopInfo playbackStopInfo, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = reportPlaybackStoppedValidateBeforeCall(playbackStopInfo, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
 }

@@ -13,13 +13,17 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,100 +31,73 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * RemoteSearchResult
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  RemoteSearchResult.JSON_PROPERTY_NAME,
+  RemoteSearchResult.JSON_PROPERTY_PROVIDER_IDS,
+  RemoteSearchResult.JSON_PROPERTY_PRODUCTION_YEAR,
+  RemoteSearchResult.JSON_PROPERTY_INDEX_NUMBER,
+  RemoteSearchResult.JSON_PROPERTY_INDEX_NUMBER_END,
+  RemoteSearchResult.JSON_PROPERTY_PARENT_INDEX_NUMBER,
+  RemoteSearchResult.JSON_PROPERTY_PREMIERE_DATE,
+  RemoteSearchResult.JSON_PROPERTY_IMAGE_URL,
+  RemoteSearchResult.JSON_PROPERTY_SEARCH_PROVIDER_NAME,
+  RemoteSearchResult.JSON_PROPERTY_OVERVIEW,
+  RemoteSearchResult.JSON_PROPERTY_ALBUM_ARTIST,
+  RemoteSearchResult.JSON_PROPERTY_ARTISTS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class RemoteSearchResult {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PROVIDER_IDS = "ProviderIds";
-  @SerializedName(SERIALIZED_NAME_PROVIDER_IDS)
-  @javax.annotation.Nullable
-  private Map<String, String> providerIds;
+  public static final String JSON_PROPERTY_PROVIDER_IDS = "ProviderIds";
+  private JsonNullable<Map<String, String>> providerIds = JsonNullable.<Map<String, String>>undefined();
 
-  public static final String SERIALIZED_NAME_PRODUCTION_YEAR = "ProductionYear";
-  @SerializedName(SERIALIZED_NAME_PRODUCTION_YEAR)
-  @javax.annotation.Nullable
-  private Integer productionYear;
+  public static final String JSON_PROPERTY_PRODUCTION_YEAR = "ProductionYear";
+  private JsonNullable<Integer> productionYear = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_INDEX_NUMBER = "IndexNumber";
-  @SerializedName(SERIALIZED_NAME_INDEX_NUMBER)
-  @javax.annotation.Nullable
-  private Integer indexNumber;
+  public static final String JSON_PROPERTY_INDEX_NUMBER = "IndexNumber";
+  private JsonNullable<Integer> indexNumber = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_INDEX_NUMBER_END = "IndexNumberEnd";
-  @SerializedName(SERIALIZED_NAME_INDEX_NUMBER_END)
-  @javax.annotation.Nullable
-  private Integer indexNumberEnd;
+  public static final String JSON_PROPERTY_INDEX_NUMBER_END = "IndexNumberEnd";
+  private JsonNullable<Integer> indexNumberEnd = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_PARENT_INDEX_NUMBER = "ParentIndexNumber";
-  @SerializedName(SERIALIZED_NAME_PARENT_INDEX_NUMBER)
-  @javax.annotation.Nullable
-  private Integer parentIndexNumber;
+  public static final String JSON_PROPERTY_PARENT_INDEX_NUMBER = "ParentIndexNumber";
+  private JsonNullable<Integer> parentIndexNumber = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_PREMIERE_DATE = "PremiereDate";
-  @SerializedName(SERIALIZED_NAME_PREMIERE_DATE)
-  @javax.annotation.Nullable
-  private OffsetDateTime premiereDate;
+  public static final String JSON_PROPERTY_PREMIERE_DATE = "PremiereDate";
+  private JsonNullable<OffsetDateTime> premiereDate = JsonNullable.<OffsetDateTime>undefined();
 
-  public static final String SERIALIZED_NAME_IMAGE_URL = "ImageUrl";
-  @SerializedName(SERIALIZED_NAME_IMAGE_URL)
-  @javax.annotation.Nullable
-  private String imageUrl;
+  public static final String JSON_PROPERTY_IMAGE_URL = "ImageUrl";
+  private JsonNullable<String> imageUrl = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_SEARCH_PROVIDER_NAME = "SearchProviderName";
-  @SerializedName(SERIALIZED_NAME_SEARCH_PROVIDER_NAME)
-  @javax.annotation.Nullable
-  private String searchProviderName;
+  public static final String JSON_PROPERTY_SEARCH_PROVIDER_NAME = "SearchProviderName";
+  private JsonNullable<String> searchProviderName = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_OVERVIEW = "Overview";
-  @SerializedName(SERIALIZED_NAME_OVERVIEW)
-  @javax.annotation.Nullable
-  private String overview;
+  public static final String JSON_PROPERTY_OVERVIEW = "Overview";
+  private JsonNullable<String> overview = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ALBUM_ARTIST = "AlbumArtist";
-  @SerializedName(SERIALIZED_NAME_ALBUM_ARTIST)
-  @javax.annotation.Nullable
-  private RemoteSearchResult albumArtist;
+  public static final String JSON_PROPERTY_ALBUM_ARTIST = "AlbumArtist";
+  private JsonNullable<RemoteSearchResult> albumArtist = JsonNullable.<RemoteSearchResult>undefined();
 
-  public static final String SERIALIZED_NAME_ARTISTS = "Artists";
-  @SerializedName(SERIALIZED_NAME_ARTISTS)
-  @javax.annotation.Nullable
-  private List<RemoteSearchResult> artists;
+  public static final String JSON_PROPERTY_ARTISTS = "Artists";
+  private JsonNullable<List<RemoteSearchResult>> artists = JsonNullable.<List<RemoteSearchResult>>undefined();
 
-  public RemoteSearchResult() {
+  public RemoteSearchResult() { 
   }
 
   public RemoteSearchResult name(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
     return this;
   }
 
@@ -129,25 +106,42 @@ public class RemoteSearchResult {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
   }
 
 
   public RemoteSearchResult providerIds(@javax.annotation.Nullable Map<String, String> providerIds) {
-    this.providerIds = providerIds;
+    this.providerIds = JsonNullable.<Map<String, String>>of(providerIds);
     return this;
   }
 
   public RemoteSearchResult putProviderIdsItem(String key, String providerIdsItem) {
-    if (this.providerIds == null) {
-      this.providerIds = new HashMap<>();
+    if (this.providerIds == null || !this.providerIds.isPresent()) {
+      this.providerIds = JsonNullable.<Map<String, String>>of(new HashMap<>());
     }
-    this.providerIds.put(key, providerIdsItem);
+    try {
+      this.providerIds.get().put(key, providerIdsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -156,17 +150,30 @@ public class RemoteSearchResult {
    * @return providerIds
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Map<String, String> getProviderIds() {
+        return providerIds.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Map<String, String>> getProviderIds_JsonNullable() {
     return providerIds;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
+  public void setProviderIds_JsonNullable(JsonNullable<Map<String, String>> providerIds) {
+    this.providerIds = providerIds;
   }
 
   public void setProviderIds(@javax.annotation.Nullable Map<String, String> providerIds) {
-    this.providerIds = providerIds;
+    this.providerIds = JsonNullable.<Map<String, String>>of(providerIds);
   }
 
 
   public RemoteSearchResult productionYear(@javax.annotation.Nullable Integer productionYear) {
-    this.productionYear = productionYear;
+    this.productionYear = JsonNullable.<Integer>of(productionYear);
     return this;
   }
 
@@ -175,17 +182,30 @@ public class RemoteSearchResult {
    * @return productionYear
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getProductionYear() {
+        return productionYear.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PRODUCTION_YEAR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getProductionYear_JsonNullable() {
     return productionYear;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PRODUCTION_YEAR)
+  public void setProductionYear_JsonNullable(JsonNullable<Integer> productionYear) {
+    this.productionYear = productionYear;
   }
 
   public void setProductionYear(@javax.annotation.Nullable Integer productionYear) {
-    this.productionYear = productionYear;
+    this.productionYear = JsonNullable.<Integer>of(productionYear);
   }
 
 
   public RemoteSearchResult indexNumber(@javax.annotation.Nullable Integer indexNumber) {
-    this.indexNumber = indexNumber;
+    this.indexNumber = JsonNullable.<Integer>of(indexNumber);
     return this;
   }
 
@@ -194,17 +214,30 @@ public class RemoteSearchResult {
    * @return indexNumber
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getIndexNumber() {
+        return indexNumber.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getIndexNumber_JsonNullable() {
     return indexNumber;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
+  public void setIndexNumber_JsonNullable(JsonNullable<Integer> indexNumber) {
+    this.indexNumber = indexNumber;
   }
 
   public void setIndexNumber(@javax.annotation.Nullable Integer indexNumber) {
-    this.indexNumber = indexNumber;
+    this.indexNumber = JsonNullable.<Integer>of(indexNumber);
   }
 
 
   public RemoteSearchResult indexNumberEnd(@javax.annotation.Nullable Integer indexNumberEnd) {
-    this.indexNumberEnd = indexNumberEnd;
+    this.indexNumberEnd = JsonNullable.<Integer>of(indexNumberEnd);
     return this;
   }
 
@@ -213,17 +246,30 @@ public class RemoteSearchResult {
    * @return indexNumberEnd
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getIndexNumberEnd() {
+        return indexNumberEnd.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_INDEX_NUMBER_END)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getIndexNumberEnd_JsonNullable() {
     return indexNumberEnd;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_INDEX_NUMBER_END)
+  public void setIndexNumberEnd_JsonNullable(JsonNullable<Integer> indexNumberEnd) {
+    this.indexNumberEnd = indexNumberEnd;
   }
 
   public void setIndexNumberEnd(@javax.annotation.Nullable Integer indexNumberEnd) {
-    this.indexNumberEnd = indexNumberEnd;
+    this.indexNumberEnd = JsonNullable.<Integer>of(indexNumberEnd);
   }
 
 
   public RemoteSearchResult parentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
-    this.parentIndexNumber = parentIndexNumber;
+    this.parentIndexNumber = JsonNullable.<Integer>of(parentIndexNumber);
     return this;
   }
 
@@ -232,17 +278,30 @@ public class RemoteSearchResult {
    * @return parentIndexNumber
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getParentIndexNumber() {
+        return parentIndexNumber.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getParentIndexNumber_JsonNullable() {
     return parentIndexNumber;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
+  public void setParentIndexNumber_JsonNullable(JsonNullable<Integer> parentIndexNumber) {
+    this.parentIndexNumber = parentIndexNumber;
   }
 
   public void setParentIndexNumber(@javax.annotation.Nullable Integer parentIndexNumber) {
-    this.parentIndexNumber = parentIndexNumber;
+    this.parentIndexNumber = JsonNullable.<Integer>of(parentIndexNumber);
   }
 
 
   public RemoteSearchResult premiereDate(@javax.annotation.Nullable OffsetDateTime premiereDate) {
-    this.premiereDate = premiereDate;
+    this.premiereDate = JsonNullable.<OffsetDateTime>of(premiereDate);
     return this;
   }
 
@@ -251,17 +310,30 @@ public class RemoteSearchResult {
    * @return premiereDate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public OffsetDateTime getPremiereDate() {
+        return premiereDate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<OffsetDateTime> getPremiereDate_JsonNullable() {
     return premiereDate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
+  public void setPremiereDate_JsonNullable(JsonNullable<OffsetDateTime> premiereDate) {
+    this.premiereDate = premiereDate;
   }
 
   public void setPremiereDate(@javax.annotation.Nullable OffsetDateTime premiereDate) {
-    this.premiereDate = premiereDate;
+    this.premiereDate = JsonNullable.<OffsetDateTime>of(premiereDate);
   }
 
 
   public RemoteSearchResult imageUrl(@javax.annotation.Nullable String imageUrl) {
-    this.imageUrl = imageUrl;
+    this.imageUrl = JsonNullable.<String>of(imageUrl);
     return this;
   }
 
@@ -270,17 +342,30 @@ public class RemoteSearchResult {
    * @return imageUrl
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getImageUrl() {
+        return imageUrl.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_IMAGE_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getImageUrl_JsonNullable() {
     return imageUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IMAGE_URL)
+  public void setImageUrl_JsonNullable(JsonNullable<String> imageUrl) {
+    this.imageUrl = imageUrl;
   }
 
   public void setImageUrl(@javax.annotation.Nullable String imageUrl) {
-    this.imageUrl = imageUrl;
+    this.imageUrl = JsonNullable.<String>of(imageUrl);
   }
 
 
   public RemoteSearchResult searchProviderName(@javax.annotation.Nullable String searchProviderName) {
-    this.searchProviderName = searchProviderName;
+    this.searchProviderName = JsonNullable.<String>of(searchProviderName);
     return this;
   }
 
@@ -289,17 +374,30 @@ public class RemoteSearchResult {
    * @return searchProviderName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getSearchProviderName() {
+        return searchProviderName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getSearchProviderName_JsonNullable() {
     return searchProviderName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
+  public void setSearchProviderName_JsonNullable(JsonNullable<String> searchProviderName) {
+    this.searchProviderName = searchProviderName;
   }
 
   public void setSearchProviderName(@javax.annotation.Nullable String searchProviderName) {
-    this.searchProviderName = searchProviderName;
+    this.searchProviderName = JsonNullable.<String>of(searchProviderName);
   }
 
 
   public RemoteSearchResult overview(@javax.annotation.Nullable String overview) {
-    this.overview = overview;
+    this.overview = JsonNullable.<String>of(overview);
     return this;
   }
 
@@ -308,17 +406,30 @@ public class RemoteSearchResult {
    * @return overview
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getOverview() {
+        return overview.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_OVERVIEW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getOverview_JsonNullable() {
     return overview;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_OVERVIEW)
+  public void setOverview_JsonNullable(JsonNullable<String> overview) {
+    this.overview = overview;
   }
 
   public void setOverview(@javax.annotation.Nullable String overview) {
-    this.overview = overview;
+    this.overview = JsonNullable.<String>of(overview);
   }
 
 
   public RemoteSearchResult albumArtist(@javax.annotation.Nullable RemoteSearchResult albumArtist) {
-    this.albumArtist = albumArtist;
+    this.albumArtist = JsonNullable.<RemoteSearchResult>of(albumArtist);
     return this;
   }
 
@@ -327,25 +438,42 @@ public class RemoteSearchResult {
    * @return albumArtist
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public RemoteSearchResult getAlbumArtist() {
+        return albumArtist.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ALBUM_ARTIST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<RemoteSearchResult> getAlbumArtist_JsonNullable() {
     return albumArtist;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ALBUM_ARTIST)
+  public void setAlbumArtist_JsonNullable(JsonNullable<RemoteSearchResult> albumArtist) {
+    this.albumArtist = albumArtist;
   }
 
   public void setAlbumArtist(@javax.annotation.Nullable RemoteSearchResult albumArtist) {
-    this.albumArtist = albumArtist;
+    this.albumArtist = JsonNullable.<RemoteSearchResult>of(albumArtist);
   }
 
 
   public RemoteSearchResult artists(@javax.annotation.Nullable List<RemoteSearchResult> artists) {
-    this.artists = artists;
+    this.artists = JsonNullable.<List<RemoteSearchResult>>of(artists);
     return this;
   }
 
   public RemoteSearchResult addArtistsItem(RemoteSearchResult artistsItem) {
-    if (this.artists == null) {
-      this.artists = new ArrayList<>();
+    if (this.artists == null || !this.artists.isPresent()) {
+      this.artists = JsonNullable.<List<RemoteSearchResult>>of(new ArrayList<>());
     }
-    this.artists.add(artistsItem);
+    try {
+      this.artists.get().add(artistsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -354,16 +482,31 @@ public class RemoteSearchResult {
    * @return artists
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<RemoteSearchResult> getArtists() {
-    return artists;
+        return artists.orElse(null);
   }
 
-  public void setArtists(@javax.annotation.Nullable List<RemoteSearchResult> artists) {
+  @JsonProperty(JSON_PROPERTY_ARTISTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<RemoteSearchResult>> getArtists_JsonNullable() {
+    return artists;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ARTISTS)
+  public void setArtists_JsonNullable(JsonNullable<List<RemoteSearchResult>> artists) {
     this.artists = artists;
   }
 
+  public void setArtists(@javax.annotation.Nullable List<RemoteSearchResult> artists) {
+    this.artists = JsonNullable.<List<RemoteSearchResult>>of(artists);
+  }
 
 
+  /**
+   * Return true if this RemoteSearchResult object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -373,18 +516,18 @@ public class RemoteSearchResult {
       return false;
     }
     RemoteSearchResult remoteSearchResult = (RemoteSearchResult) o;
-    return Objects.equals(this.name, remoteSearchResult.name) &&
-        Objects.equals(this.providerIds, remoteSearchResult.providerIds) &&
-        Objects.equals(this.productionYear, remoteSearchResult.productionYear) &&
-        Objects.equals(this.indexNumber, remoteSearchResult.indexNumber) &&
-        Objects.equals(this.indexNumberEnd, remoteSearchResult.indexNumberEnd) &&
-        Objects.equals(this.parentIndexNumber, remoteSearchResult.parentIndexNumber) &&
-        Objects.equals(this.premiereDate, remoteSearchResult.premiereDate) &&
-        Objects.equals(this.imageUrl, remoteSearchResult.imageUrl) &&
-        Objects.equals(this.searchProviderName, remoteSearchResult.searchProviderName) &&
-        Objects.equals(this.overview, remoteSearchResult.overview) &&
-        Objects.equals(this.albumArtist, remoteSearchResult.albumArtist) &&
-        Objects.equals(this.artists, remoteSearchResult.artists);
+    return equalsNullable(this.name, remoteSearchResult.name) &&
+        equalsNullable(this.providerIds, remoteSearchResult.providerIds) &&
+        equalsNullable(this.productionYear, remoteSearchResult.productionYear) &&
+        equalsNullable(this.indexNumber, remoteSearchResult.indexNumber) &&
+        equalsNullable(this.indexNumberEnd, remoteSearchResult.indexNumberEnd) &&
+        equalsNullable(this.parentIndexNumber, remoteSearchResult.parentIndexNumber) &&
+        equalsNullable(this.premiereDate, remoteSearchResult.premiereDate) &&
+        equalsNullable(this.imageUrl, remoteSearchResult.imageUrl) &&
+        equalsNullable(this.searchProviderName, remoteSearchResult.searchProviderName) &&
+        equalsNullable(this.overview, remoteSearchResult.overview) &&
+        equalsNullable(this.albumArtist, remoteSearchResult.albumArtist) &&
+        equalsNullable(this.artists, remoteSearchResult.artists);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -393,7 +536,7 @@ public class RemoteSearchResult {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, providerIds, productionYear, indexNumber, indexNumberEnd, parentIndexNumber, premiereDate, imageUrl, searchProviderName, overview, albumArtist, artists);
+    return Objects.hash(hashCodeNullable(name), hashCodeNullable(providerIds), hashCodeNullable(productionYear), hashCodeNullable(indexNumber), hashCodeNullable(indexNumberEnd), hashCodeNullable(parentIndexNumber), hashCodeNullable(premiereDate), hashCodeNullable(imageUrl), hashCodeNullable(searchProviderName), hashCodeNullable(overview), hashCodeNullable(albumArtist), hashCodeNullable(artists));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -434,130 +577,108 @@ public class RemoteSearchResult {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("ProviderIds");
-    openapiFields.add("ProductionYear");
-    openapiFields.add("IndexNumber");
-    openapiFields.add("IndexNumberEnd");
-    openapiFields.add("ParentIndexNumber");
-    openapiFields.add("PremiereDate");
-    openapiFields.add("ImageUrl");
-    openapiFields.add("SearchProviderName");
-    openapiFields.add("Overview");
-    openapiFields.add("AlbumArtist");
-    openapiFields.add("Artists");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to RemoteSearchResult
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!RemoteSearchResult.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in RemoteSearchResult is not found in the empty JSON string", RemoteSearchResult.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!RemoteSearchResult.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `RemoteSearchResult` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("ImageUrl") != null && !jsonObj.get("ImageUrl").isJsonNull()) && !jsonObj.get("ImageUrl").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ImageUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ImageUrl").toString()));
-      }
-      if ((jsonObj.get("SearchProviderName") != null && !jsonObj.get("SearchProviderName").isJsonNull()) && !jsonObj.get("SearchProviderName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SearchProviderName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("SearchProviderName").toString()));
-      }
-      if ((jsonObj.get("Overview") != null && !jsonObj.get("Overview").isJsonNull()) && !jsonObj.get("Overview").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Overview` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Overview").toString()));
-      }
-      // validate the optional field `AlbumArtist`
-      if (jsonObj.get("AlbumArtist") != null && !jsonObj.get("AlbumArtist").isJsonNull()) {
-        RemoteSearchResult.validateJsonElement(jsonObj.get("AlbumArtist"));
-      }
-      if (jsonObj.get("Artists") != null && !jsonObj.get("Artists").isJsonNull()) {
-        JsonArray jsonArrayartists = jsonObj.getAsJsonArray("Artists");
-        if (jsonArrayartists != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("Artists").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `Artists` to be an array in the JSON string but got `%s`", jsonObj.get("Artists").toString()));
-          }
-
-          // validate the optional field `Artists` (array)
-          for (int i = 0; i < jsonArrayartists.size(); i++) {
-            RemoteSearchResult.validateJsonElement(jsonArrayartists.get(i));
-          };
-        }
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!RemoteSearchResult.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'RemoteSearchResult' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<RemoteSearchResult> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(RemoteSearchResult.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<RemoteSearchResult>() {
-           @Override
-           public void write(JsonWriter out, RemoteSearchResult value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public RemoteSearchResult read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of RemoteSearchResult given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of RemoteSearchResult
-   * @throws IOException if the JSON string is invalid with respect to RemoteSearchResult
-   */
-  public static RemoteSearchResult fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, RemoteSearchResult.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of RemoteSearchResult to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `ProviderIds` to the URL query string
+    if (getProviderIds() != null) {
+      for (String _key : getProviderIds().keySet()) {
+        joiner.add(String.format("%sProviderIds%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+            getProviderIds().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getProviderIds().get(_key)))));
+      }
+    }
+
+    // add `ProductionYear` to the URL query string
+    if (getProductionYear() != null) {
+      joiner.add(String.format("%sProductionYear%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProductionYear()))));
+    }
+
+    // add `IndexNumber` to the URL query string
+    if (getIndexNumber() != null) {
+      joiner.add(String.format("%sIndexNumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIndexNumber()))));
+    }
+
+    // add `IndexNumberEnd` to the URL query string
+    if (getIndexNumberEnd() != null) {
+      joiner.add(String.format("%sIndexNumberEnd%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIndexNumberEnd()))));
+    }
+
+    // add `ParentIndexNumber` to the URL query string
+    if (getParentIndexNumber() != null) {
+      joiner.add(String.format("%sParentIndexNumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getParentIndexNumber()))));
+    }
+
+    // add `PremiereDate` to the URL query string
+    if (getPremiereDate() != null) {
+      joiner.add(String.format("%sPremiereDate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPremiereDate()))));
+    }
+
+    // add `ImageUrl` to the URL query string
+    if (getImageUrl() != null) {
+      joiner.add(String.format("%sImageUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getImageUrl()))));
+    }
+
+    // add `SearchProviderName` to the URL query string
+    if (getSearchProviderName() != null) {
+      joiner.add(String.format("%sSearchProviderName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSearchProviderName()))));
+    }
+
+    // add `Overview` to the URL query string
+    if (getOverview() != null) {
+      joiner.add(String.format("%sOverview%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
+    }
+
+    // add `AlbumArtist` to the URL query string
+    if (getAlbumArtist() != null) {
+      joiner.add(getAlbumArtist().toUrlQueryString(prefix + "AlbumArtist" + suffix));
+    }
+
+    // add `Artists` to the URL query string
+    if (getArtists() != null) {
+      for (int i = 0; i < getArtists().size(); i++) {
+        if (getArtists().get(i) != null) {
+          joiner.add(getArtists().get(i).toUrlQueryString(String.format("%sArtists%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

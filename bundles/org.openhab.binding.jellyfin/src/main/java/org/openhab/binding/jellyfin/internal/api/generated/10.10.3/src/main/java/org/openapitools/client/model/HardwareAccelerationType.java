@@ -13,20 +13,21 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.annotations.SerializedName;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import java.io.IOException;
-import com.google.gson.TypeAdapter;
-import com.google.gson.JsonElement;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Enum containing hardware acceleration types.
  */
-@JsonAdapter(HardwareAccelerationType.Adapter.class)
 public enum HardwareAccelerationType {
   
   NONE("none"),
@@ -51,6 +52,7 @@ public enum HardwareAccelerationType {
     this.value = value;
   }
 
+  @JsonValue
   public String getValue() {
     return value;
   }
@@ -60,6 +62,7 @@ public enum HardwareAccelerationType {
     return String.valueOf(value);
   }
 
+  @JsonCreator
   public static HardwareAccelerationType fromValue(String value) {
     for (HardwareAccelerationType b : HardwareAccelerationType.values()) {
       if (b.value.equals(value)) {
@@ -69,22 +72,19 @@ public enum HardwareAccelerationType {
     throw new IllegalArgumentException("Unexpected value '" + value + "'");
   }
 
-  public static class Adapter extends TypeAdapter<HardwareAccelerationType> {
-    @Override
-    public void write(final JsonWriter jsonWriter, final HardwareAccelerationType enumeration) throws IOException {
-      jsonWriter.value(enumeration.getValue());
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @param prefix prefix of the query string
+   * @return URL query string
+   */
+  public String toUrlQueryString(String prefix) {
+    if (prefix == null) {
+      prefix = "";
     }
 
-    @Override
-    public HardwareAccelerationType read(final JsonReader jsonReader) throws IOException {
-      String value = jsonReader.nextString();
-      return HardwareAccelerationType.fromValue(value);
-    }
+    return String.format("%s=%s", prefix, this.toString());
   }
 
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-    String value = jsonElement.getAsString();
-    HardwareAccelerationType.fromValue(value);
-  }
 }
 

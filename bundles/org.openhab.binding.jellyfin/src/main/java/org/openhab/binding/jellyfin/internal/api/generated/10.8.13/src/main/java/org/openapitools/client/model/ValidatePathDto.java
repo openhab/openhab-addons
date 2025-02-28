@@ -13,60 +13,47 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Validate path object.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  ValidatePathDto.JSON_PROPERTY_VALIDATE_WRITABLE,
+  ValidatePathDto.JSON_PROPERTY_PATH,
+  ValidatePathDto.JSON_PROPERTY_IS_FILE
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ValidatePathDto {
-  public static final String SERIALIZED_NAME_VALIDATE_WRITABLE = "ValidateWritable";
-  @SerializedName(SERIALIZED_NAME_VALIDATE_WRITABLE)
+  public static final String JSON_PROPERTY_VALIDATE_WRITABLE = "ValidateWritable";
   @javax.annotation.Nullable
   private Boolean validateWritable;
 
-  public static final String SERIALIZED_NAME_PATH = "Path";
-  @SerializedName(SERIALIZED_NAME_PATH)
-  @javax.annotation.Nullable
-  private String path;
+  public static final String JSON_PROPERTY_PATH = "Path";
+  private JsonNullable<String> path = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_IS_FILE = "IsFile";
-  @SerializedName(SERIALIZED_NAME_IS_FILE)
-  @javax.annotation.Nullable
-  private Boolean isFile;
+  public static final String JSON_PROPERTY_IS_FILE = "IsFile";
+  private JsonNullable<Boolean> isFile = JsonNullable.<Boolean>undefined();
 
-  public ValidatePathDto() {
+  public ValidatePathDto() { 
   }
 
   public ValidatePathDto validateWritable(@javax.annotation.Nullable Boolean validateWritable) {
@@ -79,17 +66,22 @@ public class ValidatePathDto {
    * @return validateWritable
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_VALIDATE_WRITABLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getValidateWritable() {
     return validateWritable;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_VALIDATE_WRITABLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setValidateWritable(@javax.annotation.Nullable Boolean validateWritable) {
     this.validateWritable = validateWritable;
   }
 
 
   public ValidatePathDto path(@javax.annotation.Nullable String path) {
-    this.path = path;
+    this.path = JsonNullable.<String>of(path);
     return this;
   }
 
@@ -98,17 +90,30 @@ public class ValidatePathDto {
    * @return path
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPath() {
+        return path.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPath_JsonNullable() {
     return path;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PATH)
+  public void setPath_JsonNullable(JsonNullable<String> path) {
+    this.path = path;
   }
 
   public void setPath(@javax.annotation.Nullable String path) {
-    this.path = path;
+    this.path = JsonNullable.<String>of(path);
   }
 
 
   public ValidatePathDto isFile(@javax.annotation.Nullable Boolean isFile) {
-    this.isFile = isFile;
+    this.isFile = JsonNullable.<Boolean>of(isFile);
     return this;
   }
 
@@ -117,16 +122,31 @@ public class ValidatePathDto {
    * @return isFile
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Boolean getIsFile() {
-    return isFile;
+        return isFile.orElse(null);
   }
 
-  public void setIsFile(@javax.annotation.Nullable Boolean isFile) {
+  @JsonProperty(JSON_PROPERTY_IS_FILE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Boolean> getIsFile_JsonNullable() {
+    return isFile;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_FILE)
+  public void setIsFile_JsonNullable(JsonNullable<Boolean> isFile) {
     this.isFile = isFile;
   }
 
+  public void setIsFile(@javax.annotation.Nullable Boolean isFile) {
+    this.isFile = JsonNullable.<Boolean>of(isFile);
+  }
 
 
+  /**
+   * Return true if this ValidatePathDto object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -137,8 +157,8 @@ public class ValidatePathDto {
     }
     ValidatePathDto validatePathDto = (ValidatePathDto) o;
     return Objects.equals(this.validateWritable, validatePathDto.validateWritable) &&
-        Objects.equals(this.path, validatePathDto.path) &&
-        Objects.equals(this.isFile, validatePathDto.isFile);
+        equalsNullable(this.path, validatePathDto.path) &&
+        equalsNullable(this.isFile, validatePathDto.isFile);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -147,7 +167,7 @@ public class ValidatePathDto {
 
   @Override
   public int hashCode() {
-    return Objects.hash(validateWritable, path, isFile);
+    return Objects.hash(validateWritable, hashCodeNullable(path), hashCodeNullable(isFile));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -179,94 +199,54 @@ public class ValidatePathDto {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("ValidateWritable");
-    openapiFields.add("Path");
-    openapiFields.add("IsFile");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to ValidatePathDto
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!ValidatePathDto.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in ValidatePathDto is not found in the empty JSON string", ValidatePathDto.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!ValidatePathDto.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `ValidatePathDto` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Path") != null && !jsonObj.get("Path").isJsonNull()) && !jsonObj.get("Path").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Path` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Path").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!ValidatePathDto.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'ValidatePathDto' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<ValidatePathDto> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(ValidatePathDto.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<ValidatePathDto>() {
-           @Override
-           public void write(JsonWriter out, ValidatePathDto value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public ValidatePathDto read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of ValidatePathDto given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of ValidatePathDto
-   * @throws IOException if the JSON string is invalid with respect to ValidatePathDto
-   */
-  public static ValidatePathDto fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, ValidatePathDto.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of ValidatePathDto to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `ValidateWritable` to the URL query string
+    if (getValidateWritable() != null) {
+      joiner.add(String.format("%sValidateWritable%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getValidateWritable()))));
+    }
+
+    // add `Path` to the URL query string
+    if (getPath() != null) {
+      joiner.add(String.format("%sPath%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
+    }
+
+    // add `IsFile` to the URL query string
+    if (getIsFile() != null) {
+      joiner.add(String.format("%sIsFile%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsFile()))));
+    }
+
+    return joiner.toString();
   }
 }
 

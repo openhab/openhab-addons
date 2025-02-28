@@ -13,20 +13,21 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.annotations.SerializedName;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import java.io.IOException;
-import com.google.gson.TypeAdapter;
-import com.google.gson.JsonElement;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Gets or Sets DlnaProfileType
  */
-@JsonAdapter(DlnaProfileType.Adapter.class)
 public enum DlnaProfileType {
   
   AUDIO("Audio"),
@@ -43,6 +44,7 @@ public enum DlnaProfileType {
     this.value = value;
   }
 
+  @JsonValue
   public String getValue() {
     return value;
   }
@@ -52,6 +54,7 @@ public enum DlnaProfileType {
     return String.valueOf(value);
   }
 
+  @JsonCreator
   public static DlnaProfileType fromValue(String value) {
     for (DlnaProfileType b : DlnaProfileType.values()) {
       if (b.value.equals(value)) {
@@ -61,22 +64,19 @@ public enum DlnaProfileType {
     throw new IllegalArgumentException("Unexpected value '" + value + "'");
   }
 
-  public static class Adapter extends TypeAdapter<DlnaProfileType> {
-    @Override
-    public void write(final JsonWriter jsonWriter, final DlnaProfileType enumeration) throws IOException {
-      jsonWriter.value(enumeration.getValue());
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @param prefix prefix of the query string
+   * @return URL query string
+   */
+  public String toUrlQueryString(String prefix) {
+    if (prefix == null) {
+      prefix = "";
     }
 
-    @Override
-    public DlnaProfileType read(final JsonReader jsonReader) throws IOException {
-      String value = jsonReader.nextString();
-      return DlnaProfileType.fromValue(value);
-    }
+    return String.format("%s=%s", prefix, this.toString());
   }
 
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-    String value = jsonElement.getAsString();
-    DlnaProfileType.fromValue(value);
-  }
 }
 

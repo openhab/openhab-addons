@@ -13,13 +13,17 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,235 +36,197 @@ import org.openapitools.client.model.SubtitleProfile;
 import org.openapitools.client.model.TranscodingProfile;
 import org.openapitools.client.model.XmlAttribute;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * A MediaBrowser.Model.Dlna.DeviceProfile represents a set of metadata which determines which content a certain device is able to play.  &lt;br /&gt;  Specifically, it defines the supported &lt;see cref&#x3D;\&quot;P:MediaBrowser.Model.Dlna.DeviceProfile.ContainerProfiles\&quot;&gt;containers&lt;/see&gt; and  &lt;see cref&#x3D;\&quot;P:MediaBrowser.Model.Dlna.DeviceProfile.CodecProfiles\&quot;&gt;codecs&lt;/see&gt; (video and/or audio, including codec profiles and levels)  the device is able to direct play (without transcoding or remuxing),  as well as which &lt;see cref&#x3D;\&quot;P:MediaBrowser.Model.Dlna.DeviceProfile.TranscodingProfiles\&quot;&gt;containers/codecs to transcode to&lt;/see&gt; in case it isn&#39;t.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  DeviceProfile.JSON_PROPERTY_NAME,
+  DeviceProfile.JSON_PROPERTY_ID,
+  DeviceProfile.JSON_PROPERTY_IDENTIFICATION,
+  DeviceProfile.JSON_PROPERTY_FRIENDLY_NAME,
+  DeviceProfile.JSON_PROPERTY_MANUFACTURER,
+  DeviceProfile.JSON_PROPERTY_MANUFACTURER_URL,
+  DeviceProfile.JSON_PROPERTY_MODEL_NAME,
+  DeviceProfile.JSON_PROPERTY_MODEL_DESCRIPTION,
+  DeviceProfile.JSON_PROPERTY_MODEL_NUMBER,
+  DeviceProfile.JSON_PROPERTY_MODEL_URL,
+  DeviceProfile.JSON_PROPERTY_SERIAL_NUMBER,
+  DeviceProfile.JSON_PROPERTY_ENABLE_ALBUM_ART_IN_DIDL,
+  DeviceProfile.JSON_PROPERTY_ENABLE_SINGLE_ALBUM_ART_LIMIT,
+  DeviceProfile.JSON_PROPERTY_ENABLE_SINGLE_SUBTITLE_LIMIT,
+  DeviceProfile.JSON_PROPERTY_SUPPORTED_MEDIA_TYPES,
+  DeviceProfile.JSON_PROPERTY_USER_ID,
+  DeviceProfile.JSON_PROPERTY_ALBUM_ART_PN,
+  DeviceProfile.JSON_PROPERTY_MAX_ALBUM_ART_WIDTH,
+  DeviceProfile.JSON_PROPERTY_MAX_ALBUM_ART_HEIGHT,
+  DeviceProfile.JSON_PROPERTY_MAX_ICON_WIDTH,
+  DeviceProfile.JSON_PROPERTY_MAX_ICON_HEIGHT,
+  DeviceProfile.JSON_PROPERTY_MAX_STREAMING_BITRATE,
+  DeviceProfile.JSON_PROPERTY_MAX_STATIC_BITRATE,
+  DeviceProfile.JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE,
+  DeviceProfile.JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE,
+  DeviceProfile.JSON_PROPERTY_SONY_AGGREGATION_FLAGS,
+  DeviceProfile.JSON_PROPERTY_PROTOCOL_INFO,
+  DeviceProfile.JSON_PROPERTY_TIMELINE_OFFSET_SECONDS,
+  DeviceProfile.JSON_PROPERTY_REQUIRES_PLAIN_VIDEO_ITEMS,
+  DeviceProfile.JSON_PROPERTY_REQUIRES_PLAIN_FOLDERS,
+  DeviceProfile.JSON_PROPERTY_ENABLE_M_S_MEDIA_RECEIVER_REGISTRAR,
+  DeviceProfile.JSON_PROPERTY_IGNORE_TRANSCODE_BYTE_RANGE_REQUESTS,
+  DeviceProfile.JSON_PROPERTY_XML_ROOT_ATTRIBUTES,
+  DeviceProfile.JSON_PROPERTY_DIRECT_PLAY_PROFILES,
+  DeviceProfile.JSON_PROPERTY_TRANSCODING_PROFILES,
+  DeviceProfile.JSON_PROPERTY_CONTAINER_PROFILES,
+  DeviceProfile.JSON_PROPERTY_CODEC_PROFILES,
+  DeviceProfile.JSON_PROPERTY_RESPONSE_PROFILES,
+  DeviceProfile.JSON_PROPERTY_SUBTITLE_PROFILES
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class DeviceProfile {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ID = "Id";
-  @SerializedName(SERIALIZED_NAME_ID)
-  @javax.annotation.Nullable
-  private String id;
+  public static final String JSON_PROPERTY_ID = "Id";
+  private JsonNullable<String> id = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_IDENTIFICATION = "Identification";
-  @SerializedName(SERIALIZED_NAME_IDENTIFICATION)
-  @javax.annotation.Nullable
-  private DeviceIdentification identification;
+  public static final String JSON_PROPERTY_IDENTIFICATION = "Identification";
+  private JsonNullable<DeviceIdentification> identification = JsonNullable.<DeviceIdentification>undefined();
 
-  public static final String SERIALIZED_NAME_FRIENDLY_NAME = "FriendlyName";
-  @SerializedName(SERIALIZED_NAME_FRIENDLY_NAME)
-  @javax.annotation.Nullable
-  private String friendlyName;
+  public static final String JSON_PROPERTY_FRIENDLY_NAME = "FriendlyName";
+  private JsonNullable<String> friendlyName = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_MANUFACTURER = "Manufacturer";
-  @SerializedName(SERIALIZED_NAME_MANUFACTURER)
-  @javax.annotation.Nullable
-  private String manufacturer;
+  public static final String JSON_PROPERTY_MANUFACTURER = "Manufacturer";
+  private JsonNullable<String> manufacturer = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_MANUFACTURER_URL = "ManufacturerUrl";
-  @SerializedName(SERIALIZED_NAME_MANUFACTURER_URL)
-  @javax.annotation.Nullable
-  private String manufacturerUrl;
+  public static final String JSON_PROPERTY_MANUFACTURER_URL = "ManufacturerUrl";
+  private JsonNullable<String> manufacturerUrl = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_MODEL_NAME = "ModelName";
-  @SerializedName(SERIALIZED_NAME_MODEL_NAME)
-  @javax.annotation.Nullable
-  private String modelName;
+  public static final String JSON_PROPERTY_MODEL_NAME = "ModelName";
+  private JsonNullable<String> modelName = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_MODEL_DESCRIPTION = "ModelDescription";
-  @SerializedName(SERIALIZED_NAME_MODEL_DESCRIPTION)
-  @javax.annotation.Nullable
-  private String modelDescription;
+  public static final String JSON_PROPERTY_MODEL_DESCRIPTION = "ModelDescription";
+  private JsonNullable<String> modelDescription = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_MODEL_NUMBER = "ModelNumber";
-  @SerializedName(SERIALIZED_NAME_MODEL_NUMBER)
-  @javax.annotation.Nullable
-  private String modelNumber;
+  public static final String JSON_PROPERTY_MODEL_NUMBER = "ModelNumber";
+  private JsonNullable<String> modelNumber = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_MODEL_URL = "ModelUrl";
-  @SerializedName(SERIALIZED_NAME_MODEL_URL)
-  @javax.annotation.Nullable
-  private String modelUrl;
+  public static final String JSON_PROPERTY_MODEL_URL = "ModelUrl";
+  private JsonNullable<String> modelUrl = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_SERIAL_NUMBER = "SerialNumber";
-  @SerializedName(SERIALIZED_NAME_SERIAL_NUMBER)
-  @javax.annotation.Nullable
-  private String serialNumber;
+  public static final String JSON_PROPERTY_SERIAL_NUMBER = "SerialNumber";
+  private JsonNullable<String> serialNumber = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ENABLE_ALBUM_ART_IN_DIDL = "EnableAlbumArtInDidl";
-  @SerializedName(SERIALIZED_NAME_ENABLE_ALBUM_ART_IN_DIDL)
+  public static final String JSON_PROPERTY_ENABLE_ALBUM_ART_IN_DIDL = "EnableAlbumArtInDidl";
   @javax.annotation.Nullable
   private Boolean enableAlbumArtInDidl = false;
 
-  public static final String SERIALIZED_NAME_ENABLE_SINGLE_ALBUM_ART_LIMIT = "EnableSingleAlbumArtLimit";
-  @SerializedName(SERIALIZED_NAME_ENABLE_SINGLE_ALBUM_ART_LIMIT)
+  public static final String JSON_PROPERTY_ENABLE_SINGLE_ALBUM_ART_LIMIT = "EnableSingleAlbumArtLimit";
   @javax.annotation.Nullable
   private Boolean enableSingleAlbumArtLimit = false;
 
-  public static final String SERIALIZED_NAME_ENABLE_SINGLE_SUBTITLE_LIMIT = "EnableSingleSubtitleLimit";
-  @SerializedName(SERIALIZED_NAME_ENABLE_SINGLE_SUBTITLE_LIMIT)
+  public static final String JSON_PROPERTY_ENABLE_SINGLE_SUBTITLE_LIMIT = "EnableSingleSubtitleLimit";
   @javax.annotation.Nullable
   private Boolean enableSingleSubtitleLimit = false;
 
-  public static final String SERIALIZED_NAME_SUPPORTED_MEDIA_TYPES = "SupportedMediaTypes";
-  @SerializedName(SERIALIZED_NAME_SUPPORTED_MEDIA_TYPES)
+  public static final String JSON_PROPERTY_SUPPORTED_MEDIA_TYPES = "SupportedMediaTypes";
   @javax.annotation.Nullable
   private String supportedMediaTypes;
 
-  public static final String SERIALIZED_NAME_USER_ID = "UserId";
-  @SerializedName(SERIALIZED_NAME_USER_ID)
-  @javax.annotation.Nullable
-  private String userId;
+  public static final String JSON_PROPERTY_USER_ID = "UserId";
+  private JsonNullable<String> userId = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ALBUM_ART_PN = "AlbumArtPn";
-  @SerializedName(SERIALIZED_NAME_ALBUM_ART_PN)
-  @javax.annotation.Nullable
-  private String albumArtPn;
+  public static final String JSON_PROPERTY_ALBUM_ART_PN = "AlbumArtPn";
+  private JsonNullable<String> albumArtPn = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_MAX_ALBUM_ART_WIDTH = "MaxAlbumArtWidth";
-  @SerializedName(SERIALIZED_NAME_MAX_ALBUM_ART_WIDTH)
-  @javax.annotation.Nullable
-  private Integer maxAlbumArtWidth;
+  public static final String JSON_PROPERTY_MAX_ALBUM_ART_WIDTH = "MaxAlbumArtWidth";
+  private JsonNullable<Integer> maxAlbumArtWidth = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_MAX_ALBUM_ART_HEIGHT = "MaxAlbumArtHeight";
-  @SerializedName(SERIALIZED_NAME_MAX_ALBUM_ART_HEIGHT)
-  @javax.annotation.Nullable
-  private Integer maxAlbumArtHeight;
+  public static final String JSON_PROPERTY_MAX_ALBUM_ART_HEIGHT = "MaxAlbumArtHeight";
+  private JsonNullable<Integer> maxAlbumArtHeight = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_MAX_ICON_WIDTH = "MaxIconWidth";
-  @SerializedName(SERIALIZED_NAME_MAX_ICON_WIDTH)
-  @javax.annotation.Nullable
-  private Integer maxIconWidth;
+  public static final String JSON_PROPERTY_MAX_ICON_WIDTH = "MaxIconWidth";
+  private JsonNullable<Integer> maxIconWidth = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_MAX_ICON_HEIGHT = "MaxIconHeight";
-  @SerializedName(SERIALIZED_NAME_MAX_ICON_HEIGHT)
-  @javax.annotation.Nullable
-  private Integer maxIconHeight;
+  public static final String JSON_PROPERTY_MAX_ICON_HEIGHT = "MaxIconHeight";
+  private JsonNullable<Integer> maxIconHeight = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_MAX_STREAMING_BITRATE = "MaxStreamingBitrate";
-  @SerializedName(SERIALIZED_NAME_MAX_STREAMING_BITRATE)
-  @javax.annotation.Nullable
-  private Integer maxStreamingBitrate;
+  public static final String JSON_PROPERTY_MAX_STREAMING_BITRATE = "MaxStreamingBitrate";
+  private JsonNullable<Integer> maxStreamingBitrate = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_MAX_STATIC_BITRATE = "MaxStaticBitrate";
-  @SerializedName(SERIALIZED_NAME_MAX_STATIC_BITRATE)
-  @javax.annotation.Nullable
-  private Integer maxStaticBitrate;
+  public static final String JSON_PROPERTY_MAX_STATIC_BITRATE = "MaxStaticBitrate";
+  private JsonNullable<Integer> maxStaticBitrate = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_MUSIC_STREAMING_TRANSCODING_BITRATE = "MusicStreamingTranscodingBitrate";
-  @SerializedName(SERIALIZED_NAME_MUSIC_STREAMING_TRANSCODING_BITRATE)
-  @javax.annotation.Nullable
-  private Integer musicStreamingTranscodingBitrate;
+  public static final String JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE = "MusicStreamingTranscodingBitrate";
+  private JsonNullable<Integer> musicStreamingTranscodingBitrate = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_MAX_STATIC_MUSIC_BITRATE = "MaxStaticMusicBitrate";
-  @SerializedName(SERIALIZED_NAME_MAX_STATIC_MUSIC_BITRATE)
-  @javax.annotation.Nullable
-  private Integer maxStaticMusicBitrate;
+  public static final String JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE = "MaxStaticMusicBitrate";
+  private JsonNullable<Integer> maxStaticMusicBitrate = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_SONY_AGGREGATION_FLAGS = "SonyAggregationFlags";
-  @SerializedName(SERIALIZED_NAME_SONY_AGGREGATION_FLAGS)
-  @javax.annotation.Nullable
-  private String sonyAggregationFlags;
+  public static final String JSON_PROPERTY_SONY_AGGREGATION_FLAGS = "SonyAggregationFlags";
+  private JsonNullable<String> sonyAggregationFlags = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PROTOCOL_INFO = "ProtocolInfo";
-  @SerializedName(SERIALIZED_NAME_PROTOCOL_INFO)
-  @javax.annotation.Nullable
-  private String protocolInfo;
+  public static final String JSON_PROPERTY_PROTOCOL_INFO = "ProtocolInfo";
+  private JsonNullable<String> protocolInfo = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TIMELINE_OFFSET_SECONDS = "TimelineOffsetSeconds";
-  @SerializedName(SERIALIZED_NAME_TIMELINE_OFFSET_SECONDS)
+  public static final String JSON_PROPERTY_TIMELINE_OFFSET_SECONDS = "TimelineOffsetSeconds";
   @javax.annotation.Nullable
   private Integer timelineOffsetSeconds = 0;
 
-  public static final String SERIALIZED_NAME_REQUIRES_PLAIN_VIDEO_ITEMS = "RequiresPlainVideoItems";
-  @SerializedName(SERIALIZED_NAME_REQUIRES_PLAIN_VIDEO_ITEMS)
+  public static final String JSON_PROPERTY_REQUIRES_PLAIN_VIDEO_ITEMS = "RequiresPlainVideoItems";
   @javax.annotation.Nullable
   private Boolean requiresPlainVideoItems = false;
 
-  public static final String SERIALIZED_NAME_REQUIRES_PLAIN_FOLDERS = "RequiresPlainFolders";
-  @SerializedName(SERIALIZED_NAME_REQUIRES_PLAIN_FOLDERS)
+  public static final String JSON_PROPERTY_REQUIRES_PLAIN_FOLDERS = "RequiresPlainFolders";
   @javax.annotation.Nullable
   private Boolean requiresPlainFolders = false;
 
-  public static final String SERIALIZED_NAME_ENABLE_M_S_MEDIA_RECEIVER_REGISTRAR = "EnableMSMediaReceiverRegistrar";
-  @SerializedName(SERIALIZED_NAME_ENABLE_M_S_MEDIA_RECEIVER_REGISTRAR)
+  public static final String JSON_PROPERTY_ENABLE_M_S_MEDIA_RECEIVER_REGISTRAR = "EnableMSMediaReceiverRegistrar";
   @javax.annotation.Nullable
   private Boolean enableMSMediaReceiverRegistrar = false;
 
-  public static final String SERIALIZED_NAME_IGNORE_TRANSCODE_BYTE_RANGE_REQUESTS = "IgnoreTranscodeByteRangeRequests";
-  @SerializedName(SERIALIZED_NAME_IGNORE_TRANSCODE_BYTE_RANGE_REQUESTS)
+  public static final String JSON_PROPERTY_IGNORE_TRANSCODE_BYTE_RANGE_REQUESTS = "IgnoreTranscodeByteRangeRequests";
   @javax.annotation.Nullable
   private Boolean ignoreTranscodeByteRangeRequests = false;
 
-  public static final String SERIALIZED_NAME_XML_ROOT_ATTRIBUTES = "XmlRootAttributes";
-  @SerializedName(SERIALIZED_NAME_XML_ROOT_ATTRIBUTES)
+  public static final String JSON_PROPERTY_XML_ROOT_ATTRIBUTES = "XmlRootAttributes";
   @javax.annotation.Nullable
   private List<XmlAttribute> xmlRootAttributes = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_DIRECT_PLAY_PROFILES = "DirectPlayProfiles";
-  @SerializedName(SERIALIZED_NAME_DIRECT_PLAY_PROFILES)
+  public static final String JSON_PROPERTY_DIRECT_PLAY_PROFILES = "DirectPlayProfiles";
   @javax.annotation.Nullable
   private List<DirectPlayProfile> directPlayProfiles = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_TRANSCODING_PROFILES = "TranscodingProfiles";
-  @SerializedName(SERIALIZED_NAME_TRANSCODING_PROFILES)
+  public static final String JSON_PROPERTY_TRANSCODING_PROFILES = "TranscodingProfiles";
   @javax.annotation.Nullable
   private List<TranscodingProfile> transcodingProfiles = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_CONTAINER_PROFILES = "ContainerProfiles";
-  @SerializedName(SERIALIZED_NAME_CONTAINER_PROFILES)
+  public static final String JSON_PROPERTY_CONTAINER_PROFILES = "ContainerProfiles";
   @javax.annotation.Nullable
   private List<ContainerProfile> containerProfiles = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_CODEC_PROFILES = "CodecProfiles";
-  @SerializedName(SERIALIZED_NAME_CODEC_PROFILES)
+  public static final String JSON_PROPERTY_CODEC_PROFILES = "CodecProfiles";
   @javax.annotation.Nullable
   private List<CodecProfile> codecProfiles = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_RESPONSE_PROFILES = "ResponseProfiles";
-  @SerializedName(SERIALIZED_NAME_RESPONSE_PROFILES)
+  public static final String JSON_PROPERTY_RESPONSE_PROFILES = "ResponseProfiles";
   @javax.annotation.Nullable
   private List<ResponseProfile> responseProfiles = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_SUBTITLE_PROFILES = "SubtitleProfiles";
-  @SerializedName(SERIALIZED_NAME_SUBTITLE_PROFILES)
+  public static final String JSON_PROPERTY_SUBTITLE_PROFILES = "SubtitleProfiles";
   @javax.annotation.Nullable
   private List<SubtitleProfile> subtitleProfiles = new ArrayList<>();
 
-  public DeviceProfile() {
+  public DeviceProfile() { 
   }
 
   public DeviceProfile name(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
     return this;
   }
 
@@ -269,17 +235,30 @@ public class DeviceProfile {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
   }
 
 
   public DeviceProfile id(@javax.annotation.Nullable String id) {
-    this.id = id;
+    this.id = JsonNullable.<String>of(id);
     return this;
   }
 
@@ -288,17 +267,30 @@ public class DeviceProfile {
    * @return id
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getId() {
+        return id.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getId_JsonNullable() {
     return id;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ID)
+  public void setId_JsonNullable(JsonNullable<String> id) {
+    this.id = id;
   }
 
   public void setId(@javax.annotation.Nullable String id) {
-    this.id = id;
+    this.id = JsonNullable.<String>of(id);
   }
 
 
   public DeviceProfile identification(@javax.annotation.Nullable DeviceIdentification identification) {
-    this.identification = identification;
+    this.identification = JsonNullable.<DeviceIdentification>of(identification);
     return this;
   }
 
@@ -307,17 +299,30 @@ public class DeviceProfile {
    * @return identification
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public DeviceIdentification getIdentification() {
+        return identification.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_IDENTIFICATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<DeviceIdentification> getIdentification_JsonNullable() {
     return identification;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IDENTIFICATION)
+  public void setIdentification_JsonNullable(JsonNullable<DeviceIdentification> identification) {
+    this.identification = identification;
   }
 
   public void setIdentification(@javax.annotation.Nullable DeviceIdentification identification) {
-    this.identification = identification;
+    this.identification = JsonNullable.<DeviceIdentification>of(identification);
   }
 
 
   public DeviceProfile friendlyName(@javax.annotation.Nullable String friendlyName) {
-    this.friendlyName = friendlyName;
+    this.friendlyName = JsonNullable.<String>of(friendlyName);
     return this;
   }
 
@@ -326,17 +331,30 @@ public class DeviceProfile {
    * @return friendlyName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getFriendlyName() {
+        return friendlyName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_FRIENDLY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getFriendlyName_JsonNullable() {
     return friendlyName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_FRIENDLY_NAME)
+  public void setFriendlyName_JsonNullable(JsonNullable<String> friendlyName) {
+    this.friendlyName = friendlyName;
   }
 
   public void setFriendlyName(@javax.annotation.Nullable String friendlyName) {
-    this.friendlyName = friendlyName;
+    this.friendlyName = JsonNullable.<String>of(friendlyName);
   }
 
 
   public DeviceProfile manufacturer(@javax.annotation.Nullable String manufacturer) {
-    this.manufacturer = manufacturer;
+    this.manufacturer = JsonNullable.<String>of(manufacturer);
     return this;
   }
 
@@ -345,17 +363,30 @@ public class DeviceProfile {
    * @return manufacturer
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getManufacturer() {
+        return manufacturer.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MANUFACTURER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getManufacturer_JsonNullable() {
     return manufacturer;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MANUFACTURER)
+  public void setManufacturer_JsonNullable(JsonNullable<String> manufacturer) {
+    this.manufacturer = manufacturer;
   }
 
   public void setManufacturer(@javax.annotation.Nullable String manufacturer) {
-    this.manufacturer = manufacturer;
+    this.manufacturer = JsonNullable.<String>of(manufacturer);
   }
 
 
   public DeviceProfile manufacturerUrl(@javax.annotation.Nullable String manufacturerUrl) {
-    this.manufacturerUrl = manufacturerUrl;
+    this.manufacturerUrl = JsonNullable.<String>of(manufacturerUrl);
     return this;
   }
 
@@ -364,17 +395,30 @@ public class DeviceProfile {
    * @return manufacturerUrl
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getManufacturerUrl() {
+        return manufacturerUrl.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MANUFACTURER_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getManufacturerUrl_JsonNullable() {
     return manufacturerUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MANUFACTURER_URL)
+  public void setManufacturerUrl_JsonNullable(JsonNullable<String> manufacturerUrl) {
+    this.manufacturerUrl = manufacturerUrl;
   }
 
   public void setManufacturerUrl(@javax.annotation.Nullable String manufacturerUrl) {
-    this.manufacturerUrl = manufacturerUrl;
+    this.manufacturerUrl = JsonNullable.<String>of(manufacturerUrl);
   }
 
 
   public DeviceProfile modelName(@javax.annotation.Nullable String modelName) {
-    this.modelName = modelName;
+    this.modelName = JsonNullable.<String>of(modelName);
     return this;
   }
 
@@ -383,17 +427,30 @@ public class DeviceProfile {
    * @return modelName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getModelName() {
+        return modelName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MODEL_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getModelName_JsonNullable() {
     return modelName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MODEL_NAME)
+  public void setModelName_JsonNullable(JsonNullable<String> modelName) {
+    this.modelName = modelName;
   }
 
   public void setModelName(@javax.annotation.Nullable String modelName) {
-    this.modelName = modelName;
+    this.modelName = JsonNullable.<String>of(modelName);
   }
 
 
   public DeviceProfile modelDescription(@javax.annotation.Nullable String modelDescription) {
-    this.modelDescription = modelDescription;
+    this.modelDescription = JsonNullable.<String>of(modelDescription);
     return this;
   }
 
@@ -402,17 +459,30 @@ public class DeviceProfile {
    * @return modelDescription
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getModelDescription() {
+        return modelDescription.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MODEL_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getModelDescription_JsonNullable() {
     return modelDescription;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MODEL_DESCRIPTION)
+  public void setModelDescription_JsonNullable(JsonNullable<String> modelDescription) {
+    this.modelDescription = modelDescription;
   }
 
   public void setModelDescription(@javax.annotation.Nullable String modelDescription) {
-    this.modelDescription = modelDescription;
+    this.modelDescription = JsonNullable.<String>of(modelDescription);
   }
 
 
   public DeviceProfile modelNumber(@javax.annotation.Nullable String modelNumber) {
-    this.modelNumber = modelNumber;
+    this.modelNumber = JsonNullable.<String>of(modelNumber);
     return this;
   }
 
@@ -421,17 +491,30 @@ public class DeviceProfile {
    * @return modelNumber
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getModelNumber() {
+        return modelNumber.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MODEL_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getModelNumber_JsonNullable() {
     return modelNumber;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MODEL_NUMBER)
+  public void setModelNumber_JsonNullable(JsonNullable<String> modelNumber) {
+    this.modelNumber = modelNumber;
   }
 
   public void setModelNumber(@javax.annotation.Nullable String modelNumber) {
-    this.modelNumber = modelNumber;
+    this.modelNumber = JsonNullable.<String>of(modelNumber);
   }
 
 
   public DeviceProfile modelUrl(@javax.annotation.Nullable String modelUrl) {
-    this.modelUrl = modelUrl;
+    this.modelUrl = JsonNullable.<String>of(modelUrl);
     return this;
   }
 
@@ -440,17 +523,30 @@ public class DeviceProfile {
    * @return modelUrl
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getModelUrl() {
+        return modelUrl.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MODEL_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getModelUrl_JsonNullable() {
     return modelUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MODEL_URL)
+  public void setModelUrl_JsonNullable(JsonNullable<String> modelUrl) {
+    this.modelUrl = modelUrl;
   }
 
   public void setModelUrl(@javax.annotation.Nullable String modelUrl) {
-    this.modelUrl = modelUrl;
+    this.modelUrl = JsonNullable.<String>of(modelUrl);
   }
 
 
   public DeviceProfile serialNumber(@javax.annotation.Nullable String serialNumber) {
-    this.serialNumber = serialNumber;
+    this.serialNumber = JsonNullable.<String>of(serialNumber);
     return this;
   }
 
@@ -459,12 +555,25 @@ public class DeviceProfile {
    * @return serialNumber
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getSerialNumber() {
+        return serialNumber.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SERIAL_NUMBER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getSerialNumber_JsonNullable() {
     return serialNumber;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SERIAL_NUMBER)
+  public void setSerialNumber_JsonNullable(JsonNullable<String> serialNumber) {
+    this.serialNumber = serialNumber;
   }
 
   public void setSerialNumber(@javax.annotation.Nullable String serialNumber) {
-    this.serialNumber = serialNumber;
+    this.serialNumber = JsonNullable.<String>of(serialNumber);
   }
 
 
@@ -478,10 +587,15 @@ public class DeviceProfile {
    * @return enableAlbumArtInDidl
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_ALBUM_ART_IN_DIDL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableAlbumArtInDidl() {
     return enableAlbumArtInDidl;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_ALBUM_ART_IN_DIDL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableAlbumArtInDidl(@javax.annotation.Nullable Boolean enableAlbumArtInDidl) {
     this.enableAlbumArtInDidl = enableAlbumArtInDidl;
   }
@@ -497,10 +611,15 @@ public class DeviceProfile {
    * @return enableSingleAlbumArtLimit
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_SINGLE_ALBUM_ART_LIMIT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableSingleAlbumArtLimit() {
     return enableSingleAlbumArtLimit;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_SINGLE_ALBUM_ART_LIMIT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableSingleAlbumArtLimit(@javax.annotation.Nullable Boolean enableSingleAlbumArtLimit) {
     this.enableSingleAlbumArtLimit = enableSingleAlbumArtLimit;
   }
@@ -516,10 +635,15 @@ public class DeviceProfile {
    * @return enableSingleSubtitleLimit
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_SINGLE_SUBTITLE_LIMIT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableSingleSubtitleLimit() {
     return enableSingleSubtitleLimit;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_SINGLE_SUBTITLE_LIMIT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableSingleSubtitleLimit(@javax.annotation.Nullable Boolean enableSingleSubtitleLimit) {
     this.enableSingleSubtitleLimit = enableSingleSubtitleLimit;
   }
@@ -535,17 +659,22 @@ public class DeviceProfile {
    * @return supportedMediaTypes
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUPPORTED_MEDIA_TYPES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSupportedMediaTypes() {
     return supportedMediaTypes;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SUPPORTED_MEDIA_TYPES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSupportedMediaTypes(@javax.annotation.Nullable String supportedMediaTypes) {
     this.supportedMediaTypes = supportedMediaTypes;
   }
 
 
   public DeviceProfile userId(@javax.annotation.Nullable String userId) {
-    this.userId = userId;
+    this.userId = JsonNullable.<String>of(userId);
     return this;
   }
 
@@ -554,17 +683,30 @@ public class DeviceProfile {
    * @return userId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getUserId() {
+        return userId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getUserId_JsonNullable() {
     return userId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  public void setUserId_JsonNullable(JsonNullable<String> userId) {
+    this.userId = userId;
   }
 
   public void setUserId(@javax.annotation.Nullable String userId) {
-    this.userId = userId;
+    this.userId = JsonNullable.<String>of(userId);
   }
 
 
   public DeviceProfile albumArtPn(@javax.annotation.Nullable String albumArtPn) {
-    this.albumArtPn = albumArtPn;
+    this.albumArtPn = JsonNullable.<String>of(albumArtPn);
     return this;
   }
 
@@ -573,17 +715,30 @@ public class DeviceProfile {
    * @return albumArtPn
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getAlbumArtPn() {
+        return albumArtPn.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ALBUM_ART_PN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getAlbumArtPn_JsonNullable() {
     return albumArtPn;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ALBUM_ART_PN)
+  public void setAlbumArtPn_JsonNullable(JsonNullable<String> albumArtPn) {
+    this.albumArtPn = albumArtPn;
   }
 
   public void setAlbumArtPn(@javax.annotation.Nullable String albumArtPn) {
-    this.albumArtPn = albumArtPn;
+    this.albumArtPn = JsonNullable.<String>of(albumArtPn);
   }
 
 
   public DeviceProfile maxAlbumArtWidth(@javax.annotation.Nullable Integer maxAlbumArtWidth) {
-    this.maxAlbumArtWidth = maxAlbumArtWidth;
+    this.maxAlbumArtWidth = JsonNullable.<Integer>of(maxAlbumArtWidth);
     return this;
   }
 
@@ -592,17 +747,30 @@ public class DeviceProfile {
    * @return maxAlbumArtWidth
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getMaxAlbumArtWidth() {
+        return maxAlbumArtWidth.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MAX_ALBUM_ART_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getMaxAlbumArtWidth_JsonNullable() {
     return maxAlbumArtWidth;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAX_ALBUM_ART_WIDTH)
+  public void setMaxAlbumArtWidth_JsonNullable(JsonNullable<Integer> maxAlbumArtWidth) {
+    this.maxAlbumArtWidth = maxAlbumArtWidth;
   }
 
   public void setMaxAlbumArtWidth(@javax.annotation.Nullable Integer maxAlbumArtWidth) {
-    this.maxAlbumArtWidth = maxAlbumArtWidth;
+    this.maxAlbumArtWidth = JsonNullable.<Integer>of(maxAlbumArtWidth);
   }
 
 
   public DeviceProfile maxAlbumArtHeight(@javax.annotation.Nullable Integer maxAlbumArtHeight) {
-    this.maxAlbumArtHeight = maxAlbumArtHeight;
+    this.maxAlbumArtHeight = JsonNullable.<Integer>of(maxAlbumArtHeight);
     return this;
   }
 
@@ -611,17 +779,30 @@ public class DeviceProfile {
    * @return maxAlbumArtHeight
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getMaxAlbumArtHeight() {
+        return maxAlbumArtHeight.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MAX_ALBUM_ART_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getMaxAlbumArtHeight_JsonNullable() {
     return maxAlbumArtHeight;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAX_ALBUM_ART_HEIGHT)
+  public void setMaxAlbumArtHeight_JsonNullable(JsonNullable<Integer> maxAlbumArtHeight) {
+    this.maxAlbumArtHeight = maxAlbumArtHeight;
   }
 
   public void setMaxAlbumArtHeight(@javax.annotation.Nullable Integer maxAlbumArtHeight) {
-    this.maxAlbumArtHeight = maxAlbumArtHeight;
+    this.maxAlbumArtHeight = JsonNullable.<Integer>of(maxAlbumArtHeight);
   }
 
 
   public DeviceProfile maxIconWidth(@javax.annotation.Nullable Integer maxIconWidth) {
-    this.maxIconWidth = maxIconWidth;
+    this.maxIconWidth = JsonNullable.<Integer>of(maxIconWidth);
     return this;
   }
 
@@ -630,17 +811,30 @@ public class DeviceProfile {
    * @return maxIconWidth
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getMaxIconWidth() {
+        return maxIconWidth.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MAX_ICON_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getMaxIconWidth_JsonNullable() {
     return maxIconWidth;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAX_ICON_WIDTH)
+  public void setMaxIconWidth_JsonNullable(JsonNullable<Integer> maxIconWidth) {
+    this.maxIconWidth = maxIconWidth;
   }
 
   public void setMaxIconWidth(@javax.annotation.Nullable Integer maxIconWidth) {
-    this.maxIconWidth = maxIconWidth;
+    this.maxIconWidth = JsonNullable.<Integer>of(maxIconWidth);
   }
 
 
   public DeviceProfile maxIconHeight(@javax.annotation.Nullable Integer maxIconHeight) {
-    this.maxIconHeight = maxIconHeight;
+    this.maxIconHeight = JsonNullable.<Integer>of(maxIconHeight);
     return this;
   }
 
@@ -649,17 +843,30 @@ public class DeviceProfile {
    * @return maxIconHeight
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getMaxIconHeight() {
+        return maxIconHeight.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MAX_ICON_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getMaxIconHeight_JsonNullable() {
     return maxIconHeight;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAX_ICON_HEIGHT)
+  public void setMaxIconHeight_JsonNullable(JsonNullable<Integer> maxIconHeight) {
+    this.maxIconHeight = maxIconHeight;
   }
 
   public void setMaxIconHeight(@javax.annotation.Nullable Integer maxIconHeight) {
-    this.maxIconHeight = maxIconHeight;
+    this.maxIconHeight = JsonNullable.<Integer>of(maxIconHeight);
   }
 
 
   public DeviceProfile maxStreamingBitrate(@javax.annotation.Nullable Integer maxStreamingBitrate) {
-    this.maxStreamingBitrate = maxStreamingBitrate;
+    this.maxStreamingBitrate = JsonNullable.<Integer>of(maxStreamingBitrate);
     return this;
   }
 
@@ -668,17 +875,30 @@ public class DeviceProfile {
    * @return maxStreamingBitrate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getMaxStreamingBitrate() {
+        return maxStreamingBitrate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getMaxStreamingBitrate_JsonNullable() {
     return maxStreamingBitrate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
+  public void setMaxStreamingBitrate_JsonNullable(JsonNullable<Integer> maxStreamingBitrate) {
+    this.maxStreamingBitrate = maxStreamingBitrate;
   }
 
   public void setMaxStreamingBitrate(@javax.annotation.Nullable Integer maxStreamingBitrate) {
-    this.maxStreamingBitrate = maxStreamingBitrate;
+    this.maxStreamingBitrate = JsonNullable.<Integer>of(maxStreamingBitrate);
   }
 
 
   public DeviceProfile maxStaticBitrate(@javax.annotation.Nullable Integer maxStaticBitrate) {
-    this.maxStaticBitrate = maxStaticBitrate;
+    this.maxStaticBitrate = JsonNullable.<Integer>of(maxStaticBitrate);
     return this;
   }
 
@@ -687,17 +907,30 @@ public class DeviceProfile {
    * @return maxStaticBitrate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getMaxStaticBitrate() {
+        return maxStaticBitrate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MAX_STATIC_BITRATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getMaxStaticBitrate_JsonNullable() {
     return maxStaticBitrate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAX_STATIC_BITRATE)
+  public void setMaxStaticBitrate_JsonNullable(JsonNullable<Integer> maxStaticBitrate) {
+    this.maxStaticBitrate = maxStaticBitrate;
   }
 
   public void setMaxStaticBitrate(@javax.annotation.Nullable Integer maxStaticBitrate) {
-    this.maxStaticBitrate = maxStaticBitrate;
+    this.maxStaticBitrate = JsonNullable.<Integer>of(maxStaticBitrate);
   }
 
 
   public DeviceProfile musicStreamingTranscodingBitrate(@javax.annotation.Nullable Integer musicStreamingTranscodingBitrate) {
-    this.musicStreamingTranscodingBitrate = musicStreamingTranscodingBitrate;
+    this.musicStreamingTranscodingBitrate = JsonNullable.<Integer>of(musicStreamingTranscodingBitrate);
     return this;
   }
 
@@ -706,17 +939,30 @@ public class DeviceProfile {
    * @return musicStreamingTranscodingBitrate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getMusicStreamingTranscodingBitrate() {
+        return musicStreamingTranscodingBitrate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getMusicStreamingTranscodingBitrate_JsonNullable() {
     return musicStreamingTranscodingBitrate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE)
+  public void setMusicStreamingTranscodingBitrate_JsonNullable(JsonNullable<Integer> musicStreamingTranscodingBitrate) {
+    this.musicStreamingTranscodingBitrate = musicStreamingTranscodingBitrate;
   }
 
   public void setMusicStreamingTranscodingBitrate(@javax.annotation.Nullable Integer musicStreamingTranscodingBitrate) {
-    this.musicStreamingTranscodingBitrate = musicStreamingTranscodingBitrate;
+    this.musicStreamingTranscodingBitrate = JsonNullable.<Integer>of(musicStreamingTranscodingBitrate);
   }
 
 
   public DeviceProfile maxStaticMusicBitrate(@javax.annotation.Nullable Integer maxStaticMusicBitrate) {
-    this.maxStaticMusicBitrate = maxStaticMusicBitrate;
+    this.maxStaticMusicBitrate = JsonNullable.<Integer>of(maxStaticMusicBitrate);
     return this;
   }
 
@@ -725,17 +971,30 @@ public class DeviceProfile {
    * @return maxStaticMusicBitrate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getMaxStaticMusicBitrate() {
+        return maxStaticMusicBitrate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getMaxStaticMusicBitrate_JsonNullable() {
     return maxStaticMusicBitrate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE)
+  public void setMaxStaticMusicBitrate_JsonNullable(JsonNullable<Integer> maxStaticMusicBitrate) {
+    this.maxStaticMusicBitrate = maxStaticMusicBitrate;
   }
 
   public void setMaxStaticMusicBitrate(@javax.annotation.Nullable Integer maxStaticMusicBitrate) {
-    this.maxStaticMusicBitrate = maxStaticMusicBitrate;
+    this.maxStaticMusicBitrate = JsonNullable.<Integer>of(maxStaticMusicBitrate);
   }
 
 
   public DeviceProfile sonyAggregationFlags(@javax.annotation.Nullable String sonyAggregationFlags) {
-    this.sonyAggregationFlags = sonyAggregationFlags;
+    this.sonyAggregationFlags = JsonNullable.<String>of(sonyAggregationFlags);
     return this;
   }
 
@@ -744,17 +1003,30 @@ public class DeviceProfile {
    * @return sonyAggregationFlags
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getSonyAggregationFlags() {
+        return sonyAggregationFlags.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SONY_AGGREGATION_FLAGS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getSonyAggregationFlags_JsonNullable() {
     return sonyAggregationFlags;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SONY_AGGREGATION_FLAGS)
+  public void setSonyAggregationFlags_JsonNullable(JsonNullable<String> sonyAggregationFlags) {
+    this.sonyAggregationFlags = sonyAggregationFlags;
   }
 
   public void setSonyAggregationFlags(@javax.annotation.Nullable String sonyAggregationFlags) {
-    this.sonyAggregationFlags = sonyAggregationFlags;
+    this.sonyAggregationFlags = JsonNullable.<String>of(sonyAggregationFlags);
   }
 
 
   public DeviceProfile protocolInfo(@javax.annotation.Nullable String protocolInfo) {
-    this.protocolInfo = protocolInfo;
+    this.protocolInfo = JsonNullable.<String>of(protocolInfo);
     return this;
   }
 
@@ -763,12 +1035,25 @@ public class DeviceProfile {
    * @return protocolInfo
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getProtocolInfo() {
+        return protocolInfo.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PROTOCOL_INFO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getProtocolInfo_JsonNullable() {
     return protocolInfo;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PROTOCOL_INFO)
+  public void setProtocolInfo_JsonNullable(JsonNullable<String> protocolInfo) {
+    this.protocolInfo = protocolInfo;
   }
 
   public void setProtocolInfo(@javax.annotation.Nullable String protocolInfo) {
-    this.protocolInfo = protocolInfo;
+    this.protocolInfo = JsonNullable.<String>of(protocolInfo);
   }
 
 
@@ -782,10 +1067,15 @@ public class DeviceProfile {
    * @return timelineOffsetSeconds
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TIMELINE_OFFSET_SECONDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getTimelineOffsetSeconds() {
     return timelineOffsetSeconds;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TIMELINE_OFFSET_SECONDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTimelineOffsetSeconds(@javax.annotation.Nullable Integer timelineOffsetSeconds) {
     this.timelineOffsetSeconds = timelineOffsetSeconds;
   }
@@ -801,10 +1091,15 @@ public class DeviceProfile {
    * @return requiresPlainVideoItems
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REQUIRES_PLAIN_VIDEO_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getRequiresPlainVideoItems() {
     return requiresPlainVideoItems;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REQUIRES_PLAIN_VIDEO_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRequiresPlainVideoItems(@javax.annotation.Nullable Boolean requiresPlainVideoItems) {
     this.requiresPlainVideoItems = requiresPlainVideoItems;
   }
@@ -820,10 +1115,15 @@ public class DeviceProfile {
    * @return requiresPlainFolders
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REQUIRES_PLAIN_FOLDERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getRequiresPlainFolders() {
     return requiresPlainFolders;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REQUIRES_PLAIN_FOLDERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRequiresPlainFolders(@javax.annotation.Nullable Boolean requiresPlainFolders) {
     this.requiresPlainFolders = requiresPlainFolders;
   }
@@ -839,10 +1139,15 @@ public class DeviceProfile {
    * @return enableMSMediaReceiverRegistrar
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_M_S_MEDIA_RECEIVER_REGISTRAR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableMSMediaReceiverRegistrar() {
     return enableMSMediaReceiverRegistrar;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_M_S_MEDIA_RECEIVER_REGISTRAR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableMSMediaReceiverRegistrar(@javax.annotation.Nullable Boolean enableMSMediaReceiverRegistrar) {
     this.enableMSMediaReceiverRegistrar = enableMSMediaReceiverRegistrar;
   }
@@ -858,10 +1163,15 @@ public class DeviceProfile {
    * @return ignoreTranscodeByteRangeRequests
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IGNORE_TRANSCODE_BYTE_RANGE_REQUESTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIgnoreTranscodeByteRangeRequests() {
     return ignoreTranscodeByteRangeRequests;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IGNORE_TRANSCODE_BYTE_RANGE_REQUESTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIgnoreTranscodeByteRangeRequests(@javax.annotation.Nullable Boolean ignoreTranscodeByteRangeRequests) {
     this.ignoreTranscodeByteRangeRequests = ignoreTranscodeByteRangeRequests;
   }
@@ -885,10 +1195,15 @@ public class DeviceProfile {
    * @return xmlRootAttributes
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_XML_ROOT_ATTRIBUTES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<XmlAttribute> getXmlRootAttributes() {
     return xmlRootAttributes;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_XML_ROOT_ATTRIBUTES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setXmlRootAttributes(@javax.annotation.Nullable List<XmlAttribute> xmlRootAttributes) {
     this.xmlRootAttributes = xmlRootAttributes;
   }
@@ -912,10 +1227,15 @@ public class DeviceProfile {
    * @return directPlayProfiles
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DIRECT_PLAY_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<DirectPlayProfile> getDirectPlayProfiles() {
     return directPlayProfiles;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DIRECT_PLAY_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDirectPlayProfiles(@javax.annotation.Nullable List<DirectPlayProfile> directPlayProfiles) {
     this.directPlayProfiles = directPlayProfiles;
   }
@@ -939,10 +1259,15 @@ public class DeviceProfile {
    * @return transcodingProfiles
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TRANSCODING_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<TranscodingProfile> getTranscodingProfiles() {
     return transcodingProfiles;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TRANSCODING_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTranscodingProfiles(@javax.annotation.Nullable List<TranscodingProfile> transcodingProfiles) {
     this.transcodingProfiles = transcodingProfiles;
   }
@@ -966,10 +1291,15 @@ public class DeviceProfile {
    * @return containerProfiles
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CONTAINER_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ContainerProfile> getContainerProfiles() {
     return containerProfiles;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CONTAINER_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setContainerProfiles(@javax.annotation.Nullable List<ContainerProfile> containerProfiles) {
     this.containerProfiles = containerProfiles;
   }
@@ -993,10 +1323,15 @@ public class DeviceProfile {
    * @return codecProfiles
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CODEC_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<CodecProfile> getCodecProfiles() {
     return codecProfiles;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CODEC_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCodecProfiles(@javax.annotation.Nullable List<CodecProfile> codecProfiles) {
     this.codecProfiles = codecProfiles;
   }
@@ -1020,10 +1355,15 @@ public class DeviceProfile {
    * @return responseProfiles
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_RESPONSE_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ResponseProfile> getResponseProfiles() {
     return responseProfiles;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_RESPONSE_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setResponseProfiles(@javax.annotation.Nullable List<ResponseProfile> responseProfiles) {
     this.responseProfiles = responseProfiles;
   }
@@ -1047,16 +1387,23 @@ public class DeviceProfile {
    * @return subtitleProfiles
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<SubtitleProfile> getSubtitleProfiles() {
     return subtitleProfiles;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubtitleProfiles(@javax.annotation.Nullable List<SubtitleProfile> subtitleProfiles) {
     this.subtitleProfiles = subtitleProfiles;
   }
 
 
-
+  /**
+   * Return true if this DeviceProfile object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -1066,33 +1413,33 @@ public class DeviceProfile {
       return false;
     }
     DeviceProfile deviceProfile = (DeviceProfile) o;
-    return Objects.equals(this.name, deviceProfile.name) &&
-        Objects.equals(this.id, deviceProfile.id) &&
-        Objects.equals(this.identification, deviceProfile.identification) &&
-        Objects.equals(this.friendlyName, deviceProfile.friendlyName) &&
-        Objects.equals(this.manufacturer, deviceProfile.manufacturer) &&
-        Objects.equals(this.manufacturerUrl, deviceProfile.manufacturerUrl) &&
-        Objects.equals(this.modelName, deviceProfile.modelName) &&
-        Objects.equals(this.modelDescription, deviceProfile.modelDescription) &&
-        Objects.equals(this.modelNumber, deviceProfile.modelNumber) &&
-        Objects.equals(this.modelUrl, deviceProfile.modelUrl) &&
-        Objects.equals(this.serialNumber, deviceProfile.serialNumber) &&
+    return equalsNullable(this.name, deviceProfile.name) &&
+        equalsNullable(this.id, deviceProfile.id) &&
+        equalsNullable(this.identification, deviceProfile.identification) &&
+        equalsNullable(this.friendlyName, deviceProfile.friendlyName) &&
+        equalsNullable(this.manufacturer, deviceProfile.manufacturer) &&
+        equalsNullable(this.manufacturerUrl, deviceProfile.manufacturerUrl) &&
+        equalsNullable(this.modelName, deviceProfile.modelName) &&
+        equalsNullable(this.modelDescription, deviceProfile.modelDescription) &&
+        equalsNullable(this.modelNumber, deviceProfile.modelNumber) &&
+        equalsNullable(this.modelUrl, deviceProfile.modelUrl) &&
+        equalsNullable(this.serialNumber, deviceProfile.serialNumber) &&
         Objects.equals(this.enableAlbumArtInDidl, deviceProfile.enableAlbumArtInDidl) &&
         Objects.equals(this.enableSingleAlbumArtLimit, deviceProfile.enableSingleAlbumArtLimit) &&
         Objects.equals(this.enableSingleSubtitleLimit, deviceProfile.enableSingleSubtitleLimit) &&
         Objects.equals(this.supportedMediaTypes, deviceProfile.supportedMediaTypes) &&
-        Objects.equals(this.userId, deviceProfile.userId) &&
-        Objects.equals(this.albumArtPn, deviceProfile.albumArtPn) &&
-        Objects.equals(this.maxAlbumArtWidth, deviceProfile.maxAlbumArtWidth) &&
-        Objects.equals(this.maxAlbumArtHeight, deviceProfile.maxAlbumArtHeight) &&
-        Objects.equals(this.maxIconWidth, deviceProfile.maxIconWidth) &&
-        Objects.equals(this.maxIconHeight, deviceProfile.maxIconHeight) &&
-        Objects.equals(this.maxStreamingBitrate, deviceProfile.maxStreamingBitrate) &&
-        Objects.equals(this.maxStaticBitrate, deviceProfile.maxStaticBitrate) &&
-        Objects.equals(this.musicStreamingTranscodingBitrate, deviceProfile.musicStreamingTranscodingBitrate) &&
-        Objects.equals(this.maxStaticMusicBitrate, deviceProfile.maxStaticMusicBitrate) &&
-        Objects.equals(this.sonyAggregationFlags, deviceProfile.sonyAggregationFlags) &&
-        Objects.equals(this.protocolInfo, deviceProfile.protocolInfo) &&
+        equalsNullable(this.userId, deviceProfile.userId) &&
+        equalsNullable(this.albumArtPn, deviceProfile.albumArtPn) &&
+        equalsNullable(this.maxAlbumArtWidth, deviceProfile.maxAlbumArtWidth) &&
+        equalsNullable(this.maxAlbumArtHeight, deviceProfile.maxAlbumArtHeight) &&
+        equalsNullable(this.maxIconWidth, deviceProfile.maxIconWidth) &&
+        equalsNullable(this.maxIconHeight, deviceProfile.maxIconHeight) &&
+        equalsNullable(this.maxStreamingBitrate, deviceProfile.maxStreamingBitrate) &&
+        equalsNullable(this.maxStaticBitrate, deviceProfile.maxStaticBitrate) &&
+        equalsNullable(this.musicStreamingTranscodingBitrate, deviceProfile.musicStreamingTranscodingBitrate) &&
+        equalsNullable(this.maxStaticMusicBitrate, deviceProfile.maxStaticMusicBitrate) &&
+        equalsNullable(this.sonyAggregationFlags, deviceProfile.sonyAggregationFlags) &&
+        equalsNullable(this.protocolInfo, deviceProfile.protocolInfo) &&
         Objects.equals(this.timelineOffsetSeconds, deviceProfile.timelineOffsetSeconds) &&
         Objects.equals(this.requiresPlainVideoItems, deviceProfile.requiresPlainVideoItems) &&
         Objects.equals(this.requiresPlainFolders, deviceProfile.requiresPlainFolders) &&
@@ -1113,7 +1460,7 @@ public class DeviceProfile {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, id, identification, friendlyName, manufacturer, manufacturerUrl, modelName, modelDescription, modelNumber, modelUrl, serialNumber, enableAlbumArtInDidl, enableSingleAlbumArtLimit, enableSingleSubtitleLimit, supportedMediaTypes, userId, albumArtPn, maxAlbumArtWidth, maxAlbumArtHeight, maxIconWidth, maxIconHeight, maxStreamingBitrate, maxStaticBitrate, musicStreamingTranscodingBitrate, maxStaticMusicBitrate, sonyAggregationFlags, protocolInfo, timelineOffsetSeconds, requiresPlainVideoItems, requiresPlainFolders, enableMSMediaReceiverRegistrar, ignoreTranscodeByteRangeRequests, xmlRootAttributes, directPlayProfiles, transcodingProfiles, containerProfiles, codecProfiles, responseProfiles, subtitleProfiles);
+    return Objects.hash(hashCodeNullable(name), hashCodeNullable(id), hashCodeNullable(identification), hashCodeNullable(friendlyName), hashCodeNullable(manufacturer), hashCodeNullable(manufacturerUrl), hashCodeNullable(modelName), hashCodeNullable(modelDescription), hashCodeNullable(modelNumber), hashCodeNullable(modelUrl), hashCodeNullable(serialNumber), enableAlbumArtInDidl, enableSingleAlbumArtLimit, enableSingleSubtitleLimit, supportedMediaTypes, hashCodeNullable(userId), hashCodeNullable(albumArtPn), hashCodeNullable(maxAlbumArtWidth), hashCodeNullable(maxAlbumArtHeight), hashCodeNullable(maxIconWidth), hashCodeNullable(maxIconHeight), hashCodeNullable(maxStreamingBitrate), hashCodeNullable(maxStaticBitrate), hashCodeNullable(musicStreamingTranscodingBitrate), hashCodeNullable(maxStaticMusicBitrate), hashCodeNullable(sonyAggregationFlags), hashCodeNullable(protocolInfo), timelineOffsetSeconds, requiresPlainVideoItems, requiresPlainFolders, enableMSMediaReceiverRegistrar, ignoreTranscodeByteRangeRequests, xmlRootAttributes, directPlayProfiles, transcodingProfiles, containerProfiles, codecProfiles, responseProfiles, subtitleProfiles);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -1181,274 +1528,269 @@ public class DeviceProfile {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("Id");
-    openapiFields.add("Identification");
-    openapiFields.add("FriendlyName");
-    openapiFields.add("Manufacturer");
-    openapiFields.add("ManufacturerUrl");
-    openapiFields.add("ModelName");
-    openapiFields.add("ModelDescription");
-    openapiFields.add("ModelNumber");
-    openapiFields.add("ModelUrl");
-    openapiFields.add("SerialNumber");
-    openapiFields.add("EnableAlbumArtInDidl");
-    openapiFields.add("EnableSingleAlbumArtLimit");
-    openapiFields.add("EnableSingleSubtitleLimit");
-    openapiFields.add("SupportedMediaTypes");
-    openapiFields.add("UserId");
-    openapiFields.add("AlbumArtPn");
-    openapiFields.add("MaxAlbumArtWidth");
-    openapiFields.add("MaxAlbumArtHeight");
-    openapiFields.add("MaxIconWidth");
-    openapiFields.add("MaxIconHeight");
-    openapiFields.add("MaxStreamingBitrate");
-    openapiFields.add("MaxStaticBitrate");
-    openapiFields.add("MusicStreamingTranscodingBitrate");
-    openapiFields.add("MaxStaticMusicBitrate");
-    openapiFields.add("SonyAggregationFlags");
-    openapiFields.add("ProtocolInfo");
-    openapiFields.add("TimelineOffsetSeconds");
-    openapiFields.add("RequiresPlainVideoItems");
-    openapiFields.add("RequiresPlainFolders");
-    openapiFields.add("EnableMSMediaReceiverRegistrar");
-    openapiFields.add("IgnoreTranscodeByteRangeRequests");
-    openapiFields.add("XmlRootAttributes");
-    openapiFields.add("DirectPlayProfiles");
-    openapiFields.add("TranscodingProfiles");
-    openapiFields.add("ContainerProfiles");
-    openapiFields.add("CodecProfiles");
-    openapiFields.add("ResponseProfiles");
-    openapiFields.add("SubtitleProfiles");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to DeviceProfile
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!DeviceProfile.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in DeviceProfile is not found in the empty JSON string", DeviceProfile.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!DeviceProfile.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `DeviceProfile` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("Id") != null && !jsonObj.get("Id").isJsonNull()) && !jsonObj.get("Id").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Id").toString()));
-      }
-      // validate the optional field `Identification`
-      if (jsonObj.get("Identification") != null && !jsonObj.get("Identification").isJsonNull()) {
-        DeviceIdentification.validateJsonElement(jsonObj.get("Identification"));
-      }
-      if ((jsonObj.get("FriendlyName") != null && !jsonObj.get("FriendlyName").isJsonNull()) && !jsonObj.get("FriendlyName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `FriendlyName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("FriendlyName").toString()));
-      }
-      if ((jsonObj.get("Manufacturer") != null && !jsonObj.get("Manufacturer").isJsonNull()) && !jsonObj.get("Manufacturer").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Manufacturer` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Manufacturer").toString()));
-      }
-      if ((jsonObj.get("ManufacturerUrl") != null && !jsonObj.get("ManufacturerUrl").isJsonNull()) && !jsonObj.get("ManufacturerUrl").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ManufacturerUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ManufacturerUrl").toString()));
-      }
-      if ((jsonObj.get("ModelName") != null && !jsonObj.get("ModelName").isJsonNull()) && !jsonObj.get("ModelName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ModelName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ModelName").toString()));
-      }
-      if ((jsonObj.get("ModelDescription") != null && !jsonObj.get("ModelDescription").isJsonNull()) && !jsonObj.get("ModelDescription").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ModelDescription` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ModelDescription").toString()));
-      }
-      if ((jsonObj.get("ModelNumber") != null && !jsonObj.get("ModelNumber").isJsonNull()) && !jsonObj.get("ModelNumber").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ModelNumber` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ModelNumber").toString()));
-      }
-      if ((jsonObj.get("ModelUrl") != null && !jsonObj.get("ModelUrl").isJsonNull()) && !jsonObj.get("ModelUrl").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ModelUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ModelUrl").toString()));
-      }
-      if ((jsonObj.get("SerialNumber") != null && !jsonObj.get("SerialNumber").isJsonNull()) && !jsonObj.get("SerialNumber").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SerialNumber` to be a primitive type in the JSON string but got `%s`", jsonObj.get("SerialNumber").toString()));
-      }
-      if ((jsonObj.get("SupportedMediaTypes") != null && !jsonObj.get("SupportedMediaTypes").isJsonNull()) && !jsonObj.get("SupportedMediaTypes").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SupportedMediaTypes` to be a primitive type in the JSON string but got `%s`", jsonObj.get("SupportedMediaTypes").toString()));
-      }
-      if ((jsonObj.get("UserId") != null && !jsonObj.get("UserId").isJsonNull()) && !jsonObj.get("UserId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `UserId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("UserId").toString()));
-      }
-      if ((jsonObj.get("AlbumArtPn") != null && !jsonObj.get("AlbumArtPn").isJsonNull()) && !jsonObj.get("AlbumArtPn").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `AlbumArtPn` to be a primitive type in the JSON string but got `%s`", jsonObj.get("AlbumArtPn").toString()));
-      }
-      if ((jsonObj.get("SonyAggregationFlags") != null && !jsonObj.get("SonyAggregationFlags").isJsonNull()) && !jsonObj.get("SonyAggregationFlags").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SonyAggregationFlags` to be a primitive type in the JSON string but got `%s`", jsonObj.get("SonyAggregationFlags").toString()));
-      }
-      if ((jsonObj.get("ProtocolInfo") != null && !jsonObj.get("ProtocolInfo").isJsonNull()) && !jsonObj.get("ProtocolInfo").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ProtocolInfo` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ProtocolInfo").toString()));
-      }
-      if (jsonObj.get("XmlRootAttributes") != null && !jsonObj.get("XmlRootAttributes").isJsonNull()) {
-        JsonArray jsonArrayxmlRootAttributes = jsonObj.getAsJsonArray("XmlRootAttributes");
-        if (jsonArrayxmlRootAttributes != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("XmlRootAttributes").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `XmlRootAttributes` to be an array in the JSON string but got `%s`", jsonObj.get("XmlRootAttributes").toString()));
-          }
-
-          // validate the optional field `XmlRootAttributes` (array)
-          for (int i = 0; i < jsonArrayxmlRootAttributes.size(); i++) {
-            XmlAttribute.validateJsonElement(jsonArrayxmlRootAttributes.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("DirectPlayProfiles") != null && !jsonObj.get("DirectPlayProfiles").isJsonNull()) {
-        JsonArray jsonArraydirectPlayProfiles = jsonObj.getAsJsonArray("DirectPlayProfiles");
-        if (jsonArraydirectPlayProfiles != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("DirectPlayProfiles").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `DirectPlayProfiles` to be an array in the JSON string but got `%s`", jsonObj.get("DirectPlayProfiles").toString()));
-          }
-
-          // validate the optional field `DirectPlayProfiles` (array)
-          for (int i = 0; i < jsonArraydirectPlayProfiles.size(); i++) {
-            DirectPlayProfile.validateJsonElement(jsonArraydirectPlayProfiles.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("TranscodingProfiles") != null && !jsonObj.get("TranscodingProfiles").isJsonNull()) {
-        JsonArray jsonArraytranscodingProfiles = jsonObj.getAsJsonArray("TranscodingProfiles");
-        if (jsonArraytranscodingProfiles != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("TranscodingProfiles").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `TranscodingProfiles` to be an array in the JSON string but got `%s`", jsonObj.get("TranscodingProfiles").toString()));
-          }
-
-          // validate the optional field `TranscodingProfiles` (array)
-          for (int i = 0; i < jsonArraytranscodingProfiles.size(); i++) {
-            TranscodingProfile.validateJsonElement(jsonArraytranscodingProfiles.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("ContainerProfiles") != null && !jsonObj.get("ContainerProfiles").isJsonNull()) {
-        JsonArray jsonArraycontainerProfiles = jsonObj.getAsJsonArray("ContainerProfiles");
-        if (jsonArraycontainerProfiles != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("ContainerProfiles").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `ContainerProfiles` to be an array in the JSON string but got `%s`", jsonObj.get("ContainerProfiles").toString()));
-          }
-
-          // validate the optional field `ContainerProfiles` (array)
-          for (int i = 0; i < jsonArraycontainerProfiles.size(); i++) {
-            ContainerProfile.validateJsonElement(jsonArraycontainerProfiles.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("CodecProfiles") != null && !jsonObj.get("CodecProfiles").isJsonNull()) {
-        JsonArray jsonArraycodecProfiles = jsonObj.getAsJsonArray("CodecProfiles");
-        if (jsonArraycodecProfiles != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("CodecProfiles").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `CodecProfiles` to be an array in the JSON string but got `%s`", jsonObj.get("CodecProfiles").toString()));
-          }
-
-          // validate the optional field `CodecProfiles` (array)
-          for (int i = 0; i < jsonArraycodecProfiles.size(); i++) {
-            CodecProfile.validateJsonElement(jsonArraycodecProfiles.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("ResponseProfiles") != null && !jsonObj.get("ResponseProfiles").isJsonNull()) {
-        JsonArray jsonArrayresponseProfiles = jsonObj.getAsJsonArray("ResponseProfiles");
-        if (jsonArrayresponseProfiles != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("ResponseProfiles").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `ResponseProfiles` to be an array in the JSON string but got `%s`", jsonObj.get("ResponseProfiles").toString()));
-          }
-
-          // validate the optional field `ResponseProfiles` (array)
-          for (int i = 0; i < jsonArrayresponseProfiles.size(); i++) {
-            ResponseProfile.validateJsonElement(jsonArrayresponseProfiles.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("SubtitleProfiles") != null && !jsonObj.get("SubtitleProfiles").isJsonNull()) {
-        JsonArray jsonArraysubtitleProfiles = jsonObj.getAsJsonArray("SubtitleProfiles");
-        if (jsonArraysubtitleProfiles != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("SubtitleProfiles").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `SubtitleProfiles` to be an array in the JSON string but got `%s`", jsonObj.get("SubtitleProfiles").toString()));
-          }
-
-          // validate the optional field `SubtitleProfiles` (array)
-          for (int i = 0; i < jsonArraysubtitleProfiles.size(); i++) {
-            SubtitleProfile.validateJsonElement(jsonArraysubtitleProfiles.get(i));
-          };
-        }
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!DeviceProfile.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'DeviceProfile' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<DeviceProfile> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(DeviceProfile.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<DeviceProfile>() {
-           @Override
-           public void write(JsonWriter out, DeviceProfile value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public DeviceProfile read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of DeviceProfile given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of DeviceProfile
-   * @throws IOException if the JSON string is invalid with respect to DeviceProfile
-   */
-  public static DeviceProfile fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, DeviceProfile.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of DeviceProfile to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `Id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+    }
+
+    // add `Identification` to the URL query string
+    if (getIdentification() != null) {
+      joiner.add(getIdentification().toUrlQueryString(prefix + "Identification" + suffix));
+    }
+
+    // add `FriendlyName` to the URL query string
+    if (getFriendlyName() != null) {
+      joiner.add(String.format("%sFriendlyName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFriendlyName()))));
+    }
+
+    // add `Manufacturer` to the URL query string
+    if (getManufacturer() != null) {
+      joiner.add(String.format("%sManufacturer%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getManufacturer()))));
+    }
+
+    // add `ManufacturerUrl` to the URL query string
+    if (getManufacturerUrl() != null) {
+      joiner.add(String.format("%sManufacturerUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getManufacturerUrl()))));
+    }
+
+    // add `ModelName` to the URL query string
+    if (getModelName() != null) {
+      joiner.add(String.format("%sModelName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getModelName()))));
+    }
+
+    // add `ModelDescription` to the URL query string
+    if (getModelDescription() != null) {
+      joiner.add(String.format("%sModelDescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getModelDescription()))));
+    }
+
+    // add `ModelNumber` to the URL query string
+    if (getModelNumber() != null) {
+      joiner.add(String.format("%sModelNumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getModelNumber()))));
+    }
+
+    // add `ModelUrl` to the URL query string
+    if (getModelUrl() != null) {
+      joiner.add(String.format("%sModelUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getModelUrl()))));
+    }
+
+    // add `SerialNumber` to the URL query string
+    if (getSerialNumber() != null) {
+      joiner.add(String.format("%sSerialNumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSerialNumber()))));
+    }
+
+    // add `EnableAlbumArtInDidl` to the URL query string
+    if (getEnableAlbumArtInDidl() != null) {
+      joiner.add(String.format("%sEnableAlbumArtInDidl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableAlbumArtInDidl()))));
+    }
+
+    // add `EnableSingleAlbumArtLimit` to the URL query string
+    if (getEnableSingleAlbumArtLimit() != null) {
+      joiner.add(String.format("%sEnableSingleAlbumArtLimit%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableSingleAlbumArtLimit()))));
+    }
+
+    // add `EnableSingleSubtitleLimit` to the URL query string
+    if (getEnableSingleSubtitleLimit() != null) {
+      joiner.add(String.format("%sEnableSingleSubtitleLimit%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableSingleSubtitleLimit()))));
+    }
+
+    // add `SupportedMediaTypes` to the URL query string
+    if (getSupportedMediaTypes() != null) {
+      joiner.add(String.format("%sSupportedMediaTypes%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSupportedMediaTypes()))));
+    }
+
+    // add `UserId` to the URL query string
+    if (getUserId() != null) {
+      joiner.add(String.format("%sUserId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
+    }
+
+    // add `AlbumArtPn` to the URL query string
+    if (getAlbumArtPn() != null) {
+      joiner.add(String.format("%sAlbumArtPn%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAlbumArtPn()))));
+    }
+
+    // add `MaxAlbumArtWidth` to the URL query string
+    if (getMaxAlbumArtWidth() != null) {
+      joiner.add(String.format("%sMaxAlbumArtWidth%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxAlbumArtWidth()))));
+    }
+
+    // add `MaxAlbumArtHeight` to the URL query string
+    if (getMaxAlbumArtHeight() != null) {
+      joiner.add(String.format("%sMaxAlbumArtHeight%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxAlbumArtHeight()))));
+    }
+
+    // add `MaxIconWidth` to the URL query string
+    if (getMaxIconWidth() != null) {
+      joiner.add(String.format("%sMaxIconWidth%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxIconWidth()))));
+    }
+
+    // add `MaxIconHeight` to the URL query string
+    if (getMaxIconHeight() != null) {
+      joiner.add(String.format("%sMaxIconHeight%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxIconHeight()))));
+    }
+
+    // add `MaxStreamingBitrate` to the URL query string
+    if (getMaxStreamingBitrate() != null) {
+      joiner.add(String.format("%sMaxStreamingBitrate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxStreamingBitrate()))));
+    }
+
+    // add `MaxStaticBitrate` to the URL query string
+    if (getMaxStaticBitrate() != null) {
+      joiner.add(String.format("%sMaxStaticBitrate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxStaticBitrate()))));
+    }
+
+    // add `MusicStreamingTranscodingBitrate` to the URL query string
+    if (getMusicStreamingTranscodingBitrate() != null) {
+      joiner.add(String.format("%sMusicStreamingTranscodingBitrate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMusicStreamingTranscodingBitrate()))));
+    }
+
+    // add `MaxStaticMusicBitrate` to the URL query string
+    if (getMaxStaticMusicBitrate() != null) {
+      joiner.add(String.format("%sMaxStaticMusicBitrate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxStaticMusicBitrate()))));
+    }
+
+    // add `SonyAggregationFlags` to the URL query string
+    if (getSonyAggregationFlags() != null) {
+      joiner.add(String.format("%sSonyAggregationFlags%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSonyAggregationFlags()))));
+    }
+
+    // add `ProtocolInfo` to the URL query string
+    if (getProtocolInfo() != null) {
+      joiner.add(String.format("%sProtocolInfo%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProtocolInfo()))));
+    }
+
+    // add `TimelineOffsetSeconds` to the URL query string
+    if (getTimelineOffsetSeconds() != null) {
+      joiner.add(String.format("%sTimelineOffsetSeconds%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTimelineOffsetSeconds()))));
+    }
+
+    // add `RequiresPlainVideoItems` to the URL query string
+    if (getRequiresPlainVideoItems() != null) {
+      joiner.add(String.format("%sRequiresPlainVideoItems%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRequiresPlainVideoItems()))));
+    }
+
+    // add `RequiresPlainFolders` to the URL query string
+    if (getRequiresPlainFolders() != null) {
+      joiner.add(String.format("%sRequiresPlainFolders%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRequiresPlainFolders()))));
+    }
+
+    // add `EnableMSMediaReceiverRegistrar` to the URL query string
+    if (getEnableMSMediaReceiverRegistrar() != null) {
+      joiner.add(String.format("%sEnableMSMediaReceiverRegistrar%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableMSMediaReceiverRegistrar()))));
+    }
+
+    // add `IgnoreTranscodeByteRangeRequests` to the URL query string
+    if (getIgnoreTranscodeByteRangeRequests() != null) {
+      joiner.add(String.format("%sIgnoreTranscodeByteRangeRequests%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIgnoreTranscodeByteRangeRequests()))));
+    }
+
+    // add `XmlRootAttributes` to the URL query string
+    if (getXmlRootAttributes() != null) {
+      for (int i = 0; i < getXmlRootAttributes().size(); i++) {
+        if (getXmlRootAttributes().get(i) != null) {
+          joiner.add(getXmlRootAttributes().get(i).toUrlQueryString(String.format("%sXmlRootAttributes%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `DirectPlayProfiles` to the URL query string
+    if (getDirectPlayProfiles() != null) {
+      for (int i = 0; i < getDirectPlayProfiles().size(); i++) {
+        if (getDirectPlayProfiles().get(i) != null) {
+          joiner.add(getDirectPlayProfiles().get(i).toUrlQueryString(String.format("%sDirectPlayProfiles%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `TranscodingProfiles` to the URL query string
+    if (getTranscodingProfiles() != null) {
+      for (int i = 0; i < getTranscodingProfiles().size(); i++) {
+        if (getTranscodingProfiles().get(i) != null) {
+          joiner.add(getTranscodingProfiles().get(i).toUrlQueryString(String.format("%sTranscodingProfiles%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `ContainerProfiles` to the URL query string
+    if (getContainerProfiles() != null) {
+      for (int i = 0; i < getContainerProfiles().size(); i++) {
+        if (getContainerProfiles().get(i) != null) {
+          joiner.add(getContainerProfiles().get(i).toUrlQueryString(String.format("%sContainerProfiles%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `CodecProfiles` to the URL query string
+    if (getCodecProfiles() != null) {
+      for (int i = 0; i < getCodecProfiles().size(); i++) {
+        if (getCodecProfiles().get(i) != null) {
+          joiner.add(getCodecProfiles().get(i).toUrlQueryString(String.format("%sCodecProfiles%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `ResponseProfiles` to the URL query string
+    if (getResponseProfiles() != null) {
+      for (int i = 0; i < getResponseProfiles().size(); i++) {
+        if (getResponseProfiles().get(i) != null) {
+          joiner.add(getResponseProfiles().get(i).toUrlQueryString(String.format("%sResponseProfiles%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `SubtitleProfiles` to the URL query string
+    if (getSubtitleProfiles() != null) {
+      for (int i = 0; i < getSubtitleProfiles().size(); i++) {
+        if (getSubtitleProfiles().get(i) != null) {
+          joiner.add(getSubtitleProfiles().get(i).toUrlQueryString(String.format("%sSubtitleProfiles%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

@@ -13,100 +13,85 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import java.util.UUID;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Defines the MediaBrowser.Common.Plugins.IPlugin.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  IPlugin.JSON_PROPERTY_NAME,
+  IPlugin.JSON_PROPERTY_DESCRIPTION,
+  IPlugin.JSON_PROPERTY_ID,
+  IPlugin.JSON_PROPERTY_VERSION,
+  IPlugin.JSON_PROPERTY_ASSEMBLY_FILE_PATH,
+  IPlugin.JSON_PROPERTY_CAN_UNINSTALL,
+  IPlugin.JSON_PROPERTY_DATA_FOLDER_PATH
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class IPlugin {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_DESCRIPTION = "Description";
-  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
-  @javax.annotation.Nullable
-  private String description;
+  public static final String JSON_PROPERTY_DESCRIPTION = "Description";
+  private JsonNullable<String> description = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ID = "Id";
-  @SerializedName(SERIALIZED_NAME_ID)
+  public static final String JSON_PROPERTY_ID = "Id";
   @javax.annotation.Nullable
   private UUID id;
 
-  public static final String SERIALIZED_NAME_VERSION = "Version";
-  @SerializedName(SERIALIZED_NAME_VERSION)
-  @javax.annotation.Nullable
-  private String version;
+  public static final String JSON_PROPERTY_VERSION = "Version";
+  private JsonNullable<String> version = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ASSEMBLY_FILE_PATH = "AssemblyFilePath";
-  @SerializedName(SERIALIZED_NAME_ASSEMBLY_FILE_PATH)
-  @javax.annotation.Nullable
-  private String assemblyFilePath;
+  public static final String JSON_PROPERTY_ASSEMBLY_FILE_PATH = "AssemblyFilePath";
+  private JsonNullable<String> assemblyFilePath = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_CAN_UNINSTALL = "CanUninstall";
-  @SerializedName(SERIALIZED_NAME_CAN_UNINSTALL)
+  public static final String JSON_PROPERTY_CAN_UNINSTALL = "CanUninstall";
   @javax.annotation.Nullable
   private Boolean canUninstall;
 
-  public static final String SERIALIZED_NAME_DATA_FOLDER_PATH = "DataFolderPath";
-  @SerializedName(SERIALIZED_NAME_DATA_FOLDER_PATH)
-  @javax.annotation.Nullable
-  private String dataFolderPath;
+  public static final String JSON_PROPERTY_DATA_FOLDER_PATH = "DataFolderPath";
+  private JsonNullable<String> dataFolderPath = JsonNullable.<String>undefined();
 
-  public IPlugin() {
+  public IPlugin() { 
   }
 
+  @JsonCreator
   public IPlugin(
-     String name, 
-     String description, 
-     UUID id, 
-     String version, 
-     String assemblyFilePath, 
-     Boolean canUninstall, 
-     String dataFolderPath
+    @JsonProperty(JSON_PROPERTY_NAME) String name, 
+    @JsonProperty(JSON_PROPERTY_DESCRIPTION) String description, 
+    @JsonProperty(JSON_PROPERTY_ID) UUID id, 
+    @JsonProperty(JSON_PROPERTY_VERSION) String version, 
+    @JsonProperty(JSON_PROPERTY_ASSEMBLY_FILE_PATH) String assemblyFilePath, 
+    @JsonProperty(JSON_PROPERTY_CAN_UNINSTALL) Boolean canUninstall, 
+    @JsonProperty(JSON_PROPERTY_DATA_FOLDER_PATH) String dataFolderPath
   ) {
-    this();
-    this.name = name;
-    this.description = description;
+  this();
+    this.name = name == null ? JsonNullable.<String>undefined() : JsonNullable.of(name);
+    this.description = description == null ? JsonNullable.<String>undefined() : JsonNullable.of(description);
     this.id = id;
-    this.version = version;
-    this.assemblyFilePath = assemblyFilePath;
+    this.version = version == null ? JsonNullable.<String>undefined() : JsonNullable.of(version);
+    this.assemblyFilePath = assemblyFilePath == null ? JsonNullable.<String>undefined() : JsonNullable.of(assemblyFilePath);
     this.canUninstall = canUninstall;
-    this.dataFolderPath = dataFolderPath;
+    this.dataFolderPath = dataFolderPath == null ? JsonNullable.<String>undefined() : JsonNullable.of(dataFolderPath);
   }
 
   /**
@@ -114,8 +99,25 @@ public class IPlugin {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+    
+    if (name == null) {
+      name = JsonNullable.<String>undefined();
+    }
+    return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  private void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
 
@@ -125,8 +127,25 @@ public class IPlugin {
    * @return description
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getDescription() {
+    
+    if (description == null) {
+      description = JsonNullable.<String>undefined();
+    }
+    return description.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getDescription_JsonNullable() {
     return description;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  private void setDescription_JsonNullable(JsonNullable<String> description) {
+    this.description = description;
   }
 
 
@@ -136,9 +155,12 @@ public class IPlugin {
    * @return id
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getId() {
     return id;
   }
+
 
 
 
@@ -147,8 +169,25 @@ public class IPlugin {
    * @return version
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getVersion() {
+    
+    if (version == null) {
+      version = JsonNullable.<String>undefined();
+    }
+    return version.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getVersion_JsonNullable() {
     return version;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  private void setVersion_JsonNullable(JsonNullable<String> version) {
+    this.version = version;
   }
 
 
@@ -158,8 +197,25 @@ public class IPlugin {
    * @return assemblyFilePath
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getAssemblyFilePath() {
+    
+    if (assemblyFilePath == null) {
+      assemblyFilePath = JsonNullable.<String>undefined();
+    }
+    return assemblyFilePath.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ASSEMBLY_FILE_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getAssemblyFilePath_JsonNullable() {
     return assemblyFilePath;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ASSEMBLY_FILE_PATH)
+  private void setAssemblyFilePath_JsonNullable(JsonNullable<String> assemblyFilePath) {
+    this.assemblyFilePath = assemblyFilePath;
   }
 
 
@@ -169,9 +225,12 @@ public class IPlugin {
    * @return canUninstall
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CAN_UNINSTALL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getCanUninstall() {
     return canUninstall;
   }
+
 
 
 
@@ -180,13 +239,32 @@ public class IPlugin {
    * @return dataFolderPath
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getDataFolderPath() {
+    
+    if (dataFolderPath == null) {
+      dataFolderPath = JsonNullable.<String>undefined();
+    }
+    return dataFolderPath.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DATA_FOLDER_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getDataFolderPath_JsonNullable() {
     return dataFolderPath;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DATA_FOLDER_PATH)
+  private void setDataFolderPath_JsonNullable(JsonNullable<String> dataFolderPath) {
+    this.dataFolderPath = dataFolderPath;
   }
 
 
 
-
+  /**
+   * Return true if this IPlugin object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -196,13 +274,13 @@ public class IPlugin {
       return false;
     }
     IPlugin iplugin = (IPlugin) o;
-    return Objects.equals(this.name, iplugin.name) &&
-        Objects.equals(this.description, iplugin.description) &&
+    return equalsNullable(this.name, iplugin.name) &&
+        equalsNullable(this.description, iplugin.description) &&
         Objects.equals(this.id, iplugin.id) &&
-        Objects.equals(this.version, iplugin.version) &&
-        Objects.equals(this.assemblyFilePath, iplugin.assemblyFilePath) &&
+        equalsNullable(this.version, iplugin.version) &&
+        equalsNullable(this.assemblyFilePath, iplugin.assemblyFilePath) &&
         Objects.equals(this.canUninstall, iplugin.canUninstall) &&
-        Objects.equals(this.dataFolderPath, iplugin.dataFolderPath);
+        equalsNullable(this.dataFolderPath, iplugin.dataFolderPath);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -211,7 +289,7 @@ public class IPlugin {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, description, id, version, assemblyFilePath, canUninstall, dataFolderPath);
+    return Objects.hash(hashCodeNullable(name), hashCodeNullable(description), id, hashCodeNullable(version), hashCodeNullable(assemblyFilePath), canUninstall, hashCodeNullable(dataFolderPath));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -247,113 +325,74 @@ public class IPlugin {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("Description");
-    openapiFields.add("Id");
-    openapiFields.add("Version");
-    openapiFields.add("AssemblyFilePath");
-    openapiFields.add("CanUninstall");
-    openapiFields.add("DataFolderPath");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to IPlugin
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!IPlugin.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in IPlugin is not found in the empty JSON string", IPlugin.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!IPlugin.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `IPlugin` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("Description") != null && !jsonObj.get("Description").isJsonNull()) && !jsonObj.get("Description").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Description").toString()));
-      }
-      if ((jsonObj.get("Id") != null && !jsonObj.get("Id").isJsonNull()) && !jsonObj.get("Id").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Id").toString()));
-      }
-      if ((jsonObj.get("Version") != null && !jsonObj.get("Version").isJsonNull()) && !jsonObj.get("Version").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Version` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Version").toString()));
-      }
-      if ((jsonObj.get("AssemblyFilePath") != null && !jsonObj.get("AssemblyFilePath").isJsonNull()) && !jsonObj.get("AssemblyFilePath").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `AssemblyFilePath` to be a primitive type in the JSON string but got `%s`", jsonObj.get("AssemblyFilePath").toString()));
-      }
-      if ((jsonObj.get("DataFolderPath") != null && !jsonObj.get("DataFolderPath").isJsonNull()) && !jsonObj.get("DataFolderPath").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `DataFolderPath` to be a primitive type in the JSON string but got `%s`", jsonObj.get("DataFolderPath").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!IPlugin.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'IPlugin' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<IPlugin> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(IPlugin.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<IPlugin>() {
-           @Override
-           public void write(JsonWriter out, IPlugin value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public IPlugin read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of IPlugin given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of IPlugin
-   * @throws IOException if the JSON string is invalid with respect to IPlugin
-   */
-  public static IPlugin fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, IPlugin.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of IPlugin to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `Description` to the URL query string
+    if (getDescription() != null) {
+      joiner.add(String.format("%sDescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
+    }
+
+    // add `Id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+    }
+
+    // add `Version` to the URL query string
+    if (getVersion() != null) {
+      joiner.add(String.format("%sVersion%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
+    }
+
+    // add `AssemblyFilePath` to the URL query string
+    if (getAssemblyFilePath() != null) {
+      joiner.add(String.format("%sAssemblyFilePath%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAssemblyFilePath()))));
+    }
+
+    // add `CanUninstall` to the URL query string
+    if (getCanUninstall() != null) {
+      joiner.add(String.format("%sCanUninstall%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCanUninstall()))));
+    }
+
+    // add `DataFolderPath` to the URL query string
+    if (getDataFolderPath() != null) {
+      joiner.add(String.format("%sDataFolderPath%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDataFolderPath()))));
+    }
+
+    return joiner.toString();
   }
 }
 

@@ -10,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import org.openapitools.client.model.ImageProviderInfo;
 import org.openapitools.client.model.ImageType;
@@ -33,527 +24,368 @@ import org.openapitools.client.model.ProblemDetails;
 import org.openapitools.client.model.RemoteImageResult;
 import java.util.UUID;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class RemoteImageApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public RemoteImageApi() {
-        this(Configuration.getDefaultApiClient());
+  public RemoteImageApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public RemoteImageApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Downloads a remote image for an item.
+   * 
+   * @param itemId Item Id. (required)
+   * @param type The image type. (required)
+   * @param imageUrl The image url. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void downloadRemoteImage(UUID itemId, ImageType type, String imageUrl) throws ApiException {
+    downloadRemoteImageWithHttpInfo(itemId, type, imageUrl);
+  }
+
+  /**
+   * Downloads a remote image for an item.
+   * 
+   * @param itemId Item Id. (required)
+   * @param type The image type. (required)
+   * @param imageUrl The image url. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> downloadRemoteImageWithHttpInfo(UUID itemId, ImageType type, String imageUrl) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = downloadRemoteImageRequestBuilder(itemId, type, imageUrl);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("downloadRemoteImage", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder downloadRemoteImageRequestBuilder(UUID itemId, ImageType type, String imageUrl) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling downloadRemoteImage");
+    }
+    // verify the required parameter 'type' is set
+    if (type == null) {
+      throw new ApiException(400, "Missing the required parameter 'type' when calling downloadRemoteImage");
     }
 
-    public RemoteImageApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/RemoteImages/Download"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "type";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("type", type));
+    localVarQueryParameterBaseName = "imageUrl";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageUrl", imageUrl));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    public int getHostIndex() {
-        return localHostIndex;
-    }
+  /**
+   * Gets available remote image providers for an item.
+   * 
+   * @param itemId Item Id. (required)
+   * @return List&lt;ImageProviderInfo&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<ImageProviderInfo> getRemoteImageProviders(UUID itemId) throws ApiException {
+    ApiResponse<List<ImageProviderInfo>> localVarResponse = getRemoteImageProvidersWithHttpInfo(itemId);
+    return localVarResponse.getData();
+  }
 
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
-    }
-
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for downloadRemoteImage
-     * @param itemId Item Id. (required)
-     * @param type The image type. (required)
-     * @param imageUrl The image url. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Remote image downloaded. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Remote image not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call downloadRemoteImageCall(UUID itemId, ImageType type, String imageUrl, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Gets available remote image providers for an item.
+   * 
+   * @param itemId Item Id. (required)
+   * @return ApiResponse&lt;List&lt;ImageProviderInfo&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<ImageProviderInfo>> getRemoteImageProvidersWithHttpInfo(UUID itemId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getRemoteImageProvidersRequestBuilder(itemId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getRemoteImageProviders", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<ImageProviderInfo>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = null;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/RemoteImages/Download"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
+        return new ApiResponse<List<ImageProviderInfo>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<ImageProviderInfo>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (type != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("type", type));
-        }
-
-        if (imageUrl != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageUrl", imageUrl));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+  private HttpRequest.Builder getRemoteImageProvidersRequestBuilder(UUID itemId) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getRemoteImageProviders");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call downloadRemoteImageValidateBeforeCall(UUID itemId, ImageType type, String imageUrl, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling downloadRemoteImage(Async)");
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/RemoteImages/Providers"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets available remote images for an item.
+   * 
+   * @param itemId Item Id. (required)
+   * @param type The image type. (optional)
+   * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param providerName Optional. The image provider to use. (optional)
+   * @param includeAllLanguages Optional. Include all languages. (optional, default to false)
+   * @return RemoteImageResult
+   * @throws ApiException if fails to make API call
+   */
+  public RemoteImageResult getRemoteImages(UUID itemId, ImageType type, Integer startIndex, Integer limit, String providerName, Boolean includeAllLanguages) throws ApiException {
+    ApiResponse<RemoteImageResult> localVarResponse = getRemoteImagesWithHttpInfo(itemId, type, startIndex, limit, providerName, includeAllLanguages);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets available remote images for an item.
+   * 
+   * @param itemId Item Id. (required)
+   * @param type The image type. (optional)
+   * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param providerName Optional. The image provider to use. (optional)
+   * @param includeAllLanguages Optional. Include all languages. (optional, default to false)
+   * @return ApiResponse&lt;RemoteImageResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<RemoteImageResult> getRemoteImagesWithHttpInfo(UUID itemId, ImageType type, Integer startIndex, Integer limit, String providerName, Boolean includeAllLanguages) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getRemoteImagesRequestBuilder(itemId, type, startIndex, limit, providerName, includeAllLanguages);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getRemoteImages", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<RemoteImageResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        // verify the required parameter 'type' is set
-        if (type == null) {
-            throw new ApiException("Missing the required parameter 'type' when calling downloadRemoteImage(Async)");
-        }
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        return downloadRemoteImageCall(itemId, type, imageUrl, _callback);
+        return new ApiResponse<RemoteImageResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<RemoteImageResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
+  private HttpRequest.Builder getRemoteImagesRequestBuilder(UUID itemId, ImageType type, Integer startIndex, Integer limit, String providerName, Boolean includeAllLanguages) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getRemoteImages");
     }
 
-    /**
-     * Downloads a remote image for an item.
-     * 
-     * @param itemId Item Id. (required)
-     * @param type The image type. (required)
-     * @param imageUrl The image url. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Remote image downloaded. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Remote image not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void downloadRemoteImage(UUID itemId, ImageType type, String imageUrl) throws ApiException {
-        downloadRemoteImageWithHttpInfo(itemId, type, imageUrl);
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/RemoteImages"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "type";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("type", type));
+    localVarQueryParameterBaseName = "startIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("startIndex", startIndex));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "providerName";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("providerName", providerName));
+    localVarQueryParameterBaseName = "includeAllLanguages";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("includeAllLanguages", includeAllLanguages));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Downloads a remote image for an item.
-     * 
-     * @param itemId Item Id. (required)
-     * @param type The image type. (required)
-     * @param imageUrl The image url. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Remote image downloaded. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Remote image not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> downloadRemoteImageWithHttpInfo(UUID itemId, ImageType type, String imageUrl) throws ApiException {
-        okhttp3.Call localVarCall = downloadRemoteImageValidateBeforeCall(itemId, type, imageUrl, null);
-        return localVarApiClient.execute(localVarCall);
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Downloads a remote image for an item. (asynchronously)
-     * 
-     * @param itemId Item Id. (required)
-     * @param type The image type. (required)
-     * @param imageUrl The image url. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Remote image downloaded. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Remote image not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call downloadRemoteImageAsync(UUID itemId, ImageType type, String imageUrl, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = downloadRemoteImageValidateBeforeCall(itemId, type, imageUrl, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
-    /**
-     * Build call for getRemoteImageProviders
-     * @param itemId Item Id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Returned remote image providers. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getRemoteImageProvidersCall(UUID itemId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
+    return localVarRequestBuilder;
+  }
 
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/RemoteImages/Providers"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getRemoteImageProvidersValidateBeforeCall(UUID itemId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getRemoteImageProviders(Async)");
-        }
-
-        return getRemoteImageProvidersCall(itemId, _callback);
-
-    }
-
-    /**
-     * Gets available remote image providers for an item.
-     * 
-     * @param itemId Item Id. (required)
-     * @return List&lt;ImageProviderInfo&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Returned remote image providers. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<ImageProviderInfo> getRemoteImageProviders(UUID itemId) throws ApiException {
-        ApiResponse<List<ImageProviderInfo>> localVarResp = getRemoteImageProvidersWithHttpInfo(itemId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets available remote image providers for an item.
-     * 
-     * @param itemId Item Id. (required)
-     * @return ApiResponse&lt;List&lt;ImageProviderInfo&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Returned remote image providers. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<ImageProviderInfo>> getRemoteImageProvidersWithHttpInfo(UUID itemId) throws ApiException {
-        okhttp3.Call localVarCall = getRemoteImageProvidersValidateBeforeCall(itemId, null);
-        Type localVarReturnType = new TypeToken<List<ImageProviderInfo>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets available remote image providers for an item. (asynchronously)
-     * 
-     * @param itemId Item Id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Returned remote image providers. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getRemoteImageProvidersAsync(UUID itemId, final ApiCallback<List<ImageProviderInfo>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getRemoteImageProvidersValidateBeforeCall(itemId, _callback);
-        Type localVarReturnType = new TypeToken<List<ImageProviderInfo>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getRemoteImages
-     * @param itemId Item Id. (required)
-     * @param type The image type. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param providerName Optional. The image provider to use. (optional)
-     * @param includeAllLanguages Optional. Include all languages. (optional, default to false)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Remote Images returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getRemoteImagesCall(UUID itemId, ImageType type, Integer startIndex, Integer limit, String providerName, Boolean includeAllLanguages, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/RemoteImages"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (type != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("type", type));
-        }
-
-        if (startIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startIndex", startIndex));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (providerName != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("providerName", providerName));
-        }
-
-        if (includeAllLanguages != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("includeAllLanguages", includeAllLanguages));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getRemoteImagesValidateBeforeCall(UUID itemId, ImageType type, Integer startIndex, Integer limit, String providerName, Boolean includeAllLanguages, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getRemoteImages(Async)");
-        }
-
-        return getRemoteImagesCall(itemId, type, startIndex, limit, providerName, includeAllLanguages, _callback);
-
-    }
-
-    /**
-     * Gets available remote images for an item.
-     * 
-     * @param itemId Item Id. (required)
-     * @param type The image type. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param providerName Optional. The image provider to use. (optional)
-     * @param includeAllLanguages Optional. Include all languages. (optional, default to false)
-     * @return RemoteImageResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Remote Images returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public RemoteImageResult getRemoteImages(UUID itemId, ImageType type, Integer startIndex, Integer limit, String providerName, Boolean includeAllLanguages) throws ApiException {
-        ApiResponse<RemoteImageResult> localVarResp = getRemoteImagesWithHttpInfo(itemId, type, startIndex, limit, providerName, includeAllLanguages);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets available remote images for an item.
-     * 
-     * @param itemId Item Id. (required)
-     * @param type The image type. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param providerName Optional. The image provider to use. (optional)
-     * @param includeAllLanguages Optional. Include all languages. (optional, default to false)
-     * @return ApiResponse&lt;RemoteImageResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Remote Images returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<RemoteImageResult> getRemoteImagesWithHttpInfo(UUID itemId, ImageType type, Integer startIndex, Integer limit, String providerName, Boolean includeAllLanguages) throws ApiException {
-        okhttp3.Call localVarCall = getRemoteImagesValidateBeforeCall(itemId, type, startIndex, limit, providerName, includeAllLanguages, null);
-        Type localVarReturnType = new TypeToken<RemoteImageResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets available remote images for an item. (asynchronously)
-     * 
-     * @param itemId Item Id. (required)
-     * @param type The image type. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param providerName Optional. The image provider to use. (optional)
-     * @param includeAllLanguages Optional. Include all languages. (optional, default to false)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Remote Images returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getRemoteImagesAsync(UUID itemId, ImageType type, Integer startIndex, Integer limit, String providerName, Boolean includeAllLanguages, final ApiCallback<RemoteImageResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getRemoteImagesValidateBeforeCall(itemId, type, startIndex, limit, providerName, includeAllLanguages, _callback);
-        Type localVarReturnType = new TypeToken<RemoteImageResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
 }

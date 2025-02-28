@@ -13,13 +13,17 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,70 +31,59 @@ import java.util.UUID;
 import org.openapitools.client.model.SessionInfoDto;
 import org.openapitools.client.model.SessionMessageType;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Sessions message.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  SessionsMessage.JSON_PROPERTY_DATA,
+  SessionsMessage.JSON_PROPERTY_MESSAGE_ID,
+  SessionsMessage.JSON_PROPERTY_MESSAGE_TYPE
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class SessionsMessage {
-  public static final String SERIALIZED_NAME_DATA = "Data";
-  @SerializedName(SERIALIZED_NAME_DATA)
-  @javax.annotation.Nullable
-  private List<SessionInfoDto> data;
+  public static final String JSON_PROPERTY_DATA = "Data";
+  private JsonNullable<List<SessionInfoDto>> data = JsonNullable.<List<SessionInfoDto>>undefined();
 
-  public static final String SERIALIZED_NAME_MESSAGE_ID = "MessageId";
-  @SerializedName(SERIALIZED_NAME_MESSAGE_ID)
+  public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
   @javax.annotation.Nullable
   private UUID messageId;
 
-  public static final String SERIALIZED_NAME_MESSAGE_TYPE = "MessageType";
-  @SerializedName(SERIALIZED_NAME_MESSAGE_TYPE)
+  public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
   @javax.annotation.Nullable
   private SessionMessageType messageType = SessionMessageType.SESSIONS;
 
-  public SessionsMessage() {
+  public SessionsMessage() { 
   }
 
+  @JsonCreator
   public SessionsMessage(
-     SessionMessageType messageType
+    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType
   ) {
-    this();
+  this();
     this.messageType = messageType;
   }
 
   public SessionsMessage data(@javax.annotation.Nullable List<SessionInfoDto> data) {
-    this.data = data;
+    this.data = JsonNullable.<List<SessionInfoDto>>of(data);
     return this;
   }
 
   public SessionsMessage addDataItem(SessionInfoDto dataItem) {
-    if (this.data == null) {
-      this.data = new ArrayList<>();
+    if (this.data == null || !this.data.isPresent()) {
+      this.data = JsonNullable.<List<SessionInfoDto>>of(new ArrayList<>());
     }
-    this.data.add(dataItem);
+    try {
+      this.data.get().add(dataItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -99,12 +92,25 @@ public class SessionsMessage {
    * @return data
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<SessionInfoDto> getData() {
+        return data.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<SessionInfoDto>> getData_JsonNullable() {
     return data;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DATA)
+  public void setData_JsonNullable(JsonNullable<List<SessionInfoDto>> data) {
+    this.data = data;
   }
 
   public void setData(@javax.annotation.Nullable List<SessionInfoDto> data) {
-    this.data = data;
+    this.data = JsonNullable.<List<SessionInfoDto>>of(data);
   }
 
 
@@ -118,10 +124,15 @@ public class SessionsMessage {
    * @return messageId
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getMessageId() {
     return messageId;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMessageId(@javax.annotation.Nullable UUID messageId) {
     this.messageId = messageId;
   }
@@ -132,6 +143,8 @@ public class SessionsMessage {
    * @return messageType
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public SessionMessageType getMessageType() {
     return messageType;
   }
@@ -139,6 +152,9 @@ public class SessionsMessage {
 
 
 
+  /**
+   * Return true if this SessionsMessage object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -148,7 +164,7 @@ public class SessionsMessage {
       return false;
     }
     SessionsMessage sessionsMessage = (SessionsMessage) o;
-    return Objects.equals(this.data, sessionsMessage.data) &&
+    return equalsNullable(this.data, sessionsMessage.data) &&
         Objects.equals(this.messageId, sessionsMessage.messageId) &&
         Objects.equals(this.messageType, sessionsMessage.messageType);
   }
@@ -159,7 +175,7 @@ public class SessionsMessage {
 
   @Override
   public int hashCode() {
-    return Objects.hash(data, messageId, messageType);
+    return Objects.hash(hashCodeNullable(data), messageId, messageType);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -191,112 +207,59 @@ public class SessionsMessage {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Data");
-    openapiFields.add("MessageId");
-    openapiFields.add("MessageType");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to SessionsMessage
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!SessionsMessage.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in SessionsMessage is not found in the empty JSON string", SessionsMessage.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!SessionsMessage.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `SessionsMessage` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (jsonObj.get("Data") != null && !jsonObj.get("Data").isJsonNull()) {
-        JsonArray jsonArraydata = jsonObj.getAsJsonArray("Data");
-        if (jsonArraydata != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("Data").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `Data` to be an array in the JSON string but got `%s`", jsonObj.get("Data").toString()));
-          }
-
-          // validate the optional field `Data` (array)
-          for (int i = 0; i < jsonArraydata.size(); i++) {
-            SessionInfoDto.validateJsonElement(jsonArraydata.get(i));
-          };
-        }
-      }
-      if ((jsonObj.get("MessageId") != null && !jsonObj.get("MessageId").isJsonNull()) && !jsonObj.get("MessageId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MessageId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("MessageId").toString()));
-      }
-      // validate the optional field `MessageType`
-      if (jsonObj.get("MessageType") != null && !jsonObj.get("MessageType").isJsonNull()) {
-        SessionMessageType.validateJsonElement(jsonObj.get("MessageType"));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!SessionsMessage.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'SessionsMessage' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<SessionsMessage> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(SessionsMessage.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<SessionsMessage>() {
-           @Override
-           public void write(JsonWriter out, SessionsMessage value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public SessionsMessage read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of SessionsMessage given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of SessionsMessage
-   * @throws IOException if the JSON string is invalid with respect to SessionsMessage
-   */
-  public static SessionsMessage fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, SessionsMessage.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of SessionsMessage to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Data` to the URL query string
+    if (getData() != null) {
+      for (int i = 0; i < getData().size(); i++) {
+        if (getData().get(i) != null) {
+          joiner.add(getData().get(i).toUrlQueryString(String.format("%sData%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `MessageId` to the URL query string
+    if (getMessageId() != null) {
+      joiner.add(String.format("%sMessageId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMessageId()))));
+    }
+
+    // add `MessageType` to the URL query string
+    if (getMessageType() != null) {
+      joiner.add(String.format("%sMessageType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMessageType()))));
+    }
+
+    return joiner.toString();
   }
 }
 

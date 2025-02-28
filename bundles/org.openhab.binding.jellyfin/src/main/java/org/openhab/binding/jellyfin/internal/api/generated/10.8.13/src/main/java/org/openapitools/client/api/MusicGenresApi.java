@@ -10,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import org.openapitools.client.model.BaseItemDto;
 import org.openapitools.client.model.BaseItemDtoQueryResult;
@@ -35,472 +26,333 @@ import org.openapitools.client.model.ItemFields;
 import org.openapitools.client.model.SortOrder;
 import java.util.UUID;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class MusicGenresApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public MusicGenresApi() {
-        this(Configuration.getDefaultApiClient());
+  public MusicGenresApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public MusicGenresApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Gets a music genre, by name.
+   * 
+   * @param genreName The genre name. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @return BaseItemDto
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDto getMusicGenre(String genreName, UUID userId) throws ApiException {
+    ApiResponse<BaseItemDto> localVarResponse = getMusicGenreWithHttpInfo(genreName, userId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets a music genre, by name.
+   * 
+   * @param genreName The genre name. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @return ApiResponse&lt;BaseItemDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDto> getMusicGenreWithHttpInfo(String genreName, UUID userId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getMusicGenreRequestBuilder(genreName, userId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getMusicGenre", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDto>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDto>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getMusicGenreRequestBuilder(String genreName, UUID userId) throws ApiException {
+    // verify the required parameter 'genreName' is set
+    if (genreName == null) {
+      throw new ApiException(400, "Missing the required parameter 'genreName' when calling getMusicGenre");
     }
 
-    public MusicGenresApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/MusicGenres/{genreName}"
+        .replace("{genreName}", ApiClient.urlEncode(genreName.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets all music genres from a given item, folder, or the entire library.
+   * 
+   * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param searchTerm The search term. (optional)
+   * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows multiple, comma delimited. (optional)
+   * @param includeItemTypes Optional. If specified, results will be filtered in based on item type. This allows multiple, comma delimited. (optional)
+   * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
+   * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @param userId User id. (optional)
+   * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string. (optional)
+   * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
+   * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string. (optional)
+   * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
+   * @param sortOrder Sort Order - Ascending,Descending. (optional)
+   * @param enableImages Optional, include image information in output. (optional, default to true)
+   * @param enableTotalRecordCount Optional. Include total record count. (optional, default to true)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   * @deprecated
+   */
+  @Deprecated
+  public BaseItemDtoQueryResult getMusicGenres(Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, Boolean isFavorite, Integer imageTypeLimit, List<ImageType> enableImageTypes, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<String> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getMusicGenresWithHttpInfo(startIndex, limit, searchTerm, parentId, fields, excludeItemTypes, includeItemTypes, isFavorite, imageTypeLimit, enableImageTypes, userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets all music genres from a given item, folder, or the entire library.
+   * 
+   * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param searchTerm The search term. (optional)
+   * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows multiple, comma delimited. (optional)
+   * @param includeItemTypes Optional. If specified, results will be filtered in based on item type. This allows multiple, comma delimited. (optional)
+   * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
+   * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @param userId User id. (optional)
+   * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string. (optional)
+   * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
+   * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string. (optional)
+   * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
+   * @param sortOrder Sort Order - Ascending,Descending. (optional)
+   * @param enableImages Optional, include image information in output. (optional, default to true)
+   * @param enableTotalRecordCount Optional. Include total record count. (optional, default to true)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   * @deprecated
+   */
+  @Deprecated
+  public ApiResponse<BaseItemDtoQueryResult> getMusicGenresWithHttpInfo(Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, Boolean isFavorite, Integer imageTypeLimit, List<ImageType> enableImageTypes, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<String> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getMusicGenresRequestBuilder(startIndex, limit, searchTerm, parentId, fields, excludeItemTypes, includeItemTypes, isFavorite, imageTypeLimit, enableImageTypes, userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getMusicGenres", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getMusicGenresRequestBuilder(Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, Boolean isFavorite, Integer imageTypeLimit, List<ImageType> enableImageTypes, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<String> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/MusicGenres";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "startIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("startIndex", startIndex));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "searchTerm";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("searchTerm", searchTerm));
+    localVarQueryParameterBaseName = "parentId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("parentId", parentId));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+    localVarQueryParameterBaseName = "excludeItemTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "excludeItemTypes", excludeItemTypes));
+    localVarQueryParameterBaseName = "includeItemTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
+    localVarQueryParameterBaseName = "isFavorite";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isFavorite", isFavorite));
+    localVarQueryParameterBaseName = "imageTypeLimit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
+    localVarQueryParameterBaseName = "enableImageTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "nameStartsWithOrGreater";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("nameStartsWithOrGreater", nameStartsWithOrGreater));
+    localVarQueryParameterBaseName = "nameStartsWith";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("nameStartsWith", nameStartsWith));
+    localVarQueryParameterBaseName = "nameLessThan";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("nameLessThan", nameLessThan));
+    localVarQueryParameterBaseName = "sortBy";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "sortBy", sortBy));
+    localVarQueryParameterBaseName = "sortOrder";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "sortOrder", sortOrder));
+    localVarQueryParameterBaseName = "enableImages";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
+    localVarQueryParameterBaseName = "enableTotalRecordCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableTotalRecordCount", enableTotalRecordCount));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    public int getHostIndex() {
-        return localHostIndex;
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
-    }
-
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for getMusicGenre
-     * @param genreName The genre name. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Success </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMusicGenreCall(String genreName, UUID userId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/MusicGenres/{genreName}"
-            .replace("{" + "genreName" + "}", localVarApiClient.escapeString(genreName.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getMusicGenreValidateBeforeCall(String genreName, UUID userId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'genreName' is set
-        if (genreName == null) {
-            throw new ApiException("Missing the required parameter 'genreName' when calling getMusicGenre(Async)");
-        }
-
-        return getMusicGenreCall(genreName, userId, _callback);
-
-    }
-
-    /**
-     * Gets a music genre, by name.
-     * 
-     * @param genreName The genre name. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @return BaseItemDto
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Success </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDto getMusicGenre(String genreName, UUID userId) throws ApiException {
-        ApiResponse<BaseItemDto> localVarResp = getMusicGenreWithHttpInfo(genreName, userId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets a music genre, by name.
-     * 
-     * @param genreName The genre name. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @return ApiResponse&lt;BaseItemDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Success </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDto> getMusicGenreWithHttpInfo(String genreName, UUID userId) throws ApiException {
-        okhttp3.Call localVarCall = getMusicGenreValidateBeforeCall(genreName, userId, null);
-        Type localVarReturnType = new TypeToken<BaseItemDto>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets a music genre, by name. (asynchronously)
-     * 
-     * @param genreName The genre name. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Success </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMusicGenreAsync(String genreName, UUID userId, final ApiCallback<BaseItemDto> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getMusicGenreValidateBeforeCall(genreName, userId, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDto>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getMusicGenres
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param searchTerm The search term. (optional)
-     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows multiple, comma delimited. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered in based on item type. This allows multiple, comma delimited. (optional)
-     * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
-     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param userId User id. (optional)
-     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string. (optional)
-     * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
-     * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string. (optional)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
-     * @param sortOrder Sort Order - Ascending,Descending. (optional)
-     * @param enableImages Optional, include image information in output. (optional, default to true)
-     * @param enableTotalRecordCount Optional. Include total record count. (optional, default to true)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Music genres returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public okhttp3.Call getMusicGenresCall(Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, Boolean isFavorite, Integer imageTypeLimit, List<ImageType> enableImageTypes, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<String> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/MusicGenres";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (startIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startIndex", startIndex));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (searchTerm != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("searchTerm", searchTerm));
-        }
-
-        if (parentId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("parentId", parentId));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        if (excludeItemTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "excludeItemTypes", excludeItemTypes));
-        }
-
-        if (includeItemTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
-        }
-
-        if (isFavorite != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isFavorite", isFavorite));
-        }
-
-        if (imageTypeLimit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageTypeLimit", imageTypeLimit));
-        }
-
-        if (enableImageTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        }
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (nameStartsWithOrGreater != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("nameStartsWithOrGreater", nameStartsWithOrGreater));
-        }
-
-        if (nameStartsWith != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("nameStartsWith", nameStartsWith));
-        }
-
-        if (nameLessThan != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("nameLessThan", nameLessThan));
-        }
-
-        if (sortBy != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "sortBy", sortBy));
-        }
-
-        if (sortOrder != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "sortOrder", sortOrder));
-        }
-
-        if (enableImages != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableImages", enableImages));
-        }
-
-        if (enableTotalRecordCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableTotalRecordCount", enableTotalRecordCount));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @Deprecated
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getMusicGenresValidateBeforeCall(Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, Boolean isFavorite, Integer imageTypeLimit, List<ImageType> enableImageTypes, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<String> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount, final ApiCallback _callback) throws ApiException {
-        return getMusicGenresCall(startIndex, limit, searchTerm, parentId, fields, excludeItemTypes, includeItemTypes, isFavorite, imageTypeLimit, enableImageTypes, userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount, _callback);
-
-    }
-
-    /**
-     * Gets all music genres from a given item, folder, or the entire library.
-     * 
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param searchTerm The search term. (optional)
-     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows multiple, comma delimited. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered in based on item type. This allows multiple, comma delimited. (optional)
-     * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
-     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param userId User id. (optional)
-     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string. (optional)
-     * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
-     * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string. (optional)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
-     * @param sortOrder Sort Order - Ascending,Descending. (optional)
-     * @param enableImages Optional, include image information in output. (optional, default to true)
-     * @param enableTotalRecordCount Optional. Include total record count. (optional, default to true)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Music genres returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public BaseItemDtoQueryResult getMusicGenres(Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, Boolean isFavorite, Integer imageTypeLimit, List<ImageType> enableImageTypes, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<String> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getMusicGenresWithHttpInfo(startIndex, limit, searchTerm, parentId, fields, excludeItemTypes, includeItemTypes, isFavorite, imageTypeLimit, enableImageTypes, userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets all music genres from a given item, folder, or the entire library.
-     * 
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param searchTerm The search term. (optional)
-     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows multiple, comma delimited. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered in based on item type. This allows multiple, comma delimited. (optional)
-     * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
-     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param userId User id. (optional)
-     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string. (optional)
-     * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
-     * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string. (optional)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
-     * @param sortOrder Sort Order - Ascending,Descending. (optional)
-     * @param enableImages Optional, include image information in output. (optional, default to true)
-     * @param enableTotalRecordCount Optional. Include total record count. (optional, default to true)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Music genres returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public ApiResponse<BaseItemDtoQueryResult> getMusicGenresWithHttpInfo(Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, Boolean isFavorite, Integer imageTypeLimit, List<ImageType> enableImageTypes, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<String> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount) throws ApiException {
-        okhttp3.Call localVarCall = getMusicGenresValidateBeforeCall(startIndex, limit, searchTerm, parentId, fields, excludeItemTypes, includeItemTypes, isFavorite, imageTypeLimit, enableImageTypes, userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets all music genres from a given item, folder, or the entire library. (asynchronously)
-     * 
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param searchTerm The search term. (optional)
-     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows multiple, comma delimited. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered in based on item type. This allows multiple, comma delimited. (optional)
-     * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
-     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param userId User id. (optional)
-     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string. (optional)
-     * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
-     * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string. (optional)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
-     * @param sortOrder Sort Order - Ascending,Descending. (optional)
-     * @param enableImages Optional, include image information in output. (optional, default to true)
-     * @param enableTotalRecordCount Optional. Include total record count. (optional, default to true)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Music genres returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public okhttp3.Call getMusicGenresAsync(Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, Boolean isFavorite, Integer imageTypeLimit, List<ImageType> enableImageTypes, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<String> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getMusicGenresValidateBeforeCall(startIndex, limit, searchTerm, parentId, fields, excludeItemTypes, includeItemTypes, isFavorite, imageTypeLimit, enableImageTypes, userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
 }

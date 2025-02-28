@@ -10,345 +10,245 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import org.openapitools.client.model.BaseItemKind;
 import org.openapitools.client.model.MediaType;
 import org.openapitools.client.model.SearchHintResult;
 import java.util.UUID;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class SearchApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public SearchApi() {
-        this(Configuration.getDefaultApiClient());
+  public SearchApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public SearchApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Gets the search hint result.
+   * 
+   * @param searchTerm The search term to filter on. (required)
+   * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param userId Optional. Supply a user id to search within a user&#39;s library or omit to search all. (optional)
+   * @param includeItemTypes If specified, only results with the specified item types are returned. This allows multiple, comma delimited. (optional)
+   * @param excludeItemTypes If specified, results with these item types are filtered out. This allows multiple, comma delimited. (optional)
+   * @param mediaTypes If specified, only results with the specified media types are returned. This allows multiple, comma delimited. (optional)
+   * @param parentId If specified, only children of the parent are returned. (optional)
+   * @param isMovie Optional filter for movies. (optional)
+   * @param isSeries Optional filter for series. (optional)
+   * @param isNews Optional filter for news. (optional)
+   * @param isKids Optional filter for kids. (optional)
+   * @param isSports Optional filter for sports. (optional)
+   * @param includePeople Optional filter whether to include people. (optional, default to true)
+   * @param includeMedia Optional filter whether to include media. (optional, default to true)
+   * @param includeGenres Optional filter whether to include genres. (optional, default to true)
+   * @param includeStudios Optional filter whether to include studios. (optional, default to true)
+   * @param includeArtists Optional filter whether to include artists. (optional, default to true)
+   * @return SearchHintResult
+   * @throws ApiException if fails to make API call
+   */
+  public SearchHintResult getSearchHints(String searchTerm, Integer startIndex, Integer limit, UUID userId, List<BaseItemKind> includeItemTypes, List<BaseItemKind> excludeItemTypes, List<MediaType> mediaTypes, UUID parentId, Boolean isMovie, Boolean isSeries, Boolean isNews, Boolean isKids, Boolean isSports, Boolean includePeople, Boolean includeMedia, Boolean includeGenres, Boolean includeStudios, Boolean includeArtists) throws ApiException {
+    ApiResponse<SearchHintResult> localVarResponse = getSearchHintsWithHttpInfo(searchTerm, startIndex, limit, userId, includeItemTypes, excludeItemTypes, mediaTypes, parentId, isMovie, isSeries, isNews, isKids, isSports, includePeople, includeMedia, includeGenres, includeStudios, includeArtists);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets the search hint result.
+   * 
+   * @param searchTerm The search term to filter on. (required)
+   * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param userId Optional. Supply a user id to search within a user&#39;s library or omit to search all. (optional)
+   * @param includeItemTypes If specified, only results with the specified item types are returned. This allows multiple, comma delimited. (optional)
+   * @param excludeItemTypes If specified, results with these item types are filtered out. This allows multiple, comma delimited. (optional)
+   * @param mediaTypes If specified, only results with the specified media types are returned. This allows multiple, comma delimited. (optional)
+   * @param parentId If specified, only children of the parent are returned. (optional)
+   * @param isMovie Optional filter for movies. (optional)
+   * @param isSeries Optional filter for series. (optional)
+   * @param isNews Optional filter for news. (optional)
+   * @param isKids Optional filter for kids. (optional)
+   * @param isSports Optional filter for sports. (optional)
+   * @param includePeople Optional filter whether to include people. (optional, default to true)
+   * @param includeMedia Optional filter whether to include media. (optional, default to true)
+   * @param includeGenres Optional filter whether to include genres. (optional, default to true)
+   * @param includeStudios Optional filter whether to include studios. (optional, default to true)
+   * @param includeArtists Optional filter whether to include artists. (optional, default to true)
+   * @return ApiResponse&lt;SearchHintResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<SearchHintResult> getSearchHintsWithHttpInfo(String searchTerm, Integer startIndex, Integer limit, UUID userId, List<BaseItemKind> includeItemTypes, List<BaseItemKind> excludeItemTypes, List<MediaType> mediaTypes, UUID parentId, Boolean isMovie, Boolean isSeries, Boolean isNews, Boolean isKids, Boolean isSports, Boolean includePeople, Boolean includeMedia, Boolean includeGenres, Boolean includeStudios, Boolean includeArtists) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getSearchHintsRequestBuilder(searchTerm, startIndex, limit, userId, includeItemTypes, excludeItemTypes, mediaTypes, parentId, isMovie, isSeries, isNews, isKids, isSports, includePeople, includeMedia, includeGenres, includeStudios, includeArtists);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getSearchHints", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<SearchHintResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<SearchHintResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<SearchHintResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getSearchHintsRequestBuilder(String searchTerm, Integer startIndex, Integer limit, UUID userId, List<BaseItemKind> includeItemTypes, List<BaseItemKind> excludeItemTypes, List<MediaType> mediaTypes, UUID parentId, Boolean isMovie, Boolean isSeries, Boolean isNews, Boolean isKids, Boolean isSports, Boolean includePeople, Boolean includeMedia, Boolean includeGenres, Boolean includeStudios, Boolean includeArtists) throws ApiException {
+    // verify the required parameter 'searchTerm' is set
+    if (searchTerm == null) {
+      throw new ApiException(400, "Missing the required parameter 'searchTerm' when calling getSearchHints");
     }
 
-    public SearchApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Search/Hints";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "startIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("startIndex", startIndex));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "searchTerm";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("searchTerm", searchTerm));
+    localVarQueryParameterBaseName = "includeItemTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
+    localVarQueryParameterBaseName = "excludeItemTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "excludeItemTypes", excludeItemTypes));
+    localVarQueryParameterBaseName = "mediaTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "mediaTypes", mediaTypes));
+    localVarQueryParameterBaseName = "parentId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("parentId", parentId));
+    localVarQueryParameterBaseName = "isMovie";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isMovie", isMovie));
+    localVarQueryParameterBaseName = "isSeries";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isSeries", isSeries));
+    localVarQueryParameterBaseName = "isNews";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isNews", isNews));
+    localVarQueryParameterBaseName = "isKids";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isKids", isKids));
+    localVarQueryParameterBaseName = "isSports";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isSports", isSports));
+    localVarQueryParameterBaseName = "includePeople";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("includePeople", includePeople));
+    localVarQueryParameterBaseName = "includeMedia";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("includeMedia", includeMedia));
+    localVarQueryParameterBaseName = "includeGenres";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("includeGenres", includeGenres));
+    localVarQueryParameterBaseName = "includeStudios";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("includeStudios", includeStudios));
+    localVarQueryParameterBaseName = "includeArtists";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("includeArtists", includeArtists));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    public int getHostIndex() {
-        return localHostIndex;
-    }
-
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
-    }
-
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for getSearchHints
-     * @param searchTerm The search term to filter on. (required)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param userId Optional. Supply a user id to search within a user&#39;s library or omit to search all. (optional)
-     * @param includeItemTypes If specified, only results with the specified item types are returned. This allows multiple, comma delimited. (optional)
-     * @param excludeItemTypes If specified, results with these item types are filtered out. This allows multiple, comma delimited. (optional)
-     * @param mediaTypes If specified, only results with the specified media types are returned. This allows multiple, comma delimited. (optional)
-     * @param parentId If specified, only children of the parent are returned. (optional)
-     * @param isMovie Optional filter for movies. (optional)
-     * @param isSeries Optional filter for series. (optional)
-     * @param isNews Optional filter for news. (optional)
-     * @param isKids Optional filter for kids. (optional)
-     * @param isSports Optional filter for sports. (optional)
-     * @param includePeople Optional filter whether to include people. (optional, default to true)
-     * @param includeMedia Optional filter whether to include media. (optional, default to true)
-     * @param includeGenres Optional filter whether to include genres. (optional, default to true)
-     * @param includeStudios Optional filter whether to include studios. (optional, default to true)
-     * @param includeArtists Optional filter whether to include artists. (optional, default to true)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Search hint returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSearchHintsCall(String searchTerm, Integer startIndex, Integer limit, UUID userId, List<BaseItemKind> includeItemTypes, List<BaseItemKind> excludeItemTypes, List<MediaType> mediaTypes, UUID parentId, Boolean isMovie, Boolean isSeries, Boolean isNews, Boolean isKids, Boolean isSports, Boolean includePeople, Boolean includeMedia, Boolean includeGenres, Boolean includeStudios, Boolean includeArtists, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Search/Hints";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (startIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startIndex", startIndex));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (searchTerm != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("searchTerm", searchTerm));
-        }
-
-        if (includeItemTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
-        }
-
-        if (excludeItemTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "excludeItemTypes", excludeItemTypes));
-        }
-
-        if (mediaTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "mediaTypes", mediaTypes));
-        }
-
-        if (parentId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("parentId", parentId));
-        }
-
-        if (isMovie != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isMovie", isMovie));
-        }
-
-        if (isSeries != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isSeries", isSeries));
-        }
-
-        if (isNews != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isNews", isNews));
-        }
-
-        if (isKids != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isKids", isKids));
-        }
-
-        if (isSports != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isSports", isSports));
-        }
-
-        if (includePeople != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("includePeople", includePeople));
-        }
-
-        if (includeMedia != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("includeMedia", includeMedia));
-        }
-
-        if (includeGenres != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("includeGenres", includeGenres));
-        }
-
-        if (includeStudios != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("includeStudios", includeStudios));
-        }
-
-        if (includeArtists != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("includeArtists", includeArtists));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getSearchHintsValidateBeforeCall(String searchTerm, Integer startIndex, Integer limit, UUID userId, List<BaseItemKind> includeItemTypes, List<BaseItemKind> excludeItemTypes, List<MediaType> mediaTypes, UUID parentId, Boolean isMovie, Boolean isSeries, Boolean isNews, Boolean isKids, Boolean isSports, Boolean includePeople, Boolean includeMedia, Boolean includeGenres, Boolean includeStudios, Boolean includeArtists, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'searchTerm' is set
-        if (searchTerm == null) {
-            throw new ApiException("Missing the required parameter 'searchTerm' when calling getSearchHints(Async)");
-        }
-
-        return getSearchHintsCall(searchTerm, startIndex, limit, userId, includeItemTypes, excludeItemTypes, mediaTypes, parentId, isMovie, isSeries, isNews, isKids, isSports, includePeople, includeMedia, includeGenres, includeStudios, includeArtists, _callback);
-
-    }
-
-    /**
-     * Gets the search hint result.
-     * 
-     * @param searchTerm The search term to filter on. (required)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param userId Optional. Supply a user id to search within a user&#39;s library or omit to search all. (optional)
-     * @param includeItemTypes If specified, only results with the specified item types are returned. This allows multiple, comma delimited. (optional)
-     * @param excludeItemTypes If specified, results with these item types are filtered out. This allows multiple, comma delimited. (optional)
-     * @param mediaTypes If specified, only results with the specified media types are returned. This allows multiple, comma delimited. (optional)
-     * @param parentId If specified, only children of the parent are returned. (optional)
-     * @param isMovie Optional filter for movies. (optional)
-     * @param isSeries Optional filter for series. (optional)
-     * @param isNews Optional filter for news. (optional)
-     * @param isKids Optional filter for kids. (optional)
-     * @param isSports Optional filter for sports. (optional)
-     * @param includePeople Optional filter whether to include people. (optional, default to true)
-     * @param includeMedia Optional filter whether to include media. (optional, default to true)
-     * @param includeGenres Optional filter whether to include genres. (optional, default to true)
-     * @param includeStudios Optional filter whether to include studios. (optional, default to true)
-     * @param includeArtists Optional filter whether to include artists. (optional, default to true)
-     * @return SearchHintResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Search hint returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public SearchHintResult getSearchHints(String searchTerm, Integer startIndex, Integer limit, UUID userId, List<BaseItemKind> includeItemTypes, List<BaseItemKind> excludeItemTypes, List<MediaType> mediaTypes, UUID parentId, Boolean isMovie, Boolean isSeries, Boolean isNews, Boolean isKids, Boolean isSports, Boolean includePeople, Boolean includeMedia, Boolean includeGenres, Boolean includeStudios, Boolean includeArtists) throws ApiException {
-        ApiResponse<SearchHintResult> localVarResp = getSearchHintsWithHttpInfo(searchTerm, startIndex, limit, userId, includeItemTypes, excludeItemTypes, mediaTypes, parentId, isMovie, isSeries, isNews, isKids, isSports, includePeople, includeMedia, includeGenres, includeStudios, includeArtists);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets the search hint result.
-     * 
-     * @param searchTerm The search term to filter on. (required)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param userId Optional. Supply a user id to search within a user&#39;s library or omit to search all. (optional)
-     * @param includeItemTypes If specified, only results with the specified item types are returned. This allows multiple, comma delimited. (optional)
-     * @param excludeItemTypes If specified, results with these item types are filtered out. This allows multiple, comma delimited. (optional)
-     * @param mediaTypes If specified, only results with the specified media types are returned. This allows multiple, comma delimited. (optional)
-     * @param parentId If specified, only children of the parent are returned. (optional)
-     * @param isMovie Optional filter for movies. (optional)
-     * @param isSeries Optional filter for series. (optional)
-     * @param isNews Optional filter for news. (optional)
-     * @param isKids Optional filter for kids. (optional)
-     * @param isSports Optional filter for sports. (optional)
-     * @param includePeople Optional filter whether to include people. (optional, default to true)
-     * @param includeMedia Optional filter whether to include media. (optional, default to true)
-     * @param includeGenres Optional filter whether to include genres. (optional, default to true)
-     * @param includeStudios Optional filter whether to include studios. (optional, default to true)
-     * @param includeArtists Optional filter whether to include artists. (optional, default to true)
-     * @return ApiResponse&lt;SearchHintResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Search hint returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<SearchHintResult> getSearchHintsWithHttpInfo(String searchTerm, Integer startIndex, Integer limit, UUID userId, List<BaseItemKind> includeItemTypes, List<BaseItemKind> excludeItemTypes, List<MediaType> mediaTypes, UUID parentId, Boolean isMovie, Boolean isSeries, Boolean isNews, Boolean isKids, Boolean isSports, Boolean includePeople, Boolean includeMedia, Boolean includeGenres, Boolean includeStudios, Boolean includeArtists) throws ApiException {
-        okhttp3.Call localVarCall = getSearchHintsValidateBeforeCall(searchTerm, startIndex, limit, userId, includeItemTypes, excludeItemTypes, mediaTypes, parentId, isMovie, isSeries, isNews, isKids, isSports, includePeople, includeMedia, includeGenres, includeStudios, includeArtists, null);
-        Type localVarReturnType = new TypeToken<SearchHintResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets the search hint result. (asynchronously)
-     * 
-     * @param searchTerm The search term to filter on. (required)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param userId Optional. Supply a user id to search within a user&#39;s library or omit to search all. (optional)
-     * @param includeItemTypes If specified, only results with the specified item types are returned. This allows multiple, comma delimited. (optional)
-     * @param excludeItemTypes If specified, results with these item types are filtered out. This allows multiple, comma delimited. (optional)
-     * @param mediaTypes If specified, only results with the specified media types are returned. This allows multiple, comma delimited. (optional)
-     * @param parentId If specified, only children of the parent are returned. (optional)
-     * @param isMovie Optional filter for movies. (optional)
-     * @param isSeries Optional filter for series. (optional)
-     * @param isNews Optional filter for news. (optional)
-     * @param isKids Optional filter for kids. (optional)
-     * @param isSports Optional filter for sports. (optional)
-     * @param includePeople Optional filter whether to include people. (optional, default to true)
-     * @param includeMedia Optional filter whether to include media. (optional, default to true)
-     * @param includeGenres Optional filter whether to include genres. (optional, default to true)
-     * @param includeStudios Optional filter whether to include studios. (optional, default to true)
-     * @param includeArtists Optional filter whether to include artists. (optional, default to true)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Search hint returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSearchHintsAsync(String searchTerm, Integer startIndex, Integer limit, UUID userId, List<BaseItemKind> includeItemTypes, List<BaseItemKind> excludeItemTypes, List<MediaType> mediaTypes, UUID parentId, Boolean isMovie, Boolean isSeries, Boolean isNews, Boolean isKids, Boolean isSports, Boolean includePeople, Boolean includeMedia, Boolean includeGenres, Boolean includeStudios, Boolean includeArtists, final ApiCallback<SearchHintResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getSearchHintsValidateBeforeCall(searchTerm, startIndex, limit, userId, includeItemTypes, excludeItemTypes, mediaTypes, parentId, isMovie, isSeries, isNews, isKids, isSports, includePeople, includeMedia, includeGenres, includeStudios, includeArtists, _callback);
-        Type localVarReturnType = new TypeToken<SearchHintResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
 }

@@ -13,79 +13,68 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * QueryFiltersLegacy
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  QueryFiltersLegacy.JSON_PROPERTY_GENRES,
+  QueryFiltersLegacy.JSON_PROPERTY_TAGS,
+  QueryFiltersLegacy.JSON_PROPERTY_OFFICIAL_RATINGS,
+  QueryFiltersLegacy.JSON_PROPERTY_YEARS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class QueryFiltersLegacy {
-  public static final String SERIALIZED_NAME_GENRES = "Genres";
-  @SerializedName(SERIALIZED_NAME_GENRES)
-  @javax.annotation.Nullable
-  private List<String> genres;
+  public static final String JSON_PROPERTY_GENRES = "Genres";
+  private JsonNullable<List<String>> genres = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_TAGS = "Tags";
-  @SerializedName(SERIALIZED_NAME_TAGS)
-  @javax.annotation.Nullable
-  private List<String> tags;
+  public static final String JSON_PROPERTY_TAGS = "Tags";
+  private JsonNullable<List<String>> tags = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_OFFICIAL_RATINGS = "OfficialRatings";
-  @SerializedName(SERIALIZED_NAME_OFFICIAL_RATINGS)
-  @javax.annotation.Nullable
-  private List<String> officialRatings;
+  public static final String JSON_PROPERTY_OFFICIAL_RATINGS = "OfficialRatings";
+  private JsonNullable<List<String>> officialRatings = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_YEARS = "Years";
-  @SerializedName(SERIALIZED_NAME_YEARS)
-  @javax.annotation.Nullable
-  private List<Integer> years;
+  public static final String JSON_PROPERTY_YEARS = "Years";
+  private JsonNullable<List<Integer>> years = JsonNullable.<List<Integer>>undefined();
 
-  public QueryFiltersLegacy() {
+  public QueryFiltersLegacy() { 
   }
 
   public QueryFiltersLegacy genres(@javax.annotation.Nullable List<String> genres) {
-    this.genres = genres;
+    this.genres = JsonNullable.<List<String>>of(genres);
     return this;
   }
 
   public QueryFiltersLegacy addGenresItem(String genresItem) {
-    if (this.genres == null) {
-      this.genres = new ArrayList<>();
+    if (this.genres == null || !this.genres.isPresent()) {
+      this.genres = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.genres.add(genresItem);
+    try {
+      this.genres.get().add(genresItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -94,25 +83,42 @@ public class QueryFiltersLegacy {
    * @return genres
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getGenres() {
+        return genres.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_GENRES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getGenres_JsonNullable() {
     return genres;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_GENRES)
+  public void setGenres_JsonNullable(JsonNullable<List<String>> genres) {
+    this.genres = genres;
   }
 
   public void setGenres(@javax.annotation.Nullable List<String> genres) {
-    this.genres = genres;
+    this.genres = JsonNullable.<List<String>>of(genres);
   }
 
 
   public QueryFiltersLegacy tags(@javax.annotation.Nullable List<String> tags) {
-    this.tags = tags;
+    this.tags = JsonNullable.<List<String>>of(tags);
     return this;
   }
 
   public QueryFiltersLegacy addTagsItem(String tagsItem) {
-    if (this.tags == null) {
-      this.tags = new ArrayList<>();
+    if (this.tags == null || !this.tags.isPresent()) {
+      this.tags = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.tags.add(tagsItem);
+    try {
+      this.tags.get().add(tagsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -121,25 +127,42 @@ public class QueryFiltersLegacy {
    * @return tags
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getTags() {
+        return tags.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TAGS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getTags_JsonNullable() {
     return tags;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TAGS)
+  public void setTags_JsonNullable(JsonNullable<List<String>> tags) {
+    this.tags = tags;
   }
 
   public void setTags(@javax.annotation.Nullable List<String> tags) {
-    this.tags = tags;
+    this.tags = JsonNullable.<List<String>>of(tags);
   }
 
 
   public QueryFiltersLegacy officialRatings(@javax.annotation.Nullable List<String> officialRatings) {
-    this.officialRatings = officialRatings;
+    this.officialRatings = JsonNullable.<List<String>>of(officialRatings);
     return this;
   }
 
   public QueryFiltersLegacy addOfficialRatingsItem(String officialRatingsItem) {
-    if (this.officialRatings == null) {
-      this.officialRatings = new ArrayList<>();
+    if (this.officialRatings == null || !this.officialRatings.isPresent()) {
+      this.officialRatings = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.officialRatings.add(officialRatingsItem);
+    try {
+      this.officialRatings.get().add(officialRatingsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -148,25 +171,42 @@ public class QueryFiltersLegacy {
    * @return officialRatings
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getOfficialRatings() {
+        return officialRatings.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_OFFICIAL_RATINGS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getOfficialRatings_JsonNullable() {
     return officialRatings;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_OFFICIAL_RATINGS)
+  public void setOfficialRatings_JsonNullable(JsonNullable<List<String>> officialRatings) {
+    this.officialRatings = officialRatings;
   }
 
   public void setOfficialRatings(@javax.annotation.Nullable List<String> officialRatings) {
-    this.officialRatings = officialRatings;
+    this.officialRatings = JsonNullable.<List<String>>of(officialRatings);
   }
 
 
   public QueryFiltersLegacy years(@javax.annotation.Nullable List<Integer> years) {
-    this.years = years;
+    this.years = JsonNullable.<List<Integer>>of(years);
     return this;
   }
 
   public QueryFiltersLegacy addYearsItem(Integer yearsItem) {
-    if (this.years == null) {
-      this.years = new ArrayList<>();
+    if (this.years == null || !this.years.isPresent()) {
+      this.years = JsonNullable.<List<Integer>>of(new ArrayList<>());
     }
-    this.years.add(yearsItem);
+    try {
+      this.years.get().add(yearsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -175,16 +215,31 @@ public class QueryFiltersLegacy {
    * @return years
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<Integer> getYears() {
-    return years;
+        return years.orElse(null);
   }
 
-  public void setYears(@javax.annotation.Nullable List<Integer> years) {
+  @JsonProperty(JSON_PROPERTY_YEARS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<Integer>> getYears_JsonNullable() {
+    return years;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_YEARS)
+  public void setYears_JsonNullable(JsonNullable<List<Integer>> years) {
     this.years = years;
   }
 
+  public void setYears(@javax.annotation.Nullable List<Integer> years) {
+    this.years = JsonNullable.<List<Integer>>of(years);
+  }
 
 
+  /**
+   * Return true if this QueryFiltersLegacy object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -194,10 +249,10 @@ public class QueryFiltersLegacy {
       return false;
     }
     QueryFiltersLegacy queryFiltersLegacy = (QueryFiltersLegacy) o;
-    return Objects.equals(this.genres, queryFiltersLegacy.genres) &&
-        Objects.equals(this.tags, queryFiltersLegacy.tags) &&
-        Objects.equals(this.officialRatings, queryFiltersLegacy.officialRatings) &&
-        Objects.equals(this.years, queryFiltersLegacy.years);
+    return equalsNullable(this.genres, queryFiltersLegacy.genres) &&
+        equalsNullable(this.tags, queryFiltersLegacy.tags) &&
+        equalsNullable(this.officialRatings, queryFiltersLegacy.officialRatings) &&
+        equalsNullable(this.years, queryFiltersLegacy.years);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -206,7 +261,7 @@ public class QueryFiltersLegacy {
 
   @Override
   public int hashCode() {
-    return Objects.hash(genres, tags, officialRatings, years);
+    return Objects.hash(hashCodeNullable(genres), hashCodeNullable(tags), hashCodeNullable(officialRatings), hashCodeNullable(years));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -239,108 +294,75 @@ public class QueryFiltersLegacy {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Genres");
-    openapiFields.add("Tags");
-    openapiFields.add("OfficialRatings");
-    openapiFields.add("Years");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to QueryFiltersLegacy
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!QueryFiltersLegacy.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in QueryFiltersLegacy is not found in the empty JSON string", QueryFiltersLegacy.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!QueryFiltersLegacy.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `QueryFiltersLegacy` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("Genres") != null && !jsonObj.get("Genres").isJsonNull() && !jsonObj.get("Genres").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Genres` to be an array in the JSON string but got `%s`", jsonObj.get("Genres").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("Tags") != null && !jsonObj.get("Tags").isJsonNull() && !jsonObj.get("Tags").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Tags` to be an array in the JSON string but got `%s`", jsonObj.get("Tags").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("OfficialRatings") != null && !jsonObj.get("OfficialRatings").isJsonNull() && !jsonObj.get("OfficialRatings").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `OfficialRatings` to be an array in the JSON string but got `%s`", jsonObj.get("OfficialRatings").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("Years") != null && !jsonObj.get("Years").isJsonNull() && !jsonObj.get("Years").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Years` to be an array in the JSON string but got `%s`", jsonObj.get("Years").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!QueryFiltersLegacy.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'QueryFiltersLegacy' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<QueryFiltersLegacy> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(QueryFiltersLegacy.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<QueryFiltersLegacy>() {
-           @Override
-           public void write(JsonWriter out, QueryFiltersLegacy value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public QueryFiltersLegacy read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of QueryFiltersLegacy given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of QueryFiltersLegacy
-   * @throws IOException if the JSON string is invalid with respect to QueryFiltersLegacy
-   */
-  public static QueryFiltersLegacy fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, QueryFiltersLegacy.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of QueryFiltersLegacy to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Genres` to the URL query string
+    if (getGenres() != null) {
+      for (int i = 0; i < getGenres().size(); i++) {
+        joiner.add(String.format("%sGenres%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getGenres().get(i)))));
+      }
+    }
+
+    // add `Tags` to the URL query string
+    if (getTags() != null) {
+      for (int i = 0; i < getTags().size(); i++) {
+        joiner.add(String.format("%sTags%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getTags().get(i)))));
+      }
+    }
+
+    // add `OfficialRatings` to the URL query string
+    if (getOfficialRatings() != null) {
+      for (int i = 0; i < getOfficialRatings().size(); i++) {
+        joiner.add(String.format("%sOfficialRatings%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getOfficialRatings().get(i)))));
+      }
+    }
+
+    // add `Years` to the URL query string
+    if (getYears() != null) {
+      for (int i = 0; i < getYears().size(); i++) {
+        joiner.add(String.format("%sYears%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getYears().get(i)))));
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

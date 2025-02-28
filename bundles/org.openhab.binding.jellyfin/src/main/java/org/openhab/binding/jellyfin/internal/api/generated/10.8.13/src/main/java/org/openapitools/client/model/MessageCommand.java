@@ -13,64 +13,51 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * MessageCommand
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  MessageCommand.JSON_PROPERTY_HEADER,
+  MessageCommand.JSON_PROPERTY_TEXT,
+  MessageCommand.JSON_PROPERTY_TIMEOUT_MS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class MessageCommand {
-  public static final String SERIALIZED_NAME_HEADER = "Header";
-  @SerializedName(SERIALIZED_NAME_HEADER)
-  @javax.annotation.Nullable
-  private String header;
+  public static final String JSON_PROPERTY_HEADER = "Header";
+  private JsonNullable<String> header = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TEXT = "Text";
-  @SerializedName(SERIALIZED_NAME_TEXT)
+  public static final String JSON_PROPERTY_TEXT = "Text";
   @javax.annotation.Nonnull
   private String text;
 
-  public static final String SERIALIZED_NAME_TIMEOUT_MS = "TimeoutMs";
-  @SerializedName(SERIALIZED_NAME_TIMEOUT_MS)
-  @javax.annotation.Nullable
-  private Long timeoutMs;
+  public static final String JSON_PROPERTY_TIMEOUT_MS = "TimeoutMs";
+  private JsonNullable<Long> timeoutMs = JsonNullable.<Long>undefined();
 
-  public MessageCommand() {
+  public MessageCommand() { 
   }
 
   public MessageCommand header(@javax.annotation.Nullable String header) {
-    this.header = header;
+    this.header = JsonNullable.<String>of(header);
     return this;
   }
 
@@ -79,12 +66,25 @@ public class MessageCommand {
    * @return header
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getHeader() {
+        return header.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_HEADER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getHeader_JsonNullable() {
     return header;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_HEADER)
+  public void setHeader_JsonNullable(JsonNullable<String> header) {
+    this.header = header;
   }
 
   public void setHeader(@javax.annotation.Nullable String header) {
-    this.header = header;
+    this.header = JsonNullable.<String>of(header);
   }
 
 
@@ -98,17 +98,22 @@ public class MessageCommand {
    * @return text
    */
   @javax.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_TEXT)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getText() {
     return text;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TEXT)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setText(@javax.annotation.Nonnull String text) {
     this.text = text;
   }
 
 
   public MessageCommand timeoutMs(@javax.annotation.Nullable Long timeoutMs) {
-    this.timeoutMs = timeoutMs;
+    this.timeoutMs = JsonNullable.<Long>of(timeoutMs);
     return this;
   }
 
@@ -117,16 +122,31 @@ public class MessageCommand {
    * @return timeoutMs
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Long getTimeoutMs() {
-    return timeoutMs;
+        return timeoutMs.orElse(null);
   }
 
-  public void setTimeoutMs(@javax.annotation.Nullable Long timeoutMs) {
+  @JsonProperty(JSON_PROPERTY_TIMEOUT_MS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Long> getTimeoutMs_JsonNullable() {
+    return timeoutMs;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TIMEOUT_MS)
+  public void setTimeoutMs_JsonNullable(JsonNullable<Long> timeoutMs) {
     this.timeoutMs = timeoutMs;
   }
 
+  public void setTimeoutMs(@javax.annotation.Nullable Long timeoutMs) {
+    this.timeoutMs = JsonNullable.<Long>of(timeoutMs);
+  }
 
 
+  /**
+   * Return true if this MessageCommand object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -136,9 +156,9 @@ public class MessageCommand {
       return false;
     }
     MessageCommand messageCommand = (MessageCommand) o;
-    return Objects.equals(this.header, messageCommand.header) &&
+    return equalsNullable(this.header, messageCommand.header) &&
         Objects.equals(this.text, messageCommand.text) &&
-        Objects.equals(this.timeoutMs, messageCommand.timeoutMs);
+        equalsNullable(this.timeoutMs, messageCommand.timeoutMs);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -147,7 +167,7 @@ public class MessageCommand {
 
   @Override
   public int hashCode() {
-    return Objects.hash(header, text, timeoutMs);
+    return Objects.hash(hashCodeNullable(header), text, hashCodeNullable(timeoutMs));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -179,105 +199,54 @@ public class MessageCommand {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Header");
-    openapiFields.add("Text");
-    openapiFields.add("TimeoutMs");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
-    openapiRequiredFields.add("Text");
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to MessageCommand
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!MessageCommand.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in MessageCommand is not found in the empty JSON string", MessageCommand.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!MessageCommand.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `MessageCommand` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-
-      // check to make sure all required properties/fields are present in the JSON string
-      for (String requiredField : MessageCommand.openapiRequiredFields) {
-        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Header") != null && !jsonObj.get("Header").isJsonNull()) && !jsonObj.get("Header").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Header` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Header").toString()));
-      }
-      if (!jsonObj.get("Text").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Text` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Text").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!MessageCommand.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'MessageCommand' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<MessageCommand> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(MessageCommand.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<MessageCommand>() {
-           @Override
-           public void write(JsonWriter out, MessageCommand value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public MessageCommand read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of MessageCommand given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of MessageCommand
-   * @throws IOException if the JSON string is invalid with respect to MessageCommand
-   */
-  public static MessageCommand fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, MessageCommand.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of MessageCommand to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Header` to the URL query string
+    if (getHeader() != null) {
+      joiner.add(String.format("%sHeader%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHeader()))));
+    }
+
+    // add `Text` to the URL query string
+    if (getText() != null) {
+      joiner.add(String.format("%sText%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getText()))));
+    }
+
+    // add `TimeoutMs` to the URL query string
+    if (getTimeoutMs() != null) {
+      joiner.add(String.format("%sTimeoutMs%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTimeoutMs()))));
+    }
+
+    return joiner.toString();
   }
 }
 

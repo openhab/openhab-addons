@@ -13,13 +13,17 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,116 +32,100 @@ import org.openapitools.client.model.EncodingContext;
 import org.openapitools.client.model.ProfileCondition;
 import org.openapitools.client.model.TranscodeSeekInfo;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * TranscodingProfile
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  TranscodingProfile.JSON_PROPERTY_CONTAINER,
+  TranscodingProfile.JSON_PROPERTY_TYPE,
+  TranscodingProfile.JSON_PROPERTY_VIDEO_CODEC,
+  TranscodingProfile.JSON_PROPERTY_AUDIO_CODEC,
+  TranscodingProfile.JSON_PROPERTY_PROTOCOL,
+  TranscodingProfile.JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH,
+  TranscodingProfile.JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE,
+  TranscodingProfile.JSON_PROPERTY_TRANSCODE_SEEK_INFO,
+  TranscodingProfile.JSON_PROPERTY_COPY_TIMESTAMPS,
+  TranscodingProfile.JSON_PROPERTY_CONTEXT,
+  TranscodingProfile.JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST,
+  TranscodingProfile.JSON_PROPERTY_MAX_AUDIO_CHANNELS,
+  TranscodingProfile.JSON_PROPERTY_MIN_SEGMENTS,
+  TranscodingProfile.JSON_PROPERTY_SEGMENT_LENGTH,
+  TranscodingProfile.JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES,
+  TranscodingProfile.JSON_PROPERTY_CONDITIONS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class TranscodingProfile {
-  public static final String SERIALIZED_NAME_CONTAINER = "Container";
-  @SerializedName(SERIALIZED_NAME_CONTAINER)
+  public static final String JSON_PROPERTY_CONTAINER = "Container";
   @javax.annotation.Nullable
   private String container;
 
-  public static final String SERIALIZED_NAME_TYPE = "Type";
-  @SerializedName(SERIALIZED_NAME_TYPE)
+  public static final String JSON_PROPERTY_TYPE = "Type";
   @javax.annotation.Nullable
   private DlnaProfileType type;
 
-  public static final String SERIALIZED_NAME_VIDEO_CODEC = "VideoCodec";
-  @SerializedName(SERIALIZED_NAME_VIDEO_CODEC)
+  public static final String JSON_PROPERTY_VIDEO_CODEC = "VideoCodec";
   @javax.annotation.Nullable
   private String videoCodec;
 
-  public static final String SERIALIZED_NAME_AUDIO_CODEC = "AudioCodec";
-  @SerializedName(SERIALIZED_NAME_AUDIO_CODEC)
+  public static final String JSON_PROPERTY_AUDIO_CODEC = "AudioCodec";
   @javax.annotation.Nullable
   private String audioCodec;
 
-  public static final String SERIALIZED_NAME_PROTOCOL = "Protocol";
-  @SerializedName(SERIALIZED_NAME_PROTOCOL)
+  public static final String JSON_PROPERTY_PROTOCOL = "Protocol";
   @javax.annotation.Nullable
   private String protocol;
 
-  public static final String SERIALIZED_NAME_ESTIMATE_CONTENT_LENGTH = "EstimateContentLength";
-  @SerializedName(SERIALIZED_NAME_ESTIMATE_CONTENT_LENGTH)
+  public static final String JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH = "EstimateContentLength";
   @javax.annotation.Nullable
   private Boolean estimateContentLength = false;
 
-  public static final String SERIALIZED_NAME_ENABLE_MPEGTS_M2_TS_MODE = "EnableMpegtsM2TsMode";
-  @SerializedName(SERIALIZED_NAME_ENABLE_MPEGTS_M2_TS_MODE)
+  public static final String JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE = "EnableMpegtsM2TsMode";
   @javax.annotation.Nullable
   private Boolean enableMpegtsM2TsMode = false;
 
-  public static final String SERIALIZED_NAME_TRANSCODE_SEEK_INFO = "TranscodeSeekInfo";
-  @SerializedName(SERIALIZED_NAME_TRANSCODE_SEEK_INFO)
+  public static final String JSON_PROPERTY_TRANSCODE_SEEK_INFO = "TranscodeSeekInfo";
   @javax.annotation.Nullable
   private TranscodeSeekInfo transcodeSeekInfo = TranscodeSeekInfo.AUTO;
 
-  public static final String SERIALIZED_NAME_COPY_TIMESTAMPS = "CopyTimestamps";
-  @SerializedName(SERIALIZED_NAME_COPY_TIMESTAMPS)
+  public static final String JSON_PROPERTY_COPY_TIMESTAMPS = "CopyTimestamps";
   @javax.annotation.Nullable
   private Boolean copyTimestamps = false;
 
-  public static final String SERIALIZED_NAME_CONTEXT = "Context";
-  @SerializedName(SERIALIZED_NAME_CONTEXT)
+  public static final String JSON_PROPERTY_CONTEXT = "Context";
   @javax.annotation.Nullable
   private EncodingContext context = EncodingContext.STREAMING;
 
-  public static final String SERIALIZED_NAME_ENABLE_SUBTITLES_IN_MANIFEST = "EnableSubtitlesInManifest";
-  @SerializedName(SERIALIZED_NAME_ENABLE_SUBTITLES_IN_MANIFEST)
+  public static final String JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST = "EnableSubtitlesInManifest";
   @javax.annotation.Nullable
   private Boolean enableSubtitlesInManifest = false;
 
-  public static final String SERIALIZED_NAME_MAX_AUDIO_CHANNELS = "MaxAudioChannels";
-  @SerializedName(SERIALIZED_NAME_MAX_AUDIO_CHANNELS)
-  @javax.annotation.Nullable
-  private String maxAudioChannels;
+  public static final String JSON_PROPERTY_MAX_AUDIO_CHANNELS = "MaxAudioChannels";
+  private JsonNullable<String> maxAudioChannels = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_MIN_SEGMENTS = "MinSegments";
-  @SerializedName(SERIALIZED_NAME_MIN_SEGMENTS)
+  public static final String JSON_PROPERTY_MIN_SEGMENTS = "MinSegments";
   @javax.annotation.Nullable
   private Integer minSegments = 0;
 
-  public static final String SERIALIZED_NAME_SEGMENT_LENGTH = "SegmentLength";
-  @SerializedName(SERIALIZED_NAME_SEGMENT_LENGTH)
+  public static final String JSON_PROPERTY_SEGMENT_LENGTH = "SegmentLength";
   @javax.annotation.Nullable
   private Integer segmentLength = 0;
 
-  public static final String SERIALIZED_NAME_BREAK_ON_NON_KEY_FRAMES = "BreakOnNonKeyFrames";
-  @SerializedName(SERIALIZED_NAME_BREAK_ON_NON_KEY_FRAMES)
+  public static final String JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES = "BreakOnNonKeyFrames";
   @javax.annotation.Nullable
   private Boolean breakOnNonKeyFrames = false;
 
-  public static final String SERIALIZED_NAME_CONDITIONS = "Conditions";
-  @SerializedName(SERIALIZED_NAME_CONDITIONS)
+  public static final String JSON_PROPERTY_CONDITIONS = "Conditions";
   @javax.annotation.Nullable
   private List<ProfileCondition> conditions = new ArrayList<>();
 
-  public TranscodingProfile() {
+  public TranscodingProfile() { 
   }
 
   public TranscodingProfile container(@javax.annotation.Nullable String container) {
@@ -150,10 +138,15 @@ public class TranscodingProfile {
    * @return container
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getContainer() {
     return container;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setContainer(@javax.annotation.Nullable String container) {
     this.container = container;
   }
@@ -169,10 +162,15 @@ public class TranscodingProfile {
    * @return type
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public DlnaProfileType getType() {
     return type;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@javax.annotation.Nullable DlnaProfileType type) {
     this.type = type;
   }
@@ -188,10 +186,15 @@ public class TranscodingProfile {
    * @return videoCodec
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getVideoCodec() {
     return videoCodec;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVideoCodec(@javax.annotation.Nullable String videoCodec) {
     this.videoCodec = videoCodec;
   }
@@ -207,10 +210,15 @@ public class TranscodingProfile {
    * @return audioCodec
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAudioCodec() {
     return audioCodec;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAudioCodec(@javax.annotation.Nullable String audioCodec) {
     this.audioCodec = audioCodec;
   }
@@ -226,10 +234,15 @@ public class TranscodingProfile {
    * @return protocol
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PROTOCOL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getProtocol() {
     return protocol;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PROTOCOL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProtocol(@javax.annotation.Nullable String protocol) {
     this.protocol = protocol;
   }
@@ -245,10 +258,15 @@ public class TranscodingProfile {
    * @return estimateContentLength
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEstimateContentLength() {
     return estimateContentLength;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEstimateContentLength(@javax.annotation.Nullable Boolean estimateContentLength) {
     this.estimateContentLength = estimateContentLength;
   }
@@ -264,10 +282,15 @@ public class TranscodingProfile {
    * @return enableMpegtsM2TsMode
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableMpegtsM2TsMode() {
     return enableMpegtsM2TsMode;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableMpegtsM2TsMode(@javax.annotation.Nullable Boolean enableMpegtsM2TsMode) {
     this.enableMpegtsM2TsMode = enableMpegtsM2TsMode;
   }
@@ -283,10 +306,15 @@ public class TranscodingProfile {
    * @return transcodeSeekInfo
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TRANSCODE_SEEK_INFO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public TranscodeSeekInfo getTranscodeSeekInfo() {
     return transcodeSeekInfo;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TRANSCODE_SEEK_INFO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTranscodeSeekInfo(@javax.annotation.Nullable TranscodeSeekInfo transcodeSeekInfo) {
     this.transcodeSeekInfo = transcodeSeekInfo;
   }
@@ -302,10 +330,15 @@ public class TranscodingProfile {
    * @return copyTimestamps
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_COPY_TIMESTAMPS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getCopyTimestamps() {
     return copyTimestamps;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_COPY_TIMESTAMPS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCopyTimestamps(@javax.annotation.Nullable Boolean copyTimestamps) {
     this.copyTimestamps = copyTimestamps;
   }
@@ -321,10 +354,15 @@ public class TranscodingProfile {
    * @return context
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CONTEXT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public EncodingContext getContext() {
     return context;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CONTEXT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setContext(@javax.annotation.Nullable EncodingContext context) {
     this.context = context;
   }
@@ -340,17 +378,22 @@ public class TranscodingProfile {
    * @return enableSubtitlesInManifest
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableSubtitlesInManifest() {
     return enableSubtitlesInManifest;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableSubtitlesInManifest(@javax.annotation.Nullable Boolean enableSubtitlesInManifest) {
     this.enableSubtitlesInManifest = enableSubtitlesInManifest;
   }
 
 
   public TranscodingProfile maxAudioChannels(@javax.annotation.Nullable String maxAudioChannels) {
-    this.maxAudioChannels = maxAudioChannels;
+    this.maxAudioChannels = JsonNullable.<String>of(maxAudioChannels);
     return this;
   }
 
@@ -359,12 +402,25 @@ public class TranscodingProfile {
    * @return maxAudioChannels
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getMaxAudioChannels() {
+        return maxAudioChannels.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MAX_AUDIO_CHANNELS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getMaxAudioChannels_JsonNullable() {
     return maxAudioChannels;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAX_AUDIO_CHANNELS)
+  public void setMaxAudioChannels_JsonNullable(JsonNullable<String> maxAudioChannels) {
+    this.maxAudioChannels = maxAudioChannels;
   }
 
   public void setMaxAudioChannels(@javax.annotation.Nullable String maxAudioChannels) {
-    this.maxAudioChannels = maxAudioChannels;
+    this.maxAudioChannels = JsonNullable.<String>of(maxAudioChannels);
   }
 
 
@@ -378,10 +434,15 @@ public class TranscodingProfile {
    * @return minSegments
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MIN_SEGMENTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMinSegments() {
     return minSegments;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MIN_SEGMENTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMinSegments(@javax.annotation.Nullable Integer minSegments) {
     this.minSegments = minSegments;
   }
@@ -397,10 +458,15 @@ public class TranscodingProfile {
    * @return segmentLength
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SEGMENT_LENGTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getSegmentLength() {
     return segmentLength;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SEGMENT_LENGTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSegmentLength(@javax.annotation.Nullable Integer segmentLength) {
     this.segmentLength = segmentLength;
   }
@@ -416,10 +482,15 @@ public class TranscodingProfile {
    * @return breakOnNonKeyFrames
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getBreakOnNonKeyFrames() {
     return breakOnNonKeyFrames;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBreakOnNonKeyFrames(@javax.annotation.Nullable Boolean breakOnNonKeyFrames) {
     this.breakOnNonKeyFrames = breakOnNonKeyFrames;
   }
@@ -443,16 +514,23 @@ public class TranscodingProfile {
    * @return conditions
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CONDITIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ProfileCondition> getConditions() {
     return conditions;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CONDITIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setConditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
     this.conditions = conditions;
   }
 
 
-
+  /**
+   * Return true if this TranscodingProfile object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -473,7 +551,7 @@ public class TranscodingProfile {
         Objects.equals(this.copyTimestamps, transcodingProfile.copyTimestamps) &&
         Objects.equals(this.context, transcodingProfile.context) &&
         Objects.equals(this.enableSubtitlesInManifest, transcodingProfile.enableSubtitlesInManifest) &&
-        Objects.equals(this.maxAudioChannels, transcodingProfile.maxAudioChannels) &&
+        equalsNullable(this.maxAudioChannels, transcodingProfile.maxAudioChannels) &&
         Objects.equals(this.minSegments, transcodingProfile.minSegments) &&
         Objects.equals(this.segmentLength, transcodingProfile.segmentLength) &&
         Objects.equals(this.breakOnNonKeyFrames, transcodingProfile.breakOnNonKeyFrames) &&
@@ -486,7 +564,7 @@ public class TranscodingProfile {
 
   @Override
   public int hashCode() {
-    return Objects.hash(container, type, videoCodec, audioCodec, protocol, estimateContentLength, enableMpegtsM2TsMode, transcodeSeekInfo, copyTimestamps, context, enableSubtitlesInManifest, maxAudioChannels, minSegments, segmentLength, breakOnNonKeyFrames, conditions);
+    return Objects.hash(container, type, videoCodec, audioCodec, protocol, estimateContentLength, enableMpegtsM2TsMode, transcodeSeekInfo, copyTimestamps, context, enableSubtitlesInManifest, hashCodeNullable(maxAudioChannels), minSegments, segmentLength, breakOnNonKeyFrames, conditions);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -531,145 +609,124 @@ public class TranscodingProfile {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Container");
-    openapiFields.add("Type");
-    openapiFields.add("VideoCodec");
-    openapiFields.add("AudioCodec");
-    openapiFields.add("Protocol");
-    openapiFields.add("EstimateContentLength");
-    openapiFields.add("EnableMpegtsM2TsMode");
-    openapiFields.add("TranscodeSeekInfo");
-    openapiFields.add("CopyTimestamps");
-    openapiFields.add("Context");
-    openapiFields.add("EnableSubtitlesInManifest");
-    openapiFields.add("MaxAudioChannels");
-    openapiFields.add("MinSegments");
-    openapiFields.add("SegmentLength");
-    openapiFields.add("BreakOnNonKeyFrames");
-    openapiFields.add("Conditions");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to TranscodingProfile
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!TranscodingProfile.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in TranscodingProfile is not found in the empty JSON string", TranscodingProfile.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!TranscodingProfile.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `TranscodingProfile` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Container") != null && !jsonObj.get("Container").isJsonNull()) && !jsonObj.get("Container").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Container` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Container").toString()));
-      }
-      // validate the optional field `Type`
-      if (jsonObj.get("Type") != null && !jsonObj.get("Type").isJsonNull()) {
-        DlnaProfileType.validateJsonElement(jsonObj.get("Type"));
-      }
-      if ((jsonObj.get("VideoCodec") != null && !jsonObj.get("VideoCodec").isJsonNull()) && !jsonObj.get("VideoCodec").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `VideoCodec` to be a primitive type in the JSON string but got `%s`", jsonObj.get("VideoCodec").toString()));
-      }
-      if ((jsonObj.get("AudioCodec") != null && !jsonObj.get("AudioCodec").isJsonNull()) && !jsonObj.get("AudioCodec").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `AudioCodec` to be a primitive type in the JSON string but got `%s`", jsonObj.get("AudioCodec").toString()));
-      }
-      if ((jsonObj.get("Protocol") != null && !jsonObj.get("Protocol").isJsonNull()) && !jsonObj.get("Protocol").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Protocol` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Protocol").toString()));
-      }
-      // validate the optional field `TranscodeSeekInfo`
-      if (jsonObj.get("TranscodeSeekInfo") != null && !jsonObj.get("TranscodeSeekInfo").isJsonNull()) {
-        TranscodeSeekInfo.validateJsonElement(jsonObj.get("TranscodeSeekInfo"));
-      }
-      // validate the optional field `Context`
-      if (jsonObj.get("Context") != null && !jsonObj.get("Context").isJsonNull()) {
-        EncodingContext.validateJsonElement(jsonObj.get("Context"));
-      }
-      if ((jsonObj.get("MaxAudioChannels") != null && !jsonObj.get("MaxAudioChannels").isJsonNull()) && !jsonObj.get("MaxAudioChannels").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MaxAudioChannels` to be a primitive type in the JSON string but got `%s`", jsonObj.get("MaxAudioChannels").toString()));
-      }
-      if (jsonObj.get("Conditions") != null && !jsonObj.get("Conditions").isJsonNull()) {
-        JsonArray jsonArrayconditions = jsonObj.getAsJsonArray("Conditions");
-        if (jsonArrayconditions != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("Conditions").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `Conditions` to be an array in the JSON string but got `%s`", jsonObj.get("Conditions").toString()));
-          }
-
-          // validate the optional field `Conditions` (array)
-          for (int i = 0; i < jsonArrayconditions.size(); i++) {
-            ProfileCondition.validateJsonElement(jsonArrayconditions.get(i));
-          };
-        }
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!TranscodingProfile.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'TranscodingProfile' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<TranscodingProfile> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(TranscodingProfile.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<TranscodingProfile>() {
-           @Override
-           public void write(JsonWriter out, TranscodingProfile value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public TranscodingProfile read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of TranscodingProfile given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of TranscodingProfile
-   * @throws IOException if the JSON string is invalid with respect to TranscodingProfile
-   */
-  public static TranscodingProfile fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, TranscodingProfile.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of TranscodingProfile to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Container` to the URL query string
+    if (getContainer() != null) {
+      joiner.add(String.format("%sContainer%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
+    }
+
+    // add `Type` to the URL query string
+    if (getType() != null) {
+      joiner.add(String.format("%sType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+    }
+
+    // add `VideoCodec` to the URL query string
+    if (getVideoCodec() != null) {
+      joiner.add(String.format("%sVideoCodec%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVideoCodec()))));
+    }
+
+    // add `AudioCodec` to the URL query string
+    if (getAudioCodec() != null) {
+      joiner.add(String.format("%sAudioCodec%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAudioCodec()))));
+    }
+
+    // add `Protocol` to the URL query string
+    if (getProtocol() != null) {
+      joiner.add(String.format("%sProtocol%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProtocol()))));
+    }
+
+    // add `EstimateContentLength` to the URL query string
+    if (getEstimateContentLength() != null) {
+      joiner.add(String.format("%sEstimateContentLength%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEstimateContentLength()))));
+    }
+
+    // add `EnableMpegtsM2TsMode` to the URL query string
+    if (getEnableMpegtsM2TsMode() != null) {
+      joiner.add(String.format("%sEnableMpegtsM2TsMode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableMpegtsM2TsMode()))));
+    }
+
+    // add `TranscodeSeekInfo` to the URL query string
+    if (getTranscodeSeekInfo() != null) {
+      joiner.add(String.format("%sTranscodeSeekInfo%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTranscodeSeekInfo()))));
+    }
+
+    // add `CopyTimestamps` to the URL query string
+    if (getCopyTimestamps() != null) {
+      joiner.add(String.format("%sCopyTimestamps%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCopyTimestamps()))));
+    }
+
+    // add `Context` to the URL query string
+    if (getContext() != null) {
+      joiner.add(String.format("%sContext%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContext()))));
+    }
+
+    // add `EnableSubtitlesInManifest` to the URL query string
+    if (getEnableSubtitlesInManifest() != null) {
+      joiner.add(String.format("%sEnableSubtitlesInManifest%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableSubtitlesInManifest()))));
+    }
+
+    // add `MaxAudioChannels` to the URL query string
+    if (getMaxAudioChannels() != null) {
+      joiner.add(String.format("%sMaxAudioChannels%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxAudioChannels()))));
+    }
+
+    // add `MinSegments` to the URL query string
+    if (getMinSegments() != null) {
+      joiner.add(String.format("%sMinSegments%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMinSegments()))));
+    }
+
+    // add `SegmentLength` to the URL query string
+    if (getSegmentLength() != null) {
+      joiner.add(String.format("%sSegmentLength%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSegmentLength()))));
+    }
+
+    // add `BreakOnNonKeyFrames` to the URL query string
+    if (getBreakOnNonKeyFrames() != null) {
+      joiner.add(String.format("%sBreakOnNonKeyFrames%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBreakOnNonKeyFrames()))));
+    }
+
+    // add `Conditions` to the URL query string
+    if (getConditions() != null) {
+      for (int i = 0; i < getConditions().size(); i++) {
+        if (getConditions().get(i) != null) {
+          joiner.add(getConditions().get(i).toUrlQueryString(String.format("%sConditions%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

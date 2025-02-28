@@ -13,107 +13,86 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.UUID;
 import org.openapitools.client.model.ClientCapabilitiesDto;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * A DTO representing device information.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  DeviceInfoDto.JSON_PROPERTY_NAME,
+  DeviceInfoDto.JSON_PROPERTY_CUSTOM_NAME,
+  DeviceInfoDto.JSON_PROPERTY_ACCESS_TOKEN,
+  DeviceInfoDto.JSON_PROPERTY_ID,
+  DeviceInfoDto.JSON_PROPERTY_LAST_USER_NAME,
+  DeviceInfoDto.JSON_PROPERTY_APP_NAME,
+  DeviceInfoDto.JSON_PROPERTY_APP_VERSION,
+  DeviceInfoDto.JSON_PROPERTY_LAST_USER_ID,
+  DeviceInfoDto.JSON_PROPERTY_DATE_LAST_ACTIVITY,
+  DeviceInfoDto.JSON_PROPERTY_CAPABILITIES,
+  DeviceInfoDto.JSON_PROPERTY_ICON_URL
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class DeviceInfoDto {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_CUSTOM_NAME = "CustomName";
-  @SerializedName(SERIALIZED_NAME_CUSTOM_NAME)
-  @javax.annotation.Nullable
-  private String customName;
+  public static final String JSON_PROPERTY_CUSTOM_NAME = "CustomName";
+  private JsonNullable<String> customName = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ACCESS_TOKEN = "AccessToken";
-  @SerializedName(SERIALIZED_NAME_ACCESS_TOKEN)
-  @javax.annotation.Nullable
-  private String accessToken;
+  public static final String JSON_PROPERTY_ACCESS_TOKEN = "AccessToken";
+  private JsonNullable<String> accessToken = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ID = "Id";
-  @SerializedName(SERIALIZED_NAME_ID)
-  @javax.annotation.Nullable
-  private String id;
+  public static final String JSON_PROPERTY_ID = "Id";
+  private JsonNullable<String> id = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_LAST_USER_NAME = "LastUserName";
-  @SerializedName(SERIALIZED_NAME_LAST_USER_NAME)
-  @javax.annotation.Nullable
-  private String lastUserName;
+  public static final String JSON_PROPERTY_LAST_USER_NAME = "LastUserName";
+  private JsonNullable<String> lastUserName = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_APP_NAME = "AppName";
-  @SerializedName(SERIALIZED_NAME_APP_NAME)
-  @javax.annotation.Nullable
-  private String appName;
+  public static final String JSON_PROPERTY_APP_NAME = "AppName";
+  private JsonNullable<String> appName = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_APP_VERSION = "AppVersion";
-  @SerializedName(SERIALIZED_NAME_APP_VERSION)
-  @javax.annotation.Nullable
-  private String appVersion;
+  public static final String JSON_PROPERTY_APP_VERSION = "AppVersion";
+  private JsonNullable<String> appVersion = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_LAST_USER_ID = "LastUserId";
-  @SerializedName(SERIALIZED_NAME_LAST_USER_ID)
-  @javax.annotation.Nullable
-  private UUID lastUserId;
+  public static final String JSON_PROPERTY_LAST_USER_ID = "LastUserId";
+  private JsonNullable<UUID> lastUserId = JsonNullable.<UUID>undefined();
 
-  public static final String SERIALIZED_NAME_DATE_LAST_ACTIVITY = "DateLastActivity";
-  @SerializedName(SERIALIZED_NAME_DATE_LAST_ACTIVITY)
-  @javax.annotation.Nullable
-  private OffsetDateTime dateLastActivity;
+  public static final String JSON_PROPERTY_DATE_LAST_ACTIVITY = "DateLastActivity";
+  private JsonNullable<OffsetDateTime> dateLastActivity = JsonNullable.<OffsetDateTime>undefined();
 
-  public static final String SERIALIZED_NAME_CAPABILITIES = "Capabilities";
-  @SerializedName(SERIALIZED_NAME_CAPABILITIES)
+  public static final String JSON_PROPERTY_CAPABILITIES = "Capabilities";
   @javax.annotation.Nullable
   private ClientCapabilitiesDto capabilities;
 
-  public static final String SERIALIZED_NAME_ICON_URL = "IconUrl";
-  @SerializedName(SERIALIZED_NAME_ICON_URL)
-  @javax.annotation.Nullable
-  private String iconUrl;
+  public static final String JSON_PROPERTY_ICON_URL = "IconUrl";
+  private JsonNullable<String> iconUrl = JsonNullable.<String>undefined();
 
-  public DeviceInfoDto() {
+  public DeviceInfoDto() { 
   }
 
   public DeviceInfoDto name(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
     return this;
   }
 
@@ -122,17 +101,30 @@ public class DeviceInfoDto {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
   }
 
 
   public DeviceInfoDto customName(@javax.annotation.Nullable String customName) {
-    this.customName = customName;
+    this.customName = JsonNullable.<String>of(customName);
     return this;
   }
 
@@ -141,17 +133,30 @@ public class DeviceInfoDto {
    * @return customName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getCustomName() {
+        return customName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CUSTOM_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getCustomName_JsonNullable() {
     return customName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CUSTOM_NAME)
+  public void setCustomName_JsonNullable(JsonNullable<String> customName) {
+    this.customName = customName;
   }
 
   public void setCustomName(@javax.annotation.Nullable String customName) {
-    this.customName = customName;
+    this.customName = JsonNullable.<String>of(customName);
   }
 
 
   public DeviceInfoDto accessToken(@javax.annotation.Nullable String accessToken) {
-    this.accessToken = accessToken;
+    this.accessToken = JsonNullable.<String>of(accessToken);
     return this;
   }
 
@@ -160,17 +165,30 @@ public class DeviceInfoDto {
    * @return accessToken
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getAccessToken() {
+        return accessToken.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ACCESS_TOKEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getAccessToken_JsonNullable() {
     return accessToken;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ACCESS_TOKEN)
+  public void setAccessToken_JsonNullable(JsonNullable<String> accessToken) {
+    this.accessToken = accessToken;
   }
 
   public void setAccessToken(@javax.annotation.Nullable String accessToken) {
-    this.accessToken = accessToken;
+    this.accessToken = JsonNullable.<String>of(accessToken);
   }
 
 
   public DeviceInfoDto id(@javax.annotation.Nullable String id) {
-    this.id = id;
+    this.id = JsonNullable.<String>of(id);
     return this;
   }
 
@@ -179,17 +197,30 @@ public class DeviceInfoDto {
    * @return id
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getId() {
+        return id.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getId_JsonNullable() {
     return id;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ID)
+  public void setId_JsonNullable(JsonNullable<String> id) {
+    this.id = id;
   }
 
   public void setId(@javax.annotation.Nullable String id) {
-    this.id = id;
+    this.id = JsonNullable.<String>of(id);
   }
 
 
   public DeviceInfoDto lastUserName(@javax.annotation.Nullable String lastUserName) {
-    this.lastUserName = lastUserName;
+    this.lastUserName = JsonNullable.<String>of(lastUserName);
     return this;
   }
 
@@ -198,17 +229,30 @@ public class DeviceInfoDto {
    * @return lastUserName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getLastUserName() {
+        return lastUserName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LAST_USER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getLastUserName_JsonNullable() {
     return lastUserName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LAST_USER_NAME)
+  public void setLastUserName_JsonNullable(JsonNullable<String> lastUserName) {
+    this.lastUserName = lastUserName;
   }
 
   public void setLastUserName(@javax.annotation.Nullable String lastUserName) {
-    this.lastUserName = lastUserName;
+    this.lastUserName = JsonNullable.<String>of(lastUserName);
   }
 
 
   public DeviceInfoDto appName(@javax.annotation.Nullable String appName) {
-    this.appName = appName;
+    this.appName = JsonNullable.<String>of(appName);
     return this;
   }
 
@@ -217,17 +261,30 @@ public class DeviceInfoDto {
    * @return appName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getAppName() {
+        return appName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_APP_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getAppName_JsonNullable() {
     return appName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_APP_NAME)
+  public void setAppName_JsonNullable(JsonNullable<String> appName) {
+    this.appName = appName;
   }
 
   public void setAppName(@javax.annotation.Nullable String appName) {
-    this.appName = appName;
+    this.appName = JsonNullable.<String>of(appName);
   }
 
 
   public DeviceInfoDto appVersion(@javax.annotation.Nullable String appVersion) {
-    this.appVersion = appVersion;
+    this.appVersion = JsonNullable.<String>of(appVersion);
     return this;
   }
 
@@ -236,17 +293,30 @@ public class DeviceInfoDto {
    * @return appVersion
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getAppVersion() {
+        return appVersion.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_APP_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getAppVersion_JsonNullable() {
     return appVersion;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_APP_VERSION)
+  public void setAppVersion_JsonNullable(JsonNullable<String> appVersion) {
+    this.appVersion = appVersion;
   }
 
   public void setAppVersion(@javax.annotation.Nullable String appVersion) {
-    this.appVersion = appVersion;
+    this.appVersion = JsonNullable.<String>of(appVersion);
   }
 
 
   public DeviceInfoDto lastUserId(@javax.annotation.Nullable UUID lastUserId) {
-    this.lastUserId = lastUserId;
+    this.lastUserId = JsonNullable.<UUID>of(lastUserId);
     return this;
   }
 
@@ -255,17 +325,30 @@ public class DeviceInfoDto {
    * @return lastUserId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public UUID getLastUserId() {
+        return lastUserId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LAST_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<UUID> getLastUserId_JsonNullable() {
     return lastUserId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LAST_USER_ID)
+  public void setLastUserId_JsonNullable(JsonNullable<UUID> lastUserId) {
+    this.lastUserId = lastUserId;
   }
 
   public void setLastUserId(@javax.annotation.Nullable UUID lastUserId) {
-    this.lastUserId = lastUserId;
+    this.lastUserId = JsonNullable.<UUID>of(lastUserId);
   }
 
 
   public DeviceInfoDto dateLastActivity(@javax.annotation.Nullable OffsetDateTime dateLastActivity) {
-    this.dateLastActivity = dateLastActivity;
+    this.dateLastActivity = JsonNullable.<OffsetDateTime>of(dateLastActivity);
     return this;
   }
 
@@ -274,12 +357,25 @@ public class DeviceInfoDto {
    * @return dateLastActivity
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public OffsetDateTime getDateLastActivity() {
+        return dateLastActivity.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DATE_LAST_ACTIVITY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<OffsetDateTime> getDateLastActivity_JsonNullable() {
     return dateLastActivity;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DATE_LAST_ACTIVITY)
+  public void setDateLastActivity_JsonNullable(JsonNullable<OffsetDateTime> dateLastActivity) {
+    this.dateLastActivity = dateLastActivity;
   }
 
   public void setDateLastActivity(@javax.annotation.Nullable OffsetDateTime dateLastActivity) {
-    this.dateLastActivity = dateLastActivity;
+    this.dateLastActivity = JsonNullable.<OffsetDateTime>of(dateLastActivity);
   }
 
 
@@ -293,17 +389,22 @@ public class DeviceInfoDto {
    * @return capabilities
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CAPABILITIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ClientCapabilitiesDto getCapabilities() {
     return capabilities;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CAPABILITIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCapabilities(@javax.annotation.Nullable ClientCapabilitiesDto capabilities) {
     this.capabilities = capabilities;
   }
 
 
   public DeviceInfoDto iconUrl(@javax.annotation.Nullable String iconUrl) {
-    this.iconUrl = iconUrl;
+    this.iconUrl = JsonNullable.<String>of(iconUrl);
     return this;
   }
 
@@ -312,16 +413,31 @@ public class DeviceInfoDto {
    * @return iconUrl
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getIconUrl() {
-    return iconUrl;
+        return iconUrl.orElse(null);
   }
 
-  public void setIconUrl(@javax.annotation.Nullable String iconUrl) {
+  @JsonProperty(JSON_PROPERTY_ICON_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getIconUrl_JsonNullable() {
+    return iconUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ICON_URL)
+  public void setIconUrl_JsonNullable(JsonNullable<String> iconUrl) {
     this.iconUrl = iconUrl;
   }
 
+  public void setIconUrl(@javax.annotation.Nullable String iconUrl) {
+    this.iconUrl = JsonNullable.<String>of(iconUrl);
+  }
 
 
+  /**
+   * Return true if this DeviceInfoDto object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -331,17 +447,17 @@ public class DeviceInfoDto {
       return false;
     }
     DeviceInfoDto deviceInfoDto = (DeviceInfoDto) o;
-    return Objects.equals(this.name, deviceInfoDto.name) &&
-        Objects.equals(this.customName, deviceInfoDto.customName) &&
-        Objects.equals(this.accessToken, deviceInfoDto.accessToken) &&
-        Objects.equals(this.id, deviceInfoDto.id) &&
-        Objects.equals(this.lastUserName, deviceInfoDto.lastUserName) &&
-        Objects.equals(this.appName, deviceInfoDto.appName) &&
-        Objects.equals(this.appVersion, deviceInfoDto.appVersion) &&
-        Objects.equals(this.lastUserId, deviceInfoDto.lastUserId) &&
-        Objects.equals(this.dateLastActivity, deviceInfoDto.dateLastActivity) &&
+    return equalsNullable(this.name, deviceInfoDto.name) &&
+        equalsNullable(this.customName, deviceInfoDto.customName) &&
+        equalsNullable(this.accessToken, deviceInfoDto.accessToken) &&
+        equalsNullable(this.id, deviceInfoDto.id) &&
+        equalsNullable(this.lastUserName, deviceInfoDto.lastUserName) &&
+        equalsNullable(this.appName, deviceInfoDto.appName) &&
+        equalsNullable(this.appVersion, deviceInfoDto.appVersion) &&
+        equalsNullable(this.lastUserId, deviceInfoDto.lastUserId) &&
+        equalsNullable(this.dateLastActivity, deviceInfoDto.dateLastActivity) &&
         Objects.equals(this.capabilities, deviceInfoDto.capabilities) &&
-        Objects.equals(this.iconUrl, deviceInfoDto.iconUrl);
+        equalsNullable(this.iconUrl, deviceInfoDto.iconUrl);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -350,7 +466,7 @@ public class DeviceInfoDto {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, customName, accessToken, id, lastUserName, appName, appVersion, lastUserId, dateLastActivity, capabilities, iconUrl);
+    return Objects.hash(hashCodeNullable(name), hashCodeNullable(customName), hashCodeNullable(accessToken), hashCodeNullable(id), hashCodeNullable(lastUserName), hashCodeNullable(appName), hashCodeNullable(appVersion), hashCodeNullable(lastUserId), hashCodeNullable(dateLastActivity), capabilities, hashCodeNullable(iconUrl));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -390,130 +506,94 @@ public class DeviceInfoDto {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("CustomName");
-    openapiFields.add("AccessToken");
-    openapiFields.add("Id");
-    openapiFields.add("LastUserName");
-    openapiFields.add("AppName");
-    openapiFields.add("AppVersion");
-    openapiFields.add("LastUserId");
-    openapiFields.add("DateLastActivity");
-    openapiFields.add("Capabilities");
-    openapiFields.add("IconUrl");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to DeviceInfoDto
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!DeviceInfoDto.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in DeviceInfoDto is not found in the empty JSON string", DeviceInfoDto.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!DeviceInfoDto.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `DeviceInfoDto` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("CustomName") != null && !jsonObj.get("CustomName").isJsonNull()) && !jsonObj.get("CustomName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `CustomName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("CustomName").toString()));
-      }
-      if ((jsonObj.get("AccessToken") != null && !jsonObj.get("AccessToken").isJsonNull()) && !jsonObj.get("AccessToken").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `AccessToken` to be a primitive type in the JSON string but got `%s`", jsonObj.get("AccessToken").toString()));
-      }
-      if ((jsonObj.get("Id") != null && !jsonObj.get("Id").isJsonNull()) && !jsonObj.get("Id").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Id").toString()));
-      }
-      if ((jsonObj.get("LastUserName") != null && !jsonObj.get("LastUserName").isJsonNull()) && !jsonObj.get("LastUserName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `LastUserName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("LastUserName").toString()));
-      }
-      if ((jsonObj.get("AppName") != null && !jsonObj.get("AppName").isJsonNull()) && !jsonObj.get("AppName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `AppName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("AppName").toString()));
-      }
-      if ((jsonObj.get("AppVersion") != null && !jsonObj.get("AppVersion").isJsonNull()) && !jsonObj.get("AppVersion").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `AppVersion` to be a primitive type in the JSON string but got `%s`", jsonObj.get("AppVersion").toString()));
-      }
-      if ((jsonObj.get("LastUserId") != null && !jsonObj.get("LastUserId").isJsonNull()) && !jsonObj.get("LastUserId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `LastUserId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("LastUserId").toString()));
-      }
-      // validate the optional field `Capabilities`
-      if (jsonObj.get("Capabilities") != null && !jsonObj.get("Capabilities").isJsonNull()) {
-        ClientCapabilitiesDto.validateJsonElement(jsonObj.get("Capabilities"));
-      }
-      if ((jsonObj.get("IconUrl") != null && !jsonObj.get("IconUrl").isJsonNull()) && !jsonObj.get("IconUrl").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `IconUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("IconUrl").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!DeviceInfoDto.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'DeviceInfoDto' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<DeviceInfoDto> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(DeviceInfoDto.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<DeviceInfoDto>() {
-           @Override
-           public void write(JsonWriter out, DeviceInfoDto value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public DeviceInfoDto read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of DeviceInfoDto given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of DeviceInfoDto
-   * @throws IOException if the JSON string is invalid with respect to DeviceInfoDto
-   */
-  public static DeviceInfoDto fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, DeviceInfoDto.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of DeviceInfoDto to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `CustomName` to the URL query string
+    if (getCustomName() != null) {
+      joiner.add(String.format("%sCustomName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCustomName()))));
+    }
+
+    // add `AccessToken` to the URL query string
+    if (getAccessToken() != null) {
+      joiner.add(String.format("%sAccessToken%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAccessToken()))));
+    }
+
+    // add `Id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+    }
+
+    // add `LastUserName` to the URL query string
+    if (getLastUserName() != null) {
+      joiner.add(String.format("%sLastUserName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLastUserName()))));
+    }
+
+    // add `AppName` to the URL query string
+    if (getAppName() != null) {
+      joiner.add(String.format("%sAppName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAppName()))));
+    }
+
+    // add `AppVersion` to the URL query string
+    if (getAppVersion() != null) {
+      joiner.add(String.format("%sAppVersion%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAppVersion()))));
+    }
+
+    // add `LastUserId` to the URL query string
+    if (getLastUserId() != null) {
+      joiner.add(String.format("%sLastUserId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLastUserId()))));
+    }
+
+    // add `DateLastActivity` to the URL query string
+    if (getDateLastActivity() != null) {
+      joiner.add(String.format("%sDateLastActivity%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDateLastActivity()))));
+    }
+
+    // add `Capabilities` to the URL query string
+    if (getCapabilities() != null) {
+      joiner.add(getCapabilities().toUrlQueryString(prefix + "Capabilities" + suffix));
+    }
+
+    // add `IconUrl` to the URL query string
+    if (getIconUrl() != null) {
+      joiner.add(String.format("%sIconUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIconUrl()))));
+    }
+
+    return joiner.toString();
   }
 }
 

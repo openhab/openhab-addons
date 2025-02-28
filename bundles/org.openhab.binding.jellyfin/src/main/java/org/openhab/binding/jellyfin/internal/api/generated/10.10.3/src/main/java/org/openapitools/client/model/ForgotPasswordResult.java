@@ -13,62 +13,49 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import org.openapitools.client.model.ForgotPasswordAction;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * ForgotPasswordResult
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  ForgotPasswordResult.JSON_PROPERTY_ACTION,
+  ForgotPasswordResult.JSON_PROPERTY_PIN_FILE,
+  ForgotPasswordResult.JSON_PROPERTY_PIN_EXPIRATION_DATE
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ForgotPasswordResult {
-  public static final String SERIALIZED_NAME_ACTION = "Action";
-  @SerializedName(SERIALIZED_NAME_ACTION)
+  public static final String JSON_PROPERTY_ACTION = "Action";
   @javax.annotation.Nullable
   private ForgotPasswordAction action;
 
-  public static final String SERIALIZED_NAME_PIN_FILE = "PinFile";
-  @SerializedName(SERIALIZED_NAME_PIN_FILE)
-  @javax.annotation.Nullable
-  private String pinFile;
+  public static final String JSON_PROPERTY_PIN_FILE = "PinFile";
+  private JsonNullable<String> pinFile = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PIN_EXPIRATION_DATE = "PinExpirationDate";
-  @SerializedName(SERIALIZED_NAME_PIN_EXPIRATION_DATE)
-  @javax.annotation.Nullable
-  private OffsetDateTime pinExpirationDate;
+  public static final String JSON_PROPERTY_PIN_EXPIRATION_DATE = "PinExpirationDate";
+  private JsonNullable<OffsetDateTime> pinExpirationDate = JsonNullable.<OffsetDateTime>undefined();
 
-  public ForgotPasswordResult() {
+  public ForgotPasswordResult() { 
   }
 
   public ForgotPasswordResult action(@javax.annotation.Nullable ForgotPasswordAction action) {
@@ -81,17 +68,22 @@ public class ForgotPasswordResult {
    * @return action
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ACTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ForgotPasswordAction getAction() {
     return action;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ACTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAction(@javax.annotation.Nullable ForgotPasswordAction action) {
     this.action = action;
   }
 
 
   public ForgotPasswordResult pinFile(@javax.annotation.Nullable String pinFile) {
-    this.pinFile = pinFile;
+    this.pinFile = JsonNullable.<String>of(pinFile);
     return this;
   }
 
@@ -100,17 +92,30 @@ public class ForgotPasswordResult {
    * @return pinFile
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPinFile() {
+        return pinFile.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PIN_FILE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPinFile_JsonNullable() {
     return pinFile;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PIN_FILE)
+  public void setPinFile_JsonNullable(JsonNullable<String> pinFile) {
+    this.pinFile = pinFile;
   }
 
   public void setPinFile(@javax.annotation.Nullable String pinFile) {
-    this.pinFile = pinFile;
+    this.pinFile = JsonNullable.<String>of(pinFile);
   }
 
 
   public ForgotPasswordResult pinExpirationDate(@javax.annotation.Nullable OffsetDateTime pinExpirationDate) {
-    this.pinExpirationDate = pinExpirationDate;
+    this.pinExpirationDate = JsonNullable.<OffsetDateTime>of(pinExpirationDate);
     return this;
   }
 
@@ -119,16 +124,31 @@ public class ForgotPasswordResult {
    * @return pinExpirationDate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public OffsetDateTime getPinExpirationDate() {
-    return pinExpirationDate;
+        return pinExpirationDate.orElse(null);
   }
 
-  public void setPinExpirationDate(@javax.annotation.Nullable OffsetDateTime pinExpirationDate) {
+  @JsonProperty(JSON_PROPERTY_PIN_EXPIRATION_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<OffsetDateTime> getPinExpirationDate_JsonNullable() {
+    return pinExpirationDate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PIN_EXPIRATION_DATE)
+  public void setPinExpirationDate_JsonNullable(JsonNullable<OffsetDateTime> pinExpirationDate) {
     this.pinExpirationDate = pinExpirationDate;
   }
 
+  public void setPinExpirationDate(@javax.annotation.Nullable OffsetDateTime pinExpirationDate) {
+    this.pinExpirationDate = JsonNullable.<OffsetDateTime>of(pinExpirationDate);
+  }
 
 
+  /**
+   * Return true if this ForgotPasswordResult object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -139,8 +159,8 @@ public class ForgotPasswordResult {
     }
     ForgotPasswordResult forgotPasswordResult = (ForgotPasswordResult) o;
     return Objects.equals(this.action, forgotPasswordResult.action) &&
-        Objects.equals(this.pinFile, forgotPasswordResult.pinFile) &&
-        Objects.equals(this.pinExpirationDate, forgotPasswordResult.pinExpirationDate);
+        equalsNullable(this.pinFile, forgotPasswordResult.pinFile) &&
+        equalsNullable(this.pinExpirationDate, forgotPasswordResult.pinExpirationDate);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -149,7 +169,7 @@ public class ForgotPasswordResult {
 
   @Override
   public int hashCode() {
-    return Objects.hash(action, pinFile, pinExpirationDate);
+    return Objects.hash(action, hashCodeNullable(pinFile), hashCodeNullable(pinExpirationDate));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -181,98 +201,54 @@ public class ForgotPasswordResult {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Action");
-    openapiFields.add("PinFile");
-    openapiFields.add("PinExpirationDate");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to ForgotPasswordResult
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!ForgotPasswordResult.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in ForgotPasswordResult is not found in the empty JSON string", ForgotPasswordResult.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!ForgotPasswordResult.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `ForgotPasswordResult` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // validate the optional field `Action`
-      if (jsonObj.get("Action") != null && !jsonObj.get("Action").isJsonNull()) {
-        ForgotPasswordAction.validateJsonElement(jsonObj.get("Action"));
-      }
-      if ((jsonObj.get("PinFile") != null && !jsonObj.get("PinFile").isJsonNull()) && !jsonObj.get("PinFile").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `PinFile` to be a primitive type in the JSON string but got `%s`", jsonObj.get("PinFile").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!ForgotPasswordResult.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'ForgotPasswordResult' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<ForgotPasswordResult> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(ForgotPasswordResult.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<ForgotPasswordResult>() {
-           @Override
-           public void write(JsonWriter out, ForgotPasswordResult value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public ForgotPasswordResult read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of ForgotPasswordResult given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of ForgotPasswordResult
-   * @throws IOException if the JSON string is invalid with respect to ForgotPasswordResult
-   */
-  public static ForgotPasswordResult fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, ForgotPasswordResult.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of ForgotPasswordResult to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Action` to the URL query string
+    if (getAction() != null) {
+      joiner.add(String.format("%sAction%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAction()))));
+    }
+
+    // add `PinFile` to the URL query string
+    if (getPinFile() != null) {
+      joiner.add(String.format("%sPinFile%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPinFile()))));
+    }
+
+    // add `PinExpirationDate` to the URL query string
+    if (getPinExpirationDate() != null) {
+      joiner.add(String.format("%sPinExpirationDate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPinExpirationDate()))));
+    }
+
+    return joiner.toString();
   }
 }
 

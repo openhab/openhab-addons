@@ -13,13 +13,17 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,76 +32,58 @@ import org.openapitools.client.model.GroupRepeatMode;
 import org.openapitools.client.model.GroupShuffleMode;
 import org.openapitools.client.model.PlayQueueUpdateReason;
 import org.openapitools.client.model.SyncPlayQueueItem;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class PlayQueueUpdate.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  PlayQueueUpdate.JSON_PROPERTY_REASON,
+  PlayQueueUpdate.JSON_PROPERTY_LAST_UPDATE,
+  PlayQueueUpdate.JSON_PROPERTY_PLAYLIST,
+  PlayQueueUpdate.JSON_PROPERTY_PLAYING_ITEM_INDEX,
+  PlayQueueUpdate.JSON_PROPERTY_START_POSITION_TICKS,
+  PlayQueueUpdate.JSON_PROPERTY_IS_PLAYING,
+  PlayQueueUpdate.JSON_PROPERTY_SHUFFLE_MODE,
+  PlayQueueUpdate.JSON_PROPERTY_REPEAT_MODE
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PlayQueueUpdate {
-  public static final String SERIALIZED_NAME_REASON = "Reason";
-  @SerializedName(SERIALIZED_NAME_REASON)
+  public static final String JSON_PROPERTY_REASON = "Reason";
   @javax.annotation.Nullable
   private PlayQueueUpdateReason reason;
 
-  public static final String SERIALIZED_NAME_LAST_UPDATE = "LastUpdate";
-  @SerializedName(SERIALIZED_NAME_LAST_UPDATE)
+  public static final String JSON_PROPERTY_LAST_UPDATE = "LastUpdate";
   @javax.annotation.Nullable
   private OffsetDateTime lastUpdate;
 
-  public static final String SERIALIZED_NAME_PLAYLIST = "Playlist";
-  @SerializedName(SERIALIZED_NAME_PLAYLIST)
+  public static final String JSON_PROPERTY_PLAYLIST = "Playlist";
   @javax.annotation.Nullable
   private List<SyncPlayQueueItem> playlist = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_PLAYING_ITEM_INDEX = "PlayingItemIndex";
-  @SerializedName(SERIALIZED_NAME_PLAYING_ITEM_INDEX)
+  public static final String JSON_PROPERTY_PLAYING_ITEM_INDEX = "PlayingItemIndex";
   @javax.annotation.Nullable
   private Integer playingItemIndex;
 
-  public static final String SERIALIZED_NAME_START_POSITION_TICKS = "StartPositionTicks";
-  @SerializedName(SERIALIZED_NAME_START_POSITION_TICKS)
+  public static final String JSON_PROPERTY_START_POSITION_TICKS = "StartPositionTicks";
   @javax.annotation.Nullable
   private Long startPositionTicks;
 
-  public static final String SERIALIZED_NAME_IS_PLAYING = "IsPlaying";
-  @SerializedName(SERIALIZED_NAME_IS_PLAYING)
+  public static final String JSON_PROPERTY_IS_PLAYING = "IsPlaying";
   @javax.annotation.Nullable
   private Boolean isPlaying;
 
-  public static final String SERIALIZED_NAME_SHUFFLE_MODE = "ShuffleMode";
-  @SerializedName(SERIALIZED_NAME_SHUFFLE_MODE)
+  public static final String JSON_PROPERTY_SHUFFLE_MODE = "ShuffleMode";
   @javax.annotation.Nullable
   private GroupShuffleMode shuffleMode;
 
-  public static final String SERIALIZED_NAME_REPEAT_MODE = "RepeatMode";
-  @SerializedName(SERIALIZED_NAME_REPEAT_MODE)
+  public static final String JSON_PROPERTY_REPEAT_MODE = "RepeatMode";
   @javax.annotation.Nullable
   private GroupRepeatMode repeatMode;
 
-  public PlayQueueUpdate() {
+  public PlayQueueUpdate() { 
   }
 
   public PlayQueueUpdate reason(@javax.annotation.Nullable PlayQueueUpdateReason reason) {
@@ -110,10 +96,15 @@ public class PlayQueueUpdate {
    * @return reason
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REASON)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PlayQueueUpdateReason getReason() {
     return reason;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REASON)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setReason(@javax.annotation.Nullable PlayQueueUpdateReason reason) {
     this.reason = reason;
   }
@@ -129,10 +120,15 @@ public class PlayQueueUpdate {
    * @return lastUpdate
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_LAST_UPDATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getLastUpdate() {
     return lastUpdate;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_LAST_UPDATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLastUpdate(@javax.annotation.Nullable OffsetDateTime lastUpdate) {
     this.lastUpdate = lastUpdate;
   }
@@ -156,10 +152,15 @@ public class PlayQueueUpdate {
    * @return playlist
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLAYLIST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<SyncPlayQueueItem> getPlaylist() {
     return playlist;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PLAYLIST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlaylist(@javax.annotation.Nullable List<SyncPlayQueueItem> playlist) {
     this.playlist = playlist;
   }
@@ -175,10 +176,15 @@ public class PlayQueueUpdate {
    * @return playingItemIndex
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLAYING_ITEM_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getPlayingItemIndex() {
     return playingItemIndex;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PLAYING_ITEM_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlayingItemIndex(@javax.annotation.Nullable Integer playingItemIndex) {
     this.playingItemIndex = playingItemIndex;
   }
@@ -194,10 +200,15 @@ public class PlayQueueUpdate {
    * @return startPositionTicks
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getStartPositionTicks() {
     return startPositionTicks;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartPositionTicks(@javax.annotation.Nullable Long startPositionTicks) {
     this.startPositionTicks = startPositionTicks;
   }
@@ -213,10 +224,15 @@ public class PlayQueueUpdate {
    * @return isPlaying
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_PLAYING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsPlaying() {
     return isPlaying;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_PLAYING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsPlaying(@javax.annotation.Nullable Boolean isPlaying) {
     this.isPlaying = isPlaying;
   }
@@ -232,10 +248,15 @@ public class PlayQueueUpdate {
    * @return shuffleMode
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SHUFFLE_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public GroupShuffleMode getShuffleMode() {
     return shuffleMode;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SHUFFLE_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setShuffleMode(@javax.annotation.Nullable GroupShuffleMode shuffleMode) {
     this.shuffleMode = shuffleMode;
   }
@@ -251,16 +272,23 @@ public class PlayQueueUpdate {
    * @return repeatMode
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REPEAT_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public GroupRepeatMode getRepeatMode() {
     return repeatMode;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REPEAT_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRepeatMode(@javax.annotation.Nullable GroupRepeatMode repeatMode) {
     this.repeatMode = repeatMode;
   }
 
 
-
+  /**
+   * Return true if this PlayQueueUpdate object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -312,122 +340,84 @@ public class PlayQueueUpdate {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Reason");
-    openapiFields.add("LastUpdate");
-    openapiFields.add("Playlist");
-    openapiFields.add("PlayingItemIndex");
-    openapiFields.add("StartPositionTicks");
-    openapiFields.add("IsPlaying");
-    openapiFields.add("ShuffleMode");
-    openapiFields.add("RepeatMode");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to PlayQueueUpdate
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!PlayQueueUpdate.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in PlayQueueUpdate is not found in the empty JSON string", PlayQueueUpdate.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!PlayQueueUpdate.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `PlayQueueUpdate` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // validate the optional field `Reason`
-      if (jsonObj.get("Reason") != null && !jsonObj.get("Reason").isJsonNull()) {
-        PlayQueueUpdateReason.validateJsonElement(jsonObj.get("Reason"));
-      }
-      if (jsonObj.get("Playlist") != null && !jsonObj.get("Playlist").isJsonNull()) {
-        JsonArray jsonArrayplaylist = jsonObj.getAsJsonArray("Playlist");
-        if (jsonArrayplaylist != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("Playlist").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `Playlist` to be an array in the JSON string but got `%s`", jsonObj.get("Playlist").toString()));
-          }
-
-          // validate the optional field `Playlist` (array)
-          for (int i = 0; i < jsonArrayplaylist.size(); i++) {
-            SyncPlayQueueItem.validateJsonElement(jsonArrayplaylist.get(i));
-          };
-        }
-      }
-      // validate the optional field `ShuffleMode`
-      if (jsonObj.get("ShuffleMode") != null && !jsonObj.get("ShuffleMode").isJsonNull()) {
-        GroupShuffleMode.validateJsonElement(jsonObj.get("ShuffleMode"));
-      }
-      // validate the optional field `RepeatMode`
-      if (jsonObj.get("RepeatMode") != null && !jsonObj.get("RepeatMode").isJsonNull()) {
-        GroupRepeatMode.validateJsonElement(jsonObj.get("RepeatMode"));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!PlayQueueUpdate.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'PlayQueueUpdate' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<PlayQueueUpdate> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(PlayQueueUpdate.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<PlayQueueUpdate>() {
-           @Override
-           public void write(JsonWriter out, PlayQueueUpdate value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public PlayQueueUpdate read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of PlayQueueUpdate given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of PlayQueueUpdate
-   * @throws IOException if the JSON string is invalid with respect to PlayQueueUpdate
-   */
-  public static PlayQueueUpdate fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, PlayQueueUpdate.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of PlayQueueUpdate to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Reason` to the URL query string
+    if (getReason() != null) {
+      joiner.add(String.format("%sReason%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getReason()))));
+    }
+
+    // add `LastUpdate` to the URL query string
+    if (getLastUpdate() != null) {
+      joiner.add(String.format("%sLastUpdate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLastUpdate()))));
+    }
+
+    // add `Playlist` to the URL query string
+    if (getPlaylist() != null) {
+      for (int i = 0; i < getPlaylist().size(); i++) {
+        if (getPlaylist().get(i) != null) {
+          joiner.add(getPlaylist().get(i).toUrlQueryString(String.format("%sPlaylist%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `PlayingItemIndex` to the URL query string
+    if (getPlayingItemIndex() != null) {
+      joiner.add(String.format("%sPlayingItemIndex%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlayingItemIndex()))));
+    }
+
+    // add `StartPositionTicks` to the URL query string
+    if (getStartPositionTicks() != null) {
+      joiner.add(String.format("%sStartPositionTicks%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStartPositionTicks()))));
+    }
+
+    // add `IsPlaying` to the URL query string
+    if (getIsPlaying() != null) {
+      joiner.add(String.format("%sIsPlaying%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsPlaying()))));
+    }
+
+    // add `ShuffleMode` to the URL query string
+    if (getShuffleMode() != null) {
+      joiner.add(String.format("%sShuffleMode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getShuffleMode()))));
+    }
+
+    // add `RepeatMode` to the URL query string
+    if (getRepeatMode() != null) {
+      joiner.add(String.format("%sRepeatMode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRepeatMode()))));
+    }
+
+    return joiner.toString();
   }
 }
 

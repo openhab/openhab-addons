@@ -13,64 +13,50 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * The startup configuration DTO.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  StartupConfigurationDto.JSON_PROPERTY_UI_CULTURE,
+  StartupConfigurationDto.JSON_PROPERTY_METADATA_COUNTRY_CODE,
+  StartupConfigurationDto.JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class StartupConfigurationDto {
-  public static final String SERIALIZED_NAME_UI_CULTURE = "UICulture";
-  @SerializedName(SERIALIZED_NAME_UI_CULTURE)
-  @javax.annotation.Nullable
-  private String uiCulture;
+  public static final String JSON_PROPERTY_UI_CULTURE = "UICulture";
+  private JsonNullable<String> uiCulture = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_METADATA_COUNTRY_CODE = "MetadataCountryCode";
-  @SerializedName(SERIALIZED_NAME_METADATA_COUNTRY_CODE)
-  @javax.annotation.Nullable
-  private String metadataCountryCode;
+  public static final String JSON_PROPERTY_METADATA_COUNTRY_CODE = "MetadataCountryCode";
+  private JsonNullable<String> metadataCountryCode = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PREFERRED_METADATA_LANGUAGE = "PreferredMetadataLanguage";
-  @SerializedName(SERIALIZED_NAME_PREFERRED_METADATA_LANGUAGE)
-  @javax.annotation.Nullable
-  private String preferredMetadataLanguage;
+  public static final String JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE = "PreferredMetadataLanguage";
+  private JsonNullable<String> preferredMetadataLanguage = JsonNullable.<String>undefined();
 
-  public StartupConfigurationDto() {
+  public StartupConfigurationDto() { 
   }
 
   public StartupConfigurationDto uiCulture(@javax.annotation.Nullable String uiCulture) {
-    this.uiCulture = uiCulture;
+    this.uiCulture = JsonNullable.<String>of(uiCulture);
     return this;
   }
 
@@ -79,17 +65,30 @@ public class StartupConfigurationDto {
    * @return uiCulture
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getUiCulture() {
+        return uiCulture.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_UI_CULTURE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getUiCulture_JsonNullable() {
     return uiCulture;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_UI_CULTURE)
+  public void setUiCulture_JsonNullable(JsonNullable<String> uiCulture) {
+    this.uiCulture = uiCulture;
   }
 
   public void setUiCulture(@javax.annotation.Nullable String uiCulture) {
-    this.uiCulture = uiCulture;
+    this.uiCulture = JsonNullable.<String>of(uiCulture);
   }
 
 
   public StartupConfigurationDto metadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
-    this.metadataCountryCode = metadataCountryCode;
+    this.metadataCountryCode = JsonNullable.<String>of(metadataCountryCode);
     return this;
   }
 
@@ -98,17 +97,30 @@ public class StartupConfigurationDto {
    * @return metadataCountryCode
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getMetadataCountryCode() {
+        return metadataCountryCode.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getMetadataCountryCode_JsonNullable() {
     return metadataCountryCode;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
+  public void setMetadataCountryCode_JsonNullable(JsonNullable<String> metadataCountryCode) {
+    this.metadataCountryCode = metadataCountryCode;
   }
 
   public void setMetadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
-    this.metadataCountryCode = metadataCountryCode;
+    this.metadataCountryCode = JsonNullable.<String>of(metadataCountryCode);
   }
 
 
   public StartupConfigurationDto preferredMetadataLanguage(@javax.annotation.Nullable String preferredMetadataLanguage) {
-    this.preferredMetadataLanguage = preferredMetadataLanguage;
+    this.preferredMetadataLanguage = JsonNullable.<String>of(preferredMetadataLanguage);
     return this;
   }
 
@@ -117,16 +129,31 @@ public class StartupConfigurationDto {
    * @return preferredMetadataLanguage
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPreferredMetadataLanguage() {
-    return preferredMetadataLanguage;
+        return preferredMetadataLanguage.orElse(null);
   }
 
-  public void setPreferredMetadataLanguage(@javax.annotation.Nullable String preferredMetadataLanguage) {
+  @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPreferredMetadataLanguage_JsonNullable() {
+    return preferredMetadataLanguage;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
+  public void setPreferredMetadataLanguage_JsonNullable(JsonNullable<String> preferredMetadataLanguage) {
     this.preferredMetadataLanguage = preferredMetadataLanguage;
   }
 
+  public void setPreferredMetadataLanguage(@javax.annotation.Nullable String preferredMetadataLanguage) {
+    this.preferredMetadataLanguage = JsonNullable.<String>of(preferredMetadataLanguage);
+  }
 
 
+  /**
+   * Return true if this StartupConfigurationDto object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -136,9 +163,9 @@ public class StartupConfigurationDto {
       return false;
     }
     StartupConfigurationDto startupConfigurationDto = (StartupConfigurationDto) o;
-    return Objects.equals(this.uiCulture, startupConfigurationDto.uiCulture) &&
-        Objects.equals(this.metadataCountryCode, startupConfigurationDto.metadataCountryCode) &&
-        Objects.equals(this.preferredMetadataLanguage, startupConfigurationDto.preferredMetadataLanguage);
+    return equalsNullable(this.uiCulture, startupConfigurationDto.uiCulture) &&
+        equalsNullable(this.metadataCountryCode, startupConfigurationDto.metadataCountryCode) &&
+        equalsNullable(this.preferredMetadataLanguage, startupConfigurationDto.preferredMetadataLanguage);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -147,7 +174,7 @@ public class StartupConfigurationDto {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uiCulture, metadataCountryCode, preferredMetadataLanguage);
+    return Objects.hash(hashCodeNullable(uiCulture), hashCodeNullable(metadataCountryCode), hashCodeNullable(preferredMetadataLanguage));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -179,100 +206,54 @@ public class StartupConfigurationDto {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("UICulture");
-    openapiFields.add("MetadataCountryCode");
-    openapiFields.add("PreferredMetadataLanguage");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to StartupConfigurationDto
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!StartupConfigurationDto.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in StartupConfigurationDto is not found in the empty JSON string", StartupConfigurationDto.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!StartupConfigurationDto.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `StartupConfigurationDto` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("UICulture") != null && !jsonObj.get("UICulture").isJsonNull()) && !jsonObj.get("UICulture").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `UICulture` to be a primitive type in the JSON string but got `%s`", jsonObj.get("UICulture").toString()));
-      }
-      if ((jsonObj.get("MetadataCountryCode") != null && !jsonObj.get("MetadataCountryCode").isJsonNull()) && !jsonObj.get("MetadataCountryCode").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MetadataCountryCode` to be a primitive type in the JSON string but got `%s`", jsonObj.get("MetadataCountryCode").toString()));
-      }
-      if ((jsonObj.get("PreferredMetadataLanguage") != null && !jsonObj.get("PreferredMetadataLanguage").isJsonNull()) && !jsonObj.get("PreferredMetadataLanguage").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `PreferredMetadataLanguage` to be a primitive type in the JSON string but got `%s`", jsonObj.get("PreferredMetadataLanguage").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!StartupConfigurationDto.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'StartupConfigurationDto' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<StartupConfigurationDto> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(StartupConfigurationDto.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<StartupConfigurationDto>() {
-           @Override
-           public void write(JsonWriter out, StartupConfigurationDto value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public StartupConfigurationDto read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of StartupConfigurationDto given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of StartupConfigurationDto
-   * @throws IOException if the JSON string is invalid with respect to StartupConfigurationDto
-   */
-  public static StartupConfigurationDto fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, StartupConfigurationDto.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of StartupConfigurationDto to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `UICulture` to the URL query string
+    if (getUiCulture() != null) {
+      joiner.add(String.format("%sUICulture%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUiCulture()))));
+    }
+
+    // add `MetadataCountryCode` to the URL query string
+    if (getMetadataCountryCode() != null) {
+      joiner.add(String.format("%sMetadataCountryCode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMetadataCountryCode()))));
+    }
+
+    // add `PreferredMetadataLanguage` to the URL query string
+    if (getPreferredMetadataLanguage() != null) {
+      joiner.add(String.format("%sPreferredMetadataLanguage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPreferredMetadataLanguage()))));
+    }
+
+    return joiner.toString();
   }
 }
 

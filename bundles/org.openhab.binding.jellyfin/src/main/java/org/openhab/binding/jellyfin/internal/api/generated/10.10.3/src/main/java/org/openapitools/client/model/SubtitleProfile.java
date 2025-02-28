@@ -13,75 +13,60 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.client.model.SubtitleDeliveryMethod;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * A class for subtitle profile information.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  SubtitleProfile.JSON_PROPERTY_FORMAT,
+  SubtitleProfile.JSON_PROPERTY_METHOD,
+  SubtitleProfile.JSON_PROPERTY_DIDL_MODE,
+  SubtitleProfile.JSON_PROPERTY_LANGUAGE,
+  SubtitleProfile.JSON_PROPERTY_CONTAINER
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class SubtitleProfile {
-  public static final String SERIALIZED_NAME_FORMAT = "Format";
-  @SerializedName(SERIALIZED_NAME_FORMAT)
-  @javax.annotation.Nullable
-  private String format;
+  public static final String JSON_PROPERTY_FORMAT = "Format";
+  private JsonNullable<String> format = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_METHOD = "Method";
-  @SerializedName(SERIALIZED_NAME_METHOD)
+  public static final String JSON_PROPERTY_METHOD = "Method";
   @javax.annotation.Nullable
   private SubtitleDeliveryMethod method;
 
-  public static final String SERIALIZED_NAME_DIDL_MODE = "DidlMode";
-  @SerializedName(SERIALIZED_NAME_DIDL_MODE)
-  @javax.annotation.Nullable
-  private String didlMode;
+  public static final String JSON_PROPERTY_DIDL_MODE = "DidlMode";
+  private JsonNullable<String> didlMode = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_LANGUAGE = "Language";
-  @SerializedName(SERIALIZED_NAME_LANGUAGE)
-  @javax.annotation.Nullable
-  private String language;
+  public static final String JSON_PROPERTY_LANGUAGE = "Language";
+  private JsonNullable<String> language = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_CONTAINER = "Container";
-  @SerializedName(SERIALIZED_NAME_CONTAINER)
-  @javax.annotation.Nullable
-  private String container;
+  public static final String JSON_PROPERTY_CONTAINER = "Container";
+  private JsonNullable<String> container = JsonNullable.<String>undefined();
 
-  public SubtitleProfile() {
+  public SubtitleProfile() { 
   }
 
   public SubtitleProfile format(@javax.annotation.Nullable String format) {
-    this.format = format;
+    this.format = JsonNullable.<String>of(format);
     return this;
   }
 
@@ -90,12 +75,25 @@ public class SubtitleProfile {
    * @return format
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getFormat() {
+        return format.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_FORMAT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getFormat_JsonNullable() {
     return format;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_FORMAT)
+  public void setFormat_JsonNullable(JsonNullable<String> format) {
+    this.format = format;
   }
 
   public void setFormat(@javax.annotation.Nullable String format) {
-    this.format = format;
+    this.format = JsonNullable.<String>of(format);
   }
 
 
@@ -109,17 +107,22 @@ public class SubtitleProfile {
    * @return method
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_METHOD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public SubtitleDeliveryMethod getMethod() {
     return method;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_METHOD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMethod(@javax.annotation.Nullable SubtitleDeliveryMethod method) {
     this.method = method;
   }
 
 
   public SubtitleProfile didlMode(@javax.annotation.Nullable String didlMode) {
-    this.didlMode = didlMode;
+    this.didlMode = JsonNullable.<String>of(didlMode);
     return this;
   }
 
@@ -128,17 +131,30 @@ public class SubtitleProfile {
    * @return didlMode
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getDidlMode() {
+        return didlMode.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DIDL_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getDidlMode_JsonNullable() {
     return didlMode;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DIDL_MODE)
+  public void setDidlMode_JsonNullable(JsonNullable<String> didlMode) {
+    this.didlMode = didlMode;
   }
 
   public void setDidlMode(@javax.annotation.Nullable String didlMode) {
-    this.didlMode = didlMode;
+    this.didlMode = JsonNullable.<String>of(didlMode);
   }
 
 
   public SubtitleProfile language(@javax.annotation.Nullable String language) {
-    this.language = language;
+    this.language = JsonNullable.<String>of(language);
     return this;
   }
 
@@ -147,17 +163,30 @@ public class SubtitleProfile {
    * @return language
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getLanguage() {
+        return language.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LANGUAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getLanguage_JsonNullable() {
     return language;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LANGUAGE)
+  public void setLanguage_JsonNullable(JsonNullable<String> language) {
+    this.language = language;
   }
 
   public void setLanguage(@javax.annotation.Nullable String language) {
-    this.language = language;
+    this.language = JsonNullable.<String>of(language);
   }
 
 
   public SubtitleProfile container(@javax.annotation.Nullable String container) {
-    this.container = container;
+    this.container = JsonNullable.<String>of(container);
     return this;
   }
 
@@ -166,16 +195,31 @@ public class SubtitleProfile {
    * @return container
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getContainer() {
-    return container;
+        return container.orElse(null);
   }
 
-  public void setContainer(@javax.annotation.Nullable String container) {
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getContainer_JsonNullable() {
+    return container;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  public void setContainer_JsonNullable(JsonNullable<String> container) {
     this.container = container;
   }
 
+  public void setContainer(@javax.annotation.Nullable String container) {
+    this.container = JsonNullable.<String>of(container);
+  }
 
 
+  /**
+   * Return true if this SubtitleProfile object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -185,11 +229,11 @@ public class SubtitleProfile {
       return false;
     }
     SubtitleProfile subtitleProfile = (SubtitleProfile) o;
-    return Objects.equals(this.format, subtitleProfile.format) &&
+    return equalsNullable(this.format, subtitleProfile.format) &&
         Objects.equals(this.method, subtitleProfile.method) &&
-        Objects.equals(this.didlMode, subtitleProfile.didlMode) &&
-        Objects.equals(this.language, subtitleProfile.language) &&
-        Objects.equals(this.container, subtitleProfile.container);
+        equalsNullable(this.didlMode, subtitleProfile.didlMode) &&
+        equalsNullable(this.language, subtitleProfile.language) &&
+        equalsNullable(this.container, subtitleProfile.container);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -198,7 +242,7 @@ public class SubtitleProfile {
 
   @Override
   public int hashCode() {
-    return Objects.hash(format, method, didlMode, language, container);
+    return Objects.hash(hashCodeNullable(format), method, hashCodeNullable(didlMode), hashCodeNullable(language), hashCodeNullable(container));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -232,109 +276,64 @@ public class SubtitleProfile {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Format");
-    openapiFields.add("Method");
-    openapiFields.add("DidlMode");
-    openapiFields.add("Language");
-    openapiFields.add("Container");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to SubtitleProfile
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!SubtitleProfile.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in SubtitleProfile is not found in the empty JSON string", SubtitleProfile.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!SubtitleProfile.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `SubtitleProfile` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Format") != null && !jsonObj.get("Format").isJsonNull()) && !jsonObj.get("Format").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Format` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Format").toString()));
-      }
-      // validate the optional field `Method`
-      if (jsonObj.get("Method") != null && !jsonObj.get("Method").isJsonNull()) {
-        SubtitleDeliveryMethod.validateJsonElement(jsonObj.get("Method"));
-      }
-      if ((jsonObj.get("DidlMode") != null && !jsonObj.get("DidlMode").isJsonNull()) && !jsonObj.get("DidlMode").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `DidlMode` to be a primitive type in the JSON string but got `%s`", jsonObj.get("DidlMode").toString()));
-      }
-      if ((jsonObj.get("Language") != null && !jsonObj.get("Language").isJsonNull()) && !jsonObj.get("Language").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Language` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Language").toString()));
-      }
-      if ((jsonObj.get("Container") != null && !jsonObj.get("Container").isJsonNull()) && !jsonObj.get("Container").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Container` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Container").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!SubtitleProfile.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'SubtitleProfile' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<SubtitleProfile> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(SubtitleProfile.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<SubtitleProfile>() {
-           @Override
-           public void write(JsonWriter out, SubtitleProfile value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public SubtitleProfile read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of SubtitleProfile given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of SubtitleProfile
-   * @throws IOException if the JSON string is invalid with respect to SubtitleProfile
-   */
-  public static SubtitleProfile fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, SubtitleProfile.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of SubtitleProfile to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Format` to the URL query string
+    if (getFormat() != null) {
+      joiner.add(String.format("%sFormat%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFormat()))));
+    }
+
+    // add `Method` to the URL query string
+    if (getMethod() != null) {
+      joiner.add(String.format("%sMethod%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMethod()))));
+    }
+
+    // add `DidlMode` to the URL query string
+    if (getDidlMode() != null) {
+      joiner.add(String.format("%sDidlMode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDidlMode()))));
+    }
+
+    // add `Language` to the URL query string
+    if (getLanguage() != null) {
+      joiner.add(String.format("%sLanguage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLanguage()))));
+    }
+
+    // add `Container` to the URL query string
+    if (getContainer() != null) {
+      joiner.add(String.format("%sContainer%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
+    }
+
+    return joiner.toString();
   }
 }
 

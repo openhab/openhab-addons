@@ -13,73 +13,58 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.openapitools.client.model.PlaylistUserPermissions;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Update existing playlist dto. Fields set to &#x60;null&#x60; will not be updated and keep their current values.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  UpdatePlaylistDto.JSON_PROPERTY_NAME,
+  UpdatePlaylistDto.JSON_PROPERTY_IDS,
+  UpdatePlaylistDto.JSON_PROPERTY_USERS,
+  UpdatePlaylistDto.JSON_PROPERTY_IS_PUBLIC
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class UpdatePlaylistDto {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_IDS = "Ids";
-  @SerializedName(SERIALIZED_NAME_IDS)
-  @javax.annotation.Nullable
-  private List<UUID> ids;
+  public static final String JSON_PROPERTY_IDS = "Ids";
+  private JsonNullable<List<UUID>> ids = JsonNullable.<List<UUID>>undefined();
 
-  public static final String SERIALIZED_NAME_USERS = "Users";
-  @SerializedName(SERIALIZED_NAME_USERS)
-  @javax.annotation.Nullable
-  private List<PlaylistUserPermissions> users;
+  public static final String JSON_PROPERTY_USERS = "Users";
+  private JsonNullable<List<PlaylistUserPermissions>> users = JsonNullable.<List<PlaylistUserPermissions>>undefined();
 
-  public static final String SERIALIZED_NAME_IS_PUBLIC = "IsPublic";
-  @SerializedName(SERIALIZED_NAME_IS_PUBLIC)
-  @javax.annotation.Nullable
-  private Boolean isPublic;
+  public static final String JSON_PROPERTY_IS_PUBLIC = "IsPublic";
+  private JsonNullable<Boolean> isPublic = JsonNullable.<Boolean>undefined();
 
-  public UpdatePlaylistDto() {
+  public UpdatePlaylistDto() { 
   }
 
   public UpdatePlaylistDto name(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
     return this;
   }
 
@@ -88,25 +73,42 @@ public class UpdatePlaylistDto {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
   }
 
 
   public UpdatePlaylistDto ids(@javax.annotation.Nullable List<UUID> ids) {
-    this.ids = ids;
+    this.ids = JsonNullable.<List<UUID>>of(ids);
     return this;
   }
 
   public UpdatePlaylistDto addIdsItem(UUID idsItem) {
-    if (this.ids == null) {
-      this.ids = new ArrayList<>();
+    if (this.ids == null || !this.ids.isPresent()) {
+      this.ids = JsonNullable.<List<UUID>>of(new ArrayList<>());
     }
-    this.ids.add(idsItem);
+    try {
+      this.ids.get().add(idsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -115,25 +117,42 @@ public class UpdatePlaylistDto {
    * @return ids
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<UUID> getIds() {
+        return ids.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<UUID>> getIds_JsonNullable() {
     return ids;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IDS)
+  public void setIds_JsonNullable(JsonNullable<List<UUID>> ids) {
+    this.ids = ids;
   }
 
   public void setIds(@javax.annotation.Nullable List<UUID> ids) {
-    this.ids = ids;
+    this.ids = JsonNullable.<List<UUID>>of(ids);
   }
 
 
   public UpdatePlaylistDto users(@javax.annotation.Nullable List<PlaylistUserPermissions> users) {
-    this.users = users;
+    this.users = JsonNullable.<List<PlaylistUserPermissions>>of(users);
     return this;
   }
 
   public UpdatePlaylistDto addUsersItem(PlaylistUserPermissions usersItem) {
-    if (this.users == null) {
-      this.users = new ArrayList<>();
+    if (this.users == null || !this.users.isPresent()) {
+      this.users = JsonNullable.<List<PlaylistUserPermissions>>of(new ArrayList<>());
     }
-    this.users.add(usersItem);
+    try {
+      this.users.get().add(usersItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -142,17 +161,30 @@ public class UpdatePlaylistDto {
    * @return users
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<PlaylistUserPermissions> getUsers() {
+        return users.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_USERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<PlaylistUserPermissions>> getUsers_JsonNullable() {
     return users;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_USERS)
+  public void setUsers_JsonNullable(JsonNullable<List<PlaylistUserPermissions>> users) {
+    this.users = users;
   }
 
   public void setUsers(@javax.annotation.Nullable List<PlaylistUserPermissions> users) {
-    this.users = users;
+    this.users = JsonNullable.<List<PlaylistUserPermissions>>of(users);
   }
 
 
   public UpdatePlaylistDto isPublic(@javax.annotation.Nullable Boolean isPublic) {
-    this.isPublic = isPublic;
+    this.isPublic = JsonNullable.<Boolean>of(isPublic);
     return this;
   }
 
@@ -161,16 +193,31 @@ public class UpdatePlaylistDto {
    * @return isPublic
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Boolean getIsPublic() {
-    return isPublic;
+        return isPublic.orElse(null);
   }
 
-  public void setIsPublic(@javax.annotation.Nullable Boolean isPublic) {
+  @JsonProperty(JSON_PROPERTY_IS_PUBLIC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Boolean> getIsPublic_JsonNullable() {
+    return isPublic;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_PUBLIC)
+  public void setIsPublic_JsonNullable(JsonNullable<Boolean> isPublic) {
     this.isPublic = isPublic;
   }
 
+  public void setIsPublic(@javax.annotation.Nullable Boolean isPublic) {
+    this.isPublic = JsonNullable.<Boolean>of(isPublic);
+  }
 
 
+  /**
+   * Return true if this UpdatePlaylistDto object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -180,10 +227,10 @@ public class UpdatePlaylistDto {
       return false;
     }
     UpdatePlaylistDto updatePlaylistDto = (UpdatePlaylistDto) o;
-    return Objects.equals(this.name, updatePlaylistDto.name) &&
-        Objects.equals(this.ids, updatePlaylistDto.ids) &&
-        Objects.equals(this.users, updatePlaylistDto.users) &&
-        Objects.equals(this.isPublic, updatePlaylistDto.isPublic);
+    return equalsNullable(this.name, updatePlaylistDto.name) &&
+        equalsNullable(this.ids, updatePlaylistDto.ids) &&
+        equalsNullable(this.users, updatePlaylistDto.users) &&
+        equalsNullable(this.isPublic, updatePlaylistDto.isPublic);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -192,7 +239,7 @@ public class UpdatePlaylistDto {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, ids, users, isPublic);
+    return Objects.hash(hashCodeNullable(name), hashCodeNullable(ids), hashCodeNullable(users), hashCodeNullable(isPublic));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -225,113 +272,70 @@ public class UpdatePlaylistDto {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("Ids");
-    openapiFields.add("Users");
-    openapiFields.add("IsPublic");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to UpdatePlaylistDto
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!UpdatePlaylistDto.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in UpdatePlaylistDto is not found in the empty JSON string", UpdatePlaylistDto.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!UpdatePlaylistDto.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `UpdatePlaylistDto` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("Ids") != null && !jsonObj.get("Ids").isJsonNull() && !jsonObj.get("Ids").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Ids` to be an array in the JSON string but got `%s`", jsonObj.get("Ids").toString()));
-      }
-      if (jsonObj.get("Users") != null && !jsonObj.get("Users").isJsonNull()) {
-        JsonArray jsonArrayusers = jsonObj.getAsJsonArray("Users");
-        if (jsonArrayusers != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("Users").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `Users` to be an array in the JSON string but got `%s`", jsonObj.get("Users").toString()));
-          }
-
-          // validate the optional field `Users` (array)
-          for (int i = 0; i < jsonArrayusers.size(); i++) {
-            PlaylistUserPermissions.validateJsonElement(jsonArrayusers.get(i));
-          };
-        }
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!UpdatePlaylistDto.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'UpdatePlaylistDto' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<UpdatePlaylistDto> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(UpdatePlaylistDto.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<UpdatePlaylistDto>() {
-           @Override
-           public void write(JsonWriter out, UpdatePlaylistDto value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public UpdatePlaylistDto read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of UpdatePlaylistDto given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of UpdatePlaylistDto
-   * @throws IOException if the JSON string is invalid with respect to UpdatePlaylistDto
-   */
-  public static UpdatePlaylistDto fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, UpdatePlaylistDto.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of UpdatePlaylistDto to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `Ids` to the URL query string
+    if (getIds() != null) {
+      for (int i = 0; i < getIds().size(); i++) {
+        if (getIds().get(i) != null) {
+          joiner.add(String.format("%sIds%s%s=%s", prefix, suffix,
+              "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+              ApiClient.urlEncode(ApiClient.valueToString(getIds().get(i)))));
+        }
+      }
+    }
+
+    // add `Users` to the URL query string
+    if (getUsers() != null) {
+      for (int i = 0; i < getUsers().size(); i++) {
+        if (getUsers().get(i) != null) {
+          joiner.add(getUsers().get(i).toUrlQueryString(String.format("%sUsers%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `IsPublic` to the URL query string
+    if (getIsPublic() != null) {
+      joiner.add(String.format("%sIsPublic%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsPublic()))));
+    }
+
+    return joiner.toString();
   }
 }
 

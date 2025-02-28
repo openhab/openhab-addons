@@ -10,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import org.openapitools.client.model.AllThemeMediaResult;
 import org.openapitools.client.model.BaseItemDto;
@@ -42,3761 +33,2471 @@ import org.openapitools.client.model.SortOrder;
 import org.openapitools.client.model.ThemeMediaResult;
 import java.util.UUID;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class LibraryApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+
+  public LibraryApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public LibraryApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Deletes an item from the library and filesystem.
+   * 
+   * @param itemId The item id. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void deleteItem(UUID itemId) throws ApiException {
+    deleteItemWithHttpInfo(itemId);
+  }
+
+  /**
+   * Deletes an item from the library and filesystem.
+   * 
+   * @param itemId The item id. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> deleteItemWithHttpInfo(UUID itemId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = deleteItemRequestBuilder(itemId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("deleteItem", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder deleteItemRequestBuilder(UUID itemId) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling deleteItem");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Deletes items from the library and filesystem.
+   * 
+   * @param ids The item ids. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void deleteItems(List<UUID> ids) throws ApiException {
+    deleteItemsWithHttpInfo(ids);
+  }
+
+  /**
+   * Deletes items from the library and filesystem.
+   * 
+   * @param ids The item ids. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> deleteItemsWithHttpInfo(List<UUID> ids) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = deleteItemsRequestBuilder(ids);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("deleteItems", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder deleteItemsRequestBuilder(List<UUID> ids) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "ids";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "ids", ids));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets all parents of an item.
+   * 
+   * @param itemId The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @return List&lt;BaseItemDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<BaseItemDto> getAncestors(UUID itemId, UUID userId) throws ApiException {
+    ApiResponse<List<BaseItemDto>> localVarResponse = getAncestorsWithHttpInfo(itemId, userId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets all parents of an item.
+   * 
+   * @param itemId The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @return ApiResponse&lt;List&lt;BaseItemDto&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<BaseItemDto>> getAncestorsWithHttpInfo(UUID itemId, UUID userId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getAncestorsRequestBuilder(itemId, userId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getAncestors", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<BaseItemDto>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<BaseItemDto>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<BaseItemDto>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getAncestorsRequestBuilder(UUID itemId, UUID userId) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getAncestors");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/Ancestors"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets critic review for an item.
+   * 
+   * @param itemId  (required)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   * @deprecated
+   */
+  @Deprecated
+  public BaseItemDtoQueryResult getCriticReviews(String itemId) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getCriticReviewsWithHttpInfo(itemId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets critic review for an item.
+   * 
+   * @param itemId  (required)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   * @deprecated
+   */
+  @Deprecated
+  public ApiResponse<BaseItemDtoQueryResult> getCriticReviewsWithHttpInfo(String itemId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getCriticReviewsRequestBuilder(itemId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getCriticReviews", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getCriticReviewsRequestBuilder(String itemId) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getCriticReviews");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/CriticReviews"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Downloads item media.
+   * 
+   * @param itemId The item id. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getDownload(UUID itemId) throws ApiException {
+    ApiResponse<File> localVarResponse = getDownloadWithHttpInfo(itemId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Downloads item media.
+   * 
+   * @param itemId The item id. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getDownloadWithHttpInfo(UUID itemId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getDownloadRequestBuilder(itemId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getDownload", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getDownloadRequestBuilder(UUID itemId) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getDownload");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/Download"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "video/*, audio/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get the original file of an item.
+   * 
+   * @param itemId The item id. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getFile(UUID itemId) throws ApiException {
+    ApiResponse<File> localVarResponse = getFileWithHttpInfo(itemId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get the original file of an item.
+   * 
+   * @param itemId The item id. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getFileWithHttpInfo(UUID itemId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getFileRequestBuilder(itemId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getFile", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getFileRequestBuilder(UUID itemId) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getFile");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/File"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "video/*, audio/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get item counts.
+   * 
+   * @param userId Optional. Get counts from a specific user&#39;s library. (optional)
+   * @param isFavorite Optional. Get counts of favorite items. (optional)
+   * @return ItemCounts
+   * @throws ApiException if fails to make API call
+   */
+  public ItemCounts getItemCounts(UUID userId, Boolean isFavorite) throws ApiException {
+    ApiResponse<ItemCounts> localVarResponse = getItemCountsWithHttpInfo(userId, isFavorite);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get item counts.
+   * 
+   * @param userId Optional. Get counts from a specific user&#39;s library. (optional)
+   * @param isFavorite Optional. Get counts of favorite items. (optional)
+   * @return ApiResponse&lt;ItemCounts&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<ItemCounts> getItemCountsWithHttpInfo(UUID userId, Boolean isFavorite) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getItemCountsRequestBuilder(userId, isFavorite);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getItemCounts", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<ItemCounts>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<ItemCounts>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ItemCounts>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getItemCountsRequestBuilder(UUID userId, Boolean isFavorite) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/Counts";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "isFavorite";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isFavorite", isFavorite));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets the library options info.
+   * 
+   * @param libraryContentType Library content type. (optional)
+   * @param isNewLibrary Whether this is a new library. (optional, default to false)
+   * @return LibraryOptionsResultDto
+   * @throws ApiException if fails to make API call
+   */
+  public LibraryOptionsResultDto getLibraryOptionsInfo(CollectionType libraryContentType, Boolean isNewLibrary) throws ApiException {
+    ApiResponse<LibraryOptionsResultDto> localVarResponse = getLibraryOptionsInfoWithHttpInfo(libraryContentType, isNewLibrary);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets the library options info.
+   * 
+   * @param libraryContentType Library content type. (optional)
+   * @param isNewLibrary Whether this is a new library. (optional, default to false)
+   * @return ApiResponse&lt;LibraryOptionsResultDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<LibraryOptionsResultDto> getLibraryOptionsInfoWithHttpInfo(CollectionType libraryContentType, Boolean isNewLibrary) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getLibraryOptionsInfoRequestBuilder(libraryContentType, isNewLibrary);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getLibraryOptionsInfo", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<LibraryOptionsResultDto>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<LibraryOptionsResultDto>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<LibraryOptionsResultDto>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getLibraryOptionsInfoRequestBuilder(CollectionType libraryContentType, Boolean isNewLibrary) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Libraries/AvailableOptions";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "libraryContentType";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("libraryContentType", libraryContentType));
+    localVarQueryParameterBaseName = "isNewLibrary";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isNewLibrary", isNewLibrary));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets all user media folders.
+   * 
+   * @param isHidden Optional. Filter by folders that are marked hidden, or not. (optional)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getMediaFolders(Boolean isHidden) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getMediaFoldersWithHttpInfo(isHidden);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets all user media folders.
+   * 
+   * @param isHidden Optional. Filter by folders that are marked hidden, or not. (optional)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getMediaFoldersWithHttpInfo(Boolean isHidden) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getMediaFoldersRequestBuilder(isHidden);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getMediaFolders", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getMediaFoldersRequestBuilder(Boolean isHidden) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Library/MediaFolders";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "isHidden";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isHidden", isHidden));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets a list of physical paths from virtual folders.
+   * 
+   * @return List&lt;String&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<String> getPhysicalPaths() throws ApiException {
+    ApiResponse<List<String>> localVarResponse = getPhysicalPathsWithHttpInfo();
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets a list of physical paths from virtual folders.
+   * 
+   * @return ApiResponse&lt;List&lt;String&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<String>> getPhysicalPathsWithHttpInfo() throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getPhysicalPathsRequestBuilder();
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getPhysicalPaths", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<String>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<String>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<String>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getPhysicalPathsRequestBuilder() throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Library/PhysicalPaths";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets similar items.
+   * 
+   * @param itemId The item id. (required)
+   * @param excludeArtistIds Exclude artist ids. (optional)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getSimilarAlbums(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getSimilarAlbumsWithHttpInfo(itemId, excludeArtistIds, userId, limit, fields);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets similar items.
+   * 
+   * @param itemId The item id. (required)
+   * @param excludeArtistIds Exclude artist ids. (optional)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getSimilarAlbumsWithHttpInfo(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getSimilarAlbumsRequestBuilder(itemId, excludeArtistIds, userId, limit, fields);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getSimilarAlbums", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getSimilarAlbumsRequestBuilder(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getSimilarAlbums");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Albums/{itemId}/Similar"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "excludeArtistIds";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "excludeArtistIds", excludeArtistIds));
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets similar items.
+   * 
+   * @param itemId The item id. (required)
+   * @param excludeArtistIds Exclude artist ids. (optional)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getSimilarArtists(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getSimilarArtistsWithHttpInfo(itemId, excludeArtistIds, userId, limit, fields);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets similar items.
+   * 
+   * @param itemId The item id. (required)
+   * @param excludeArtistIds Exclude artist ids. (optional)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getSimilarArtistsWithHttpInfo(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getSimilarArtistsRequestBuilder(itemId, excludeArtistIds, userId, limit, fields);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getSimilarArtists", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getSimilarArtistsRequestBuilder(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getSimilarArtists");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Artists/{itemId}/Similar"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "excludeArtistIds";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "excludeArtistIds", excludeArtistIds));
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets similar items.
+   * 
+   * @param itemId The item id. (required)
+   * @param excludeArtistIds Exclude artist ids. (optional)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getSimilarItems(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getSimilarItemsWithHttpInfo(itemId, excludeArtistIds, userId, limit, fields);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets similar items.
+   * 
+   * @param itemId The item id. (required)
+   * @param excludeArtistIds Exclude artist ids. (optional)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getSimilarItemsWithHttpInfo(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getSimilarItemsRequestBuilder(itemId, excludeArtistIds, userId, limit, fields);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getSimilarItems", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getSimilarItemsRequestBuilder(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getSimilarItems");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/Similar"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "excludeArtistIds";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "excludeArtistIds", excludeArtistIds));
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets similar items.
+   * 
+   * @param itemId The item id. (required)
+   * @param excludeArtistIds Exclude artist ids. (optional)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getSimilarMovies(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getSimilarMoviesWithHttpInfo(itemId, excludeArtistIds, userId, limit, fields);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets similar items.
+   * 
+   * @param itemId The item id. (required)
+   * @param excludeArtistIds Exclude artist ids. (optional)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getSimilarMoviesWithHttpInfo(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getSimilarMoviesRequestBuilder(itemId, excludeArtistIds, userId, limit, fields);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getSimilarMovies", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getSimilarMoviesRequestBuilder(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getSimilarMovies");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Movies/{itemId}/Similar"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "excludeArtistIds";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "excludeArtistIds", excludeArtistIds));
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets similar items.
+   * 
+   * @param itemId The item id. (required)
+   * @param excludeArtistIds Exclude artist ids. (optional)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getSimilarShows(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getSimilarShowsWithHttpInfo(itemId, excludeArtistIds, userId, limit, fields);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets similar items.
+   * 
+   * @param itemId The item id. (required)
+   * @param excludeArtistIds Exclude artist ids. (optional)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getSimilarShowsWithHttpInfo(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getSimilarShowsRequestBuilder(itemId, excludeArtistIds, userId, limit, fields);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getSimilarShows", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getSimilarShowsRequestBuilder(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getSimilarShows");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Shows/{itemId}/Similar"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "excludeArtistIds";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "excludeArtistIds", excludeArtistIds));
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets similar items.
+   * 
+   * @param itemId The item id. (required)
+   * @param excludeArtistIds Exclude artist ids. (optional)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getSimilarTrailers(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getSimilarTrailersWithHttpInfo(itemId, excludeArtistIds, userId, limit, fields);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets similar items.
+   * 
+   * @param itemId The item id. (required)
+   * @param excludeArtistIds Exclude artist ids. (optional)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getSimilarTrailersWithHttpInfo(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getSimilarTrailersRequestBuilder(itemId, excludeArtistIds, userId, limit, fields);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getSimilarTrailers", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getSimilarTrailersRequestBuilder(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getSimilarTrailers");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Trailers/{itemId}/Similar"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "excludeArtistIds";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "excludeArtistIds", excludeArtistIds));
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get theme songs and videos for an item.
+   * 
+   * @param itemId The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media. (optional, default to false)
+   * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
+   * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
+   * @return AllThemeMediaResult
+   * @throws ApiException if fails to make API call
+   */
+  public AllThemeMediaResult getThemeMedia(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder) throws ApiException {
+    ApiResponse<AllThemeMediaResult> localVarResponse = getThemeMediaWithHttpInfo(itemId, userId, inheritFromParent, sortBy, sortOrder);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get theme songs and videos for an item.
+   * 
+   * @param itemId The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media. (optional, default to false)
+   * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
+   * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
+   * @return ApiResponse&lt;AllThemeMediaResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<AllThemeMediaResult> getThemeMediaWithHttpInfo(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getThemeMediaRequestBuilder(itemId, userId, inheritFromParent, sortBy, sortOrder);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getThemeMedia", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<AllThemeMediaResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<AllThemeMediaResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<AllThemeMediaResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getThemeMediaRequestBuilder(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getThemeMedia");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/ThemeMedia"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "inheritFromParent";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("inheritFromParent", inheritFromParent));
+    localVarQueryParameterBaseName = "sortBy";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "sortBy", sortBy));
+    localVarQueryParameterBaseName = "sortOrder";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "sortOrder", sortOrder));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get theme songs for an item.
+   * 
+   * @param itemId The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media. (optional, default to false)
+   * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
+   * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
+   * @return ThemeMediaResult
+   * @throws ApiException if fails to make API call
+   */
+  public ThemeMediaResult getThemeSongs(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder) throws ApiException {
+    ApiResponse<ThemeMediaResult> localVarResponse = getThemeSongsWithHttpInfo(itemId, userId, inheritFromParent, sortBy, sortOrder);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get theme songs for an item.
+   * 
+   * @param itemId The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media. (optional, default to false)
+   * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
+   * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
+   * @return ApiResponse&lt;ThemeMediaResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<ThemeMediaResult> getThemeSongsWithHttpInfo(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getThemeSongsRequestBuilder(itemId, userId, inheritFromParent, sortBy, sortOrder);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getThemeSongs", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<ThemeMediaResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<ThemeMediaResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ThemeMediaResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getThemeSongsRequestBuilder(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getThemeSongs");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/ThemeSongs"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "inheritFromParent";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("inheritFromParent", inheritFromParent));
+    localVarQueryParameterBaseName = "sortBy";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "sortBy", sortBy));
+    localVarQueryParameterBaseName = "sortOrder";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "sortOrder", sortOrder));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get theme videos for an item.
+   * 
+   * @param itemId The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media. (optional, default to false)
+   * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
+   * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
+   * @return ThemeMediaResult
+   * @throws ApiException if fails to make API call
+   */
+  public ThemeMediaResult getThemeVideos(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder) throws ApiException {
+    ApiResponse<ThemeMediaResult> localVarResponse = getThemeVideosWithHttpInfo(itemId, userId, inheritFromParent, sortBy, sortOrder);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get theme videos for an item.
+   * 
+   * @param itemId The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media. (optional, default to false)
+   * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
+   * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
+   * @return ApiResponse&lt;ThemeMediaResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<ThemeMediaResult> getThemeVideosWithHttpInfo(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getThemeVideosRequestBuilder(itemId, userId, inheritFromParent, sortBy, sortOrder);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getThemeVideos", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<ThemeMediaResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<ThemeMediaResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ThemeMediaResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getThemeVideosRequestBuilder(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getThemeVideos");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/ThemeVideos"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "inheritFromParent";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("inheritFromParent", inheritFromParent));
+    localVarQueryParameterBaseName = "sortBy";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "sortBy", sortBy));
+    localVarQueryParameterBaseName = "sortOrder";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "sortOrder", sortOrder));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Reports that new movies have been added by an external source.
+   * 
+   * @param tmdbId The tmdbId. (optional)
+   * @param imdbId The imdbId. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void postAddedMovies(String tmdbId, String imdbId) throws ApiException {
+    postAddedMoviesWithHttpInfo(tmdbId, imdbId);
+  }
+
+  /**
+   * Reports that new movies have been added by an external source.
+   * 
+   * @param tmdbId The tmdbId. (optional)
+   * @param imdbId The imdbId. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> postAddedMoviesWithHttpInfo(String tmdbId, String imdbId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = postAddedMoviesRequestBuilder(tmdbId, imdbId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("postAddedMovies", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder postAddedMoviesRequestBuilder(String tmdbId, String imdbId) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Library/Movies/Added";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tmdbId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tmdbId", tmdbId));
+    localVarQueryParameterBaseName = "imdbId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imdbId", imdbId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Reports that new episodes of a series have been added by an external source.
+   * 
+   * @param tvdbId The tvdbId. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void postAddedSeries(String tvdbId) throws ApiException {
+    postAddedSeriesWithHttpInfo(tvdbId);
+  }
+
+  /**
+   * Reports that new episodes of a series have been added by an external source.
+   * 
+   * @param tvdbId The tvdbId. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> postAddedSeriesWithHttpInfo(String tvdbId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = postAddedSeriesRequestBuilder(tvdbId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("postAddedSeries", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder postAddedSeriesRequestBuilder(String tvdbId) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Library/Series/Added";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tvdbId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tvdbId", tvdbId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Reports that new movies have been added by an external source.
+   * 
+   * @param mediaUpdateInfoDto The update paths. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void postUpdatedMedia(MediaUpdateInfoDto mediaUpdateInfoDto) throws ApiException {
+    postUpdatedMediaWithHttpInfo(mediaUpdateInfoDto);
+  }
+
+  /**
+   * Reports that new movies have been added by an external source.
+   * 
+   * @param mediaUpdateInfoDto The update paths. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> postUpdatedMediaWithHttpInfo(MediaUpdateInfoDto mediaUpdateInfoDto) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = postUpdatedMediaRequestBuilder(mediaUpdateInfoDto);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("postUpdatedMedia", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder postUpdatedMediaRequestBuilder(MediaUpdateInfoDto mediaUpdateInfoDto) throws ApiException {
+    // verify the required parameter 'mediaUpdateInfoDto' is set
+    if (mediaUpdateInfoDto == null) {
+      throw new ApiException(400, "Missing the required parameter 'mediaUpdateInfoDto' when calling postUpdatedMedia");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Library/Media/Updated";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(mediaUpdateInfoDto);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Reports that new movies have been added by an external source.
+   * 
+   * @param tmdbId The tmdbId. (optional)
+   * @param imdbId The imdbId. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void postUpdatedMovies(String tmdbId, String imdbId) throws ApiException {
+    postUpdatedMoviesWithHttpInfo(tmdbId, imdbId);
+  }
+
+  /**
+   * Reports that new movies have been added by an external source.
+   * 
+   * @param tmdbId The tmdbId. (optional)
+   * @param imdbId The imdbId. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> postUpdatedMoviesWithHttpInfo(String tmdbId, String imdbId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = postUpdatedMoviesRequestBuilder(tmdbId, imdbId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("postUpdatedMovies", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder postUpdatedMoviesRequestBuilder(String tmdbId, String imdbId) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Library/Movies/Updated";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tmdbId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tmdbId", tmdbId));
+    localVarQueryParameterBaseName = "imdbId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imdbId", imdbId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Reports that new episodes of a series have been added by an external source.
+   * 
+   * @param tvdbId The tvdbId. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void postUpdatedSeries(String tvdbId) throws ApiException {
+    postUpdatedSeriesWithHttpInfo(tvdbId);
+  }
+
+  /**
+   * Reports that new episodes of a series have been added by an external source.
+   * 
+   * @param tvdbId The tvdbId. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> postUpdatedSeriesWithHttpInfo(String tvdbId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = postUpdatedSeriesRequestBuilder(tvdbId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("postUpdatedSeries", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder postUpdatedSeriesRequestBuilder(String tvdbId) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Library/Series/Updated";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "tvdbId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("tvdbId", tvdbId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Starts a library scan.
+   * 
+   * @throws ApiException if fails to make API call
+   */
+  public void refreshLibrary() throws ApiException {
+    refreshLibraryWithHttpInfo();
+  }
+
+  /**
+   * Starts a library scan.
+   * 
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> refreshLibraryWithHttpInfo() throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = refreshLibraryRequestBuilder();
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("refreshLibrary", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder refreshLibraryRequestBuilder() throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Library/Refresh";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
 
-    public LibraryApi() {
-        this(Configuration.getDefaultApiClient());
-    }
-
-    public LibraryApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
-
-    public ApiClient getApiClient() {
-        return localVarApiClient;
-    }
-
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
-
-    public int getHostIndex() {
-        return localHostIndex;
-    }
-
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
-    }
-
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for deleteItem
-     * @param itemId The item id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Item deleted. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized access. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteItemCall(UUID itemId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call deleteItemValidateBeforeCall(UUID itemId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling deleteItem(Async)");
-        }
-
-        return deleteItemCall(itemId, _callback);
-
-    }
-
-    /**
-     * Deletes an item from the library and filesystem.
-     * 
-     * @param itemId The item id. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Item deleted. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized access. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void deleteItem(UUID itemId) throws ApiException {
-        deleteItemWithHttpInfo(itemId);
-    }
-
-    /**
-     * Deletes an item from the library and filesystem.
-     * 
-     * @param itemId The item id. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Item deleted. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized access. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> deleteItemWithHttpInfo(UUID itemId) throws ApiException {
-        okhttp3.Call localVarCall = deleteItemValidateBeforeCall(itemId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Deletes an item from the library and filesystem. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Item deleted. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized access. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteItemAsync(UUID itemId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = deleteItemValidateBeforeCall(itemId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for deleteItems
-     * @param ids The item ids. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items deleted. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized access. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteItemsCall(List<UUID> ids, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (ids != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "ids", ids));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call deleteItemsValidateBeforeCall(List<UUID> ids, final ApiCallback _callback) throws ApiException {
-        return deleteItemsCall(ids, _callback);
-
-    }
-
-    /**
-     * Deletes items from the library and filesystem.
-     * 
-     * @param ids The item ids. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items deleted. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized access. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void deleteItems(List<UUID> ids) throws ApiException {
-        deleteItemsWithHttpInfo(ids);
-    }
-
-    /**
-     * Deletes items from the library and filesystem.
-     * 
-     * @param ids The item ids. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items deleted. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized access. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> deleteItemsWithHttpInfo(List<UUID> ids) throws ApiException {
-        okhttp3.Call localVarCall = deleteItemsValidateBeforeCall(ids, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Deletes items from the library and filesystem. (asynchronously)
-     * 
-     * @param ids The item ids. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items deleted. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized access. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteItemsAsync(List<UUID> ids, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = deleteItemsValidateBeforeCall(ids, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getAncestors
-     * @param itemId The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item parents returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getAncestorsCall(UUID itemId, UUID userId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/Ancestors"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getAncestorsValidateBeforeCall(UUID itemId, UUID userId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getAncestors(Async)");
-        }
-
-        return getAncestorsCall(itemId, userId, _callback);
-
-    }
-
-    /**
-     * Gets all parents of an item.
-     * 
-     * @param itemId The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @return List&lt;BaseItemDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item parents returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<BaseItemDto> getAncestors(UUID itemId, UUID userId) throws ApiException {
-        ApiResponse<List<BaseItemDto>> localVarResp = getAncestorsWithHttpInfo(itemId, userId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets all parents of an item.
-     * 
-     * @param itemId The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @return ApiResponse&lt;List&lt;BaseItemDto&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item parents returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<BaseItemDto>> getAncestorsWithHttpInfo(UUID itemId, UUID userId) throws ApiException {
-        okhttp3.Call localVarCall = getAncestorsValidateBeforeCall(itemId, userId, null);
-        Type localVarReturnType = new TypeToken<List<BaseItemDto>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets all parents of an item. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item parents returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getAncestorsAsync(UUID itemId, UUID userId, final ApiCallback<List<BaseItemDto>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getAncestorsValidateBeforeCall(itemId, userId, _callback);
-        Type localVarReturnType = new TypeToken<List<BaseItemDto>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getCriticReviews
-     * @param itemId  (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Critic reviews returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public okhttp3.Call getCriticReviewsCall(String itemId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/CriticReviews"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @Deprecated
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getCriticReviewsValidateBeforeCall(String itemId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getCriticReviews(Async)");
-        }
-
-        return getCriticReviewsCall(itemId, _callback);
-
-    }
-
-    /**
-     * Gets critic review for an item.
-     * 
-     * @param itemId  (required)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Critic reviews returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public BaseItemDtoQueryResult getCriticReviews(String itemId) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getCriticReviewsWithHttpInfo(itemId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets critic review for an item.
-     * 
-     * @param itemId  (required)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Critic reviews returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public ApiResponse<BaseItemDtoQueryResult> getCriticReviewsWithHttpInfo(String itemId) throws ApiException {
-        okhttp3.Call localVarCall = getCriticReviewsValidateBeforeCall(itemId, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets critic review for an item. (asynchronously)
-     * 
-     * @param itemId  (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Critic reviews returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public okhttp3.Call getCriticReviewsAsync(String itemId, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getCriticReviewsValidateBeforeCall(itemId, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getDownload
-     * @param itemId The item id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Media downloaded. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getDownloadCall(UUID itemId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/Download"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "video/*",
-            "audio/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getDownloadValidateBeforeCall(UUID itemId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getDownload(Async)");
-        }
-
-        return getDownloadCall(itemId, _callback);
-
-    }
-
-    /**
-     * Downloads item media.
-     * 
-     * @param itemId The item id. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Media downloaded. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getDownload(UUID itemId) throws ApiException {
-        ApiResponse<File> localVarResp = getDownloadWithHttpInfo(itemId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Downloads item media.
-     * 
-     * @param itemId The item id. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Media downloaded. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getDownloadWithHttpInfo(UUID itemId) throws ApiException {
-        okhttp3.Call localVarCall = getDownloadValidateBeforeCall(itemId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Downloads item media. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Media downloaded. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getDownloadAsync(UUID itemId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getDownloadValidateBeforeCall(itemId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getFile
-     * @param itemId The item id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> File stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getFileCall(UUID itemId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/File"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "video/*",
-            "audio/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getFileValidateBeforeCall(UUID itemId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getFile(Async)");
-        }
-
-        return getFileCall(itemId, _callback);
-
-    }
-
-    /**
-     * Get the original file of an item.
-     * 
-     * @param itemId The item id. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> File stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getFile(UUID itemId) throws ApiException {
-        ApiResponse<File> localVarResp = getFileWithHttpInfo(itemId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get the original file of an item.
-     * 
-     * @param itemId The item id. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> File stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getFileWithHttpInfo(UUID itemId) throws ApiException {
-        okhttp3.Call localVarCall = getFileValidateBeforeCall(itemId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get the original file of an item. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> File stream returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getFileAsync(UUID itemId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getFileValidateBeforeCall(itemId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getItemCounts
-     * @param userId Optional. Get counts from a specific user&#39;s library. (optional)
-     * @param isFavorite Optional. Get counts of favorite items. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item counts returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getItemCountsCall(UUID userId, Boolean isFavorite, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/Counts";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (isFavorite != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isFavorite", isFavorite));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getItemCountsValidateBeforeCall(UUID userId, Boolean isFavorite, final ApiCallback _callback) throws ApiException {
-        return getItemCountsCall(userId, isFavorite, _callback);
-
-    }
-
-    /**
-     * Get item counts.
-     * 
-     * @param userId Optional. Get counts from a specific user&#39;s library. (optional)
-     * @param isFavorite Optional. Get counts of favorite items. (optional)
-     * @return ItemCounts
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item counts returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ItemCounts getItemCounts(UUID userId, Boolean isFavorite) throws ApiException {
-        ApiResponse<ItemCounts> localVarResp = getItemCountsWithHttpInfo(userId, isFavorite);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get item counts.
-     * 
-     * @param userId Optional. Get counts from a specific user&#39;s library. (optional)
-     * @param isFavorite Optional. Get counts of favorite items. (optional)
-     * @return ApiResponse&lt;ItemCounts&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item counts returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<ItemCounts> getItemCountsWithHttpInfo(UUID userId, Boolean isFavorite) throws ApiException {
-        okhttp3.Call localVarCall = getItemCountsValidateBeforeCall(userId, isFavorite, null);
-        Type localVarReturnType = new TypeToken<ItemCounts>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get item counts. (asynchronously)
-     * 
-     * @param userId Optional. Get counts from a specific user&#39;s library. (optional)
-     * @param isFavorite Optional. Get counts of favorite items. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item counts returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getItemCountsAsync(UUID userId, Boolean isFavorite, final ApiCallback<ItemCounts> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getItemCountsValidateBeforeCall(userId, isFavorite, _callback);
-        Type localVarReturnType = new TypeToken<ItemCounts>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getLibraryOptionsInfo
-     * @param libraryContentType Library content type. (optional)
-     * @param isNewLibrary Whether this is a new library. (optional, default to false)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Library options info returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getLibraryOptionsInfoCall(CollectionType libraryContentType, Boolean isNewLibrary, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Libraries/AvailableOptions";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (libraryContentType != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("libraryContentType", libraryContentType));
-        }
-
-        if (isNewLibrary != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isNewLibrary", isNewLibrary));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getLibraryOptionsInfoValidateBeforeCall(CollectionType libraryContentType, Boolean isNewLibrary, final ApiCallback _callback) throws ApiException {
-        return getLibraryOptionsInfoCall(libraryContentType, isNewLibrary, _callback);
-
-    }
-
-    /**
-     * Gets the library options info.
-     * 
-     * @param libraryContentType Library content type. (optional)
-     * @param isNewLibrary Whether this is a new library. (optional, default to false)
-     * @return LibraryOptionsResultDto
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Library options info returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public LibraryOptionsResultDto getLibraryOptionsInfo(CollectionType libraryContentType, Boolean isNewLibrary) throws ApiException {
-        ApiResponse<LibraryOptionsResultDto> localVarResp = getLibraryOptionsInfoWithHttpInfo(libraryContentType, isNewLibrary);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets the library options info.
-     * 
-     * @param libraryContentType Library content type. (optional)
-     * @param isNewLibrary Whether this is a new library. (optional, default to false)
-     * @return ApiResponse&lt;LibraryOptionsResultDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Library options info returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<LibraryOptionsResultDto> getLibraryOptionsInfoWithHttpInfo(CollectionType libraryContentType, Boolean isNewLibrary) throws ApiException {
-        okhttp3.Call localVarCall = getLibraryOptionsInfoValidateBeforeCall(libraryContentType, isNewLibrary, null);
-        Type localVarReturnType = new TypeToken<LibraryOptionsResultDto>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets the library options info. (asynchronously)
-     * 
-     * @param libraryContentType Library content type. (optional)
-     * @param isNewLibrary Whether this is a new library. (optional, default to false)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Library options info returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getLibraryOptionsInfoAsync(CollectionType libraryContentType, Boolean isNewLibrary, final ApiCallback<LibraryOptionsResultDto> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getLibraryOptionsInfoValidateBeforeCall(libraryContentType, isNewLibrary, _callback);
-        Type localVarReturnType = new TypeToken<LibraryOptionsResultDto>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getMediaFolders
-     * @param isHidden Optional. Filter by folders that are marked hidden, or not. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Media folders returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMediaFoldersCall(Boolean isHidden, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Library/MediaFolders";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (isHidden != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isHidden", isHidden));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getMediaFoldersValidateBeforeCall(Boolean isHidden, final ApiCallback _callback) throws ApiException {
-        return getMediaFoldersCall(isHidden, _callback);
-
-    }
-
-    /**
-     * Gets all user media folders.
-     * 
-     * @param isHidden Optional. Filter by folders that are marked hidden, or not. (optional)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Media folders returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getMediaFolders(Boolean isHidden) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getMediaFoldersWithHttpInfo(isHidden);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets all user media folders.
-     * 
-     * @param isHidden Optional. Filter by folders that are marked hidden, or not. (optional)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Media folders returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getMediaFoldersWithHttpInfo(Boolean isHidden) throws ApiException {
-        okhttp3.Call localVarCall = getMediaFoldersValidateBeforeCall(isHidden, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets all user media folders. (asynchronously)
-     * 
-     * @param isHidden Optional. Filter by folders that are marked hidden, or not. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Media folders returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getMediaFoldersAsync(Boolean isHidden, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getMediaFoldersValidateBeforeCall(isHidden, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getPhysicalPaths
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Physical paths returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPhysicalPathsCall(final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Library/PhysicalPaths";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getPhysicalPathsValidateBeforeCall(final ApiCallback _callback) throws ApiException {
-        return getPhysicalPathsCall(_callback);
-
-    }
-
-    /**
-     * Gets a list of physical paths from virtual folders.
-     * 
-     * @return List&lt;String&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Physical paths returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<String> getPhysicalPaths() throws ApiException {
-        ApiResponse<List<String>> localVarResp = getPhysicalPathsWithHttpInfo();
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets a list of physical paths from virtual folders.
-     * 
-     * @return ApiResponse&lt;List&lt;String&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Physical paths returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<String>> getPhysicalPathsWithHttpInfo() throws ApiException {
-        okhttp3.Call localVarCall = getPhysicalPathsValidateBeforeCall(null);
-        Type localVarReturnType = new TypeToken<List<String>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets a list of physical paths from virtual folders. (asynchronously)
-     * 
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Physical paths returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPhysicalPathsAsync(final ApiCallback<List<String>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getPhysicalPathsValidateBeforeCall(_callback);
-        Type localVarReturnType = new TypeToken<List<String>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getSimilarAlbums
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSimilarAlbumsCall(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Albums/{itemId}/Similar"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (excludeArtistIds != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "excludeArtistIds", excludeArtistIds));
-        }
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getSimilarAlbumsValidateBeforeCall(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getSimilarAlbums(Async)");
-        }
-
-        return getSimilarAlbumsCall(itemId, excludeArtistIds, userId, limit, fields, _callback);
-
-    }
-
-    /**
-     * Gets similar items.
-     * 
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getSimilarAlbums(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getSimilarAlbumsWithHttpInfo(itemId, excludeArtistIds, userId, limit, fields);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets similar items.
-     * 
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getSimilarAlbumsWithHttpInfo(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
-        okhttp3.Call localVarCall = getSimilarAlbumsValidateBeforeCall(itemId, excludeArtistIds, userId, limit, fields, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets similar items. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSimilarAlbumsAsync(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getSimilarAlbumsValidateBeforeCall(itemId, excludeArtistIds, userId, limit, fields, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getSimilarArtists
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSimilarArtistsCall(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Artists/{itemId}/Similar"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (excludeArtistIds != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "excludeArtistIds", excludeArtistIds));
-        }
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getSimilarArtistsValidateBeforeCall(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getSimilarArtists(Async)");
-        }
-
-        return getSimilarArtistsCall(itemId, excludeArtistIds, userId, limit, fields, _callback);
-
-    }
-
-    /**
-     * Gets similar items.
-     * 
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getSimilarArtists(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getSimilarArtistsWithHttpInfo(itemId, excludeArtistIds, userId, limit, fields);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets similar items.
-     * 
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getSimilarArtistsWithHttpInfo(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
-        okhttp3.Call localVarCall = getSimilarArtistsValidateBeforeCall(itemId, excludeArtistIds, userId, limit, fields, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets similar items. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSimilarArtistsAsync(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getSimilarArtistsValidateBeforeCall(itemId, excludeArtistIds, userId, limit, fields, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getSimilarItems
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSimilarItemsCall(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/Similar"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (excludeArtistIds != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "excludeArtistIds", excludeArtistIds));
-        }
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getSimilarItemsValidateBeforeCall(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getSimilarItems(Async)");
-        }
-
-        return getSimilarItemsCall(itemId, excludeArtistIds, userId, limit, fields, _callback);
-
-    }
-
-    /**
-     * Gets similar items.
-     * 
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getSimilarItems(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getSimilarItemsWithHttpInfo(itemId, excludeArtistIds, userId, limit, fields);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets similar items.
-     * 
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getSimilarItemsWithHttpInfo(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
-        okhttp3.Call localVarCall = getSimilarItemsValidateBeforeCall(itemId, excludeArtistIds, userId, limit, fields, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets similar items. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSimilarItemsAsync(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getSimilarItemsValidateBeforeCall(itemId, excludeArtistIds, userId, limit, fields, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getSimilarMovies
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSimilarMoviesCall(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Movies/{itemId}/Similar"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (excludeArtistIds != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "excludeArtistIds", excludeArtistIds));
-        }
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getSimilarMoviesValidateBeforeCall(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getSimilarMovies(Async)");
-        }
-
-        return getSimilarMoviesCall(itemId, excludeArtistIds, userId, limit, fields, _callback);
-
-    }
-
-    /**
-     * Gets similar items.
-     * 
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getSimilarMovies(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getSimilarMoviesWithHttpInfo(itemId, excludeArtistIds, userId, limit, fields);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets similar items.
-     * 
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getSimilarMoviesWithHttpInfo(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
-        okhttp3.Call localVarCall = getSimilarMoviesValidateBeforeCall(itemId, excludeArtistIds, userId, limit, fields, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets similar items. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSimilarMoviesAsync(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getSimilarMoviesValidateBeforeCall(itemId, excludeArtistIds, userId, limit, fields, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getSimilarShows
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSimilarShowsCall(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Shows/{itemId}/Similar"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (excludeArtistIds != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "excludeArtistIds", excludeArtistIds));
-        }
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getSimilarShowsValidateBeforeCall(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getSimilarShows(Async)");
-        }
-
-        return getSimilarShowsCall(itemId, excludeArtistIds, userId, limit, fields, _callback);
-
-    }
-
-    /**
-     * Gets similar items.
-     * 
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getSimilarShows(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getSimilarShowsWithHttpInfo(itemId, excludeArtistIds, userId, limit, fields);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets similar items.
-     * 
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getSimilarShowsWithHttpInfo(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
-        okhttp3.Call localVarCall = getSimilarShowsValidateBeforeCall(itemId, excludeArtistIds, userId, limit, fields, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets similar items. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSimilarShowsAsync(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getSimilarShowsValidateBeforeCall(itemId, excludeArtistIds, userId, limit, fields, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getSimilarTrailers
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSimilarTrailersCall(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Trailers/{itemId}/Similar"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (excludeArtistIds != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "excludeArtistIds", excludeArtistIds));
-        }
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getSimilarTrailersValidateBeforeCall(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getSimilarTrailers(Async)");
-        }
-
-        return getSimilarTrailersCall(itemId, excludeArtistIds, userId, limit, fields, _callback);
-
-    }
-
-    /**
-     * Gets similar items.
-     * 
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getSimilarTrailers(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getSimilarTrailersWithHttpInfo(itemId, excludeArtistIds, userId, limit, fields);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets similar items.
-     * 
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getSimilarTrailersWithHttpInfo(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields) throws ApiException {
-        okhttp3.Call localVarCall = getSimilarTrailersValidateBeforeCall(itemId, excludeArtistIds, userId, limit, fields, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets similar items. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param excludeArtistIds Exclude artist ids. (optional)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple, comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions, MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue, SortName, Studios, Taglines, TrailerUrls. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Similar items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSimilarTrailersAsync(UUID itemId, List<UUID> excludeArtistIds, UUID userId, Integer limit, List<ItemFields> fields, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getSimilarTrailersValidateBeforeCall(itemId, excludeArtistIds, userId, limit, fields, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getThemeMedia
-     * @param itemId The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media. (optional, default to false)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
-     * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Theme songs and videos returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getThemeMediaCall(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/ThemeMedia"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (inheritFromParent != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("inheritFromParent", inheritFromParent));
-        }
-
-        if (sortBy != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "sortBy", sortBy));
-        }
-
-        if (sortOrder != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "sortOrder", sortOrder));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getThemeMediaValidateBeforeCall(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getThemeMedia(Async)");
-        }
-
-        return getThemeMediaCall(itemId, userId, inheritFromParent, sortBy, sortOrder, _callback);
-
-    }
-
-    /**
-     * Get theme songs and videos for an item.
-     * 
-     * @param itemId The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media. (optional, default to false)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
-     * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
-     * @return AllThemeMediaResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Theme songs and videos returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public AllThemeMediaResult getThemeMedia(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder) throws ApiException {
-        ApiResponse<AllThemeMediaResult> localVarResp = getThemeMediaWithHttpInfo(itemId, userId, inheritFromParent, sortBy, sortOrder);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get theme songs and videos for an item.
-     * 
-     * @param itemId The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media. (optional, default to false)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
-     * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
-     * @return ApiResponse&lt;AllThemeMediaResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Theme songs and videos returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<AllThemeMediaResult> getThemeMediaWithHttpInfo(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder) throws ApiException {
-        okhttp3.Call localVarCall = getThemeMediaValidateBeforeCall(itemId, userId, inheritFromParent, sortBy, sortOrder, null);
-        Type localVarReturnType = new TypeToken<AllThemeMediaResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get theme songs and videos for an item. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media. (optional, default to false)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
-     * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Theme songs and videos returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getThemeMediaAsync(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, final ApiCallback<AllThemeMediaResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getThemeMediaValidateBeforeCall(itemId, userId, inheritFromParent, sortBy, sortOrder, _callback);
-        Type localVarReturnType = new TypeToken<AllThemeMediaResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getThemeSongs
-     * @param itemId The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media. (optional, default to false)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
-     * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Theme songs returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getThemeSongsCall(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/ThemeSongs"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (inheritFromParent != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("inheritFromParent", inheritFromParent));
-        }
-
-        if (sortBy != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "sortBy", sortBy));
-        }
-
-        if (sortOrder != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "sortOrder", sortOrder));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getThemeSongsValidateBeforeCall(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getThemeSongs(Async)");
-        }
-
-        return getThemeSongsCall(itemId, userId, inheritFromParent, sortBy, sortOrder, _callback);
-
-    }
-
-    /**
-     * Get theme songs for an item.
-     * 
-     * @param itemId The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media. (optional, default to false)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
-     * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
-     * @return ThemeMediaResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Theme songs returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ThemeMediaResult getThemeSongs(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder) throws ApiException {
-        ApiResponse<ThemeMediaResult> localVarResp = getThemeSongsWithHttpInfo(itemId, userId, inheritFromParent, sortBy, sortOrder);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get theme songs for an item.
-     * 
-     * @param itemId The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media. (optional, default to false)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
-     * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
-     * @return ApiResponse&lt;ThemeMediaResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Theme songs returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<ThemeMediaResult> getThemeSongsWithHttpInfo(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder) throws ApiException {
-        okhttp3.Call localVarCall = getThemeSongsValidateBeforeCall(itemId, userId, inheritFromParent, sortBy, sortOrder, null);
-        Type localVarReturnType = new TypeToken<ThemeMediaResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get theme songs for an item. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media. (optional, default to false)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
-     * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Theme songs returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getThemeSongsAsync(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, final ApiCallback<ThemeMediaResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getThemeSongsValidateBeforeCall(itemId, userId, inheritFromParent, sortBy, sortOrder, _callback);
-        Type localVarReturnType = new TypeToken<ThemeMediaResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getThemeVideos
-     * @param itemId The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media. (optional, default to false)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
-     * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Theme videos returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getThemeVideosCall(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/ThemeVideos"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (inheritFromParent != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("inheritFromParent", inheritFromParent));
-        }
-
-        if (sortBy != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "sortBy", sortBy));
-        }
-
-        if (sortOrder != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "sortOrder", sortOrder));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getThemeVideosValidateBeforeCall(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getThemeVideos(Async)");
-        }
-
-        return getThemeVideosCall(itemId, userId, inheritFromParent, sortBy, sortOrder, _callback);
-
-    }
-
-    /**
-     * Get theme videos for an item.
-     * 
-     * @param itemId The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media. (optional, default to false)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
-     * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
-     * @return ThemeMediaResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Theme videos returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ThemeMediaResult getThemeVideos(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder) throws ApiException {
-        ApiResponse<ThemeMediaResult> localVarResp = getThemeVideosWithHttpInfo(itemId, userId, inheritFromParent, sortBy, sortOrder);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get theme videos for an item.
-     * 
-     * @param itemId The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media. (optional, default to false)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
-     * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
-     * @return ApiResponse&lt;ThemeMediaResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Theme videos returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<ThemeMediaResult> getThemeVideosWithHttpInfo(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder) throws ApiException {
-        okhttp3.Call localVarCall = getThemeVideosValidateBeforeCall(itemId, userId, inheritFromParent, sortBy, sortOrder, null);
-        Type localVarReturnType = new TypeToken<ThemeMediaResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get theme videos for an item. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media. (optional, default to false)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
-     * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Theme videos returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getThemeVideosAsync(UUID itemId, UUID userId, Boolean inheritFromParent, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, final ApiCallback<ThemeMediaResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getThemeVideosValidateBeforeCall(itemId, userId, inheritFromParent, sortBy, sortOrder, _callback);
-        Type localVarReturnType = new TypeToken<ThemeMediaResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for postAddedMovies
-     * @param tmdbId The tmdbId. (optional)
-     * @param imdbId The imdbId. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call postAddedMoviesCall(String tmdbId, String imdbId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Library/Movies/Added";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tmdbId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tmdbId", tmdbId));
-        }
-
-        if (imdbId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imdbId", imdbId));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call postAddedMoviesValidateBeforeCall(String tmdbId, String imdbId, final ApiCallback _callback) throws ApiException {
-        return postAddedMoviesCall(tmdbId, imdbId, _callback);
-
-    }
-
-    /**
-     * Reports that new movies have been added by an external source.
-     * 
-     * @param tmdbId The tmdbId. (optional)
-     * @param imdbId The imdbId. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void postAddedMovies(String tmdbId, String imdbId) throws ApiException {
-        postAddedMoviesWithHttpInfo(tmdbId, imdbId);
-    }
-
-    /**
-     * Reports that new movies have been added by an external source.
-     * 
-     * @param tmdbId The tmdbId. (optional)
-     * @param imdbId The imdbId. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> postAddedMoviesWithHttpInfo(String tmdbId, String imdbId) throws ApiException {
-        okhttp3.Call localVarCall = postAddedMoviesValidateBeforeCall(tmdbId, imdbId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Reports that new movies have been added by an external source. (asynchronously)
-     * 
-     * @param tmdbId The tmdbId. (optional)
-     * @param imdbId The imdbId. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call postAddedMoviesAsync(String tmdbId, String imdbId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = postAddedMoviesValidateBeforeCall(tmdbId, imdbId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for postAddedSeries
-     * @param tvdbId The tvdbId. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call postAddedSeriesCall(String tvdbId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Library/Series/Added";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tvdbId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tvdbId", tvdbId));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call postAddedSeriesValidateBeforeCall(String tvdbId, final ApiCallback _callback) throws ApiException {
-        return postAddedSeriesCall(tvdbId, _callback);
-
-    }
-
-    /**
-     * Reports that new episodes of a series have been added by an external source.
-     * 
-     * @param tvdbId The tvdbId. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void postAddedSeries(String tvdbId) throws ApiException {
-        postAddedSeriesWithHttpInfo(tvdbId);
-    }
-
-    /**
-     * Reports that new episodes of a series have been added by an external source.
-     * 
-     * @param tvdbId The tvdbId. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> postAddedSeriesWithHttpInfo(String tvdbId) throws ApiException {
-        okhttp3.Call localVarCall = postAddedSeriesValidateBeforeCall(tvdbId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Reports that new episodes of a series have been added by an external source. (asynchronously)
-     * 
-     * @param tvdbId The tvdbId. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call postAddedSeriesAsync(String tvdbId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = postAddedSeriesValidateBeforeCall(tvdbId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for postUpdatedMedia
-     * @param mediaUpdateInfoDto The update paths. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call postUpdatedMediaCall(MediaUpdateInfoDto mediaUpdateInfoDto, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = mediaUpdateInfoDto;
-
-        // create path and map variables
-        String localVarPath = "/Library/Media/Updated";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call postUpdatedMediaValidateBeforeCall(MediaUpdateInfoDto mediaUpdateInfoDto, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'mediaUpdateInfoDto' is set
-        if (mediaUpdateInfoDto == null) {
-            throw new ApiException("Missing the required parameter 'mediaUpdateInfoDto' when calling postUpdatedMedia(Async)");
-        }
-
-        return postUpdatedMediaCall(mediaUpdateInfoDto, _callback);
-
-    }
-
-    /**
-     * Reports that new movies have been added by an external source.
-     * 
-     * @param mediaUpdateInfoDto The update paths. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void postUpdatedMedia(MediaUpdateInfoDto mediaUpdateInfoDto) throws ApiException {
-        postUpdatedMediaWithHttpInfo(mediaUpdateInfoDto);
-    }
-
-    /**
-     * Reports that new movies have been added by an external source.
-     * 
-     * @param mediaUpdateInfoDto The update paths. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> postUpdatedMediaWithHttpInfo(MediaUpdateInfoDto mediaUpdateInfoDto) throws ApiException {
-        okhttp3.Call localVarCall = postUpdatedMediaValidateBeforeCall(mediaUpdateInfoDto, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Reports that new movies have been added by an external source. (asynchronously)
-     * 
-     * @param mediaUpdateInfoDto The update paths. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call postUpdatedMediaAsync(MediaUpdateInfoDto mediaUpdateInfoDto, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = postUpdatedMediaValidateBeforeCall(mediaUpdateInfoDto, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for postUpdatedMovies
-     * @param tmdbId The tmdbId. (optional)
-     * @param imdbId The imdbId. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call postUpdatedMoviesCall(String tmdbId, String imdbId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Library/Movies/Updated";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tmdbId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tmdbId", tmdbId));
-        }
-
-        if (imdbId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imdbId", imdbId));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call postUpdatedMoviesValidateBeforeCall(String tmdbId, String imdbId, final ApiCallback _callback) throws ApiException {
-        return postUpdatedMoviesCall(tmdbId, imdbId, _callback);
-
-    }
-
-    /**
-     * Reports that new movies have been added by an external source.
-     * 
-     * @param tmdbId The tmdbId. (optional)
-     * @param imdbId The imdbId. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void postUpdatedMovies(String tmdbId, String imdbId) throws ApiException {
-        postUpdatedMoviesWithHttpInfo(tmdbId, imdbId);
-    }
-
-    /**
-     * Reports that new movies have been added by an external source.
-     * 
-     * @param tmdbId The tmdbId. (optional)
-     * @param imdbId The imdbId. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> postUpdatedMoviesWithHttpInfo(String tmdbId, String imdbId) throws ApiException {
-        okhttp3.Call localVarCall = postUpdatedMoviesValidateBeforeCall(tmdbId, imdbId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Reports that new movies have been added by an external source. (asynchronously)
-     * 
-     * @param tmdbId The tmdbId. (optional)
-     * @param imdbId The imdbId. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call postUpdatedMoviesAsync(String tmdbId, String imdbId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = postUpdatedMoviesValidateBeforeCall(tmdbId, imdbId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for postUpdatedSeries
-     * @param tvdbId The tvdbId. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call postUpdatedSeriesCall(String tvdbId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Library/Series/Updated";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (tvdbId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("tvdbId", tvdbId));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call postUpdatedSeriesValidateBeforeCall(String tvdbId, final ApiCallback _callback) throws ApiException {
-        return postUpdatedSeriesCall(tvdbId, _callback);
-
-    }
-
-    /**
-     * Reports that new episodes of a series have been added by an external source.
-     * 
-     * @param tvdbId The tvdbId. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void postUpdatedSeries(String tvdbId) throws ApiException {
-        postUpdatedSeriesWithHttpInfo(tvdbId);
-    }
-
-    /**
-     * Reports that new episodes of a series have been added by an external source.
-     * 
-     * @param tvdbId The tvdbId. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> postUpdatedSeriesWithHttpInfo(String tvdbId) throws ApiException {
-        okhttp3.Call localVarCall = postUpdatedSeriesValidateBeforeCall(tvdbId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Reports that new episodes of a series have been added by an external source. (asynchronously)
-     * 
-     * @param tvdbId The tvdbId. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Report success. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call postUpdatedSeriesAsync(String tvdbId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = postUpdatedSeriesValidateBeforeCall(tvdbId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for refreshLibrary
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Library scan started. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call refreshLibraryCall(final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Library/Refresh";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call refreshLibraryValidateBeforeCall(final ApiCallback _callback) throws ApiException {
-        return refreshLibraryCall(_callback);
-
-    }
-
-    /**
-     * Starts a library scan.
-     * 
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Library scan started. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void refreshLibrary() throws ApiException {
-        refreshLibraryWithHttpInfo();
-    }
-
-    /**
-     * Starts a library scan.
-     * 
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Library scan started. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> refreshLibraryWithHttpInfo() throws ApiException {
-        okhttp3.Call localVarCall = refreshLibraryValidateBeforeCall(null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Starts a library scan. (asynchronously)
-     * 
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Library scan started. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call refreshLibraryAsync(final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = refreshLibraryValidateBeforeCall(_callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
 }

@@ -13,67 +13,56 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.client.model.SessionMessageType;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Activity log entry start message.  Data is the timing data encoded as \&quot;$initialDelay,$interval\&quot; in ms.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  ActivityLogEntryStartMessage.JSON_PROPERTY_DATA,
+  ActivityLogEntryStartMessage.JSON_PROPERTY_MESSAGE_TYPE
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ActivityLogEntryStartMessage {
-  public static final String SERIALIZED_NAME_DATA = "Data";
-  @SerializedName(SERIALIZED_NAME_DATA)
-  @javax.annotation.Nullable
-  private String data;
+  public static final String JSON_PROPERTY_DATA = "Data";
+  private JsonNullable<String> data = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_MESSAGE_TYPE = "MessageType";
-  @SerializedName(SERIALIZED_NAME_MESSAGE_TYPE)
+  public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
   @javax.annotation.Nullable
   private SessionMessageType messageType = SessionMessageType.ACTIVITY_LOG_ENTRY_START;
 
-  public ActivityLogEntryStartMessage() {
+  public ActivityLogEntryStartMessage() { 
   }
 
+  @JsonCreator
   public ActivityLogEntryStartMessage(
-     SessionMessageType messageType
+    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType
   ) {
-    this();
+  this();
     this.messageType = messageType;
   }
 
   public ActivityLogEntryStartMessage data(@javax.annotation.Nullable String data) {
-    this.data = data;
+    this.data = JsonNullable.<String>of(data);
     return this;
   }
 
@@ -82,12 +71,25 @@ public class ActivityLogEntryStartMessage {
    * @return data
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getData() {
+        return data.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getData_JsonNullable() {
     return data;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DATA)
+  public void setData_JsonNullable(JsonNullable<String> data) {
+    this.data = data;
   }
 
   public void setData(@javax.annotation.Nullable String data) {
-    this.data = data;
+    this.data = JsonNullable.<String>of(data);
   }
 
 
@@ -96,6 +98,8 @@ public class ActivityLogEntryStartMessage {
    * @return messageType
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public SessionMessageType getMessageType() {
     return messageType;
   }
@@ -103,6 +107,9 @@ public class ActivityLogEntryStartMessage {
 
 
 
+  /**
+   * Return true if this ActivityLogEntryStartMessage object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -112,7 +119,7 @@ public class ActivityLogEntryStartMessage {
       return false;
     }
     ActivityLogEntryStartMessage activityLogEntryStartMessage = (ActivityLogEntryStartMessage) o;
-    return Objects.equals(this.data, activityLogEntryStartMessage.data) &&
+    return equalsNullable(this.data, activityLogEntryStartMessage.data) &&
         Objects.equals(this.messageType, activityLogEntryStartMessage.messageType);
   }
 
@@ -122,7 +129,7 @@ public class ActivityLogEntryStartMessage {
 
   @Override
   public int hashCode() {
-    return Objects.hash(data, messageType);
+    return Objects.hash(hashCodeNullable(data), messageType);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -153,97 +160,49 @@ public class ActivityLogEntryStartMessage {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Data");
-    openapiFields.add("MessageType");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to ActivityLogEntryStartMessage
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!ActivityLogEntryStartMessage.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in ActivityLogEntryStartMessage is not found in the empty JSON string", ActivityLogEntryStartMessage.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!ActivityLogEntryStartMessage.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `ActivityLogEntryStartMessage` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Data") != null && !jsonObj.get("Data").isJsonNull()) && !jsonObj.get("Data").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Data` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Data").toString()));
-      }
-      // validate the optional field `MessageType`
-      if (jsonObj.get("MessageType") != null && !jsonObj.get("MessageType").isJsonNull()) {
-        SessionMessageType.validateJsonElement(jsonObj.get("MessageType"));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!ActivityLogEntryStartMessage.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'ActivityLogEntryStartMessage' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<ActivityLogEntryStartMessage> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(ActivityLogEntryStartMessage.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<ActivityLogEntryStartMessage>() {
-           @Override
-           public void write(JsonWriter out, ActivityLogEntryStartMessage value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public ActivityLogEntryStartMessage read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of ActivityLogEntryStartMessage given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of ActivityLogEntryStartMessage
-   * @throws IOException if the JSON string is invalid with respect to ActivityLogEntryStartMessage
-   */
-  public static ActivityLogEntryStartMessage fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, ActivityLogEntryStartMessage.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of ActivityLogEntryStartMessage to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Data` to the URL query string
+    if (getData() != null) {
+      joiner.add(String.format("%sData%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getData()))));
+    }
+
+    // add `MessageType` to the URL query string
+    if (getMessageType() != null) {
+      joiner.add(String.format("%sMessageType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMessageType()))));
+    }
+
+    return joiner.toString();
   }
 }
 

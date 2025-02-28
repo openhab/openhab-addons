@@ -13,65 +13,57 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.client.model.NotificationOption;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * NotificationOptions
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  NotificationOptions.JSON_PROPERTY_OPTIONS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class NotificationOptions {
-  public static final String SERIALIZED_NAME_OPTIONS = "Options";
-  @SerializedName(SERIALIZED_NAME_OPTIONS)
-  @javax.annotation.Nullable
-  private List<NotificationOption> options;
+  public static final String JSON_PROPERTY_OPTIONS = "Options";
+  private JsonNullable<List<NotificationOption>> options = JsonNullable.<List<NotificationOption>>undefined();
 
-  public NotificationOptions() {
+  public NotificationOptions() { 
   }
 
   public NotificationOptions options(@javax.annotation.Nullable List<NotificationOption> options) {
-    this.options = options;
+    this.options = JsonNullable.<List<NotificationOption>>of(options);
     return this;
   }
 
   public NotificationOptions addOptionsItem(NotificationOption optionsItem) {
-    if (this.options == null) {
-      this.options = new ArrayList<>();
+    if (this.options == null || !this.options.isPresent()) {
+      this.options = JsonNullable.<List<NotificationOption>>of(new ArrayList<>());
     }
-    this.options.add(optionsItem);
+    try {
+      this.options.get().add(optionsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -80,16 +72,31 @@ public class NotificationOptions {
    * @return options
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<NotificationOption> getOptions() {
-    return options;
+        return options.orElse(null);
   }
 
-  public void setOptions(@javax.annotation.Nullable List<NotificationOption> options) {
+  @JsonProperty(JSON_PROPERTY_OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<NotificationOption>> getOptions_JsonNullable() {
+    return options;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_OPTIONS)
+  public void setOptions_JsonNullable(JsonNullable<List<NotificationOption>> options) {
     this.options = options;
   }
 
+  public void setOptions(@javax.annotation.Nullable List<NotificationOption> options) {
+    this.options = JsonNullable.<List<NotificationOption>>of(options);
+  }
 
 
+  /**
+   * Return true if this NotificationOptions object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -99,7 +106,7 @@ public class NotificationOptions {
       return false;
     }
     NotificationOptions notificationOptions = (NotificationOptions) o;
-    return Objects.equals(this.options, notificationOptions.options);
+    return equalsNullable(this.options, notificationOptions.options);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -108,7 +115,7 @@ public class NotificationOptions {
 
   @Override
   public int hashCode() {
-    return Objects.hash(options);
+    return Objects.hash(hashCodeNullable(options));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -138,103 +145,49 @@ public class NotificationOptions {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Options");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to NotificationOptions
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!NotificationOptions.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in NotificationOptions is not found in the empty JSON string", NotificationOptions.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!NotificationOptions.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `NotificationOptions` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (jsonObj.get("Options") != null && !jsonObj.get("Options").isJsonNull()) {
-        JsonArray jsonArrayoptions = jsonObj.getAsJsonArray("Options");
-        if (jsonArrayoptions != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("Options").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `Options` to be an array in the JSON string but got `%s`", jsonObj.get("Options").toString()));
-          }
-
-          // validate the optional field `Options` (array)
-          for (int i = 0; i < jsonArrayoptions.size(); i++) {
-            NotificationOption.validateJsonElement(jsonArrayoptions.get(i));
-          };
-        }
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!NotificationOptions.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'NotificationOptions' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<NotificationOptions> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(NotificationOptions.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<NotificationOptions>() {
-           @Override
-           public void write(JsonWriter out, NotificationOptions value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public NotificationOptions read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of NotificationOptions given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of NotificationOptions
-   * @throws IOException if the JSON string is invalid with respect to NotificationOptions
-   */
-  public static NotificationOptions fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, NotificationOptions.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of NotificationOptions to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Options` to the URL query string
+    if (getOptions() != null) {
+      for (int i = 0; i < getOptions().size(); i++) {
+        if (getOptions().get(i) != null) {
+          joiner.add(getOptions().get(i).toUrlQueryString(String.format("%sOptions%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

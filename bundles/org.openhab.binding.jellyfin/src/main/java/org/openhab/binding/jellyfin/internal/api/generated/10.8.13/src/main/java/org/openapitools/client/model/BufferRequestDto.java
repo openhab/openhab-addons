@@ -13,66 +13,52 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class BufferRequestDto.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  BufferRequestDto.JSON_PROPERTY_WHEN,
+  BufferRequestDto.JSON_PROPERTY_POSITION_TICKS,
+  BufferRequestDto.JSON_PROPERTY_IS_PLAYING,
+  BufferRequestDto.JSON_PROPERTY_PLAYLIST_ITEM_ID
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class BufferRequestDto {
-  public static final String SERIALIZED_NAME_WHEN = "When";
-  @SerializedName(SERIALIZED_NAME_WHEN)
+  public static final String JSON_PROPERTY_WHEN = "When";
   @javax.annotation.Nullable
   private OffsetDateTime when;
 
-  public static final String SERIALIZED_NAME_POSITION_TICKS = "PositionTicks";
-  @SerializedName(SERIALIZED_NAME_POSITION_TICKS)
+  public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
   @javax.annotation.Nullable
   private Long positionTicks;
 
-  public static final String SERIALIZED_NAME_IS_PLAYING = "IsPlaying";
-  @SerializedName(SERIALIZED_NAME_IS_PLAYING)
+  public static final String JSON_PROPERTY_IS_PLAYING = "IsPlaying";
   @javax.annotation.Nullable
   private Boolean isPlaying;
 
-  public static final String SERIALIZED_NAME_PLAYLIST_ITEM_ID = "PlaylistItemId";
-  @SerializedName(SERIALIZED_NAME_PLAYLIST_ITEM_ID)
+  public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
   @javax.annotation.Nullable
   private UUID playlistItemId;
 
-  public BufferRequestDto() {
+  public BufferRequestDto() { 
   }
 
   public BufferRequestDto when(@javax.annotation.Nullable OffsetDateTime when) {
@@ -85,10 +71,15 @@ public class BufferRequestDto {
    * @return when
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_WHEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getWhen() {
     return when;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_WHEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWhen(@javax.annotation.Nullable OffsetDateTime when) {
     this.when = when;
   }
@@ -104,10 +95,15 @@ public class BufferRequestDto {
    * @return positionTicks
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getPositionTicks() {
     return positionTicks;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPositionTicks(@javax.annotation.Nullable Long positionTicks) {
     this.positionTicks = positionTicks;
   }
@@ -123,10 +119,15 @@ public class BufferRequestDto {
    * @return isPlaying
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_PLAYING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsPlaying() {
     return isPlaying;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_PLAYING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsPlaying(@javax.annotation.Nullable Boolean isPlaying) {
     this.isPlaying = isPlaying;
   }
@@ -142,16 +143,23 @@ public class BufferRequestDto {
    * @return playlistItemId
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getPlaylistItemId() {
     return playlistItemId;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlaylistItemId(@javax.annotation.Nullable UUID playlistItemId) {
     this.playlistItemId = playlistItemId;
   }
 
 
-
+  /**
+   * Return true if this BufferRequestDto object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -195,95 +203,59 @@ public class BufferRequestDto {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("When");
-    openapiFields.add("PositionTicks");
-    openapiFields.add("IsPlaying");
-    openapiFields.add("PlaylistItemId");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to BufferRequestDto
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!BufferRequestDto.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in BufferRequestDto is not found in the empty JSON string", BufferRequestDto.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!BufferRequestDto.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `BufferRequestDto` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("PlaylistItemId") != null && !jsonObj.get("PlaylistItemId").isJsonNull()) && !jsonObj.get("PlaylistItemId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `PlaylistItemId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("PlaylistItemId").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!BufferRequestDto.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'BufferRequestDto' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<BufferRequestDto> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(BufferRequestDto.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<BufferRequestDto>() {
-           @Override
-           public void write(JsonWriter out, BufferRequestDto value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public BufferRequestDto read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of BufferRequestDto given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of BufferRequestDto
-   * @throws IOException if the JSON string is invalid with respect to BufferRequestDto
-   */
-  public static BufferRequestDto fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, BufferRequestDto.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of BufferRequestDto to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `When` to the URL query string
+    if (getWhen() != null) {
+      joiner.add(String.format("%sWhen%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWhen()))));
+    }
+
+    // add `PositionTicks` to the URL query string
+    if (getPositionTicks() != null) {
+      joiner.add(String.format("%sPositionTicks%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
+    }
+
+    // add `IsPlaying` to the URL query string
+    if (getIsPlaying() != null) {
+      joiner.add(String.format("%sIsPlaying%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsPlaying()))));
+    }
+
+    // add `PlaylistItemId` to the URL query string
+    if (getPlaylistItemId() != null) {
+      joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
+    }
+
+    return joiner.toString();
   }
 }
 

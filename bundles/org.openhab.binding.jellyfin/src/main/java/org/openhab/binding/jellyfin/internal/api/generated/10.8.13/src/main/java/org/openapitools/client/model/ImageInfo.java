@@ -13,86 +13,69 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.client.model.ImageType;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class ImageInfo.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  ImageInfo.JSON_PROPERTY_IMAGE_TYPE,
+  ImageInfo.JSON_PROPERTY_IMAGE_INDEX,
+  ImageInfo.JSON_PROPERTY_IMAGE_TAG,
+  ImageInfo.JSON_PROPERTY_PATH,
+  ImageInfo.JSON_PROPERTY_BLUR_HASH,
+  ImageInfo.JSON_PROPERTY_HEIGHT,
+  ImageInfo.JSON_PROPERTY_WIDTH,
+  ImageInfo.JSON_PROPERTY_SIZE
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ImageInfo {
-  public static final String SERIALIZED_NAME_IMAGE_TYPE = "ImageType";
-  @SerializedName(SERIALIZED_NAME_IMAGE_TYPE)
+  public static final String JSON_PROPERTY_IMAGE_TYPE = "ImageType";
   @javax.annotation.Nullable
   private ImageType imageType;
 
-  public static final String SERIALIZED_NAME_IMAGE_INDEX = "ImageIndex";
-  @SerializedName(SERIALIZED_NAME_IMAGE_INDEX)
-  @javax.annotation.Nullable
-  private Integer imageIndex;
+  public static final String JSON_PROPERTY_IMAGE_INDEX = "ImageIndex";
+  private JsonNullable<Integer> imageIndex = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_IMAGE_TAG = "ImageTag";
-  @SerializedName(SERIALIZED_NAME_IMAGE_TAG)
-  @javax.annotation.Nullable
-  private String imageTag;
+  public static final String JSON_PROPERTY_IMAGE_TAG = "ImageTag";
+  private JsonNullable<String> imageTag = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PATH = "Path";
-  @SerializedName(SERIALIZED_NAME_PATH)
-  @javax.annotation.Nullable
-  private String path;
+  public static final String JSON_PROPERTY_PATH = "Path";
+  private JsonNullable<String> path = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_BLUR_HASH = "BlurHash";
-  @SerializedName(SERIALIZED_NAME_BLUR_HASH)
-  @javax.annotation.Nullable
-  private String blurHash;
+  public static final String JSON_PROPERTY_BLUR_HASH = "BlurHash";
+  private JsonNullable<String> blurHash = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_HEIGHT = "Height";
-  @SerializedName(SERIALIZED_NAME_HEIGHT)
-  @javax.annotation.Nullable
-  private Integer height;
+  public static final String JSON_PROPERTY_HEIGHT = "Height";
+  private JsonNullable<Integer> height = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_WIDTH = "Width";
-  @SerializedName(SERIALIZED_NAME_WIDTH)
-  @javax.annotation.Nullable
-  private Integer width;
+  public static final String JSON_PROPERTY_WIDTH = "Width";
+  private JsonNullable<Integer> width = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_SIZE = "Size";
-  @SerializedName(SERIALIZED_NAME_SIZE)
+  public static final String JSON_PROPERTY_SIZE = "Size";
   @javax.annotation.Nullable
   private Long size;
 
-  public ImageInfo() {
+  public ImageInfo() { 
   }
 
   public ImageInfo imageType(@javax.annotation.Nullable ImageType imageType) {
@@ -105,17 +88,22 @@ public class ImageInfo {
    * @return imageType
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IMAGE_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ImageType getImageType() {
     return imageType;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IMAGE_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setImageType(@javax.annotation.Nullable ImageType imageType) {
     this.imageType = imageType;
   }
 
 
   public ImageInfo imageIndex(@javax.annotation.Nullable Integer imageIndex) {
-    this.imageIndex = imageIndex;
+    this.imageIndex = JsonNullable.<Integer>of(imageIndex);
     return this;
   }
 
@@ -124,17 +112,30 @@ public class ImageInfo {
    * @return imageIndex
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getImageIndex() {
+        return imageIndex.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_IMAGE_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getImageIndex_JsonNullable() {
     return imageIndex;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IMAGE_INDEX)
+  public void setImageIndex_JsonNullable(JsonNullable<Integer> imageIndex) {
+    this.imageIndex = imageIndex;
   }
 
   public void setImageIndex(@javax.annotation.Nullable Integer imageIndex) {
-    this.imageIndex = imageIndex;
+    this.imageIndex = JsonNullable.<Integer>of(imageIndex);
   }
 
 
   public ImageInfo imageTag(@javax.annotation.Nullable String imageTag) {
-    this.imageTag = imageTag;
+    this.imageTag = JsonNullable.<String>of(imageTag);
     return this;
   }
 
@@ -143,17 +144,30 @@ public class ImageInfo {
    * @return imageTag
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getImageTag() {
+        return imageTag.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_IMAGE_TAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getImageTag_JsonNullable() {
     return imageTag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IMAGE_TAG)
+  public void setImageTag_JsonNullable(JsonNullable<String> imageTag) {
+    this.imageTag = imageTag;
   }
 
   public void setImageTag(@javax.annotation.Nullable String imageTag) {
-    this.imageTag = imageTag;
+    this.imageTag = JsonNullable.<String>of(imageTag);
   }
 
 
   public ImageInfo path(@javax.annotation.Nullable String path) {
-    this.path = path;
+    this.path = JsonNullable.<String>of(path);
     return this;
   }
 
@@ -162,17 +176,30 @@ public class ImageInfo {
    * @return path
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPath() {
+        return path.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPath_JsonNullable() {
     return path;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PATH)
+  public void setPath_JsonNullable(JsonNullable<String> path) {
+    this.path = path;
   }
 
   public void setPath(@javax.annotation.Nullable String path) {
-    this.path = path;
+    this.path = JsonNullable.<String>of(path);
   }
 
 
   public ImageInfo blurHash(@javax.annotation.Nullable String blurHash) {
-    this.blurHash = blurHash;
+    this.blurHash = JsonNullable.<String>of(blurHash);
     return this;
   }
 
@@ -181,17 +208,30 @@ public class ImageInfo {
    * @return blurHash
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getBlurHash() {
+        return blurHash.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_BLUR_HASH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getBlurHash_JsonNullable() {
     return blurHash;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_BLUR_HASH)
+  public void setBlurHash_JsonNullable(JsonNullable<String> blurHash) {
+    this.blurHash = blurHash;
   }
 
   public void setBlurHash(@javax.annotation.Nullable String blurHash) {
-    this.blurHash = blurHash;
+    this.blurHash = JsonNullable.<String>of(blurHash);
   }
 
 
   public ImageInfo height(@javax.annotation.Nullable Integer height) {
-    this.height = height;
+    this.height = JsonNullable.<Integer>of(height);
     return this;
   }
 
@@ -200,17 +240,30 @@ public class ImageInfo {
    * @return height
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getHeight() {
+        return height.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getHeight_JsonNullable() {
     return height;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_HEIGHT)
+  public void setHeight_JsonNullable(JsonNullable<Integer> height) {
+    this.height = height;
   }
 
   public void setHeight(@javax.annotation.Nullable Integer height) {
-    this.height = height;
+    this.height = JsonNullable.<Integer>of(height);
   }
 
 
   public ImageInfo width(@javax.annotation.Nullable Integer width) {
-    this.width = width;
+    this.width = JsonNullable.<Integer>of(width);
     return this;
   }
 
@@ -219,12 +272,25 @@ public class ImageInfo {
    * @return width
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getWidth() {
+        return width.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getWidth_JsonNullable() {
     return width;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_WIDTH)
+  public void setWidth_JsonNullable(JsonNullable<Integer> width) {
+    this.width = width;
   }
 
   public void setWidth(@javax.annotation.Nullable Integer width) {
-    this.width = width;
+    this.width = JsonNullable.<Integer>of(width);
   }
 
 
@@ -238,16 +304,23 @@ public class ImageInfo {
    * @return size
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getSize() {
     return size;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSize(@javax.annotation.Nullable Long size) {
     this.size = size;
   }
 
 
-
+  /**
+   * Return true if this ImageInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -258,12 +331,12 @@ public class ImageInfo {
     }
     ImageInfo imageInfo = (ImageInfo) o;
     return Objects.equals(this.imageType, imageInfo.imageType) &&
-        Objects.equals(this.imageIndex, imageInfo.imageIndex) &&
-        Objects.equals(this.imageTag, imageInfo.imageTag) &&
-        Objects.equals(this.path, imageInfo.path) &&
-        Objects.equals(this.blurHash, imageInfo.blurHash) &&
-        Objects.equals(this.height, imageInfo.height) &&
-        Objects.equals(this.width, imageInfo.width) &&
+        equalsNullable(this.imageIndex, imageInfo.imageIndex) &&
+        equalsNullable(this.imageTag, imageInfo.imageTag) &&
+        equalsNullable(this.path, imageInfo.path) &&
+        equalsNullable(this.blurHash, imageInfo.blurHash) &&
+        equalsNullable(this.height, imageInfo.height) &&
+        equalsNullable(this.width, imageInfo.width) &&
         Objects.equals(this.size, imageInfo.size);
   }
 
@@ -273,7 +346,7 @@ public class ImageInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(imageType, imageIndex, imageTag, path, blurHash, height, width, size);
+    return Objects.hash(imageType, hashCodeNullable(imageIndex), hashCodeNullable(imageTag), hashCodeNullable(path), hashCodeNullable(blurHash), hashCodeNullable(height), hashCodeNullable(width), size);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -310,109 +383,79 @@ public class ImageInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("ImageType");
-    openapiFields.add("ImageIndex");
-    openapiFields.add("ImageTag");
-    openapiFields.add("Path");
-    openapiFields.add("BlurHash");
-    openapiFields.add("Height");
-    openapiFields.add("Width");
-    openapiFields.add("Size");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to ImageInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!ImageInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in ImageInfo is not found in the empty JSON string", ImageInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!ImageInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `ImageInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // validate the optional field `ImageType`
-      if (jsonObj.get("ImageType") != null && !jsonObj.get("ImageType").isJsonNull()) {
-        ImageType.validateJsonElement(jsonObj.get("ImageType"));
-      }
-      if ((jsonObj.get("ImageTag") != null && !jsonObj.get("ImageTag").isJsonNull()) && !jsonObj.get("ImageTag").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ImageTag` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ImageTag").toString()));
-      }
-      if ((jsonObj.get("Path") != null && !jsonObj.get("Path").isJsonNull()) && !jsonObj.get("Path").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Path` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Path").toString()));
-      }
-      if ((jsonObj.get("BlurHash") != null && !jsonObj.get("BlurHash").isJsonNull()) && !jsonObj.get("BlurHash").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `BlurHash` to be a primitive type in the JSON string but got `%s`", jsonObj.get("BlurHash").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!ImageInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'ImageInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<ImageInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(ImageInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<ImageInfo>() {
-           @Override
-           public void write(JsonWriter out, ImageInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public ImageInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of ImageInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of ImageInfo
-   * @throws IOException if the JSON string is invalid with respect to ImageInfo
-   */
-  public static ImageInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, ImageInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of ImageInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `ImageType` to the URL query string
+    if (getImageType() != null) {
+      joiner.add(String.format("%sImageType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getImageType()))));
+    }
+
+    // add `ImageIndex` to the URL query string
+    if (getImageIndex() != null) {
+      joiner.add(String.format("%sImageIndex%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getImageIndex()))));
+    }
+
+    // add `ImageTag` to the URL query string
+    if (getImageTag() != null) {
+      joiner.add(String.format("%sImageTag%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getImageTag()))));
+    }
+
+    // add `Path` to the URL query string
+    if (getPath() != null) {
+      joiner.add(String.format("%sPath%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
+    }
+
+    // add `BlurHash` to the URL query string
+    if (getBlurHash() != null) {
+      joiner.add(String.format("%sBlurHash%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBlurHash()))));
+    }
+
+    // add `Height` to the URL query string
+    if (getHeight() != null) {
+      joiner.add(String.format("%sHeight%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
+    }
+
+    // add `Width` to the URL query string
+    if (getWidth() != null) {
+      joiner.add(String.format("%sWidth%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
+    }
+
+    // add `Size` to the URL query string
+    if (getSize() != null) {
+      joiner.add(String.format("%sSize%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSize()))));
+    }
+
+    return joiner.toString();
   }
 }
 

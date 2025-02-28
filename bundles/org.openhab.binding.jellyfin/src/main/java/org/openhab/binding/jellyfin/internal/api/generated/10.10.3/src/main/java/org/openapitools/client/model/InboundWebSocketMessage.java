@@ -13,13 +13,20 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.client.model.ActivityLogEntryStartMessage;
 import org.openapitools.client.model.ActivityLogEntryStopMessage;
@@ -30,229 +37,310 @@ import org.openapitools.client.model.SessionMessageType;
 import org.openapitools.client.model.SessionsStartMessage;
 import org.openapitools.client.model.SessionsStopMessage;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapter;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParseException;
-
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import org.openapitools.client.ApiClient;
 import org.openapitools.client.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@JsonDeserialize(using = InboundWebSocketMessage.InboundWebSocketMessageDeserializer.class)
+@JsonSerialize(using = InboundWebSocketMessage.InboundWebSocketMessageSerializer.class)
 public class InboundWebSocketMessage extends AbstractOpenApiSchema {
     private static final Logger log = Logger.getLogger(InboundWebSocketMessage.class.getName());
 
-    public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-        @SuppressWarnings("unchecked")
+    public static class InboundWebSocketMessageSerializer extends StdSerializer<InboundWebSocketMessage> {
+        public InboundWebSocketMessageSerializer(Class<InboundWebSocketMessage> t) {
+            super(t);
+        }
+
+        public InboundWebSocketMessageSerializer() {
+            this(null);
+        }
+
         @Override
-        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            if (!InboundWebSocketMessage.class.isAssignableFrom(type.getRawType())) {
-                return null; // this class only serializes 'InboundWebSocketMessage' and its subtypes
+        public void serialize(InboundWebSocketMessage value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+            jgen.writeObject(value.getActualInstance());
+        }
+    }
+
+    public static class InboundWebSocketMessageDeserializer extends StdDeserializer<InboundWebSocketMessage> {
+        public InboundWebSocketMessageDeserializer() {
+            this(InboundWebSocketMessage.class);
+        }
+
+        public InboundWebSocketMessageDeserializer(Class<?> vc) {
+            super(vc);
+        }
+
+        @Override
+        public InboundWebSocketMessage deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+            JsonNode tree = jp.readValueAsTree();
+            Object deserialized = null;
+            boolean typeCoercion = ctxt.isEnabled(MapperFeature.ALLOW_COERCION_OF_SCALARS);
+            int match = 0;
+            JsonToken token = tree.traverse(jp.getCodec()).nextToken();
+            // deserialize ActivityLogEntryStartMessage
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (ActivityLogEntryStartMessage.class.equals(Integer.class) || ActivityLogEntryStartMessage.class.equals(Long.class) || ActivityLogEntryStartMessage.class.equals(Float.class) || ActivityLogEntryStartMessage.class.equals(Double.class) || ActivityLogEntryStartMessage.class.equals(Boolean.class) || ActivityLogEntryStartMessage.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((ActivityLogEntryStartMessage.class.equals(Integer.class) || ActivityLogEntryStartMessage.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((ActivityLogEntryStartMessage.class.equals(Float.class) || ActivityLogEntryStartMessage.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (ActivityLogEntryStartMessage.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (ActivityLogEntryStartMessage.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(ActivityLogEntryStartMessage.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'ActivityLogEntryStartMessage'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'ActivityLogEntryStartMessage'", e);
             }
-            final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-            final TypeAdapter<ActivityLogEntryStartMessage> adapterActivityLogEntryStartMessage = gson.getDelegateAdapter(this, TypeToken.get(ActivityLogEntryStartMessage.class));
-            final TypeAdapter<ActivityLogEntryStopMessage> adapterActivityLogEntryStopMessage = gson.getDelegateAdapter(this, TypeToken.get(ActivityLogEntryStopMessage.class));
-            final TypeAdapter<InboundKeepAliveMessage> adapterInboundKeepAliveMessage = gson.getDelegateAdapter(this, TypeToken.get(InboundKeepAliveMessage.class));
-            final TypeAdapter<ScheduledTasksInfoStartMessage> adapterScheduledTasksInfoStartMessage = gson.getDelegateAdapter(this, TypeToken.get(ScheduledTasksInfoStartMessage.class));
-            final TypeAdapter<ScheduledTasksInfoStopMessage> adapterScheduledTasksInfoStopMessage = gson.getDelegateAdapter(this, TypeToken.get(ScheduledTasksInfoStopMessage.class));
-            final TypeAdapter<SessionsStartMessage> adapterSessionsStartMessage = gson.getDelegateAdapter(this, TypeToken.get(SessionsStartMessage.class));
-            final TypeAdapter<SessionsStopMessage> adapterSessionsStopMessage = gson.getDelegateAdapter(this, TypeToken.get(SessionsStopMessage.class));
 
-            return (TypeAdapter<T>) new TypeAdapter<InboundWebSocketMessage>() {
-                @Override
-                public void write(JsonWriter out, InboundWebSocketMessage value) throws IOException {
-                    if (value == null || value.getActualInstance() == null) {
-                        elementAdapter.write(out, null);
-                        return;
+            // deserialize ActivityLogEntryStopMessage
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (ActivityLogEntryStopMessage.class.equals(Integer.class) || ActivityLogEntryStopMessage.class.equals(Long.class) || ActivityLogEntryStopMessage.class.equals(Float.class) || ActivityLogEntryStopMessage.class.equals(Double.class) || ActivityLogEntryStopMessage.class.equals(Boolean.class) || ActivityLogEntryStopMessage.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((ActivityLogEntryStopMessage.class.equals(Integer.class) || ActivityLogEntryStopMessage.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((ActivityLogEntryStopMessage.class.equals(Float.class) || ActivityLogEntryStopMessage.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (ActivityLogEntryStopMessage.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (ActivityLogEntryStopMessage.class.equals(String.class) && token == JsonToken.VALUE_STRING);
                     }
-
-                    // check if the actual instance is of the type `ActivityLogEntryStartMessage`
-                    if (value.getActualInstance() instanceof ActivityLogEntryStartMessage) {
-                        JsonElement element = adapterActivityLogEntryStartMessage.toJsonTree((ActivityLogEntryStartMessage)value.getActualInstance());
-                        elementAdapter.write(out, element);
-                        return;
-                    }
-                    // check if the actual instance is of the type `ActivityLogEntryStopMessage`
-                    if (value.getActualInstance() instanceof ActivityLogEntryStopMessage) {
-                        JsonElement element = adapterActivityLogEntryStopMessage.toJsonTree((ActivityLogEntryStopMessage)value.getActualInstance());
-                        elementAdapter.write(out, element);
-                        return;
-                    }
-                    // check if the actual instance is of the type `InboundKeepAliveMessage`
-                    if (value.getActualInstance() instanceof InboundKeepAliveMessage) {
-                        JsonElement element = adapterInboundKeepAliveMessage.toJsonTree((InboundKeepAliveMessage)value.getActualInstance());
-                        elementAdapter.write(out, element);
-                        return;
-                    }
-                    // check if the actual instance is of the type `ScheduledTasksInfoStartMessage`
-                    if (value.getActualInstance() instanceof ScheduledTasksInfoStartMessage) {
-                        JsonElement element = adapterScheduledTasksInfoStartMessage.toJsonTree((ScheduledTasksInfoStartMessage)value.getActualInstance());
-                        elementAdapter.write(out, element);
-                        return;
-                    }
-                    // check if the actual instance is of the type `ScheduledTasksInfoStopMessage`
-                    if (value.getActualInstance() instanceof ScheduledTasksInfoStopMessage) {
-                        JsonElement element = adapterScheduledTasksInfoStopMessage.toJsonTree((ScheduledTasksInfoStopMessage)value.getActualInstance());
-                        elementAdapter.write(out, element);
-                        return;
-                    }
-                    // check if the actual instance is of the type `SessionsStartMessage`
-                    if (value.getActualInstance() instanceof SessionsStartMessage) {
-                        JsonElement element = adapterSessionsStartMessage.toJsonTree((SessionsStartMessage)value.getActualInstance());
-                        elementAdapter.write(out, element);
-                        return;
-                    }
-                    // check if the actual instance is of the type `SessionsStopMessage`
-                    if (value.getActualInstance() instanceof SessionsStopMessage) {
-                        JsonElement element = adapterSessionsStopMessage.toJsonTree((SessionsStopMessage)value.getActualInstance());
-                        elementAdapter.write(out, element);
-                        return;
-                    }
-                    throw new IOException("Failed to serialize as the type doesn't match oneOf schemas: ActivityLogEntryStartMessage, ActivityLogEntryStopMessage, InboundKeepAliveMessage, ScheduledTasksInfoStartMessage, ScheduledTasksInfoStopMessage, SessionsStartMessage, SessionsStopMessage");
                 }
-
-                @Override
-                public InboundWebSocketMessage read(JsonReader in) throws IOException {
-                    Object deserialized = null;
-                    JsonElement jsonElement = elementAdapter.read(in);
-
-                    int match = 0;
-                    ArrayList<String> errorMessages = new ArrayList<>();
-                    TypeAdapter actualAdapter = elementAdapter;
-
-                    // deserialize ActivityLogEntryStartMessage
-                    try {
-                        // validate the JSON object to see if any exception is thrown
-                        ActivityLogEntryStartMessage.validateJsonElement(jsonElement);
-                        actualAdapter = adapterActivityLogEntryStartMessage;
-                        match++;
-                        log.log(Level.FINER, "Input data matches schema 'ActivityLogEntryStartMessage'");
-                    } catch (Exception e) {
-                        // deserialization failed, continue
-                        errorMessages.add(String.format("Deserialization for ActivityLogEntryStartMessage failed with `%s`.", e.getMessage()));
-                        log.log(Level.FINER, "Input data does not match schema 'ActivityLogEntryStartMessage'", e);
-                    }
-                    // deserialize ActivityLogEntryStopMessage
-                    try {
-                        // validate the JSON object to see if any exception is thrown
-                        ActivityLogEntryStopMessage.validateJsonElement(jsonElement);
-                        actualAdapter = adapterActivityLogEntryStopMessage;
-                        match++;
-                        log.log(Level.FINER, "Input data matches schema 'ActivityLogEntryStopMessage'");
-                    } catch (Exception e) {
-                        // deserialization failed, continue
-                        errorMessages.add(String.format("Deserialization for ActivityLogEntryStopMessage failed with `%s`.", e.getMessage()));
-                        log.log(Level.FINER, "Input data does not match schema 'ActivityLogEntryStopMessage'", e);
-                    }
-                    // deserialize InboundKeepAliveMessage
-                    try {
-                        // validate the JSON object to see if any exception is thrown
-                        InboundKeepAliveMessage.validateJsonElement(jsonElement);
-                        actualAdapter = adapterInboundKeepAliveMessage;
-                        match++;
-                        log.log(Level.FINER, "Input data matches schema 'InboundKeepAliveMessage'");
-                    } catch (Exception e) {
-                        // deserialization failed, continue
-                        errorMessages.add(String.format("Deserialization for InboundKeepAliveMessage failed with `%s`.", e.getMessage()));
-                        log.log(Level.FINER, "Input data does not match schema 'InboundKeepAliveMessage'", e);
-                    }
-                    // deserialize ScheduledTasksInfoStartMessage
-                    try {
-                        // validate the JSON object to see if any exception is thrown
-                        ScheduledTasksInfoStartMessage.validateJsonElement(jsonElement);
-                        actualAdapter = adapterScheduledTasksInfoStartMessage;
-                        match++;
-                        log.log(Level.FINER, "Input data matches schema 'ScheduledTasksInfoStartMessage'");
-                    } catch (Exception e) {
-                        // deserialization failed, continue
-                        errorMessages.add(String.format("Deserialization for ScheduledTasksInfoStartMessage failed with `%s`.", e.getMessage()));
-                        log.log(Level.FINER, "Input data does not match schema 'ScheduledTasksInfoStartMessage'", e);
-                    }
-                    // deserialize ScheduledTasksInfoStopMessage
-                    try {
-                        // validate the JSON object to see if any exception is thrown
-                        ScheduledTasksInfoStopMessage.validateJsonElement(jsonElement);
-                        actualAdapter = adapterScheduledTasksInfoStopMessage;
-                        match++;
-                        log.log(Level.FINER, "Input data matches schema 'ScheduledTasksInfoStopMessage'");
-                    } catch (Exception e) {
-                        // deserialization failed, continue
-                        errorMessages.add(String.format("Deserialization for ScheduledTasksInfoStopMessage failed with `%s`.", e.getMessage()));
-                        log.log(Level.FINER, "Input data does not match schema 'ScheduledTasksInfoStopMessage'", e);
-                    }
-                    // deserialize SessionsStartMessage
-                    try {
-                        // validate the JSON object to see if any exception is thrown
-                        SessionsStartMessage.validateJsonElement(jsonElement);
-                        actualAdapter = adapterSessionsStartMessage;
-                        match++;
-                        log.log(Level.FINER, "Input data matches schema 'SessionsStartMessage'");
-                    } catch (Exception e) {
-                        // deserialization failed, continue
-                        errorMessages.add(String.format("Deserialization for SessionsStartMessage failed with `%s`.", e.getMessage()));
-                        log.log(Level.FINER, "Input data does not match schema 'SessionsStartMessage'", e);
-                    }
-                    // deserialize SessionsStopMessage
-                    try {
-                        // validate the JSON object to see if any exception is thrown
-                        SessionsStopMessage.validateJsonElement(jsonElement);
-                        actualAdapter = adapterSessionsStopMessage;
-                        match++;
-                        log.log(Level.FINER, "Input data matches schema 'SessionsStopMessage'");
-                    } catch (Exception e) {
-                        // deserialization failed, continue
-                        errorMessages.add(String.format("Deserialization for SessionsStopMessage failed with `%s`.", e.getMessage()));
-                        log.log(Level.FINER, "Input data does not match schema 'SessionsStopMessage'", e);
-                    }
-
-                    if (match == 1) {
-                        InboundWebSocketMessage ret = new InboundWebSocketMessage();
-                        ret.setActualInstance(actualAdapter.fromJsonTree(jsonElement));
-                        return ret;
-                    }
-
-                    throw new IOException(String.format("Failed deserialization for InboundWebSocketMessage: %d classes match result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", match, errorMessages, jsonElement.toString()));
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(ActivityLogEntryStopMessage.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'ActivityLogEntryStopMessage'");
                 }
-            }.nullSafe();
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'ActivityLogEntryStopMessage'", e);
+            }
+
+            // deserialize InboundKeepAliveMessage
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (InboundKeepAliveMessage.class.equals(Integer.class) || InboundKeepAliveMessage.class.equals(Long.class) || InboundKeepAliveMessage.class.equals(Float.class) || InboundKeepAliveMessage.class.equals(Double.class) || InboundKeepAliveMessage.class.equals(Boolean.class) || InboundKeepAliveMessage.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((InboundKeepAliveMessage.class.equals(Integer.class) || InboundKeepAliveMessage.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((InboundKeepAliveMessage.class.equals(Float.class) || InboundKeepAliveMessage.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (InboundKeepAliveMessage.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (InboundKeepAliveMessage.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(InboundKeepAliveMessage.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'InboundKeepAliveMessage'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'InboundKeepAliveMessage'", e);
+            }
+
+            // deserialize ScheduledTasksInfoStartMessage
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (ScheduledTasksInfoStartMessage.class.equals(Integer.class) || ScheduledTasksInfoStartMessage.class.equals(Long.class) || ScheduledTasksInfoStartMessage.class.equals(Float.class) || ScheduledTasksInfoStartMessage.class.equals(Double.class) || ScheduledTasksInfoStartMessage.class.equals(Boolean.class) || ScheduledTasksInfoStartMessage.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((ScheduledTasksInfoStartMessage.class.equals(Integer.class) || ScheduledTasksInfoStartMessage.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((ScheduledTasksInfoStartMessage.class.equals(Float.class) || ScheduledTasksInfoStartMessage.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (ScheduledTasksInfoStartMessage.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (ScheduledTasksInfoStartMessage.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(ScheduledTasksInfoStartMessage.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'ScheduledTasksInfoStartMessage'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'ScheduledTasksInfoStartMessage'", e);
+            }
+
+            // deserialize ScheduledTasksInfoStopMessage
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (ScheduledTasksInfoStopMessage.class.equals(Integer.class) || ScheduledTasksInfoStopMessage.class.equals(Long.class) || ScheduledTasksInfoStopMessage.class.equals(Float.class) || ScheduledTasksInfoStopMessage.class.equals(Double.class) || ScheduledTasksInfoStopMessage.class.equals(Boolean.class) || ScheduledTasksInfoStopMessage.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((ScheduledTasksInfoStopMessage.class.equals(Integer.class) || ScheduledTasksInfoStopMessage.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((ScheduledTasksInfoStopMessage.class.equals(Float.class) || ScheduledTasksInfoStopMessage.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (ScheduledTasksInfoStopMessage.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (ScheduledTasksInfoStopMessage.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(ScheduledTasksInfoStopMessage.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'ScheduledTasksInfoStopMessage'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'ScheduledTasksInfoStopMessage'", e);
+            }
+
+            // deserialize SessionsStartMessage
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (SessionsStartMessage.class.equals(Integer.class) || SessionsStartMessage.class.equals(Long.class) || SessionsStartMessage.class.equals(Float.class) || SessionsStartMessage.class.equals(Double.class) || SessionsStartMessage.class.equals(Boolean.class) || SessionsStartMessage.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((SessionsStartMessage.class.equals(Integer.class) || SessionsStartMessage.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((SessionsStartMessage.class.equals(Float.class) || SessionsStartMessage.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (SessionsStartMessage.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (SessionsStartMessage.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(SessionsStartMessage.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'SessionsStartMessage'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'SessionsStartMessage'", e);
+            }
+
+            // deserialize SessionsStopMessage
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (SessionsStopMessage.class.equals(Integer.class) || SessionsStopMessage.class.equals(Long.class) || SessionsStopMessage.class.equals(Float.class) || SessionsStopMessage.class.equals(Double.class) || SessionsStopMessage.class.equals(Boolean.class) || SessionsStopMessage.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((SessionsStopMessage.class.equals(Integer.class) || SessionsStopMessage.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((SessionsStopMessage.class.equals(Float.class) || SessionsStopMessage.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (SessionsStopMessage.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (SessionsStopMessage.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(SessionsStopMessage.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'SessionsStopMessage'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'SessionsStopMessage'", e);
+            }
+
+            if (match == 1) {
+                InboundWebSocketMessage ret = new InboundWebSocketMessage();
+                ret.setActualInstance(deserialized);
+                return ret;
+            }
+            throw new IOException(String.format("Failed deserialization for InboundWebSocketMessage: %d classes match result, expected 1", match));
+        }
+
+        /**
+         * Handle deserialization of the 'null' value.
+         */
+        @Override
+        public InboundWebSocketMessage getNullValue(DeserializationContext ctxt) throws JsonMappingException {
+            throw new JsonMappingException(ctxt.getParser(), "InboundWebSocketMessage cannot be null");
         }
     }
 
     // store a list of schema names defined in oneOf
-    public static final Map<String, Class<?>> schemas = new HashMap<String, Class<?>>();
+    public static final Map<String, Class<?>> schemas = new HashMap<>();
 
     public InboundWebSocketMessage() {
         super("oneOf", Boolean.FALSE);
     }
 
-    public InboundWebSocketMessage(Object o) {
+    public InboundWebSocketMessage(ActivityLogEntryStartMessage o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
+    public InboundWebSocketMessage(ActivityLogEntryStopMessage o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
+    public InboundWebSocketMessage(InboundKeepAliveMessage o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
+    public InboundWebSocketMessage(ScheduledTasksInfoStartMessage o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
+    public InboundWebSocketMessage(ScheduledTasksInfoStopMessage o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
+    public InboundWebSocketMessage(SessionsStartMessage o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
+    public InboundWebSocketMessage(SessionsStopMessage o) {
         super("oneOf", Boolean.FALSE);
         setActualInstance(o);
     }
@@ -265,6 +353,25 @@ public class InboundWebSocketMessage extends AbstractOpenApiSchema {
         schemas.put("ScheduledTasksInfoStopMessage", ScheduledTasksInfoStopMessage.class);
         schemas.put("SessionsStartMessage", SessionsStartMessage.class);
         schemas.put("SessionsStopMessage", SessionsStopMessage.class);
+        JSON.registerDescendants(InboundWebSocketMessage.class, Collections.unmodifiableMap(schemas));
+        // Initialize and register the discriminator mappings.
+        Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
+        mappings.put("ActivityLogEntryStart", ActivityLogEntryStartMessage.class);
+        mappings.put("ActivityLogEntryStop", ActivityLogEntryStopMessage.class);
+        mappings.put("KeepAlive", InboundKeepAliveMessage.class);
+        mappings.put("ScheduledTasksInfoStart", ScheduledTasksInfoStartMessage.class);
+        mappings.put("ScheduledTasksInfoStop", ScheduledTasksInfoStopMessage.class);
+        mappings.put("SessionsStart", SessionsStartMessage.class);
+        mappings.put("SessionsStop", SessionsStopMessage.class);
+        mappings.put("ActivityLogEntryStartMessage", ActivityLogEntryStartMessage.class);
+        mappings.put("ActivityLogEntryStopMessage", ActivityLogEntryStopMessage.class);
+        mappings.put("InboundKeepAliveMessage", InboundKeepAliveMessage.class);
+        mappings.put("ScheduledTasksInfoStartMessage", ScheduledTasksInfoStartMessage.class);
+        mappings.put("ScheduledTasksInfoStopMessage", ScheduledTasksInfoStopMessage.class);
+        mappings.put("SessionsStartMessage", SessionsStartMessage.class);
+        mappings.put("SessionsStopMessage", SessionsStopMessage.class);
+        mappings.put("InboundWebSocketMessage", InboundWebSocketMessage.class);
+        JSON.registerDiscriminator(InboundWebSocketMessage.class, "MessageType", mappings);
     }
 
     @Override
@@ -278,40 +385,41 @@ public class InboundWebSocketMessage extends AbstractOpenApiSchema {
      * ActivityLogEntryStartMessage, ActivityLogEntryStopMessage, InboundKeepAliveMessage, ScheduledTasksInfoStartMessage, ScheduledTasksInfoStopMessage, SessionsStartMessage, SessionsStopMessage
      *
      * It could be an instance of the 'oneOf' schemas.
+     * The oneOf child schemas may themselves be a composed schema (allOf, anyOf, oneOf).
      */
     @Override
     public void setActualInstance(Object instance) {
-        if (instance instanceof ActivityLogEntryStartMessage) {
+        if (JSON.isInstanceOf(ActivityLogEntryStartMessage.class, instance, new HashSet<Class<?>>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (instance instanceof ActivityLogEntryStopMessage) {
+        if (JSON.isInstanceOf(ActivityLogEntryStopMessage.class, instance, new HashSet<Class<?>>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (instance instanceof InboundKeepAliveMessage) {
+        if (JSON.isInstanceOf(InboundKeepAliveMessage.class, instance, new HashSet<Class<?>>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (instance instanceof ScheduledTasksInfoStartMessage) {
+        if (JSON.isInstanceOf(ScheduledTasksInfoStartMessage.class, instance, new HashSet<Class<?>>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (instance instanceof ScheduledTasksInfoStopMessage) {
+        if (JSON.isInstanceOf(ScheduledTasksInfoStopMessage.class, instance, new HashSet<Class<?>>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (instance instanceof SessionsStartMessage) {
+        if (JSON.isInstanceOf(SessionsStartMessage.class, instance, new HashSet<Class<?>>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (instance instanceof SessionsStopMessage) {
+        if (JSON.isInstanceOf(SessionsStopMessage.class, instance, new HashSet<Class<?>>())) {
             super.setActualInstance(instance);
             return;
         }
@@ -325,7 +433,6 @@ public class InboundWebSocketMessage extends AbstractOpenApiSchema {
      *
      * @return The actual instance (ActivityLogEntryStartMessage, ActivityLogEntryStopMessage, InboundKeepAliveMessage, ScheduledTasksInfoStartMessage, ScheduledTasksInfoStopMessage, SessionsStartMessage, SessionsStopMessage)
      */
-    @SuppressWarnings("unchecked")
     @Override
     public Object getActualInstance() {
         return super.getActualInstance();
@@ -408,95 +515,84 @@ public class InboundWebSocketMessage extends AbstractOpenApiSchema {
         return (SessionsStopMessage)super.getActualInstance();
     }
 
-    /**
-     * Validates the JSON Element and throws an exception if issues found
-     *
-     * @param jsonElement JSON Element
-     * @throws IOException if the JSON Element is invalid with respect to InboundWebSocketMessage
-     */
-    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-        // validate oneOf schemas one by one
-        int validCount = 0;
-        ArrayList<String> errorMessages = new ArrayList<>();
-        // validate the json string with ActivityLogEntryStartMessage
-        try {
-            ActivityLogEntryStartMessage.validateJsonElement(jsonElement);
-            validCount++;
-        } catch (Exception e) {
-            errorMessages.add(String.format("Deserialization for ActivityLogEntryStartMessage failed with `%s`.", e.getMessage()));
-            // continue to the next one
-        }
-        // validate the json string with ActivityLogEntryStopMessage
-        try {
-            ActivityLogEntryStopMessage.validateJsonElement(jsonElement);
-            validCount++;
-        } catch (Exception e) {
-            errorMessages.add(String.format("Deserialization for ActivityLogEntryStopMessage failed with `%s`.", e.getMessage()));
-            // continue to the next one
-        }
-        // validate the json string with InboundKeepAliveMessage
-        try {
-            InboundKeepAliveMessage.validateJsonElement(jsonElement);
-            validCount++;
-        } catch (Exception e) {
-            errorMessages.add(String.format("Deserialization for InboundKeepAliveMessage failed with `%s`.", e.getMessage()));
-            // continue to the next one
-        }
-        // validate the json string with ScheduledTasksInfoStartMessage
-        try {
-            ScheduledTasksInfoStartMessage.validateJsonElement(jsonElement);
-            validCount++;
-        } catch (Exception e) {
-            errorMessages.add(String.format("Deserialization for ScheduledTasksInfoStartMessage failed with `%s`.", e.getMessage()));
-            // continue to the next one
-        }
-        // validate the json string with ScheduledTasksInfoStopMessage
-        try {
-            ScheduledTasksInfoStopMessage.validateJsonElement(jsonElement);
-            validCount++;
-        } catch (Exception e) {
-            errorMessages.add(String.format("Deserialization for ScheduledTasksInfoStopMessage failed with `%s`.", e.getMessage()));
-            // continue to the next one
-        }
-        // validate the json string with SessionsStartMessage
-        try {
-            SessionsStartMessage.validateJsonElement(jsonElement);
-            validCount++;
-        } catch (Exception e) {
-            errorMessages.add(String.format("Deserialization for SessionsStartMessage failed with `%s`.", e.getMessage()));
-            // continue to the next one
-        }
-        // validate the json string with SessionsStopMessage
-        try {
-            SessionsStopMessage.validateJsonElement(jsonElement);
-            validCount++;
-        } catch (Exception e) {
-            errorMessages.add(String.format("Deserialization for SessionsStopMessage failed with `%s`.", e.getMessage()));
-            // continue to the next one
-        }
-        if (validCount != 1) {
-            throw new IOException(String.format("The JSON string is invalid for InboundWebSocketMessage with oneOf schemas: ActivityLogEntryStartMessage, ActivityLogEntryStopMessage, InboundKeepAliveMessage, ScheduledTasksInfoStartMessage, ScheduledTasksInfoStopMessage, SessionsStartMessage, SessionsStopMessage. %d class(es) match the result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", validCount, errorMessages, jsonElement.toString()));
-        }
+
+
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
+  }
+
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @param prefix prefix of the query string
+   * @return URL query string
+   */
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
 
-    /**
-     * Create an instance of InboundWebSocketMessage given an JSON string
-     *
-     * @param jsonString JSON string
-     * @return An instance of InboundWebSocketMessage
-     * @throws IOException if the JSON string is invalid with respect to InboundWebSocketMessage
-     */
-    public static InboundWebSocketMessage fromJson(String jsonString) throws IOException {
-        return JSON.getGson().fromJson(jsonString, InboundWebSocketMessage.class);
-    }
+    StringJoiner joiner = new StringJoiner("&");
 
-    /**
-     * Convert an instance of InboundWebSocketMessage to an JSON string
-     *
-     * @return JSON string
-     */
-    public String toJson() {
-        return JSON.getGson().toJson(this);
+    if (getActualInstance() instanceof ActivityLogEntryStartMessage) {
+        if (getActualInstance() != null) {
+          joiner.add(((ActivityLogEntryStartMessage)getActualInstance()).toUrlQueryString(prefix + "one_of_0" + suffix));
+        }
+        return joiner.toString();
     }
+    if (getActualInstance() instanceof ActivityLogEntryStopMessage) {
+        if (getActualInstance() != null) {
+          joiner.add(((ActivityLogEntryStopMessage)getActualInstance()).toUrlQueryString(prefix + "one_of_1" + suffix));
+        }
+        return joiner.toString();
+    }
+    if (getActualInstance() instanceof InboundKeepAliveMessage) {
+        if (getActualInstance() != null) {
+          joiner.add(((InboundKeepAliveMessage)getActualInstance()).toUrlQueryString(prefix + "one_of_2" + suffix));
+        }
+        return joiner.toString();
+    }
+    if (getActualInstance() instanceof ScheduledTasksInfoStartMessage) {
+        if (getActualInstance() != null) {
+          joiner.add(((ScheduledTasksInfoStartMessage)getActualInstance()).toUrlQueryString(prefix + "one_of_3" + suffix));
+        }
+        return joiner.toString();
+    }
+    if (getActualInstance() instanceof ScheduledTasksInfoStopMessage) {
+        if (getActualInstance() != null) {
+          joiner.add(((ScheduledTasksInfoStopMessage)getActualInstance()).toUrlQueryString(prefix + "one_of_4" + suffix));
+        }
+        return joiner.toString();
+    }
+    if (getActualInstance() instanceof SessionsStartMessage) {
+        if (getActualInstance() != null) {
+          joiner.add(((SessionsStartMessage)getActualInstance()).toUrlQueryString(prefix + "one_of_5" + suffix));
+        }
+        return joiner.toString();
+    }
+    if (getActualInstance() instanceof SessionsStopMessage) {
+        if (getActualInstance() != null) {
+          joiner.add(((SessionsStopMessage)getActualInstance()).toUrlQueryString(prefix + "one_of_6" + suffix));
+        }
+        return joiner.toString();
+    }
+    return null;
+  }
+
 }
 

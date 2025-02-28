@@ -13,164 +13,143 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.client.model.HardwareAccelerationType;
 import org.openapitools.client.model.TranscodeReason;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class holding information on a runnning transcode.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  TranscodingInfo.JSON_PROPERTY_AUDIO_CODEC,
+  TranscodingInfo.JSON_PROPERTY_VIDEO_CODEC,
+  TranscodingInfo.JSON_PROPERTY_CONTAINER,
+  TranscodingInfo.JSON_PROPERTY_IS_VIDEO_DIRECT,
+  TranscodingInfo.JSON_PROPERTY_IS_AUDIO_DIRECT,
+  TranscodingInfo.JSON_PROPERTY_BITRATE,
+  TranscodingInfo.JSON_PROPERTY_FRAMERATE,
+  TranscodingInfo.JSON_PROPERTY_COMPLETION_PERCENTAGE,
+  TranscodingInfo.JSON_PROPERTY_WIDTH,
+  TranscodingInfo.JSON_PROPERTY_HEIGHT,
+  TranscodingInfo.JSON_PROPERTY_AUDIO_CHANNELS,
+  TranscodingInfo.JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE,
+  TranscodingInfo.JSON_PROPERTY_TRANSCODE_REASONS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class TranscodingInfo {
-  public static final String SERIALIZED_NAME_AUDIO_CODEC = "AudioCodec";
-  @SerializedName(SERIALIZED_NAME_AUDIO_CODEC)
-  @javax.annotation.Nullable
-  private String audioCodec;
+  public static final String JSON_PROPERTY_AUDIO_CODEC = "AudioCodec";
+  private JsonNullable<String> audioCodec = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_VIDEO_CODEC = "VideoCodec";
-  @SerializedName(SERIALIZED_NAME_VIDEO_CODEC)
-  @javax.annotation.Nullable
-  private String videoCodec;
+  public static final String JSON_PROPERTY_VIDEO_CODEC = "VideoCodec";
+  private JsonNullable<String> videoCodec = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_CONTAINER = "Container";
-  @SerializedName(SERIALIZED_NAME_CONTAINER)
-  @javax.annotation.Nullable
-  private String container;
+  public static final String JSON_PROPERTY_CONTAINER = "Container";
+  private JsonNullable<String> container = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_IS_VIDEO_DIRECT = "IsVideoDirect";
-  @SerializedName(SERIALIZED_NAME_IS_VIDEO_DIRECT)
+  public static final String JSON_PROPERTY_IS_VIDEO_DIRECT = "IsVideoDirect";
   @javax.annotation.Nullable
   private Boolean isVideoDirect;
 
-  public static final String SERIALIZED_NAME_IS_AUDIO_DIRECT = "IsAudioDirect";
-  @SerializedName(SERIALIZED_NAME_IS_AUDIO_DIRECT)
+  public static final String JSON_PROPERTY_IS_AUDIO_DIRECT = "IsAudioDirect";
   @javax.annotation.Nullable
   private Boolean isAudioDirect;
 
-  public static final String SERIALIZED_NAME_BITRATE = "Bitrate";
-  @SerializedName(SERIALIZED_NAME_BITRATE)
-  @javax.annotation.Nullable
-  private Integer bitrate;
+  public static final String JSON_PROPERTY_BITRATE = "Bitrate";
+  private JsonNullable<Integer> bitrate = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_FRAMERATE = "Framerate";
-  @SerializedName(SERIALIZED_NAME_FRAMERATE)
-  @javax.annotation.Nullable
-  private Float framerate;
+  public static final String JSON_PROPERTY_FRAMERATE = "Framerate";
+  private JsonNullable<Float> framerate = JsonNullable.<Float>undefined();
 
-  public static final String SERIALIZED_NAME_COMPLETION_PERCENTAGE = "CompletionPercentage";
-  @SerializedName(SERIALIZED_NAME_COMPLETION_PERCENTAGE)
-  @javax.annotation.Nullable
-  private Double completionPercentage;
+  public static final String JSON_PROPERTY_COMPLETION_PERCENTAGE = "CompletionPercentage";
+  private JsonNullable<Double> completionPercentage = JsonNullable.<Double>undefined();
 
-  public static final String SERIALIZED_NAME_WIDTH = "Width";
-  @SerializedName(SERIALIZED_NAME_WIDTH)
-  @javax.annotation.Nullable
-  private Integer width;
+  public static final String JSON_PROPERTY_WIDTH = "Width";
+  private JsonNullable<Integer> width = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_HEIGHT = "Height";
-  @SerializedName(SERIALIZED_NAME_HEIGHT)
-  @javax.annotation.Nullable
-  private Integer height;
+  public static final String JSON_PROPERTY_HEIGHT = "Height";
+  private JsonNullable<Integer> height = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_AUDIO_CHANNELS = "AudioChannels";
-  @SerializedName(SERIALIZED_NAME_AUDIO_CHANNELS)
-  @javax.annotation.Nullable
-  private Integer audioChannels;
+  public static final String JSON_PROPERTY_AUDIO_CHANNELS = "AudioChannels";
+  private JsonNullable<Integer> audioChannels = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_HARDWARE_ACCELERATION_TYPE = "HardwareAccelerationType";
-  @SerializedName(SERIALIZED_NAME_HARDWARE_ACCELERATION_TYPE)
-  @javax.annotation.Nullable
-  private HardwareAccelerationType hardwareAccelerationType;
+  public static final String JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE = "HardwareAccelerationType";
+  private JsonNullable<HardwareAccelerationType> hardwareAccelerationType = JsonNullable.<HardwareAccelerationType>undefined();
 
   /**
    * Gets or Sets transcodeReasons
    */
-  @JsonAdapter(TranscodeReason.Adapter.class)
   public enum TranscodeReason {
-    CONTAINER_NOT_SUPPORTED("ContainerNotSupported"),
+    CONTAINER_NOT_SUPPORTED(TranscodeReason.valueOf("ContainerNotSupported")),
     
-    VIDEO_CODEC_NOT_SUPPORTED("VideoCodecNotSupported"),
+    VIDEO_CODEC_NOT_SUPPORTED(TranscodeReason.valueOf("VideoCodecNotSupported")),
     
-    AUDIO_CODEC_NOT_SUPPORTED("AudioCodecNotSupported"),
+    AUDIO_CODEC_NOT_SUPPORTED(TranscodeReason.valueOf("AudioCodecNotSupported")),
     
-    SUBTITLE_CODEC_NOT_SUPPORTED("SubtitleCodecNotSupported"),
+    SUBTITLE_CODEC_NOT_SUPPORTED(TranscodeReason.valueOf("SubtitleCodecNotSupported")),
     
-    AUDIO_IS_EXTERNAL("AudioIsExternal"),
+    AUDIO_IS_EXTERNAL(TranscodeReason.valueOf("AudioIsExternal")),
     
-    SECONDARY_AUDIO_NOT_SUPPORTED("SecondaryAudioNotSupported"),
+    SECONDARY_AUDIO_NOT_SUPPORTED(TranscodeReason.valueOf("SecondaryAudioNotSupported")),
     
-    VIDEO_PROFILE_NOT_SUPPORTED("VideoProfileNotSupported"),
+    VIDEO_PROFILE_NOT_SUPPORTED(TranscodeReason.valueOf("VideoProfileNotSupported")),
     
-    VIDEO_LEVEL_NOT_SUPPORTED("VideoLevelNotSupported"),
+    VIDEO_LEVEL_NOT_SUPPORTED(TranscodeReason.valueOf("VideoLevelNotSupported")),
     
-    VIDEO_RESOLUTION_NOT_SUPPORTED("VideoResolutionNotSupported"),
+    VIDEO_RESOLUTION_NOT_SUPPORTED(TranscodeReason.valueOf("VideoResolutionNotSupported")),
     
-    VIDEO_BIT_DEPTH_NOT_SUPPORTED("VideoBitDepthNotSupported"),
+    VIDEO_BIT_DEPTH_NOT_SUPPORTED(TranscodeReason.valueOf("VideoBitDepthNotSupported")),
     
-    VIDEO_FRAMERATE_NOT_SUPPORTED("VideoFramerateNotSupported"),
+    VIDEO_FRAMERATE_NOT_SUPPORTED(TranscodeReason.valueOf("VideoFramerateNotSupported")),
     
-    REF_FRAMES_NOT_SUPPORTED("RefFramesNotSupported"),
+    REF_FRAMES_NOT_SUPPORTED(TranscodeReason.valueOf("RefFramesNotSupported")),
     
-    ANAMORPHIC_VIDEO_NOT_SUPPORTED("AnamorphicVideoNotSupported"),
+    ANAMORPHIC_VIDEO_NOT_SUPPORTED(TranscodeReason.valueOf("AnamorphicVideoNotSupported")),
     
-    INTERLACED_VIDEO_NOT_SUPPORTED("InterlacedVideoNotSupported"),
+    INTERLACED_VIDEO_NOT_SUPPORTED(TranscodeReason.valueOf("InterlacedVideoNotSupported")),
     
-    AUDIO_CHANNELS_NOT_SUPPORTED("AudioChannelsNotSupported"),
+    AUDIO_CHANNELS_NOT_SUPPORTED(TranscodeReason.valueOf("AudioChannelsNotSupported")),
     
-    AUDIO_PROFILE_NOT_SUPPORTED("AudioProfileNotSupported"),
+    AUDIO_PROFILE_NOT_SUPPORTED(TranscodeReason.valueOf("AudioProfileNotSupported")),
     
-    AUDIO_SAMPLE_RATE_NOT_SUPPORTED("AudioSampleRateNotSupported"),
+    AUDIO_SAMPLE_RATE_NOT_SUPPORTED(TranscodeReason.valueOf("AudioSampleRateNotSupported")),
     
-    AUDIO_BIT_DEPTH_NOT_SUPPORTED("AudioBitDepthNotSupported"),
+    AUDIO_BIT_DEPTH_NOT_SUPPORTED(TranscodeReason.valueOf("AudioBitDepthNotSupported")),
     
-    CONTAINER_BITRATE_EXCEEDS_LIMIT("ContainerBitrateExceedsLimit"),
+    CONTAINER_BITRATE_EXCEEDS_LIMIT(TranscodeReason.valueOf("ContainerBitrateExceedsLimit")),
     
-    VIDEO_BITRATE_NOT_SUPPORTED("VideoBitrateNotSupported"),
+    VIDEO_BITRATE_NOT_SUPPORTED(TranscodeReason.valueOf("VideoBitrateNotSupported")),
     
-    AUDIO_BITRATE_NOT_SUPPORTED("AudioBitrateNotSupported"),
+    AUDIO_BITRATE_NOT_SUPPORTED(TranscodeReason.valueOf("AudioBitrateNotSupported")),
     
-    UNKNOWN_VIDEO_STREAM_INFO("UnknownVideoStreamInfo"),
+    UNKNOWN_VIDEO_STREAM_INFO(TranscodeReason.valueOf("UnknownVideoStreamInfo")),
     
-    UNKNOWN_AUDIO_STREAM_INFO("UnknownAudioStreamInfo"),
+    UNKNOWN_AUDIO_STREAM_INFO(TranscodeReason.valueOf("UnknownAudioStreamInfo")),
     
-    DIRECT_PLAY_ERROR("DirectPlayError"),
+    DIRECT_PLAY_ERROR(TranscodeReason.valueOf("DirectPlayError")),
     
-    VIDEO_RANGE_TYPE_NOT_SUPPORTED("VideoRangeTypeNotSupported"),
+    VIDEO_RANGE_TYPE_NOT_SUPPORTED(TranscodeReason.valueOf("VideoRangeTypeNotSupported")),
     
-    VIDEO_CODEC_TAG_NOT_SUPPORTED("VideoCodecTagNotSupported");
+    VIDEO_CODEC_TAG_NOT_SUPPORTED(TranscodeReason.valueOf("VideoCodecTagNotSupported"));
 
     private TranscodeReason value;
 
@@ -178,6 +157,7 @@ public class TranscodingInfo {
       this.value = value;
     }
 
+    @JsonValue
     public TranscodeReason getValue() {
       return value;
     }
@@ -187,6 +167,7 @@ public class TranscodingInfo {
       return String.valueOf(value);
     }
 
+    @JsonCreator
     public static TranscodeReason fromValue(TranscodeReason value) {
       for (TranscodeReason b : TranscodeReason.values()) {
         if (b.value.equals(value)) {
@@ -195,36 +176,17 @@ public class TranscodingInfo {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
-
-    public static class Adapter extends TypeAdapter<TranscodeReason> {
-      @Override
-      public void write(final JsonWriter jsonWriter, final TranscodeReason enumeration) throws IOException {
-        jsonWriter.value(enumeration.getValue());
-      }
-
-      @Override
-      public TranscodeReason read(final JsonReader jsonReader) throws IOException {
-        TranscodeReason value =  jsonReader.nextTranscodeReason();
-        return TranscodeReason.fromValue(value);
-      }
-    }
-
-    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      TranscodeReason value = jsonElement.getAsTranscodeReason();
-      TranscodeReason.fromValue(value);
-    }
   }
 
-  public static final String SERIALIZED_NAME_TRANSCODE_REASONS = "TranscodeReasons";
-  @SerializedName(SERIALIZED_NAME_TRANSCODE_REASONS)
+  public static final String JSON_PROPERTY_TRANSCODE_REASONS = "TranscodeReasons";
   @javax.annotation.Nullable
   private TranscodeReasonsEnum transcodeReasons = new ArrayList<>();
 
-  public TranscodingInfo() {
+  public TranscodingInfo() { 
   }
 
   public TranscodingInfo audioCodec(@javax.annotation.Nullable String audioCodec) {
-    this.audioCodec = audioCodec;
+    this.audioCodec = JsonNullable.<String>of(audioCodec);
     return this;
   }
 
@@ -233,17 +195,30 @@ public class TranscodingInfo {
    * @return audioCodec
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getAudioCodec() {
+        return audioCodec.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getAudioCodec_JsonNullable() {
     return audioCodec;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
+  public void setAudioCodec_JsonNullable(JsonNullable<String> audioCodec) {
+    this.audioCodec = audioCodec;
   }
 
   public void setAudioCodec(@javax.annotation.Nullable String audioCodec) {
-    this.audioCodec = audioCodec;
+    this.audioCodec = JsonNullable.<String>of(audioCodec);
   }
 
 
   public TranscodingInfo videoCodec(@javax.annotation.Nullable String videoCodec) {
-    this.videoCodec = videoCodec;
+    this.videoCodec = JsonNullable.<String>of(videoCodec);
     return this;
   }
 
@@ -252,17 +227,30 @@ public class TranscodingInfo {
    * @return videoCodec
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getVideoCodec() {
+        return videoCodec.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getVideoCodec_JsonNullable() {
     return videoCodec;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
+  public void setVideoCodec_JsonNullable(JsonNullable<String> videoCodec) {
+    this.videoCodec = videoCodec;
   }
 
   public void setVideoCodec(@javax.annotation.Nullable String videoCodec) {
-    this.videoCodec = videoCodec;
+    this.videoCodec = JsonNullable.<String>of(videoCodec);
   }
 
 
   public TranscodingInfo container(@javax.annotation.Nullable String container) {
-    this.container = container;
+    this.container = JsonNullable.<String>of(container);
     return this;
   }
 
@@ -271,12 +259,25 @@ public class TranscodingInfo {
    * @return container
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getContainer() {
+        return container.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getContainer_JsonNullable() {
     return container;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  public void setContainer_JsonNullable(JsonNullable<String> container) {
+    this.container = container;
   }
 
   public void setContainer(@javax.annotation.Nullable String container) {
-    this.container = container;
+    this.container = JsonNullable.<String>of(container);
   }
 
 
@@ -290,10 +291,15 @@ public class TranscodingInfo {
    * @return isVideoDirect
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_VIDEO_DIRECT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsVideoDirect() {
     return isVideoDirect;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_VIDEO_DIRECT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsVideoDirect(@javax.annotation.Nullable Boolean isVideoDirect) {
     this.isVideoDirect = isVideoDirect;
   }
@@ -309,17 +315,22 @@ public class TranscodingInfo {
    * @return isAudioDirect
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_AUDIO_DIRECT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsAudioDirect() {
     return isAudioDirect;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_AUDIO_DIRECT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsAudioDirect(@javax.annotation.Nullable Boolean isAudioDirect) {
     this.isAudioDirect = isAudioDirect;
   }
 
 
   public TranscodingInfo bitrate(@javax.annotation.Nullable Integer bitrate) {
-    this.bitrate = bitrate;
+    this.bitrate = JsonNullable.<Integer>of(bitrate);
     return this;
   }
 
@@ -328,17 +339,30 @@ public class TranscodingInfo {
    * @return bitrate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getBitrate() {
+        return bitrate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_BITRATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getBitrate_JsonNullable() {
     return bitrate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_BITRATE)
+  public void setBitrate_JsonNullable(JsonNullable<Integer> bitrate) {
+    this.bitrate = bitrate;
   }
 
   public void setBitrate(@javax.annotation.Nullable Integer bitrate) {
-    this.bitrate = bitrate;
+    this.bitrate = JsonNullable.<Integer>of(bitrate);
   }
 
 
   public TranscodingInfo framerate(@javax.annotation.Nullable Float framerate) {
-    this.framerate = framerate;
+    this.framerate = JsonNullable.<Float>of(framerate);
     return this;
   }
 
@@ -347,17 +371,30 @@ public class TranscodingInfo {
    * @return framerate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Float getFramerate() {
+        return framerate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_FRAMERATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Float> getFramerate_JsonNullable() {
     return framerate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_FRAMERATE)
+  public void setFramerate_JsonNullable(JsonNullable<Float> framerate) {
+    this.framerate = framerate;
   }
 
   public void setFramerate(@javax.annotation.Nullable Float framerate) {
-    this.framerate = framerate;
+    this.framerate = JsonNullable.<Float>of(framerate);
   }
 
 
   public TranscodingInfo completionPercentage(@javax.annotation.Nullable Double completionPercentage) {
-    this.completionPercentage = completionPercentage;
+    this.completionPercentage = JsonNullable.<Double>of(completionPercentage);
     return this;
   }
 
@@ -366,17 +403,30 @@ public class TranscodingInfo {
    * @return completionPercentage
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Double getCompletionPercentage() {
+        return completionPercentage.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_COMPLETION_PERCENTAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Double> getCompletionPercentage_JsonNullable() {
     return completionPercentage;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_COMPLETION_PERCENTAGE)
+  public void setCompletionPercentage_JsonNullable(JsonNullable<Double> completionPercentage) {
+    this.completionPercentage = completionPercentage;
   }
 
   public void setCompletionPercentage(@javax.annotation.Nullable Double completionPercentage) {
-    this.completionPercentage = completionPercentage;
+    this.completionPercentage = JsonNullable.<Double>of(completionPercentage);
   }
 
 
   public TranscodingInfo width(@javax.annotation.Nullable Integer width) {
-    this.width = width;
+    this.width = JsonNullable.<Integer>of(width);
     return this;
   }
 
@@ -385,17 +435,30 @@ public class TranscodingInfo {
    * @return width
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getWidth() {
+        return width.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getWidth_JsonNullable() {
     return width;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_WIDTH)
+  public void setWidth_JsonNullable(JsonNullable<Integer> width) {
+    this.width = width;
   }
 
   public void setWidth(@javax.annotation.Nullable Integer width) {
-    this.width = width;
+    this.width = JsonNullable.<Integer>of(width);
   }
 
 
   public TranscodingInfo height(@javax.annotation.Nullable Integer height) {
-    this.height = height;
+    this.height = JsonNullable.<Integer>of(height);
     return this;
   }
 
@@ -404,17 +467,30 @@ public class TranscodingInfo {
    * @return height
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getHeight() {
+        return height.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getHeight_JsonNullable() {
     return height;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_HEIGHT)
+  public void setHeight_JsonNullable(JsonNullable<Integer> height) {
+    this.height = height;
   }
 
   public void setHeight(@javax.annotation.Nullable Integer height) {
-    this.height = height;
+    this.height = JsonNullable.<Integer>of(height);
   }
 
 
   public TranscodingInfo audioChannels(@javax.annotation.Nullable Integer audioChannels) {
-    this.audioChannels = audioChannels;
+    this.audioChannels = JsonNullable.<Integer>of(audioChannels);
     return this;
   }
 
@@ -423,17 +499,30 @@ public class TranscodingInfo {
    * @return audioChannels
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getAudioChannels() {
+        return audioChannels.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_AUDIO_CHANNELS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getAudioChannels_JsonNullable() {
     return audioChannels;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AUDIO_CHANNELS)
+  public void setAudioChannels_JsonNullable(JsonNullable<Integer> audioChannels) {
+    this.audioChannels = audioChannels;
   }
 
   public void setAudioChannels(@javax.annotation.Nullable Integer audioChannels) {
-    this.audioChannels = audioChannels;
+    this.audioChannels = JsonNullable.<Integer>of(audioChannels);
   }
 
 
   public TranscodingInfo hardwareAccelerationType(@javax.annotation.Nullable HardwareAccelerationType hardwareAccelerationType) {
-    this.hardwareAccelerationType = hardwareAccelerationType;
+    this.hardwareAccelerationType = JsonNullable.<HardwareAccelerationType>of(hardwareAccelerationType);
     return this;
   }
 
@@ -442,12 +531,25 @@ public class TranscodingInfo {
    * @return hardwareAccelerationType
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public HardwareAccelerationType getHardwareAccelerationType() {
+        return hardwareAccelerationType.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<HardwareAccelerationType> getHardwareAccelerationType_JsonNullable() {
     return hardwareAccelerationType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE)
+  public void setHardwareAccelerationType_JsonNullable(JsonNullable<HardwareAccelerationType> hardwareAccelerationType) {
+    this.hardwareAccelerationType = hardwareAccelerationType;
   }
 
   public void setHardwareAccelerationType(@javax.annotation.Nullable HardwareAccelerationType hardwareAccelerationType) {
-    this.hardwareAccelerationType = hardwareAccelerationType;
+    this.hardwareAccelerationType = JsonNullable.<HardwareAccelerationType>of(hardwareAccelerationType);
   }
 
 
@@ -469,16 +571,23 @@ public class TranscodingInfo {
    * @return transcodeReasons
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TRANSCODE_REASONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public TranscodeReasonsEnum getTranscodeReasons() {
     return transcodeReasons;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TRANSCODE_REASONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTranscodeReasons(@javax.annotation.Nullable TranscodeReasonsEnum transcodeReasons) {
     this.transcodeReasons = transcodeReasons;
   }
 
 
-
+  /**
+   * Return true if this TranscodingInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -488,18 +597,18 @@ public class TranscodingInfo {
       return false;
     }
     TranscodingInfo transcodingInfo = (TranscodingInfo) o;
-    return Objects.equals(this.audioCodec, transcodingInfo.audioCodec) &&
-        Objects.equals(this.videoCodec, transcodingInfo.videoCodec) &&
-        Objects.equals(this.container, transcodingInfo.container) &&
+    return equalsNullable(this.audioCodec, transcodingInfo.audioCodec) &&
+        equalsNullable(this.videoCodec, transcodingInfo.videoCodec) &&
+        equalsNullable(this.container, transcodingInfo.container) &&
         Objects.equals(this.isVideoDirect, transcodingInfo.isVideoDirect) &&
         Objects.equals(this.isAudioDirect, transcodingInfo.isAudioDirect) &&
-        Objects.equals(this.bitrate, transcodingInfo.bitrate) &&
-        Objects.equals(this.framerate, transcodingInfo.framerate) &&
-        Objects.equals(this.completionPercentage, transcodingInfo.completionPercentage) &&
-        Objects.equals(this.width, transcodingInfo.width) &&
-        Objects.equals(this.height, transcodingInfo.height) &&
-        Objects.equals(this.audioChannels, transcodingInfo.audioChannels) &&
-        Objects.equals(this.hardwareAccelerationType, transcodingInfo.hardwareAccelerationType) &&
+        equalsNullable(this.bitrate, transcodingInfo.bitrate) &&
+        equalsNullable(this.framerate, transcodingInfo.framerate) &&
+        equalsNullable(this.completionPercentage, transcodingInfo.completionPercentage) &&
+        equalsNullable(this.width, transcodingInfo.width) &&
+        equalsNullable(this.height, transcodingInfo.height) &&
+        equalsNullable(this.audioChannels, transcodingInfo.audioChannels) &&
+        equalsNullable(this.hardwareAccelerationType, transcodingInfo.hardwareAccelerationType) &&
         Objects.equals(this.transcodeReasons, transcodingInfo.transcodeReasons);
   }
 
@@ -509,7 +618,7 @@ public class TranscodingInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(audioCodec, videoCodec, container, isVideoDirect, isAudioDirect, bitrate, framerate, completionPercentage, width, height, audioChannels, hardwareAccelerationType, transcodeReasons);
+    return Objects.hash(hashCodeNullable(audioCodec), hashCodeNullable(videoCodec), hashCodeNullable(container), isVideoDirect, isAudioDirect, hashCodeNullable(bitrate), hashCodeNullable(framerate), hashCodeNullable(completionPercentage), hashCodeNullable(width), hashCodeNullable(height), hashCodeNullable(audioChannels), hashCodeNullable(hardwareAccelerationType), transcodeReasons);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -551,118 +660,110 @@ public class TranscodingInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("AudioCodec");
-    openapiFields.add("VideoCodec");
-    openapiFields.add("Container");
-    openapiFields.add("IsVideoDirect");
-    openapiFields.add("IsAudioDirect");
-    openapiFields.add("Bitrate");
-    openapiFields.add("Framerate");
-    openapiFields.add("CompletionPercentage");
-    openapiFields.add("Width");
-    openapiFields.add("Height");
-    openapiFields.add("AudioChannels");
-    openapiFields.add("HardwareAccelerationType");
-    openapiFields.add("TranscodeReasons");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to TranscodingInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!TranscodingInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in TranscodingInfo is not found in the empty JSON string", TranscodingInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!TranscodingInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `TranscodingInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("AudioCodec") != null && !jsonObj.get("AudioCodec").isJsonNull()) && !jsonObj.get("AudioCodec").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `AudioCodec` to be a primitive type in the JSON string but got `%s`", jsonObj.get("AudioCodec").toString()));
-      }
-      if ((jsonObj.get("VideoCodec") != null && !jsonObj.get("VideoCodec").isJsonNull()) && !jsonObj.get("VideoCodec").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `VideoCodec` to be a primitive type in the JSON string but got `%s`", jsonObj.get("VideoCodec").toString()));
-      }
-      if ((jsonObj.get("Container") != null && !jsonObj.get("Container").isJsonNull()) && !jsonObj.get("Container").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Container` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Container").toString()));
-      }
-      // validate the optional field `HardwareAccelerationType`
-      if (jsonObj.get("HardwareAccelerationType") != null && !jsonObj.get("HardwareAccelerationType").isJsonNull()) {
-        HardwareAccelerationType.validateJsonElement(jsonObj.get("HardwareAccelerationType"));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("TranscodeReasons") != null && !jsonObj.get("TranscodeReasons").isJsonNull() && !jsonObj.get("TranscodeReasons").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `TranscodeReasons` to be an array in the JSON string but got `%s`", jsonObj.get("TranscodeReasons").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!TranscodingInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'TranscodingInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<TranscodingInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(TranscodingInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<TranscodingInfo>() {
-           @Override
-           public void write(JsonWriter out, TranscodingInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public TranscodingInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of TranscodingInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of TranscodingInfo
-   * @throws IOException if the JSON string is invalid with respect to TranscodingInfo
-   */
-  public static TranscodingInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, TranscodingInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of TranscodingInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `AudioCodec` to the URL query string
+    if (getAudioCodec() != null) {
+      joiner.add(String.format("%sAudioCodec%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAudioCodec()))));
+    }
+
+    // add `VideoCodec` to the URL query string
+    if (getVideoCodec() != null) {
+      joiner.add(String.format("%sVideoCodec%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVideoCodec()))));
+    }
+
+    // add `Container` to the URL query string
+    if (getContainer() != null) {
+      joiner.add(String.format("%sContainer%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
+    }
+
+    // add `IsVideoDirect` to the URL query string
+    if (getIsVideoDirect() != null) {
+      joiner.add(String.format("%sIsVideoDirect%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsVideoDirect()))));
+    }
+
+    // add `IsAudioDirect` to the URL query string
+    if (getIsAudioDirect() != null) {
+      joiner.add(String.format("%sIsAudioDirect%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsAudioDirect()))));
+    }
+
+    // add `Bitrate` to the URL query string
+    if (getBitrate() != null) {
+      joiner.add(String.format("%sBitrate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBitrate()))));
+    }
+
+    // add `Framerate` to the URL query string
+    if (getFramerate() != null) {
+      joiner.add(String.format("%sFramerate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFramerate()))));
+    }
+
+    // add `CompletionPercentage` to the URL query string
+    if (getCompletionPercentage() != null) {
+      joiner.add(String.format("%sCompletionPercentage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCompletionPercentage()))));
+    }
+
+    // add `Width` to the URL query string
+    if (getWidth() != null) {
+      joiner.add(String.format("%sWidth%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
+    }
+
+    // add `Height` to the URL query string
+    if (getHeight() != null) {
+      joiner.add(String.format("%sHeight%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
+    }
+
+    // add `AudioChannels` to the URL query string
+    if (getAudioChannels() != null) {
+      joiner.add(String.format("%sAudioChannels%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAudioChannels()))));
+    }
+
+    // add `HardwareAccelerationType` to the URL query string
+    if (getHardwareAccelerationType() != null) {
+      joiner.add(String.format("%sHardwareAccelerationType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHardwareAccelerationType()))));
+    }
+
+    // add `TranscodeReasons` to the URL query string
+    if (getTranscodeReasons() != null) {
+      for (int i = 0; i < getTranscodeReasons().size(); i++) {
+        if (getTranscodeReasons().get(i) != null) {
+          joiner.add(String.format("%sTranscodeReasons%s%s=%s", prefix, suffix,
+              "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+              ApiClient.urlEncode(ApiClient.valueToString(getTranscodeReasons().get(i)))));
+        }
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

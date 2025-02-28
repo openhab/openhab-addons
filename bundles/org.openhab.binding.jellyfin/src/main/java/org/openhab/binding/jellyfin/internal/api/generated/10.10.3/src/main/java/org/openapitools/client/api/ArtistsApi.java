@@ -10,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import org.openapitools.client.model.BaseItemDto;
 import org.openapitools.client.model.BaseItemDtoQueryResult;
@@ -38,958 +29,603 @@ import org.openapitools.client.model.MediaType;
 import org.openapitools.client.model.SortOrder;
 import java.util.UUID;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ArtistsApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public ArtistsApi() {
-        this(Configuration.getDefaultApiClient());
+  public ArtistsApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public ArtistsApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Gets all album artists from a given item, folder, or the entire library.
+   * 
+   * @param minCommunityRating Optional filter by minimum community rating. (optional)
+   * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param searchTerm Optional. Search term. (optional)
+   * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows multiple, comma delimited. (optional)
+   * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
+   * @param filters Optional. Specify additional filters to apply. (optional)
+   * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
+   * @param mediaTypes Optional filter by MediaType. Allows multiple, comma delimited. (optional)
+   * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe delimited. (optional)
+   * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe delimited. (optional)
+   * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows multiple, pipe delimited. (optional)
+   * @param tags Optional. If specified, results will be filtered based on tag. This allows multiple, pipe delimited. (optional)
+   * @param years Optional. If specified, results will be filtered based on production year. This allows multiple, comma delimited. (optional)
+   * @param enableUserData Optional, include user data. (optional)
+   * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @param person Optional. If specified, results will be filtered to include only those containing the specified person. (optional)
+   * @param personIds Optional. If specified, results will be filtered to include only those containing the specified person ids. (optional)
+   * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those containing the specified person and PersonType. Allows multiple, comma-delimited. (optional)
+   * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe delimited. (optional)
+   * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe delimited. (optional)
+   * @param userId User id. (optional)
+   * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string. (optional)
+   * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
+   * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string. (optional)
+   * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
+   * @param sortOrder Sort Order - Ascending,Descending. (optional)
+   * @param enableImages Optional, include image information in output. (optional, default to true)
+   * @param enableTotalRecordCount Total record count. (optional, default to true)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getAlbumArtists(Double minCommunityRating, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<String> genres, List<UUID> genreIds, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<UUID> studioIds, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getAlbumArtistsWithHttpInfo(minCommunityRating, startIndex, limit, searchTerm, parentId, fields, excludeItemTypes, includeItemTypes, filters, isFavorite, mediaTypes, genres, genreIds, officialRatings, tags, years, enableUserData, imageTypeLimit, enableImageTypes, person, personIds, personTypes, studios, studioIds, userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets all album artists from a given item, folder, or the entire library.
+   * 
+   * @param minCommunityRating Optional filter by minimum community rating. (optional)
+   * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param searchTerm Optional. Search term. (optional)
+   * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows multiple, comma delimited. (optional)
+   * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
+   * @param filters Optional. Specify additional filters to apply. (optional)
+   * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
+   * @param mediaTypes Optional filter by MediaType. Allows multiple, comma delimited. (optional)
+   * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe delimited. (optional)
+   * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe delimited. (optional)
+   * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows multiple, pipe delimited. (optional)
+   * @param tags Optional. If specified, results will be filtered based on tag. This allows multiple, pipe delimited. (optional)
+   * @param years Optional. If specified, results will be filtered based on production year. This allows multiple, comma delimited. (optional)
+   * @param enableUserData Optional, include user data. (optional)
+   * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @param person Optional. If specified, results will be filtered to include only those containing the specified person. (optional)
+   * @param personIds Optional. If specified, results will be filtered to include only those containing the specified person ids. (optional)
+   * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those containing the specified person and PersonType. Allows multiple, comma-delimited. (optional)
+   * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe delimited. (optional)
+   * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe delimited. (optional)
+   * @param userId User id. (optional)
+   * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string. (optional)
+   * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
+   * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string. (optional)
+   * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
+   * @param sortOrder Sort Order - Ascending,Descending. (optional)
+   * @param enableImages Optional, include image information in output. (optional, default to true)
+   * @param enableTotalRecordCount Total record count. (optional, default to true)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getAlbumArtistsWithHttpInfo(Double minCommunityRating, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<String> genres, List<UUID> genreIds, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<UUID> studioIds, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getAlbumArtistsRequestBuilder(minCommunityRating, startIndex, limit, searchTerm, parentId, fields, excludeItemTypes, includeItemTypes, filters, isFavorite, mediaTypes, genres, genreIds, officialRatings, tags, years, enableUserData, imageTypeLimit, enableImageTypes, person, personIds, personTypes, studios, studioIds, userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getAlbumArtists", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getAlbumArtistsRequestBuilder(Double minCommunityRating, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<String> genres, List<UUID> genreIds, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<UUID> studioIds, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Artists/AlbumArtists";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "minCommunityRating";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("minCommunityRating", minCommunityRating));
+    localVarQueryParameterBaseName = "startIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("startIndex", startIndex));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "searchTerm";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("searchTerm", searchTerm));
+    localVarQueryParameterBaseName = "parentId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("parentId", parentId));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+    localVarQueryParameterBaseName = "excludeItemTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "excludeItemTypes", excludeItemTypes));
+    localVarQueryParameterBaseName = "includeItemTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
+    localVarQueryParameterBaseName = "filters";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "filters", filters));
+    localVarQueryParameterBaseName = "isFavorite";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isFavorite", isFavorite));
+    localVarQueryParameterBaseName = "mediaTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "mediaTypes", mediaTypes));
+    localVarQueryParameterBaseName = "genres";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "genres", genres));
+    localVarQueryParameterBaseName = "genreIds";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "genreIds", genreIds));
+    localVarQueryParameterBaseName = "officialRatings";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "officialRatings", officialRatings));
+    localVarQueryParameterBaseName = "tags";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "tags", tags));
+    localVarQueryParameterBaseName = "years";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "years", years));
+    localVarQueryParameterBaseName = "enableUserData";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
+    localVarQueryParameterBaseName = "imageTypeLimit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
+    localVarQueryParameterBaseName = "enableImageTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+    localVarQueryParameterBaseName = "person";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("person", person));
+    localVarQueryParameterBaseName = "personIds";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "personIds", personIds));
+    localVarQueryParameterBaseName = "personTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "personTypes", personTypes));
+    localVarQueryParameterBaseName = "studios";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "studios", studios));
+    localVarQueryParameterBaseName = "studioIds";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "studioIds", studioIds));
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "nameStartsWithOrGreater";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("nameStartsWithOrGreater", nameStartsWithOrGreater));
+    localVarQueryParameterBaseName = "nameStartsWith";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("nameStartsWith", nameStartsWith));
+    localVarQueryParameterBaseName = "nameLessThan";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("nameLessThan", nameLessThan));
+    localVarQueryParameterBaseName = "sortBy";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "sortBy", sortBy));
+    localVarQueryParameterBaseName = "sortOrder";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "sortOrder", sortOrder));
+    localVarQueryParameterBaseName = "enableImages";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
+    localVarQueryParameterBaseName = "enableTotalRecordCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableTotalRecordCount", enableTotalRecordCount));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public ArtistsApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets an artist by name.
+   * 
+   * @param name Studio name. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @return BaseItemDto
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDto getArtistByName(String name, UUID userId) throws ApiException {
+    ApiResponse<BaseItemDto> localVarResponse = getArtistByNameWithHttpInfo(name, userId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets an artist by name.
+   * 
+   * @param name Studio name. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @return ApiResponse&lt;BaseItemDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDto> getArtistByNameWithHttpInfo(String name, UUID userId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getArtistByNameRequestBuilder(name, userId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getArtistByName", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDto>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDto>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getArtistByNameRequestBuilder(String name, UUID userId) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling getArtistByName");
     }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Artists/{name}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets all artists from a given item, folder, or the entire library.
+   * 
+   * @param minCommunityRating Optional filter by minimum community rating. (optional)
+   * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param searchTerm Optional. Search term. (optional)
+   * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows multiple, comma delimited. (optional)
+   * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
+   * @param filters Optional. Specify additional filters to apply. (optional)
+   * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
+   * @param mediaTypes Optional filter by MediaType. Allows multiple, comma delimited. (optional)
+   * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe delimited. (optional)
+   * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe delimited. (optional)
+   * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows multiple, pipe delimited. (optional)
+   * @param tags Optional. If specified, results will be filtered based on tag. This allows multiple, pipe delimited. (optional)
+   * @param years Optional. If specified, results will be filtered based on production year. This allows multiple, comma delimited. (optional)
+   * @param enableUserData Optional, include user data. (optional)
+   * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @param person Optional. If specified, results will be filtered to include only those containing the specified person. (optional)
+   * @param personIds Optional. If specified, results will be filtered to include only those containing the specified person ids. (optional)
+   * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those containing the specified person and PersonType. Allows multiple, comma-delimited. (optional)
+   * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe delimited. (optional)
+   * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe delimited. (optional)
+   * @param userId User id. (optional)
+   * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string. (optional)
+   * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
+   * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string. (optional)
+   * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
+   * @param sortOrder Sort Order - Ascending,Descending. (optional)
+   * @param enableImages Optional, include image information in output. (optional, default to true)
+   * @param enableTotalRecordCount Total record count. (optional, default to true)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getArtists(Double minCommunityRating, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<String> genres, List<UUID> genreIds, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<UUID> studioIds, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getArtistsWithHttpInfo(minCommunityRating, startIndex, limit, searchTerm, parentId, fields, excludeItemTypes, includeItemTypes, filters, isFavorite, mediaTypes, genres, genreIds, officialRatings, tags, years, enableUserData, imageTypeLimit, enableImageTypes, person, personIds, personTypes, studios, studioIds, userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets all artists from a given item, folder, or the entire library.
+   * 
+   * @param minCommunityRating Optional filter by minimum community rating. (optional)
+   * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param searchTerm Optional. Search term. (optional)
+   * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows multiple, comma delimited. (optional)
+   * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
+   * @param filters Optional. Specify additional filters to apply. (optional)
+   * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
+   * @param mediaTypes Optional filter by MediaType. Allows multiple, comma delimited. (optional)
+   * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe delimited. (optional)
+   * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe delimited. (optional)
+   * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows multiple, pipe delimited. (optional)
+   * @param tags Optional. If specified, results will be filtered based on tag. This allows multiple, pipe delimited. (optional)
+   * @param years Optional. If specified, results will be filtered based on production year. This allows multiple, comma delimited. (optional)
+   * @param enableUserData Optional, include user data. (optional)
+   * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @param person Optional. If specified, results will be filtered to include only those containing the specified person. (optional)
+   * @param personIds Optional. If specified, results will be filtered to include only those containing the specified person ids. (optional)
+   * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those containing the specified person and PersonType. Allows multiple, comma-delimited. (optional)
+   * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe delimited. (optional)
+   * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe delimited. (optional)
+   * @param userId User id. (optional)
+   * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string. (optional)
+   * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
+   * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string. (optional)
+   * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
+   * @param sortOrder Sort Order - Ascending,Descending. (optional)
+   * @param enableImages Optional, include image information in output. (optional, default to true)
+   * @param enableTotalRecordCount Total record count. (optional, default to true)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getArtistsWithHttpInfo(Double minCommunityRating, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<String> genres, List<UUID> genreIds, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<UUID> studioIds, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getArtistsRequestBuilder(minCommunityRating, startIndex, limit, searchTerm, parentId, fields, excludeItemTypes, includeItemTypes, filters, isFavorite, mediaTypes, genres, genreIds, officialRatings, tags, years, enableUserData, imageTypeLimit, enableImageTypes, person, personIds, personTypes, studios, studioIds, userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getArtists", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getArtistsRequestBuilder(Double minCommunityRating, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<String> genres, List<UUID> genreIds, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<UUID> studioIds, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Artists";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "minCommunityRating";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("minCommunityRating", minCommunityRating));
+    localVarQueryParameterBaseName = "startIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("startIndex", startIndex));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "searchTerm";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("searchTerm", searchTerm));
+    localVarQueryParameterBaseName = "parentId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("parentId", parentId));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+    localVarQueryParameterBaseName = "excludeItemTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "excludeItemTypes", excludeItemTypes));
+    localVarQueryParameterBaseName = "includeItemTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
+    localVarQueryParameterBaseName = "filters";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "filters", filters));
+    localVarQueryParameterBaseName = "isFavorite";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isFavorite", isFavorite));
+    localVarQueryParameterBaseName = "mediaTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "mediaTypes", mediaTypes));
+    localVarQueryParameterBaseName = "genres";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "genres", genres));
+    localVarQueryParameterBaseName = "genreIds";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "genreIds", genreIds));
+    localVarQueryParameterBaseName = "officialRatings";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "officialRatings", officialRatings));
+    localVarQueryParameterBaseName = "tags";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "tags", tags));
+    localVarQueryParameterBaseName = "years";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "years", years));
+    localVarQueryParameterBaseName = "enableUserData";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
+    localVarQueryParameterBaseName = "imageTypeLimit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
+    localVarQueryParameterBaseName = "enableImageTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+    localVarQueryParameterBaseName = "person";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("person", person));
+    localVarQueryParameterBaseName = "personIds";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "personIds", personIds));
+    localVarQueryParameterBaseName = "personTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "personTypes", personTypes));
+    localVarQueryParameterBaseName = "studios";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "studios", studios));
+    localVarQueryParameterBaseName = "studioIds";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "studioIds", studioIds));
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "nameStartsWithOrGreater";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("nameStartsWithOrGreater", nameStartsWithOrGreater));
+    localVarQueryParameterBaseName = "nameStartsWith";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("nameStartsWith", nameStartsWith));
+    localVarQueryParameterBaseName = "nameLessThan";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("nameLessThan", nameLessThan));
+    localVarQueryParameterBaseName = "sortBy";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "sortBy", sortBy));
+    localVarQueryParameterBaseName = "sortOrder";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "sortOrder", sortOrder));
+    localVarQueryParameterBaseName = "enableImages";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
+    localVarQueryParameterBaseName = "enableTotalRecordCount";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableTotalRecordCount", enableTotalRecordCount));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public int getHostIndex() {
-        return localHostIndex;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for getAlbumArtists
-     * @param minCommunityRating Optional filter by minimum community rating. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param searchTerm Optional. Search term. (optional)
-     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows multiple, comma delimited. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
-     * @param mediaTypes Optional filter by MediaType. Allows multiple, comma delimited. (optional)
-     * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe delimited. (optional)
-     * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe delimited. (optional)
-     * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows multiple, pipe delimited. (optional)
-     * @param tags Optional. If specified, results will be filtered based on tag. This allows multiple, pipe delimited. (optional)
-     * @param years Optional. If specified, results will be filtered based on production year. This allows multiple, comma delimited. (optional)
-     * @param enableUserData Optional, include user data. (optional)
-     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param person Optional. If specified, results will be filtered to include only those containing the specified person. (optional)
-     * @param personIds Optional. If specified, results will be filtered to include only those containing the specified person ids. (optional)
-     * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those containing the specified person and PersonType. Allows multiple, comma-delimited. (optional)
-     * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe delimited. (optional)
-     * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe delimited. (optional)
-     * @param userId User id. (optional)
-     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string. (optional)
-     * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
-     * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string. (optional)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
-     * @param sortOrder Sort Order - Ascending,Descending. (optional)
-     * @param enableImages Optional, include image information in output. (optional, default to true)
-     * @param enableTotalRecordCount Total record count. (optional, default to true)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Album artists returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getAlbumArtistsCall(Double minCommunityRating, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<String> genres, List<UUID> genreIds, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<UUID> studioIds, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Artists/AlbumArtists";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (minCommunityRating != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("minCommunityRating", minCommunityRating));
-        }
-
-        if (startIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startIndex", startIndex));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (searchTerm != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("searchTerm", searchTerm));
-        }
-
-        if (parentId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("parentId", parentId));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        if (excludeItemTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "excludeItemTypes", excludeItemTypes));
-        }
-
-        if (includeItemTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
-        }
-
-        if (filters != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "filters", filters));
-        }
-
-        if (isFavorite != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isFavorite", isFavorite));
-        }
-
-        if (mediaTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "mediaTypes", mediaTypes));
-        }
-
-        if (genres != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "genres", genres));
-        }
-
-        if (genreIds != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "genreIds", genreIds));
-        }
-
-        if (officialRatings != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "officialRatings", officialRatings));
-        }
-
-        if (tags != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "tags", tags));
-        }
-
-        if (years != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "years", years));
-        }
-
-        if (enableUserData != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableUserData", enableUserData));
-        }
-
-        if (imageTypeLimit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageTypeLimit", imageTypeLimit));
-        }
-
-        if (enableImageTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        }
-
-        if (person != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("person", person));
-        }
-
-        if (personIds != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "personIds", personIds));
-        }
-
-        if (personTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "personTypes", personTypes));
-        }
-
-        if (studios != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "studios", studios));
-        }
-
-        if (studioIds != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "studioIds", studioIds));
-        }
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (nameStartsWithOrGreater != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("nameStartsWithOrGreater", nameStartsWithOrGreater));
-        }
-
-        if (nameStartsWith != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("nameStartsWith", nameStartsWith));
-        }
-
-        if (nameLessThan != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("nameLessThan", nameLessThan));
-        }
-
-        if (sortBy != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "sortBy", sortBy));
-        }
-
-        if (sortOrder != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "sortOrder", sortOrder));
-        }
-
-        if (enableImages != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableImages", enableImages));
-        }
-
-        if (enableTotalRecordCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableTotalRecordCount", enableTotalRecordCount));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getAlbumArtistsValidateBeforeCall(Double minCommunityRating, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<String> genres, List<UUID> genreIds, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<UUID> studioIds, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount, final ApiCallback _callback) throws ApiException {
-        return getAlbumArtistsCall(minCommunityRating, startIndex, limit, searchTerm, parentId, fields, excludeItemTypes, includeItemTypes, filters, isFavorite, mediaTypes, genres, genreIds, officialRatings, tags, years, enableUserData, imageTypeLimit, enableImageTypes, person, personIds, personTypes, studios, studioIds, userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount, _callback);
-
-    }
-
-    /**
-     * Gets all album artists from a given item, folder, or the entire library.
-     * 
-     * @param minCommunityRating Optional filter by minimum community rating. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param searchTerm Optional. Search term. (optional)
-     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows multiple, comma delimited. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
-     * @param mediaTypes Optional filter by MediaType. Allows multiple, comma delimited. (optional)
-     * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe delimited. (optional)
-     * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe delimited. (optional)
-     * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows multiple, pipe delimited. (optional)
-     * @param tags Optional. If specified, results will be filtered based on tag. This allows multiple, pipe delimited. (optional)
-     * @param years Optional. If specified, results will be filtered based on production year. This allows multiple, comma delimited. (optional)
-     * @param enableUserData Optional, include user data. (optional)
-     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param person Optional. If specified, results will be filtered to include only those containing the specified person. (optional)
-     * @param personIds Optional. If specified, results will be filtered to include only those containing the specified person ids. (optional)
-     * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those containing the specified person and PersonType. Allows multiple, comma-delimited. (optional)
-     * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe delimited. (optional)
-     * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe delimited. (optional)
-     * @param userId User id. (optional)
-     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string. (optional)
-     * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
-     * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string. (optional)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
-     * @param sortOrder Sort Order - Ascending,Descending. (optional)
-     * @param enableImages Optional, include image information in output. (optional, default to true)
-     * @param enableTotalRecordCount Total record count. (optional, default to true)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Album artists returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getAlbumArtists(Double minCommunityRating, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<String> genres, List<UUID> genreIds, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<UUID> studioIds, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getAlbumArtistsWithHttpInfo(minCommunityRating, startIndex, limit, searchTerm, parentId, fields, excludeItemTypes, includeItemTypes, filters, isFavorite, mediaTypes, genres, genreIds, officialRatings, tags, years, enableUserData, imageTypeLimit, enableImageTypes, person, personIds, personTypes, studios, studioIds, userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets all album artists from a given item, folder, or the entire library.
-     * 
-     * @param minCommunityRating Optional filter by minimum community rating. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param searchTerm Optional. Search term. (optional)
-     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows multiple, comma delimited. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
-     * @param mediaTypes Optional filter by MediaType. Allows multiple, comma delimited. (optional)
-     * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe delimited. (optional)
-     * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe delimited. (optional)
-     * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows multiple, pipe delimited. (optional)
-     * @param tags Optional. If specified, results will be filtered based on tag. This allows multiple, pipe delimited. (optional)
-     * @param years Optional. If specified, results will be filtered based on production year. This allows multiple, comma delimited. (optional)
-     * @param enableUserData Optional, include user data. (optional)
-     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param person Optional. If specified, results will be filtered to include only those containing the specified person. (optional)
-     * @param personIds Optional. If specified, results will be filtered to include only those containing the specified person ids. (optional)
-     * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those containing the specified person and PersonType. Allows multiple, comma-delimited. (optional)
-     * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe delimited. (optional)
-     * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe delimited. (optional)
-     * @param userId User id. (optional)
-     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string. (optional)
-     * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
-     * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string. (optional)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
-     * @param sortOrder Sort Order - Ascending,Descending. (optional)
-     * @param enableImages Optional, include image information in output. (optional, default to true)
-     * @param enableTotalRecordCount Total record count. (optional, default to true)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Album artists returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getAlbumArtistsWithHttpInfo(Double minCommunityRating, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<String> genres, List<UUID> genreIds, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<UUID> studioIds, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount) throws ApiException {
-        okhttp3.Call localVarCall = getAlbumArtistsValidateBeforeCall(minCommunityRating, startIndex, limit, searchTerm, parentId, fields, excludeItemTypes, includeItemTypes, filters, isFavorite, mediaTypes, genres, genreIds, officialRatings, tags, years, enableUserData, imageTypeLimit, enableImageTypes, person, personIds, personTypes, studios, studioIds, userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets all album artists from a given item, folder, or the entire library. (asynchronously)
-     * 
-     * @param minCommunityRating Optional filter by minimum community rating. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param searchTerm Optional. Search term. (optional)
-     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows multiple, comma delimited. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
-     * @param mediaTypes Optional filter by MediaType. Allows multiple, comma delimited. (optional)
-     * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe delimited. (optional)
-     * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe delimited. (optional)
-     * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows multiple, pipe delimited. (optional)
-     * @param tags Optional. If specified, results will be filtered based on tag. This allows multiple, pipe delimited. (optional)
-     * @param years Optional. If specified, results will be filtered based on production year. This allows multiple, comma delimited. (optional)
-     * @param enableUserData Optional, include user data. (optional)
-     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param person Optional. If specified, results will be filtered to include only those containing the specified person. (optional)
-     * @param personIds Optional. If specified, results will be filtered to include only those containing the specified person ids. (optional)
-     * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those containing the specified person and PersonType. Allows multiple, comma-delimited. (optional)
-     * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe delimited. (optional)
-     * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe delimited. (optional)
-     * @param userId User id. (optional)
-     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string. (optional)
-     * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
-     * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string. (optional)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
-     * @param sortOrder Sort Order - Ascending,Descending. (optional)
-     * @param enableImages Optional, include image information in output. (optional, default to true)
-     * @param enableTotalRecordCount Total record count. (optional, default to true)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Album artists returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getAlbumArtistsAsync(Double minCommunityRating, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<String> genres, List<UUID> genreIds, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<UUID> studioIds, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getAlbumArtistsValidateBeforeCall(minCommunityRating, startIndex, limit, searchTerm, parentId, fields, excludeItemTypes, includeItemTypes, filters, isFavorite, mediaTypes, genres, genreIds, officialRatings, tags, years, enableUserData, imageTypeLimit, enableImageTypes, person, personIds, personTypes, studios, studioIds, userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getArtistByName
-     * @param name Studio name. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Artist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getArtistByNameCall(String name, UUID userId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Artists/{name}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getArtistByNameValidateBeforeCall(String name, UUID userId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling getArtistByName(Async)");
-        }
-
-        return getArtistByNameCall(name, userId, _callback);
-
-    }
-
-    /**
-     * Gets an artist by name.
-     * 
-     * @param name Studio name. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @return BaseItemDto
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Artist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDto getArtistByName(String name, UUID userId) throws ApiException {
-        ApiResponse<BaseItemDto> localVarResp = getArtistByNameWithHttpInfo(name, userId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets an artist by name.
-     * 
-     * @param name Studio name. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @return ApiResponse&lt;BaseItemDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Artist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDto> getArtistByNameWithHttpInfo(String name, UUID userId) throws ApiException {
-        okhttp3.Call localVarCall = getArtistByNameValidateBeforeCall(name, userId, null);
-        Type localVarReturnType = new TypeToken<BaseItemDto>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets an artist by name. (asynchronously)
-     * 
-     * @param name Studio name. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Artist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getArtistByNameAsync(String name, UUID userId, final ApiCallback<BaseItemDto> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getArtistByNameValidateBeforeCall(name, userId, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDto>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getArtists
-     * @param minCommunityRating Optional filter by minimum community rating. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param searchTerm Optional. Search term. (optional)
-     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows multiple, comma delimited. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
-     * @param mediaTypes Optional filter by MediaType. Allows multiple, comma delimited. (optional)
-     * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe delimited. (optional)
-     * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe delimited. (optional)
-     * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows multiple, pipe delimited. (optional)
-     * @param tags Optional. If specified, results will be filtered based on tag. This allows multiple, pipe delimited. (optional)
-     * @param years Optional. If specified, results will be filtered based on production year. This allows multiple, comma delimited. (optional)
-     * @param enableUserData Optional, include user data. (optional)
-     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param person Optional. If specified, results will be filtered to include only those containing the specified person. (optional)
-     * @param personIds Optional. If specified, results will be filtered to include only those containing the specified person ids. (optional)
-     * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those containing the specified person and PersonType. Allows multiple, comma-delimited. (optional)
-     * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe delimited. (optional)
-     * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe delimited. (optional)
-     * @param userId User id. (optional)
-     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string. (optional)
-     * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
-     * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string. (optional)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
-     * @param sortOrder Sort Order - Ascending,Descending. (optional)
-     * @param enableImages Optional, include image information in output. (optional, default to true)
-     * @param enableTotalRecordCount Total record count. (optional, default to true)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Artists returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getArtistsCall(Double minCommunityRating, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<String> genres, List<UUID> genreIds, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<UUID> studioIds, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Artists";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (minCommunityRating != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("minCommunityRating", minCommunityRating));
-        }
-
-        if (startIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startIndex", startIndex));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (searchTerm != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("searchTerm", searchTerm));
-        }
-
-        if (parentId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("parentId", parentId));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        if (excludeItemTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "excludeItemTypes", excludeItemTypes));
-        }
-
-        if (includeItemTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
-        }
-
-        if (filters != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "filters", filters));
-        }
-
-        if (isFavorite != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isFavorite", isFavorite));
-        }
-
-        if (mediaTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "mediaTypes", mediaTypes));
-        }
-
-        if (genres != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "genres", genres));
-        }
-
-        if (genreIds != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "genreIds", genreIds));
-        }
-
-        if (officialRatings != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "officialRatings", officialRatings));
-        }
-
-        if (tags != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "tags", tags));
-        }
-
-        if (years != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "years", years));
-        }
-
-        if (enableUserData != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableUserData", enableUserData));
-        }
-
-        if (imageTypeLimit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageTypeLimit", imageTypeLimit));
-        }
-
-        if (enableImageTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        }
-
-        if (person != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("person", person));
-        }
-
-        if (personIds != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "personIds", personIds));
-        }
-
-        if (personTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "personTypes", personTypes));
-        }
-
-        if (studios != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "studios", studios));
-        }
-
-        if (studioIds != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "studioIds", studioIds));
-        }
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (nameStartsWithOrGreater != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("nameStartsWithOrGreater", nameStartsWithOrGreater));
-        }
-
-        if (nameStartsWith != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("nameStartsWith", nameStartsWith));
-        }
-
-        if (nameLessThan != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("nameLessThan", nameLessThan));
-        }
-
-        if (sortBy != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "sortBy", sortBy));
-        }
-
-        if (sortOrder != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "sortOrder", sortOrder));
-        }
-
-        if (enableImages != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableImages", enableImages));
-        }
-
-        if (enableTotalRecordCount != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableTotalRecordCount", enableTotalRecordCount));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getArtistsValidateBeforeCall(Double minCommunityRating, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<String> genres, List<UUID> genreIds, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<UUID> studioIds, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount, final ApiCallback _callback) throws ApiException {
-        return getArtistsCall(minCommunityRating, startIndex, limit, searchTerm, parentId, fields, excludeItemTypes, includeItemTypes, filters, isFavorite, mediaTypes, genres, genreIds, officialRatings, tags, years, enableUserData, imageTypeLimit, enableImageTypes, person, personIds, personTypes, studios, studioIds, userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount, _callback);
-
-    }
-
-    /**
-     * Gets all artists from a given item, folder, or the entire library.
-     * 
-     * @param minCommunityRating Optional filter by minimum community rating. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param searchTerm Optional. Search term. (optional)
-     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows multiple, comma delimited. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
-     * @param mediaTypes Optional filter by MediaType. Allows multiple, comma delimited. (optional)
-     * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe delimited. (optional)
-     * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe delimited. (optional)
-     * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows multiple, pipe delimited. (optional)
-     * @param tags Optional. If specified, results will be filtered based on tag. This allows multiple, pipe delimited. (optional)
-     * @param years Optional. If specified, results will be filtered based on production year. This allows multiple, comma delimited. (optional)
-     * @param enableUserData Optional, include user data. (optional)
-     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param person Optional. If specified, results will be filtered to include only those containing the specified person. (optional)
-     * @param personIds Optional. If specified, results will be filtered to include only those containing the specified person ids. (optional)
-     * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those containing the specified person and PersonType. Allows multiple, comma-delimited. (optional)
-     * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe delimited. (optional)
-     * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe delimited. (optional)
-     * @param userId User id. (optional)
-     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string. (optional)
-     * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
-     * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string. (optional)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
-     * @param sortOrder Sort Order - Ascending,Descending. (optional)
-     * @param enableImages Optional, include image information in output. (optional, default to true)
-     * @param enableTotalRecordCount Total record count. (optional, default to true)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Artists returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getArtists(Double minCommunityRating, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<String> genres, List<UUID> genreIds, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<UUID> studioIds, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getArtistsWithHttpInfo(minCommunityRating, startIndex, limit, searchTerm, parentId, fields, excludeItemTypes, includeItemTypes, filters, isFavorite, mediaTypes, genres, genreIds, officialRatings, tags, years, enableUserData, imageTypeLimit, enableImageTypes, person, personIds, personTypes, studios, studioIds, userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets all artists from a given item, folder, or the entire library.
-     * 
-     * @param minCommunityRating Optional filter by minimum community rating. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param searchTerm Optional. Search term. (optional)
-     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows multiple, comma delimited. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
-     * @param mediaTypes Optional filter by MediaType. Allows multiple, comma delimited. (optional)
-     * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe delimited. (optional)
-     * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe delimited. (optional)
-     * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows multiple, pipe delimited. (optional)
-     * @param tags Optional. If specified, results will be filtered based on tag. This allows multiple, pipe delimited. (optional)
-     * @param years Optional. If specified, results will be filtered based on production year. This allows multiple, comma delimited. (optional)
-     * @param enableUserData Optional, include user data. (optional)
-     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param person Optional. If specified, results will be filtered to include only those containing the specified person. (optional)
-     * @param personIds Optional. If specified, results will be filtered to include only those containing the specified person ids. (optional)
-     * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those containing the specified person and PersonType. Allows multiple, comma-delimited. (optional)
-     * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe delimited. (optional)
-     * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe delimited. (optional)
-     * @param userId User id. (optional)
-     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string. (optional)
-     * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
-     * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string. (optional)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
-     * @param sortOrder Sort Order - Ascending,Descending. (optional)
-     * @param enableImages Optional, include image information in output. (optional, default to true)
-     * @param enableTotalRecordCount Total record count. (optional, default to true)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Artists returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getArtistsWithHttpInfo(Double minCommunityRating, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<String> genres, List<UUID> genreIds, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<UUID> studioIds, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount) throws ApiException {
-        okhttp3.Call localVarCall = getArtistsValidateBeforeCall(minCommunityRating, startIndex, limit, searchTerm, parentId, fields, excludeItemTypes, includeItemTypes, filters, isFavorite, mediaTypes, genres, genreIds, officialRatings, tags, years, enableUserData, imageTypeLimit, enableImageTypes, person, personIds, personTypes, studios, studioIds, userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets all artists from a given item, folder, or the entire library. (asynchronously)
-     * 
-     * @param minCommunityRating Optional filter by minimum community rating. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param searchTerm Optional. Search term. (optional)
-     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows multiple, comma delimited. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
-     * @param mediaTypes Optional filter by MediaType. Allows multiple, comma delimited. (optional)
-     * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe delimited. (optional)
-     * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe delimited. (optional)
-     * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows multiple, pipe delimited. (optional)
-     * @param tags Optional. If specified, results will be filtered based on tag. This allows multiple, pipe delimited. (optional)
-     * @param years Optional. If specified, results will be filtered based on production year. This allows multiple, comma delimited. (optional)
-     * @param enableUserData Optional, include user data. (optional)
-     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param person Optional. If specified, results will be filtered to include only those containing the specified person. (optional)
-     * @param personIds Optional. If specified, results will be filtered to include only those containing the specified person ids. (optional)
-     * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those containing the specified person and PersonType. Allows multiple, comma-delimited. (optional)
-     * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe delimited. (optional)
-     * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe delimited. (optional)
-     * @param userId User id. (optional)
-     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given input string. (optional)
-     * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
-     * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string. (optional)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
-     * @param sortOrder Sort Order - Ascending,Descending. (optional)
-     * @param enableImages Optional, include image information in output. (optional, default to true)
-     * @param enableTotalRecordCount Total record count. (optional, default to true)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Artists returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getArtistsAsync(Double minCommunityRating, Integer startIndex, Integer limit, String searchTerm, UUID parentId, List<ItemFields> fields, List<BaseItemKind> excludeItemTypes, List<BaseItemKind> includeItemTypes, List<ItemFilter> filters, Boolean isFavorite, List<MediaType> mediaTypes, List<String> genres, List<UUID> genreIds, List<String> officialRatings, List<String> tags, List<Integer> years, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, String person, List<UUID> personIds, List<String> personTypes, List<String> studios, List<UUID> studioIds, UUID userId, String nameStartsWithOrGreater, String nameStartsWith, String nameLessThan, List<ItemSortBy> sortBy, List<SortOrder> sortOrder, Boolean enableImages, Boolean enableTotalRecordCount, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getArtistsValidateBeforeCall(minCommunityRating, startIndex, limit, searchTerm, parentId, fields, excludeItemTypes, includeItemTypes, filters, isFavorite, mediaTypes, genres, genreIds, officialRatings, tags, years, enableUserData, imageTypeLimit, enableImageTypes, person, personIds, personTypes, studios, studioIds, userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
 }

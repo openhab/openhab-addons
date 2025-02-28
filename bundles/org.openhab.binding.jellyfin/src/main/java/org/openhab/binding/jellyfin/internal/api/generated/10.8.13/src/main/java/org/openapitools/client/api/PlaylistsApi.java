@@ -10,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import org.openapitools.client.model.BaseItemDtoQueryResult;
 import org.openapitools.client.model.CreatePlaylistDto;
@@ -34,857 +25,593 @@ import org.openapitools.client.model.ItemFields;
 import org.openapitools.client.model.PlaylistCreationResult;
 import java.util.UUID;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PlaylistsApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public PlaylistsApi() {
-        this(Configuration.getDefaultApiClient());
+  public PlaylistsApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public PlaylistsApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Adds items to a playlist.
+   * 
+   * @param playlistId The playlist id. (required)
+   * @param ids Item id, comma delimited. (optional)
+   * @param userId The userId. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void addToPlaylist(UUID playlistId, List<UUID> ids, UUID userId) throws ApiException {
+    addToPlaylistWithHttpInfo(playlistId, ids, userId);
+  }
+
+  /**
+   * Adds items to a playlist.
+   * 
+   * @param playlistId The playlist id. (required)
+   * @param ids Item id, comma delimited. (optional)
+   * @param userId The userId. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> addToPlaylistWithHttpInfo(UUID playlistId, List<UUID> ids, UUID userId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = addToPlaylistRequestBuilder(playlistId, ids, userId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("addToPlaylist", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder addToPlaylistRequestBuilder(UUID playlistId, List<UUID> ids, UUID userId) throws ApiException {
+    // verify the required parameter 'playlistId' is set
+    if (playlistId == null) {
+      throw new ApiException(400, "Missing the required parameter 'playlistId' when calling addToPlaylist");
     }
 
-    public PlaylistsApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Playlists/{playlistId}/Items"
+        .replace("{playlistId}", ApiClient.urlEncode(playlistId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "ids";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "ids", ids));
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Creates a new playlist.
+   * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence.  Query parameters are obsolete.
+   * @param name The playlist name. (optional)
+   * @param ids The item ids. (optional)
+   * @param userId The user id. (optional)
+   * @param mediaType The media type. (optional)
+   * @param createPlaylistDto The create playlist payload. (optional)
+   * @return PlaylistCreationResult
+   * @throws ApiException if fails to make API call
+   */
+  public PlaylistCreationResult createPlaylist(String name, List<UUID> ids, UUID userId, String mediaType, CreatePlaylistDto createPlaylistDto) throws ApiException {
+    ApiResponse<PlaylistCreationResult> localVarResponse = createPlaylistWithHttpInfo(name, ids, userId, mediaType, createPlaylistDto);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Creates a new playlist.
+   * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence.  Query parameters are obsolete.
+   * @param name The playlist name. (optional)
+   * @param ids The item ids. (optional)
+   * @param userId The user id. (optional)
+   * @param mediaType The media type. (optional)
+   * @param createPlaylistDto The create playlist payload. (optional)
+   * @return ApiResponse&lt;PlaylistCreationResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<PlaylistCreationResult> createPlaylistWithHttpInfo(String name, List<UUID> ids, UUID userId, String mediaType, CreatePlaylistDto createPlaylistDto) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = createPlaylistRequestBuilder(name, ids, userId, mediaType, createPlaylistDto);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("createPlaylist", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<PlaylistCreationResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<PlaylistCreationResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PlaylistCreationResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder createPlaylistRequestBuilder(String name, List<UUID> ids, UUID userId, String mediaType, CreatePlaylistDto createPlaylistDto) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Playlists";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "name";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("name", name));
+    localVarQueryParameterBaseName = "ids";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "ids", ids));
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "mediaType";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("mediaType", mediaType));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(createPlaylistDto);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets the original items of a playlist.
+   * 
+   * @param playlistId The playlist id. (required)
+   * @param userId User id. (required)
+   * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param enableImages Optional. Include image information in output. (optional)
+   * @param enableUserData Optional. Include user data. (optional)
+   * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getPlaylistItems(UUID playlistId, UUID userId, Integer startIndex, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getPlaylistItemsWithHttpInfo(playlistId, userId, startIndex, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets the original items of a playlist.
+   * 
+   * @param playlistId The playlist id. (required)
+   * @param userId User id. (required)
+   * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param enableImages Optional. Include image information in output. (optional)
+   * @param enableUserData Optional. Include user data. (optional)
+   * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getPlaylistItemsWithHttpInfo(UUID playlistId, UUID userId, Integer startIndex, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getPlaylistItemsRequestBuilder(playlistId, userId, startIndex, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getPlaylistItems", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getPlaylistItemsRequestBuilder(UUID playlistId, UUID userId, Integer startIndex, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    // verify the required parameter 'playlistId' is set
+    if (playlistId == null) {
+      throw new ApiException(400, "Missing the required parameter 'playlistId' when calling getPlaylistItems");
+    }
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling getPlaylistItems");
     }
 
-    public int getHostIndex() {
-        return localHostIndex;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Playlists/{playlistId}/Items"
+        .replace("{playlistId}", ApiClient.urlEncode(playlistId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "startIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("startIndex", startIndex));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+    localVarQueryParameterBaseName = "enableImages";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
+    localVarQueryParameterBaseName = "enableUserData";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
+    localVarQueryParameterBaseName = "imageTypeLimit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
+    localVarQueryParameterBaseName = "enableImageTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Moves a playlist item.
+   * 
+   * @param playlistId The playlist id. (required)
+   * @param itemId The item id. (required)
+   * @param newIndex The new index. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void moveItem(String playlistId, String itemId, Integer newIndex) throws ApiException {
+    moveItemWithHttpInfo(playlistId, itemId, newIndex);
+  }
+
+  /**
+   * Moves a playlist item.
+   * 
+   * @param playlistId The playlist id. (required)
+   * @param itemId The item id. (required)
+   * @param newIndex The new index. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> moveItemWithHttpInfo(String playlistId, String itemId, Integer newIndex) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = moveItemRequestBuilder(playlistId, itemId, newIndex);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("moveItem", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder moveItemRequestBuilder(String playlistId, String itemId, Integer newIndex) throws ApiException {
+    // verify the required parameter 'playlistId' is set
+    if (playlistId == null) {
+      throw new ApiException(400, "Missing the required parameter 'playlistId' when calling moveItem");
+    }
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling moveItem");
+    }
+    // verify the required parameter 'newIndex' is set
+    if (newIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'newIndex' when calling moveItem");
     }
 
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Playlists/{playlistId}/Items/{itemId}/Move/{newIndex}"
+        .replace("{playlistId}", ApiClient.urlEncode(playlistId.toString()))
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{newIndex}", ApiClient.urlEncode(newIndex.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Removes items from a playlist.
+   * 
+   * @param playlistId The playlist id. (required)
+   * @param entryIds The item ids, comma delimited. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void removeFromPlaylist(String playlistId, List<String> entryIds) throws ApiException {
+    removeFromPlaylistWithHttpInfo(playlistId, entryIds);
+  }
+
+  /**
+   * Removes items from a playlist.
+   * 
+   * @param playlistId The playlist id. (required)
+   * @param entryIds The item ids, comma delimited. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> removeFromPlaylistWithHttpInfo(String playlistId, List<String> entryIds) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = removeFromPlaylistRequestBuilder(playlistId, entryIds);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("removeFromPlaylist", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder removeFromPlaylistRequestBuilder(String playlistId, List<String> entryIds) throws ApiException {
+    // verify the required parameter 'playlistId' is set
+    if (playlistId == null) {
+      throw new ApiException(400, "Missing the required parameter 'playlistId' when calling removeFromPlaylist");
     }
 
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Playlists/{playlistId}/Items"
+        .replace("{playlistId}", ApiClient.urlEncode(playlistId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "entryIds";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "entryIds", entryIds));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Build call for addToPlaylist
-     * @param playlistId The playlist id. (required)
-     * @param ids Item id, comma delimited. (optional)
-     * @param userId The userId. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items added to playlist. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call addToPlaylistCall(UUID playlistId, List<UUID> ids, UUID userId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
+    localVarRequestBuilder.header("Accept", "application/json");
 
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Playlists/{playlistId}/Items"
-            .replace("{" + "playlistId" + "}", localVarApiClient.escapeString(playlistId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (ids != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "ids", ids));
-        }
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call addToPlaylistValidateBeforeCall(UUID playlistId, List<UUID> ids, UUID userId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'playlistId' is set
-        if (playlistId == null) {
-            throw new ApiException("Missing the required parameter 'playlistId' when calling addToPlaylist(Async)");
-        }
-
-        return addToPlaylistCall(playlistId, ids, userId, _callback);
-
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    /**
-     * Adds items to a playlist.
-     * 
-     * @param playlistId The playlist id. (required)
-     * @param ids Item id, comma delimited. (optional)
-     * @param userId The userId. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items added to playlist. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void addToPlaylist(UUID playlistId, List<UUID> ids, UUID userId) throws ApiException {
-        addToPlaylistWithHttpInfo(playlistId, ids, userId);
-    }
-
-    /**
-     * Adds items to a playlist.
-     * 
-     * @param playlistId The playlist id. (required)
-     * @param ids Item id, comma delimited. (optional)
-     * @param userId The userId. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items added to playlist. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> addToPlaylistWithHttpInfo(UUID playlistId, List<UUID> ids, UUID userId) throws ApiException {
-        okhttp3.Call localVarCall = addToPlaylistValidateBeforeCall(playlistId, ids, userId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Adds items to a playlist. (asynchronously)
-     * 
-     * @param playlistId The playlist id. (required)
-     * @param ids Item id, comma delimited. (optional)
-     * @param userId The userId. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items added to playlist. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call addToPlaylistAsync(UUID playlistId, List<UUID> ids, UUID userId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = addToPlaylistValidateBeforeCall(playlistId, ids, userId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for createPlaylist
-     * @param name The playlist name. (optional)
-     * @param ids The item ids. (optional)
-     * @param userId The user id. (optional)
-     * @param mediaType The media type. (optional)
-     * @param createPlaylistDto The create playlist payload. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Success </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call createPlaylistCall(String name, List<UUID> ids, UUID userId, String mediaType, CreatePlaylistDto createPlaylistDto, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = createPlaylistDto;
-
-        // create path and map variables
-        String localVarPath = "/Playlists";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (name != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("name", name));
-        }
-
-        if (ids != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "ids", ids));
-        }
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (mediaType != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("mediaType", mediaType));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call createPlaylistValidateBeforeCall(String name, List<UUID> ids, UUID userId, String mediaType, CreatePlaylistDto createPlaylistDto, final ApiCallback _callback) throws ApiException {
-        return createPlaylistCall(name, ids, userId, mediaType, createPlaylistDto, _callback);
-
-    }
-
-    /**
-     * Creates a new playlist.
-     * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence.  Query parameters are obsolete.
-     * @param name The playlist name. (optional)
-     * @param ids The item ids. (optional)
-     * @param userId The user id. (optional)
-     * @param mediaType The media type. (optional)
-     * @param createPlaylistDto The create playlist payload. (optional)
-     * @return PlaylistCreationResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Success </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public PlaylistCreationResult createPlaylist(String name, List<UUID> ids, UUID userId, String mediaType, CreatePlaylistDto createPlaylistDto) throws ApiException {
-        ApiResponse<PlaylistCreationResult> localVarResp = createPlaylistWithHttpInfo(name, ids, userId, mediaType, createPlaylistDto);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Creates a new playlist.
-     * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence.  Query parameters are obsolete.
-     * @param name The playlist name. (optional)
-     * @param ids The item ids. (optional)
-     * @param userId The user id. (optional)
-     * @param mediaType The media type. (optional)
-     * @param createPlaylistDto The create playlist payload. (optional)
-     * @return ApiResponse&lt;PlaylistCreationResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Success </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<PlaylistCreationResult> createPlaylistWithHttpInfo(String name, List<UUID> ids, UUID userId, String mediaType, CreatePlaylistDto createPlaylistDto) throws ApiException {
-        okhttp3.Call localVarCall = createPlaylistValidateBeforeCall(name, ids, userId, mediaType, createPlaylistDto, null);
-        Type localVarReturnType = new TypeToken<PlaylistCreationResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Creates a new playlist. (asynchronously)
-     * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence.  Query parameters are obsolete.
-     * @param name The playlist name. (optional)
-     * @param ids The item ids. (optional)
-     * @param userId The user id. (optional)
-     * @param mediaType The media type. (optional)
-     * @param createPlaylistDto The create playlist payload. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Success </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call createPlaylistAsync(String name, List<UUID> ids, UUID userId, String mediaType, CreatePlaylistDto createPlaylistDto, final ApiCallback<PlaylistCreationResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = createPlaylistValidateBeforeCall(name, ids, userId, mediaType, createPlaylistDto, _callback);
-        Type localVarReturnType = new TypeToken<PlaylistCreationResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getPlaylistItems
-     * @param playlistId The playlist id. (required)
-     * @param userId User id. (required)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Original playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Playlist not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPlaylistItemsCall(UUID playlistId, UUID userId, Integer startIndex, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Playlists/{playlistId}/Items"
-            .replace("{" + "playlistId" + "}", localVarApiClient.escapeString(playlistId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (startIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startIndex", startIndex));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        if (enableImages != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableImages", enableImages));
-        }
-
-        if (enableUserData != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableUserData", enableUserData));
-        }
-
-        if (imageTypeLimit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageTypeLimit", imageTypeLimit));
-        }
-
-        if (enableImageTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getPlaylistItemsValidateBeforeCall(UUID playlistId, UUID userId, Integer startIndex, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'playlistId' is set
-        if (playlistId == null) {
-            throw new ApiException("Missing the required parameter 'playlistId' when calling getPlaylistItems(Async)");
-        }
-
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling getPlaylistItems(Async)");
-        }
-
-        return getPlaylistItemsCall(playlistId, userId, startIndex, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, _callback);
-
-    }
-
-    /**
-     * Gets the original items of a playlist.
-     * 
-     * @param playlistId The playlist id. (required)
-     * @param userId User id. (required)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Original playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Playlist not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getPlaylistItems(UUID playlistId, UUID userId, Integer startIndex, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getPlaylistItemsWithHttpInfo(playlistId, userId, startIndex, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets the original items of a playlist.
-     * 
-     * @param playlistId The playlist id. (required)
-     * @param userId User id. (required)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Original playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Playlist not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getPlaylistItemsWithHttpInfo(UUID playlistId, UUID userId, Integer startIndex, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
-        okhttp3.Call localVarCall = getPlaylistItemsValidateBeforeCall(playlistId, userId, startIndex, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets the original items of a playlist. (asynchronously)
-     * 
-     * @param playlistId The playlist id. (required)
-     * @param userId User id. (required)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Original playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Playlist not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPlaylistItemsAsync(UUID playlistId, UUID userId, Integer startIndex, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getPlaylistItemsValidateBeforeCall(playlistId, userId, startIndex, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for moveItem
-     * @param playlistId The playlist id. (required)
-     * @param itemId The item id. (required)
-     * @param newIndex The new index. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Item moved to new index. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call moveItemCall(String playlistId, String itemId, Integer newIndex, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Playlists/{playlistId}/Items/{itemId}/Move/{newIndex}"
-            .replace("{" + "playlistId" + "}", localVarApiClient.escapeString(playlistId.toString()))
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "newIndex" + "}", localVarApiClient.escapeString(newIndex.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call moveItemValidateBeforeCall(String playlistId, String itemId, Integer newIndex, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'playlistId' is set
-        if (playlistId == null) {
-            throw new ApiException("Missing the required parameter 'playlistId' when calling moveItem(Async)");
-        }
-
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling moveItem(Async)");
-        }
-
-        // verify the required parameter 'newIndex' is set
-        if (newIndex == null) {
-            throw new ApiException("Missing the required parameter 'newIndex' when calling moveItem(Async)");
-        }
-
-        return moveItemCall(playlistId, itemId, newIndex, _callback);
-
-    }
-
-    /**
-     * Moves a playlist item.
-     * 
-     * @param playlistId The playlist id. (required)
-     * @param itemId The item id. (required)
-     * @param newIndex The new index. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Item moved to new index. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void moveItem(String playlistId, String itemId, Integer newIndex) throws ApiException {
-        moveItemWithHttpInfo(playlistId, itemId, newIndex);
-    }
-
-    /**
-     * Moves a playlist item.
-     * 
-     * @param playlistId The playlist id. (required)
-     * @param itemId The item id. (required)
-     * @param newIndex The new index. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Item moved to new index. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> moveItemWithHttpInfo(String playlistId, String itemId, Integer newIndex) throws ApiException {
-        okhttp3.Call localVarCall = moveItemValidateBeforeCall(playlistId, itemId, newIndex, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Moves a playlist item. (asynchronously)
-     * 
-     * @param playlistId The playlist id. (required)
-     * @param itemId The item id. (required)
-     * @param newIndex The new index. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Item moved to new index. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call moveItemAsync(String playlistId, String itemId, Integer newIndex, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = moveItemValidateBeforeCall(playlistId, itemId, newIndex, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for removeFromPlaylist
-     * @param playlistId The playlist id. (required)
-     * @param entryIds The item ids, comma delimited. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items removed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call removeFromPlaylistCall(String playlistId, List<String> entryIds, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Playlists/{playlistId}/Items"
-            .replace("{" + "playlistId" + "}", localVarApiClient.escapeString(playlistId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (entryIds != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "entryIds", entryIds));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call removeFromPlaylistValidateBeforeCall(String playlistId, List<String> entryIds, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'playlistId' is set
-        if (playlistId == null) {
-            throw new ApiException("Missing the required parameter 'playlistId' when calling removeFromPlaylist(Async)");
-        }
-
-        return removeFromPlaylistCall(playlistId, entryIds, _callback);
-
-    }
-
-    /**
-     * Removes items from a playlist.
-     * 
-     * @param playlistId The playlist id. (required)
-     * @param entryIds The item ids, comma delimited. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items removed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void removeFromPlaylist(String playlistId, List<String> entryIds) throws ApiException {
-        removeFromPlaylistWithHttpInfo(playlistId, entryIds);
-    }
-
-    /**
-     * Removes items from a playlist.
-     * 
-     * @param playlistId The playlist id. (required)
-     * @param entryIds The item ids, comma delimited. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items removed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> removeFromPlaylistWithHttpInfo(String playlistId, List<String> entryIds) throws ApiException {
-        okhttp3.Call localVarCall = removeFromPlaylistValidateBeforeCall(playlistId, entryIds, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Removes items from a playlist. (asynchronously)
-     * 
-     * @param playlistId The playlist id. (required)
-     * @param entryIds The item ids, comma delimited. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items removed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call removeFromPlaylistAsync(String playlistId, List<String> entryIds, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = removeFromPlaylistValidateBeforeCall(playlistId, entryIds, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
 }

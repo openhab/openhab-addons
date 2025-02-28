@@ -13,20 +13,21 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.annotations.SerializedName;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import java.io.IOException;
-import com.google.gson.TypeAdapter;
-import com.google.gson.JsonElement;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Gets or Sets ChannelItemSortField
  */
-@JsonAdapter(ChannelItemSortField.Adapter.class)
 public enum ChannelItemSortField {
   
   NAME("Name"),
@@ -49,6 +50,7 @@ public enum ChannelItemSortField {
     this.value = value;
   }
 
+  @JsonValue
   public String getValue() {
     return value;
   }
@@ -58,6 +60,7 @@ public enum ChannelItemSortField {
     return String.valueOf(value);
   }
 
+  @JsonCreator
   public static ChannelItemSortField fromValue(String value) {
     for (ChannelItemSortField b : ChannelItemSortField.values()) {
       if (b.value.equals(value)) {
@@ -67,22 +70,19 @@ public enum ChannelItemSortField {
     throw new IllegalArgumentException("Unexpected value '" + value + "'");
   }
 
-  public static class Adapter extends TypeAdapter<ChannelItemSortField> {
-    @Override
-    public void write(final JsonWriter jsonWriter, final ChannelItemSortField enumeration) throws IOException {
-      jsonWriter.value(enumeration.getValue());
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @param prefix prefix of the query string
+   * @return URL query string
+   */
+  public String toUrlQueryString(String prefix) {
+    if (prefix == null) {
+      prefix = "";
     }
 
-    @Override
-    public ChannelItemSortField read(final JsonReader jsonReader) throws IOException {
-      String value = jsonReader.nextString();
-      return ChannelItemSortField.fromValue(value);
-    }
+    return String.format("%s=%s", prefix, this.toString());
   }
 
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-    String value = jsonElement.getAsString();
-    ChannelItemSortField.fromValue(value);
-  }
 }
 

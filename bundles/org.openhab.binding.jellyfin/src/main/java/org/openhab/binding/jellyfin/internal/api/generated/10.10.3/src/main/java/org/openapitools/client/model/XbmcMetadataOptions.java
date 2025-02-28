@@ -13,74 +13,62 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * XbmcMetadataOptions
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  XbmcMetadataOptions.JSON_PROPERTY_USER_ID,
+  XbmcMetadataOptions.JSON_PROPERTY_RELEASE_DATE_FORMAT,
+  XbmcMetadataOptions.JSON_PROPERTY_SAVE_IMAGE_PATHS_IN_NFO,
+  XbmcMetadataOptions.JSON_PROPERTY_ENABLE_PATH_SUBSTITUTION,
+  XbmcMetadataOptions.JSON_PROPERTY_ENABLE_EXTRA_THUMBS_DUPLICATION
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class XbmcMetadataOptions {
-  public static final String SERIALIZED_NAME_USER_ID = "UserId";
-  @SerializedName(SERIALIZED_NAME_USER_ID)
-  @javax.annotation.Nullable
-  private String userId;
+  public static final String JSON_PROPERTY_USER_ID = "UserId";
+  private JsonNullable<String> userId = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_RELEASE_DATE_FORMAT = "ReleaseDateFormat";
-  @SerializedName(SERIALIZED_NAME_RELEASE_DATE_FORMAT)
+  public static final String JSON_PROPERTY_RELEASE_DATE_FORMAT = "ReleaseDateFormat";
   @javax.annotation.Nullable
   private String releaseDateFormat;
 
-  public static final String SERIALIZED_NAME_SAVE_IMAGE_PATHS_IN_NFO = "SaveImagePathsInNfo";
-  @SerializedName(SERIALIZED_NAME_SAVE_IMAGE_PATHS_IN_NFO)
+  public static final String JSON_PROPERTY_SAVE_IMAGE_PATHS_IN_NFO = "SaveImagePathsInNfo";
   @javax.annotation.Nullable
   private Boolean saveImagePathsInNfo;
 
-  public static final String SERIALIZED_NAME_ENABLE_PATH_SUBSTITUTION = "EnablePathSubstitution";
-  @SerializedName(SERIALIZED_NAME_ENABLE_PATH_SUBSTITUTION)
+  public static final String JSON_PROPERTY_ENABLE_PATH_SUBSTITUTION = "EnablePathSubstitution";
   @javax.annotation.Nullable
   private Boolean enablePathSubstitution;
 
-  public static final String SERIALIZED_NAME_ENABLE_EXTRA_THUMBS_DUPLICATION = "EnableExtraThumbsDuplication";
-  @SerializedName(SERIALIZED_NAME_ENABLE_EXTRA_THUMBS_DUPLICATION)
+  public static final String JSON_PROPERTY_ENABLE_EXTRA_THUMBS_DUPLICATION = "EnableExtraThumbsDuplication";
   @javax.annotation.Nullable
   private Boolean enableExtraThumbsDuplication;
 
-  public XbmcMetadataOptions() {
+  public XbmcMetadataOptions() { 
   }
 
   public XbmcMetadataOptions userId(@javax.annotation.Nullable String userId) {
-    this.userId = userId;
+    this.userId = JsonNullable.<String>of(userId);
     return this;
   }
 
@@ -89,12 +77,25 @@ public class XbmcMetadataOptions {
    * @return userId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getUserId() {
+        return userId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getUserId_JsonNullable() {
     return userId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  public void setUserId_JsonNullable(JsonNullable<String> userId) {
+    this.userId = userId;
   }
 
   public void setUserId(@javax.annotation.Nullable String userId) {
-    this.userId = userId;
+    this.userId = JsonNullable.<String>of(userId);
   }
 
 
@@ -108,10 +109,15 @@ public class XbmcMetadataOptions {
    * @return releaseDateFormat
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_RELEASE_DATE_FORMAT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getReleaseDateFormat() {
     return releaseDateFormat;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_RELEASE_DATE_FORMAT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setReleaseDateFormat(@javax.annotation.Nullable String releaseDateFormat) {
     this.releaseDateFormat = releaseDateFormat;
   }
@@ -127,10 +133,15 @@ public class XbmcMetadataOptions {
    * @return saveImagePathsInNfo
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SAVE_IMAGE_PATHS_IN_NFO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSaveImagePathsInNfo() {
     return saveImagePathsInNfo;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SAVE_IMAGE_PATHS_IN_NFO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSaveImagePathsInNfo(@javax.annotation.Nullable Boolean saveImagePathsInNfo) {
     this.saveImagePathsInNfo = saveImagePathsInNfo;
   }
@@ -146,10 +157,15 @@ public class XbmcMetadataOptions {
    * @return enablePathSubstitution
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_PATH_SUBSTITUTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnablePathSubstitution() {
     return enablePathSubstitution;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_PATH_SUBSTITUTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnablePathSubstitution(@javax.annotation.Nullable Boolean enablePathSubstitution) {
     this.enablePathSubstitution = enablePathSubstitution;
   }
@@ -165,16 +181,23 @@ public class XbmcMetadataOptions {
    * @return enableExtraThumbsDuplication
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_EXTRA_THUMBS_DUPLICATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableExtraThumbsDuplication() {
     return enableExtraThumbsDuplication;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_EXTRA_THUMBS_DUPLICATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableExtraThumbsDuplication(@javax.annotation.Nullable Boolean enableExtraThumbsDuplication) {
     this.enableExtraThumbsDuplication = enableExtraThumbsDuplication;
   }
 
 
-
+  /**
+   * Return true if this XbmcMetadataOptions object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -184,7 +207,7 @@ public class XbmcMetadataOptions {
       return false;
     }
     XbmcMetadataOptions xbmcMetadataOptions = (XbmcMetadataOptions) o;
-    return Objects.equals(this.userId, xbmcMetadataOptions.userId) &&
+    return equalsNullable(this.userId, xbmcMetadataOptions.userId) &&
         Objects.equals(this.releaseDateFormat, xbmcMetadataOptions.releaseDateFormat) &&
         Objects.equals(this.saveImagePathsInNfo, xbmcMetadataOptions.saveImagePathsInNfo) &&
         Objects.equals(this.enablePathSubstitution, xbmcMetadataOptions.enablePathSubstitution) &&
@@ -197,7 +220,7 @@ public class XbmcMetadataOptions {
 
   @Override
   public int hashCode() {
-    return Objects.hash(userId, releaseDateFormat, saveImagePathsInNfo, enablePathSubstitution, enableExtraThumbsDuplication);
+    return Objects.hash(hashCodeNullable(userId), releaseDateFormat, saveImagePathsInNfo, enablePathSubstitution, enableExtraThumbsDuplication);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -231,99 +254,64 @@ public class XbmcMetadataOptions {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("UserId");
-    openapiFields.add("ReleaseDateFormat");
-    openapiFields.add("SaveImagePathsInNfo");
-    openapiFields.add("EnablePathSubstitution");
-    openapiFields.add("EnableExtraThumbsDuplication");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to XbmcMetadataOptions
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!XbmcMetadataOptions.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in XbmcMetadataOptions is not found in the empty JSON string", XbmcMetadataOptions.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!XbmcMetadataOptions.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `XbmcMetadataOptions` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("UserId") != null && !jsonObj.get("UserId").isJsonNull()) && !jsonObj.get("UserId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `UserId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("UserId").toString()));
-      }
-      if ((jsonObj.get("ReleaseDateFormat") != null && !jsonObj.get("ReleaseDateFormat").isJsonNull()) && !jsonObj.get("ReleaseDateFormat").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ReleaseDateFormat` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ReleaseDateFormat").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!XbmcMetadataOptions.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'XbmcMetadataOptions' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<XbmcMetadataOptions> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(XbmcMetadataOptions.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<XbmcMetadataOptions>() {
-           @Override
-           public void write(JsonWriter out, XbmcMetadataOptions value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public XbmcMetadataOptions read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of XbmcMetadataOptions given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of XbmcMetadataOptions
-   * @throws IOException if the JSON string is invalid with respect to XbmcMetadataOptions
-   */
-  public static XbmcMetadataOptions fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, XbmcMetadataOptions.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of XbmcMetadataOptions to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `UserId` to the URL query string
+    if (getUserId() != null) {
+      joiner.add(String.format("%sUserId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
+    }
+
+    // add `ReleaseDateFormat` to the URL query string
+    if (getReleaseDateFormat() != null) {
+      joiner.add(String.format("%sReleaseDateFormat%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getReleaseDateFormat()))));
+    }
+
+    // add `SaveImagePathsInNfo` to the URL query string
+    if (getSaveImagePathsInNfo() != null) {
+      joiner.add(String.format("%sSaveImagePathsInNfo%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSaveImagePathsInNfo()))));
+    }
+
+    // add `EnablePathSubstitution` to the URL query string
+    if (getEnablePathSubstitution() != null) {
+      joiner.add(String.format("%sEnablePathSubstitution%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnablePathSubstitution()))));
+    }
+
+    // add `EnableExtraThumbsDuplication` to the URL query string
+    if (getEnableExtraThumbsDuplication() != null) {
+      joiner.add(String.format("%sEnableExtraThumbsDuplication%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableExtraThumbsDuplication()))));
+    }
+
+    return joiner.toString();
   }
 }
 

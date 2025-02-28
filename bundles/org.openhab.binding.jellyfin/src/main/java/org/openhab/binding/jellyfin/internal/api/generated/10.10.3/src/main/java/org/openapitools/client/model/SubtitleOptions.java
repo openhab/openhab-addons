@@ -13,92 +13,78 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * SubtitleOptions
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  SubtitleOptions.JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT,
+  SubtitleOptions.JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES,
+  SubtitleOptions.JSON_PROPERTY_DOWNLOAD_LANGUAGES,
+  SubtitleOptions.JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES,
+  SubtitleOptions.JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES,
+  SubtitleOptions.JSON_PROPERTY_OPEN_SUBTITLES_USERNAME,
+  SubtitleOptions.JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH,
+  SubtitleOptions.JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT,
+  SubtitleOptions.JSON_PROPERTY_REQUIRE_PERFECT_MATCH
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class SubtitleOptions {
-  public static final String SERIALIZED_NAME_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT = "SkipIfEmbeddedSubtitlesPresent";
-  @SerializedName(SERIALIZED_NAME_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT)
+  public static final String JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT = "SkipIfEmbeddedSubtitlesPresent";
   @javax.annotation.Nullable
   private Boolean skipIfEmbeddedSubtitlesPresent;
 
-  public static final String SERIALIZED_NAME_SKIP_IF_AUDIO_TRACK_MATCHES = "SkipIfAudioTrackMatches";
-  @SerializedName(SERIALIZED_NAME_SKIP_IF_AUDIO_TRACK_MATCHES)
+  public static final String JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES = "SkipIfAudioTrackMatches";
   @javax.annotation.Nullable
   private Boolean skipIfAudioTrackMatches;
 
-  public static final String SERIALIZED_NAME_DOWNLOAD_LANGUAGES = "DownloadLanguages";
-  @SerializedName(SERIALIZED_NAME_DOWNLOAD_LANGUAGES)
-  @javax.annotation.Nullable
-  private List<String> downloadLanguages;
+  public static final String JSON_PROPERTY_DOWNLOAD_LANGUAGES = "DownloadLanguages";
+  private JsonNullable<List<String>> downloadLanguages = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_DOWNLOAD_MOVIE_SUBTITLES = "DownloadMovieSubtitles";
-  @SerializedName(SERIALIZED_NAME_DOWNLOAD_MOVIE_SUBTITLES)
+  public static final String JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES = "DownloadMovieSubtitles";
   @javax.annotation.Nullable
   private Boolean downloadMovieSubtitles;
 
-  public static final String SERIALIZED_NAME_DOWNLOAD_EPISODE_SUBTITLES = "DownloadEpisodeSubtitles";
-  @SerializedName(SERIALIZED_NAME_DOWNLOAD_EPISODE_SUBTITLES)
+  public static final String JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES = "DownloadEpisodeSubtitles";
   @javax.annotation.Nullable
   private Boolean downloadEpisodeSubtitles;
 
-  public static final String SERIALIZED_NAME_OPEN_SUBTITLES_USERNAME = "OpenSubtitlesUsername";
-  @SerializedName(SERIALIZED_NAME_OPEN_SUBTITLES_USERNAME)
-  @javax.annotation.Nullable
-  private String openSubtitlesUsername;
+  public static final String JSON_PROPERTY_OPEN_SUBTITLES_USERNAME = "OpenSubtitlesUsername";
+  private JsonNullable<String> openSubtitlesUsername = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_OPEN_SUBTITLES_PASSWORD_HASH = "OpenSubtitlesPasswordHash";
-  @SerializedName(SERIALIZED_NAME_OPEN_SUBTITLES_PASSWORD_HASH)
-  @javax.annotation.Nullable
-  private String openSubtitlesPasswordHash;
+  public static final String JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH = "OpenSubtitlesPasswordHash";
+  private JsonNullable<String> openSubtitlesPasswordHash = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_IS_OPEN_SUBTITLE_VIP_ACCOUNT = "IsOpenSubtitleVipAccount";
-  @SerializedName(SERIALIZED_NAME_IS_OPEN_SUBTITLE_VIP_ACCOUNT)
+  public static final String JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT = "IsOpenSubtitleVipAccount";
   @javax.annotation.Nullable
   private Boolean isOpenSubtitleVipAccount;
 
-  public static final String SERIALIZED_NAME_REQUIRE_PERFECT_MATCH = "RequirePerfectMatch";
-  @SerializedName(SERIALIZED_NAME_REQUIRE_PERFECT_MATCH)
+  public static final String JSON_PROPERTY_REQUIRE_PERFECT_MATCH = "RequirePerfectMatch";
   @javax.annotation.Nullable
   private Boolean requirePerfectMatch;
 
-  public SubtitleOptions() {
+  public SubtitleOptions() { 
   }
 
   public SubtitleOptions skipIfEmbeddedSubtitlesPresent(@javax.annotation.Nullable Boolean skipIfEmbeddedSubtitlesPresent) {
@@ -111,10 +97,15 @@ public class SubtitleOptions {
    * @return skipIfEmbeddedSubtitlesPresent
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSkipIfEmbeddedSubtitlesPresent() {
     return skipIfEmbeddedSubtitlesPresent;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSkipIfEmbeddedSubtitlesPresent(@javax.annotation.Nullable Boolean skipIfEmbeddedSubtitlesPresent) {
     this.skipIfEmbeddedSubtitlesPresent = skipIfEmbeddedSubtitlesPresent;
   }
@@ -130,25 +121,34 @@ public class SubtitleOptions {
    * @return skipIfAudioTrackMatches
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSkipIfAudioTrackMatches() {
     return skipIfAudioTrackMatches;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSkipIfAudioTrackMatches(@javax.annotation.Nullable Boolean skipIfAudioTrackMatches) {
     this.skipIfAudioTrackMatches = skipIfAudioTrackMatches;
   }
 
 
   public SubtitleOptions downloadLanguages(@javax.annotation.Nullable List<String> downloadLanguages) {
-    this.downloadLanguages = downloadLanguages;
+    this.downloadLanguages = JsonNullable.<List<String>>of(downloadLanguages);
     return this;
   }
 
   public SubtitleOptions addDownloadLanguagesItem(String downloadLanguagesItem) {
-    if (this.downloadLanguages == null) {
-      this.downloadLanguages = new ArrayList<>();
+    if (this.downloadLanguages == null || !this.downloadLanguages.isPresent()) {
+      this.downloadLanguages = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.downloadLanguages.add(downloadLanguagesItem);
+    try {
+      this.downloadLanguages.get().add(downloadLanguagesItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -157,12 +157,25 @@ public class SubtitleOptions {
    * @return downloadLanguages
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getDownloadLanguages() {
+        return downloadLanguages.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DOWNLOAD_LANGUAGES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getDownloadLanguages_JsonNullable() {
     return downloadLanguages;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DOWNLOAD_LANGUAGES)
+  public void setDownloadLanguages_JsonNullable(JsonNullable<List<String>> downloadLanguages) {
+    this.downloadLanguages = downloadLanguages;
   }
 
   public void setDownloadLanguages(@javax.annotation.Nullable List<String> downloadLanguages) {
-    this.downloadLanguages = downloadLanguages;
+    this.downloadLanguages = JsonNullable.<List<String>>of(downloadLanguages);
   }
 
 
@@ -176,10 +189,15 @@ public class SubtitleOptions {
    * @return downloadMovieSubtitles
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getDownloadMovieSubtitles() {
     return downloadMovieSubtitles;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDownloadMovieSubtitles(@javax.annotation.Nullable Boolean downloadMovieSubtitles) {
     this.downloadMovieSubtitles = downloadMovieSubtitles;
   }
@@ -195,17 +213,22 @@ public class SubtitleOptions {
    * @return downloadEpisodeSubtitles
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getDownloadEpisodeSubtitles() {
     return downloadEpisodeSubtitles;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDownloadEpisodeSubtitles(@javax.annotation.Nullable Boolean downloadEpisodeSubtitles) {
     this.downloadEpisodeSubtitles = downloadEpisodeSubtitles;
   }
 
 
   public SubtitleOptions openSubtitlesUsername(@javax.annotation.Nullable String openSubtitlesUsername) {
-    this.openSubtitlesUsername = openSubtitlesUsername;
+    this.openSubtitlesUsername = JsonNullable.<String>of(openSubtitlesUsername);
     return this;
   }
 
@@ -214,17 +237,30 @@ public class SubtitleOptions {
    * @return openSubtitlesUsername
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getOpenSubtitlesUsername() {
+        return openSubtitlesUsername.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_USERNAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getOpenSubtitlesUsername_JsonNullable() {
     return openSubtitlesUsername;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_USERNAME)
+  public void setOpenSubtitlesUsername_JsonNullable(JsonNullable<String> openSubtitlesUsername) {
+    this.openSubtitlesUsername = openSubtitlesUsername;
   }
 
   public void setOpenSubtitlesUsername(@javax.annotation.Nullable String openSubtitlesUsername) {
-    this.openSubtitlesUsername = openSubtitlesUsername;
+    this.openSubtitlesUsername = JsonNullable.<String>of(openSubtitlesUsername);
   }
 
 
   public SubtitleOptions openSubtitlesPasswordHash(@javax.annotation.Nullable String openSubtitlesPasswordHash) {
-    this.openSubtitlesPasswordHash = openSubtitlesPasswordHash;
+    this.openSubtitlesPasswordHash = JsonNullable.<String>of(openSubtitlesPasswordHash);
     return this;
   }
 
@@ -233,12 +269,25 @@ public class SubtitleOptions {
    * @return openSubtitlesPasswordHash
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getOpenSubtitlesPasswordHash() {
+        return openSubtitlesPasswordHash.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getOpenSubtitlesPasswordHash_JsonNullable() {
     return openSubtitlesPasswordHash;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH)
+  public void setOpenSubtitlesPasswordHash_JsonNullable(JsonNullable<String> openSubtitlesPasswordHash) {
+    this.openSubtitlesPasswordHash = openSubtitlesPasswordHash;
   }
 
   public void setOpenSubtitlesPasswordHash(@javax.annotation.Nullable String openSubtitlesPasswordHash) {
-    this.openSubtitlesPasswordHash = openSubtitlesPasswordHash;
+    this.openSubtitlesPasswordHash = JsonNullable.<String>of(openSubtitlesPasswordHash);
   }
 
 
@@ -252,10 +301,15 @@ public class SubtitleOptions {
    * @return isOpenSubtitleVipAccount
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsOpenSubtitleVipAccount() {
     return isOpenSubtitleVipAccount;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsOpenSubtitleVipAccount(@javax.annotation.Nullable Boolean isOpenSubtitleVipAccount) {
     this.isOpenSubtitleVipAccount = isOpenSubtitleVipAccount;
   }
@@ -271,16 +325,23 @@ public class SubtitleOptions {
    * @return requirePerfectMatch
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REQUIRE_PERFECT_MATCH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getRequirePerfectMatch() {
     return requirePerfectMatch;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REQUIRE_PERFECT_MATCH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRequirePerfectMatch(@javax.annotation.Nullable Boolean requirePerfectMatch) {
     this.requirePerfectMatch = requirePerfectMatch;
   }
 
 
-
+  /**
+   * Return true if this SubtitleOptions object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -292,11 +353,11 @@ public class SubtitleOptions {
     SubtitleOptions subtitleOptions = (SubtitleOptions) o;
     return Objects.equals(this.skipIfEmbeddedSubtitlesPresent, subtitleOptions.skipIfEmbeddedSubtitlesPresent) &&
         Objects.equals(this.skipIfAudioTrackMatches, subtitleOptions.skipIfAudioTrackMatches) &&
-        Objects.equals(this.downloadLanguages, subtitleOptions.downloadLanguages) &&
+        equalsNullable(this.downloadLanguages, subtitleOptions.downloadLanguages) &&
         Objects.equals(this.downloadMovieSubtitles, subtitleOptions.downloadMovieSubtitles) &&
         Objects.equals(this.downloadEpisodeSubtitles, subtitleOptions.downloadEpisodeSubtitles) &&
-        Objects.equals(this.openSubtitlesUsername, subtitleOptions.openSubtitlesUsername) &&
-        Objects.equals(this.openSubtitlesPasswordHash, subtitleOptions.openSubtitlesPasswordHash) &&
+        equalsNullable(this.openSubtitlesUsername, subtitleOptions.openSubtitlesUsername) &&
+        equalsNullable(this.openSubtitlesPasswordHash, subtitleOptions.openSubtitlesPasswordHash) &&
         Objects.equals(this.isOpenSubtitleVipAccount, subtitleOptions.isOpenSubtitleVipAccount) &&
         Objects.equals(this.requirePerfectMatch, subtitleOptions.requirePerfectMatch);
   }
@@ -307,7 +368,7 @@ public class SubtitleOptions {
 
   @Override
   public int hashCode() {
-    return Objects.hash(skipIfEmbeddedSubtitlesPresent, skipIfAudioTrackMatches, downloadLanguages, downloadMovieSubtitles, downloadEpisodeSubtitles, openSubtitlesUsername, openSubtitlesPasswordHash, isOpenSubtitleVipAccount, requirePerfectMatch);
+    return Objects.hash(skipIfEmbeddedSubtitlesPresent, skipIfAudioTrackMatches, hashCodeNullable(downloadLanguages), downloadMovieSubtitles, downloadEpisodeSubtitles, hashCodeNullable(openSubtitlesUsername), hashCodeNullable(openSubtitlesPasswordHash), isOpenSubtitleVipAccount, requirePerfectMatch);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -345,107 +406,88 @@ public class SubtitleOptions {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("SkipIfEmbeddedSubtitlesPresent");
-    openapiFields.add("SkipIfAudioTrackMatches");
-    openapiFields.add("DownloadLanguages");
-    openapiFields.add("DownloadMovieSubtitles");
-    openapiFields.add("DownloadEpisodeSubtitles");
-    openapiFields.add("OpenSubtitlesUsername");
-    openapiFields.add("OpenSubtitlesPasswordHash");
-    openapiFields.add("IsOpenSubtitleVipAccount");
-    openapiFields.add("RequirePerfectMatch");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to SubtitleOptions
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!SubtitleOptions.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in SubtitleOptions is not found in the empty JSON string", SubtitleOptions.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!SubtitleOptions.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `SubtitleOptions` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("DownloadLanguages") != null && !jsonObj.get("DownloadLanguages").isJsonNull() && !jsonObj.get("DownloadLanguages").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `DownloadLanguages` to be an array in the JSON string but got `%s`", jsonObj.get("DownloadLanguages").toString()));
-      }
-      if ((jsonObj.get("OpenSubtitlesUsername") != null && !jsonObj.get("OpenSubtitlesUsername").isJsonNull()) && !jsonObj.get("OpenSubtitlesUsername").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `OpenSubtitlesUsername` to be a primitive type in the JSON string but got `%s`", jsonObj.get("OpenSubtitlesUsername").toString()));
-      }
-      if ((jsonObj.get("OpenSubtitlesPasswordHash") != null && !jsonObj.get("OpenSubtitlesPasswordHash").isJsonNull()) && !jsonObj.get("OpenSubtitlesPasswordHash").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `OpenSubtitlesPasswordHash` to be a primitive type in the JSON string but got `%s`", jsonObj.get("OpenSubtitlesPasswordHash").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!SubtitleOptions.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'SubtitleOptions' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<SubtitleOptions> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(SubtitleOptions.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<SubtitleOptions>() {
-           @Override
-           public void write(JsonWriter out, SubtitleOptions value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public SubtitleOptions read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of SubtitleOptions given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of SubtitleOptions
-   * @throws IOException if the JSON string is invalid with respect to SubtitleOptions
-   */
-  public static SubtitleOptions fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, SubtitleOptions.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of SubtitleOptions to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `SkipIfEmbeddedSubtitlesPresent` to the URL query string
+    if (getSkipIfEmbeddedSubtitlesPresent() != null) {
+      joiner.add(String.format("%sSkipIfEmbeddedSubtitlesPresent%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSkipIfEmbeddedSubtitlesPresent()))));
+    }
+
+    // add `SkipIfAudioTrackMatches` to the URL query string
+    if (getSkipIfAudioTrackMatches() != null) {
+      joiner.add(String.format("%sSkipIfAudioTrackMatches%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSkipIfAudioTrackMatches()))));
+    }
+
+    // add `DownloadLanguages` to the URL query string
+    if (getDownloadLanguages() != null) {
+      for (int i = 0; i < getDownloadLanguages().size(); i++) {
+        joiner.add(String.format("%sDownloadLanguages%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getDownloadLanguages().get(i)))));
+      }
+    }
+
+    // add `DownloadMovieSubtitles` to the URL query string
+    if (getDownloadMovieSubtitles() != null) {
+      joiner.add(String.format("%sDownloadMovieSubtitles%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDownloadMovieSubtitles()))));
+    }
+
+    // add `DownloadEpisodeSubtitles` to the URL query string
+    if (getDownloadEpisodeSubtitles() != null) {
+      joiner.add(String.format("%sDownloadEpisodeSubtitles%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDownloadEpisodeSubtitles()))));
+    }
+
+    // add `OpenSubtitlesUsername` to the URL query string
+    if (getOpenSubtitlesUsername() != null) {
+      joiner.add(String.format("%sOpenSubtitlesUsername%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOpenSubtitlesUsername()))));
+    }
+
+    // add `OpenSubtitlesPasswordHash` to the URL query string
+    if (getOpenSubtitlesPasswordHash() != null) {
+      joiner.add(String.format("%sOpenSubtitlesPasswordHash%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOpenSubtitlesPasswordHash()))));
+    }
+
+    // add `IsOpenSubtitleVipAccount` to the URL query string
+    if (getIsOpenSubtitleVipAccount() != null) {
+      joiner.add(String.format("%sIsOpenSubtitleVipAccount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsOpenSubtitleVipAccount()))));
+    }
+
+    // add `RequirePerfectMatch` to the URL query string
+    if (getRequirePerfectMatch() != null) {
+      joiner.add(String.format("%sRequirePerfectMatch%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRequirePerfectMatch()))));
+    }
+
+    return joiner.toString();
   }
 }
 

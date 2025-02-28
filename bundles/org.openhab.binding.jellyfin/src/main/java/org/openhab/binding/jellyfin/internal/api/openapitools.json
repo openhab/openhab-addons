@@ -1,5 +1,5 @@
 {
-  "$schema": "./specifications/json/config.schema.json",
+  "$schema": "./specifications/schema/config.schema.json",
   "spaces": 2,
   "generator-cli": {
     "version": "7.10.0"

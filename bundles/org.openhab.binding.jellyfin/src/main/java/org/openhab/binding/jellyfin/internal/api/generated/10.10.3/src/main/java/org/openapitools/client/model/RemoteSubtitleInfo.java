@@ -13,130 +13,103 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * RemoteSubtitleInfo
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  RemoteSubtitleInfo.JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME,
+  RemoteSubtitleInfo.JSON_PROPERTY_ID,
+  RemoteSubtitleInfo.JSON_PROPERTY_PROVIDER_NAME,
+  RemoteSubtitleInfo.JSON_PROPERTY_NAME,
+  RemoteSubtitleInfo.JSON_PROPERTY_FORMAT,
+  RemoteSubtitleInfo.JSON_PROPERTY_AUTHOR,
+  RemoteSubtitleInfo.JSON_PROPERTY_COMMENT,
+  RemoteSubtitleInfo.JSON_PROPERTY_DATE_CREATED,
+  RemoteSubtitleInfo.JSON_PROPERTY_COMMUNITY_RATING,
+  RemoteSubtitleInfo.JSON_PROPERTY_FRAME_RATE,
+  RemoteSubtitleInfo.JSON_PROPERTY_DOWNLOAD_COUNT,
+  RemoteSubtitleInfo.JSON_PROPERTY_IS_HASH_MATCH,
+  RemoteSubtitleInfo.JSON_PROPERTY_AI_TRANSLATED,
+  RemoteSubtitleInfo.JSON_PROPERTY_MACHINE_TRANSLATED,
+  RemoteSubtitleInfo.JSON_PROPERTY_FORCED,
+  RemoteSubtitleInfo.JSON_PROPERTY_HEARING_IMPAIRED
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class RemoteSubtitleInfo {
-  public static final String SERIALIZED_NAME_THREE_LETTER_I_S_O_LANGUAGE_NAME = "ThreeLetterISOLanguageName";
-  @SerializedName(SERIALIZED_NAME_THREE_LETTER_I_S_O_LANGUAGE_NAME)
-  @javax.annotation.Nullable
-  private String threeLetterISOLanguageName;
+  public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME = "ThreeLetterISOLanguageName";
+  private JsonNullable<String> threeLetterISOLanguageName = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ID = "Id";
-  @SerializedName(SERIALIZED_NAME_ID)
-  @javax.annotation.Nullable
-  private String id;
+  public static final String JSON_PROPERTY_ID = "Id";
+  private JsonNullable<String> id = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PROVIDER_NAME = "ProviderName";
-  @SerializedName(SERIALIZED_NAME_PROVIDER_NAME)
-  @javax.annotation.Nullable
-  private String providerName;
+  public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
+  private JsonNullable<String> providerName = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_FORMAT = "Format";
-  @SerializedName(SERIALIZED_NAME_FORMAT)
-  @javax.annotation.Nullable
-  private String format;
+  public static final String JSON_PROPERTY_FORMAT = "Format";
+  private JsonNullable<String> format = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_AUTHOR = "Author";
-  @SerializedName(SERIALIZED_NAME_AUTHOR)
-  @javax.annotation.Nullable
-  private String author;
+  public static final String JSON_PROPERTY_AUTHOR = "Author";
+  private JsonNullable<String> author = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_COMMENT = "Comment";
-  @SerializedName(SERIALIZED_NAME_COMMENT)
-  @javax.annotation.Nullable
-  private String comment;
+  public static final String JSON_PROPERTY_COMMENT = "Comment";
+  private JsonNullable<String> comment = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_DATE_CREATED = "DateCreated";
-  @SerializedName(SERIALIZED_NAME_DATE_CREATED)
-  @javax.annotation.Nullable
-  private OffsetDateTime dateCreated;
+  public static final String JSON_PROPERTY_DATE_CREATED = "DateCreated";
+  private JsonNullable<OffsetDateTime> dateCreated = JsonNullable.<OffsetDateTime>undefined();
 
-  public static final String SERIALIZED_NAME_COMMUNITY_RATING = "CommunityRating";
-  @SerializedName(SERIALIZED_NAME_COMMUNITY_RATING)
-  @javax.annotation.Nullable
-  private Float communityRating;
+  public static final String JSON_PROPERTY_COMMUNITY_RATING = "CommunityRating";
+  private JsonNullable<Float> communityRating = JsonNullable.<Float>undefined();
 
-  public static final String SERIALIZED_NAME_FRAME_RATE = "FrameRate";
-  @SerializedName(SERIALIZED_NAME_FRAME_RATE)
-  @javax.annotation.Nullable
-  private Float frameRate;
+  public static final String JSON_PROPERTY_FRAME_RATE = "FrameRate";
+  private JsonNullable<Float> frameRate = JsonNullable.<Float>undefined();
 
-  public static final String SERIALIZED_NAME_DOWNLOAD_COUNT = "DownloadCount";
-  @SerializedName(SERIALIZED_NAME_DOWNLOAD_COUNT)
-  @javax.annotation.Nullable
-  private Integer downloadCount;
+  public static final String JSON_PROPERTY_DOWNLOAD_COUNT = "DownloadCount";
+  private JsonNullable<Integer> downloadCount = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_IS_HASH_MATCH = "IsHashMatch";
-  @SerializedName(SERIALIZED_NAME_IS_HASH_MATCH)
-  @javax.annotation.Nullable
-  private Boolean isHashMatch;
+  public static final String JSON_PROPERTY_IS_HASH_MATCH = "IsHashMatch";
+  private JsonNullable<Boolean> isHashMatch = JsonNullable.<Boolean>undefined();
 
-  public static final String SERIALIZED_NAME_AI_TRANSLATED = "AiTranslated";
-  @SerializedName(SERIALIZED_NAME_AI_TRANSLATED)
-  @javax.annotation.Nullable
-  private Boolean aiTranslated;
+  public static final String JSON_PROPERTY_AI_TRANSLATED = "AiTranslated";
+  private JsonNullable<Boolean> aiTranslated = JsonNullable.<Boolean>undefined();
 
-  public static final String SERIALIZED_NAME_MACHINE_TRANSLATED = "MachineTranslated";
-  @SerializedName(SERIALIZED_NAME_MACHINE_TRANSLATED)
-  @javax.annotation.Nullable
-  private Boolean machineTranslated;
+  public static final String JSON_PROPERTY_MACHINE_TRANSLATED = "MachineTranslated";
+  private JsonNullable<Boolean> machineTranslated = JsonNullable.<Boolean>undefined();
 
-  public static final String SERIALIZED_NAME_FORCED = "Forced";
-  @SerializedName(SERIALIZED_NAME_FORCED)
-  @javax.annotation.Nullable
-  private Boolean forced;
+  public static final String JSON_PROPERTY_FORCED = "Forced";
+  private JsonNullable<Boolean> forced = JsonNullable.<Boolean>undefined();
 
-  public static final String SERIALIZED_NAME_HEARING_IMPAIRED = "HearingImpaired";
-  @SerializedName(SERIALIZED_NAME_HEARING_IMPAIRED)
-  @javax.annotation.Nullable
-  private Boolean hearingImpaired;
+  public static final String JSON_PROPERTY_HEARING_IMPAIRED = "HearingImpaired";
+  private JsonNullable<Boolean> hearingImpaired = JsonNullable.<Boolean>undefined();
 
-  public RemoteSubtitleInfo() {
+  public RemoteSubtitleInfo() { 
   }
 
   public RemoteSubtitleInfo threeLetterISOLanguageName(@javax.annotation.Nullable String threeLetterISOLanguageName) {
-    this.threeLetterISOLanguageName = threeLetterISOLanguageName;
+    this.threeLetterISOLanguageName = JsonNullable.<String>of(threeLetterISOLanguageName);
     return this;
   }
 
@@ -145,17 +118,30 @@ public class RemoteSubtitleInfo {
    * @return threeLetterISOLanguageName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getThreeLetterISOLanguageName() {
+        return threeLetterISOLanguageName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getThreeLetterISOLanguageName_JsonNullable() {
     return threeLetterISOLanguageName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
+  public void setThreeLetterISOLanguageName_JsonNullable(JsonNullable<String> threeLetterISOLanguageName) {
+    this.threeLetterISOLanguageName = threeLetterISOLanguageName;
   }
 
   public void setThreeLetterISOLanguageName(@javax.annotation.Nullable String threeLetterISOLanguageName) {
-    this.threeLetterISOLanguageName = threeLetterISOLanguageName;
+    this.threeLetterISOLanguageName = JsonNullable.<String>of(threeLetterISOLanguageName);
   }
 
 
   public RemoteSubtitleInfo id(@javax.annotation.Nullable String id) {
-    this.id = id;
+    this.id = JsonNullable.<String>of(id);
     return this;
   }
 
@@ -164,17 +150,30 @@ public class RemoteSubtitleInfo {
    * @return id
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getId() {
+        return id.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getId_JsonNullable() {
     return id;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ID)
+  public void setId_JsonNullable(JsonNullable<String> id) {
+    this.id = id;
   }
 
   public void setId(@javax.annotation.Nullable String id) {
-    this.id = id;
+    this.id = JsonNullable.<String>of(id);
   }
 
 
   public RemoteSubtitleInfo providerName(@javax.annotation.Nullable String providerName) {
-    this.providerName = providerName;
+    this.providerName = JsonNullable.<String>of(providerName);
     return this;
   }
 
@@ -183,17 +182,30 @@ public class RemoteSubtitleInfo {
    * @return providerName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getProviderName() {
+        return providerName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getProviderName_JsonNullable() {
     return providerName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
+  public void setProviderName_JsonNullable(JsonNullable<String> providerName) {
+    this.providerName = providerName;
   }
 
   public void setProviderName(@javax.annotation.Nullable String providerName) {
-    this.providerName = providerName;
+    this.providerName = JsonNullable.<String>of(providerName);
   }
 
 
   public RemoteSubtitleInfo name(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
     return this;
   }
 
@@ -202,17 +214,30 @@ public class RemoteSubtitleInfo {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
   }
 
 
   public RemoteSubtitleInfo format(@javax.annotation.Nullable String format) {
-    this.format = format;
+    this.format = JsonNullable.<String>of(format);
     return this;
   }
 
@@ -221,17 +246,30 @@ public class RemoteSubtitleInfo {
    * @return format
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getFormat() {
+        return format.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_FORMAT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getFormat_JsonNullable() {
     return format;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_FORMAT)
+  public void setFormat_JsonNullable(JsonNullable<String> format) {
+    this.format = format;
   }
 
   public void setFormat(@javax.annotation.Nullable String format) {
-    this.format = format;
+    this.format = JsonNullable.<String>of(format);
   }
 
 
   public RemoteSubtitleInfo author(@javax.annotation.Nullable String author) {
-    this.author = author;
+    this.author = JsonNullable.<String>of(author);
     return this;
   }
 
@@ -240,17 +278,30 @@ public class RemoteSubtitleInfo {
    * @return author
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getAuthor() {
+        return author.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_AUTHOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getAuthor_JsonNullable() {
     return author;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AUTHOR)
+  public void setAuthor_JsonNullable(JsonNullable<String> author) {
+    this.author = author;
   }
 
   public void setAuthor(@javax.annotation.Nullable String author) {
-    this.author = author;
+    this.author = JsonNullable.<String>of(author);
   }
 
 
   public RemoteSubtitleInfo comment(@javax.annotation.Nullable String comment) {
-    this.comment = comment;
+    this.comment = JsonNullable.<String>of(comment);
     return this;
   }
 
@@ -259,17 +310,30 @@ public class RemoteSubtitleInfo {
    * @return comment
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getComment() {
+        return comment.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_COMMENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getComment_JsonNullable() {
     return comment;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_COMMENT)
+  public void setComment_JsonNullable(JsonNullable<String> comment) {
+    this.comment = comment;
   }
 
   public void setComment(@javax.annotation.Nullable String comment) {
-    this.comment = comment;
+    this.comment = JsonNullable.<String>of(comment);
   }
 
 
   public RemoteSubtitleInfo dateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
-    this.dateCreated = dateCreated;
+    this.dateCreated = JsonNullable.<OffsetDateTime>of(dateCreated);
     return this;
   }
 
@@ -278,17 +342,30 @@ public class RemoteSubtitleInfo {
    * @return dateCreated
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public OffsetDateTime getDateCreated() {
+        return dateCreated.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DATE_CREATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<OffsetDateTime> getDateCreated_JsonNullable() {
     return dateCreated;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DATE_CREATED)
+  public void setDateCreated_JsonNullable(JsonNullable<OffsetDateTime> dateCreated) {
+    this.dateCreated = dateCreated;
   }
 
   public void setDateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
-    this.dateCreated = dateCreated;
+    this.dateCreated = JsonNullable.<OffsetDateTime>of(dateCreated);
   }
 
 
   public RemoteSubtitleInfo communityRating(@javax.annotation.Nullable Float communityRating) {
-    this.communityRating = communityRating;
+    this.communityRating = JsonNullable.<Float>of(communityRating);
     return this;
   }
 
@@ -297,17 +374,30 @@ public class RemoteSubtitleInfo {
    * @return communityRating
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Float getCommunityRating() {
+        return communityRating.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Float> getCommunityRating_JsonNullable() {
     return communityRating;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
+  public void setCommunityRating_JsonNullable(JsonNullable<Float> communityRating) {
+    this.communityRating = communityRating;
   }
 
   public void setCommunityRating(@javax.annotation.Nullable Float communityRating) {
-    this.communityRating = communityRating;
+    this.communityRating = JsonNullable.<Float>of(communityRating);
   }
 
 
   public RemoteSubtitleInfo frameRate(@javax.annotation.Nullable Float frameRate) {
-    this.frameRate = frameRate;
+    this.frameRate = JsonNullable.<Float>of(frameRate);
     return this;
   }
 
@@ -316,17 +406,30 @@ public class RemoteSubtitleInfo {
    * @return frameRate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Float getFrameRate() {
+        return frameRate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_FRAME_RATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Float> getFrameRate_JsonNullable() {
     return frameRate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_FRAME_RATE)
+  public void setFrameRate_JsonNullable(JsonNullable<Float> frameRate) {
+    this.frameRate = frameRate;
   }
 
   public void setFrameRate(@javax.annotation.Nullable Float frameRate) {
-    this.frameRate = frameRate;
+    this.frameRate = JsonNullable.<Float>of(frameRate);
   }
 
 
   public RemoteSubtitleInfo downloadCount(@javax.annotation.Nullable Integer downloadCount) {
-    this.downloadCount = downloadCount;
+    this.downloadCount = JsonNullable.<Integer>of(downloadCount);
     return this;
   }
 
@@ -335,17 +438,30 @@ public class RemoteSubtitleInfo {
    * @return downloadCount
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getDownloadCount() {
+        return downloadCount.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DOWNLOAD_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getDownloadCount_JsonNullable() {
     return downloadCount;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DOWNLOAD_COUNT)
+  public void setDownloadCount_JsonNullable(JsonNullable<Integer> downloadCount) {
+    this.downloadCount = downloadCount;
   }
 
   public void setDownloadCount(@javax.annotation.Nullable Integer downloadCount) {
-    this.downloadCount = downloadCount;
+    this.downloadCount = JsonNullable.<Integer>of(downloadCount);
   }
 
 
   public RemoteSubtitleInfo isHashMatch(@javax.annotation.Nullable Boolean isHashMatch) {
-    this.isHashMatch = isHashMatch;
+    this.isHashMatch = JsonNullable.<Boolean>of(isHashMatch);
     return this;
   }
 
@@ -354,17 +470,30 @@ public class RemoteSubtitleInfo {
    * @return isHashMatch
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Boolean getIsHashMatch() {
+        return isHashMatch.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_IS_HASH_MATCH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Boolean> getIsHashMatch_JsonNullable() {
     return isHashMatch;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IS_HASH_MATCH)
+  public void setIsHashMatch_JsonNullable(JsonNullable<Boolean> isHashMatch) {
+    this.isHashMatch = isHashMatch;
   }
 
   public void setIsHashMatch(@javax.annotation.Nullable Boolean isHashMatch) {
-    this.isHashMatch = isHashMatch;
+    this.isHashMatch = JsonNullable.<Boolean>of(isHashMatch);
   }
 
 
   public RemoteSubtitleInfo aiTranslated(@javax.annotation.Nullable Boolean aiTranslated) {
-    this.aiTranslated = aiTranslated;
+    this.aiTranslated = JsonNullable.<Boolean>of(aiTranslated);
     return this;
   }
 
@@ -373,17 +502,30 @@ public class RemoteSubtitleInfo {
    * @return aiTranslated
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Boolean getAiTranslated() {
+        return aiTranslated.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_AI_TRANSLATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Boolean> getAiTranslated_JsonNullable() {
     return aiTranslated;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AI_TRANSLATED)
+  public void setAiTranslated_JsonNullable(JsonNullable<Boolean> aiTranslated) {
+    this.aiTranslated = aiTranslated;
   }
 
   public void setAiTranslated(@javax.annotation.Nullable Boolean aiTranslated) {
-    this.aiTranslated = aiTranslated;
+    this.aiTranslated = JsonNullable.<Boolean>of(aiTranslated);
   }
 
 
   public RemoteSubtitleInfo machineTranslated(@javax.annotation.Nullable Boolean machineTranslated) {
-    this.machineTranslated = machineTranslated;
+    this.machineTranslated = JsonNullable.<Boolean>of(machineTranslated);
     return this;
   }
 
@@ -392,17 +534,30 @@ public class RemoteSubtitleInfo {
    * @return machineTranslated
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Boolean getMachineTranslated() {
+        return machineTranslated.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MACHINE_TRANSLATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Boolean> getMachineTranslated_JsonNullable() {
     return machineTranslated;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MACHINE_TRANSLATED)
+  public void setMachineTranslated_JsonNullable(JsonNullable<Boolean> machineTranslated) {
+    this.machineTranslated = machineTranslated;
   }
 
   public void setMachineTranslated(@javax.annotation.Nullable Boolean machineTranslated) {
-    this.machineTranslated = machineTranslated;
+    this.machineTranslated = JsonNullable.<Boolean>of(machineTranslated);
   }
 
 
   public RemoteSubtitleInfo forced(@javax.annotation.Nullable Boolean forced) {
-    this.forced = forced;
+    this.forced = JsonNullable.<Boolean>of(forced);
     return this;
   }
 
@@ -411,17 +566,30 @@ public class RemoteSubtitleInfo {
    * @return forced
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Boolean getForced() {
+        return forced.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_FORCED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Boolean> getForced_JsonNullable() {
     return forced;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_FORCED)
+  public void setForced_JsonNullable(JsonNullable<Boolean> forced) {
+    this.forced = forced;
   }
 
   public void setForced(@javax.annotation.Nullable Boolean forced) {
-    this.forced = forced;
+    this.forced = JsonNullable.<Boolean>of(forced);
   }
 
 
   public RemoteSubtitleInfo hearingImpaired(@javax.annotation.Nullable Boolean hearingImpaired) {
-    this.hearingImpaired = hearingImpaired;
+    this.hearingImpaired = JsonNullable.<Boolean>of(hearingImpaired);
     return this;
   }
 
@@ -430,16 +598,31 @@ public class RemoteSubtitleInfo {
    * @return hearingImpaired
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Boolean getHearingImpaired() {
-    return hearingImpaired;
+        return hearingImpaired.orElse(null);
   }
 
-  public void setHearingImpaired(@javax.annotation.Nullable Boolean hearingImpaired) {
+  @JsonProperty(JSON_PROPERTY_HEARING_IMPAIRED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Boolean> getHearingImpaired_JsonNullable() {
+    return hearingImpaired;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_HEARING_IMPAIRED)
+  public void setHearingImpaired_JsonNullable(JsonNullable<Boolean> hearingImpaired) {
     this.hearingImpaired = hearingImpaired;
   }
 
+  public void setHearingImpaired(@javax.annotation.Nullable Boolean hearingImpaired) {
+    this.hearingImpaired = JsonNullable.<Boolean>of(hearingImpaired);
+  }
 
 
+  /**
+   * Return true if this RemoteSubtitleInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -449,22 +632,22 @@ public class RemoteSubtitleInfo {
       return false;
     }
     RemoteSubtitleInfo remoteSubtitleInfo = (RemoteSubtitleInfo) o;
-    return Objects.equals(this.threeLetterISOLanguageName, remoteSubtitleInfo.threeLetterISOLanguageName) &&
-        Objects.equals(this.id, remoteSubtitleInfo.id) &&
-        Objects.equals(this.providerName, remoteSubtitleInfo.providerName) &&
-        Objects.equals(this.name, remoteSubtitleInfo.name) &&
-        Objects.equals(this.format, remoteSubtitleInfo.format) &&
-        Objects.equals(this.author, remoteSubtitleInfo.author) &&
-        Objects.equals(this.comment, remoteSubtitleInfo.comment) &&
-        Objects.equals(this.dateCreated, remoteSubtitleInfo.dateCreated) &&
-        Objects.equals(this.communityRating, remoteSubtitleInfo.communityRating) &&
-        Objects.equals(this.frameRate, remoteSubtitleInfo.frameRate) &&
-        Objects.equals(this.downloadCount, remoteSubtitleInfo.downloadCount) &&
-        Objects.equals(this.isHashMatch, remoteSubtitleInfo.isHashMatch) &&
-        Objects.equals(this.aiTranslated, remoteSubtitleInfo.aiTranslated) &&
-        Objects.equals(this.machineTranslated, remoteSubtitleInfo.machineTranslated) &&
-        Objects.equals(this.forced, remoteSubtitleInfo.forced) &&
-        Objects.equals(this.hearingImpaired, remoteSubtitleInfo.hearingImpaired);
+    return equalsNullable(this.threeLetterISOLanguageName, remoteSubtitleInfo.threeLetterISOLanguageName) &&
+        equalsNullable(this.id, remoteSubtitleInfo.id) &&
+        equalsNullable(this.providerName, remoteSubtitleInfo.providerName) &&
+        equalsNullable(this.name, remoteSubtitleInfo.name) &&
+        equalsNullable(this.format, remoteSubtitleInfo.format) &&
+        equalsNullable(this.author, remoteSubtitleInfo.author) &&
+        equalsNullable(this.comment, remoteSubtitleInfo.comment) &&
+        equalsNullable(this.dateCreated, remoteSubtitleInfo.dateCreated) &&
+        equalsNullable(this.communityRating, remoteSubtitleInfo.communityRating) &&
+        equalsNullable(this.frameRate, remoteSubtitleInfo.frameRate) &&
+        equalsNullable(this.downloadCount, remoteSubtitleInfo.downloadCount) &&
+        equalsNullable(this.isHashMatch, remoteSubtitleInfo.isHashMatch) &&
+        equalsNullable(this.aiTranslated, remoteSubtitleInfo.aiTranslated) &&
+        equalsNullable(this.machineTranslated, remoteSubtitleInfo.machineTranslated) &&
+        equalsNullable(this.forced, remoteSubtitleInfo.forced) &&
+        equalsNullable(this.hearingImpaired, remoteSubtitleInfo.hearingImpaired);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -473,7 +656,7 @@ public class RemoteSubtitleInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(threeLetterISOLanguageName, id, providerName, name, format, author, comment, dateCreated, communityRating, frameRate, downloadCount, isHashMatch, aiTranslated, machineTranslated, forced, hearingImpaired);
+    return Objects.hash(hashCodeNullable(threeLetterISOLanguageName), hashCodeNullable(id), hashCodeNullable(providerName), hashCodeNullable(name), hashCodeNullable(format), hashCodeNullable(author), hashCodeNullable(comment), hashCodeNullable(dateCreated), hashCodeNullable(communityRating), hashCodeNullable(frameRate), hashCodeNullable(downloadCount), hashCodeNullable(isHashMatch), hashCodeNullable(aiTranslated), hashCodeNullable(machineTranslated), hashCodeNullable(forced), hashCodeNullable(hearingImpaired));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -518,125 +701,119 @@ public class RemoteSubtitleInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("ThreeLetterISOLanguageName");
-    openapiFields.add("Id");
-    openapiFields.add("ProviderName");
-    openapiFields.add("Name");
-    openapiFields.add("Format");
-    openapiFields.add("Author");
-    openapiFields.add("Comment");
-    openapiFields.add("DateCreated");
-    openapiFields.add("CommunityRating");
-    openapiFields.add("FrameRate");
-    openapiFields.add("DownloadCount");
-    openapiFields.add("IsHashMatch");
-    openapiFields.add("AiTranslated");
-    openapiFields.add("MachineTranslated");
-    openapiFields.add("Forced");
-    openapiFields.add("HearingImpaired");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to RemoteSubtitleInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!RemoteSubtitleInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in RemoteSubtitleInfo is not found in the empty JSON string", RemoteSubtitleInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!RemoteSubtitleInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `RemoteSubtitleInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("ThreeLetterISOLanguageName") != null && !jsonObj.get("ThreeLetterISOLanguageName").isJsonNull()) && !jsonObj.get("ThreeLetterISOLanguageName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ThreeLetterISOLanguageName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ThreeLetterISOLanguageName").toString()));
-      }
-      if ((jsonObj.get("Id") != null && !jsonObj.get("Id").isJsonNull()) && !jsonObj.get("Id").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Id").toString()));
-      }
-      if ((jsonObj.get("ProviderName") != null && !jsonObj.get("ProviderName").isJsonNull()) && !jsonObj.get("ProviderName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ProviderName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ProviderName").toString()));
-      }
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("Format") != null && !jsonObj.get("Format").isJsonNull()) && !jsonObj.get("Format").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Format` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Format").toString()));
-      }
-      if ((jsonObj.get("Author") != null && !jsonObj.get("Author").isJsonNull()) && !jsonObj.get("Author").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Author` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Author").toString()));
-      }
-      if ((jsonObj.get("Comment") != null && !jsonObj.get("Comment").isJsonNull()) && !jsonObj.get("Comment").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Comment` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Comment").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!RemoteSubtitleInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'RemoteSubtitleInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<RemoteSubtitleInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(RemoteSubtitleInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<RemoteSubtitleInfo>() {
-           @Override
-           public void write(JsonWriter out, RemoteSubtitleInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public RemoteSubtitleInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of RemoteSubtitleInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of RemoteSubtitleInfo
-   * @throws IOException if the JSON string is invalid with respect to RemoteSubtitleInfo
-   */
-  public static RemoteSubtitleInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, RemoteSubtitleInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of RemoteSubtitleInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `ThreeLetterISOLanguageName` to the URL query string
+    if (getThreeLetterISOLanguageName() != null) {
+      joiner.add(String.format("%sThreeLetterISOLanguageName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getThreeLetterISOLanguageName()))));
+    }
+
+    // add `Id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+    }
+
+    // add `ProviderName` to the URL query string
+    if (getProviderName() != null) {
+      joiner.add(String.format("%sProviderName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProviderName()))));
+    }
+
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `Format` to the URL query string
+    if (getFormat() != null) {
+      joiner.add(String.format("%sFormat%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFormat()))));
+    }
+
+    // add `Author` to the URL query string
+    if (getAuthor() != null) {
+      joiner.add(String.format("%sAuthor%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAuthor()))));
+    }
+
+    // add `Comment` to the URL query string
+    if (getComment() != null) {
+      joiner.add(String.format("%sComment%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getComment()))));
+    }
+
+    // add `DateCreated` to the URL query string
+    if (getDateCreated() != null) {
+      joiner.add(String.format("%sDateCreated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDateCreated()))));
+    }
+
+    // add `CommunityRating` to the URL query string
+    if (getCommunityRating() != null) {
+      joiner.add(String.format("%sCommunityRating%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCommunityRating()))));
+    }
+
+    // add `FrameRate` to the URL query string
+    if (getFrameRate() != null) {
+      joiner.add(String.format("%sFrameRate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFrameRate()))));
+    }
+
+    // add `DownloadCount` to the URL query string
+    if (getDownloadCount() != null) {
+      joiner.add(String.format("%sDownloadCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDownloadCount()))));
+    }
+
+    // add `IsHashMatch` to the URL query string
+    if (getIsHashMatch() != null) {
+      joiner.add(String.format("%sIsHashMatch%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsHashMatch()))));
+    }
+
+    // add `AiTranslated` to the URL query string
+    if (getAiTranslated() != null) {
+      joiner.add(String.format("%sAiTranslated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAiTranslated()))));
+    }
+
+    // add `MachineTranslated` to the URL query string
+    if (getMachineTranslated() != null) {
+      joiner.add(String.format("%sMachineTranslated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMachineTranslated()))));
+    }
+
+    // add `Forced` to the URL query string
+    if (getForced() != null) {
+      joiner.add(String.format("%sForced%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getForced()))));
+    }
+
+    // add `HearingImpaired` to the URL query string
+    if (getHearingImpaired() != null) {
+      joiner.add(String.format("%sHearingImpaired%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHearingImpaired()))));
+    }
+
+    return joiner.toString();
   }
 }
 

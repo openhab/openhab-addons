@@ -13,101 +13,82 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.client.model.ImageType;
 import org.openapitools.client.model.RatingType;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class RemoteImageInfo.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  RemoteImageInfo.JSON_PROPERTY_PROVIDER_NAME,
+  RemoteImageInfo.JSON_PROPERTY_URL,
+  RemoteImageInfo.JSON_PROPERTY_THUMBNAIL_URL,
+  RemoteImageInfo.JSON_PROPERTY_HEIGHT,
+  RemoteImageInfo.JSON_PROPERTY_WIDTH,
+  RemoteImageInfo.JSON_PROPERTY_COMMUNITY_RATING,
+  RemoteImageInfo.JSON_PROPERTY_VOTE_COUNT,
+  RemoteImageInfo.JSON_PROPERTY_LANGUAGE,
+  RemoteImageInfo.JSON_PROPERTY_TYPE,
+  RemoteImageInfo.JSON_PROPERTY_RATING_TYPE
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class RemoteImageInfo {
-  public static final String SERIALIZED_NAME_PROVIDER_NAME = "ProviderName";
-  @SerializedName(SERIALIZED_NAME_PROVIDER_NAME)
-  @javax.annotation.Nullable
-  private String providerName;
+  public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
+  private JsonNullable<String> providerName = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_URL = "Url";
-  @SerializedName(SERIALIZED_NAME_URL)
-  @javax.annotation.Nullable
-  private String url;
+  public static final String JSON_PROPERTY_URL = "Url";
+  private JsonNullable<String> url = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_THUMBNAIL_URL = "ThumbnailUrl";
-  @SerializedName(SERIALIZED_NAME_THUMBNAIL_URL)
-  @javax.annotation.Nullable
-  private String thumbnailUrl;
+  public static final String JSON_PROPERTY_THUMBNAIL_URL = "ThumbnailUrl";
+  private JsonNullable<String> thumbnailUrl = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_HEIGHT = "Height";
-  @SerializedName(SERIALIZED_NAME_HEIGHT)
-  @javax.annotation.Nullable
-  private Integer height;
+  public static final String JSON_PROPERTY_HEIGHT = "Height";
+  private JsonNullable<Integer> height = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_WIDTH = "Width";
-  @SerializedName(SERIALIZED_NAME_WIDTH)
-  @javax.annotation.Nullable
-  private Integer width;
+  public static final String JSON_PROPERTY_WIDTH = "Width";
+  private JsonNullable<Integer> width = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_COMMUNITY_RATING = "CommunityRating";
-  @SerializedName(SERIALIZED_NAME_COMMUNITY_RATING)
-  @javax.annotation.Nullable
-  private Double communityRating;
+  public static final String JSON_PROPERTY_COMMUNITY_RATING = "CommunityRating";
+  private JsonNullable<Double> communityRating = JsonNullable.<Double>undefined();
 
-  public static final String SERIALIZED_NAME_VOTE_COUNT = "VoteCount";
-  @SerializedName(SERIALIZED_NAME_VOTE_COUNT)
-  @javax.annotation.Nullable
-  private Integer voteCount;
+  public static final String JSON_PROPERTY_VOTE_COUNT = "VoteCount";
+  private JsonNullable<Integer> voteCount = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_LANGUAGE = "Language";
-  @SerializedName(SERIALIZED_NAME_LANGUAGE)
-  @javax.annotation.Nullable
-  private String language;
+  public static final String JSON_PROPERTY_LANGUAGE = "Language";
+  private JsonNullable<String> language = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TYPE = "Type";
-  @SerializedName(SERIALIZED_NAME_TYPE)
+  public static final String JSON_PROPERTY_TYPE = "Type";
   @javax.annotation.Nullable
   private ImageType type;
 
-  public static final String SERIALIZED_NAME_RATING_TYPE = "RatingType";
-  @SerializedName(SERIALIZED_NAME_RATING_TYPE)
+  public static final String JSON_PROPERTY_RATING_TYPE = "RatingType";
   @javax.annotation.Nullable
   private RatingType ratingType;
 
-  public RemoteImageInfo() {
+  public RemoteImageInfo() { 
   }
 
   public RemoteImageInfo providerName(@javax.annotation.Nullable String providerName) {
-    this.providerName = providerName;
+    this.providerName = JsonNullable.<String>of(providerName);
     return this;
   }
 
@@ -116,17 +97,30 @@ public class RemoteImageInfo {
    * @return providerName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getProviderName() {
+        return providerName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getProviderName_JsonNullable() {
     return providerName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
+  public void setProviderName_JsonNullable(JsonNullable<String> providerName) {
+    this.providerName = providerName;
   }
 
   public void setProviderName(@javax.annotation.Nullable String providerName) {
-    this.providerName = providerName;
+    this.providerName = JsonNullable.<String>of(providerName);
   }
 
 
   public RemoteImageInfo url(@javax.annotation.Nullable String url) {
-    this.url = url;
+    this.url = JsonNullable.<String>of(url);
     return this;
   }
 
@@ -135,17 +129,30 @@ public class RemoteImageInfo {
    * @return url
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getUrl() {
+        return url.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getUrl_JsonNullable() {
     return url;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_URL)
+  public void setUrl_JsonNullable(JsonNullable<String> url) {
+    this.url = url;
   }
 
   public void setUrl(@javax.annotation.Nullable String url) {
-    this.url = url;
+    this.url = JsonNullable.<String>of(url);
   }
 
 
   public RemoteImageInfo thumbnailUrl(@javax.annotation.Nullable String thumbnailUrl) {
-    this.thumbnailUrl = thumbnailUrl;
+    this.thumbnailUrl = JsonNullable.<String>of(thumbnailUrl);
     return this;
   }
 
@@ -154,17 +161,30 @@ public class RemoteImageInfo {
    * @return thumbnailUrl
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getThumbnailUrl() {
+        return thumbnailUrl.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_THUMBNAIL_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getThumbnailUrl_JsonNullable() {
     return thumbnailUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_THUMBNAIL_URL)
+  public void setThumbnailUrl_JsonNullable(JsonNullable<String> thumbnailUrl) {
+    this.thumbnailUrl = thumbnailUrl;
   }
 
   public void setThumbnailUrl(@javax.annotation.Nullable String thumbnailUrl) {
-    this.thumbnailUrl = thumbnailUrl;
+    this.thumbnailUrl = JsonNullable.<String>of(thumbnailUrl);
   }
 
 
   public RemoteImageInfo height(@javax.annotation.Nullable Integer height) {
-    this.height = height;
+    this.height = JsonNullable.<Integer>of(height);
     return this;
   }
 
@@ -173,17 +193,30 @@ public class RemoteImageInfo {
    * @return height
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getHeight() {
+        return height.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getHeight_JsonNullable() {
     return height;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_HEIGHT)
+  public void setHeight_JsonNullable(JsonNullable<Integer> height) {
+    this.height = height;
   }
 
   public void setHeight(@javax.annotation.Nullable Integer height) {
-    this.height = height;
+    this.height = JsonNullable.<Integer>of(height);
   }
 
 
   public RemoteImageInfo width(@javax.annotation.Nullable Integer width) {
-    this.width = width;
+    this.width = JsonNullable.<Integer>of(width);
     return this;
   }
 
@@ -192,17 +225,30 @@ public class RemoteImageInfo {
    * @return width
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getWidth() {
+        return width.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getWidth_JsonNullable() {
     return width;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_WIDTH)
+  public void setWidth_JsonNullable(JsonNullable<Integer> width) {
+    this.width = width;
   }
 
   public void setWidth(@javax.annotation.Nullable Integer width) {
-    this.width = width;
+    this.width = JsonNullable.<Integer>of(width);
   }
 
 
   public RemoteImageInfo communityRating(@javax.annotation.Nullable Double communityRating) {
-    this.communityRating = communityRating;
+    this.communityRating = JsonNullable.<Double>of(communityRating);
     return this;
   }
 
@@ -211,17 +257,30 @@ public class RemoteImageInfo {
    * @return communityRating
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Double getCommunityRating() {
+        return communityRating.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Double> getCommunityRating_JsonNullable() {
     return communityRating;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
+  public void setCommunityRating_JsonNullable(JsonNullable<Double> communityRating) {
+    this.communityRating = communityRating;
   }
 
   public void setCommunityRating(@javax.annotation.Nullable Double communityRating) {
-    this.communityRating = communityRating;
+    this.communityRating = JsonNullable.<Double>of(communityRating);
   }
 
 
   public RemoteImageInfo voteCount(@javax.annotation.Nullable Integer voteCount) {
-    this.voteCount = voteCount;
+    this.voteCount = JsonNullable.<Integer>of(voteCount);
     return this;
   }
 
@@ -230,17 +289,30 @@ public class RemoteImageInfo {
    * @return voteCount
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getVoteCount() {
+        return voteCount.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_VOTE_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getVoteCount_JsonNullable() {
     return voteCount;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VOTE_COUNT)
+  public void setVoteCount_JsonNullable(JsonNullable<Integer> voteCount) {
+    this.voteCount = voteCount;
   }
 
   public void setVoteCount(@javax.annotation.Nullable Integer voteCount) {
-    this.voteCount = voteCount;
+    this.voteCount = JsonNullable.<Integer>of(voteCount);
   }
 
 
   public RemoteImageInfo language(@javax.annotation.Nullable String language) {
-    this.language = language;
+    this.language = JsonNullable.<String>of(language);
     return this;
   }
 
@@ -249,12 +321,25 @@ public class RemoteImageInfo {
    * @return language
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getLanguage() {
+        return language.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LANGUAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getLanguage_JsonNullable() {
     return language;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LANGUAGE)
+  public void setLanguage_JsonNullable(JsonNullable<String> language) {
+    this.language = language;
   }
 
   public void setLanguage(@javax.annotation.Nullable String language) {
-    this.language = language;
+    this.language = JsonNullable.<String>of(language);
   }
 
 
@@ -268,10 +353,15 @@ public class RemoteImageInfo {
    * @return type
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ImageType getType() {
     return type;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@javax.annotation.Nullable ImageType type) {
     this.type = type;
   }
@@ -287,16 +377,23 @@ public class RemoteImageInfo {
    * @return ratingType
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_RATING_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public RatingType getRatingType() {
     return ratingType;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_RATING_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRatingType(@javax.annotation.Nullable RatingType ratingType) {
     this.ratingType = ratingType;
   }
 
 
-
+  /**
+   * Return true if this RemoteImageInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -306,14 +403,14 @@ public class RemoteImageInfo {
       return false;
     }
     RemoteImageInfo remoteImageInfo = (RemoteImageInfo) o;
-    return Objects.equals(this.providerName, remoteImageInfo.providerName) &&
-        Objects.equals(this.url, remoteImageInfo.url) &&
-        Objects.equals(this.thumbnailUrl, remoteImageInfo.thumbnailUrl) &&
-        Objects.equals(this.height, remoteImageInfo.height) &&
-        Objects.equals(this.width, remoteImageInfo.width) &&
-        Objects.equals(this.communityRating, remoteImageInfo.communityRating) &&
-        Objects.equals(this.voteCount, remoteImageInfo.voteCount) &&
-        Objects.equals(this.language, remoteImageInfo.language) &&
+    return equalsNullable(this.providerName, remoteImageInfo.providerName) &&
+        equalsNullable(this.url, remoteImageInfo.url) &&
+        equalsNullable(this.thumbnailUrl, remoteImageInfo.thumbnailUrl) &&
+        equalsNullable(this.height, remoteImageInfo.height) &&
+        equalsNullable(this.width, remoteImageInfo.width) &&
+        equalsNullable(this.communityRating, remoteImageInfo.communityRating) &&
+        equalsNullable(this.voteCount, remoteImageInfo.voteCount) &&
+        equalsNullable(this.language, remoteImageInfo.language) &&
         Objects.equals(this.type, remoteImageInfo.type) &&
         Objects.equals(this.ratingType, remoteImageInfo.ratingType);
   }
@@ -324,7 +421,7 @@ public class RemoteImageInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(providerName, url, thumbnailUrl, height, width, communityRating, voteCount, language, type, ratingType);
+    return Objects.hash(hashCodeNullable(providerName), hashCodeNullable(url), hashCodeNullable(thumbnailUrl), hashCodeNullable(height), hashCodeNullable(width), hashCodeNullable(communityRating), hashCodeNullable(voteCount), hashCodeNullable(language), type, ratingType);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -363,118 +460,89 @@ public class RemoteImageInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("ProviderName");
-    openapiFields.add("Url");
-    openapiFields.add("ThumbnailUrl");
-    openapiFields.add("Height");
-    openapiFields.add("Width");
-    openapiFields.add("CommunityRating");
-    openapiFields.add("VoteCount");
-    openapiFields.add("Language");
-    openapiFields.add("Type");
-    openapiFields.add("RatingType");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to RemoteImageInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!RemoteImageInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in RemoteImageInfo is not found in the empty JSON string", RemoteImageInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!RemoteImageInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `RemoteImageInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("ProviderName") != null && !jsonObj.get("ProviderName").isJsonNull()) && !jsonObj.get("ProviderName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ProviderName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ProviderName").toString()));
-      }
-      if ((jsonObj.get("Url") != null && !jsonObj.get("Url").isJsonNull()) && !jsonObj.get("Url").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Url` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Url").toString()));
-      }
-      if ((jsonObj.get("ThumbnailUrl") != null && !jsonObj.get("ThumbnailUrl").isJsonNull()) && !jsonObj.get("ThumbnailUrl").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ThumbnailUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ThumbnailUrl").toString()));
-      }
-      if ((jsonObj.get("Language") != null && !jsonObj.get("Language").isJsonNull()) && !jsonObj.get("Language").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Language` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Language").toString()));
-      }
-      // validate the optional field `Type`
-      if (jsonObj.get("Type") != null && !jsonObj.get("Type").isJsonNull()) {
-        ImageType.validateJsonElement(jsonObj.get("Type"));
-      }
-      // validate the optional field `RatingType`
-      if (jsonObj.get("RatingType") != null && !jsonObj.get("RatingType").isJsonNull()) {
-        RatingType.validateJsonElement(jsonObj.get("RatingType"));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!RemoteImageInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'RemoteImageInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<RemoteImageInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(RemoteImageInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<RemoteImageInfo>() {
-           @Override
-           public void write(JsonWriter out, RemoteImageInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public RemoteImageInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of RemoteImageInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of RemoteImageInfo
-   * @throws IOException if the JSON string is invalid with respect to RemoteImageInfo
-   */
-  public static RemoteImageInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, RemoteImageInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of RemoteImageInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `ProviderName` to the URL query string
+    if (getProviderName() != null) {
+      joiner.add(String.format("%sProviderName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProviderName()))));
+    }
+
+    // add `Url` to the URL query string
+    if (getUrl() != null) {
+      joiner.add(String.format("%sUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
+    }
+
+    // add `ThumbnailUrl` to the URL query string
+    if (getThumbnailUrl() != null) {
+      joiner.add(String.format("%sThumbnailUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getThumbnailUrl()))));
+    }
+
+    // add `Height` to the URL query string
+    if (getHeight() != null) {
+      joiner.add(String.format("%sHeight%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
+    }
+
+    // add `Width` to the URL query string
+    if (getWidth() != null) {
+      joiner.add(String.format("%sWidth%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
+    }
+
+    // add `CommunityRating` to the URL query string
+    if (getCommunityRating() != null) {
+      joiner.add(String.format("%sCommunityRating%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCommunityRating()))));
+    }
+
+    // add `VoteCount` to the URL query string
+    if (getVoteCount() != null) {
+      joiner.add(String.format("%sVoteCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVoteCount()))));
+    }
+
+    // add `Language` to the URL query string
+    if (getLanguage() != null) {
+      joiner.add(String.format("%sLanguage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLanguage()))));
+    }
+
+    // add `Type` to the URL query string
+    if (getType() != null) {
+      joiner.add(String.format("%sType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+    }
+
+    // add `RatingType` to the URL query string
+    if (getRatingType() != null) {
+      joiner.add(String.format("%sRatingType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRatingType()))));
+    }
+
+    return joiner.toString();
   }
 }
 

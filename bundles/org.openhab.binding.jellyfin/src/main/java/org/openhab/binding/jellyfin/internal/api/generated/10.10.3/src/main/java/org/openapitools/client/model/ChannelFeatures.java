@@ -13,13 +13,17 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,96 +32,79 @@ import org.openapitools.client.model.ChannelItemSortField;
 import org.openapitools.client.model.ChannelMediaContentType;
 import org.openapitools.client.model.ChannelMediaType;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * ChannelFeatures
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  ChannelFeatures.JSON_PROPERTY_NAME,
+  ChannelFeatures.JSON_PROPERTY_ID,
+  ChannelFeatures.JSON_PROPERTY_CAN_SEARCH,
+  ChannelFeatures.JSON_PROPERTY_MEDIA_TYPES,
+  ChannelFeatures.JSON_PROPERTY_CONTENT_TYPES,
+  ChannelFeatures.JSON_PROPERTY_MAX_PAGE_SIZE,
+  ChannelFeatures.JSON_PROPERTY_AUTO_REFRESH_LEVELS,
+  ChannelFeatures.JSON_PROPERTY_DEFAULT_SORT_FIELDS,
+  ChannelFeatures.JSON_PROPERTY_SUPPORTS_SORT_ORDER_TOGGLE,
+  ChannelFeatures.JSON_PROPERTY_SUPPORTS_LATEST_MEDIA,
+  ChannelFeatures.JSON_PROPERTY_CAN_FILTER,
+  ChannelFeatures.JSON_PROPERTY_SUPPORTS_CONTENT_DOWNLOADING
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ChannelFeatures {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
+  public static final String JSON_PROPERTY_NAME = "Name";
   @javax.annotation.Nullable
   private String name;
 
-  public static final String SERIALIZED_NAME_ID = "Id";
-  @SerializedName(SERIALIZED_NAME_ID)
+  public static final String JSON_PROPERTY_ID = "Id";
   @javax.annotation.Nullable
   private UUID id;
 
-  public static final String SERIALIZED_NAME_CAN_SEARCH = "CanSearch";
-  @SerializedName(SERIALIZED_NAME_CAN_SEARCH)
+  public static final String JSON_PROPERTY_CAN_SEARCH = "CanSearch";
   @javax.annotation.Nullable
   private Boolean canSearch;
 
-  public static final String SERIALIZED_NAME_MEDIA_TYPES = "MediaTypes";
-  @SerializedName(SERIALIZED_NAME_MEDIA_TYPES)
+  public static final String JSON_PROPERTY_MEDIA_TYPES = "MediaTypes";
   @javax.annotation.Nullable
   private List<ChannelMediaType> mediaTypes = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_CONTENT_TYPES = "ContentTypes";
-  @SerializedName(SERIALIZED_NAME_CONTENT_TYPES)
+  public static final String JSON_PROPERTY_CONTENT_TYPES = "ContentTypes";
   @javax.annotation.Nullable
   private List<ChannelMediaContentType> contentTypes = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_MAX_PAGE_SIZE = "MaxPageSize";
-  @SerializedName(SERIALIZED_NAME_MAX_PAGE_SIZE)
-  @javax.annotation.Nullable
-  private Integer maxPageSize;
+  public static final String JSON_PROPERTY_MAX_PAGE_SIZE = "MaxPageSize";
+  private JsonNullable<Integer> maxPageSize = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_AUTO_REFRESH_LEVELS = "AutoRefreshLevels";
-  @SerializedName(SERIALIZED_NAME_AUTO_REFRESH_LEVELS)
-  @javax.annotation.Nullable
-  private Integer autoRefreshLevels;
+  public static final String JSON_PROPERTY_AUTO_REFRESH_LEVELS = "AutoRefreshLevels";
+  private JsonNullable<Integer> autoRefreshLevels = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_DEFAULT_SORT_FIELDS = "DefaultSortFields";
-  @SerializedName(SERIALIZED_NAME_DEFAULT_SORT_FIELDS)
+  public static final String JSON_PROPERTY_DEFAULT_SORT_FIELDS = "DefaultSortFields";
   @javax.annotation.Nullable
   private List<ChannelItemSortField> defaultSortFields = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_SUPPORTS_SORT_ORDER_TOGGLE = "SupportsSortOrderToggle";
-  @SerializedName(SERIALIZED_NAME_SUPPORTS_SORT_ORDER_TOGGLE)
+  public static final String JSON_PROPERTY_SUPPORTS_SORT_ORDER_TOGGLE = "SupportsSortOrderToggle";
   @javax.annotation.Nullable
   private Boolean supportsSortOrderToggle;
 
-  public static final String SERIALIZED_NAME_SUPPORTS_LATEST_MEDIA = "SupportsLatestMedia";
-  @SerializedName(SERIALIZED_NAME_SUPPORTS_LATEST_MEDIA)
+  public static final String JSON_PROPERTY_SUPPORTS_LATEST_MEDIA = "SupportsLatestMedia";
   @javax.annotation.Nullable
   private Boolean supportsLatestMedia;
 
-  public static final String SERIALIZED_NAME_CAN_FILTER = "CanFilter";
-  @SerializedName(SERIALIZED_NAME_CAN_FILTER)
+  public static final String JSON_PROPERTY_CAN_FILTER = "CanFilter";
   @javax.annotation.Nullable
   private Boolean canFilter;
 
-  public static final String SERIALIZED_NAME_SUPPORTS_CONTENT_DOWNLOADING = "SupportsContentDownloading";
-  @SerializedName(SERIALIZED_NAME_SUPPORTS_CONTENT_DOWNLOADING)
+  public static final String JSON_PROPERTY_SUPPORTS_CONTENT_DOWNLOADING = "SupportsContentDownloading";
   @javax.annotation.Nullable
   private Boolean supportsContentDownloading;
 
-  public ChannelFeatures() {
+  public ChannelFeatures() { 
   }
 
   public ChannelFeatures name(@javax.annotation.Nullable String name) {
@@ -130,10 +117,15 @@ public class ChannelFeatures {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -149,10 +141,15 @@ public class ChannelFeatures {
    * @return id
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getId() {
     return id;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable UUID id) {
     this.id = id;
   }
@@ -168,10 +165,15 @@ public class ChannelFeatures {
    * @return canSearch
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CAN_SEARCH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getCanSearch() {
     return canSearch;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CAN_SEARCH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCanSearch(@javax.annotation.Nullable Boolean canSearch) {
     this.canSearch = canSearch;
   }
@@ -195,10 +197,15 @@ public class ChannelFeatures {
    * @return mediaTypes
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MEDIA_TYPES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ChannelMediaType> getMediaTypes() {
     return mediaTypes;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MEDIA_TYPES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMediaTypes(@javax.annotation.Nullable List<ChannelMediaType> mediaTypes) {
     this.mediaTypes = mediaTypes;
   }
@@ -222,17 +229,22 @@ public class ChannelFeatures {
    * @return contentTypes
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CONTENT_TYPES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ChannelMediaContentType> getContentTypes() {
     return contentTypes;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CONTENT_TYPES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setContentTypes(@javax.annotation.Nullable List<ChannelMediaContentType> contentTypes) {
     this.contentTypes = contentTypes;
   }
 
 
   public ChannelFeatures maxPageSize(@javax.annotation.Nullable Integer maxPageSize) {
-    this.maxPageSize = maxPageSize;
+    this.maxPageSize = JsonNullable.<Integer>of(maxPageSize);
     return this;
   }
 
@@ -241,17 +253,30 @@ public class ChannelFeatures {
    * @return maxPageSize
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getMaxPageSize() {
+        return maxPageSize.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MAX_PAGE_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getMaxPageSize_JsonNullable() {
     return maxPageSize;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAX_PAGE_SIZE)
+  public void setMaxPageSize_JsonNullable(JsonNullable<Integer> maxPageSize) {
+    this.maxPageSize = maxPageSize;
   }
 
   public void setMaxPageSize(@javax.annotation.Nullable Integer maxPageSize) {
-    this.maxPageSize = maxPageSize;
+    this.maxPageSize = JsonNullable.<Integer>of(maxPageSize);
   }
 
 
   public ChannelFeatures autoRefreshLevels(@javax.annotation.Nullable Integer autoRefreshLevels) {
-    this.autoRefreshLevels = autoRefreshLevels;
+    this.autoRefreshLevels = JsonNullable.<Integer>of(autoRefreshLevels);
     return this;
   }
 
@@ -260,12 +285,25 @@ public class ChannelFeatures {
    * @return autoRefreshLevels
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getAutoRefreshLevels() {
+        return autoRefreshLevels.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_AUTO_REFRESH_LEVELS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getAutoRefreshLevels_JsonNullable() {
     return autoRefreshLevels;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AUTO_REFRESH_LEVELS)
+  public void setAutoRefreshLevels_JsonNullable(JsonNullable<Integer> autoRefreshLevels) {
+    this.autoRefreshLevels = autoRefreshLevels;
   }
 
   public void setAutoRefreshLevels(@javax.annotation.Nullable Integer autoRefreshLevels) {
-    this.autoRefreshLevels = autoRefreshLevels;
+    this.autoRefreshLevels = JsonNullable.<Integer>of(autoRefreshLevels);
   }
 
 
@@ -287,10 +325,15 @@ public class ChannelFeatures {
    * @return defaultSortFields
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DEFAULT_SORT_FIELDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ChannelItemSortField> getDefaultSortFields() {
     return defaultSortFields;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DEFAULT_SORT_FIELDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDefaultSortFields(@javax.annotation.Nullable List<ChannelItemSortField> defaultSortFields) {
     this.defaultSortFields = defaultSortFields;
   }
@@ -306,10 +349,15 @@ public class ChannelFeatures {
    * @return supportsSortOrderToggle
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_SORT_ORDER_TOGGLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSupportsSortOrderToggle() {
     return supportsSortOrderToggle;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_SORT_ORDER_TOGGLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSupportsSortOrderToggle(@javax.annotation.Nullable Boolean supportsSortOrderToggle) {
     this.supportsSortOrderToggle = supportsSortOrderToggle;
   }
@@ -325,10 +373,15 @@ public class ChannelFeatures {
    * @return supportsLatestMedia
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_LATEST_MEDIA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSupportsLatestMedia() {
     return supportsLatestMedia;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_LATEST_MEDIA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSupportsLatestMedia(@javax.annotation.Nullable Boolean supportsLatestMedia) {
     this.supportsLatestMedia = supportsLatestMedia;
   }
@@ -344,10 +397,15 @@ public class ChannelFeatures {
    * @return canFilter
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CAN_FILTER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getCanFilter() {
     return canFilter;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CAN_FILTER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCanFilter(@javax.annotation.Nullable Boolean canFilter) {
     this.canFilter = canFilter;
   }
@@ -363,16 +421,23 @@ public class ChannelFeatures {
    * @return supportsContentDownloading
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_CONTENT_DOWNLOADING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSupportsContentDownloading() {
     return supportsContentDownloading;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_CONTENT_DOWNLOADING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSupportsContentDownloading(@javax.annotation.Nullable Boolean supportsContentDownloading) {
     this.supportsContentDownloading = supportsContentDownloading;
   }
 
 
-
+  /**
+   * Return true if this ChannelFeatures object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -387,8 +452,8 @@ public class ChannelFeatures {
         Objects.equals(this.canSearch, channelFeatures.canSearch) &&
         Objects.equals(this.mediaTypes, channelFeatures.mediaTypes) &&
         Objects.equals(this.contentTypes, channelFeatures.contentTypes) &&
-        Objects.equals(this.maxPageSize, channelFeatures.maxPageSize) &&
-        Objects.equals(this.autoRefreshLevels, channelFeatures.autoRefreshLevels) &&
+        equalsNullable(this.maxPageSize, channelFeatures.maxPageSize) &&
+        equalsNullable(this.autoRefreshLevels, channelFeatures.autoRefreshLevels) &&
         Objects.equals(this.defaultSortFields, channelFeatures.defaultSortFields) &&
         Objects.equals(this.supportsSortOrderToggle, channelFeatures.supportsSortOrderToggle) &&
         Objects.equals(this.supportsLatestMedia, channelFeatures.supportsLatestMedia) &&
@@ -402,7 +467,7 @@ public class ChannelFeatures {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, id, canSearch, mediaTypes, contentTypes, maxPageSize, autoRefreshLevels, defaultSortFields, supportsSortOrderToggle, supportsLatestMedia, canFilter, supportsContentDownloading);
+    return Objects.hash(name, id, canSearch, mediaTypes, contentTypes, hashCodeNullable(maxPageSize), hashCodeNullable(autoRefreshLevels), defaultSortFields, supportsSortOrderToggle, supportsLatestMedia, canFilter, supportsContentDownloading);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -443,118 +508,117 @@ public class ChannelFeatures {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("Id");
-    openapiFields.add("CanSearch");
-    openapiFields.add("MediaTypes");
-    openapiFields.add("ContentTypes");
-    openapiFields.add("MaxPageSize");
-    openapiFields.add("AutoRefreshLevels");
-    openapiFields.add("DefaultSortFields");
-    openapiFields.add("SupportsSortOrderToggle");
-    openapiFields.add("SupportsLatestMedia");
-    openapiFields.add("CanFilter");
-    openapiFields.add("SupportsContentDownloading");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to ChannelFeatures
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!ChannelFeatures.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in ChannelFeatures is not found in the empty JSON string", ChannelFeatures.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!ChannelFeatures.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `ChannelFeatures` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("Id") != null && !jsonObj.get("Id").isJsonNull()) && !jsonObj.get("Id").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Id").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("MediaTypes") != null && !jsonObj.get("MediaTypes").isJsonNull() && !jsonObj.get("MediaTypes").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MediaTypes` to be an array in the JSON string but got `%s`", jsonObj.get("MediaTypes").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("ContentTypes") != null && !jsonObj.get("ContentTypes").isJsonNull() && !jsonObj.get("ContentTypes").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ContentTypes` to be an array in the JSON string but got `%s`", jsonObj.get("ContentTypes").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("DefaultSortFields") != null && !jsonObj.get("DefaultSortFields").isJsonNull() && !jsonObj.get("DefaultSortFields").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `DefaultSortFields` to be an array in the JSON string but got `%s`", jsonObj.get("DefaultSortFields").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!ChannelFeatures.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'ChannelFeatures' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<ChannelFeatures> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(ChannelFeatures.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<ChannelFeatures>() {
-           @Override
-           public void write(JsonWriter out, ChannelFeatures value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public ChannelFeatures read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of ChannelFeatures given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of ChannelFeatures
-   * @throws IOException if the JSON string is invalid with respect to ChannelFeatures
-   */
-  public static ChannelFeatures fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, ChannelFeatures.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of ChannelFeatures to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `Id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+    }
+
+    // add `CanSearch` to the URL query string
+    if (getCanSearch() != null) {
+      joiner.add(String.format("%sCanSearch%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCanSearch()))));
+    }
+
+    // add `MediaTypes` to the URL query string
+    if (getMediaTypes() != null) {
+      for (int i = 0; i < getMediaTypes().size(); i++) {
+        if (getMediaTypes().get(i) != null) {
+          joiner.add(String.format("%sMediaTypes%s%s=%s", prefix, suffix,
+              "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+              ApiClient.urlEncode(ApiClient.valueToString(getMediaTypes().get(i)))));
+        }
+      }
+    }
+
+    // add `ContentTypes` to the URL query string
+    if (getContentTypes() != null) {
+      for (int i = 0; i < getContentTypes().size(); i++) {
+        if (getContentTypes().get(i) != null) {
+          joiner.add(String.format("%sContentTypes%s%s=%s", prefix, suffix,
+              "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+              ApiClient.urlEncode(ApiClient.valueToString(getContentTypes().get(i)))));
+        }
+      }
+    }
+
+    // add `MaxPageSize` to the URL query string
+    if (getMaxPageSize() != null) {
+      joiner.add(String.format("%sMaxPageSize%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxPageSize()))));
+    }
+
+    // add `AutoRefreshLevels` to the URL query string
+    if (getAutoRefreshLevels() != null) {
+      joiner.add(String.format("%sAutoRefreshLevels%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAutoRefreshLevels()))));
+    }
+
+    // add `DefaultSortFields` to the URL query string
+    if (getDefaultSortFields() != null) {
+      for (int i = 0; i < getDefaultSortFields().size(); i++) {
+        if (getDefaultSortFields().get(i) != null) {
+          joiner.add(String.format("%sDefaultSortFields%s%s=%s", prefix, suffix,
+              "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+              ApiClient.urlEncode(ApiClient.valueToString(getDefaultSortFields().get(i)))));
+        }
+      }
+    }
+
+    // add `SupportsSortOrderToggle` to the URL query string
+    if (getSupportsSortOrderToggle() != null) {
+      joiner.add(String.format("%sSupportsSortOrderToggle%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSupportsSortOrderToggle()))));
+    }
+
+    // add `SupportsLatestMedia` to the URL query string
+    if (getSupportsLatestMedia() != null) {
+      joiner.add(String.format("%sSupportsLatestMedia%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSupportsLatestMedia()))));
+    }
+
+    // add `CanFilter` to the URL query string
+    if (getCanFilter() != null) {
+      joiner.add(String.format("%sCanFilter%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCanFilter()))));
+    }
+
+    // add `SupportsContentDownloading` to the URL query string
+    if (getSupportsContentDownloading() != null) {
+      joiner.add(String.format("%sSupportsContentDownloading%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSupportsContentDownloading()))));
+    }
+
+    return joiner.toString();
   }
 }
 

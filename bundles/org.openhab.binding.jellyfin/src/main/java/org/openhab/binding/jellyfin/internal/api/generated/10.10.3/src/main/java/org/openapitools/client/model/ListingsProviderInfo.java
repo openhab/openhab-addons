@@ -13,142 +13,114 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.client.model.NameValuePair;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * ListingsProviderInfo
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  ListingsProviderInfo.JSON_PROPERTY_ID,
+  ListingsProviderInfo.JSON_PROPERTY_TYPE,
+  ListingsProviderInfo.JSON_PROPERTY_USERNAME,
+  ListingsProviderInfo.JSON_PROPERTY_PASSWORD,
+  ListingsProviderInfo.JSON_PROPERTY_LISTINGS_ID,
+  ListingsProviderInfo.JSON_PROPERTY_ZIP_CODE,
+  ListingsProviderInfo.JSON_PROPERTY_COUNTRY,
+  ListingsProviderInfo.JSON_PROPERTY_PATH,
+  ListingsProviderInfo.JSON_PROPERTY_ENABLED_TUNERS,
+  ListingsProviderInfo.JSON_PROPERTY_ENABLE_ALL_TUNERS,
+  ListingsProviderInfo.JSON_PROPERTY_NEWS_CATEGORIES,
+  ListingsProviderInfo.JSON_PROPERTY_SPORTS_CATEGORIES,
+  ListingsProviderInfo.JSON_PROPERTY_KIDS_CATEGORIES,
+  ListingsProviderInfo.JSON_PROPERTY_MOVIE_CATEGORIES,
+  ListingsProviderInfo.JSON_PROPERTY_CHANNEL_MAPPINGS,
+  ListingsProviderInfo.JSON_PROPERTY_MOVIE_PREFIX,
+  ListingsProviderInfo.JSON_PROPERTY_PREFERRED_LANGUAGE,
+  ListingsProviderInfo.JSON_PROPERTY_USER_AGENT
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ListingsProviderInfo {
-  public static final String SERIALIZED_NAME_ID = "Id";
-  @SerializedName(SERIALIZED_NAME_ID)
-  @javax.annotation.Nullable
-  private String id;
+  public static final String JSON_PROPERTY_ID = "Id";
+  private JsonNullable<String> id = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TYPE = "Type";
-  @SerializedName(SERIALIZED_NAME_TYPE)
-  @javax.annotation.Nullable
-  private String type;
+  public static final String JSON_PROPERTY_TYPE = "Type";
+  private JsonNullable<String> type = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_USERNAME = "Username";
-  @SerializedName(SERIALIZED_NAME_USERNAME)
-  @javax.annotation.Nullable
-  private String username;
+  public static final String JSON_PROPERTY_USERNAME = "Username";
+  private JsonNullable<String> username = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PASSWORD = "Password";
-  @SerializedName(SERIALIZED_NAME_PASSWORD)
-  @javax.annotation.Nullable
-  private String password;
+  public static final String JSON_PROPERTY_PASSWORD = "Password";
+  private JsonNullable<String> password = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_LISTINGS_ID = "ListingsId";
-  @SerializedName(SERIALIZED_NAME_LISTINGS_ID)
-  @javax.annotation.Nullable
-  private String listingsId;
+  public static final String JSON_PROPERTY_LISTINGS_ID = "ListingsId";
+  private JsonNullable<String> listingsId = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ZIP_CODE = "ZipCode";
-  @SerializedName(SERIALIZED_NAME_ZIP_CODE)
-  @javax.annotation.Nullable
-  private String zipCode;
+  public static final String JSON_PROPERTY_ZIP_CODE = "ZipCode";
+  private JsonNullable<String> zipCode = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_COUNTRY = "Country";
-  @SerializedName(SERIALIZED_NAME_COUNTRY)
-  @javax.annotation.Nullable
-  private String country;
+  public static final String JSON_PROPERTY_COUNTRY = "Country";
+  private JsonNullable<String> country = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PATH = "Path";
-  @SerializedName(SERIALIZED_NAME_PATH)
-  @javax.annotation.Nullable
-  private String path;
+  public static final String JSON_PROPERTY_PATH = "Path";
+  private JsonNullable<String> path = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ENABLED_TUNERS = "EnabledTuners";
-  @SerializedName(SERIALIZED_NAME_ENABLED_TUNERS)
-  @javax.annotation.Nullable
-  private List<String> enabledTuners;
+  public static final String JSON_PROPERTY_ENABLED_TUNERS = "EnabledTuners";
+  private JsonNullable<List<String>> enabledTuners = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_ENABLE_ALL_TUNERS = "EnableAllTuners";
-  @SerializedName(SERIALIZED_NAME_ENABLE_ALL_TUNERS)
+  public static final String JSON_PROPERTY_ENABLE_ALL_TUNERS = "EnableAllTuners";
   @javax.annotation.Nullable
   private Boolean enableAllTuners;
 
-  public static final String SERIALIZED_NAME_NEWS_CATEGORIES = "NewsCategories";
-  @SerializedName(SERIALIZED_NAME_NEWS_CATEGORIES)
-  @javax.annotation.Nullable
-  private List<String> newsCategories;
+  public static final String JSON_PROPERTY_NEWS_CATEGORIES = "NewsCategories";
+  private JsonNullable<List<String>> newsCategories = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_SPORTS_CATEGORIES = "SportsCategories";
-  @SerializedName(SERIALIZED_NAME_SPORTS_CATEGORIES)
-  @javax.annotation.Nullable
-  private List<String> sportsCategories;
+  public static final String JSON_PROPERTY_SPORTS_CATEGORIES = "SportsCategories";
+  private JsonNullable<List<String>> sportsCategories = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_KIDS_CATEGORIES = "KidsCategories";
-  @SerializedName(SERIALIZED_NAME_KIDS_CATEGORIES)
-  @javax.annotation.Nullable
-  private List<String> kidsCategories;
+  public static final String JSON_PROPERTY_KIDS_CATEGORIES = "KidsCategories";
+  private JsonNullable<List<String>> kidsCategories = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_MOVIE_CATEGORIES = "MovieCategories";
-  @SerializedName(SERIALIZED_NAME_MOVIE_CATEGORIES)
-  @javax.annotation.Nullable
-  private List<String> movieCategories;
+  public static final String JSON_PROPERTY_MOVIE_CATEGORIES = "MovieCategories";
+  private JsonNullable<List<String>> movieCategories = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_CHANNEL_MAPPINGS = "ChannelMappings";
-  @SerializedName(SERIALIZED_NAME_CHANNEL_MAPPINGS)
-  @javax.annotation.Nullable
-  private List<NameValuePair> channelMappings;
+  public static final String JSON_PROPERTY_CHANNEL_MAPPINGS = "ChannelMappings";
+  private JsonNullable<List<NameValuePair>> channelMappings = JsonNullable.<List<NameValuePair>>undefined();
 
-  public static final String SERIALIZED_NAME_MOVIE_PREFIX = "MoviePrefix";
-  @SerializedName(SERIALIZED_NAME_MOVIE_PREFIX)
-  @javax.annotation.Nullable
-  private String moviePrefix;
+  public static final String JSON_PROPERTY_MOVIE_PREFIX = "MoviePrefix";
+  private JsonNullable<String> moviePrefix = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PREFERRED_LANGUAGE = "PreferredLanguage";
-  @SerializedName(SERIALIZED_NAME_PREFERRED_LANGUAGE)
-  @javax.annotation.Nullable
-  private String preferredLanguage;
+  public static final String JSON_PROPERTY_PREFERRED_LANGUAGE = "PreferredLanguage";
+  private JsonNullable<String> preferredLanguage = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_USER_AGENT = "UserAgent";
-  @SerializedName(SERIALIZED_NAME_USER_AGENT)
-  @javax.annotation.Nullable
-  private String userAgent;
+  public static final String JSON_PROPERTY_USER_AGENT = "UserAgent";
+  private JsonNullable<String> userAgent = JsonNullable.<String>undefined();
 
-  public ListingsProviderInfo() {
+  public ListingsProviderInfo() { 
   }
 
   public ListingsProviderInfo id(@javax.annotation.Nullable String id) {
-    this.id = id;
+    this.id = JsonNullable.<String>of(id);
     return this;
   }
 
@@ -157,17 +129,30 @@ public class ListingsProviderInfo {
    * @return id
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getId() {
+        return id.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getId_JsonNullable() {
     return id;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ID)
+  public void setId_JsonNullable(JsonNullable<String> id) {
+    this.id = id;
   }
 
   public void setId(@javax.annotation.Nullable String id) {
-    this.id = id;
+    this.id = JsonNullable.<String>of(id);
   }
 
 
   public ListingsProviderInfo type(@javax.annotation.Nullable String type) {
-    this.type = type;
+    this.type = JsonNullable.<String>of(type);
     return this;
   }
 
@@ -176,17 +161,30 @@ public class ListingsProviderInfo {
    * @return type
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getType() {
+        return type.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getType_JsonNullable() {
     return type;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  public void setType_JsonNullable(JsonNullable<String> type) {
+    this.type = type;
   }
 
   public void setType(@javax.annotation.Nullable String type) {
-    this.type = type;
+    this.type = JsonNullable.<String>of(type);
   }
 
 
   public ListingsProviderInfo username(@javax.annotation.Nullable String username) {
-    this.username = username;
+    this.username = JsonNullable.<String>of(username);
     return this;
   }
 
@@ -195,17 +193,30 @@ public class ListingsProviderInfo {
    * @return username
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getUsername() {
+        return username.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_USERNAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getUsername_JsonNullable() {
     return username;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_USERNAME)
+  public void setUsername_JsonNullable(JsonNullable<String> username) {
+    this.username = username;
   }
 
   public void setUsername(@javax.annotation.Nullable String username) {
-    this.username = username;
+    this.username = JsonNullable.<String>of(username);
   }
 
 
   public ListingsProviderInfo password(@javax.annotation.Nullable String password) {
-    this.password = password;
+    this.password = JsonNullable.<String>of(password);
     return this;
   }
 
@@ -214,17 +225,30 @@ public class ListingsProviderInfo {
    * @return password
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPassword() {
+        return password.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PASSWORD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPassword_JsonNullable() {
     return password;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PASSWORD)
+  public void setPassword_JsonNullable(JsonNullable<String> password) {
+    this.password = password;
   }
 
   public void setPassword(@javax.annotation.Nullable String password) {
-    this.password = password;
+    this.password = JsonNullable.<String>of(password);
   }
 
 
   public ListingsProviderInfo listingsId(@javax.annotation.Nullable String listingsId) {
-    this.listingsId = listingsId;
+    this.listingsId = JsonNullable.<String>of(listingsId);
     return this;
   }
 
@@ -233,17 +257,30 @@ public class ListingsProviderInfo {
    * @return listingsId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getListingsId() {
+        return listingsId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LISTINGS_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getListingsId_JsonNullable() {
     return listingsId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LISTINGS_ID)
+  public void setListingsId_JsonNullable(JsonNullable<String> listingsId) {
+    this.listingsId = listingsId;
   }
 
   public void setListingsId(@javax.annotation.Nullable String listingsId) {
-    this.listingsId = listingsId;
+    this.listingsId = JsonNullable.<String>of(listingsId);
   }
 
 
   public ListingsProviderInfo zipCode(@javax.annotation.Nullable String zipCode) {
-    this.zipCode = zipCode;
+    this.zipCode = JsonNullable.<String>of(zipCode);
     return this;
   }
 
@@ -252,17 +289,30 @@ public class ListingsProviderInfo {
    * @return zipCode
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getZipCode() {
+        return zipCode.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ZIP_CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getZipCode_JsonNullable() {
     return zipCode;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ZIP_CODE)
+  public void setZipCode_JsonNullable(JsonNullable<String> zipCode) {
+    this.zipCode = zipCode;
   }
 
   public void setZipCode(@javax.annotation.Nullable String zipCode) {
-    this.zipCode = zipCode;
+    this.zipCode = JsonNullable.<String>of(zipCode);
   }
 
 
   public ListingsProviderInfo country(@javax.annotation.Nullable String country) {
-    this.country = country;
+    this.country = JsonNullable.<String>of(country);
     return this;
   }
 
@@ -271,17 +321,30 @@ public class ListingsProviderInfo {
    * @return country
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getCountry() {
+        return country.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_COUNTRY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getCountry_JsonNullable() {
     return country;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_COUNTRY)
+  public void setCountry_JsonNullable(JsonNullable<String> country) {
+    this.country = country;
   }
 
   public void setCountry(@javax.annotation.Nullable String country) {
-    this.country = country;
+    this.country = JsonNullable.<String>of(country);
   }
 
 
   public ListingsProviderInfo path(@javax.annotation.Nullable String path) {
-    this.path = path;
+    this.path = JsonNullable.<String>of(path);
     return this;
   }
 
@@ -290,25 +353,42 @@ public class ListingsProviderInfo {
    * @return path
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPath() {
+        return path.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPath_JsonNullable() {
     return path;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PATH)
+  public void setPath_JsonNullable(JsonNullable<String> path) {
+    this.path = path;
   }
 
   public void setPath(@javax.annotation.Nullable String path) {
-    this.path = path;
+    this.path = JsonNullable.<String>of(path);
   }
 
 
   public ListingsProviderInfo enabledTuners(@javax.annotation.Nullable List<String> enabledTuners) {
-    this.enabledTuners = enabledTuners;
+    this.enabledTuners = JsonNullable.<List<String>>of(enabledTuners);
     return this;
   }
 
   public ListingsProviderInfo addEnabledTunersItem(String enabledTunersItem) {
-    if (this.enabledTuners == null) {
-      this.enabledTuners = new ArrayList<>();
+    if (this.enabledTuners == null || !this.enabledTuners.isPresent()) {
+      this.enabledTuners = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.enabledTuners.add(enabledTunersItem);
+    try {
+      this.enabledTuners.get().add(enabledTunersItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -317,12 +397,25 @@ public class ListingsProviderInfo {
    * @return enabledTuners
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getEnabledTuners() {
+        return enabledTuners.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ENABLED_TUNERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getEnabledTuners_JsonNullable() {
     return enabledTuners;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ENABLED_TUNERS)
+  public void setEnabledTuners_JsonNullable(JsonNullable<List<String>> enabledTuners) {
+    this.enabledTuners = enabledTuners;
   }
 
   public void setEnabledTuners(@javax.annotation.Nullable List<String> enabledTuners) {
-    this.enabledTuners = enabledTuners;
+    this.enabledTuners = JsonNullable.<List<String>>of(enabledTuners);
   }
 
 
@@ -336,25 +429,34 @@ public class ListingsProviderInfo {
    * @return enableAllTuners
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_ALL_TUNERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableAllTuners() {
     return enableAllTuners;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_ALL_TUNERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableAllTuners(@javax.annotation.Nullable Boolean enableAllTuners) {
     this.enableAllTuners = enableAllTuners;
   }
 
 
   public ListingsProviderInfo newsCategories(@javax.annotation.Nullable List<String> newsCategories) {
-    this.newsCategories = newsCategories;
+    this.newsCategories = JsonNullable.<List<String>>of(newsCategories);
     return this;
   }
 
   public ListingsProviderInfo addNewsCategoriesItem(String newsCategoriesItem) {
-    if (this.newsCategories == null) {
-      this.newsCategories = new ArrayList<>();
+    if (this.newsCategories == null || !this.newsCategories.isPresent()) {
+      this.newsCategories = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.newsCategories.add(newsCategoriesItem);
+    try {
+      this.newsCategories.get().add(newsCategoriesItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -363,25 +465,42 @@ public class ListingsProviderInfo {
    * @return newsCategories
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getNewsCategories() {
+        return newsCategories.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NEWS_CATEGORIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getNewsCategories_JsonNullable() {
     return newsCategories;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NEWS_CATEGORIES)
+  public void setNewsCategories_JsonNullable(JsonNullable<List<String>> newsCategories) {
+    this.newsCategories = newsCategories;
   }
 
   public void setNewsCategories(@javax.annotation.Nullable List<String> newsCategories) {
-    this.newsCategories = newsCategories;
+    this.newsCategories = JsonNullable.<List<String>>of(newsCategories);
   }
 
 
   public ListingsProviderInfo sportsCategories(@javax.annotation.Nullable List<String> sportsCategories) {
-    this.sportsCategories = sportsCategories;
+    this.sportsCategories = JsonNullable.<List<String>>of(sportsCategories);
     return this;
   }
 
   public ListingsProviderInfo addSportsCategoriesItem(String sportsCategoriesItem) {
-    if (this.sportsCategories == null) {
-      this.sportsCategories = new ArrayList<>();
+    if (this.sportsCategories == null || !this.sportsCategories.isPresent()) {
+      this.sportsCategories = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.sportsCategories.add(sportsCategoriesItem);
+    try {
+      this.sportsCategories.get().add(sportsCategoriesItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -390,25 +509,42 @@ public class ListingsProviderInfo {
    * @return sportsCategories
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getSportsCategories() {
+        return sportsCategories.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SPORTS_CATEGORIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getSportsCategories_JsonNullable() {
     return sportsCategories;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SPORTS_CATEGORIES)
+  public void setSportsCategories_JsonNullable(JsonNullable<List<String>> sportsCategories) {
+    this.sportsCategories = sportsCategories;
   }
 
   public void setSportsCategories(@javax.annotation.Nullable List<String> sportsCategories) {
-    this.sportsCategories = sportsCategories;
+    this.sportsCategories = JsonNullable.<List<String>>of(sportsCategories);
   }
 
 
   public ListingsProviderInfo kidsCategories(@javax.annotation.Nullable List<String> kidsCategories) {
-    this.kidsCategories = kidsCategories;
+    this.kidsCategories = JsonNullable.<List<String>>of(kidsCategories);
     return this;
   }
 
   public ListingsProviderInfo addKidsCategoriesItem(String kidsCategoriesItem) {
-    if (this.kidsCategories == null) {
-      this.kidsCategories = new ArrayList<>();
+    if (this.kidsCategories == null || !this.kidsCategories.isPresent()) {
+      this.kidsCategories = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.kidsCategories.add(kidsCategoriesItem);
+    try {
+      this.kidsCategories.get().add(kidsCategoriesItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -417,25 +553,42 @@ public class ListingsProviderInfo {
    * @return kidsCategories
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getKidsCategories() {
+        return kidsCategories.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_KIDS_CATEGORIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getKidsCategories_JsonNullable() {
     return kidsCategories;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_KIDS_CATEGORIES)
+  public void setKidsCategories_JsonNullable(JsonNullable<List<String>> kidsCategories) {
+    this.kidsCategories = kidsCategories;
   }
 
   public void setKidsCategories(@javax.annotation.Nullable List<String> kidsCategories) {
-    this.kidsCategories = kidsCategories;
+    this.kidsCategories = JsonNullable.<List<String>>of(kidsCategories);
   }
 
 
   public ListingsProviderInfo movieCategories(@javax.annotation.Nullable List<String> movieCategories) {
-    this.movieCategories = movieCategories;
+    this.movieCategories = JsonNullable.<List<String>>of(movieCategories);
     return this;
   }
 
   public ListingsProviderInfo addMovieCategoriesItem(String movieCategoriesItem) {
-    if (this.movieCategories == null) {
-      this.movieCategories = new ArrayList<>();
+    if (this.movieCategories == null || !this.movieCategories.isPresent()) {
+      this.movieCategories = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.movieCategories.add(movieCategoriesItem);
+    try {
+      this.movieCategories.get().add(movieCategoriesItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -444,25 +597,42 @@ public class ListingsProviderInfo {
    * @return movieCategories
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getMovieCategories() {
+        return movieCategories.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MOVIE_CATEGORIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getMovieCategories_JsonNullable() {
     return movieCategories;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MOVIE_CATEGORIES)
+  public void setMovieCategories_JsonNullable(JsonNullable<List<String>> movieCategories) {
+    this.movieCategories = movieCategories;
   }
 
   public void setMovieCategories(@javax.annotation.Nullable List<String> movieCategories) {
-    this.movieCategories = movieCategories;
+    this.movieCategories = JsonNullable.<List<String>>of(movieCategories);
   }
 
 
   public ListingsProviderInfo channelMappings(@javax.annotation.Nullable List<NameValuePair> channelMappings) {
-    this.channelMappings = channelMappings;
+    this.channelMappings = JsonNullable.<List<NameValuePair>>of(channelMappings);
     return this;
   }
 
   public ListingsProviderInfo addChannelMappingsItem(NameValuePair channelMappingsItem) {
-    if (this.channelMappings == null) {
-      this.channelMappings = new ArrayList<>();
+    if (this.channelMappings == null || !this.channelMappings.isPresent()) {
+      this.channelMappings = JsonNullable.<List<NameValuePair>>of(new ArrayList<>());
     }
-    this.channelMappings.add(channelMappingsItem);
+    try {
+      this.channelMappings.get().add(channelMappingsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -471,17 +641,30 @@ public class ListingsProviderInfo {
    * @return channelMappings
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<NameValuePair> getChannelMappings() {
+        return channelMappings.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CHANNEL_MAPPINGS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<NameValuePair>> getChannelMappings_JsonNullable() {
     return channelMappings;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CHANNEL_MAPPINGS)
+  public void setChannelMappings_JsonNullable(JsonNullable<List<NameValuePair>> channelMappings) {
+    this.channelMappings = channelMappings;
   }
 
   public void setChannelMappings(@javax.annotation.Nullable List<NameValuePair> channelMappings) {
-    this.channelMappings = channelMappings;
+    this.channelMappings = JsonNullable.<List<NameValuePair>>of(channelMappings);
   }
 
 
   public ListingsProviderInfo moviePrefix(@javax.annotation.Nullable String moviePrefix) {
-    this.moviePrefix = moviePrefix;
+    this.moviePrefix = JsonNullable.<String>of(moviePrefix);
     return this;
   }
 
@@ -490,17 +673,30 @@ public class ListingsProviderInfo {
    * @return moviePrefix
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getMoviePrefix() {
+        return moviePrefix.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MOVIE_PREFIX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getMoviePrefix_JsonNullable() {
     return moviePrefix;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MOVIE_PREFIX)
+  public void setMoviePrefix_JsonNullable(JsonNullable<String> moviePrefix) {
+    this.moviePrefix = moviePrefix;
   }
 
   public void setMoviePrefix(@javax.annotation.Nullable String moviePrefix) {
-    this.moviePrefix = moviePrefix;
+    this.moviePrefix = JsonNullable.<String>of(moviePrefix);
   }
 
 
   public ListingsProviderInfo preferredLanguage(@javax.annotation.Nullable String preferredLanguage) {
-    this.preferredLanguage = preferredLanguage;
+    this.preferredLanguage = JsonNullable.<String>of(preferredLanguage);
     return this;
   }
 
@@ -509,17 +705,30 @@ public class ListingsProviderInfo {
    * @return preferredLanguage
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPreferredLanguage() {
+        return preferredLanguage.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PREFERRED_LANGUAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPreferredLanguage_JsonNullable() {
     return preferredLanguage;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PREFERRED_LANGUAGE)
+  public void setPreferredLanguage_JsonNullable(JsonNullable<String> preferredLanguage) {
+    this.preferredLanguage = preferredLanguage;
   }
 
   public void setPreferredLanguage(@javax.annotation.Nullable String preferredLanguage) {
-    this.preferredLanguage = preferredLanguage;
+    this.preferredLanguage = JsonNullable.<String>of(preferredLanguage);
   }
 
 
   public ListingsProviderInfo userAgent(@javax.annotation.Nullable String userAgent) {
-    this.userAgent = userAgent;
+    this.userAgent = JsonNullable.<String>of(userAgent);
     return this;
   }
 
@@ -528,16 +737,31 @@ public class ListingsProviderInfo {
    * @return userAgent
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getUserAgent() {
-    return userAgent;
+        return userAgent.orElse(null);
   }
 
-  public void setUserAgent(@javax.annotation.Nullable String userAgent) {
+  @JsonProperty(JSON_PROPERTY_USER_AGENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getUserAgent_JsonNullable() {
+    return userAgent;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_USER_AGENT)
+  public void setUserAgent_JsonNullable(JsonNullable<String> userAgent) {
     this.userAgent = userAgent;
   }
 
+  public void setUserAgent(@javax.annotation.Nullable String userAgent) {
+    this.userAgent = JsonNullable.<String>of(userAgent);
+  }
 
 
+  /**
+   * Return true if this ListingsProviderInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -547,24 +771,24 @@ public class ListingsProviderInfo {
       return false;
     }
     ListingsProviderInfo listingsProviderInfo = (ListingsProviderInfo) o;
-    return Objects.equals(this.id, listingsProviderInfo.id) &&
-        Objects.equals(this.type, listingsProviderInfo.type) &&
-        Objects.equals(this.username, listingsProviderInfo.username) &&
-        Objects.equals(this.password, listingsProviderInfo.password) &&
-        Objects.equals(this.listingsId, listingsProviderInfo.listingsId) &&
-        Objects.equals(this.zipCode, listingsProviderInfo.zipCode) &&
-        Objects.equals(this.country, listingsProviderInfo.country) &&
-        Objects.equals(this.path, listingsProviderInfo.path) &&
-        Objects.equals(this.enabledTuners, listingsProviderInfo.enabledTuners) &&
+    return equalsNullable(this.id, listingsProviderInfo.id) &&
+        equalsNullable(this.type, listingsProviderInfo.type) &&
+        equalsNullable(this.username, listingsProviderInfo.username) &&
+        equalsNullable(this.password, listingsProviderInfo.password) &&
+        equalsNullable(this.listingsId, listingsProviderInfo.listingsId) &&
+        equalsNullable(this.zipCode, listingsProviderInfo.zipCode) &&
+        equalsNullable(this.country, listingsProviderInfo.country) &&
+        equalsNullable(this.path, listingsProviderInfo.path) &&
+        equalsNullable(this.enabledTuners, listingsProviderInfo.enabledTuners) &&
         Objects.equals(this.enableAllTuners, listingsProviderInfo.enableAllTuners) &&
-        Objects.equals(this.newsCategories, listingsProviderInfo.newsCategories) &&
-        Objects.equals(this.sportsCategories, listingsProviderInfo.sportsCategories) &&
-        Objects.equals(this.kidsCategories, listingsProviderInfo.kidsCategories) &&
-        Objects.equals(this.movieCategories, listingsProviderInfo.movieCategories) &&
-        Objects.equals(this.channelMappings, listingsProviderInfo.channelMappings) &&
-        Objects.equals(this.moviePrefix, listingsProviderInfo.moviePrefix) &&
-        Objects.equals(this.preferredLanguage, listingsProviderInfo.preferredLanguage) &&
-        Objects.equals(this.userAgent, listingsProviderInfo.userAgent);
+        equalsNullable(this.newsCategories, listingsProviderInfo.newsCategories) &&
+        equalsNullable(this.sportsCategories, listingsProviderInfo.sportsCategories) &&
+        equalsNullable(this.kidsCategories, listingsProviderInfo.kidsCategories) &&
+        equalsNullable(this.movieCategories, listingsProviderInfo.movieCategories) &&
+        equalsNullable(this.channelMappings, listingsProviderInfo.channelMappings) &&
+        equalsNullable(this.moviePrefix, listingsProviderInfo.moviePrefix) &&
+        equalsNullable(this.preferredLanguage, listingsProviderInfo.preferredLanguage) &&
+        equalsNullable(this.userAgent, listingsProviderInfo.userAgent);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -573,7 +797,7 @@ public class ListingsProviderInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, type, username, password, listingsId, zipCode, country, path, enabledTuners, enableAllTuners, newsCategories, sportsCategories, kidsCategories, movieCategories, channelMappings, moviePrefix, preferredLanguage, userAgent);
+    return Objects.hash(hashCodeNullable(id), hashCodeNullable(type), hashCodeNullable(username), hashCodeNullable(password), hashCodeNullable(listingsId), hashCodeNullable(zipCode), hashCodeNullable(country), hashCodeNullable(path), hashCodeNullable(enabledTuners), enableAllTuners, hashCodeNullable(newsCategories), hashCodeNullable(sportsCategories), hashCodeNullable(kidsCategories), hashCodeNullable(movieCategories), hashCodeNullable(channelMappings), hashCodeNullable(moviePrefix), hashCodeNullable(preferredLanguage), hashCodeNullable(userAgent));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -620,173 +844,154 @@ public class ListingsProviderInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Id");
-    openapiFields.add("Type");
-    openapiFields.add("Username");
-    openapiFields.add("Password");
-    openapiFields.add("ListingsId");
-    openapiFields.add("ZipCode");
-    openapiFields.add("Country");
-    openapiFields.add("Path");
-    openapiFields.add("EnabledTuners");
-    openapiFields.add("EnableAllTuners");
-    openapiFields.add("NewsCategories");
-    openapiFields.add("SportsCategories");
-    openapiFields.add("KidsCategories");
-    openapiFields.add("MovieCategories");
-    openapiFields.add("ChannelMappings");
-    openapiFields.add("MoviePrefix");
-    openapiFields.add("PreferredLanguage");
-    openapiFields.add("UserAgent");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to ListingsProviderInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!ListingsProviderInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in ListingsProviderInfo is not found in the empty JSON string", ListingsProviderInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!ListingsProviderInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `ListingsProviderInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Id") != null && !jsonObj.get("Id").isJsonNull()) && !jsonObj.get("Id").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Id").toString()));
-      }
-      if ((jsonObj.get("Type") != null && !jsonObj.get("Type").isJsonNull()) && !jsonObj.get("Type").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Type").toString()));
-      }
-      if ((jsonObj.get("Username") != null && !jsonObj.get("Username").isJsonNull()) && !jsonObj.get("Username").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Username` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Username").toString()));
-      }
-      if ((jsonObj.get("Password") != null && !jsonObj.get("Password").isJsonNull()) && !jsonObj.get("Password").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Password` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Password").toString()));
-      }
-      if ((jsonObj.get("ListingsId") != null && !jsonObj.get("ListingsId").isJsonNull()) && !jsonObj.get("ListingsId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ListingsId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ListingsId").toString()));
-      }
-      if ((jsonObj.get("ZipCode") != null && !jsonObj.get("ZipCode").isJsonNull()) && !jsonObj.get("ZipCode").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ZipCode` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ZipCode").toString()));
-      }
-      if ((jsonObj.get("Country") != null && !jsonObj.get("Country").isJsonNull()) && !jsonObj.get("Country").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Country` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Country").toString()));
-      }
-      if ((jsonObj.get("Path") != null && !jsonObj.get("Path").isJsonNull()) && !jsonObj.get("Path").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Path` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Path").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("EnabledTuners") != null && !jsonObj.get("EnabledTuners").isJsonNull() && !jsonObj.get("EnabledTuners").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `EnabledTuners` to be an array in the JSON string but got `%s`", jsonObj.get("EnabledTuners").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("NewsCategories") != null && !jsonObj.get("NewsCategories").isJsonNull() && !jsonObj.get("NewsCategories").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `NewsCategories` to be an array in the JSON string but got `%s`", jsonObj.get("NewsCategories").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("SportsCategories") != null && !jsonObj.get("SportsCategories").isJsonNull() && !jsonObj.get("SportsCategories").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SportsCategories` to be an array in the JSON string but got `%s`", jsonObj.get("SportsCategories").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("KidsCategories") != null && !jsonObj.get("KidsCategories").isJsonNull() && !jsonObj.get("KidsCategories").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `KidsCategories` to be an array in the JSON string but got `%s`", jsonObj.get("KidsCategories").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("MovieCategories") != null && !jsonObj.get("MovieCategories").isJsonNull() && !jsonObj.get("MovieCategories").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MovieCategories` to be an array in the JSON string but got `%s`", jsonObj.get("MovieCategories").toString()));
-      }
-      if (jsonObj.get("ChannelMappings") != null && !jsonObj.get("ChannelMappings").isJsonNull()) {
-        JsonArray jsonArraychannelMappings = jsonObj.getAsJsonArray("ChannelMappings");
-        if (jsonArraychannelMappings != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("ChannelMappings").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `ChannelMappings` to be an array in the JSON string but got `%s`", jsonObj.get("ChannelMappings").toString()));
-          }
-
-          // validate the optional field `ChannelMappings` (array)
-          for (int i = 0; i < jsonArraychannelMappings.size(); i++) {
-            NameValuePair.validateJsonElement(jsonArraychannelMappings.get(i));
-          };
-        }
-      }
-      if ((jsonObj.get("MoviePrefix") != null && !jsonObj.get("MoviePrefix").isJsonNull()) && !jsonObj.get("MoviePrefix").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MoviePrefix` to be a primitive type in the JSON string but got `%s`", jsonObj.get("MoviePrefix").toString()));
-      }
-      if ((jsonObj.get("PreferredLanguage") != null && !jsonObj.get("PreferredLanguage").isJsonNull()) && !jsonObj.get("PreferredLanguage").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `PreferredLanguage` to be a primitive type in the JSON string but got `%s`", jsonObj.get("PreferredLanguage").toString()));
-      }
-      if ((jsonObj.get("UserAgent") != null && !jsonObj.get("UserAgent").isJsonNull()) && !jsonObj.get("UserAgent").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `UserAgent` to be a primitive type in the JSON string but got `%s`", jsonObj.get("UserAgent").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!ListingsProviderInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'ListingsProviderInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<ListingsProviderInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(ListingsProviderInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<ListingsProviderInfo>() {
-           @Override
-           public void write(JsonWriter out, ListingsProviderInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public ListingsProviderInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of ListingsProviderInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of ListingsProviderInfo
-   * @throws IOException if the JSON string is invalid with respect to ListingsProviderInfo
-   */
-  public static ListingsProviderInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, ListingsProviderInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of ListingsProviderInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+    }
+
+    // add `Type` to the URL query string
+    if (getType() != null) {
+      joiner.add(String.format("%sType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+    }
+
+    // add `Username` to the URL query string
+    if (getUsername() != null) {
+      joiner.add(String.format("%sUsername%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUsername()))));
+    }
+
+    // add `Password` to the URL query string
+    if (getPassword() != null) {
+      joiner.add(String.format("%sPassword%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPassword()))));
+    }
+
+    // add `ListingsId` to the URL query string
+    if (getListingsId() != null) {
+      joiner.add(String.format("%sListingsId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getListingsId()))));
+    }
+
+    // add `ZipCode` to the URL query string
+    if (getZipCode() != null) {
+      joiner.add(String.format("%sZipCode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getZipCode()))));
+    }
+
+    // add `Country` to the URL query string
+    if (getCountry() != null) {
+      joiner.add(String.format("%sCountry%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCountry()))));
+    }
+
+    // add `Path` to the URL query string
+    if (getPath() != null) {
+      joiner.add(String.format("%sPath%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
+    }
+
+    // add `EnabledTuners` to the URL query string
+    if (getEnabledTuners() != null) {
+      for (int i = 0; i < getEnabledTuners().size(); i++) {
+        joiner.add(String.format("%sEnabledTuners%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getEnabledTuners().get(i)))));
+      }
+    }
+
+    // add `EnableAllTuners` to the URL query string
+    if (getEnableAllTuners() != null) {
+      joiner.add(String.format("%sEnableAllTuners%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableAllTuners()))));
+    }
+
+    // add `NewsCategories` to the URL query string
+    if (getNewsCategories() != null) {
+      for (int i = 0; i < getNewsCategories().size(); i++) {
+        joiner.add(String.format("%sNewsCategories%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getNewsCategories().get(i)))));
+      }
+    }
+
+    // add `SportsCategories` to the URL query string
+    if (getSportsCategories() != null) {
+      for (int i = 0; i < getSportsCategories().size(); i++) {
+        joiner.add(String.format("%sSportsCategories%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getSportsCategories().get(i)))));
+      }
+    }
+
+    // add `KidsCategories` to the URL query string
+    if (getKidsCategories() != null) {
+      for (int i = 0; i < getKidsCategories().size(); i++) {
+        joiner.add(String.format("%sKidsCategories%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getKidsCategories().get(i)))));
+      }
+    }
+
+    // add `MovieCategories` to the URL query string
+    if (getMovieCategories() != null) {
+      for (int i = 0; i < getMovieCategories().size(); i++) {
+        joiner.add(String.format("%sMovieCategories%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getMovieCategories().get(i)))));
+      }
+    }
+
+    // add `ChannelMappings` to the URL query string
+    if (getChannelMappings() != null) {
+      for (int i = 0; i < getChannelMappings().size(); i++) {
+        if (getChannelMappings().get(i) != null) {
+          joiner.add(getChannelMappings().get(i).toUrlQueryString(String.format("%sChannelMappings%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `MoviePrefix` to the URL query string
+    if (getMoviePrefix() != null) {
+      joiner.add(String.format("%sMoviePrefix%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMoviePrefix()))));
+    }
+
+    // add `PreferredLanguage` to the URL query string
+    if (getPreferredLanguage() != null) {
+      joiner.add(String.format("%sPreferredLanguage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPreferredLanguage()))));
+    }
+
+    // add `UserAgent` to the URL query string
+    if (getUserAgent() != null) {
+      joiner.add(String.format("%sUserAgent%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUserAgent()))));
+    }
+
+    return joiner.toString();
   }
 }
 

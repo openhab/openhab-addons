@@ -13,99 +13,83 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.UUID;
 import org.openapitools.client.model.LogLevel;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * An activity log entry.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  ActivityLogEntry.JSON_PROPERTY_ID,
+  ActivityLogEntry.JSON_PROPERTY_NAME,
+  ActivityLogEntry.JSON_PROPERTY_OVERVIEW,
+  ActivityLogEntry.JSON_PROPERTY_SHORT_OVERVIEW,
+  ActivityLogEntry.JSON_PROPERTY_TYPE,
+  ActivityLogEntry.JSON_PROPERTY_ITEM_ID,
+  ActivityLogEntry.JSON_PROPERTY_DATE,
+  ActivityLogEntry.JSON_PROPERTY_USER_ID,
+  ActivityLogEntry.JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG,
+  ActivityLogEntry.JSON_PROPERTY_SEVERITY
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ActivityLogEntry {
-  public static final String SERIALIZED_NAME_ID = "Id";
-  @SerializedName(SERIALIZED_NAME_ID)
+  public static final String JSON_PROPERTY_ID = "Id";
   @javax.annotation.Nullable
   private Long id;
 
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
+  public static final String JSON_PROPERTY_NAME = "Name";
   @javax.annotation.Nullable
   private String name;
 
-  public static final String SERIALIZED_NAME_OVERVIEW = "Overview";
-  @SerializedName(SERIALIZED_NAME_OVERVIEW)
-  @javax.annotation.Nullable
-  private String overview;
+  public static final String JSON_PROPERTY_OVERVIEW = "Overview";
+  private JsonNullable<String> overview = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_SHORT_OVERVIEW = "ShortOverview";
-  @SerializedName(SERIALIZED_NAME_SHORT_OVERVIEW)
-  @javax.annotation.Nullable
-  private String shortOverview;
+  public static final String JSON_PROPERTY_SHORT_OVERVIEW = "ShortOverview";
+  private JsonNullable<String> shortOverview = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TYPE = "Type";
-  @SerializedName(SERIALIZED_NAME_TYPE)
+  public static final String JSON_PROPERTY_TYPE = "Type";
   @javax.annotation.Nullable
   private String type;
 
-  public static final String SERIALIZED_NAME_ITEM_ID = "ItemId";
-  @SerializedName(SERIALIZED_NAME_ITEM_ID)
-  @javax.annotation.Nullable
-  private String itemId;
+  public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
+  private JsonNullable<String> itemId = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_DATE = "Date";
-  @SerializedName(SERIALIZED_NAME_DATE)
+  public static final String JSON_PROPERTY_DATE = "Date";
   @javax.annotation.Nullable
   private OffsetDateTime date;
 
-  public static final String SERIALIZED_NAME_USER_ID = "UserId";
-  @SerializedName(SERIALIZED_NAME_USER_ID)
+  public static final String JSON_PROPERTY_USER_ID = "UserId";
   @javax.annotation.Nullable
   private UUID userId;
 
-  public static final String SERIALIZED_NAME_USER_PRIMARY_IMAGE_TAG = "UserPrimaryImageTag";
-  @Deprecated
-  @SerializedName(SERIALIZED_NAME_USER_PRIMARY_IMAGE_TAG)
-  @javax.annotation.Nullable
-  private String userPrimaryImageTag;
+  public static final String JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG = "UserPrimaryImageTag";
+  private JsonNullable<String> userPrimaryImageTag = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_SEVERITY = "Severity";
-  @SerializedName(SERIALIZED_NAME_SEVERITY)
+  public static final String JSON_PROPERTY_SEVERITY = "Severity";
   @javax.annotation.Nullable
   private LogLevel severity;
 
-  public ActivityLogEntry() {
+  public ActivityLogEntry() { 
   }
 
   public ActivityLogEntry id(@javax.annotation.Nullable Long id) {
@@ -118,10 +102,15 @@ public class ActivityLogEntry {
    * @return id
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getId() {
     return id;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable Long id) {
     this.id = id;
   }
@@ -137,17 +126,22 @@ public class ActivityLogEntry {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
 
 
   public ActivityLogEntry overview(@javax.annotation.Nullable String overview) {
-    this.overview = overview;
+    this.overview = JsonNullable.<String>of(overview);
     return this;
   }
 
@@ -156,17 +150,30 @@ public class ActivityLogEntry {
    * @return overview
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getOverview() {
+        return overview.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_OVERVIEW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getOverview_JsonNullable() {
     return overview;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_OVERVIEW)
+  public void setOverview_JsonNullable(JsonNullable<String> overview) {
+    this.overview = overview;
   }
 
   public void setOverview(@javax.annotation.Nullable String overview) {
-    this.overview = overview;
+    this.overview = JsonNullable.<String>of(overview);
   }
 
 
   public ActivityLogEntry shortOverview(@javax.annotation.Nullable String shortOverview) {
-    this.shortOverview = shortOverview;
+    this.shortOverview = JsonNullable.<String>of(shortOverview);
     return this;
   }
 
@@ -175,12 +182,25 @@ public class ActivityLogEntry {
    * @return shortOverview
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getShortOverview() {
+        return shortOverview.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SHORT_OVERVIEW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getShortOverview_JsonNullable() {
     return shortOverview;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SHORT_OVERVIEW)
+  public void setShortOverview_JsonNullable(JsonNullable<String> shortOverview) {
+    this.shortOverview = shortOverview;
   }
 
   public void setShortOverview(@javax.annotation.Nullable String shortOverview) {
-    this.shortOverview = shortOverview;
+    this.shortOverview = JsonNullable.<String>of(shortOverview);
   }
 
 
@@ -194,17 +214,22 @@ public class ActivityLogEntry {
    * @return type
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getType() {
     return type;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@javax.annotation.Nullable String type) {
     this.type = type;
   }
 
 
   public ActivityLogEntry itemId(@javax.annotation.Nullable String itemId) {
-    this.itemId = itemId;
+    this.itemId = JsonNullable.<String>of(itemId);
     return this;
   }
 
@@ -213,12 +238,25 @@ public class ActivityLogEntry {
    * @return itemId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getItemId() {
+        return itemId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getItemId_JsonNullable() {
     return itemId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ITEM_ID)
+  public void setItemId_JsonNullable(JsonNullable<String> itemId) {
+    this.itemId = itemId;
   }
 
   public void setItemId(@javax.annotation.Nullable String itemId) {
-    this.itemId = itemId;
+    this.itemId = JsonNullable.<String>of(itemId);
   }
 
 
@@ -232,10 +270,15 @@ public class ActivityLogEntry {
    * @return date
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getDate() {
     return date;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDate(@javax.annotation.Nullable OffsetDateTime date) {
     this.date = date;
   }
@@ -251,18 +294,22 @@ public class ActivityLogEntry {
    * @return userId
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getUserId() {
     return userId;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUserId(@javax.annotation.Nullable UUID userId) {
     this.userId = userId;
   }
 
 
-  @Deprecated
   public ActivityLogEntry userPrimaryImageTag(@javax.annotation.Nullable String userPrimaryImageTag) {
-    this.userPrimaryImageTag = userPrimaryImageTag;
+    this.userPrimaryImageTag = JsonNullable.<String>of(userPrimaryImageTag);
     return this;
   }
 
@@ -273,13 +320,25 @@ public class ActivityLogEntry {
    */
   @Deprecated
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getUserPrimaryImageTag() {
-    return userPrimaryImageTag;
+        return userPrimaryImageTag.orElse(null);
   }
 
-  @Deprecated
-  public void setUserPrimaryImageTag(@javax.annotation.Nullable String userPrimaryImageTag) {
+  @JsonProperty(JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getUserPrimaryImageTag_JsonNullable() {
+    return userPrimaryImageTag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
+  public void setUserPrimaryImageTag_JsonNullable(JsonNullable<String> userPrimaryImageTag) {
     this.userPrimaryImageTag = userPrimaryImageTag;
+  }
+
+  public void setUserPrimaryImageTag(@javax.annotation.Nullable String userPrimaryImageTag) {
+    this.userPrimaryImageTag = JsonNullable.<String>of(userPrimaryImageTag);
   }
 
 
@@ -293,16 +352,23 @@ public class ActivityLogEntry {
    * @return severity
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SEVERITY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public LogLevel getSeverity() {
     return severity;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SEVERITY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSeverity(@javax.annotation.Nullable LogLevel severity) {
     this.severity = severity;
   }
 
 
-
+  /**
+   * Return true if this ActivityLogEntry object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -314,13 +380,13 @@ public class ActivityLogEntry {
     ActivityLogEntry activityLogEntry = (ActivityLogEntry) o;
     return Objects.equals(this.id, activityLogEntry.id) &&
         Objects.equals(this.name, activityLogEntry.name) &&
-        Objects.equals(this.overview, activityLogEntry.overview) &&
-        Objects.equals(this.shortOverview, activityLogEntry.shortOverview) &&
+        equalsNullable(this.overview, activityLogEntry.overview) &&
+        equalsNullable(this.shortOverview, activityLogEntry.shortOverview) &&
         Objects.equals(this.type, activityLogEntry.type) &&
-        Objects.equals(this.itemId, activityLogEntry.itemId) &&
+        equalsNullable(this.itemId, activityLogEntry.itemId) &&
         Objects.equals(this.date, activityLogEntry.date) &&
         Objects.equals(this.userId, activityLogEntry.userId) &&
-        Objects.equals(this.userPrimaryImageTag, activityLogEntry.userPrimaryImageTag) &&
+        equalsNullable(this.userPrimaryImageTag, activityLogEntry.userPrimaryImageTag) &&
         Objects.equals(this.severity, activityLogEntry.severity);
   }
 
@@ -330,7 +396,7 @@ public class ActivityLogEntry {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, overview, shortOverview, type, itemId, date, userId, userPrimaryImageTag, severity);
+    return Objects.hash(id, name, hashCodeNullable(overview), hashCodeNullable(shortOverview), type, hashCodeNullable(itemId), date, userId, hashCodeNullable(userPrimaryImageTag), severity);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -369,123 +435,89 @@ public class ActivityLogEntry {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Id");
-    openapiFields.add("Name");
-    openapiFields.add("Overview");
-    openapiFields.add("ShortOverview");
-    openapiFields.add("Type");
-    openapiFields.add("ItemId");
-    openapiFields.add("Date");
-    openapiFields.add("UserId");
-    openapiFields.add("UserPrimaryImageTag");
-    openapiFields.add("Severity");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to ActivityLogEntry
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!ActivityLogEntry.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in ActivityLogEntry is not found in the empty JSON string", ActivityLogEntry.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!ActivityLogEntry.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `ActivityLogEntry` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("Overview") != null && !jsonObj.get("Overview").isJsonNull()) && !jsonObj.get("Overview").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Overview` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Overview").toString()));
-      }
-      if ((jsonObj.get("ShortOverview") != null && !jsonObj.get("ShortOverview").isJsonNull()) && !jsonObj.get("ShortOverview").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ShortOverview` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ShortOverview").toString()));
-      }
-      if ((jsonObj.get("Type") != null && !jsonObj.get("Type").isJsonNull()) && !jsonObj.get("Type").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Type").toString()));
-      }
-      if ((jsonObj.get("ItemId") != null && !jsonObj.get("ItemId").isJsonNull()) && !jsonObj.get("ItemId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ItemId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ItemId").toString()));
-      }
-      if ((jsonObj.get("UserId") != null && !jsonObj.get("UserId").isJsonNull()) && !jsonObj.get("UserId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `UserId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("UserId").toString()));
-      }
-      if ((jsonObj.get("UserPrimaryImageTag") != null && !jsonObj.get("UserPrimaryImageTag").isJsonNull()) && !jsonObj.get("UserPrimaryImageTag").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `UserPrimaryImageTag` to be a primitive type in the JSON string but got `%s`", jsonObj.get("UserPrimaryImageTag").toString()));
-      }
-      // validate the optional field `Severity`
-      if (jsonObj.get("Severity") != null && !jsonObj.get("Severity").isJsonNull()) {
-        LogLevel.validateJsonElement(jsonObj.get("Severity"));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!ActivityLogEntry.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'ActivityLogEntry' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<ActivityLogEntry> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(ActivityLogEntry.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<ActivityLogEntry>() {
-           @Override
-           public void write(JsonWriter out, ActivityLogEntry value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public ActivityLogEntry read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of ActivityLogEntry given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of ActivityLogEntry
-   * @throws IOException if the JSON string is invalid with respect to ActivityLogEntry
-   */
-  public static ActivityLogEntry fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, ActivityLogEntry.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of ActivityLogEntry to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+    }
+
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `Overview` to the URL query string
+    if (getOverview() != null) {
+      joiner.add(String.format("%sOverview%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
+    }
+
+    // add `ShortOverview` to the URL query string
+    if (getShortOverview() != null) {
+      joiner.add(String.format("%sShortOverview%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getShortOverview()))));
+    }
+
+    // add `Type` to the URL query string
+    if (getType() != null) {
+      joiner.add(String.format("%sType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+    }
+
+    // add `ItemId` to the URL query string
+    if (getItemId() != null) {
+      joiner.add(String.format("%sItemId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
+    }
+
+    // add `Date` to the URL query string
+    if (getDate() != null) {
+      joiner.add(String.format("%sDate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDate()))));
+    }
+
+    // add `UserId` to the URL query string
+    if (getUserId() != null) {
+      joiner.add(String.format("%sUserId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
+    }
+
+    // add `UserPrimaryImageTag` to the URL query string
+    if (getUserPrimaryImageTag() != null) {
+      joiner.add(String.format("%sUserPrimaryImageTag%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUserPrimaryImageTag()))));
+    }
+
+    // add `Severity` to the URL query string
+    if (getSeverity() != null) {
+      joiner.add(String.format("%sSeverity%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSeverity()))));
+    }
+
+    return joiner.toString();
   }
 }
 

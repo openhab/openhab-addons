@@ -13,69 +13,55 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * The update user password request body.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  UpdateUserPassword.JSON_PROPERTY_CURRENT_PASSWORD,
+  UpdateUserPassword.JSON_PROPERTY_CURRENT_PW,
+  UpdateUserPassword.JSON_PROPERTY_NEW_PW,
+  UpdateUserPassword.JSON_PROPERTY_RESET_PASSWORD
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class UpdateUserPassword {
-  public static final String SERIALIZED_NAME_CURRENT_PASSWORD = "CurrentPassword";
-  @SerializedName(SERIALIZED_NAME_CURRENT_PASSWORD)
-  @javax.annotation.Nullable
-  private String currentPassword;
+  public static final String JSON_PROPERTY_CURRENT_PASSWORD = "CurrentPassword";
+  private JsonNullable<String> currentPassword = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_CURRENT_PW = "CurrentPw";
-  @SerializedName(SERIALIZED_NAME_CURRENT_PW)
-  @javax.annotation.Nullable
-  private String currentPw;
+  public static final String JSON_PROPERTY_CURRENT_PW = "CurrentPw";
+  private JsonNullable<String> currentPw = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_NEW_PW = "NewPw";
-  @SerializedName(SERIALIZED_NAME_NEW_PW)
-  @javax.annotation.Nullable
-  private String newPw;
+  public static final String JSON_PROPERTY_NEW_PW = "NewPw";
+  private JsonNullable<String> newPw = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_RESET_PASSWORD = "ResetPassword";
-  @SerializedName(SERIALIZED_NAME_RESET_PASSWORD)
+  public static final String JSON_PROPERTY_RESET_PASSWORD = "ResetPassword";
   @javax.annotation.Nullable
   private Boolean resetPassword;
 
-  public UpdateUserPassword() {
+  public UpdateUserPassword() { 
   }
 
   public UpdateUserPassword currentPassword(@javax.annotation.Nullable String currentPassword) {
-    this.currentPassword = currentPassword;
+    this.currentPassword = JsonNullable.<String>of(currentPassword);
     return this;
   }
 
@@ -84,17 +70,30 @@ public class UpdateUserPassword {
    * @return currentPassword
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getCurrentPassword() {
+        return currentPassword.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CURRENT_PASSWORD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getCurrentPassword_JsonNullable() {
     return currentPassword;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CURRENT_PASSWORD)
+  public void setCurrentPassword_JsonNullable(JsonNullable<String> currentPassword) {
+    this.currentPassword = currentPassword;
   }
 
   public void setCurrentPassword(@javax.annotation.Nullable String currentPassword) {
-    this.currentPassword = currentPassword;
+    this.currentPassword = JsonNullable.<String>of(currentPassword);
   }
 
 
   public UpdateUserPassword currentPw(@javax.annotation.Nullable String currentPw) {
-    this.currentPw = currentPw;
+    this.currentPw = JsonNullable.<String>of(currentPw);
     return this;
   }
 
@@ -103,17 +102,30 @@ public class UpdateUserPassword {
    * @return currentPw
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getCurrentPw() {
+        return currentPw.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CURRENT_PW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getCurrentPw_JsonNullable() {
     return currentPw;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CURRENT_PW)
+  public void setCurrentPw_JsonNullable(JsonNullable<String> currentPw) {
+    this.currentPw = currentPw;
   }
 
   public void setCurrentPw(@javax.annotation.Nullable String currentPw) {
-    this.currentPw = currentPw;
+    this.currentPw = JsonNullable.<String>of(currentPw);
   }
 
 
   public UpdateUserPassword newPw(@javax.annotation.Nullable String newPw) {
-    this.newPw = newPw;
+    this.newPw = JsonNullable.<String>of(newPw);
     return this;
   }
 
@@ -122,12 +134,25 @@ public class UpdateUserPassword {
    * @return newPw
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getNewPw() {
+        return newPw.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NEW_PW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getNewPw_JsonNullable() {
     return newPw;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NEW_PW)
+  public void setNewPw_JsonNullable(JsonNullable<String> newPw) {
+    this.newPw = newPw;
   }
 
   public void setNewPw(@javax.annotation.Nullable String newPw) {
-    this.newPw = newPw;
+    this.newPw = JsonNullable.<String>of(newPw);
   }
 
 
@@ -141,16 +166,23 @@ public class UpdateUserPassword {
    * @return resetPassword
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_RESET_PASSWORD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getResetPassword() {
     return resetPassword;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_RESET_PASSWORD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setResetPassword(@javax.annotation.Nullable Boolean resetPassword) {
     this.resetPassword = resetPassword;
   }
 
 
-
+  /**
+   * Return true if this UpdateUserPassword object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -160,9 +192,9 @@ public class UpdateUserPassword {
       return false;
     }
     UpdateUserPassword updateUserPassword = (UpdateUserPassword) o;
-    return Objects.equals(this.currentPassword, updateUserPassword.currentPassword) &&
-        Objects.equals(this.currentPw, updateUserPassword.currentPw) &&
-        Objects.equals(this.newPw, updateUserPassword.newPw) &&
+    return equalsNullable(this.currentPassword, updateUserPassword.currentPassword) &&
+        equalsNullable(this.currentPw, updateUserPassword.currentPw) &&
+        equalsNullable(this.newPw, updateUserPassword.newPw) &&
         Objects.equals(this.resetPassword, updateUserPassword.resetPassword);
   }
 
@@ -172,7 +204,7 @@ public class UpdateUserPassword {
 
   @Override
   public int hashCode() {
-    return Objects.hash(currentPassword, currentPw, newPw, resetPassword);
+    return Objects.hash(hashCodeNullable(currentPassword), hashCodeNullable(currentPw), hashCodeNullable(newPw), resetPassword);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -205,101 +237,59 @@ public class UpdateUserPassword {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("CurrentPassword");
-    openapiFields.add("CurrentPw");
-    openapiFields.add("NewPw");
-    openapiFields.add("ResetPassword");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to UpdateUserPassword
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!UpdateUserPassword.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in UpdateUserPassword is not found in the empty JSON string", UpdateUserPassword.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!UpdateUserPassword.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `UpdateUserPassword` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("CurrentPassword") != null && !jsonObj.get("CurrentPassword").isJsonNull()) && !jsonObj.get("CurrentPassword").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `CurrentPassword` to be a primitive type in the JSON string but got `%s`", jsonObj.get("CurrentPassword").toString()));
-      }
-      if ((jsonObj.get("CurrentPw") != null && !jsonObj.get("CurrentPw").isJsonNull()) && !jsonObj.get("CurrentPw").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `CurrentPw` to be a primitive type in the JSON string but got `%s`", jsonObj.get("CurrentPw").toString()));
-      }
-      if ((jsonObj.get("NewPw") != null && !jsonObj.get("NewPw").isJsonNull()) && !jsonObj.get("NewPw").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `NewPw` to be a primitive type in the JSON string but got `%s`", jsonObj.get("NewPw").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!UpdateUserPassword.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'UpdateUserPassword' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<UpdateUserPassword> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(UpdateUserPassword.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<UpdateUserPassword>() {
-           @Override
-           public void write(JsonWriter out, UpdateUserPassword value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public UpdateUserPassword read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of UpdateUserPassword given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of UpdateUserPassword
-   * @throws IOException if the JSON string is invalid with respect to UpdateUserPassword
-   */
-  public static UpdateUserPassword fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, UpdateUserPassword.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of UpdateUserPassword to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `CurrentPassword` to the URL query string
+    if (getCurrentPassword() != null) {
+      joiner.add(String.format("%sCurrentPassword%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCurrentPassword()))));
+    }
+
+    // add `CurrentPw` to the URL query string
+    if (getCurrentPw() != null) {
+      joiner.add(String.format("%sCurrentPw%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCurrentPw()))));
+    }
+
+    // add `NewPw` to the URL query string
+    if (getNewPw() != null) {
+      joiner.add(String.format("%sNewPw%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNewPw()))));
+    }
+
+    // add `ResetPassword` to the URL query string
+    if (getResetPassword() != null) {
+      joiner.add(String.format("%sResetPassword%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getResetPassword()))));
+    }
+
+    return joiner.toString();
   }
 }
 

@@ -13,67 +13,55 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.client.model.ProfileConditionType;
 import org.openapitools.client.model.ProfileConditionValue;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * ProfileCondition
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  ProfileCondition.JSON_PROPERTY_CONDITION,
+  ProfileCondition.JSON_PROPERTY_PROPERTY,
+  ProfileCondition.JSON_PROPERTY_VALUE,
+  ProfileCondition.JSON_PROPERTY_IS_REQUIRED
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ProfileCondition {
-  public static final String SERIALIZED_NAME_CONDITION = "Condition";
-  @SerializedName(SERIALIZED_NAME_CONDITION)
+  public static final String JSON_PROPERTY_CONDITION = "Condition";
   @javax.annotation.Nullable
   private ProfileConditionType condition;
 
-  public static final String SERIALIZED_NAME_PROPERTY = "Property";
-  @SerializedName(SERIALIZED_NAME_PROPERTY)
+  public static final String JSON_PROPERTY_PROPERTY = "Property";
   @javax.annotation.Nullable
   private ProfileConditionValue property;
 
-  public static final String SERIALIZED_NAME_VALUE = "Value";
-  @SerializedName(SERIALIZED_NAME_VALUE)
-  @javax.annotation.Nullable
-  private String value;
+  public static final String JSON_PROPERTY_VALUE = "Value";
+  private JsonNullable<String> value = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_IS_REQUIRED = "IsRequired";
-  @SerializedName(SERIALIZED_NAME_IS_REQUIRED)
+  public static final String JSON_PROPERTY_IS_REQUIRED = "IsRequired";
   @javax.annotation.Nullable
   private Boolean isRequired;
 
-  public ProfileCondition() {
+  public ProfileCondition() { 
   }
 
   public ProfileCondition condition(@javax.annotation.Nullable ProfileConditionType condition) {
@@ -86,10 +74,15 @@ public class ProfileCondition {
    * @return condition
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CONDITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProfileConditionType getCondition() {
     return condition;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CONDITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCondition(@javax.annotation.Nullable ProfileConditionType condition) {
     this.condition = condition;
   }
@@ -105,17 +98,22 @@ public class ProfileCondition {
    * @return property
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProfileConditionValue getProperty() {
     return property;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProperty(@javax.annotation.Nullable ProfileConditionValue property) {
     this.property = property;
   }
 
 
   public ProfileCondition value(@javax.annotation.Nullable String value) {
-    this.value = value;
+    this.value = JsonNullable.<String>of(value);
     return this;
   }
 
@@ -124,12 +122,25 @@ public class ProfileCondition {
    * @return value
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getValue() {
+        return value.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_VALUE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getValue_JsonNullable() {
     return value;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VALUE)
+  public void setValue_JsonNullable(JsonNullable<String> value) {
+    this.value = value;
   }
 
   public void setValue(@javax.annotation.Nullable String value) {
-    this.value = value;
+    this.value = JsonNullable.<String>of(value);
   }
 
 
@@ -143,16 +154,23 @@ public class ProfileCondition {
    * @return isRequired
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_REQUIRED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsRequired() {
     return isRequired;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_REQUIRED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsRequired(@javax.annotation.Nullable Boolean isRequired) {
     this.isRequired = isRequired;
   }
 
 
-
+  /**
+   * Return true if this ProfileCondition object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -164,7 +182,7 @@ public class ProfileCondition {
     ProfileCondition profileCondition = (ProfileCondition) o;
     return Objects.equals(this.condition, profileCondition.condition) &&
         Objects.equals(this.property, profileCondition.property) &&
-        Objects.equals(this.value, profileCondition.value) &&
+        equalsNullable(this.value, profileCondition.value) &&
         Objects.equals(this.isRequired, profileCondition.isRequired);
   }
 
@@ -174,7 +192,7 @@ public class ProfileCondition {
 
   @Override
   public int hashCode() {
-    return Objects.hash(condition, property, value, isRequired);
+    return Objects.hash(condition, property, hashCodeNullable(value), isRequired);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -207,103 +225,59 @@ public class ProfileCondition {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Condition");
-    openapiFields.add("Property");
-    openapiFields.add("Value");
-    openapiFields.add("IsRequired");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to ProfileCondition
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!ProfileCondition.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in ProfileCondition is not found in the empty JSON string", ProfileCondition.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!ProfileCondition.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `ProfileCondition` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // validate the optional field `Condition`
-      if (jsonObj.get("Condition") != null && !jsonObj.get("Condition").isJsonNull()) {
-        ProfileConditionType.validateJsonElement(jsonObj.get("Condition"));
-      }
-      // validate the optional field `Property`
-      if (jsonObj.get("Property") != null && !jsonObj.get("Property").isJsonNull()) {
-        ProfileConditionValue.validateJsonElement(jsonObj.get("Property"));
-      }
-      if ((jsonObj.get("Value") != null && !jsonObj.get("Value").isJsonNull()) && !jsonObj.get("Value").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Value` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Value").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!ProfileCondition.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'ProfileCondition' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<ProfileCondition> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(ProfileCondition.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<ProfileCondition>() {
-           @Override
-           public void write(JsonWriter out, ProfileCondition value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public ProfileCondition read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of ProfileCondition given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of ProfileCondition
-   * @throws IOException if the JSON string is invalid with respect to ProfileCondition
-   */
-  public static ProfileCondition fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, ProfileCondition.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of ProfileCondition to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Condition` to the URL query string
+    if (getCondition() != null) {
+      joiner.add(String.format("%sCondition%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCondition()))));
+    }
+
+    // add `Property` to the URL query string
+    if (getProperty() != null) {
+      joiner.add(String.format("%sProperty%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProperty()))));
+    }
+
+    // add `Value` to the URL query string
+    if (getValue() != null) {
+      joiner.add(String.format("%sValue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getValue()))));
+    }
+
+    // add `IsRequired` to the URL query string
+    if (getIsRequired() != null) {
+      joiner.add(String.format("%sIsRequired%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsRequired()))));
+    }
+
+    return joiner.toString();
   }
 }
 

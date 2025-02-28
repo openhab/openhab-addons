@@ -13,13 +13,17 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,172 +31,151 @@ import org.openapitools.client.model.EmbeddedSubtitleOptions;
 import org.openapitools.client.model.MediaPathInfo;
 import org.openapitools.client.model.TypeOptions;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * LibraryOptions
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  LibraryOptions.JSON_PROPERTY_ENABLE_PHOTOS,
+  LibraryOptions.JSON_PROPERTY_ENABLE_REALTIME_MONITOR,
+  LibraryOptions.JSON_PROPERTY_ENABLE_CHAPTER_IMAGE_EXTRACTION,
+  LibraryOptions.JSON_PROPERTY_EXTRACT_CHAPTER_IMAGES_DURING_LIBRARY_SCAN,
+  LibraryOptions.JSON_PROPERTY_PATH_INFOS,
+  LibraryOptions.JSON_PROPERTY_SAVE_LOCAL_METADATA,
+  LibraryOptions.JSON_PROPERTY_ENABLE_INTERNET_PROVIDERS,
+  LibraryOptions.JSON_PROPERTY_ENABLE_AUTOMATIC_SERIES_GROUPING,
+  LibraryOptions.JSON_PROPERTY_ENABLE_EMBEDDED_TITLES,
+  LibraryOptions.JSON_PROPERTY_ENABLE_EMBEDDED_EPISODE_INFOS,
+  LibraryOptions.JSON_PROPERTY_AUTOMATIC_REFRESH_INTERVAL_DAYS,
+  LibraryOptions.JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE,
+  LibraryOptions.JSON_PROPERTY_METADATA_COUNTRY_CODE,
+  LibraryOptions.JSON_PROPERTY_SEASON_ZERO_DISPLAY_NAME,
+  LibraryOptions.JSON_PROPERTY_METADATA_SAVERS,
+  LibraryOptions.JSON_PROPERTY_DISABLED_LOCAL_METADATA_READERS,
+  LibraryOptions.JSON_PROPERTY_LOCAL_METADATA_READER_ORDER,
+  LibraryOptions.JSON_PROPERTY_DISABLED_SUBTITLE_FETCHERS,
+  LibraryOptions.JSON_PROPERTY_SUBTITLE_FETCHER_ORDER,
+  LibraryOptions.JSON_PROPERTY_SKIP_SUBTITLES_IF_EMBEDDED_SUBTITLES_PRESENT,
+  LibraryOptions.JSON_PROPERTY_SKIP_SUBTITLES_IF_AUDIO_TRACK_MATCHES,
+  LibraryOptions.JSON_PROPERTY_SUBTITLE_DOWNLOAD_LANGUAGES,
+  LibraryOptions.JSON_PROPERTY_REQUIRE_PERFECT_SUBTITLE_MATCH,
+  LibraryOptions.JSON_PROPERTY_SAVE_SUBTITLES_WITH_MEDIA,
+  LibraryOptions.JSON_PROPERTY_AUTOMATICALLY_ADD_TO_COLLECTION,
+  LibraryOptions.JSON_PROPERTY_ALLOW_EMBEDDED_SUBTITLES,
+  LibraryOptions.JSON_PROPERTY_TYPE_OPTIONS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class LibraryOptions {
-  public static final String SERIALIZED_NAME_ENABLE_PHOTOS = "EnablePhotos";
-  @SerializedName(SERIALIZED_NAME_ENABLE_PHOTOS)
+  public static final String JSON_PROPERTY_ENABLE_PHOTOS = "EnablePhotos";
   @javax.annotation.Nullable
   private Boolean enablePhotos;
 
-  public static final String SERIALIZED_NAME_ENABLE_REALTIME_MONITOR = "EnableRealtimeMonitor";
-  @SerializedName(SERIALIZED_NAME_ENABLE_REALTIME_MONITOR)
+  public static final String JSON_PROPERTY_ENABLE_REALTIME_MONITOR = "EnableRealtimeMonitor";
   @javax.annotation.Nullable
   private Boolean enableRealtimeMonitor;
 
-  public static final String SERIALIZED_NAME_ENABLE_CHAPTER_IMAGE_EXTRACTION = "EnableChapterImageExtraction";
-  @SerializedName(SERIALIZED_NAME_ENABLE_CHAPTER_IMAGE_EXTRACTION)
+  public static final String JSON_PROPERTY_ENABLE_CHAPTER_IMAGE_EXTRACTION = "EnableChapterImageExtraction";
   @javax.annotation.Nullable
   private Boolean enableChapterImageExtraction;
 
-  public static final String SERIALIZED_NAME_EXTRACT_CHAPTER_IMAGES_DURING_LIBRARY_SCAN = "ExtractChapterImagesDuringLibraryScan";
-  @SerializedName(SERIALIZED_NAME_EXTRACT_CHAPTER_IMAGES_DURING_LIBRARY_SCAN)
+  public static final String JSON_PROPERTY_EXTRACT_CHAPTER_IMAGES_DURING_LIBRARY_SCAN = "ExtractChapterImagesDuringLibraryScan";
   @javax.annotation.Nullable
   private Boolean extractChapterImagesDuringLibraryScan;
 
-  public static final String SERIALIZED_NAME_PATH_INFOS = "PathInfos";
-  @SerializedName(SERIALIZED_NAME_PATH_INFOS)
+  public static final String JSON_PROPERTY_PATH_INFOS = "PathInfos";
   @javax.annotation.Nullable
   private List<MediaPathInfo> pathInfos = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_SAVE_LOCAL_METADATA = "SaveLocalMetadata";
-  @SerializedName(SERIALIZED_NAME_SAVE_LOCAL_METADATA)
+  public static final String JSON_PROPERTY_SAVE_LOCAL_METADATA = "SaveLocalMetadata";
   @javax.annotation.Nullable
   private Boolean saveLocalMetadata;
 
-  public static final String SERIALIZED_NAME_ENABLE_INTERNET_PROVIDERS = "EnableInternetProviders";
-  @Deprecated
-  @SerializedName(SERIALIZED_NAME_ENABLE_INTERNET_PROVIDERS)
+  public static final String JSON_PROPERTY_ENABLE_INTERNET_PROVIDERS = "EnableInternetProviders";
   @javax.annotation.Nullable
   private Boolean enableInternetProviders;
 
-  public static final String SERIALIZED_NAME_ENABLE_AUTOMATIC_SERIES_GROUPING = "EnableAutomaticSeriesGrouping";
-  @SerializedName(SERIALIZED_NAME_ENABLE_AUTOMATIC_SERIES_GROUPING)
+  public static final String JSON_PROPERTY_ENABLE_AUTOMATIC_SERIES_GROUPING = "EnableAutomaticSeriesGrouping";
   @javax.annotation.Nullable
   private Boolean enableAutomaticSeriesGrouping;
 
-  public static final String SERIALIZED_NAME_ENABLE_EMBEDDED_TITLES = "EnableEmbeddedTitles";
-  @SerializedName(SERIALIZED_NAME_ENABLE_EMBEDDED_TITLES)
+  public static final String JSON_PROPERTY_ENABLE_EMBEDDED_TITLES = "EnableEmbeddedTitles";
   @javax.annotation.Nullable
   private Boolean enableEmbeddedTitles;
 
-  public static final String SERIALIZED_NAME_ENABLE_EMBEDDED_EPISODE_INFOS = "EnableEmbeddedEpisodeInfos";
-  @SerializedName(SERIALIZED_NAME_ENABLE_EMBEDDED_EPISODE_INFOS)
+  public static final String JSON_PROPERTY_ENABLE_EMBEDDED_EPISODE_INFOS = "EnableEmbeddedEpisodeInfos";
   @javax.annotation.Nullable
   private Boolean enableEmbeddedEpisodeInfos;
 
-  public static final String SERIALIZED_NAME_AUTOMATIC_REFRESH_INTERVAL_DAYS = "AutomaticRefreshIntervalDays";
-  @SerializedName(SERIALIZED_NAME_AUTOMATIC_REFRESH_INTERVAL_DAYS)
+  public static final String JSON_PROPERTY_AUTOMATIC_REFRESH_INTERVAL_DAYS = "AutomaticRefreshIntervalDays";
   @javax.annotation.Nullable
   private Integer automaticRefreshIntervalDays;
 
-  public static final String SERIALIZED_NAME_PREFERRED_METADATA_LANGUAGE = "PreferredMetadataLanguage";
-  @SerializedName(SERIALIZED_NAME_PREFERRED_METADATA_LANGUAGE)
-  @javax.annotation.Nullable
-  private String preferredMetadataLanguage;
+  public static final String JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE = "PreferredMetadataLanguage";
+  private JsonNullable<String> preferredMetadataLanguage = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_METADATA_COUNTRY_CODE = "MetadataCountryCode";
-  @SerializedName(SERIALIZED_NAME_METADATA_COUNTRY_CODE)
-  @javax.annotation.Nullable
-  private String metadataCountryCode;
+  public static final String JSON_PROPERTY_METADATA_COUNTRY_CODE = "MetadataCountryCode";
+  private JsonNullable<String> metadataCountryCode = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_SEASON_ZERO_DISPLAY_NAME = "SeasonZeroDisplayName";
-  @SerializedName(SERIALIZED_NAME_SEASON_ZERO_DISPLAY_NAME)
+  public static final String JSON_PROPERTY_SEASON_ZERO_DISPLAY_NAME = "SeasonZeroDisplayName";
   @javax.annotation.Nullable
   private String seasonZeroDisplayName;
 
-  public static final String SERIALIZED_NAME_METADATA_SAVERS = "MetadataSavers";
-  @SerializedName(SERIALIZED_NAME_METADATA_SAVERS)
-  @javax.annotation.Nullable
-  private List<String> metadataSavers;
+  public static final String JSON_PROPERTY_METADATA_SAVERS = "MetadataSavers";
+  private JsonNullable<List<String>> metadataSavers = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_DISABLED_LOCAL_METADATA_READERS = "DisabledLocalMetadataReaders";
-  @SerializedName(SERIALIZED_NAME_DISABLED_LOCAL_METADATA_READERS)
+  public static final String JSON_PROPERTY_DISABLED_LOCAL_METADATA_READERS = "DisabledLocalMetadataReaders";
   @javax.annotation.Nullable
   private List<String> disabledLocalMetadataReaders = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_LOCAL_METADATA_READER_ORDER = "LocalMetadataReaderOrder";
-  @SerializedName(SERIALIZED_NAME_LOCAL_METADATA_READER_ORDER)
-  @javax.annotation.Nullable
-  private List<String> localMetadataReaderOrder;
+  public static final String JSON_PROPERTY_LOCAL_METADATA_READER_ORDER = "LocalMetadataReaderOrder";
+  private JsonNullable<List<String>> localMetadataReaderOrder = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_DISABLED_SUBTITLE_FETCHERS = "DisabledSubtitleFetchers";
-  @SerializedName(SERIALIZED_NAME_DISABLED_SUBTITLE_FETCHERS)
+  public static final String JSON_PROPERTY_DISABLED_SUBTITLE_FETCHERS = "DisabledSubtitleFetchers";
   @javax.annotation.Nullable
   private List<String> disabledSubtitleFetchers = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_SUBTITLE_FETCHER_ORDER = "SubtitleFetcherOrder";
-  @SerializedName(SERIALIZED_NAME_SUBTITLE_FETCHER_ORDER)
+  public static final String JSON_PROPERTY_SUBTITLE_FETCHER_ORDER = "SubtitleFetcherOrder";
   @javax.annotation.Nullable
   private List<String> subtitleFetcherOrder = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_SKIP_SUBTITLES_IF_EMBEDDED_SUBTITLES_PRESENT = "SkipSubtitlesIfEmbeddedSubtitlesPresent";
-  @SerializedName(SERIALIZED_NAME_SKIP_SUBTITLES_IF_EMBEDDED_SUBTITLES_PRESENT)
+  public static final String JSON_PROPERTY_SKIP_SUBTITLES_IF_EMBEDDED_SUBTITLES_PRESENT = "SkipSubtitlesIfEmbeddedSubtitlesPresent";
   @javax.annotation.Nullable
   private Boolean skipSubtitlesIfEmbeddedSubtitlesPresent;
 
-  public static final String SERIALIZED_NAME_SKIP_SUBTITLES_IF_AUDIO_TRACK_MATCHES = "SkipSubtitlesIfAudioTrackMatches";
-  @SerializedName(SERIALIZED_NAME_SKIP_SUBTITLES_IF_AUDIO_TRACK_MATCHES)
+  public static final String JSON_PROPERTY_SKIP_SUBTITLES_IF_AUDIO_TRACK_MATCHES = "SkipSubtitlesIfAudioTrackMatches";
   @javax.annotation.Nullable
   private Boolean skipSubtitlesIfAudioTrackMatches;
 
-  public static final String SERIALIZED_NAME_SUBTITLE_DOWNLOAD_LANGUAGES = "SubtitleDownloadLanguages";
-  @SerializedName(SERIALIZED_NAME_SUBTITLE_DOWNLOAD_LANGUAGES)
-  @javax.annotation.Nullable
-  private List<String> subtitleDownloadLanguages;
+  public static final String JSON_PROPERTY_SUBTITLE_DOWNLOAD_LANGUAGES = "SubtitleDownloadLanguages";
+  private JsonNullable<List<String>> subtitleDownloadLanguages = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_REQUIRE_PERFECT_SUBTITLE_MATCH = "RequirePerfectSubtitleMatch";
-  @SerializedName(SERIALIZED_NAME_REQUIRE_PERFECT_SUBTITLE_MATCH)
+  public static final String JSON_PROPERTY_REQUIRE_PERFECT_SUBTITLE_MATCH = "RequirePerfectSubtitleMatch";
   @javax.annotation.Nullable
   private Boolean requirePerfectSubtitleMatch;
 
-  public static final String SERIALIZED_NAME_SAVE_SUBTITLES_WITH_MEDIA = "SaveSubtitlesWithMedia";
-  @SerializedName(SERIALIZED_NAME_SAVE_SUBTITLES_WITH_MEDIA)
+  public static final String JSON_PROPERTY_SAVE_SUBTITLES_WITH_MEDIA = "SaveSubtitlesWithMedia";
   @javax.annotation.Nullable
   private Boolean saveSubtitlesWithMedia;
 
-  public static final String SERIALIZED_NAME_AUTOMATICALLY_ADD_TO_COLLECTION = "AutomaticallyAddToCollection";
-  @SerializedName(SERIALIZED_NAME_AUTOMATICALLY_ADD_TO_COLLECTION)
+  public static final String JSON_PROPERTY_AUTOMATICALLY_ADD_TO_COLLECTION = "AutomaticallyAddToCollection";
   @javax.annotation.Nullable
   private Boolean automaticallyAddToCollection;
 
-  public static final String SERIALIZED_NAME_ALLOW_EMBEDDED_SUBTITLES = "AllowEmbeddedSubtitles";
-  @SerializedName(SERIALIZED_NAME_ALLOW_EMBEDDED_SUBTITLES)
+  public static final String JSON_PROPERTY_ALLOW_EMBEDDED_SUBTITLES = "AllowEmbeddedSubtitles";
   @javax.annotation.Nullable
   private EmbeddedSubtitleOptions allowEmbeddedSubtitles;
 
-  public static final String SERIALIZED_NAME_TYPE_OPTIONS = "TypeOptions";
-  @SerializedName(SERIALIZED_NAME_TYPE_OPTIONS)
+  public static final String JSON_PROPERTY_TYPE_OPTIONS = "TypeOptions";
   @javax.annotation.Nullable
   private List<TypeOptions> typeOptions = new ArrayList<>();
 
-  public LibraryOptions() {
+  public LibraryOptions() { 
   }
 
   public LibraryOptions enablePhotos(@javax.annotation.Nullable Boolean enablePhotos) {
@@ -205,10 +188,15 @@ public class LibraryOptions {
    * @return enablePhotos
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_PHOTOS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnablePhotos() {
     return enablePhotos;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_PHOTOS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnablePhotos(@javax.annotation.Nullable Boolean enablePhotos) {
     this.enablePhotos = enablePhotos;
   }
@@ -224,10 +212,15 @@ public class LibraryOptions {
    * @return enableRealtimeMonitor
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_REALTIME_MONITOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableRealtimeMonitor() {
     return enableRealtimeMonitor;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_REALTIME_MONITOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableRealtimeMonitor(@javax.annotation.Nullable Boolean enableRealtimeMonitor) {
     this.enableRealtimeMonitor = enableRealtimeMonitor;
   }
@@ -243,10 +236,15 @@ public class LibraryOptions {
    * @return enableChapterImageExtraction
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_CHAPTER_IMAGE_EXTRACTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableChapterImageExtraction() {
     return enableChapterImageExtraction;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_CHAPTER_IMAGE_EXTRACTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableChapterImageExtraction(@javax.annotation.Nullable Boolean enableChapterImageExtraction) {
     this.enableChapterImageExtraction = enableChapterImageExtraction;
   }
@@ -262,10 +260,15 @@ public class LibraryOptions {
    * @return extractChapterImagesDuringLibraryScan
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_EXTRACT_CHAPTER_IMAGES_DURING_LIBRARY_SCAN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getExtractChapterImagesDuringLibraryScan() {
     return extractChapterImagesDuringLibraryScan;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_EXTRACT_CHAPTER_IMAGES_DURING_LIBRARY_SCAN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExtractChapterImagesDuringLibraryScan(@javax.annotation.Nullable Boolean extractChapterImagesDuringLibraryScan) {
     this.extractChapterImagesDuringLibraryScan = extractChapterImagesDuringLibraryScan;
   }
@@ -289,10 +292,15 @@ public class LibraryOptions {
    * @return pathInfos
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PATH_INFOS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<MediaPathInfo> getPathInfos() {
     return pathInfos;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PATH_INFOS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPathInfos(@javax.annotation.Nullable List<MediaPathInfo> pathInfos) {
     this.pathInfos = pathInfos;
   }
@@ -308,16 +316,20 @@ public class LibraryOptions {
    * @return saveLocalMetadata
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SAVE_LOCAL_METADATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSaveLocalMetadata() {
     return saveLocalMetadata;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SAVE_LOCAL_METADATA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSaveLocalMetadata(@javax.annotation.Nullable Boolean saveLocalMetadata) {
     this.saveLocalMetadata = saveLocalMetadata;
   }
 
 
-  @Deprecated
   public LibraryOptions enableInternetProviders(@javax.annotation.Nullable Boolean enableInternetProviders) {
     this.enableInternetProviders = enableInternetProviders;
     return this;
@@ -330,11 +342,15 @@ public class LibraryOptions {
    */
   @Deprecated
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_INTERNET_PROVIDERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableInternetProviders() {
     return enableInternetProviders;
   }
 
-  @Deprecated
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_INTERNET_PROVIDERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableInternetProviders(@javax.annotation.Nullable Boolean enableInternetProviders) {
     this.enableInternetProviders = enableInternetProviders;
   }
@@ -350,10 +366,15 @@ public class LibraryOptions {
    * @return enableAutomaticSeriesGrouping
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_AUTOMATIC_SERIES_GROUPING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableAutomaticSeriesGrouping() {
     return enableAutomaticSeriesGrouping;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_AUTOMATIC_SERIES_GROUPING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableAutomaticSeriesGrouping(@javax.annotation.Nullable Boolean enableAutomaticSeriesGrouping) {
     this.enableAutomaticSeriesGrouping = enableAutomaticSeriesGrouping;
   }
@@ -369,10 +390,15 @@ public class LibraryOptions {
    * @return enableEmbeddedTitles
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_EMBEDDED_TITLES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableEmbeddedTitles() {
     return enableEmbeddedTitles;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_EMBEDDED_TITLES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableEmbeddedTitles(@javax.annotation.Nullable Boolean enableEmbeddedTitles) {
     this.enableEmbeddedTitles = enableEmbeddedTitles;
   }
@@ -388,10 +414,15 @@ public class LibraryOptions {
    * @return enableEmbeddedEpisodeInfos
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_EMBEDDED_EPISODE_INFOS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableEmbeddedEpisodeInfos() {
     return enableEmbeddedEpisodeInfos;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_EMBEDDED_EPISODE_INFOS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableEmbeddedEpisodeInfos(@javax.annotation.Nullable Boolean enableEmbeddedEpisodeInfos) {
     this.enableEmbeddedEpisodeInfos = enableEmbeddedEpisodeInfos;
   }
@@ -407,17 +438,22 @@ public class LibraryOptions {
    * @return automaticRefreshIntervalDays
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_AUTOMATIC_REFRESH_INTERVAL_DAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getAutomaticRefreshIntervalDays() {
     return automaticRefreshIntervalDays;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_AUTOMATIC_REFRESH_INTERVAL_DAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAutomaticRefreshIntervalDays(@javax.annotation.Nullable Integer automaticRefreshIntervalDays) {
     this.automaticRefreshIntervalDays = automaticRefreshIntervalDays;
   }
 
 
   public LibraryOptions preferredMetadataLanguage(@javax.annotation.Nullable String preferredMetadataLanguage) {
-    this.preferredMetadataLanguage = preferredMetadataLanguage;
+    this.preferredMetadataLanguage = JsonNullable.<String>of(preferredMetadataLanguage);
     return this;
   }
 
@@ -426,17 +462,30 @@ public class LibraryOptions {
    * @return preferredMetadataLanguage
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPreferredMetadataLanguage() {
+        return preferredMetadataLanguage.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPreferredMetadataLanguage_JsonNullable() {
     return preferredMetadataLanguage;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
+  public void setPreferredMetadataLanguage_JsonNullable(JsonNullable<String> preferredMetadataLanguage) {
+    this.preferredMetadataLanguage = preferredMetadataLanguage;
   }
 
   public void setPreferredMetadataLanguage(@javax.annotation.Nullable String preferredMetadataLanguage) {
-    this.preferredMetadataLanguage = preferredMetadataLanguage;
+    this.preferredMetadataLanguage = JsonNullable.<String>of(preferredMetadataLanguage);
   }
 
 
   public LibraryOptions metadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
-    this.metadataCountryCode = metadataCountryCode;
+    this.metadataCountryCode = JsonNullable.<String>of(metadataCountryCode);
     return this;
   }
 
@@ -445,12 +494,25 @@ public class LibraryOptions {
    * @return metadataCountryCode
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getMetadataCountryCode() {
+        return metadataCountryCode.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getMetadataCountryCode_JsonNullable() {
     return metadataCountryCode;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
+  public void setMetadataCountryCode_JsonNullable(JsonNullable<String> metadataCountryCode) {
+    this.metadataCountryCode = metadataCountryCode;
   }
 
   public void setMetadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
-    this.metadataCountryCode = metadataCountryCode;
+    this.metadataCountryCode = JsonNullable.<String>of(metadataCountryCode);
   }
 
 
@@ -464,25 +526,34 @@ public class LibraryOptions {
    * @return seasonZeroDisplayName
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SEASON_ZERO_DISPLAY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSeasonZeroDisplayName() {
     return seasonZeroDisplayName;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SEASON_ZERO_DISPLAY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSeasonZeroDisplayName(@javax.annotation.Nullable String seasonZeroDisplayName) {
     this.seasonZeroDisplayName = seasonZeroDisplayName;
   }
 
 
   public LibraryOptions metadataSavers(@javax.annotation.Nullable List<String> metadataSavers) {
-    this.metadataSavers = metadataSavers;
+    this.metadataSavers = JsonNullable.<List<String>>of(metadataSavers);
     return this;
   }
 
   public LibraryOptions addMetadataSaversItem(String metadataSaversItem) {
-    if (this.metadataSavers == null) {
-      this.metadataSavers = new ArrayList<>();
+    if (this.metadataSavers == null || !this.metadataSavers.isPresent()) {
+      this.metadataSavers = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.metadataSavers.add(metadataSaversItem);
+    try {
+      this.metadataSavers.get().add(metadataSaversItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -491,12 +562,25 @@ public class LibraryOptions {
    * @return metadataSavers
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getMetadataSavers() {
+        return metadataSavers.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_METADATA_SAVERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getMetadataSavers_JsonNullable() {
     return metadataSavers;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_METADATA_SAVERS)
+  public void setMetadataSavers_JsonNullable(JsonNullable<List<String>> metadataSavers) {
+    this.metadataSavers = metadataSavers;
   }
 
   public void setMetadataSavers(@javax.annotation.Nullable List<String> metadataSavers) {
-    this.metadataSavers = metadataSavers;
+    this.metadataSavers = JsonNullable.<List<String>>of(metadataSavers);
   }
 
 
@@ -518,25 +602,34 @@ public class LibraryOptions {
    * @return disabledLocalMetadataReaders
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DISABLED_LOCAL_METADATA_READERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getDisabledLocalMetadataReaders() {
     return disabledLocalMetadataReaders;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DISABLED_LOCAL_METADATA_READERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisabledLocalMetadataReaders(@javax.annotation.Nullable List<String> disabledLocalMetadataReaders) {
     this.disabledLocalMetadataReaders = disabledLocalMetadataReaders;
   }
 
 
   public LibraryOptions localMetadataReaderOrder(@javax.annotation.Nullable List<String> localMetadataReaderOrder) {
-    this.localMetadataReaderOrder = localMetadataReaderOrder;
+    this.localMetadataReaderOrder = JsonNullable.<List<String>>of(localMetadataReaderOrder);
     return this;
   }
 
   public LibraryOptions addLocalMetadataReaderOrderItem(String localMetadataReaderOrderItem) {
-    if (this.localMetadataReaderOrder == null) {
-      this.localMetadataReaderOrder = new ArrayList<>();
+    if (this.localMetadataReaderOrder == null || !this.localMetadataReaderOrder.isPresent()) {
+      this.localMetadataReaderOrder = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.localMetadataReaderOrder.add(localMetadataReaderOrderItem);
+    try {
+      this.localMetadataReaderOrder.get().add(localMetadataReaderOrderItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -545,12 +638,25 @@ public class LibraryOptions {
    * @return localMetadataReaderOrder
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getLocalMetadataReaderOrder() {
+        return localMetadataReaderOrder.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LOCAL_METADATA_READER_ORDER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getLocalMetadataReaderOrder_JsonNullable() {
     return localMetadataReaderOrder;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LOCAL_METADATA_READER_ORDER)
+  public void setLocalMetadataReaderOrder_JsonNullable(JsonNullable<List<String>> localMetadataReaderOrder) {
+    this.localMetadataReaderOrder = localMetadataReaderOrder;
   }
 
   public void setLocalMetadataReaderOrder(@javax.annotation.Nullable List<String> localMetadataReaderOrder) {
-    this.localMetadataReaderOrder = localMetadataReaderOrder;
+    this.localMetadataReaderOrder = JsonNullable.<List<String>>of(localMetadataReaderOrder);
   }
 
 
@@ -572,10 +678,15 @@ public class LibraryOptions {
    * @return disabledSubtitleFetchers
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DISABLED_SUBTITLE_FETCHERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getDisabledSubtitleFetchers() {
     return disabledSubtitleFetchers;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DISABLED_SUBTITLE_FETCHERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisabledSubtitleFetchers(@javax.annotation.Nullable List<String> disabledSubtitleFetchers) {
     this.disabledSubtitleFetchers = disabledSubtitleFetchers;
   }
@@ -599,10 +710,15 @@ public class LibraryOptions {
    * @return subtitleFetcherOrder
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_FETCHER_ORDER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getSubtitleFetcherOrder() {
     return subtitleFetcherOrder;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_FETCHER_ORDER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubtitleFetcherOrder(@javax.annotation.Nullable List<String> subtitleFetcherOrder) {
     this.subtitleFetcherOrder = subtitleFetcherOrder;
   }
@@ -618,10 +734,15 @@ public class LibraryOptions {
    * @return skipSubtitlesIfEmbeddedSubtitlesPresent
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SKIP_SUBTITLES_IF_EMBEDDED_SUBTITLES_PRESENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSkipSubtitlesIfEmbeddedSubtitlesPresent() {
     return skipSubtitlesIfEmbeddedSubtitlesPresent;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SKIP_SUBTITLES_IF_EMBEDDED_SUBTITLES_PRESENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSkipSubtitlesIfEmbeddedSubtitlesPresent(@javax.annotation.Nullable Boolean skipSubtitlesIfEmbeddedSubtitlesPresent) {
     this.skipSubtitlesIfEmbeddedSubtitlesPresent = skipSubtitlesIfEmbeddedSubtitlesPresent;
   }
@@ -637,25 +758,34 @@ public class LibraryOptions {
    * @return skipSubtitlesIfAudioTrackMatches
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SKIP_SUBTITLES_IF_AUDIO_TRACK_MATCHES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSkipSubtitlesIfAudioTrackMatches() {
     return skipSubtitlesIfAudioTrackMatches;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SKIP_SUBTITLES_IF_AUDIO_TRACK_MATCHES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSkipSubtitlesIfAudioTrackMatches(@javax.annotation.Nullable Boolean skipSubtitlesIfAudioTrackMatches) {
     this.skipSubtitlesIfAudioTrackMatches = skipSubtitlesIfAudioTrackMatches;
   }
 
 
   public LibraryOptions subtitleDownloadLanguages(@javax.annotation.Nullable List<String> subtitleDownloadLanguages) {
-    this.subtitleDownloadLanguages = subtitleDownloadLanguages;
+    this.subtitleDownloadLanguages = JsonNullable.<List<String>>of(subtitleDownloadLanguages);
     return this;
   }
 
   public LibraryOptions addSubtitleDownloadLanguagesItem(String subtitleDownloadLanguagesItem) {
-    if (this.subtitleDownloadLanguages == null) {
-      this.subtitleDownloadLanguages = new ArrayList<>();
+    if (this.subtitleDownloadLanguages == null || !this.subtitleDownloadLanguages.isPresent()) {
+      this.subtitleDownloadLanguages = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.subtitleDownloadLanguages.add(subtitleDownloadLanguagesItem);
+    try {
+      this.subtitleDownloadLanguages.get().add(subtitleDownloadLanguagesItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -664,12 +794,25 @@ public class LibraryOptions {
    * @return subtitleDownloadLanguages
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getSubtitleDownloadLanguages() {
+        return subtitleDownloadLanguages.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_DOWNLOAD_LANGUAGES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getSubtitleDownloadLanguages_JsonNullable() {
     return subtitleDownloadLanguages;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_DOWNLOAD_LANGUAGES)
+  public void setSubtitleDownloadLanguages_JsonNullable(JsonNullable<List<String>> subtitleDownloadLanguages) {
+    this.subtitleDownloadLanguages = subtitleDownloadLanguages;
   }
 
   public void setSubtitleDownloadLanguages(@javax.annotation.Nullable List<String> subtitleDownloadLanguages) {
-    this.subtitleDownloadLanguages = subtitleDownloadLanguages;
+    this.subtitleDownloadLanguages = JsonNullable.<List<String>>of(subtitleDownloadLanguages);
   }
 
 
@@ -683,10 +826,15 @@ public class LibraryOptions {
    * @return requirePerfectSubtitleMatch
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REQUIRE_PERFECT_SUBTITLE_MATCH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getRequirePerfectSubtitleMatch() {
     return requirePerfectSubtitleMatch;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REQUIRE_PERFECT_SUBTITLE_MATCH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRequirePerfectSubtitleMatch(@javax.annotation.Nullable Boolean requirePerfectSubtitleMatch) {
     this.requirePerfectSubtitleMatch = requirePerfectSubtitleMatch;
   }
@@ -702,10 +850,15 @@ public class LibraryOptions {
    * @return saveSubtitlesWithMedia
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SAVE_SUBTITLES_WITH_MEDIA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSaveSubtitlesWithMedia() {
     return saveSubtitlesWithMedia;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SAVE_SUBTITLES_WITH_MEDIA)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSaveSubtitlesWithMedia(@javax.annotation.Nullable Boolean saveSubtitlesWithMedia) {
     this.saveSubtitlesWithMedia = saveSubtitlesWithMedia;
   }
@@ -721,10 +874,15 @@ public class LibraryOptions {
    * @return automaticallyAddToCollection
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_AUTOMATICALLY_ADD_TO_COLLECTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getAutomaticallyAddToCollection() {
     return automaticallyAddToCollection;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_AUTOMATICALLY_ADD_TO_COLLECTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAutomaticallyAddToCollection(@javax.annotation.Nullable Boolean automaticallyAddToCollection) {
     this.automaticallyAddToCollection = automaticallyAddToCollection;
   }
@@ -740,10 +898,15 @@ public class LibraryOptions {
    * @return allowEmbeddedSubtitles
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ALLOW_EMBEDDED_SUBTITLES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public EmbeddedSubtitleOptions getAllowEmbeddedSubtitles() {
     return allowEmbeddedSubtitles;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ALLOW_EMBEDDED_SUBTITLES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAllowEmbeddedSubtitles(@javax.annotation.Nullable EmbeddedSubtitleOptions allowEmbeddedSubtitles) {
     this.allowEmbeddedSubtitles = allowEmbeddedSubtitles;
   }
@@ -767,16 +930,23 @@ public class LibraryOptions {
    * @return typeOptions
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TYPE_OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<TypeOptions> getTypeOptions() {
     return typeOptions;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TYPE_OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTypeOptions(@javax.annotation.Nullable List<TypeOptions> typeOptions) {
     this.typeOptions = typeOptions;
   }
 
 
-
+  /**
+   * Return true if this LibraryOptions object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -797,17 +967,17 @@ public class LibraryOptions {
         Objects.equals(this.enableEmbeddedTitles, libraryOptions.enableEmbeddedTitles) &&
         Objects.equals(this.enableEmbeddedEpisodeInfos, libraryOptions.enableEmbeddedEpisodeInfos) &&
         Objects.equals(this.automaticRefreshIntervalDays, libraryOptions.automaticRefreshIntervalDays) &&
-        Objects.equals(this.preferredMetadataLanguage, libraryOptions.preferredMetadataLanguage) &&
-        Objects.equals(this.metadataCountryCode, libraryOptions.metadataCountryCode) &&
+        equalsNullable(this.preferredMetadataLanguage, libraryOptions.preferredMetadataLanguage) &&
+        equalsNullable(this.metadataCountryCode, libraryOptions.metadataCountryCode) &&
         Objects.equals(this.seasonZeroDisplayName, libraryOptions.seasonZeroDisplayName) &&
-        Objects.equals(this.metadataSavers, libraryOptions.metadataSavers) &&
+        equalsNullable(this.metadataSavers, libraryOptions.metadataSavers) &&
         Objects.equals(this.disabledLocalMetadataReaders, libraryOptions.disabledLocalMetadataReaders) &&
-        Objects.equals(this.localMetadataReaderOrder, libraryOptions.localMetadataReaderOrder) &&
+        equalsNullable(this.localMetadataReaderOrder, libraryOptions.localMetadataReaderOrder) &&
         Objects.equals(this.disabledSubtitleFetchers, libraryOptions.disabledSubtitleFetchers) &&
         Objects.equals(this.subtitleFetcherOrder, libraryOptions.subtitleFetcherOrder) &&
         Objects.equals(this.skipSubtitlesIfEmbeddedSubtitlesPresent, libraryOptions.skipSubtitlesIfEmbeddedSubtitlesPresent) &&
         Objects.equals(this.skipSubtitlesIfAudioTrackMatches, libraryOptions.skipSubtitlesIfAudioTrackMatches) &&
-        Objects.equals(this.subtitleDownloadLanguages, libraryOptions.subtitleDownloadLanguages) &&
+        equalsNullable(this.subtitleDownloadLanguages, libraryOptions.subtitleDownloadLanguages) &&
         Objects.equals(this.requirePerfectSubtitleMatch, libraryOptions.requirePerfectSubtitleMatch) &&
         Objects.equals(this.saveSubtitlesWithMedia, libraryOptions.saveSubtitlesWithMedia) &&
         Objects.equals(this.automaticallyAddToCollection, libraryOptions.automaticallyAddToCollection) &&
@@ -821,7 +991,7 @@ public class LibraryOptions {
 
   @Override
   public int hashCode() {
-    return Objects.hash(enablePhotos, enableRealtimeMonitor, enableChapterImageExtraction, extractChapterImagesDuringLibraryScan, pathInfos, saveLocalMetadata, enableInternetProviders, enableAutomaticSeriesGrouping, enableEmbeddedTitles, enableEmbeddedEpisodeInfos, automaticRefreshIntervalDays, preferredMetadataLanguage, metadataCountryCode, seasonZeroDisplayName, metadataSavers, disabledLocalMetadataReaders, localMetadataReaderOrder, disabledSubtitleFetchers, subtitleFetcherOrder, skipSubtitlesIfEmbeddedSubtitlesPresent, skipSubtitlesIfAudioTrackMatches, subtitleDownloadLanguages, requirePerfectSubtitleMatch, saveSubtitlesWithMedia, automaticallyAddToCollection, allowEmbeddedSubtitles, typeOptions);
+    return Objects.hash(enablePhotos, enableRealtimeMonitor, enableChapterImageExtraction, extractChapterImagesDuringLibraryScan, pathInfos, saveLocalMetadata, enableInternetProviders, enableAutomaticSeriesGrouping, enableEmbeddedTitles, enableEmbeddedEpisodeInfos, automaticRefreshIntervalDays, hashCodeNullable(preferredMetadataLanguage), hashCodeNullable(metadataCountryCode), seasonZeroDisplayName, hashCodeNullable(metadataSavers), disabledLocalMetadataReaders, hashCodeNullable(localMetadataReaderOrder), disabledSubtitleFetchers, subtitleFetcherOrder, skipSubtitlesIfEmbeddedSubtitlesPresent, skipSubtitlesIfAudioTrackMatches, hashCodeNullable(subtitleDownloadLanguages), requirePerfectSubtitleMatch, saveSubtitlesWithMedia, automaticallyAddToCollection, allowEmbeddedSubtitles, typeOptions);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -877,180 +1047,208 @@ public class LibraryOptions {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("EnablePhotos");
-    openapiFields.add("EnableRealtimeMonitor");
-    openapiFields.add("EnableChapterImageExtraction");
-    openapiFields.add("ExtractChapterImagesDuringLibraryScan");
-    openapiFields.add("PathInfos");
-    openapiFields.add("SaveLocalMetadata");
-    openapiFields.add("EnableInternetProviders");
-    openapiFields.add("EnableAutomaticSeriesGrouping");
-    openapiFields.add("EnableEmbeddedTitles");
-    openapiFields.add("EnableEmbeddedEpisodeInfos");
-    openapiFields.add("AutomaticRefreshIntervalDays");
-    openapiFields.add("PreferredMetadataLanguage");
-    openapiFields.add("MetadataCountryCode");
-    openapiFields.add("SeasonZeroDisplayName");
-    openapiFields.add("MetadataSavers");
-    openapiFields.add("DisabledLocalMetadataReaders");
-    openapiFields.add("LocalMetadataReaderOrder");
-    openapiFields.add("DisabledSubtitleFetchers");
-    openapiFields.add("SubtitleFetcherOrder");
-    openapiFields.add("SkipSubtitlesIfEmbeddedSubtitlesPresent");
-    openapiFields.add("SkipSubtitlesIfAudioTrackMatches");
-    openapiFields.add("SubtitleDownloadLanguages");
-    openapiFields.add("RequirePerfectSubtitleMatch");
-    openapiFields.add("SaveSubtitlesWithMedia");
-    openapiFields.add("AutomaticallyAddToCollection");
-    openapiFields.add("AllowEmbeddedSubtitles");
-    openapiFields.add("TypeOptions");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to LibraryOptions
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!LibraryOptions.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in LibraryOptions is not found in the empty JSON string", LibraryOptions.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!LibraryOptions.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `LibraryOptions` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (jsonObj.get("PathInfos") != null && !jsonObj.get("PathInfos").isJsonNull()) {
-        JsonArray jsonArraypathInfos = jsonObj.getAsJsonArray("PathInfos");
-        if (jsonArraypathInfos != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("PathInfos").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `PathInfos` to be an array in the JSON string but got `%s`", jsonObj.get("PathInfos").toString()));
-          }
-
-          // validate the optional field `PathInfos` (array)
-          for (int i = 0; i < jsonArraypathInfos.size(); i++) {
-            MediaPathInfo.validateJsonElement(jsonArraypathInfos.get(i));
-          };
-        }
-      }
-      if ((jsonObj.get("PreferredMetadataLanguage") != null && !jsonObj.get("PreferredMetadataLanguage").isJsonNull()) && !jsonObj.get("PreferredMetadataLanguage").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `PreferredMetadataLanguage` to be a primitive type in the JSON string but got `%s`", jsonObj.get("PreferredMetadataLanguage").toString()));
-      }
-      if ((jsonObj.get("MetadataCountryCode") != null && !jsonObj.get("MetadataCountryCode").isJsonNull()) && !jsonObj.get("MetadataCountryCode").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MetadataCountryCode` to be a primitive type in the JSON string but got `%s`", jsonObj.get("MetadataCountryCode").toString()));
-      }
-      if ((jsonObj.get("SeasonZeroDisplayName") != null && !jsonObj.get("SeasonZeroDisplayName").isJsonNull()) && !jsonObj.get("SeasonZeroDisplayName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SeasonZeroDisplayName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("SeasonZeroDisplayName").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("MetadataSavers") != null && !jsonObj.get("MetadataSavers").isJsonNull() && !jsonObj.get("MetadataSavers").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MetadataSavers` to be an array in the JSON string but got `%s`", jsonObj.get("MetadataSavers").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("DisabledLocalMetadataReaders") != null && !jsonObj.get("DisabledLocalMetadataReaders").isJsonNull() && !jsonObj.get("DisabledLocalMetadataReaders").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `DisabledLocalMetadataReaders` to be an array in the JSON string but got `%s`", jsonObj.get("DisabledLocalMetadataReaders").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("LocalMetadataReaderOrder") != null && !jsonObj.get("LocalMetadataReaderOrder").isJsonNull() && !jsonObj.get("LocalMetadataReaderOrder").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `LocalMetadataReaderOrder` to be an array in the JSON string but got `%s`", jsonObj.get("LocalMetadataReaderOrder").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("DisabledSubtitleFetchers") != null && !jsonObj.get("DisabledSubtitleFetchers").isJsonNull() && !jsonObj.get("DisabledSubtitleFetchers").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `DisabledSubtitleFetchers` to be an array in the JSON string but got `%s`", jsonObj.get("DisabledSubtitleFetchers").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("SubtitleFetcherOrder") != null && !jsonObj.get("SubtitleFetcherOrder").isJsonNull() && !jsonObj.get("SubtitleFetcherOrder").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SubtitleFetcherOrder` to be an array in the JSON string but got `%s`", jsonObj.get("SubtitleFetcherOrder").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("SubtitleDownloadLanguages") != null && !jsonObj.get("SubtitleDownloadLanguages").isJsonNull() && !jsonObj.get("SubtitleDownloadLanguages").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SubtitleDownloadLanguages` to be an array in the JSON string but got `%s`", jsonObj.get("SubtitleDownloadLanguages").toString()));
-      }
-      // validate the optional field `AllowEmbeddedSubtitles`
-      if (jsonObj.get("AllowEmbeddedSubtitles") != null && !jsonObj.get("AllowEmbeddedSubtitles").isJsonNull()) {
-        EmbeddedSubtitleOptions.validateJsonElement(jsonObj.get("AllowEmbeddedSubtitles"));
-      }
-      if (jsonObj.get("TypeOptions") != null && !jsonObj.get("TypeOptions").isJsonNull()) {
-        JsonArray jsonArraytypeOptions = jsonObj.getAsJsonArray("TypeOptions");
-        if (jsonArraytypeOptions != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("TypeOptions").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `TypeOptions` to be an array in the JSON string but got `%s`", jsonObj.get("TypeOptions").toString()));
-          }
-
-          // validate the optional field `TypeOptions` (array)
-          for (int i = 0; i < jsonArraytypeOptions.size(); i++) {
-            TypeOptions.validateJsonElement(jsonArraytypeOptions.get(i));
-          };
-        }
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!LibraryOptions.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'LibraryOptions' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<LibraryOptions> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(LibraryOptions.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<LibraryOptions>() {
-           @Override
-           public void write(JsonWriter out, LibraryOptions value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public LibraryOptions read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of LibraryOptions given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of LibraryOptions
-   * @throws IOException if the JSON string is invalid with respect to LibraryOptions
-   */
-  public static LibraryOptions fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, LibraryOptions.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of LibraryOptions to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `EnablePhotos` to the URL query string
+    if (getEnablePhotos() != null) {
+      joiner.add(String.format("%sEnablePhotos%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnablePhotos()))));
+    }
+
+    // add `EnableRealtimeMonitor` to the URL query string
+    if (getEnableRealtimeMonitor() != null) {
+      joiner.add(String.format("%sEnableRealtimeMonitor%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableRealtimeMonitor()))));
+    }
+
+    // add `EnableChapterImageExtraction` to the URL query string
+    if (getEnableChapterImageExtraction() != null) {
+      joiner.add(String.format("%sEnableChapterImageExtraction%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableChapterImageExtraction()))));
+    }
+
+    // add `ExtractChapterImagesDuringLibraryScan` to the URL query string
+    if (getExtractChapterImagesDuringLibraryScan() != null) {
+      joiner.add(String.format("%sExtractChapterImagesDuringLibraryScan%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExtractChapterImagesDuringLibraryScan()))));
+    }
+
+    // add `PathInfos` to the URL query string
+    if (getPathInfos() != null) {
+      for (int i = 0; i < getPathInfos().size(); i++) {
+        if (getPathInfos().get(i) != null) {
+          joiner.add(getPathInfos().get(i).toUrlQueryString(String.format("%sPathInfos%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `SaveLocalMetadata` to the URL query string
+    if (getSaveLocalMetadata() != null) {
+      joiner.add(String.format("%sSaveLocalMetadata%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSaveLocalMetadata()))));
+    }
+
+    // add `EnableInternetProviders` to the URL query string
+    if (getEnableInternetProviders() != null) {
+      joiner.add(String.format("%sEnableInternetProviders%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableInternetProviders()))));
+    }
+
+    // add `EnableAutomaticSeriesGrouping` to the URL query string
+    if (getEnableAutomaticSeriesGrouping() != null) {
+      joiner.add(String.format("%sEnableAutomaticSeriesGrouping%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableAutomaticSeriesGrouping()))));
+    }
+
+    // add `EnableEmbeddedTitles` to the URL query string
+    if (getEnableEmbeddedTitles() != null) {
+      joiner.add(String.format("%sEnableEmbeddedTitles%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableEmbeddedTitles()))));
+    }
+
+    // add `EnableEmbeddedEpisodeInfos` to the URL query string
+    if (getEnableEmbeddedEpisodeInfos() != null) {
+      joiner.add(String.format("%sEnableEmbeddedEpisodeInfos%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableEmbeddedEpisodeInfos()))));
+    }
+
+    // add `AutomaticRefreshIntervalDays` to the URL query string
+    if (getAutomaticRefreshIntervalDays() != null) {
+      joiner.add(String.format("%sAutomaticRefreshIntervalDays%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAutomaticRefreshIntervalDays()))));
+    }
+
+    // add `PreferredMetadataLanguage` to the URL query string
+    if (getPreferredMetadataLanguage() != null) {
+      joiner.add(String.format("%sPreferredMetadataLanguage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPreferredMetadataLanguage()))));
+    }
+
+    // add `MetadataCountryCode` to the URL query string
+    if (getMetadataCountryCode() != null) {
+      joiner.add(String.format("%sMetadataCountryCode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMetadataCountryCode()))));
+    }
+
+    // add `SeasonZeroDisplayName` to the URL query string
+    if (getSeasonZeroDisplayName() != null) {
+      joiner.add(String.format("%sSeasonZeroDisplayName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSeasonZeroDisplayName()))));
+    }
+
+    // add `MetadataSavers` to the URL query string
+    if (getMetadataSavers() != null) {
+      for (int i = 0; i < getMetadataSavers().size(); i++) {
+        joiner.add(String.format("%sMetadataSavers%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getMetadataSavers().get(i)))));
+      }
+    }
+
+    // add `DisabledLocalMetadataReaders` to the URL query string
+    if (getDisabledLocalMetadataReaders() != null) {
+      for (int i = 0; i < getDisabledLocalMetadataReaders().size(); i++) {
+        joiner.add(String.format("%sDisabledLocalMetadataReaders%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getDisabledLocalMetadataReaders().get(i)))));
+      }
+    }
+
+    // add `LocalMetadataReaderOrder` to the URL query string
+    if (getLocalMetadataReaderOrder() != null) {
+      for (int i = 0; i < getLocalMetadataReaderOrder().size(); i++) {
+        joiner.add(String.format("%sLocalMetadataReaderOrder%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getLocalMetadataReaderOrder().get(i)))));
+      }
+    }
+
+    // add `DisabledSubtitleFetchers` to the URL query string
+    if (getDisabledSubtitleFetchers() != null) {
+      for (int i = 0; i < getDisabledSubtitleFetchers().size(); i++) {
+        joiner.add(String.format("%sDisabledSubtitleFetchers%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getDisabledSubtitleFetchers().get(i)))));
+      }
+    }
+
+    // add `SubtitleFetcherOrder` to the URL query string
+    if (getSubtitleFetcherOrder() != null) {
+      for (int i = 0; i < getSubtitleFetcherOrder().size(); i++) {
+        joiner.add(String.format("%sSubtitleFetcherOrder%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getSubtitleFetcherOrder().get(i)))));
+      }
+    }
+
+    // add `SkipSubtitlesIfEmbeddedSubtitlesPresent` to the URL query string
+    if (getSkipSubtitlesIfEmbeddedSubtitlesPresent() != null) {
+      joiner.add(String.format("%sSkipSubtitlesIfEmbeddedSubtitlesPresent%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSkipSubtitlesIfEmbeddedSubtitlesPresent()))));
+    }
+
+    // add `SkipSubtitlesIfAudioTrackMatches` to the URL query string
+    if (getSkipSubtitlesIfAudioTrackMatches() != null) {
+      joiner.add(String.format("%sSkipSubtitlesIfAudioTrackMatches%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSkipSubtitlesIfAudioTrackMatches()))));
+    }
+
+    // add `SubtitleDownloadLanguages` to the URL query string
+    if (getSubtitleDownloadLanguages() != null) {
+      for (int i = 0; i < getSubtitleDownloadLanguages().size(); i++) {
+        joiner.add(String.format("%sSubtitleDownloadLanguages%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getSubtitleDownloadLanguages().get(i)))));
+      }
+    }
+
+    // add `RequirePerfectSubtitleMatch` to the URL query string
+    if (getRequirePerfectSubtitleMatch() != null) {
+      joiner.add(String.format("%sRequirePerfectSubtitleMatch%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRequirePerfectSubtitleMatch()))));
+    }
+
+    // add `SaveSubtitlesWithMedia` to the URL query string
+    if (getSaveSubtitlesWithMedia() != null) {
+      joiner.add(String.format("%sSaveSubtitlesWithMedia%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSaveSubtitlesWithMedia()))));
+    }
+
+    // add `AutomaticallyAddToCollection` to the URL query string
+    if (getAutomaticallyAddToCollection() != null) {
+      joiner.add(String.format("%sAutomaticallyAddToCollection%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAutomaticallyAddToCollection()))));
+    }
+
+    // add `AllowEmbeddedSubtitles` to the URL query string
+    if (getAllowEmbeddedSubtitles() != null) {
+      joiner.add(String.format("%sAllowEmbeddedSubtitles%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAllowEmbeddedSubtitles()))));
+    }
+
+    // add `TypeOptions` to the URL query string
+    if (getTypeOptions() != null) {
+      for (int i = 0; i < getTypeOptions().size(); i++) {
+        if (getTypeOptions().get(i) != null) {
+          joiner.add(getTypeOptions().get(i).toUrlQueryString(String.format("%sTypeOptions%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

@@ -10,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import org.openapitools.client.model.BaseItemDto;
 import org.openapitools.client.model.BaseItemDtoQueryResult;
@@ -35,1585 +26,1032 @@ import org.openapitools.client.model.ItemFields;
 import java.util.UUID;
 import org.openapitools.client.model.UserItemDataDto;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class UserLibraryApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public UserLibraryApi() {
-        this(Configuration.getDefaultApiClient());
+  public UserLibraryApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public UserLibraryApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Deletes a user&#39;s saved personal rating for an item.
+   * 
+   * @param userId User id. (required)
+   * @param itemId Item id. (required)
+   * @return UserItemDataDto
+   * @throws ApiException if fails to make API call
+   */
+  public UserItemDataDto deleteUserItemRating(UUID userId, UUID itemId) throws ApiException {
+    ApiResponse<UserItemDataDto> localVarResponse = deleteUserItemRatingWithHttpInfo(userId, itemId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Deletes a user&#39;s saved personal rating for an item.
+   * 
+   * @param userId User id. (required)
+   * @param itemId Item id. (required)
+   * @return ApiResponse&lt;UserItemDataDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<UserItemDataDto> deleteUserItemRatingWithHttpInfo(UUID userId, UUID itemId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = deleteUserItemRatingRequestBuilder(userId, itemId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("deleteUserItemRating", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<UserItemDataDto>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<UserItemDataDto>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder deleteUserItemRatingRequestBuilder(UUID userId, UUID itemId) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling deleteUserItemRating");
+    }
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling deleteUserItemRating");
     }
 
-    public UserLibraryApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/{userId}/Items/{itemId}/Rating"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()))
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets intros to play before the main media item plays.
+   * 
+   * @param userId User id. (required)
+   * @param itemId Item id. (required)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getIntros(UUID userId, UUID itemId) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getIntrosWithHttpInfo(userId, itemId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets intros to play before the main media item plays.
+   * 
+   * @param userId User id. (required)
+   * @param itemId Item id. (required)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getIntrosWithHttpInfo(UUID userId, UUID itemId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getIntrosRequestBuilder(userId, itemId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getIntros", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getIntrosRequestBuilder(UUID userId, UUID itemId) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling getIntros");
+    }
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getIntros");
     }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/{userId}/Items/{itemId}/Intros"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()))
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets an item from a user&#39;s library.
+   * 
+   * @param userId User id. (required)
+   * @param itemId Item id. (required)
+   * @return BaseItemDto
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDto getItem(UUID userId, UUID itemId) throws ApiException {
+    ApiResponse<BaseItemDto> localVarResponse = getItemWithHttpInfo(userId, itemId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets an item from a user&#39;s library.
+   * 
+   * @param userId User id. (required)
+   * @param itemId Item id. (required)
+   * @return ApiResponse&lt;BaseItemDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDto> getItemWithHttpInfo(UUID userId, UUID itemId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getItemRequestBuilder(userId, itemId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getItem", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDto>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDto>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getItemRequestBuilder(UUID userId, UUID itemId) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling getItem");
+    }
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getItem");
     }
 
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/{userId}/Items/{itemId}"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()))
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets latest media.
+   * 
+   * @param userId User id. (required)
+   * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
+   * @param isPlayed Filter by items that are played, or not. (optional)
+   * @param enableImages Optional. include image information in output. (optional)
+   * @param imageTypeLimit Optional. the max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @param enableUserData Optional. include user data. (optional)
+   * @param limit Return item limit. (optional, default to 20)
+   * @param groupItems Whether or not to group items into a parent container. (optional, default to true)
+   * @return List&lt;BaseItemDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<BaseItemDto> getLatestMedia(UUID userId, UUID parentId, List<ItemFields> fields, List<BaseItemKind> includeItemTypes, Boolean isPlayed, Boolean enableImages, Integer imageTypeLimit, List<ImageType> enableImageTypes, Boolean enableUserData, Integer limit, Boolean groupItems) throws ApiException {
+    ApiResponse<List<BaseItemDto>> localVarResponse = getLatestMediaWithHttpInfo(userId, parentId, fields, includeItemTypes, isPlayed, enableImages, imageTypeLimit, enableImageTypes, enableUserData, limit, groupItems);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets latest media.
+   * 
+   * @param userId User id. (required)
+   * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
+   * @param isPlayed Filter by items that are played, or not. (optional)
+   * @param enableImages Optional. include image information in output. (optional)
+   * @param imageTypeLimit Optional. the max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @param enableUserData Optional. include user data. (optional)
+   * @param limit Return item limit. (optional, default to 20)
+   * @param groupItems Whether or not to group items into a parent container. (optional, default to true)
+   * @return ApiResponse&lt;List&lt;BaseItemDto&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<BaseItemDto>> getLatestMediaWithHttpInfo(UUID userId, UUID parentId, List<ItemFields> fields, List<BaseItemKind> includeItemTypes, Boolean isPlayed, Boolean enableImages, Integer imageTypeLimit, List<ImageType> enableImageTypes, Boolean enableUserData, Integer limit, Boolean groupItems) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getLatestMediaRequestBuilder(userId, parentId, fields, includeItemTypes, isPlayed, enableImages, imageTypeLimit, enableImageTypes, enableUserData, limit, groupItems);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getLatestMedia", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<BaseItemDto>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<BaseItemDto>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<BaseItemDto>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getLatestMediaRequestBuilder(UUID userId, UUID parentId, List<ItemFields> fields, List<BaseItemKind> includeItemTypes, Boolean isPlayed, Boolean enableImages, Integer imageTypeLimit, List<ImageType> enableImageTypes, Boolean enableUserData, Integer limit, Boolean groupItems) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling getLatestMedia");
     }
 
-    public int getHostIndex() {
-        return localHostIndex;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/{userId}/Items/Latest"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "parentId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("parentId", parentId));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+    localVarQueryParameterBaseName = "includeItemTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
+    localVarQueryParameterBaseName = "isPlayed";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isPlayed", isPlayed));
+    localVarQueryParameterBaseName = "enableImages";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
+    localVarQueryParameterBaseName = "imageTypeLimit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
+    localVarQueryParameterBaseName = "enableImageTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+    localVarQueryParameterBaseName = "enableUserData";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "groupItems";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("groupItems", groupItems));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets local trailers for an item.
+   * 
+   * @param userId User id. (required)
+   * @param itemId Item id. (required)
+   * @return List&lt;BaseItemDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<BaseItemDto> getLocalTrailers(UUID userId, UUID itemId) throws ApiException {
+    ApiResponse<List<BaseItemDto>> localVarResponse = getLocalTrailersWithHttpInfo(userId, itemId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets local trailers for an item.
+   * 
+   * @param userId User id. (required)
+   * @param itemId Item id. (required)
+   * @return ApiResponse&lt;List&lt;BaseItemDto&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<BaseItemDto>> getLocalTrailersWithHttpInfo(UUID userId, UUID itemId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getLocalTrailersRequestBuilder(userId, itemId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getLocalTrailers", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<BaseItemDto>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<BaseItemDto>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<BaseItemDto>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getLocalTrailersRequestBuilder(UUID userId, UUID itemId) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling getLocalTrailers");
+    }
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getLocalTrailers");
     }
 
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/{userId}/Items/{itemId}/LocalTrailers"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()))
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets the root folder from a user&#39;s library.
+   * 
+   * @param userId User id. (required)
+   * @return BaseItemDto
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDto getRootFolder(UUID userId) throws ApiException {
+    ApiResponse<BaseItemDto> localVarResponse = getRootFolderWithHttpInfo(userId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets the root folder from a user&#39;s library.
+   * 
+   * @param userId User id. (required)
+   * @return ApiResponse&lt;BaseItemDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDto> getRootFolderWithHttpInfo(UUID userId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getRootFolderRequestBuilder(userId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getRootFolder", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDto>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDto>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getRootFolderRequestBuilder(UUID userId) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling getRootFolder");
     }
 
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/{userId}/Items/Root"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets special features for an item.
+   * 
+   * @param userId User id. (required)
+   * @param itemId Item id. (required)
+   * @return List&lt;BaseItemDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<BaseItemDto> getSpecialFeatures(UUID userId, UUID itemId) throws ApiException {
+    ApiResponse<List<BaseItemDto>> localVarResponse = getSpecialFeaturesWithHttpInfo(userId, itemId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets special features for an item.
+   * 
+   * @param userId User id. (required)
+   * @param itemId Item id. (required)
+   * @return ApiResponse&lt;List&lt;BaseItemDto&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<BaseItemDto>> getSpecialFeaturesWithHttpInfo(UUID userId, UUID itemId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getSpecialFeaturesRequestBuilder(userId, itemId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getSpecialFeatures", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<BaseItemDto>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<BaseItemDto>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<BaseItemDto>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getSpecialFeaturesRequestBuilder(UUID userId, UUID itemId) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling getSpecialFeatures");
+    }
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getSpecialFeatures");
     }
 
-    /**
-     * Build call for deleteUserItemRating
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Personal rating removed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteUserItemRatingCall(UUID userId, UUID itemId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+    String localVarPath = "/Users/{userId}/Items/{itemId}/SpecialFeatures"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()))
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Marks an item as a favorite.
+   * 
+   * @param userId User id. (required)
+   * @param itemId Item id. (required)
+   * @return UserItemDataDto
+   * @throws ApiException if fails to make API call
+   */
+  public UserItemDataDto markFavoriteItem(UUID userId, UUID itemId) throws ApiException {
+    ApiResponse<UserItemDataDto> localVarResponse = markFavoriteItemWithHttpInfo(userId, itemId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Marks an item as a favorite.
+   * 
+   * @param userId User id. (required)
+   * @param itemId Item id. (required)
+   * @return ApiResponse&lt;UserItemDataDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<UserItemDataDto> markFavoriteItemWithHttpInfo(UUID userId, UUID itemId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = markFavoriteItemRequestBuilder(userId, itemId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("markFavoriteItem", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<UserItemDataDto>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = null;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/Users/{userId}/Items/{itemId}/Rating"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()))
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
+        return new ApiResponse<UserItemDataDto>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+  private HttpRequest.Builder markFavoriteItemRequestBuilder(UUID userId, UUID itemId) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling markFavoriteItem");
+    }
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling markFavoriteItem");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call deleteUserItemRatingValidateBeforeCall(UUID userId, UUID itemId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling deleteUserItemRating(Async)");
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/{userId}/FavoriteItems/{itemId}"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()))
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Unmarks item as a favorite.
+   * 
+   * @param userId User id. (required)
+   * @param itemId Item id. (required)
+   * @return UserItemDataDto
+   * @throws ApiException if fails to make API call
+   */
+  public UserItemDataDto unmarkFavoriteItem(UUID userId, UUID itemId) throws ApiException {
+    ApiResponse<UserItemDataDto> localVarResponse = unmarkFavoriteItemWithHttpInfo(userId, itemId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Unmarks item as a favorite.
+   * 
+   * @param userId User id. (required)
+   * @param itemId Item id. (required)
+   * @return ApiResponse&lt;UserItemDataDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<UserItemDataDto> unmarkFavoriteItemWithHttpInfo(UUID userId, UUID itemId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = unmarkFavoriteItemRequestBuilder(userId, itemId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("unmarkFavoriteItem", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<UserItemDataDto>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling deleteUserItemRating(Async)");
-        }
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        return deleteUserItemRatingCall(userId, itemId, _callback);
+        return new ApiResponse<UserItemDataDto>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
+  private HttpRequest.Builder unmarkFavoriteItemRequestBuilder(UUID userId, UUID itemId) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling unmarkFavoriteItem");
+    }
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling unmarkFavoriteItem");
     }
 
-    /**
-     * Deletes a user&#39;s saved personal rating for an item.
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @return UserItemDataDto
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Personal rating removed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public UserItemDataDto deleteUserItemRating(UUID userId, UUID itemId) throws ApiException {
-        ApiResponse<UserItemDataDto> localVarResp = deleteUserItemRatingWithHttpInfo(userId, itemId);
-        return localVarResp.getData();
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/{userId}/FavoriteItems/{itemId}"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()))
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Updates a user&#39;s rating for an item.
+   * 
+   * @param userId User id. (required)
+   * @param itemId Item id. (required)
+   * @param likes Whether this M:Jellyfin.Api.Controllers.UserLibraryController.UpdateUserItemRating(System.Guid,System.Guid,System.Nullable{System.Boolean}) is likes. (optional)
+   * @return UserItemDataDto
+   * @throws ApiException if fails to make API call
+   */
+  public UserItemDataDto updateUserItemRating(UUID userId, UUID itemId, Boolean likes) throws ApiException {
+    ApiResponse<UserItemDataDto> localVarResponse = updateUserItemRatingWithHttpInfo(userId, itemId, likes);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Updates a user&#39;s rating for an item.
+   * 
+   * @param userId User id. (required)
+   * @param itemId Item id. (required)
+   * @param likes Whether this M:Jellyfin.Api.Controllers.UserLibraryController.UpdateUserItemRating(System.Guid,System.Guid,System.Nullable{System.Boolean}) is likes. (optional)
+   * @return ApiResponse&lt;UserItemDataDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<UserItemDataDto> updateUserItemRatingWithHttpInfo(UUID userId, UUID itemId, Boolean likes) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = updateUserItemRatingRequestBuilder(userId, itemId, likes);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("updateUserItemRating", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<UserItemDataDto>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<UserItemDataDto>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder updateUserItemRatingRequestBuilder(UUID userId, UUID itemId, Boolean likes) throws ApiException {
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling updateUserItemRating");
+    }
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling updateUserItemRating");
     }
 
-    /**
-     * Deletes a user&#39;s saved personal rating for an item.
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @return ApiResponse&lt;UserItemDataDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Personal rating removed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<UserItemDataDto> deleteUserItemRatingWithHttpInfo(UUID userId, UUID itemId) throws ApiException {
-        okhttp3.Call localVarCall = deleteUserItemRatingValidateBeforeCall(userId, itemId, null);
-        Type localVarReturnType = new TypeToken<UserItemDataDto>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Users/{userId}/Items/{itemId}/Rating"
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()))
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "likes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("likes", likes));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Deletes a user&#39;s saved personal rating for an item. (asynchronously)
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Personal rating removed. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteUserItemRatingAsync(UUID userId, UUID itemId, final ApiCallback<UserItemDataDto> _callback) throws ApiException {
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
 
-        okhttp3.Call localVarCall = deleteUserItemRatingValidateBeforeCall(userId, itemId, _callback);
-        Type localVarReturnType = new TypeToken<UserItemDataDto>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-    /**
-     * Build call for getIntros
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Intros returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getIntrosCall(UUID userId, UUID itemId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Users/{userId}/Items/{itemId}/Intros"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()))
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getIntrosValidateBeforeCall(UUID userId, UUID itemId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling getIntros(Async)");
-        }
-
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getIntros(Async)");
-        }
-
-        return getIntrosCall(userId, itemId, _callback);
-
-    }
-
-    /**
-     * Gets intros to play before the main media item plays.
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Intros returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getIntros(UUID userId, UUID itemId) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getIntrosWithHttpInfo(userId, itemId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets intros to play before the main media item plays.
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Intros returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getIntrosWithHttpInfo(UUID userId, UUID itemId) throws ApiException {
-        okhttp3.Call localVarCall = getIntrosValidateBeforeCall(userId, itemId, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets intros to play before the main media item plays. (asynchronously)
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Intros returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getIntrosAsync(UUID userId, UUID itemId, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getIntrosValidateBeforeCall(userId, itemId, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getItem
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getItemCall(UUID userId, UUID itemId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Users/{userId}/Items/{itemId}"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()))
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getItemValidateBeforeCall(UUID userId, UUID itemId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling getItem(Async)");
-        }
-
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getItem(Async)");
-        }
-
-        return getItemCall(userId, itemId, _callback);
-
-    }
-
-    /**
-     * Gets an item from a user&#39;s library.
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @return BaseItemDto
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDto getItem(UUID userId, UUID itemId) throws ApiException {
-        ApiResponse<BaseItemDto> localVarResp = getItemWithHttpInfo(userId, itemId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets an item from a user&#39;s library.
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @return ApiResponse&lt;BaseItemDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDto> getItemWithHttpInfo(UUID userId, UUID itemId) throws ApiException {
-        okhttp3.Call localVarCall = getItemValidateBeforeCall(userId, itemId, null);
-        Type localVarReturnType = new TypeToken<BaseItemDto>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets an item from a user&#39;s library. (asynchronously)
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getItemAsync(UUID userId, UUID itemId, final ApiCallback<BaseItemDto> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getItemValidateBeforeCall(userId, itemId, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDto>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getLatestMedia
-     * @param userId User id. (required)
-     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param isPlayed Filter by items that are played, or not. (optional)
-     * @param enableImages Optional. include image information in output. (optional)
-     * @param imageTypeLimit Optional. the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param enableUserData Optional. include user data. (optional)
-     * @param limit Return item limit. (optional, default to 20)
-     * @param groupItems Whether or not to group items into a parent container. (optional, default to true)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Latest media returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getLatestMediaCall(UUID userId, UUID parentId, List<ItemFields> fields, List<BaseItemKind> includeItemTypes, Boolean isPlayed, Boolean enableImages, Integer imageTypeLimit, List<ImageType> enableImageTypes, Boolean enableUserData, Integer limit, Boolean groupItems, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Users/{userId}/Items/Latest"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (parentId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("parentId", parentId));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        if (includeItemTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
-        }
-
-        if (isPlayed != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isPlayed", isPlayed));
-        }
-
-        if (enableImages != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableImages", enableImages));
-        }
-
-        if (imageTypeLimit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageTypeLimit", imageTypeLimit));
-        }
-
-        if (enableImageTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        }
-
-        if (enableUserData != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableUserData", enableUserData));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (groupItems != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("groupItems", groupItems));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getLatestMediaValidateBeforeCall(UUID userId, UUID parentId, List<ItemFields> fields, List<BaseItemKind> includeItemTypes, Boolean isPlayed, Boolean enableImages, Integer imageTypeLimit, List<ImageType> enableImageTypes, Boolean enableUserData, Integer limit, Boolean groupItems, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling getLatestMedia(Async)");
-        }
-
-        return getLatestMediaCall(userId, parentId, fields, includeItemTypes, isPlayed, enableImages, imageTypeLimit, enableImageTypes, enableUserData, limit, groupItems, _callback);
-
-    }
-
-    /**
-     * Gets latest media.
-     * 
-     * @param userId User id. (required)
-     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param isPlayed Filter by items that are played, or not. (optional)
-     * @param enableImages Optional. include image information in output. (optional)
-     * @param imageTypeLimit Optional. the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param enableUserData Optional. include user data. (optional)
-     * @param limit Return item limit. (optional, default to 20)
-     * @param groupItems Whether or not to group items into a parent container. (optional, default to true)
-     * @return List&lt;BaseItemDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Latest media returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<BaseItemDto> getLatestMedia(UUID userId, UUID parentId, List<ItemFields> fields, List<BaseItemKind> includeItemTypes, Boolean isPlayed, Boolean enableImages, Integer imageTypeLimit, List<ImageType> enableImageTypes, Boolean enableUserData, Integer limit, Boolean groupItems) throws ApiException {
-        ApiResponse<List<BaseItemDto>> localVarResp = getLatestMediaWithHttpInfo(userId, parentId, fields, includeItemTypes, isPlayed, enableImages, imageTypeLimit, enableImageTypes, enableUserData, limit, groupItems);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets latest media.
-     * 
-     * @param userId User id. (required)
-     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param isPlayed Filter by items that are played, or not. (optional)
-     * @param enableImages Optional. include image information in output. (optional)
-     * @param imageTypeLimit Optional. the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param enableUserData Optional. include user data. (optional)
-     * @param limit Return item limit. (optional, default to 20)
-     * @param groupItems Whether or not to group items into a parent container. (optional, default to true)
-     * @return ApiResponse&lt;List&lt;BaseItemDto&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Latest media returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<BaseItemDto>> getLatestMediaWithHttpInfo(UUID userId, UUID parentId, List<ItemFields> fields, List<BaseItemKind> includeItemTypes, Boolean isPlayed, Boolean enableImages, Integer imageTypeLimit, List<ImageType> enableImageTypes, Boolean enableUserData, Integer limit, Boolean groupItems) throws ApiException {
-        okhttp3.Call localVarCall = getLatestMediaValidateBeforeCall(userId, parentId, fields, includeItemTypes, isPlayed, enableImages, imageTypeLimit, enableImageTypes, enableUserData, limit, groupItems, null);
-        Type localVarReturnType = new TypeToken<List<BaseItemDto>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets latest media. (asynchronously)
-     * 
-     * @param userId User id. (required)
-     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param isPlayed Filter by items that are played, or not. (optional)
-     * @param enableImages Optional. include image information in output. (optional)
-     * @param imageTypeLimit Optional. the max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param enableUserData Optional. include user data. (optional)
-     * @param limit Return item limit. (optional, default to 20)
-     * @param groupItems Whether or not to group items into a parent container. (optional, default to true)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Latest media returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getLatestMediaAsync(UUID userId, UUID parentId, List<ItemFields> fields, List<BaseItemKind> includeItemTypes, Boolean isPlayed, Boolean enableImages, Integer imageTypeLimit, List<ImageType> enableImageTypes, Boolean enableUserData, Integer limit, Boolean groupItems, final ApiCallback<List<BaseItemDto>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getLatestMediaValidateBeforeCall(userId, parentId, fields, includeItemTypes, isPlayed, enableImages, imageTypeLimit, enableImageTypes, enableUserData, limit, groupItems, _callback);
-        Type localVarReturnType = new TypeToken<List<BaseItemDto>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getLocalTrailers
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> An Microsoft.AspNetCore.Mvc.OkResult containing the item&#39;s local trailers. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getLocalTrailersCall(UUID userId, UUID itemId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Users/{userId}/Items/{itemId}/LocalTrailers"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()))
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getLocalTrailersValidateBeforeCall(UUID userId, UUID itemId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling getLocalTrailers(Async)");
-        }
-
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getLocalTrailers(Async)");
-        }
-
-        return getLocalTrailersCall(userId, itemId, _callback);
-
-    }
-
-    /**
-     * Gets local trailers for an item.
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @return List&lt;BaseItemDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> An Microsoft.AspNetCore.Mvc.OkResult containing the item&#39;s local trailers. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<BaseItemDto> getLocalTrailers(UUID userId, UUID itemId) throws ApiException {
-        ApiResponse<List<BaseItemDto>> localVarResp = getLocalTrailersWithHttpInfo(userId, itemId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets local trailers for an item.
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @return ApiResponse&lt;List&lt;BaseItemDto&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> An Microsoft.AspNetCore.Mvc.OkResult containing the item&#39;s local trailers. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<BaseItemDto>> getLocalTrailersWithHttpInfo(UUID userId, UUID itemId) throws ApiException {
-        okhttp3.Call localVarCall = getLocalTrailersValidateBeforeCall(userId, itemId, null);
-        Type localVarReturnType = new TypeToken<List<BaseItemDto>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets local trailers for an item. (asynchronously)
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> An Microsoft.AspNetCore.Mvc.OkResult containing the item&#39;s local trailers. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getLocalTrailersAsync(UUID userId, UUID itemId, final ApiCallback<List<BaseItemDto>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getLocalTrailersValidateBeforeCall(userId, itemId, _callback);
-        Type localVarReturnType = new TypeToken<List<BaseItemDto>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getRootFolder
-     * @param userId User id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Root folder returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getRootFolderCall(UUID userId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Users/{userId}/Items/Root"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getRootFolderValidateBeforeCall(UUID userId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling getRootFolder(Async)");
-        }
-
-        return getRootFolderCall(userId, _callback);
-
-    }
-
-    /**
-     * Gets the root folder from a user&#39;s library.
-     * 
-     * @param userId User id. (required)
-     * @return BaseItemDto
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Root folder returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDto getRootFolder(UUID userId) throws ApiException {
-        ApiResponse<BaseItemDto> localVarResp = getRootFolderWithHttpInfo(userId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets the root folder from a user&#39;s library.
-     * 
-     * @param userId User id. (required)
-     * @return ApiResponse&lt;BaseItemDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Root folder returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDto> getRootFolderWithHttpInfo(UUID userId) throws ApiException {
-        okhttp3.Call localVarCall = getRootFolderValidateBeforeCall(userId, null);
-        Type localVarReturnType = new TypeToken<BaseItemDto>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets the root folder from a user&#39;s library. (asynchronously)
-     * 
-     * @param userId User id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Root folder returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getRootFolderAsync(UUID userId, final ApiCallback<BaseItemDto> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getRootFolderValidateBeforeCall(userId, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDto>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getSpecialFeatures
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Special features returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSpecialFeaturesCall(UUID userId, UUID itemId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Users/{userId}/Items/{itemId}/SpecialFeatures"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()))
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getSpecialFeaturesValidateBeforeCall(UUID userId, UUID itemId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling getSpecialFeatures(Async)");
-        }
-
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getSpecialFeatures(Async)");
-        }
-
-        return getSpecialFeaturesCall(userId, itemId, _callback);
-
-    }
-
-    /**
-     * Gets special features for an item.
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @return List&lt;BaseItemDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Special features returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<BaseItemDto> getSpecialFeatures(UUID userId, UUID itemId) throws ApiException {
-        ApiResponse<List<BaseItemDto>> localVarResp = getSpecialFeaturesWithHttpInfo(userId, itemId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets special features for an item.
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @return ApiResponse&lt;List&lt;BaseItemDto&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Special features returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<BaseItemDto>> getSpecialFeaturesWithHttpInfo(UUID userId, UUID itemId) throws ApiException {
-        okhttp3.Call localVarCall = getSpecialFeaturesValidateBeforeCall(userId, itemId, null);
-        Type localVarReturnType = new TypeToken<List<BaseItemDto>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets special features for an item. (asynchronously)
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Special features returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSpecialFeaturesAsync(UUID userId, UUID itemId, final ApiCallback<List<BaseItemDto>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getSpecialFeaturesValidateBeforeCall(userId, itemId, _callback);
-        Type localVarReturnType = new TypeToken<List<BaseItemDto>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for markFavoriteItem
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item marked as favorite. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call markFavoriteItemCall(UUID userId, UUID itemId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Users/{userId}/FavoriteItems/{itemId}"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()))
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call markFavoriteItemValidateBeforeCall(UUID userId, UUID itemId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling markFavoriteItem(Async)");
-        }
-
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling markFavoriteItem(Async)");
-        }
-
-        return markFavoriteItemCall(userId, itemId, _callback);
-
-    }
-
-    /**
-     * Marks an item as a favorite.
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @return UserItemDataDto
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item marked as favorite. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public UserItemDataDto markFavoriteItem(UUID userId, UUID itemId) throws ApiException {
-        ApiResponse<UserItemDataDto> localVarResp = markFavoriteItemWithHttpInfo(userId, itemId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Marks an item as a favorite.
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @return ApiResponse&lt;UserItemDataDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item marked as favorite. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<UserItemDataDto> markFavoriteItemWithHttpInfo(UUID userId, UUID itemId) throws ApiException {
-        okhttp3.Call localVarCall = markFavoriteItemValidateBeforeCall(userId, itemId, null);
-        Type localVarReturnType = new TypeToken<UserItemDataDto>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Marks an item as a favorite. (asynchronously)
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item marked as favorite. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call markFavoriteItemAsync(UUID userId, UUID itemId, final ApiCallback<UserItemDataDto> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = markFavoriteItemValidateBeforeCall(userId, itemId, _callback);
-        Type localVarReturnType = new TypeToken<UserItemDataDto>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for unmarkFavoriteItem
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item unmarked as favorite. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call unmarkFavoriteItemCall(UUID userId, UUID itemId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Users/{userId}/FavoriteItems/{itemId}"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()))
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call unmarkFavoriteItemValidateBeforeCall(UUID userId, UUID itemId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling unmarkFavoriteItem(Async)");
-        }
-
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling unmarkFavoriteItem(Async)");
-        }
-
-        return unmarkFavoriteItemCall(userId, itemId, _callback);
-
-    }
-
-    /**
-     * Unmarks item as a favorite.
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @return UserItemDataDto
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item unmarked as favorite. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public UserItemDataDto unmarkFavoriteItem(UUID userId, UUID itemId) throws ApiException {
-        ApiResponse<UserItemDataDto> localVarResp = unmarkFavoriteItemWithHttpInfo(userId, itemId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Unmarks item as a favorite.
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @return ApiResponse&lt;UserItemDataDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item unmarked as favorite. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<UserItemDataDto> unmarkFavoriteItemWithHttpInfo(UUID userId, UUID itemId) throws ApiException {
-        okhttp3.Call localVarCall = unmarkFavoriteItemValidateBeforeCall(userId, itemId, null);
-        Type localVarReturnType = new TypeToken<UserItemDataDto>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Unmarks item as a favorite. (asynchronously)
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item unmarked as favorite. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call unmarkFavoriteItemAsync(UUID userId, UUID itemId, final ApiCallback<UserItemDataDto> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = unmarkFavoriteItemValidateBeforeCall(userId, itemId, _callback);
-        Type localVarReturnType = new TypeToken<UserItemDataDto>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for updateUserItemRating
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @param likes Whether this M:Jellyfin.Api.Controllers.UserLibraryController.UpdateUserItemRating(System.Guid,System.Guid,System.Nullable{System.Boolean}) is likes. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item rating updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updateUserItemRatingCall(UUID userId, UUID itemId, Boolean likes, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Users/{userId}/Items/{itemId}/Rating"
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()))
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (likes != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("likes", likes));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call updateUserItemRatingValidateBeforeCall(UUID userId, UUID itemId, Boolean likes, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling updateUserItemRating(Async)");
-        }
-
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling updateUserItemRating(Async)");
-        }
-
-        return updateUserItemRatingCall(userId, itemId, likes, _callback);
-
-    }
-
-    /**
-     * Updates a user&#39;s rating for an item.
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @param likes Whether this M:Jellyfin.Api.Controllers.UserLibraryController.UpdateUserItemRating(System.Guid,System.Guid,System.Nullable{System.Boolean}) is likes. (optional)
-     * @return UserItemDataDto
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item rating updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public UserItemDataDto updateUserItemRating(UUID userId, UUID itemId, Boolean likes) throws ApiException {
-        ApiResponse<UserItemDataDto> localVarResp = updateUserItemRatingWithHttpInfo(userId, itemId, likes);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Updates a user&#39;s rating for an item.
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @param likes Whether this M:Jellyfin.Api.Controllers.UserLibraryController.UpdateUserItemRating(System.Guid,System.Guid,System.Nullable{System.Boolean}) is likes. (optional)
-     * @return ApiResponse&lt;UserItemDataDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item rating updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<UserItemDataDto> updateUserItemRatingWithHttpInfo(UUID userId, UUID itemId, Boolean likes) throws ApiException {
-        okhttp3.Call localVarCall = updateUserItemRatingValidateBeforeCall(userId, itemId, likes, null);
-        Type localVarReturnType = new TypeToken<UserItemDataDto>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Updates a user&#39;s rating for an item. (asynchronously)
-     * 
-     * @param userId User id. (required)
-     * @param itemId Item id. (required)
-     * @param likes Whether this M:Jellyfin.Api.Controllers.UserLibraryController.UpdateUserItemRating(System.Guid,System.Guid,System.Nullable{System.Boolean}) is likes. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Item rating updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updateUserItemRatingAsync(UUID userId, UUID itemId, Boolean likes, final ApiCallback<UserItemDataDto> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = updateUserItemRatingValidateBeforeCall(userId, itemId, likes, _callback);
-        Type localVarReturnType = new TypeToken<UserItemDataDto>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
 }

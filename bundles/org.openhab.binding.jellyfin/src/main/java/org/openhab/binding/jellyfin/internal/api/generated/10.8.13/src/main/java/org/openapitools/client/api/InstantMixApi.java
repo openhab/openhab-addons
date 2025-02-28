@@ -10,1628 +10,1085 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import org.openapitools.client.model.BaseItemDtoQueryResult;
 import org.openapitools.client.model.ImageType;
 import org.openapitools.client.model.ItemFields;
 import java.util.UUID;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class InstantMixApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public InstantMixApi() {
-        this(Configuration.getDefaultApiClient());
+  public InstantMixApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public InstantMixApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Creates an instant playlist based on a given album.
+   * 
+   * @param id The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param enableImages Optional. Include image information in output. (optional)
+   * @param enableUserData Optional. Include user data. (optional)
+   * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getInstantMixFromAlbum(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getInstantMixFromAlbumWithHttpInfo(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Creates an instant playlist based on a given album.
+   * 
+   * @param id The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param enableImages Optional. Include image information in output. (optional)
+   * @param enableUserData Optional. Include user data. (optional)
+   * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getInstantMixFromAlbumWithHttpInfo(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getInstantMixFromAlbumRequestBuilder(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getInstantMixFromAlbum", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getInstantMixFromAlbumRequestBuilder(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling getInstantMixFromAlbum");
     }
 
-    public InstantMixApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Albums/{id}/InstantMix"
+        .replace("{id}", ApiClient.urlEncode(id.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+    localVarQueryParameterBaseName = "enableImages";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
+    localVarQueryParameterBaseName = "enableUserData";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
+    localVarQueryParameterBaseName = "imageTypeLimit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
+    localVarQueryParameterBaseName = "enableImageTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Creates an instant playlist based on a given artist.
+   * 
+   * @param id The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param enableImages Optional. Include image information in output. (optional)
+   * @param enableUserData Optional. Include user data. (optional)
+   * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getInstantMixFromArtists(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getInstantMixFromArtistsWithHttpInfo(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Creates an instant playlist based on a given artist.
+   * 
+   * @param id The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param enableImages Optional. Include image information in output. (optional)
+   * @param enableUserData Optional. Include user data. (optional)
+   * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getInstantMixFromArtistsWithHttpInfo(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getInstantMixFromArtistsRequestBuilder(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getInstantMixFromArtists", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getInstantMixFromArtistsRequestBuilder(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling getInstantMixFromArtists");
     }
 
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Artists/{id}/InstantMix"
+        .replace("{id}", ApiClient.urlEncode(id.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+    localVarQueryParameterBaseName = "enableImages";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
+    localVarQueryParameterBaseName = "enableUserData";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
+    localVarQueryParameterBaseName = "imageTypeLimit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
+    localVarQueryParameterBaseName = "enableImageTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public int getHostIndex() {
-        return localHostIndex;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Creates an instant playlist based on a given artist.
+   * 
+   * @param id The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param enableImages Optional. Include image information in output. (optional)
+   * @param enableUserData Optional. Include user data. (optional)
+   * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   * @deprecated
+   */
+  @Deprecated
+  public BaseItemDtoQueryResult getInstantMixFromArtists2(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getInstantMixFromArtists2WithHttpInfo(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Creates an instant playlist based on a given artist.
+   * 
+   * @param id The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param enableImages Optional. Include image information in output. (optional)
+   * @param enableUserData Optional. Include user data. (optional)
+   * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   * @deprecated
+   */
+  @Deprecated
+  public ApiResponse<BaseItemDtoQueryResult> getInstantMixFromArtists2WithHttpInfo(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getInstantMixFromArtists2RequestBuilder(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getInstantMixFromArtists2", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getInstantMixFromArtists2RequestBuilder(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling getInstantMixFromArtists2");
     }
 
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Artists/InstantMix";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "id";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("id", id));
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+    localVarQueryParameterBaseName = "enableImages";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
+    localVarQueryParameterBaseName = "enableUserData";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
+    localVarQueryParameterBaseName = "imageTypeLimit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
+    localVarQueryParameterBaseName = "enableImageTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Creates an instant playlist based on a given item.
+   * 
+   * @param id The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param enableImages Optional. Include image information in output. (optional)
+   * @param enableUserData Optional. Include user data. (optional)
+   * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getInstantMixFromItem(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getInstantMixFromItemWithHttpInfo(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Creates an instant playlist based on a given item.
+   * 
+   * @param id The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param enableImages Optional. Include image information in output. (optional)
+   * @param enableUserData Optional. Include user data. (optional)
+   * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getInstantMixFromItemWithHttpInfo(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getInstantMixFromItemRequestBuilder(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getInstantMixFromItem", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getInstantMixFromItemRequestBuilder(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling getInstantMixFromItem");
     }
 
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{id}/InstantMix"
+        .replace("{id}", ApiClient.urlEncode(id.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+    localVarQueryParameterBaseName = "enableImages";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
+    localVarQueryParameterBaseName = "enableUserData";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
+    localVarQueryParameterBaseName = "imageTypeLimit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
+    localVarQueryParameterBaseName = "enableImageTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Build call for getInstantMixFromAlbum
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getInstantMixFromAlbumCall(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
 
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Creates an instant playlist based on a given genre.
+   * 
+   * @param id The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param enableImages Optional. Include image information in output. (optional)
+   * @param enableUserData Optional. Include user data. (optional)
+   * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getInstantMixFromMusicGenreById(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getInstantMixFromMusicGenreByIdWithHttpInfo(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Creates an instant playlist based on a given genre.
+   * 
+   * @param id The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param enableImages Optional. Include image information in output. (optional)
+   * @param enableUserData Optional. Include user data. (optional)
+   * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getInstantMixFromMusicGenreByIdWithHttpInfo(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getInstantMixFromMusicGenreByIdRequestBuilder(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getInstantMixFromMusicGenreById", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = null;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/Albums/{id}/InstantMix"
-            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        if (enableImages != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableImages", enableImages));
-        }
-
-        if (enableUserData != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableUserData", enableUserData));
-        }
-
-        if (imageTypeLimit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageTypeLimit", imageTypeLimit));
-        }
-
-        if (enableImageTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+  private HttpRequest.Builder getInstantMixFromMusicGenreByIdRequestBuilder(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling getInstantMixFromMusicGenreById");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getInstantMixFromAlbumValidateBeforeCall(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'id' is set
-        if (id == null) {
-            throw new ApiException("Missing the required parameter 'id' when calling getInstantMixFromAlbum(Async)");
-        }
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
-        return getInstantMixFromAlbumCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, _callback);
+    String localVarPath = "/MusicGenres/InstantMix";
 
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "id";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("id", id));
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+    localVarQueryParameterBaseName = "enableImages";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
+    localVarQueryParameterBaseName = "enableUserData";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
+    localVarQueryParameterBaseName = "imageTypeLimit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
+    localVarQueryParameterBaseName = "enableImageTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Creates an instant playlist based on a given album.
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getInstantMixFromAlbum(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getInstantMixFromAlbumWithHttpInfo(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
-        return localVarResp.getData();
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Creates an instant playlist based on a given genre.
+   * 
+   * @param name The genre name. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param enableImages Optional. Include image information in output. (optional)
+   * @param enableUserData Optional. Include user data. (optional)
+   * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getInstantMixFromMusicGenreByName(String name, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getInstantMixFromMusicGenreByNameWithHttpInfo(name, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Creates an instant playlist based on a given genre.
+   * 
+   * @param name The genre name. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param enableImages Optional. Include image information in output. (optional)
+   * @param enableUserData Optional. Include user data. (optional)
+   * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getInstantMixFromMusicGenreByNameWithHttpInfo(String name, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getInstantMixFromMusicGenreByNameRequestBuilder(name, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getInstantMixFromMusicGenreByName", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getInstantMixFromMusicGenreByNameRequestBuilder(String name, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling getInstantMixFromMusicGenreByName");
     }
 
-    /**
-     * Creates an instant playlist based on a given album.
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getInstantMixFromAlbumWithHttpInfo(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
-        okhttp3.Call localVarCall = getInstantMixFromAlbumValidateBeforeCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/MusicGenres/{name}/InstantMix"
+        .replace("{name}", ApiClient.urlEncode(name.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+    localVarQueryParameterBaseName = "enableImages";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
+    localVarQueryParameterBaseName = "enableUserData";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
+    localVarQueryParameterBaseName = "imageTypeLimit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
+    localVarQueryParameterBaseName = "enableImageTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Creates an instant playlist based on a given album. (asynchronously)
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getInstantMixFromAlbumAsync(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
 
-        okhttp3.Call localVarCall = getInstantMixFromAlbumValidateBeforeCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-    /**
-     * Build call for getInstantMixFromArtists
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getInstantMixFromArtistsCall(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
 
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Creates an instant playlist based on a given playlist.
+   * 
+   * @param id The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param enableImages Optional. Include image information in output. (optional)
+   * @param enableUserData Optional. Include user data. (optional)
+   * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getInstantMixFromPlaylist(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getInstantMixFromPlaylistWithHttpInfo(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Creates an instant playlist based on a given playlist.
+   * 
+   * @param id The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param enableImages Optional. Include image information in output. (optional)
+   * @param enableUserData Optional. Include user data. (optional)
+   * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getInstantMixFromPlaylistWithHttpInfo(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getInstantMixFromPlaylistRequestBuilder(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getInstantMixFromPlaylist", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = null;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/Artists/{id}/InstantMix"
-            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        if (enableImages != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableImages", enableImages));
-        }
-
-        if (enableUserData != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableUserData", enableUserData));
-        }
-
-        if (imageTypeLimit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageTypeLimit", imageTypeLimit));
-        }
-
-        if (enableImageTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+  private HttpRequest.Builder getInstantMixFromPlaylistRequestBuilder(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling getInstantMixFromPlaylist");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getInstantMixFromArtistsValidateBeforeCall(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'id' is set
-        if (id == null) {
-            throw new ApiException("Missing the required parameter 'id' when calling getInstantMixFromArtists(Async)");
-        }
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
-        return getInstantMixFromArtistsCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, _callback);
+    String localVarPath = "/Playlists/{id}/InstantMix"
+        .replace("{id}", ApiClient.urlEncode(id.toString()));
 
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+    localVarQueryParameterBaseName = "enableImages";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
+    localVarQueryParameterBaseName = "enableUserData";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
+    localVarQueryParameterBaseName = "imageTypeLimit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
+    localVarQueryParameterBaseName = "enableImageTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Creates an instant playlist based on a given artist.
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getInstantMixFromArtists(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getInstantMixFromArtistsWithHttpInfo(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
-        return localVarResp.getData();
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Creates an instant playlist based on a given song.
+   * 
+   * @param id The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param enableImages Optional. Include image information in output. (optional)
+   * @param enableUserData Optional. Include user data. (optional)
+   * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getInstantMixFromSong(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getInstantMixFromSongWithHttpInfo(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Creates an instant playlist based on a given song.
+   * 
+   * @param id The item id. (required)
+   * @param userId Optional. Filter by user id, and attach user data. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param enableImages Optional. Include image information in output. (optional)
+   * @param enableUserData Optional. Include user data. (optional)
+   * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+   * @param enableImageTypes Optional. The image types to include in the output. (optional)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getInstantMixFromSongWithHttpInfo(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getInstantMixFromSongRequestBuilder(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getInstantMixFromSong", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getInstantMixFromSongRequestBuilder(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling getInstantMixFromSong");
     }
 
-    /**
-     * Creates an instant playlist based on a given artist.
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getInstantMixFromArtistsWithHttpInfo(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
-        okhttp3.Call localVarCall = getInstantMixFromArtistsValidateBeforeCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Songs/{id}/InstantMix"
+        .replace("{id}", ApiClient.urlEncode(id.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+    localVarQueryParameterBaseName = "enableImages";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableImages", enableImages));
+    localVarQueryParameterBaseName = "enableUserData";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("enableUserData", enableUserData));
+    localVarQueryParameterBaseName = "imageTypeLimit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("imageTypeLimit", imageTypeLimit));
+    localVarQueryParameterBaseName = "enableImageTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Creates an instant playlist based on a given artist. (asynchronously)
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getInstantMixFromArtistsAsync(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
 
-        okhttp3.Call localVarCall = getInstantMixFromArtistsValidateBeforeCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-    /**
-     * Build call for getInstantMixFromArtists2
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public okhttp3.Call getInstantMixFromArtists2Call(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Artists/InstantMix";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (id != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("id", id));
-        }
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        if (enableImages != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableImages", enableImages));
-        }
-
-        if (enableUserData != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableUserData", enableUserData));
-        }
-
-        if (imageTypeLimit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageTypeLimit", imageTypeLimit));
-        }
-
-        if (enableImageTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    @Deprecated
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getInstantMixFromArtists2ValidateBeforeCall(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'id' is set
-        if (id == null) {
-            throw new ApiException("Missing the required parameter 'id' when calling getInstantMixFromArtists2(Async)");
-        }
-
-        return getInstantMixFromArtists2Call(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, _callback);
-
-    }
-
-    /**
-     * Creates an instant playlist based on a given artist.
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public BaseItemDtoQueryResult getInstantMixFromArtists2(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getInstantMixFromArtists2WithHttpInfo(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Creates an instant playlist based on a given artist.
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public ApiResponse<BaseItemDtoQueryResult> getInstantMixFromArtists2WithHttpInfo(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
-        okhttp3.Call localVarCall = getInstantMixFromArtists2ValidateBeforeCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Creates an instant playlist based on a given artist. (asynchronously)
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public okhttp3.Call getInstantMixFromArtists2Async(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getInstantMixFromArtists2ValidateBeforeCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getInstantMixFromItem
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getInstantMixFromItemCall(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{id}/InstantMix"
-            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        if (enableImages != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableImages", enableImages));
-        }
-
-        if (enableUserData != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableUserData", enableUserData));
-        }
-
-        if (imageTypeLimit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageTypeLimit", imageTypeLimit));
-        }
-
-        if (enableImageTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getInstantMixFromItemValidateBeforeCall(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'id' is set
-        if (id == null) {
-            throw new ApiException("Missing the required parameter 'id' when calling getInstantMixFromItem(Async)");
-        }
-
-        return getInstantMixFromItemCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, _callback);
-
-    }
-
-    /**
-     * Creates an instant playlist based on a given item.
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getInstantMixFromItem(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getInstantMixFromItemWithHttpInfo(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Creates an instant playlist based on a given item.
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getInstantMixFromItemWithHttpInfo(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
-        okhttp3.Call localVarCall = getInstantMixFromItemValidateBeforeCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Creates an instant playlist based on a given item. (asynchronously)
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getInstantMixFromItemAsync(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getInstantMixFromItemValidateBeforeCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getInstantMixFromMusicGenreById
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getInstantMixFromMusicGenreByIdCall(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/MusicGenres/InstantMix";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (id != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("id", id));
-        }
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        if (enableImages != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableImages", enableImages));
-        }
-
-        if (enableUserData != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableUserData", enableUserData));
-        }
-
-        if (imageTypeLimit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageTypeLimit", imageTypeLimit));
-        }
-
-        if (enableImageTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getInstantMixFromMusicGenreByIdValidateBeforeCall(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'id' is set
-        if (id == null) {
-            throw new ApiException("Missing the required parameter 'id' when calling getInstantMixFromMusicGenreById(Async)");
-        }
-
-        return getInstantMixFromMusicGenreByIdCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, _callback);
-
-    }
-
-    /**
-     * Creates an instant playlist based on a given genre.
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getInstantMixFromMusicGenreById(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getInstantMixFromMusicGenreByIdWithHttpInfo(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Creates an instant playlist based on a given genre.
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getInstantMixFromMusicGenreByIdWithHttpInfo(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
-        okhttp3.Call localVarCall = getInstantMixFromMusicGenreByIdValidateBeforeCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Creates an instant playlist based on a given genre. (asynchronously)
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getInstantMixFromMusicGenreByIdAsync(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getInstantMixFromMusicGenreByIdValidateBeforeCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getInstantMixFromMusicGenreByName
-     * @param name The genre name. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getInstantMixFromMusicGenreByNameCall(String name, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/MusicGenres/{name}/InstantMix"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        if (enableImages != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableImages", enableImages));
-        }
-
-        if (enableUserData != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableUserData", enableUserData));
-        }
-
-        if (imageTypeLimit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageTypeLimit", imageTypeLimit));
-        }
-
-        if (enableImageTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getInstantMixFromMusicGenreByNameValidateBeforeCall(String name, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling getInstantMixFromMusicGenreByName(Async)");
-        }
-
-        return getInstantMixFromMusicGenreByNameCall(name, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, _callback);
-
-    }
-
-    /**
-     * Creates an instant playlist based on a given genre.
-     * 
-     * @param name The genre name. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getInstantMixFromMusicGenreByName(String name, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getInstantMixFromMusicGenreByNameWithHttpInfo(name, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Creates an instant playlist based on a given genre.
-     * 
-     * @param name The genre name. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getInstantMixFromMusicGenreByNameWithHttpInfo(String name, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
-        okhttp3.Call localVarCall = getInstantMixFromMusicGenreByNameValidateBeforeCall(name, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Creates an instant playlist based on a given genre. (asynchronously)
-     * 
-     * @param name The genre name. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getInstantMixFromMusicGenreByNameAsync(String name, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getInstantMixFromMusicGenreByNameValidateBeforeCall(name, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getInstantMixFromPlaylist
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getInstantMixFromPlaylistCall(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Playlists/{id}/InstantMix"
-            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        if (enableImages != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableImages", enableImages));
-        }
-
-        if (enableUserData != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableUserData", enableUserData));
-        }
-
-        if (imageTypeLimit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageTypeLimit", imageTypeLimit));
-        }
-
-        if (enableImageTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getInstantMixFromPlaylistValidateBeforeCall(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'id' is set
-        if (id == null) {
-            throw new ApiException("Missing the required parameter 'id' when calling getInstantMixFromPlaylist(Async)");
-        }
-
-        return getInstantMixFromPlaylistCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, _callback);
-
-    }
-
-    /**
-     * Creates an instant playlist based on a given playlist.
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getInstantMixFromPlaylist(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getInstantMixFromPlaylistWithHttpInfo(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Creates an instant playlist based on a given playlist.
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getInstantMixFromPlaylistWithHttpInfo(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
-        okhttp3.Call localVarCall = getInstantMixFromPlaylistValidateBeforeCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Creates an instant playlist based on a given playlist. (asynchronously)
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getInstantMixFromPlaylistAsync(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getInstantMixFromPlaylistValidateBeforeCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getInstantMixFromSong
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getInstantMixFromSongCall(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Songs/{id}/InstantMix"
-            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        if (enableImages != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableImages", enableImages));
-        }
-
-        if (enableUserData != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("enableUserData", enableUserData));
-        }
-
-        if (imageTypeLimit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("imageTypeLimit", imageTypeLimit));
-        }
-
-        if (enableImageTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "enableImageTypes", enableImageTypes));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getInstantMixFromSongValidateBeforeCall(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'id' is set
-        if (id == null) {
-            throw new ApiException("Missing the required parameter 'id' when calling getInstantMixFromSong(Async)");
-        }
-
-        return getInstantMixFromSongCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, _callback);
-
-    }
-
-    /**
-     * Creates an instant playlist based on a given song.
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getInstantMixFromSong(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getInstantMixFromSongWithHttpInfo(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Creates an instant playlist based on a given song.
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getInstantMixFromSongWithHttpInfo(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes) throws ApiException {
-        okhttp3.Call localVarCall = getInstantMixFromSongValidateBeforeCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Creates an instant playlist based on a given song. (asynchronously)
-     * 
-     * @param id The item id. (required)
-     * @param userId Optional. Filter by user id, and attach user data. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param enableUserData Optional. Include user data. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Instant playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getInstantMixFromSongAsync(UUID id, UUID userId, Integer limit, List<ItemFields> fields, Boolean enableImages, Boolean enableUserData, Integer imageTypeLimit, List<ImageType> enableImageTypes, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getInstantMixFromSongValidateBeforeCall(id, userId, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
 }

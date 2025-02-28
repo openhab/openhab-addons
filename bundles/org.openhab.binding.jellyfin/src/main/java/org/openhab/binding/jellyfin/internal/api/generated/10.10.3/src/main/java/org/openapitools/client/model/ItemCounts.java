@@ -13,104 +13,90 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
-import java.util.Arrays;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import org.openapitools.client.JSON;
 
+import org.openapitools.client.ApiClient;
 /**
  * Class LibrarySummary.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  ItemCounts.JSON_PROPERTY_MOVIE_COUNT,
+  ItemCounts.JSON_PROPERTY_SERIES_COUNT,
+  ItemCounts.JSON_PROPERTY_EPISODE_COUNT,
+  ItemCounts.JSON_PROPERTY_ARTIST_COUNT,
+  ItemCounts.JSON_PROPERTY_PROGRAM_COUNT,
+  ItemCounts.JSON_PROPERTY_TRAILER_COUNT,
+  ItemCounts.JSON_PROPERTY_SONG_COUNT,
+  ItemCounts.JSON_PROPERTY_ALBUM_COUNT,
+  ItemCounts.JSON_PROPERTY_MUSIC_VIDEO_COUNT,
+  ItemCounts.JSON_PROPERTY_BOX_SET_COUNT,
+  ItemCounts.JSON_PROPERTY_BOOK_COUNT,
+  ItemCounts.JSON_PROPERTY_ITEM_COUNT
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ItemCounts {
-  public static final String SERIALIZED_NAME_MOVIE_COUNT = "MovieCount";
-  @SerializedName(SERIALIZED_NAME_MOVIE_COUNT)
+  public static final String JSON_PROPERTY_MOVIE_COUNT = "MovieCount";
   @javax.annotation.Nullable
   private Integer movieCount;
 
-  public static final String SERIALIZED_NAME_SERIES_COUNT = "SeriesCount";
-  @SerializedName(SERIALIZED_NAME_SERIES_COUNT)
+  public static final String JSON_PROPERTY_SERIES_COUNT = "SeriesCount";
   @javax.annotation.Nullable
   private Integer seriesCount;
 
-  public static final String SERIALIZED_NAME_EPISODE_COUNT = "EpisodeCount";
-  @SerializedName(SERIALIZED_NAME_EPISODE_COUNT)
+  public static final String JSON_PROPERTY_EPISODE_COUNT = "EpisodeCount";
   @javax.annotation.Nullable
   private Integer episodeCount;
 
-  public static final String SERIALIZED_NAME_ARTIST_COUNT = "ArtistCount";
-  @SerializedName(SERIALIZED_NAME_ARTIST_COUNT)
+  public static final String JSON_PROPERTY_ARTIST_COUNT = "ArtistCount";
   @javax.annotation.Nullable
   private Integer artistCount;
 
-  public static final String SERIALIZED_NAME_PROGRAM_COUNT = "ProgramCount";
-  @SerializedName(SERIALIZED_NAME_PROGRAM_COUNT)
+  public static final String JSON_PROPERTY_PROGRAM_COUNT = "ProgramCount";
   @javax.annotation.Nullable
   private Integer programCount;
 
-  public static final String SERIALIZED_NAME_TRAILER_COUNT = "TrailerCount";
-  @SerializedName(SERIALIZED_NAME_TRAILER_COUNT)
+  public static final String JSON_PROPERTY_TRAILER_COUNT = "TrailerCount";
   @javax.annotation.Nullable
   private Integer trailerCount;
 
-  public static final String SERIALIZED_NAME_SONG_COUNT = "SongCount";
-  @SerializedName(SERIALIZED_NAME_SONG_COUNT)
+  public static final String JSON_PROPERTY_SONG_COUNT = "SongCount";
   @javax.annotation.Nullable
   private Integer songCount;
 
-  public static final String SERIALIZED_NAME_ALBUM_COUNT = "AlbumCount";
-  @SerializedName(SERIALIZED_NAME_ALBUM_COUNT)
+  public static final String JSON_PROPERTY_ALBUM_COUNT = "AlbumCount";
   @javax.annotation.Nullable
   private Integer albumCount;
 
-  public static final String SERIALIZED_NAME_MUSIC_VIDEO_COUNT = "MusicVideoCount";
-  @SerializedName(SERIALIZED_NAME_MUSIC_VIDEO_COUNT)
+  public static final String JSON_PROPERTY_MUSIC_VIDEO_COUNT = "MusicVideoCount";
   @javax.annotation.Nullable
   private Integer musicVideoCount;
 
-  public static final String SERIALIZED_NAME_BOX_SET_COUNT = "BoxSetCount";
-  @SerializedName(SERIALIZED_NAME_BOX_SET_COUNT)
+  public static final String JSON_PROPERTY_BOX_SET_COUNT = "BoxSetCount";
   @javax.annotation.Nullable
   private Integer boxSetCount;
 
-  public static final String SERIALIZED_NAME_BOOK_COUNT = "BookCount";
-  @SerializedName(SERIALIZED_NAME_BOOK_COUNT)
+  public static final String JSON_PROPERTY_BOOK_COUNT = "BookCount";
   @javax.annotation.Nullable
   private Integer bookCount;
 
-  public static final String SERIALIZED_NAME_ITEM_COUNT = "ItemCount";
-  @SerializedName(SERIALIZED_NAME_ITEM_COUNT)
+  public static final String JSON_PROPERTY_ITEM_COUNT = "ItemCount";
   @javax.annotation.Nullable
   private Integer itemCount;
 
-  public ItemCounts() {
+  public ItemCounts() { 
   }
 
   public ItemCounts movieCount(@javax.annotation.Nullable Integer movieCount) {
@@ -123,10 +109,15 @@ public class ItemCounts {
    * @return movieCount
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MOVIE_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMovieCount() {
     return movieCount;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MOVIE_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMovieCount(@javax.annotation.Nullable Integer movieCount) {
     this.movieCount = movieCount;
   }
@@ -142,10 +133,15 @@ public class ItemCounts {
    * @return seriesCount
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SERIES_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getSeriesCount() {
     return seriesCount;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SERIES_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSeriesCount(@javax.annotation.Nullable Integer seriesCount) {
     this.seriesCount = seriesCount;
   }
@@ -161,10 +157,15 @@ public class ItemCounts {
    * @return episodeCount
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getEpisodeCount() {
     return episodeCount;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEpisodeCount(@javax.annotation.Nullable Integer episodeCount) {
     this.episodeCount = episodeCount;
   }
@@ -180,10 +181,15 @@ public class ItemCounts {
    * @return artistCount
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ARTIST_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getArtistCount() {
     return artistCount;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ARTIST_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setArtistCount(@javax.annotation.Nullable Integer artistCount) {
     this.artistCount = artistCount;
   }
@@ -199,10 +205,15 @@ public class ItemCounts {
    * @return programCount
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PROGRAM_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getProgramCount() {
     return programCount;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PROGRAM_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProgramCount(@javax.annotation.Nullable Integer programCount) {
     this.programCount = programCount;
   }
@@ -218,10 +229,15 @@ public class ItemCounts {
    * @return trailerCount
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TRAILER_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getTrailerCount() {
     return trailerCount;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TRAILER_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTrailerCount(@javax.annotation.Nullable Integer trailerCount) {
     this.trailerCount = trailerCount;
   }
@@ -237,10 +253,15 @@ public class ItemCounts {
    * @return songCount
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SONG_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getSongCount() {
     return songCount;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SONG_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSongCount(@javax.annotation.Nullable Integer songCount) {
     this.songCount = songCount;
   }
@@ -256,10 +277,15 @@ public class ItemCounts {
    * @return albumCount
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ALBUM_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getAlbumCount() {
     return albumCount;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ALBUM_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAlbumCount(@javax.annotation.Nullable Integer albumCount) {
     this.albumCount = albumCount;
   }
@@ -275,10 +301,15 @@ public class ItemCounts {
    * @return musicVideoCount
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MUSIC_VIDEO_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMusicVideoCount() {
     return musicVideoCount;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MUSIC_VIDEO_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMusicVideoCount(@javax.annotation.Nullable Integer musicVideoCount) {
     this.musicVideoCount = musicVideoCount;
   }
@@ -294,10 +325,15 @@ public class ItemCounts {
    * @return boxSetCount
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_BOX_SET_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getBoxSetCount() {
     return boxSetCount;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_BOX_SET_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBoxSetCount(@javax.annotation.Nullable Integer boxSetCount) {
     this.boxSetCount = boxSetCount;
   }
@@ -313,10 +349,15 @@ public class ItemCounts {
    * @return bookCount
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_BOOK_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getBookCount() {
     return bookCount;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_BOOK_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBookCount(@javax.annotation.Nullable Integer bookCount) {
     this.bookCount = bookCount;
   }
@@ -332,16 +373,23 @@ public class ItemCounts {
    * @return itemCount
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ITEM_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getItemCount() {
     return itemCount;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ITEM_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemCount(@javax.annotation.Nullable Integer itemCount) {
     this.itemCount = itemCount;
   }
 
 
-
+  /**
+   * Return true if this ItemCounts object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -401,100 +449,99 @@ public class ItemCounts {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("MovieCount");
-    openapiFields.add("SeriesCount");
-    openapiFields.add("EpisodeCount");
-    openapiFields.add("ArtistCount");
-    openapiFields.add("ProgramCount");
-    openapiFields.add("TrailerCount");
-    openapiFields.add("SongCount");
-    openapiFields.add("AlbumCount");
-    openapiFields.add("MusicVideoCount");
-    openapiFields.add("BoxSetCount");
-    openapiFields.add("BookCount");
-    openapiFields.add("ItemCount");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to ItemCounts
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!ItemCounts.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in ItemCounts is not found in the empty JSON string", ItemCounts.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!ItemCounts.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `ItemCounts` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!ItemCounts.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'ItemCounts' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<ItemCounts> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(ItemCounts.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<ItemCounts>() {
-           @Override
-           public void write(JsonWriter out, ItemCounts value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public ItemCounts read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of ItemCounts given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of ItemCounts
-   * @throws IOException if the JSON string is invalid with respect to ItemCounts
-   */
-  public static ItemCounts fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, ItemCounts.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of ItemCounts to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `MovieCount` to the URL query string
+    if (getMovieCount() != null) {
+      joiner.add(String.format("%sMovieCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMovieCount()))));
+    }
+
+    // add `SeriesCount` to the URL query string
+    if (getSeriesCount() != null) {
+      joiner.add(String.format("%sSeriesCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSeriesCount()))));
+    }
+
+    // add `EpisodeCount` to the URL query string
+    if (getEpisodeCount() != null) {
+      joiner.add(String.format("%sEpisodeCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEpisodeCount()))));
+    }
+
+    // add `ArtistCount` to the URL query string
+    if (getArtistCount() != null) {
+      joiner.add(String.format("%sArtistCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getArtistCount()))));
+    }
+
+    // add `ProgramCount` to the URL query string
+    if (getProgramCount() != null) {
+      joiner.add(String.format("%sProgramCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProgramCount()))));
+    }
+
+    // add `TrailerCount` to the URL query string
+    if (getTrailerCount() != null) {
+      joiner.add(String.format("%sTrailerCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTrailerCount()))));
+    }
+
+    // add `SongCount` to the URL query string
+    if (getSongCount() != null) {
+      joiner.add(String.format("%sSongCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSongCount()))));
+    }
+
+    // add `AlbumCount` to the URL query string
+    if (getAlbumCount() != null) {
+      joiner.add(String.format("%sAlbumCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAlbumCount()))));
+    }
+
+    // add `MusicVideoCount` to the URL query string
+    if (getMusicVideoCount() != null) {
+      joiner.add(String.format("%sMusicVideoCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMusicVideoCount()))));
+    }
+
+    // add `BoxSetCount` to the URL query string
+    if (getBoxSetCount() != null) {
+      joiner.add(String.format("%sBoxSetCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBoxSetCount()))));
+    }
+
+    // add `BookCount` to the URL query string
+    if (getBookCount() != null) {
+      joiner.add(String.format("%sBookCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBookCount()))));
+    }
+
+    // add `ItemCount` to the URL query string
+    if (getItemCount() != null) {
+      joiner.add(String.format("%sItemCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getItemCount()))));
+    }
+
+    return joiner.toString();
   }
 }
 

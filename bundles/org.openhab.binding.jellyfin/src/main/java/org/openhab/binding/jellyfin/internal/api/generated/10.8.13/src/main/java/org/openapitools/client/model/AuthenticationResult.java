@@ -13,71 +13,56 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.client.model.SessionInfo;
 import org.openapitools.client.model.UserDto;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * AuthenticationResult
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  AuthenticationResult.JSON_PROPERTY_USER,
+  AuthenticationResult.JSON_PROPERTY_SESSION_INFO,
+  AuthenticationResult.JSON_PROPERTY_ACCESS_TOKEN,
+  AuthenticationResult.JSON_PROPERTY_SERVER_ID
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class AuthenticationResult {
-  public static final String SERIALIZED_NAME_USER = "User";
-  @SerializedName(SERIALIZED_NAME_USER)
-  @javax.annotation.Nullable
-  private UserDto user;
+  public static final String JSON_PROPERTY_USER = "User";
+  private JsonNullable<UserDto> user = JsonNullable.<UserDto>undefined();
 
-  public static final String SERIALIZED_NAME_SESSION_INFO = "SessionInfo";
-  @SerializedName(SERIALIZED_NAME_SESSION_INFO)
-  @javax.annotation.Nullable
-  private SessionInfo sessionInfo;
+  public static final String JSON_PROPERTY_SESSION_INFO = "SessionInfo";
+  private JsonNullable<SessionInfo> sessionInfo = JsonNullable.<SessionInfo>undefined();
 
-  public static final String SERIALIZED_NAME_ACCESS_TOKEN = "AccessToken";
-  @SerializedName(SERIALIZED_NAME_ACCESS_TOKEN)
-  @javax.annotation.Nullable
-  private String accessToken;
+  public static final String JSON_PROPERTY_ACCESS_TOKEN = "AccessToken";
+  private JsonNullable<String> accessToken = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_SERVER_ID = "ServerId";
-  @SerializedName(SERIALIZED_NAME_SERVER_ID)
-  @javax.annotation.Nullable
-  private String serverId;
+  public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
+  private JsonNullable<String> serverId = JsonNullable.<String>undefined();
 
-  public AuthenticationResult() {
+  public AuthenticationResult() { 
   }
 
   public AuthenticationResult user(@javax.annotation.Nullable UserDto user) {
-    this.user = user;
+    this.user = JsonNullable.<UserDto>of(user);
     return this;
   }
 
@@ -86,17 +71,30 @@ public class AuthenticationResult {
    * @return user
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public UserDto getUser() {
+        return user.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_USER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<UserDto> getUser_JsonNullable() {
     return user;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_USER)
+  public void setUser_JsonNullable(JsonNullable<UserDto> user) {
+    this.user = user;
   }
 
   public void setUser(@javax.annotation.Nullable UserDto user) {
-    this.user = user;
+    this.user = JsonNullable.<UserDto>of(user);
   }
 
 
   public AuthenticationResult sessionInfo(@javax.annotation.Nullable SessionInfo sessionInfo) {
-    this.sessionInfo = sessionInfo;
+    this.sessionInfo = JsonNullable.<SessionInfo>of(sessionInfo);
     return this;
   }
 
@@ -105,17 +103,30 @@ public class AuthenticationResult {
    * @return sessionInfo
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public SessionInfo getSessionInfo() {
+        return sessionInfo.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SESSION_INFO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<SessionInfo> getSessionInfo_JsonNullable() {
     return sessionInfo;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SESSION_INFO)
+  public void setSessionInfo_JsonNullable(JsonNullable<SessionInfo> sessionInfo) {
+    this.sessionInfo = sessionInfo;
   }
 
   public void setSessionInfo(@javax.annotation.Nullable SessionInfo sessionInfo) {
-    this.sessionInfo = sessionInfo;
+    this.sessionInfo = JsonNullable.<SessionInfo>of(sessionInfo);
   }
 
 
   public AuthenticationResult accessToken(@javax.annotation.Nullable String accessToken) {
-    this.accessToken = accessToken;
+    this.accessToken = JsonNullable.<String>of(accessToken);
     return this;
   }
 
@@ -124,17 +135,30 @@ public class AuthenticationResult {
    * @return accessToken
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getAccessToken() {
+        return accessToken.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ACCESS_TOKEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getAccessToken_JsonNullable() {
     return accessToken;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ACCESS_TOKEN)
+  public void setAccessToken_JsonNullable(JsonNullable<String> accessToken) {
+    this.accessToken = accessToken;
   }
 
   public void setAccessToken(@javax.annotation.Nullable String accessToken) {
-    this.accessToken = accessToken;
+    this.accessToken = JsonNullable.<String>of(accessToken);
   }
 
 
   public AuthenticationResult serverId(@javax.annotation.Nullable String serverId) {
-    this.serverId = serverId;
+    this.serverId = JsonNullable.<String>of(serverId);
     return this;
   }
 
@@ -143,16 +167,31 @@ public class AuthenticationResult {
    * @return serverId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getServerId() {
-    return serverId;
+        return serverId.orElse(null);
   }
 
-  public void setServerId(@javax.annotation.Nullable String serverId) {
+  @JsonProperty(JSON_PROPERTY_SERVER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getServerId_JsonNullable() {
+    return serverId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SERVER_ID)
+  public void setServerId_JsonNullable(JsonNullable<String> serverId) {
     this.serverId = serverId;
   }
 
+  public void setServerId(@javax.annotation.Nullable String serverId) {
+    this.serverId = JsonNullable.<String>of(serverId);
+  }
 
 
+  /**
+   * Return true if this AuthenticationResult object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -162,10 +201,10 @@ public class AuthenticationResult {
       return false;
     }
     AuthenticationResult authenticationResult = (AuthenticationResult) o;
-    return Objects.equals(this.user, authenticationResult.user) &&
-        Objects.equals(this.sessionInfo, authenticationResult.sessionInfo) &&
-        Objects.equals(this.accessToken, authenticationResult.accessToken) &&
-        Objects.equals(this.serverId, authenticationResult.serverId);
+    return equalsNullable(this.user, authenticationResult.user) &&
+        equalsNullable(this.sessionInfo, authenticationResult.sessionInfo) &&
+        equalsNullable(this.accessToken, authenticationResult.accessToken) &&
+        equalsNullable(this.serverId, authenticationResult.serverId);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -174,7 +213,7 @@ public class AuthenticationResult {
 
   @Override
   public int hashCode() {
-    return Objects.hash(user, sessionInfo, accessToken, serverId);
+    return Objects.hash(hashCodeNullable(user), hashCodeNullable(sessionInfo), hashCodeNullable(accessToken), hashCodeNullable(serverId));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -207,106 +246,59 @@ public class AuthenticationResult {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("User");
-    openapiFields.add("SessionInfo");
-    openapiFields.add("AccessToken");
-    openapiFields.add("ServerId");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to AuthenticationResult
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!AuthenticationResult.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in AuthenticationResult is not found in the empty JSON string", AuthenticationResult.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!AuthenticationResult.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `AuthenticationResult` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // validate the optional field `User`
-      if (jsonObj.get("User") != null && !jsonObj.get("User").isJsonNull()) {
-        UserDto.validateJsonElement(jsonObj.get("User"));
-      }
-      // validate the optional field `SessionInfo`
-      if (jsonObj.get("SessionInfo") != null && !jsonObj.get("SessionInfo").isJsonNull()) {
-        SessionInfo.validateJsonElement(jsonObj.get("SessionInfo"));
-      }
-      if ((jsonObj.get("AccessToken") != null && !jsonObj.get("AccessToken").isJsonNull()) && !jsonObj.get("AccessToken").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `AccessToken` to be a primitive type in the JSON string but got `%s`", jsonObj.get("AccessToken").toString()));
-      }
-      if ((jsonObj.get("ServerId") != null && !jsonObj.get("ServerId").isJsonNull()) && !jsonObj.get("ServerId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ServerId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ServerId").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!AuthenticationResult.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'AuthenticationResult' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<AuthenticationResult> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(AuthenticationResult.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<AuthenticationResult>() {
-           @Override
-           public void write(JsonWriter out, AuthenticationResult value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public AuthenticationResult read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of AuthenticationResult given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of AuthenticationResult
-   * @throws IOException if the JSON string is invalid with respect to AuthenticationResult
-   */
-  public static AuthenticationResult fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, AuthenticationResult.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of AuthenticationResult to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `User` to the URL query string
+    if (getUser() != null) {
+      joiner.add(getUser().toUrlQueryString(prefix + "User" + suffix));
+    }
+
+    // add `SessionInfo` to the URL query string
+    if (getSessionInfo() != null) {
+      joiner.add(getSessionInfo().toUrlQueryString(prefix + "SessionInfo" + suffix));
+    }
+
+    // add `AccessToken` to the URL query string
+    if (getAccessToken() != null) {
+      joiner.add(String.format("%sAccessToken%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAccessToken()))));
+    }
+
+    // add `ServerId` to the URL query string
+    if (getServerId() != null) {
+      joiner.add(String.format("%sServerId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getServerId()))));
+    }
+
+    return joiner.toString();
   }
 }
 

@@ -13,70 +13,61 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.client.model.NameGuidPair;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * QueryFilters
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  QueryFilters.JSON_PROPERTY_GENRES,
+  QueryFilters.JSON_PROPERTY_TAGS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class QueryFilters {
-  public static final String SERIALIZED_NAME_GENRES = "Genres";
-  @SerializedName(SERIALIZED_NAME_GENRES)
-  @javax.annotation.Nullable
-  private List<NameGuidPair> genres;
+  public static final String JSON_PROPERTY_GENRES = "Genres";
+  private JsonNullable<List<NameGuidPair>> genres = JsonNullable.<List<NameGuidPair>>undefined();
 
-  public static final String SERIALIZED_NAME_TAGS = "Tags";
-  @SerializedName(SERIALIZED_NAME_TAGS)
-  @javax.annotation.Nullable
-  private List<String> tags;
+  public static final String JSON_PROPERTY_TAGS = "Tags";
+  private JsonNullable<List<String>> tags = JsonNullable.<List<String>>undefined();
 
-  public QueryFilters() {
+  public QueryFilters() { 
   }
 
   public QueryFilters genres(@javax.annotation.Nullable List<NameGuidPair> genres) {
-    this.genres = genres;
+    this.genres = JsonNullable.<List<NameGuidPair>>of(genres);
     return this;
   }
 
   public QueryFilters addGenresItem(NameGuidPair genresItem) {
-    if (this.genres == null) {
-      this.genres = new ArrayList<>();
+    if (this.genres == null || !this.genres.isPresent()) {
+      this.genres = JsonNullable.<List<NameGuidPair>>of(new ArrayList<>());
     }
-    this.genres.add(genresItem);
+    try {
+      this.genres.get().add(genresItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -85,25 +76,42 @@ public class QueryFilters {
    * @return genres
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<NameGuidPair> getGenres() {
+        return genres.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_GENRES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<NameGuidPair>> getGenres_JsonNullable() {
     return genres;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_GENRES)
+  public void setGenres_JsonNullable(JsonNullable<List<NameGuidPair>> genres) {
+    this.genres = genres;
   }
 
   public void setGenres(@javax.annotation.Nullable List<NameGuidPair> genres) {
-    this.genres = genres;
+    this.genres = JsonNullable.<List<NameGuidPair>>of(genres);
   }
 
 
   public QueryFilters tags(@javax.annotation.Nullable List<String> tags) {
-    this.tags = tags;
+    this.tags = JsonNullable.<List<String>>of(tags);
     return this;
   }
 
   public QueryFilters addTagsItem(String tagsItem) {
-    if (this.tags == null) {
-      this.tags = new ArrayList<>();
+    if (this.tags == null || !this.tags.isPresent()) {
+      this.tags = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.tags.add(tagsItem);
+    try {
+      this.tags.get().add(tagsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -112,16 +120,31 @@ public class QueryFilters {
    * @return tags
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getTags() {
-    return tags;
+        return tags.orElse(null);
   }
 
-  public void setTags(@javax.annotation.Nullable List<String> tags) {
+  @JsonProperty(JSON_PROPERTY_TAGS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getTags_JsonNullable() {
+    return tags;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TAGS)
+  public void setTags_JsonNullable(JsonNullable<List<String>> tags) {
     this.tags = tags;
   }
 
+  public void setTags(@javax.annotation.Nullable List<String> tags) {
+    this.tags = JsonNullable.<List<String>>of(tags);
+  }
 
 
+  /**
+   * Return true if this QueryFilters object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -131,8 +154,8 @@ public class QueryFilters {
       return false;
     }
     QueryFilters queryFilters = (QueryFilters) o;
-    return Objects.equals(this.genres, queryFilters.genres) &&
-        Objects.equals(this.tags, queryFilters.tags);
+    return equalsNullable(this.genres, queryFilters.genres) &&
+        equalsNullable(this.tags, queryFilters.tags);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -141,7 +164,7 @@ public class QueryFilters {
 
   @Override
   public int hashCode() {
-    return Objects.hash(genres, tags);
+    return Objects.hash(hashCodeNullable(genres), hashCodeNullable(tags));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -172,108 +195,58 @@ public class QueryFilters {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Genres");
-    openapiFields.add("Tags");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to QueryFilters
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!QueryFilters.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in QueryFilters is not found in the empty JSON string", QueryFilters.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!QueryFilters.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `QueryFilters` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (jsonObj.get("Genres") != null && !jsonObj.get("Genres").isJsonNull()) {
-        JsonArray jsonArraygenres = jsonObj.getAsJsonArray("Genres");
-        if (jsonArraygenres != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("Genres").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `Genres` to be an array in the JSON string but got `%s`", jsonObj.get("Genres").toString()));
-          }
-
-          // validate the optional field `Genres` (array)
-          for (int i = 0; i < jsonArraygenres.size(); i++) {
-            NameGuidPair.validateJsonElement(jsonArraygenres.get(i));
-          };
-        }
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("Tags") != null && !jsonObj.get("Tags").isJsonNull() && !jsonObj.get("Tags").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Tags` to be an array in the JSON string but got `%s`", jsonObj.get("Tags").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!QueryFilters.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'QueryFilters' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<QueryFilters> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(QueryFilters.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<QueryFilters>() {
-           @Override
-           public void write(JsonWriter out, QueryFilters value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public QueryFilters read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of QueryFilters given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of QueryFilters
-   * @throws IOException if the JSON string is invalid with respect to QueryFilters
-   */
-  public static QueryFilters fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, QueryFilters.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of QueryFilters to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Genres` to the URL query string
+    if (getGenres() != null) {
+      for (int i = 0; i < getGenres().size(); i++) {
+        if (getGenres().get(i) != null) {
+          joiner.add(getGenres().get(i).toUrlQueryString(String.format("%sGenres%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `Tags` to the URL query string
+    if (getTags() != null) {
+      for (int i = 0; i < getTags().size(); i++) {
+        joiner.add(String.format("%sTags%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getTags().get(i)))));
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

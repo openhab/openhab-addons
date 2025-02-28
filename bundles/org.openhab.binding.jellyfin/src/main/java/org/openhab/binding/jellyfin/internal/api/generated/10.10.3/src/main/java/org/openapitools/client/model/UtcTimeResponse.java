@@ -13,55 +13,41 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class UtcTimeResponse.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  UtcTimeResponse.JSON_PROPERTY_REQUEST_RECEPTION_TIME,
+  UtcTimeResponse.JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class UtcTimeResponse {
-  public static final String SERIALIZED_NAME_REQUEST_RECEPTION_TIME = "RequestReceptionTime";
-  @SerializedName(SERIALIZED_NAME_REQUEST_RECEPTION_TIME)
+  public static final String JSON_PROPERTY_REQUEST_RECEPTION_TIME = "RequestReceptionTime";
   @javax.annotation.Nullable
   private OffsetDateTime requestReceptionTime;
 
-  public static final String SERIALIZED_NAME_RESPONSE_TRANSMISSION_TIME = "ResponseTransmissionTime";
-  @SerializedName(SERIALIZED_NAME_RESPONSE_TRANSMISSION_TIME)
+  public static final String JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME = "ResponseTransmissionTime";
   @javax.annotation.Nullable
   private OffsetDateTime responseTransmissionTime;
 
-  public UtcTimeResponse() {
+  public UtcTimeResponse() { 
   }
 
   public UtcTimeResponse requestReceptionTime(@javax.annotation.Nullable OffsetDateTime requestReceptionTime) {
@@ -74,10 +60,15 @@ public class UtcTimeResponse {
    * @return requestReceptionTime
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REQUEST_RECEPTION_TIME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getRequestReceptionTime() {
     return requestReceptionTime;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REQUEST_RECEPTION_TIME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRequestReceptionTime(@javax.annotation.Nullable OffsetDateTime requestReceptionTime) {
     this.requestReceptionTime = requestReceptionTime;
   }
@@ -93,16 +84,23 @@ public class UtcTimeResponse {
    * @return responseTransmissionTime
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getResponseTransmissionTime() {
     return responseTransmissionTime;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setResponseTransmissionTime(@javax.annotation.Nullable OffsetDateTime responseTransmissionTime) {
     this.responseTransmissionTime = responseTransmissionTime;
   }
 
 
-
+  /**
+   * Return true if this UtcTimeResponse object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -142,90 +140,49 @@ public class UtcTimeResponse {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("RequestReceptionTime");
-    openapiFields.add("ResponseTransmissionTime");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to UtcTimeResponse
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!UtcTimeResponse.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in UtcTimeResponse is not found in the empty JSON string", UtcTimeResponse.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!UtcTimeResponse.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `UtcTimeResponse` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!UtcTimeResponse.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'UtcTimeResponse' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<UtcTimeResponse> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(UtcTimeResponse.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<UtcTimeResponse>() {
-           @Override
-           public void write(JsonWriter out, UtcTimeResponse value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public UtcTimeResponse read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of UtcTimeResponse given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of UtcTimeResponse
-   * @throws IOException if the JSON string is invalid with respect to UtcTimeResponse
-   */
-  public static UtcTimeResponse fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, UtcTimeResponse.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of UtcTimeResponse to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `RequestReceptionTime` to the URL query string
+    if (getRequestReceptionTime() != null) {
+      joiner.add(String.format("%sRequestReceptionTime%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRequestReceptionTime()))));
+    }
+
+    // add `ResponseTransmissionTime` to the URL query string
+    if (getResponseTransmissionTime() != null) {
+      joiner.add(String.format("%sResponseTransmissionTime%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getResponseTransmissionTime()))));
+    }
+
+    return joiner.toString();
   }
 }
 

@@ -13,112 +13,94 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.client.model.PlayMethod;
 import org.openapitools.client.model.PlaybackOrder;
 import org.openapitools.client.model.RepeatMode;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * PlayerStateInfo
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  PlayerStateInfo.JSON_PROPERTY_POSITION_TICKS,
+  PlayerStateInfo.JSON_PROPERTY_CAN_SEEK,
+  PlayerStateInfo.JSON_PROPERTY_IS_PAUSED,
+  PlayerStateInfo.JSON_PROPERTY_IS_MUTED,
+  PlayerStateInfo.JSON_PROPERTY_VOLUME_LEVEL,
+  PlayerStateInfo.JSON_PROPERTY_AUDIO_STREAM_INDEX,
+  PlayerStateInfo.JSON_PROPERTY_SUBTITLE_STREAM_INDEX,
+  PlayerStateInfo.JSON_PROPERTY_MEDIA_SOURCE_ID,
+  PlayerStateInfo.JSON_PROPERTY_PLAY_METHOD,
+  PlayerStateInfo.JSON_PROPERTY_REPEAT_MODE,
+  PlayerStateInfo.JSON_PROPERTY_PLAYBACK_ORDER,
+  PlayerStateInfo.JSON_PROPERTY_LIVE_STREAM_ID
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PlayerStateInfo {
-  public static final String SERIALIZED_NAME_POSITION_TICKS = "PositionTicks";
-  @SerializedName(SERIALIZED_NAME_POSITION_TICKS)
-  @javax.annotation.Nullable
-  private Long positionTicks;
+  public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
+  private JsonNullable<Long> positionTicks = JsonNullable.<Long>undefined();
 
-  public static final String SERIALIZED_NAME_CAN_SEEK = "CanSeek";
-  @SerializedName(SERIALIZED_NAME_CAN_SEEK)
+  public static final String JSON_PROPERTY_CAN_SEEK = "CanSeek";
   @javax.annotation.Nullable
   private Boolean canSeek;
 
-  public static final String SERIALIZED_NAME_IS_PAUSED = "IsPaused";
-  @SerializedName(SERIALIZED_NAME_IS_PAUSED)
+  public static final String JSON_PROPERTY_IS_PAUSED = "IsPaused";
   @javax.annotation.Nullable
   private Boolean isPaused;
 
-  public static final String SERIALIZED_NAME_IS_MUTED = "IsMuted";
-  @SerializedName(SERIALIZED_NAME_IS_MUTED)
+  public static final String JSON_PROPERTY_IS_MUTED = "IsMuted";
   @javax.annotation.Nullable
   private Boolean isMuted;
 
-  public static final String SERIALIZED_NAME_VOLUME_LEVEL = "VolumeLevel";
-  @SerializedName(SERIALIZED_NAME_VOLUME_LEVEL)
-  @javax.annotation.Nullable
-  private Integer volumeLevel;
+  public static final String JSON_PROPERTY_VOLUME_LEVEL = "VolumeLevel";
+  private JsonNullable<Integer> volumeLevel = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_AUDIO_STREAM_INDEX = "AudioStreamIndex";
-  @SerializedName(SERIALIZED_NAME_AUDIO_STREAM_INDEX)
-  @javax.annotation.Nullable
-  private Integer audioStreamIndex;
+  public static final String JSON_PROPERTY_AUDIO_STREAM_INDEX = "AudioStreamIndex";
+  private JsonNullable<Integer> audioStreamIndex = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_SUBTITLE_STREAM_INDEX = "SubtitleStreamIndex";
-  @SerializedName(SERIALIZED_NAME_SUBTITLE_STREAM_INDEX)
-  @javax.annotation.Nullable
-  private Integer subtitleStreamIndex;
+  public static final String JSON_PROPERTY_SUBTITLE_STREAM_INDEX = "SubtitleStreamIndex";
+  private JsonNullable<Integer> subtitleStreamIndex = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_MEDIA_SOURCE_ID = "MediaSourceId";
-  @SerializedName(SERIALIZED_NAME_MEDIA_SOURCE_ID)
-  @javax.annotation.Nullable
-  private String mediaSourceId;
+  public static final String JSON_PROPERTY_MEDIA_SOURCE_ID = "MediaSourceId";
+  private JsonNullable<String> mediaSourceId = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PLAY_METHOD = "PlayMethod";
-  @SerializedName(SERIALIZED_NAME_PLAY_METHOD)
-  @javax.annotation.Nullable
-  private PlayMethod playMethod;
+  public static final String JSON_PROPERTY_PLAY_METHOD = "PlayMethod";
+  private JsonNullable<PlayMethod> playMethod = JsonNullable.<PlayMethod>undefined();
 
-  public static final String SERIALIZED_NAME_REPEAT_MODE = "RepeatMode";
-  @SerializedName(SERIALIZED_NAME_REPEAT_MODE)
+  public static final String JSON_PROPERTY_REPEAT_MODE = "RepeatMode";
   @javax.annotation.Nullable
   private RepeatMode repeatMode;
 
-  public static final String SERIALIZED_NAME_PLAYBACK_ORDER = "PlaybackOrder";
-  @SerializedName(SERIALIZED_NAME_PLAYBACK_ORDER)
+  public static final String JSON_PROPERTY_PLAYBACK_ORDER = "PlaybackOrder";
   @javax.annotation.Nullable
   private PlaybackOrder playbackOrder;
 
-  public static final String SERIALIZED_NAME_LIVE_STREAM_ID = "LiveStreamId";
-  @SerializedName(SERIALIZED_NAME_LIVE_STREAM_ID)
-  @javax.annotation.Nullable
-  private String liveStreamId;
+  public static final String JSON_PROPERTY_LIVE_STREAM_ID = "LiveStreamId";
+  private JsonNullable<String> liveStreamId = JsonNullable.<String>undefined();
 
-  public PlayerStateInfo() {
+  public PlayerStateInfo() { 
   }
 
   public PlayerStateInfo positionTicks(@javax.annotation.Nullable Long positionTicks) {
-    this.positionTicks = positionTicks;
+    this.positionTicks = JsonNullable.<Long>of(positionTicks);
     return this;
   }
 
@@ -127,12 +109,25 @@ public class PlayerStateInfo {
    * @return positionTicks
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Long getPositionTicks() {
+        return positionTicks.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Long> getPositionTicks_JsonNullable() {
     return positionTicks;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+  public void setPositionTicks_JsonNullable(JsonNullable<Long> positionTicks) {
+    this.positionTicks = positionTicks;
   }
 
   public void setPositionTicks(@javax.annotation.Nullable Long positionTicks) {
-    this.positionTicks = positionTicks;
+    this.positionTicks = JsonNullable.<Long>of(positionTicks);
   }
 
 
@@ -146,10 +141,15 @@ public class PlayerStateInfo {
    * @return canSeek
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CAN_SEEK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getCanSeek() {
     return canSeek;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CAN_SEEK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCanSeek(@javax.annotation.Nullable Boolean canSeek) {
     this.canSeek = canSeek;
   }
@@ -165,10 +165,15 @@ public class PlayerStateInfo {
    * @return isPaused
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_PAUSED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsPaused() {
     return isPaused;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_PAUSED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsPaused(@javax.annotation.Nullable Boolean isPaused) {
     this.isPaused = isPaused;
   }
@@ -184,17 +189,22 @@ public class PlayerStateInfo {
    * @return isMuted
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_MUTED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsMuted() {
     return isMuted;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_MUTED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsMuted(@javax.annotation.Nullable Boolean isMuted) {
     this.isMuted = isMuted;
   }
 
 
   public PlayerStateInfo volumeLevel(@javax.annotation.Nullable Integer volumeLevel) {
-    this.volumeLevel = volumeLevel;
+    this.volumeLevel = JsonNullable.<Integer>of(volumeLevel);
     return this;
   }
 
@@ -203,17 +213,30 @@ public class PlayerStateInfo {
    * @return volumeLevel
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getVolumeLevel() {
+        return volumeLevel.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_VOLUME_LEVEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getVolumeLevel_JsonNullable() {
     return volumeLevel;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VOLUME_LEVEL)
+  public void setVolumeLevel_JsonNullable(JsonNullable<Integer> volumeLevel) {
+    this.volumeLevel = volumeLevel;
   }
 
   public void setVolumeLevel(@javax.annotation.Nullable Integer volumeLevel) {
-    this.volumeLevel = volumeLevel;
+    this.volumeLevel = JsonNullable.<Integer>of(volumeLevel);
   }
 
 
   public PlayerStateInfo audioStreamIndex(@javax.annotation.Nullable Integer audioStreamIndex) {
-    this.audioStreamIndex = audioStreamIndex;
+    this.audioStreamIndex = JsonNullable.<Integer>of(audioStreamIndex);
     return this;
   }
 
@@ -222,17 +245,30 @@ public class PlayerStateInfo {
    * @return audioStreamIndex
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getAudioStreamIndex() {
+        return audioStreamIndex.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getAudioStreamIndex_JsonNullable() {
     return audioStreamIndex;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
+  public void setAudioStreamIndex_JsonNullable(JsonNullable<Integer> audioStreamIndex) {
+    this.audioStreamIndex = audioStreamIndex;
   }
 
   public void setAudioStreamIndex(@javax.annotation.Nullable Integer audioStreamIndex) {
-    this.audioStreamIndex = audioStreamIndex;
+    this.audioStreamIndex = JsonNullable.<Integer>of(audioStreamIndex);
   }
 
 
   public PlayerStateInfo subtitleStreamIndex(@javax.annotation.Nullable Integer subtitleStreamIndex) {
-    this.subtitleStreamIndex = subtitleStreamIndex;
+    this.subtitleStreamIndex = JsonNullable.<Integer>of(subtitleStreamIndex);
     return this;
   }
 
@@ -241,17 +277,30 @@ public class PlayerStateInfo {
    * @return subtitleStreamIndex
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getSubtitleStreamIndex() {
+        return subtitleStreamIndex.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getSubtitleStreamIndex_JsonNullable() {
     return subtitleStreamIndex;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
+  public void setSubtitleStreamIndex_JsonNullable(JsonNullable<Integer> subtitleStreamIndex) {
+    this.subtitleStreamIndex = subtitleStreamIndex;
   }
 
   public void setSubtitleStreamIndex(@javax.annotation.Nullable Integer subtitleStreamIndex) {
-    this.subtitleStreamIndex = subtitleStreamIndex;
+    this.subtitleStreamIndex = JsonNullable.<Integer>of(subtitleStreamIndex);
   }
 
 
   public PlayerStateInfo mediaSourceId(@javax.annotation.Nullable String mediaSourceId) {
-    this.mediaSourceId = mediaSourceId;
+    this.mediaSourceId = JsonNullable.<String>of(mediaSourceId);
     return this;
   }
 
@@ -260,17 +309,30 @@ public class PlayerStateInfo {
    * @return mediaSourceId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getMediaSourceId() {
+        return mediaSourceId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getMediaSourceId_JsonNullable() {
     return mediaSourceId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
+  public void setMediaSourceId_JsonNullable(JsonNullable<String> mediaSourceId) {
+    this.mediaSourceId = mediaSourceId;
   }
 
   public void setMediaSourceId(@javax.annotation.Nullable String mediaSourceId) {
-    this.mediaSourceId = mediaSourceId;
+    this.mediaSourceId = JsonNullable.<String>of(mediaSourceId);
   }
 
 
   public PlayerStateInfo playMethod(@javax.annotation.Nullable PlayMethod playMethod) {
-    this.playMethod = playMethod;
+    this.playMethod = JsonNullable.<PlayMethod>of(playMethod);
     return this;
   }
 
@@ -279,12 +341,25 @@ public class PlayerStateInfo {
    * @return playMethod
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public PlayMethod getPlayMethod() {
+        return playMethod.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PLAY_METHOD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<PlayMethod> getPlayMethod_JsonNullable() {
     return playMethod;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PLAY_METHOD)
+  public void setPlayMethod_JsonNullable(JsonNullable<PlayMethod> playMethod) {
+    this.playMethod = playMethod;
   }
 
   public void setPlayMethod(@javax.annotation.Nullable PlayMethod playMethod) {
-    this.playMethod = playMethod;
+    this.playMethod = JsonNullable.<PlayMethod>of(playMethod);
   }
 
 
@@ -298,10 +373,15 @@ public class PlayerStateInfo {
    * @return repeatMode
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REPEAT_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public RepeatMode getRepeatMode() {
     return repeatMode;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REPEAT_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRepeatMode(@javax.annotation.Nullable RepeatMode repeatMode) {
     this.repeatMode = repeatMode;
   }
@@ -317,17 +397,22 @@ public class PlayerStateInfo {
    * @return playbackOrder
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLAYBACK_ORDER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PlaybackOrder getPlaybackOrder() {
     return playbackOrder;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PLAYBACK_ORDER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlaybackOrder(@javax.annotation.Nullable PlaybackOrder playbackOrder) {
     this.playbackOrder = playbackOrder;
   }
 
 
   public PlayerStateInfo liveStreamId(@javax.annotation.Nullable String liveStreamId) {
-    this.liveStreamId = liveStreamId;
+    this.liveStreamId = JsonNullable.<String>of(liveStreamId);
     return this;
   }
 
@@ -336,16 +421,31 @@ public class PlayerStateInfo {
    * @return liveStreamId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getLiveStreamId() {
-    return liveStreamId;
+        return liveStreamId.orElse(null);
   }
 
-  public void setLiveStreamId(@javax.annotation.Nullable String liveStreamId) {
+  @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getLiveStreamId_JsonNullable() {
+    return liveStreamId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
+  public void setLiveStreamId_JsonNullable(JsonNullable<String> liveStreamId) {
     this.liveStreamId = liveStreamId;
   }
 
+  public void setLiveStreamId(@javax.annotation.Nullable String liveStreamId) {
+    this.liveStreamId = JsonNullable.<String>of(liveStreamId);
+  }
 
 
+  /**
+   * Return true if this PlayerStateInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -355,18 +455,18 @@ public class PlayerStateInfo {
       return false;
     }
     PlayerStateInfo playerStateInfo = (PlayerStateInfo) o;
-    return Objects.equals(this.positionTicks, playerStateInfo.positionTicks) &&
+    return equalsNullable(this.positionTicks, playerStateInfo.positionTicks) &&
         Objects.equals(this.canSeek, playerStateInfo.canSeek) &&
         Objects.equals(this.isPaused, playerStateInfo.isPaused) &&
         Objects.equals(this.isMuted, playerStateInfo.isMuted) &&
-        Objects.equals(this.volumeLevel, playerStateInfo.volumeLevel) &&
-        Objects.equals(this.audioStreamIndex, playerStateInfo.audioStreamIndex) &&
-        Objects.equals(this.subtitleStreamIndex, playerStateInfo.subtitleStreamIndex) &&
-        Objects.equals(this.mediaSourceId, playerStateInfo.mediaSourceId) &&
-        Objects.equals(this.playMethod, playerStateInfo.playMethod) &&
+        equalsNullable(this.volumeLevel, playerStateInfo.volumeLevel) &&
+        equalsNullable(this.audioStreamIndex, playerStateInfo.audioStreamIndex) &&
+        equalsNullable(this.subtitleStreamIndex, playerStateInfo.subtitleStreamIndex) &&
+        equalsNullable(this.mediaSourceId, playerStateInfo.mediaSourceId) &&
+        equalsNullable(this.playMethod, playerStateInfo.playMethod) &&
         Objects.equals(this.repeatMode, playerStateInfo.repeatMode) &&
         Objects.equals(this.playbackOrder, playerStateInfo.playbackOrder) &&
-        Objects.equals(this.liveStreamId, playerStateInfo.liveStreamId);
+        equalsNullable(this.liveStreamId, playerStateInfo.liveStreamId);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -375,7 +475,7 @@ public class PlayerStateInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(positionTicks, canSeek, isPaused, isMuted, volumeLevel, audioStreamIndex, subtitleStreamIndex, mediaSourceId, playMethod, repeatMode, playbackOrder, liveStreamId);
+    return Objects.hash(hashCodeNullable(positionTicks), canSeek, isPaused, isMuted, hashCodeNullable(volumeLevel), hashCodeNullable(audioStreamIndex), hashCodeNullable(subtitleStreamIndex), hashCodeNullable(mediaSourceId), hashCodeNullable(playMethod), repeatMode, playbackOrder, hashCodeNullable(liveStreamId));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -416,118 +516,99 @@ public class PlayerStateInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("PositionTicks");
-    openapiFields.add("CanSeek");
-    openapiFields.add("IsPaused");
-    openapiFields.add("IsMuted");
-    openapiFields.add("VolumeLevel");
-    openapiFields.add("AudioStreamIndex");
-    openapiFields.add("SubtitleStreamIndex");
-    openapiFields.add("MediaSourceId");
-    openapiFields.add("PlayMethod");
-    openapiFields.add("RepeatMode");
-    openapiFields.add("PlaybackOrder");
-    openapiFields.add("LiveStreamId");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to PlayerStateInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!PlayerStateInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in PlayerStateInfo is not found in the empty JSON string", PlayerStateInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!PlayerStateInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `PlayerStateInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("MediaSourceId") != null && !jsonObj.get("MediaSourceId").isJsonNull()) && !jsonObj.get("MediaSourceId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MediaSourceId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("MediaSourceId").toString()));
-      }
-      // validate the optional field `PlayMethod`
-      if (jsonObj.get("PlayMethod") != null && !jsonObj.get("PlayMethod").isJsonNull()) {
-        PlayMethod.validateJsonElement(jsonObj.get("PlayMethod"));
-      }
-      // validate the optional field `RepeatMode`
-      if (jsonObj.get("RepeatMode") != null && !jsonObj.get("RepeatMode").isJsonNull()) {
-        RepeatMode.validateJsonElement(jsonObj.get("RepeatMode"));
-      }
-      // validate the optional field `PlaybackOrder`
-      if (jsonObj.get("PlaybackOrder") != null && !jsonObj.get("PlaybackOrder").isJsonNull()) {
-        PlaybackOrder.validateJsonElement(jsonObj.get("PlaybackOrder"));
-      }
-      if ((jsonObj.get("LiveStreamId") != null && !jsonObj.get("LiveStreamId").isJsonNull()) && !jsonObj.get("LiveStreamId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `LiveStreamId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("LiveStreamId").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!PlayerStateInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'PlayerStateInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<PlayerStateInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(PlayerStateInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<PlayerStateInfo>() {
-           @Override
-           public void write(JsonWriter out, PlayerStateInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public PlayerStateInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of PlayerStateInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of PlayerStateInfo
-   * @throws IOException if the JSON string is invalid with respect to PlayerStateInfo
-   */
-  public static PlayerStateInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, PlayerStateInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of PlayerStateInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `PositionTicks` to the URL query string
+    if (getPositionTicks() != null) {
+      joiner.add(String.format("%sPositionTicks%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
+    }
+
+    // add `CanSeek` to the URL query string
+    if (getCanSeek() != null) {
+      joiner.add(String.format("%sCanSeek%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCanSeek()))));
+    }
+
+    // add `IsPaused` to the URL query string
+    if (getIsPaused() != null) {
+      joiner.add(String.format("%sIsPaused%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsPaused()))));
+    }
+
+    // add `IsMuted` to the URL query string
+    if (getIsMuted() != null) {
+      joiner.add(String.format("%sIsMuted%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsMuted()))));
+    }
+
+    // add `VolumeLevel` to the URL query string
+    if (getVolumeLevel() != null) {
+      joiner.add(String.format("%sVolumeLevel%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVolumeLevel()))));
+    }
+
+    // add `AudioStreamIndex` to the URL query string
+    if (getAudioStreamIndex() != null) {
+      joiner.add(String.format("%sAudioStreamIndex%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAudioStreamIndex()))));
+    }
+
+    // add `SubtitleStreamIndex` to the URL query string
+    if (getSubtitleStreamIndex() != null) {
+      joiner.add(String.format("%sSubtitleStreamIndex%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSubtitleStreamIndex()))));
+    }
+
+    // add `MediaSourceId` to the URL query string
+    if (getMediaSourceId() != null) {
+      joiner.add(String.format("%sMediaSourceId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMediaSourceId()))));
+    }
+
+    // add `PlayMethod` to the URL query string
+    if (getPlayMethod() != null) {
+      joiner.add(String.format("%sPlayMethod%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlayMethod()))));
+    }
+
+    // add `RepeatMode` to the URL query string
+    if (getRepeatMode() != null) {
+      joiner.add(String.format("%sRepeatMode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRepeatMode()))));
+    }
+
+    // add `PlaybackOrder` to the URL query string
+    if (getPlaybackOrder() != null) {
+      joiner.add(String.format("%sPlaybackOrder%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlaybackOrder()))));
+    }
+
+    // add `LiveStreamId` to the URL query string
+    if (getLiveStreamId() != null) {
+      joiner.add(String.format("%sLiveStreamId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLiveStreamId()))));
+    }
+
+    return joiner.toString();
   }
 }
 

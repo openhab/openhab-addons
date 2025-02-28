@@ -13,75 +13,59 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.client.model.DayOfWeek;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class TaskTriggerInfo.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  TaskTriggerInfo.JSON_PROPERTY_TYPE,
+  TaskTriggerInfo.JSON_PROPERTY_TIME_OF_DAY_TICKS,
+  TaskTriggerInfo.JSON_PROPERTY_INTERVAL_TICKS,
+  TaskTriggerInfo.JSON_PROPERTY_DAY_OF_WEEK,
+  TaskTriggerInfo.JSON_PROPERTY_MAX_RUNTIME_TICKS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class TaskTriggerInfo {
-  public static final String SERIALIZED_NAME_TYPE = "Type";
-  @SerializedName(SERIALIZED_NAME_TYPE)
-  @javax.annotation.Nullable
-  private String type;
+  public static final String JSON_PROPERTY_TYPE = "Type";
+  private JsonNullable<String> type = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TIME_OF_DAY_TICKS = "TimeOfDayTicks";
-  @SerializedName(SERIALIZED_NAME_TIME_OF_DAY_TICKS)
-  @javax.annotation.Nullable
-  private Long timeOfDayTicks;
+  public static final String JSON_PROPERTY_TIME_OF_DAY_TICKS = "TimeOfDayTicks";
+  private JsonNullable<Long> timeOfDayTicks = JsonNullable.<Long>undefined();
 
-  public static final String SERIALIZED_NAME_INTERVAL_TICKS = "IntervalTicks";
-  @SerializedName(SERIALIZED_NAME_INTERVAL_TICKS)
-  @javax.annotation.Nullable
-  private Long intervalTicks;
+  public static final String JSON_PROPERTY_INTERVAL_TICKS = "IntervalTicks";
+  private JsonNullable<Long> intervalTicks = JsonNullable.<Long>undefined();
 
-  public static final String SERIALIZED_NAME_DAY_OF_WEEK = "DayOfWeek";
-  @SerializedName(SERIALIZED_NAME_DAY_OF_WEEK)
-  @javax.annotation.Nullable
-  private DayOfWeek dayOfWeek;
+  public static final String JSON_PROPERTY_DAY_OF_WEEK = "DayOfWeek";
+  private JsonNullable<DayOfWeek> dayOfWeek = JsonNullable.<DayOfWeek>undefined();
 
-  public static final String SERIALIZED_NAME_MAX_RUNTIME_TICKS = "MaxRuntimeTicks";
-  @SerializedName(SERIALIZED_NAME_MAX_RUNTIME_TICKS)
-  @javax.annotation.Nullable
-  private Long maxRuntimeTicks;
+  public static final String JSON_PROPERTY_MAX_RUNTIME_TICKS = "MaxRuntimeTicks";
+  private JsonNullable<Long> maxRuntimeTicks = JsonNullable.<Long>undefined();
 
-  public TaskTriggerInfo() {
+  public TaskTriggerInfo() { 
   }
 
   public TaskTriggerInfo type(@javax.annotation.Nullable String type) {
-    this.type = type;
+    this.type = JsonNullable.<String>of(type);
     return this;
   }
 
@@ -90,17 +74,30 @@ public class TaskTriggerInfo {
    * @return type
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getType() {
+        return type.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getType_JsonNullable() {
     return type;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  public void setType_JsonNullable(JsonNullable<String> type) {
+    this.type = type;
   }
 
   public void setType(@javax.annotation.Nullable String type) {
-    this.type = type;
+    this.type = JsonNullable.<String>of(type);
   }
 
 
   public TaskTriggerInfo timeOfDayTicks(@javax.annotation.Nullable Long timeOfDayTicks) {
-    this.timeOfDayTicks = timeOfDayTicks;
+    this.timeOfDayTicks = JsonNullable.<Long>of(timeOfDayTicks);
     return this;
   }
 
@@ -109,17 +106,30 @@ public class TaskTriggerInfo {
    * @return timeOfDayTicks
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Long getTimeOfDayTicks() {
+        return timeOfDayTicks.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TIME_OF_DAY_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Long> getTimeOfDayTicks_JsonNullable() {
     return timeOfDayTicks;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TIME_OF_DAY_TICKS)
+  public void setTimeOfDayTicks_JsonNullable(JsonNullable<Long> timeOfDayTicks) {
+    this.timeOfDayTicks = timeOfDayTicks;
   }
 
   public void setTimeOfDayTicks(@javax.annotation.Nullable Long timeOfDayTicks) {
-    this.timeOfDayTicks = timeOfDayTicks;
+    this.timeOfDayTicks = JsonNullable.<Long>of(timeOfDayTicks);
   }
 
 
   public TaskTriggerInfo intervalTicks(@javax.annotation.Nullable Long intervalTicks) {
-    this.intervalTicks = intervalTicks;
+    this.intervalTicks = JsonNullable.<Long>of(intervalTicks);
     return this;
   }
 
@@ -128,17 +138,30 @@ public class TaskTriggerInfo {
    * @return intervalTicks
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Long getIntervalTicks() {
+        return intervalTicks.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_INTERVAL_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Long> getIntervalTicks_JsonNullable() {
     return intervalTicks;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_INTERVAL_TICKS)
+  public void setIntervalTicks_JsonNullable(JsonNullable<Long> intervalTicks) {
+    this.intervalTicks = intervalTicks;
   }
 
   public void setIntervalTicks(@javax.annotation.Nullable Long intervalTicks) {
-    this.intervalTicks = intervalTicks;
+    this.intervalTicks = JsonNullable.<Long>of(intervalTicks);
   }
 
 
   public TaskTriggerInfo dayOfWeek(@javax.annotation.Nullable DayOfWeek dayOfWeek) {
-    this.dayOfWeek = dayOfWeek;
+    this.dayOfWeek = JsonNullable.<DayOfWeek>of(dayOfWeek);
     return this;
   }
 
@@ -147,17 +170,30 @@ public class TaskTriggerInfo {
    * @return dayOfWeek
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public DayOfWeek getDayOfWeek() {
+        return dayOfWeek.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DAY_OF_WEEK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<DayOfWeek> getDayOfWeek_JsonNullable() {
     return dayOfWeek;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DAY_OF_WEEK)
+  public void setDayOfWeek_JsonNullable(JsonNullable<DayOfWeek> dayOfWeek) {
+    this.dayOfWeek = dayOfWeek;
   }
 
   public void setDayOfWeek(@javax.annotation.Nullable DayOfWeek dayOfWeek) {
-    this.dayOfWeek = dayOfWeek;
+    this.dayOfWeek = JsonNullable.<DayOfWeek>of(dayOfWeek);
   }
 
 
   public TaskTriggerInfo maxRuntimeTicks(@javax.annotation.Nullable Long maxRuntimeTicks) {
-    this.maxRuntimeTicks = maxRuntimeTicks;
+    this.maxRuntimeTicks = JsonNullable.<Long>of(maxRuntimeTicks);
     return this;
   }
 
@@ -166,16 +202,31 @@ public class TaskTriggerInfo {
    * @return maxRuntimeTicks
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Long getMaxRuntimeTicks() {
-    return maxRuntimeTicks;
+        return maxRuntimeTicks.orElse(null);
   }
 
-  public void setMaxRuntimeTicks(@javax.annotation.Nullable Long maxRuntimeTicks) {
+  @JsonProperty(JSON_PROPERTY_MAX_RUNTIME_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Long> getMaxRuntimeTicks_JsonNullable() {
+    return maxRuntimeTicks;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MAX_RUNTIME_TICKS)
+  public void setMaxRuntimeTicks_JsonNullable(JsonNullable<Long> maxRuntimeTicks) {
     this.maxRuntimeTicks = maxRuntimeTicks;
   }
 
+  public void setMaxRuntimeTicks(@javax.annotation.Nullable Long maxRuntimeTicks) {
+    this.maxRuntimeTicks = JsonNullable.<Long>of(maxRuntimeTicks);
+  }
 
 
+  /**
+   * Return true if this TaskTriggerInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -185,11 +236,11 @@ public class TaskTriggerInfo {
       return false;
     }
     TaskTriggerInfo taskTriggerInfo = (TaskTriggerInfo) o;
-    return Objects.equals(this.type, taskTriggerInfo.type) &&
-        Objects.equals(this.timeOfDayTicks, taskTriggerInfo.timeOfDayTicks) &&
-        Objects.equals(this.intervalTicks, taskTriggerInfo.intervalTicks) &&
-        Objects.equals(this.dayOfWeek, taskTriggerInfo.dayOfWeek) &&
-        Objects.equals(this.maxRuntimeTicks, taskTriggerInfo.maxRuntimeTicks);
+    return equalsNullable(this.type, taskTriggerInfo.type) &&
+        equalsNullable(this.timeOfDayTicks, taskTriggerInfo.timeOfDayTicks) &&
+        equalsNullable(this.intervalTicks, taskTriggerInfo.intervalTicks) &&
+        equalsNullable(this.dayOfWeek, taskTriggerInfo.dayOfWeek) &&
+        equalsNullable(this.maxRuntimeTicks, taskTriggerInfo.maxRuntimeTicks);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -198,7 +249,7 @@ public class TaskTriggerInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, timeOfDayTicks, intervalTicks, dayOfWeek, maxRuntimeTicks);
+    return Objects.hash(hashCodeNullable(type), hashCodeNullable(timeOfDayTicks), hashCodeNullable(intervalTicks), hashCodeNullable(dayOfWeek), hashCodeNullable(maxRuntimeTicks));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -232,100 +283,64 @@ public class TaskTriggerInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Type");
-    openapiFields.add("TimeOfDayTicks");
-    openapiFields.add("IntervalTicks");
-    openapiFields.add("DayOfWeek");
-    openapiFields.add("MaxRuntimeTicks");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to TaskTriggerInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!TaskTriggerInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in TaskTriggerInfo is not found in the empty JSON string", TaskTriggerInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!TaskTriggerInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `TaskTriggerInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Type") != null && !jsonObj.get("Type").isJsonNull()) && !jsonObj.get("Type").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Type").toString()));
-      }
-      // validate the optional field `DayOfWeek`
-      if (jsonObj.get("DayOfWeek") != null && !jsonObj.get("DayOfWeek").isJsonNull()) {
-        DayOfWeek.validateJsonElement(jsonObj.get("DayOfWeek"));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!TaskTriggerInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'TaskTriggerInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<TaskTriggerInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(TaskTriggerInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<TaskTriggerInfo>() {
-           @Override
-           public void write(JsonWriter out, TaskTriggerInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public TaskTriggerInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of TaskTriggerInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of TaskTriggerInfo
-   * @throws IOException if the JSON string is invalid with respect to TaskTriggerInfo
-   */
-  public static TaskTriggerInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, TaskTriggerInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of TaskTriggerInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Type` to the URL query string
+    if (getType() != null) {
+      joiner.add(String.format("%sType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+    }
+
+    // add `TimeOfDayTicks` to the URL query string
+    if (getTimeOfDayTicks() != null) {
+      joiner.add(String.format("%sTimeOfDayTicks%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTimeOfDayTicks()))));
+    }
+
+    // add `IntervalTicks` to the URL query string
+    if (getIntervalTicks() != null) {
+      joiner.add(String.format("%sIntervalTicks%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIntervalTicks()))));
+    }
+
+    // add `DayOfWeek` to the URL query string
+    if (getDayOfWeek() != null) {
+      joiner.add(String.format("%sDayOfWeek%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDayOfWeek()))));
+    }
+
+    // add `MaxRuntimeTicks` to the URL query string
+    if (getMaxRuntimeTicks() != null) {
+      joiner.add(String.format("%sMaxRuntimeTicks%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxRuntimeTicks()))));
+    }
+
+    return joiner.toString();
   }
 }
 

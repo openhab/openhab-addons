@@ -1,9 +1,7 @@
 #!/usr/bin/bash
 
 set -e
-
-VERSIONS=("10.8.13" "10.10.3")
-REQUIRED=("wget" "yq" "openapi-generator-cli")
+REQUIRED=("wget" "yq" "docker" "curl" "jq")
 
 function checkEnvironment() {
     for i in "${REQUIRED[@]}"; do
@@ -16,8 +14,16 @@ function checkEnvironment() {
 
 checkEnvironment
 
+LATEST=$(curl -sL https://repo.jellyfin.org/releases/openapi/jellyfin-openapi-stable.json | jq -r .info.version)
+echo "ℹ️  - Latest stable API - Version: ${LATEST}"
+echo ""
+VERSIONS=("10.8.13" "10.10.3" "${LATEST}")
+
+DOCKER_IMAGE=openapitools/openapi-generator-cli:v7.12.0
+DOCKER_VOLUME_WORK="/work"
+
 for i in "${VERSIONS[@]}"; do
-    echo "ℹ️  - API Version to generate: $i"
+    echo "ℹ➡️ API Version to generate: $i"
 
     FILENAME_JSON="./specifications/json/jellyfin-openapi-${i}.json"
     FILENAME_YAML="./specifications/yaml/jellyfin-openapi-${i}.yaml"
@@ -33,15 +39,16 @@ for i in "${VERSIONS[@]}"; do
             ${SERVER}
 
         if [ ! -e "${FILENAME_YAML}" ]; then
-            echo "⚙️  - json ➡️ yaml"
+            echo "⚙️: json ➡️ yaml"
             yq -oy ${FILENAME_JSON} >${FILENAME_YAML}
         fi
     fi
 
-    echo "⚙️  - generate code for API ${i}"
-
-    # TODO: config.yaml - https://openapi-generator.tech/docs/customization
-    openapi-generator-cli generate -g java \
-        --global-property models,modelTests=false,apis,apiTests=false,library=native,serializationLibrary=jackson,apiPackage=org.openhab.binding.jellyfin.internal.api.${i} \
-        --input-spec ${FILENAME_YAML} -o ./generated/${i} 1>/dev/null
+    docker run --rm --interactive               \
+        --user $(id -u):$(id -g)                \
+        --volume "${PWD}:${DOCKER_VOLUME_WORK}" \
+        --workdir ${DOCKER_VOLUME_WORK}         \
+        --env-file environment.ini              \
+        $DOCKER_IMAGE generate --generator-name java --global-property apis,apiTests=false,apiDocs=false,models,modelDocs=false,modelTests=false,apiPackage=org.openhab.binding.jellyfin.internal.api.${i} --config java.config.json --input-spec ${FILENAME_YAML} -o ./generated/${i} \
+        > /dev/null
 done

@@ -13,13 +13,17 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,141 +34,112 @@ import org.openapitools.client.model.PlaybackOrder;
 import org.openapitools.client.model.QueueItem;
 import org.openapitools.client.model.RepeatMode;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class PlaybackProgressInfo.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  PlaybackProgressInfo.JSON_PROPERTY_CAN_SEEK,
+  PlaybackProgressInfo.JSON_PROPERTY_ITEM,
+  PlaybackProgressInfo.JSON_PROPERTY_ITEM_ID,
+  PlaybackProgressInfo.JSON_PROPERTY_SESSION_ID,
+  PlaybackProgressInfo.JSON_PROPERTY_MEDIA_SOURCE_ID,
+  PlaybackProgressInfo.JSON_PROPERTY_AUDIO_STREAM_INDEX,
+  PlaybackProgressInfo.JSON_PROPERTY_SUBTITLE_STREAM_INDEX,
+  PlaybackProgressInfo.JSON_PROPERTY_IS_PAUSED,
+  PlaybackProgressInfo.JSON_PROPERTY_IS_MUTED,
+  PlaybackProgressInfo.JSON_PROPERTY_POSITION_TICKS,
+  PlaybackProgressInfo.JSON_PROPERTY_PLAYBACK_START_TIME_TICKS,
+  PlaybackProgressInfo.JSON_PROPERTY_VOLUME_LEVEL,
+  PlaybackProgressInfo.JSON_PROPERTY_BRIGHTNESS,
+  PlaybackProgressInfo.JSON_PROPERTY_ASPECT_RATIO,
+  PlaybackProgressInfo.JSON_PROPERTY_PLAY_METHOD,
+  PlaybackProgressInfo.JSON_PROPERTY_LIVE_STREAM_ID,
+  PlaybackProgressInfo.JSON_PROPERTY_PLAY_SESSION_ID,
+  PlaybackProgressInfo.JSON_PROPERTY_REPEAT_MODE,
+  PlaybackProgressInfo.JSON_PROPERTY_PLAYBACK_ORDER,
+  PlaybackProgressInfo.JSON_PROPERTY_NOW_PLAYING_QUEUE,
+  PlaybackProgressInfo.JSON_PROPERTY_PLAYLIST_ITEM_ID
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PlaybackProgressInfo {
-  public static final String SERIALIZED_NAME_CAN_SEEK = "CanSeek";
-  @SerializedName(SERIALIZED_NAME_CAN_SEEK)
+  public static final String JSON_PROPERTY_CAN_SEEK = "CanSeek";
   @javax.annotation.Nullable
   private Boolean canSeek;
 
-  public static final String SERIALIZED_NAME_ITEM = "Item";
-  @SerializedName(SERIALIZED_NAME_ITEM)
-  @javax.annotation.Nullable
-  private BaseItemDto item;
+  public static final String JSON_PROPERTY_ITEM = "Item";
+  private JsonNullable<BaseItemDto> item = JsonNullable.<BaseItemDto>undefined();
 
-  public static final String SERIALIZED_NAME_ITEM_ID = "ItemId";
-  @SerializedName(SERIALIZED_NAME_ITEM_ID)
+  public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
   @javax.annotation.Nullable
   private UUID itemId;
 
-  public static final String SERIALIZED_NAME_SESSION_ID = "SessionId";
-  @SerializedName(SERIALIZED_NAME_SESSION_ID)
-  @javax.annotation.Nullable
-  private String sessionId;
+  public static final String JSON_PROPERTY_SESSION_ID = "SessionId";
+  private JsonNullable<String> sessionId = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_MEDIA_SOURCE_ID = "MediaSourceId";
-  @SerializedName(SERIALIZED_NAME_MEDIA_SOURCE_ID)
-  @javax.annotation.Nullable
-  private String mediaSourceId;
+  public static final String JSON_PROPERTY_MEDIA_SOURCE_ID = "MediaSourceId";
+  private JsonNullable<String> mediaSourceId = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_AUDIO_STREAM_INDEX = "AudioStreamIndex";
-  @SerializedName(SERIALIZED_NAME_AUDIO_STREAM_INDEX)
-  @javax.annotation.Nullable
-  private Integer audioStreamIndex;
+  public static final String JSON_PROPERTY_AUDIO_STREAM_INDEX = "AudioStreamIndex";
+  private JsonNullable<Integer> audioStreamIndex = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_SUBTITLE_STREAM_INDEX = "SubtitleStreamIndex";
-  @SerializedName(SERIALIZED_NAME_SUBTITLE_STREAM_INDEX)
-  @javax.annotation.Nullable
-  private Integer subtitleStreamIndex;
+  public static final String JSON_PROPERTY_SUBTITLE_STREAM_INDEX = "SubtitleStreamIndex";
+  private JsonNullable<Integer> subtitleStreamIndex = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_IS_PAUSED = "IsPaused";
-  @SerializedName(SERIALIZED_NAME_IS_PAUSED)
+  public static final String JSON_PROPERTY_IS_PAUSED = "IsPaused";
   @javax.annotation.Nullable
   private Boolean isPaused;
 
-  public static final String SERIALIZED_NAME_IS_MUTED = "IsMuted";
-  @SerializedName(SERIALIZED_NAME_IS_MUTED)
+  public static final String JSON_PROPERTY_IS_MUTED = "IsMuted";
   @javax.annotation.Nullable
   private Boolean isMuted;
 
-  public static final String SERIALIZED_NAME_POSITION_TICKS = "PositionTicks";
-  @SerializedName(SERIALIZED_NAME_POSITION_TICKS)
-  @javax.annotation.Nullable
-  private Long positionTicks;
+  public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
+  private JsonNullable<Long> positionTicks = JsonNullable.<Long>undefined();
 
-  public static final String SERIALIZED_NAME_PLAYBACK_START_TIME_TICKS = "PlaybackStartTimeTicks";
-  @SerializedName(SERIALIZED_NAME_PLAYBACK_START_TIME_TICKS)
-  @javax.annotation.Nullable
-  private Long playbackStartTimeTicks;
+  public static final String JSON_PROPERTY_PLAYBACK_START_TIME_TICKS = "PlaybackStartTimeTicks";
+  private JsonNullable<Long> playbackStartTimeTicks = JsonNullable.<Long>undefined();
 
-  public static final String SERIALIZED_NAME_VOLUME_LEVEL = "VolumeLevel";
-  @SerializedName(SERIALIZED_NAME_VOLUME_LEVEL)
-  @javax.annotation.Nullable
-  private Integer volumeLevel;
+  public static final String JSON_PROPERTY_VOLUME_LEVEL = "VolumeLevel";
+  private JsonNullable<Integer> volumeLevel = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_BRIGHTNESS = "Brightness";
-  @SerializedName(SERIALIZED_NAME_BRIGHTNESS)
-  @javax.annotation.Nullable
-  private Integer brightness;
+  public static final String JSON_PROPERTY_BRIGHTNESS = "Brightness";
+  private JsonNullable<Integer> brightness = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_ASPECT_RATIO = "AspectRatio";
-  @SerializedName(SERIALIZED_NAME_ASPECT_RATIO)
-  @javax.annotation.Nullable
-  private String aspectRatio;
+  public static final String JSON_PROPERTY_ASPECT_RATIO = "AspectRatio";
+  private JsonNullable<String> aspectRatio = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PLAY_METHOD = "PlayMethod";
-  @SerializedName(SERIALIZED_NAME_PLAY_METHOD)
+  public static final String JSON_PROPERTY_PLAY_METHOD = "PlayMethod";
   @javax.annotation.Nullable
   private PlayMethod playMethod;
 
-  public static final String SERIALIZED_NAME_LIVE_STREAM_ID = "LiveStreamId";
-  @SerializedName(SERIALIZED_NAME_LIVE_STREAM_ID)
-  @javax.annotation.Nullable
-  private String liveStreamId;
+  public static final String JSON_PROPERTY_LIVE_STREAM_ID = "LiveStreamId";
+  private JsonNullable<String> liveStreamId = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PLAY_SESSION_ID = "PlaySessionId";
-  @SerializedName(SERIALIZED_NAME_PLAY_SESSION_ID)
-  @javax.annotation.Nullable
-  private String playSessionId;
+  public static final String JSON_PROPERTY_PLAY_SESSION_ID = "PlaySessionId";
+  private JsonNullable<String> playSessionId = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_REPEAT_MODE = "RepeatMode";
-  @SerializedName(SERIALIZED_NAME_REPEAT_MODE)
+  public static final String JSON_PROPERTY_REPEAT_MODE = "RepeatMode";
   @javax.annotation.Nullable
   private RepeatMode repeatMode;
 
-  public static final String SERIALIZED_NAME_PLAYBACK_ORDER = "PlaybackOrder";
-  @SerializedName(SERIALIZED_NAME_PLAYBACK_ORDER)
+  public static final String JSON_PROPERTY_PLAYBACK_ORDER = "PlaybackOrder";
   @javax.annotation.Nullable
   private PlaybackOrder playbackOrder;
 
-  public static final String SERIALIZED_NAME_NOW_PLAYING_QUEUE = "NowPlayingQueue";
-  @SerializedName(SERIALIZED_NAME_NOW_PLAYING_QUEUE)
-  @javax.annotation.Nullable
-  private List<QueueItem> nowPlayingQueue;
+  public static final String JSON_PROPERTY_NOW_PLAYING_QUEUE = "NowPlayingQueue";
+  private JsonNullable<List<QueueItem>> nowPlayingQueue = JsonNullable.<List<QueueItem>>undefined();
 
-  public static final String SERIALIZED_NAME_PLAYLIST_ITEM_ID = "PlaylistItemId";
-  @SerializedName(SERIALIZED_NAME_PLAYLIST_ITEM_ID)
-  @javax.annotation.Nullable
-  private String playlistItemId;
+  public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
+  private JsonNullable<String> playlistItemId = JsonNullable.<String>undefined();
 
-  public PlaybackProgressInfo() {
+  public PlaybackProgressInfo() { 
   }
 
   public PlaybackProgressInfo canSeek(@javax.annotation.Nullable Boolean canSeek) {
@@ -177,17 +152,22 @@ public class PlaybackProgressInfo {
    * @return canSeek
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CAN_SEEK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getCanSeek() {
     return canSeek;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CAN_SEEK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCanSeek(@javax.annotation.Nullable Boolean canSeek) {
     this.canSeek = canSeek;
   }
 
 
   public PlaybackProgressInfo item(@javax.annotation.Nullable BaseItemDto item) {
-    this.item = item;
+    this.item = JsonNullable.<BaseItemDto>of(item);
     return this;
   }
 
@@ -196,12 +176,25 @@ public class PlaybackProgressInfo {
    * @return item
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public BaseItemDto getItem() {
+        return item.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ITEM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<BaseItemDto> getItem_JsonNullable() {
     return item;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ITEM)
+  public void setItem_JsonNullable(JsonNullable<BaseItemDto> item) {
+    this.item = item;
   }
 
   public void setItem(@javax.annotation.Nullable BaseItemDto item) {
-    this.item = item;
+    this.item = JsonNullable.<BaseItemDto>of(item);
   }
 
 
@@ -215,17 +208,22 @@ public class PlaybackProgressInfo {
    * @return itemId
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getItemId() {
     return itemId;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemId(@javax.annotation.Nullable UUID itemId) {
     this.itemId = itemId;
   }
 
 
   public PlaybackProgressInfo sessionId(@javax.annotation.Nullable String sessionId) {
-    this.sessionId = sessionId;
+    this.sessionId = JsonNullable.<String>of(sessionId);
     return this;
   }
 
@@ -234,17 +232,30 @@ public class PlaybackProgressInfo {
    * @return sessionId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getSessionId() {
+        return sessionId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SESSION_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getSessionId_JsonNullable() {
     return sessionId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SESSION_ID)
+  public void setSessionId_JsonNullable(JsonNullable<String> sessionId) {
+    this.sessionId = sessionId;
   }
 
   public void setSessionId(@javax.annotation.Nullable String sessionId) {
-    this.sessionId = sessionId;
+    this.sessionId = JsonNullable.<String>of(sessionId);
   }
 
 
   public PlaybackProgressInfo mediaSourceId(@javax.annotation.Nullable String mediaSourceId) {
-    this.mediaSourceId = mediaSourceId;
+    this.mediaSourceId = JsonNullable.<String>of(mediaSourceId);
     return this;
   }
 
@@ -253,17 +264,30 @@ public class PlaybackProgressInfo {
    * @return mediaSourceId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getMediaSourceId() {
+        return mediaSourceId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getMediaSourceId_JsonNullable() {
     return mediaSourceId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
+  public void setMediaSourceId_JsonNullable(JsonNullable<String> mediaSourceId) {
+    this.mediaSourceId = mediaSourceId;
   }
 
   public void setMediaSourceId(@javax.annotation.Nullable String mediaSourceId) {
-    this.mediaSourceId = mediaSourceId;
+    this.mediaSourceId = JsonNullable.<String>of(mediaSourceId);
   }
 
 
   public PlaybackProgressInfo audioStreamIndex(@javax.annotation.Nullable Integer audioStreamIndex) {
-    this.audioStreamIndex = audioStreamIndex;
+    this.audioStreamIndex = JsonNullable.<Integer>of(audioStreamIndex);
     return this;
   }
 
@@ -272,17 +296,30 @@ public class PlaybackProgressInfo {
    * @return audioStreamIndex
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getAudioStreamIndex() {
+        return audioStreamIndex.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getAudioStreamIndex_JsonNullable() {
     return audioStreamIndex;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
+  public void setAudioStreamIndex_JsonNullable(JsonNullable<Integer> audioStreamIndex) {
+    this.audioStreamIndex = audioStreamIndex;
   }
 
   public void setAudioStreamIndex(@javax.annotation.Nullable Integer audioStreamIndex) {
-    this.audioStreamIndex = audioStreamIndex;
+    this.audioStreamIndex = JsonNullable.<Integer>of(audioStreamIndex);
   }
 
 
   public PlaybackProgressInfo subtitleStreamIndex(@javax.annotation.Nullable Integer subtitleStreamIndex) {
-    this.subtitleStreamIndex = subtitleStreamIndex;
+    this.subtitleStreamIndex = JsonNullable.<Integer>of(subtitleStreamIndex);
     return this;
   }
 
@@ -291,12 +328,25 @@ public class PlaybackProgressInfo {
    * @return subtitleStreamIndex
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getSubtitleStreamIndex() {
+        return subtitleStreamIndex.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getSubtitleStreamIndex_JsonNullable() {
     return subtitleStreamIndex;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
+  public void setSubtitleStreamIndex_JsonNullable(JsonNullable<Integer> subtitleStreamIndex) {
+    this.subtitleStreamIndex = subtitleStreamIndex;
   }
 
   public void setSubtitleStreamIndex(@javax.annotation.Nullable Integer subtitleStreamIndex) {
-    this.subtitleStreamIndex = subtitleStreamIndex;
+    this.subtitleStreamIndex = JsonNullable.<Integer>of(subtitleStreamIndex);
   }
 
 
@@ -310,10 +360,15 @@ public class PlaybackProgressInfo {
    * @return isPaused
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_PAUSED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsPaused() {
     return isPaused;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_PAUSED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsPaused(@javax.annotation.Nullable Boolean isPaused) {
     this.isPaused = isPaused;
   }
@@ -329,17 +384,22 @@ public class PlaybackProgressInfo {
    * @return isMuted
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_MUTED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsMuted() {
     return isMuted;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_MUTED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsMuted(@javax.annotation.Nullable Boolean isMuted) {
     this.isMuted = isMuted;
   }
 
 
   public PlaybackProgressInfo positionTicks(@javax.annotation.Nullable Long positionTicks) {
-    this.positionTicks = positionTicks;
+    this.positionTicks = JsonNullable.<Long>of(positionTicks);
     return this;
   }
 
@@ -348,17 +408,30 @@ public class PlaybackProgressInfo {
    * @return positionTicks
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Long getPositionTicks() {
+        return positionTicks.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Long> getPositionTicks_JsonNullable() {
     return positionTicks;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+  public void setPositionTicks_JsonNullable(JsonNullable<Long> positionTicks) {
+    this.positionTicks = positionTicks;
   }
 
   public void setPositionTicks(@javax.annotation.Nullable Long positionTicks) {
-    this.positionTicks = positionTicks;
+    this.positionTicks = JsonNullable.<Long>of(positionTicks);
   }
 
 
   public PlaybackProgressInfo playbackStartTimeTicks(@javax.annotation.Nullable Long playbackStartTimeTicks) {
-    this.playbackStartTimeTicks = playbackStartTimeTicks;
+    this.playbackStartTimeTicks = JsonNullable.<Long>of(playbackStartTimeTicks);
     return this;
   }
 
@@ -367,17 +440,30 @@ public class PlaybackProgressInfo {
    * @return playbackStartTimeTicks
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Long getPlaybackStartTimeTicks() {
+        return playbackStartTimeTicks.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PLAYBACK_START_TIME_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Long> getPlaybackStartTimeTicks_JsonNullable() {
     return playbackStartTimeTicks;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PLAYBACK_START_TIME_TICKS)
+  public void setPlaybackStartTimeTicks_JsonNullable(JsonNullable<Long> playbackStartTimeTicks) {
+    this.playbackStartTimeTicks = playbackStartTimeTicks;
   }
 
   public void setPlaybackStartTimeTicks(@javax.annotation.Nullable Long playbackStartTimeTicks) {
-    this.playbackStartTimeTicks = playbackStartTimeTicks;
+    this.playbackStartTimeTicks = JsonNullable.<Long>of(playbackStartTimeTicks);
   }
 
 
   public PlaybackProgressInfo volumeLevel(@javax.annotation.Nullable Integer volumeLevel) {
-    this.volumeLevel = volumeLevel;
+    this.volumeLevel = JsonNullable.<Integer>of(volumeLevel);
     return this;
   }
 
@@ -386,17 +472,30 @@ public class PlaybackProgressInfo {
    * @return volumeLevel
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getVolumeLevel() {
+        return volumeLevel.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_VOLUME_LEVEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getVolumeLevel_JsonNullable() {
     return volumeLevel;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VOLUME_LEVEL)
+  public void setVolumeLevel_JsonNullable(JsonNullable<Integer> volumeLevel) {
+    this.volumeLevel = volumeLevel;
   }
 
   public void setVolumeLevel(@javax.annotation.Nullable Integer volumeLevel) {
-    this.volumeLevel = volumeLevel;
+    this.volumeLevel = JsonNullable.<Integer>of(volumeLevel);
   }
 
 
   public PlaybackProgressInfo brightness(@javax.annotation.Nullable Integer brightness) {
-    this.brightness = brightness;
+    this.brightness = JsonNullable.<Integer>of(brightness);
     return this;
   }
 
@@ -405,17 +504,30 @@ public class PlaybackProgressInfo {
    * @return brightness
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getBrightness() {
+        return brightness.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_BRIGHTNESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getBrightness_JsonNullable() {
     return brightness;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_BRIGHTNESS)
+  public void setBrightness_JsonNullable(JsonNullable<Integer> brightness) {
+    this.brightness = brightness;
   }
 
   public void setBrightness(@javax.annotation.Nullable Integer brightness) {
-    this.brightness = brightness;
+    this.brightness = JsonNullable.<Integer>of(brightness);
   }
 
 
   public PlaybackProgressInfo aspectRatio(@javax.annotation.Nullable String aspectRatio) {
-    this.aspectRatio = aspectRatio;
+    this.aspectRatio = JsonNullable.<String>of(aspectRatio);
     return this;
   }
 
@@ -424,12 +536,25 @@ public class PlaybackProgressInfo {
    * @return aspectRatio
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getAspectRatio() {
+        return aspectRatio.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ASPECT_RATIO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getAspectRatio_JsonNullable() {
     return aspectRatio;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ASPECT_RATIO)
+  public void setAspectRatio_JsonNullable(JsonNullable<String> aspectRatio) {
+    this.aspectRatio = aspectRatio;
   }
 
   public void setAspectRatio(@javax.annotation.Nullable String aspectRatio) {
-    this.aspectRatio = aspectRatio;
+    this.aspectRatio = JsonNullable.<String>of(aspectRatio);
   }
 
 
@@ -443,17 +568,22 @@ public class PlaybackProgressInfo {
    * @return playMethod
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLAY_METHOD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PlayMethod getPlayMethod() {
     return playMethod;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PLAY_METHOD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlayMethod(@javax.annotation.Nullable PlayMethod playMethod) {
     this.playMethod = playMethod;
   }
 
 
   public PlaybackProgressInfo liveStreamId(@javax.annotation.Nullable String liveStreamId) {
-    this.liveStreamId = liveStreamId;
+    this.liveStreamId = JsonNullable.<String>of(liveStreamId);
     return this;
   }
 
@@ -462,17 +592,30 @@ public class PlaybackProgressInfo {
    * @return liveStreamId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getLiveStreamId() {
+        return liveStreamId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getLiveStreamId_JsonNullable() {
     return liveStreamId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
+  public void setLiveStreamId_JsonNullable(JsonNullable<String> liveStreamId) {
+    this.liveStreamId = liveStreamId;
   }
 
   public void setLiveStreamId(@javax.annotation.Nullable String liveStreamId) {
-    this.liveStreamId = liveStreamId;
+    this.liveStreamId = JsonNullable.<String>of(liveStreamId);
   }
 
 
   public PlaybackProgressInfo playSessionId(@javax.annotation.Nullable String playSessionId) {
-    this.playSessionId = playSessionId;
+    this.playSessionId = JsonNullable.<String>of(playSessionId);
     return this;
   }
 
@@ -481,12 +624,25 @@ public class PlaybackProgressInfo {
    * @return playSessionId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPlaySessionId() {
+        return playSessionId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPlaySessionId_JsonNullable() {
     return playSessionId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
+  public void setPlaySessionId_JsonNullable(JsonNullable<String> playSessionId) {
+    this.playSessionId = playSessionId;
   }
 
   public void setPlaySessionId(@javax.annotation.Nullable String playSessionId) {
-    this.playSessionId = playSessionId;
+    this.playSessionId = JsonNullable.<String>of(playSessionId);
   }
 
 
@@ -500,10 +656,15 @@ public class PlaybackProgressInfo {
    * @return repeatMode
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REPEAT_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public RepeatMode getRepeatMode() {
     return repeatMode;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REPEAT_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRepeatMode(@javax.annotation.Nullable RepeatMode repeatMode) {
     this.repeatMode = repeatMode;
   }
@@ -519,25 +680,34 @@ public class PlaybackProgressInfo {
    * @return playbackOrder
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLAYBACK_ORDER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PlaybackOrder getPlaybackOrder() {
     return playbackOrder;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PLAYBACK_ORDER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlaybackOrder(@javax.annotation.Nullable PlaybackOrder playbackOrder) {
     this.playbackOrder = playbackOrder;
   }
 
 
   public PlaybackProgressInfo nowPlayingQueue(@javax.annotation.Nullable List<QueueItem> nowPlayingQueue) {
-    this.nowPlayingQueue = nowPlayingQueue;
+    this.nowPlayingQueue = JsonNullable.<List<QueueItem>>of(nowPlayingQueue);
     return this;
   }
 
   public PlaybackProgressInfo addNowPlayingQueueItem(QueueItem nowPlayingQueueItem) {
-    if (this.nowPlayingQueue == null) {
-      this.nowPlayingQueue = new ArrayList<>();
+    if (this.nowPlayingQueue == null || !this.nowPlayingQueue.isPresent()) {
+      this.nowPlayingQueue = JsonNullable.<List<QueueItem>>of(new ArrayList<>());
     }
-    this.nowPlayingQueue.add(nowPlayingQueueItem);
+    try {
+      this.nowPlayingQueue.get().add(nowPlayingQueueItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -546,17 +716,30 @@ public class PlaybackProgressInfo {
    * @return nowPlayingQueue
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<QueueItem> getNowPlayingQueue() {
+        return nowPlayingQueue.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<QueueItem>> getNowPlayingQueue_JsonNullable() {
     return nowPlayingQueue;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE)
+  public void setNowPlayingQueue_JsonNullable(JsonNullable<List<QueueItem>> nowPlayingQueue) {
+    this.nowPlayingQueue = nowPlayingQueue;
   }
 
   public void setNowPlayingQueue(@javax.annotation.Nullable List<QueueItem> nowPlayingQueue) {
-    this.nowPlayingQueue = nowPlayingQueue;
+    this.nowPlayingQueue = JsonNullable.<List<QueueItem>>of(nowPlayingQueue);
   }
 
 
   public PlaybackProgressInfo playlistItemId(@javax.annotation.Nullable String playlistItemId) {
-    this.playlistItemId = playlistItemId;
+    this.playlistItemId = JsonNullable.<String>of(playlistItemId);
     return this;
   }
 
@@ -565,16 +748,31 @@ public class PlaybackProgressInfo {
    * @return playlistItemId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPlaylistItemId() {
-    return playlistItemId;
+        return playlistItemId.orElse(null);
   }
 
-  public void setPlaylistItemId(@javax.annotation.Nullable String playlistItemId) {
+  @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPlaylistItemId_JsonNullable() {
+    return playlistItemId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+  public void setPlaylistItemId_JsonNullable(JsonNullable<String> playlistItemId) {
     this.playlistItemId = playlistItemId;
   }
 
+  public void setPlaylistItemId(@javax.annotation.Nullable String playlistItemId) {
+    this.playlistItemId = JsonNullable.<String>of(playlistItemId);
+  }
 
 
+  /**
+   * Return true if this PlaybackProgressInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -585,26 +783,26 @@ public class PlaybackProgressInfo {
     }
     PlaybackProgressInfo playbackProgressInfo = (PlaybackProgressInfo) o;
     return Objects.equals(this.canSeek, playbackProgressInfo.canSeek) &&
-        Objects.equals(this.item, playbackProgressInfo.item) &&
+        equalsNullable(this.item, playbackProgressInfo.item) &&
         Objects.equals(this.itemId, playbackProgressInfo.itemId) &&
-        Objects.equals(this.sessionId, playbackProgressInfo.sessionId) &&
-        Objects.equals(this.mediaSourceId, playbackProgressInfo.mediaSourceId) &&
-        Objects.equals(this.audioStreamIndex, playbackProgressInfo.audioStreamIndex) &&
-        Objects.equals(this.subtitleStreamIndex, playbackProgressInfo.subtitleStreamIndex) &&
+        equalsNullable(this.sessionId, playbackProgressInfo.sessionId) &&
+        equalsNullable(this.mediaSourceId, playbackProgressInfo.mediaSourceId) &&
+        equalsNullable(this.audioStreamIndex, playbackProgressInfo.audioStreamIndex) &&
+        equalsNullable(this.subtitleStreamIndex, playbackProgressInfo.subtitleStreamIndex) &&
         Objects.equals(this.isPaused, playbackProgressInfo.isPaused) &&
         Objects.equals(this.isMuted, playbackProgressInfo.isMuted) &&
-        Objects.equals(this.positionTicks, playbackProgressInfo.positionTicks) &&
-        Objects.equals(this.playbackStartTimeTicks, playbackProgressInfo.playbackStartTimeTicks) &&
-        Objects.equals(this.volumeLevel, playbackProgressInfo.volumeLevel) &&
-        Objects.equals(this.brightness, playbackProgressInfo.brightness) &&
-        Objects.equals(this.aspectRatio, playbackProgressInfo.aspectRatio) &&
+        equalsNullable(this.positionTicks, playbackProgressInfo.positionTicks) &&
+        equalsNullable(this.playbackStartTimeTicks, playbackProgressInfo.playbackStartTimeTicks) &&
+        equalsNullable(this.volumeLevel, playbackProgressInfo.volumeLevel) &&
+        equalsNullable(this.brightness, playbackProgressInfo.brightness) &&
+        equalsNullable(this.aspectRatio, playbackProgressInfo.aspectRatio) &&
         Objects.equals(this.playMethod, playbackProgressInfo.playMethod) &&
-        Objects.equals(this.liveStreamId, playbackProgressInfo.liveStreamId) &&
-        Objects.equals(this.playSessionId, playbackProgressInfo.playSessionId) &&
+        equalsNullable(this.liveStreamId, playbackProgressInfo.liveStreamId) &&
+        equalsNullable(this.playSessionId, playbackProgressInfo.playSessionId) &&
         Objects.equals(this.repeatMode, playbackProgressInfo.repeatMode) &&
         Objects.equals(this.playbackOrder, playbackProgressInfo.playbackOrder) &&
-        Objects.equals(this.nowPlayingQueue, playbackProgressInfo.nowPlayingQueue) &&
-        Objects.equals(this.playlistItemId, playbackProgressInfo.playlistItemId);
+        equalsNullable(this.nowPlayingQueue, playbackProgressInfo.nowPlayingQueue) &&
+        equalsNullable(this.playlistItemId, playbackProgressInfo.playlistItemId);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -613,7 +811,7 @@ public class PlaybackProgressInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(canSeek, item, itemId, sessionId, mediaSourceId, audioStreamIndex, subtitleStreamIndex, isPaused, isMuted, positionTicks, playbackStartTimeTicks, volumeLevel, brightness, aspectRatio, playMethod, liveStreamId, playSessionId, repeatMode, playbackOrder, nowPlayingQueue, playlistItemId);
+    return Objects.hash(canSeek, hashCodeNullable(item), itemId, hashCodeNullable(sessionId), hashCodeNullable(mediaSourceId), hashCodeNullable(audioStreamIndex), hashCodeNullable(subtitleStreamIndex), isPaused, isMuted, hashCodeNullable(positionTicks), hashCodeNullable(playbackStartTimeTicks), hashCodeNullable(volumeLevel), hashCodeNullable(brightness), hashCodeNullable(aspectRatio), playMethod, hashCodeNullable(liveStreamId), hashCodeNullable(playSessionId), repeatMode, playbackOrder, hashCodeNullable(nowPlayingQueue), hashCodeNullable(playlistItemId));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -663,160 +861,149 @@ public class PlaybackProgressInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("CanSeek");
-    openapiFields.add("Item");
-    openapiFields.add("ItemId");
-    openapiFields.add("SessionId");
-    openapiFields.add("MediaSourceId");
-    openapiFields.add("AudioStreamIndex");
-    openapiFields.add("SubtitleStreamIndex");
-    openapiFields.add("IsPaused");
-    openapiFields.add("IsMuted");
-    openapiFields.add("PositionTicks");
-    openapiFields.add("PlaybackStartTimeTicks");
-    openapiFields.add("VolumeLevel");
-    openapiFields.add("Brightness");
-    openapiFields.add("AspectRatio");
-    openapiFields.add("PlayMethod");
-    openapiFields.add("LiveStreamId");
-    openapiFields.add("PlaySessionId");
-    openapiFields.add("RepeatMode");
-    openapiFields.add("PlaybackOrder");
-    openapiFields.add("NowPlayingQueue");
-    openapiFields.add("PlaylistItemId");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to PlaybackProgressInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!PlaybackProgressInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in PlaybackProgressInfo is not found in the empty JSON string", PlaybackProgressInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!PlaybackProgressInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `PlaybackProgressInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // validate the optional field `Item`
-      if (jsonObj.get("Item") != null && !jsonObj.get("Item").isJsonNull()) {
-        BaseItemDto.validateJsonElement(jsonObj.get("Item"));
-      }
-      if ((jsonObj.get("ItemId") != null && !jsonObj.get("ItemId").isJsonNull()) && !jsonObj.get("ItemId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ItemId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ItemId").toString()));
-      }
-      if ((jsonObj.get("SessionId") != null && !jsonObj.get("SessionId").isJsonNull()) && !jsonObj.get("SessionId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SessionId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("SessionId").toString()));
-      }
-      if ((jsonObj.get("MediaSourceId") != null && !jsonObj.get("MediaSourceId").isJsonNull()) && !jsonObj.get("MediaSourceId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MediaSourceId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("MediaSourceId").toString()));
-      }
-      if ((jsonObj.get("AspectRatio") != null && !jsonObj.get("AspectRatio").isJsonNull()) && !jsonObj.get("AspectRatio").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `AspectRatio` to be a primitive type in the JSON string but got `%s`", jsonObj.get("AspectRatio").toString()));
-      }
-      // validate the optional field `PlayMethod`
-      if (jsonObj.get("PlayMethod") != null && !jsonObj.get("PlayMethod").isJsonNull()) {
-        PlayMethod.validateJsonElement(jsonObj.get("PlayMethod"));
-      }
-      if ((jsonObj.get("LiveStreamId") != null && !jsonObj.get("LiveStreamId").isJsonNull()) && !jsonObj.get("LiveStreamId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `LiveStreamId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("LiveStreamId").toString()));
-      }
-      if ((jsonObj.get("PlaySessionId") != null && !jsonObj.get("PlaySessionId").isJsonNull()) && !jsonObj.get("PlaySessionId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `PlaySessionId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("PlaySessionId").toString()));
-      }
-      // validate the optional field `RepeatMode`
-      if (jsonObj.get("RepeatMode") != null && !jsonObj.get("RepeatMode").isJsonNull()) {
-        RepeatMode.validateJsonElement(jsonObj.get("RepeatMode"));
-      }
-      // validate the optional field `PlaybackOrder`
-      if (jsonObj.get("PlaybackOrder") != null && !jsonObj.get("PlaybackOrder").isJsonNull()) {
-        PlaybackOrder.validateJsonElement(jsonObj.get("PlaybackOrder"));
-      }
-      if (jsonObj.get("NowPlayingQueue") != null && !jsonObj.get("NowPlayingQueue").isJsonNull()) {
-        JsonArray jsonArraynowPlayingQueue = jsonObj.getAsJsonArray("NowPlayingQueue");
-        if (jsonArraynowPlayingQueue != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("NowPlayingQueue").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `NowPlayingQueue` to be an array in the JSON string but got `%s`", jsonObj.get("NowPlayingQueue").toString()));
-          }
-
-          // validate the optional field `NowPlayingQueue` (array)
-          for (int i = 0; i < jsonArraynowPlayingQueue.size(); i++) {
-            QueueItem.validateJsonElement(jsonArraynowPlayingQueue.get(i));
-          };
-        }
-      }
-      if ((jsonObj.get("PlaylistItemId") != null && !jsonObj.get("PlaylistItemId").isJsonNull()) && !jsonObj.get("PlaylistItemId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `PlaylistItemId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("PlaylistItemId").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!PlaybackProgressInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'PlaybackProgressInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<PlaybackProgressInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(PlaybackProgressInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<PlaybackProgressInfo>() {
-           @Override
-           public void write(JsonWriter out, PlaybackProgressInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public PlaybackProgressInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of PlaybackProgressInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of PlaybackProgressInfo
-   * @throws IOException if the JSON string is invalid with respect to PlaybackProgressInfo
-   */
-  public static PlaybackProgressInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, PlaybackProgressInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of PlaybackProgressInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `CanSeek` to the URL query string
+    if (getCanSeek() != null) {
+      joiner.add(String.format("%sCanSeek%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCanSeek()))));
+    }
+
+    // add `Item` to the URL query string
+    if (getItem() != null) {
+      joiner.add(getItem().toUrlQueryString(prefix + "Item" + suffix));
+    }
+
+    // add `ItemId` to the URL query string
+    if (getItemId() != null) {
+      joiner.add(String.format("%sItemId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
+    }
+
+    // add `SessionId` to the URL query string
+    if (getSessionId() != null) {
+      joiner.add(String.format("%sSessionId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSessionId()))));
+    }
+
+    // add `MediaSourceId` to the URL query string
+    if (getMediaSourceId() != null) {
+      joiner.add(String.format("%sMediaSourceId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMediaSourceId()))));
+    }
+
+    // add `AudioStreamIndex` to the URL query string
+    if (getAudioStreamIndex() != null) {
+      joiner.add(String.format("%sAudioStreamIndex%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAudioStreamIndex()))));
+    }
+
+    // add `SubtitleStreamIndex` to the URL query string
+    if (getSubtitleStreamIndex() != null) {
+      joiner.add(String.format("%sSubtitleStreamIndex%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSubtitleStreamIndex()))));
+    }
+
+    // add `IsPaused` to the URL query string
+    if (getIsPaused() != null) {
+      joiner.add(String.format("%sIsPaused%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsPaused()))));
+    }
+
+    // add `IsMuted` to the URL query string
+    if (getIsMuted() != null) {
+      joiner.add(String.format("%sIsMuted%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsMuted()))));
+    }
+
+    // add `PositionTicks` to the URL query string
+    if (getPositionTicks() != null) {
+      joiner.add(String.format("%sPositionTicks%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
+    }
+
+    // add `PlaybackStartTimeTicks` to the URL query string
+    if (getPlaybackStartTimeTicks() != null) {
+      joiner.add(String.format("%sPlaybackStartTimeTicks%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlaybackStartTimeTicks()))));
+    }
+
+    // add `VolumeLevel` to the URL query string
+    if (getVolumeLevel() != null) {
+      joiner.add(String.format("%sVolumeLevel%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVolumeLevel()))));
+    }
+
+    // add `Brightness` to the URL query string
+    if (getBrightness() != null) {
+      joiner.add(String.format("%sBrightness%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBrightness()))));
+    }
+
+    // add `AspectRatio` to the URL query string
+    if (getAspectRatio() != null) {
+      joiner.add(String.format("%sAspectRatio%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAspectRatio()))));
+    }
+
+    // add `PlayMethod` to the URL query string
+    if (getPlayMethod() != null) {
+      joiner.add(String.format("%sPlayMethod%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlayMethod()))));
+    }
+
+    // add `LiveStreamId` to the URL query string
+    if (getLiveStreamId() != null) {
+      joiner.add(String.format("%sLiveStreamId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLiveStreamId()))));
+    }
+
+    // add `PlaySessionId` to the URL query string
+    if (getPlaySessionId() != null) {
+      joiner.add(String.format("%sPlaySessionId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlaySessionId()))));
+    }
+
+    // add `RepeatMode` to the URL query string
+    if (getRepeatMode() != null) {
+      joiner.add(String.format("%sRepeatMode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRepeatMode()))));
+    }
+
+    // add `PlaybackOrder` to the URL query string
+    if (getPlaybackOrder() != null) {
+      joiner.add(String.format("%sPlaybackOrder%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlaybackOrder()))));
+    }
+
+    // add `NowPlayingQueue` to the URL query string
+    if (getNowPlayingQueue() != null) {
+      for (int i = 0; i < getNowPlayingQueue().size(); i++) {
+        if (getNowPlayingQueue().get(i) != null) {
+          joiner.add(getNowPlayingQueue().get(i).toUrlQueryString(String.format("%sNowPlayingQueue%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `PlaylistItemId` to the URL query string
+    if (getPlaylistItemId() != null) {
+      joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
+    }
+
+    return joiner.toString();
   }
 }
 

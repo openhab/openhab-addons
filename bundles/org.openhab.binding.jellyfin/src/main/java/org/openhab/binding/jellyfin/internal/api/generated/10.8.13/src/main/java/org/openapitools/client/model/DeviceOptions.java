@@ -13,66 +13,55 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * An entity representing custom options for a device.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  DeviceOptions.JSON_PROPERTY_ID,
+  DeviceOptions.JSON_PROPERTY_DEVICE_ID,
+  DeviceOptions.JSON_PROPERTY_CUSTOM_NAME
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class DeviceOptions {
-  public static final String SERIALIZED_NAME_ID = "Id";
-  @SerializedName(SERIALIZED_NAME_ID)
+  public static final String JSON_PROPERTY_ID = "Id";
   @javax.annotation.Nullable
   private Integer id;
 
-  public static final String SERIALIZED_NAME_DEVICE_ID = "DeviceId";
-  @SerializedName(SERIALIZED_NAME_DEVICE_ID)
+  public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
   @javax.annotation.Nullable
   private String deviceId;
 
-  public static final String SERIALIZED_NAME_CUSTOM_NAME = "CustomName";
-  @SerializedName(SERIALIZED_NAME_CUSTOM_NAME)
-  @javax.annotation.Nullable
-  private String customName;
+  public static final String JSON_PROPERTY_CUSTOM_NAME = "CustomName";
+  private JsonNullable<String> customName = JsonNullable.<String>undefined();
 
-  public DeviceOptions() {
+  public DeviceOptions() { 
   }
 
+  @JsonCreator
   public DeviceOptions(
-     Integer id
+    @JsonProperty(JSON_PROPERTY_ID) Integer id
   ) {
-    this();
+  this();
     this.id = id;
   }
 
@@ -81,9 +70,12 @@ public class DeviceOptions {
    * @return id
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getId() {
     return id;
   }
+
 
 
 
@@ -97,17 +89,22 @@ public class DeviceOptions {
    * @return deviceId
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DEVICE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDeviceId() {
     return deviceId;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DEVICE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDeviceId(@javax.annotation.Nullable String deviceId) {
     this.deviceId = deviceId;
   }
 
 
   public DeviceOptions customName(@javax.annotation.Nullable String customName) {
-    this.customName = customName;
+    this.customName = JsonNullable.<String>of(customName);
     return this;
   }
 
@@ -116,16 +113,31 @@ public class DeviceOptions {
    * @return customName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getCustomName() {
-    return customName;
+        return customName.orElse(null);
   }
 
-  public void setCustomName(@javax.annotation.Nullable String customName) {
+  @JsonProperty(JSON_PROPERTY_CUSTOM_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getCustomName_JsonNullable() {
+    return customName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CUSTOM_NAME)
+  public void setCustomName_JsonNullable(JsonNullable<String> customName) {
     this.customName = customName;
   }
 
+  public void setCustomName(@javax.annotation.Nullable String customName) {
+    this.customName = JsonNullable.<String>of(customName);
+  }
 
 
+  /**
+   * Return true if this DeviceOptions object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -137,7 +149,7 @@ public class DeviceOptions {
     DeviceOptions deviceOptions = (DeviceOptions) o;
     return Objects.equals(this.id, deviceOptions.id) &&
         Objects.equals(this.deviceId, deviceOptions.deviceId) &&
-        Objects.equals(this.customName, deviceOptions.customName);
+        equalsNullable(this.customName, deviceOptions.customName);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -146,7 +158,7 @@ public class DeviceOptions {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, deviceId, customName);
+    return Objects.hash(id, deviceId, hashCodeNullable(customName));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -178,97 +190,54 @@ public class DeviceOptions {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Id");
-    openapiFields.add("DeviceId");
-    openapiFields.add("CustomName");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to DeviceOptions
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!DeviceOptions.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in DeviceOptions is not found in the empty JSON string", DeviceOptions.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!DeviceOptions.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `DeviceOptions` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("DeviceId") != null && !jsonObj.get("DeviceId").isJsonNull()) && !jsonObj.get("DeviceId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `DeviceId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("DeviceId").toString()));
-      }
-      if ((jsonObj.get("CustomName") != null && !jsonObj.get("CustomName").isJsonNull()) && !jsonObj.get("CustomName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `CustomName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("CustomName").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!DeviceOptions.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'DeviceOptions' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<DeviceOptions> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(DeviceOptions.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<DeviceOptions>() {
-           @Override
-           public void write(JsonWriter out, DeviceOptions value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public DeviceOptions read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of DeviceOptions given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of DeviceOptions
-   * @throws IOException if the JSON string is invalid with respect to DeviceOptions
-   */
-  public static DeviceOptions fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, DeviceOptions.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of DeviceOptions to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+    }
+
+    // add `DeviceId` to the URL query string
+    if (getDeviceId() != null) {
+      joiner.add(String.format("%sDeviceId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDeviceId()))));
+    }
+
+    // add `CustomName` to the URL query string
+    if (getCustomName() != null) {
+      joiner.add(String.format("%sCustomName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCustomName()))));
+    }
+
+    return joiner.toString();
   }
 }
 

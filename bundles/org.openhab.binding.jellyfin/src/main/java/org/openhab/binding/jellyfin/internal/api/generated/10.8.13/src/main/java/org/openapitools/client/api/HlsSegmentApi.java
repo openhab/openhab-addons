@@ -10,796 +10,553 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import java.io.File;
 import org.openapitools.client.model.ProblemDetails;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class HlsSegmentApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public HlsSegmentApi() {
-        this(Configuration.getDefaultApiClient());
+  public HlsSegmentApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public HlsSegmentApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
     }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
 
-    public HlsSegmentApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
+  /**
+   * Gets the specified audio segment for an audio item.
+   * 
+   * @param itemId The item id. (required)
+   * @param segmentId The segment id. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getHlsAudioSegmentLegacyAac(String itemId, String segmentId) throws ApiException {
+    ApiResponse<File> localVarResponse = getHlsAudioSegmentLegacyAacWithHttpInfo(itemId, segmentId);
+    return localVarResponse.getData();
+  }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
-    }
-
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
-
-    public int getHostIndex() {
-        return localHostIndex;
-    }
-
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
-    }
-
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for getHlsAudioSegmentLegacyAac
-     * @param itemId The item id. (required)
-     * @param segmentId The segment id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Hls audio segment returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getHlsAudioSegmentLegacyAacCall(String itemId, String segmentId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Gets the specified audio segment for an audio item.
+   * 
+   * @param itemId The item id. (required)
+   * @param segmentId The segment id. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getHlsAudioSegmentLegacyAacWithHttpInfo(String itemId, String segmentId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getHlsAudioSegmentLegacyAacRequestBuilder(itemId, segmentId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getHlsAudioSegmentLegacyAac", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = null;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/Audio/{itemId}/hls/{segmentId}/stream.aac"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "segmentId" + "}", localVarApiClient.escapeString(segmentId.toString()));
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "audio/*"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+  private HttpRequest.Builder getHlsAudioSegmentLegacyAacRequestBuilder(String itemId, String segmentId) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getHlsAudioSegmentLegacyAac");
+    }
+    // verify the required parameter 'segmentId' is set
+    if (segmentId == null) {
+      throw new ApiException(400, "Missing the required parameter 'segmentId' when calling getHlsAudioSegmentLegacyAac");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getHlsAudioSegmentLegacyAacValidateBeforeCall(String itemId, String segmentId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getHlsAudioSegmentLegacyAac(Async)");
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Audio/{itemId}/hls/{segmentId}/stream.aac"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{segmentId}", ApiClient.urlEncode(segmentId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "audio/*");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets the specified audio segment for an audio item.
+   * 
+   * @param itemId The item id. (required)
+   * @param segmentId The segment id. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getHlsAudioSegmentLegacyMp3(String itemId, String segmentId) throws ApiException {
+    ApiResponse<File> localVarResponse = getHlsAudioSegmentLegacyMp3WithHttpInfo(itemId, segmentId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets the specified audio segment for an audio item.
+   * 
+   * @param itemId The item id. (required)
+   * @param segmentId The segment id. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getHlsAudioSegmentLegacyMp3WithHttpInfo(String itemId, String segmentId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getHlsAudioSegmentLegacyMp3RequestBuilder(itemId, segmentId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getHlsAudioSegmentLegacyMp3", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        // verify the required parameter 'segmentId' is set
-        if (segmentId == null) {
-            throw new ApiException("Missing the required parameter 'segmentId' when calling getHlsAudioSegmentLegacyAac(Async)");
-        }
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        return getHlsAudioSegmentLegacyAacCall(itemId, segmentId, _callback);
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
+  private HttpRequest.Builder getHlsAudioSegmentLegacyMp3RequestBuilder(String itemId, String segmentId) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getHlsAudioSegmentLegacyMp3");
+    }
+    // verify the required parameter 'segmentId' is set
+    if (segmentId == null) {
+      throw new ApiException(400, "Missing the required parameter 'segmentId' when calling getHlsAudioSegmentLegacyMp3");
     }
 
-    /**
-     * Gets the specified audio segment for an audio item.
-     * 
-     * @param itemId The item id. (required)
-     * @param segmentId The segment id. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Hls audio segment returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getHlsAudioSegmentLegacyAac(String itemId, String segmentId) throws ApiException {
-        ApiResponse<File> localVarResp = getHlsAudioSegmentLegacyAacWithHttpInfo(itemId, segmentId);
-        return localVarResp.getData();
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Audio/{itemId}/hls/{segmentId}/stream.mp3"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{segmentId}", ApiClient.urlEncode(segmentId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "audio/*");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets a hls video playlist.
+   * 
+   * @param itemId The video id. (required)
+   * @param playlistId The playlist id. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getHlsPlaylistLegacy(String itemId, String playlistId) throws ApiException {
+    ApiResponse<File> localVarResponse = getHlsPlaylistLegacyWithHttpInfo(itemId, playlistId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets a hls video playlist.
+   * 
+   * @param itemId The video id. (required)
+   * @param playlistId The playlist id. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getHlsPlaylistLegacyWithHttpInfo(String itemId, String playlistId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getHlsPlaylistLegacyRequestBuilder(itemId, playlistId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getHlsPlaylistLegacy", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getHlsPlaylistLegacyRequestBuilder(String itemId, String playlistId) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getHlsPlaylistLegacy");
+    }
+    // verify the required parameter 'playlistId' is set
+    if (playlistId == null) {
+      throw new ApiException(400, "Missing the required parameter 'playlistId' when calling getHlsPlaylistLegacy");
     }
 
-    /**
-     * Gets the specified audio segment for an audio item.
-     * 
-     * @param itemId The item id. (required)
-     * @param segmentId The segment id. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Hls audio segment returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getHlsAudioSegmentLegacyAacWithHttpInfo(String itemId, String segmentId) throws ApiException {
-        okhttp3.Call localVarCall = getHlsAudioSegmentLegacyAacValidateBeforeCall(itemId, segmentId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Videos/{itemId}/hls/{playlistId}/stream.m3u8"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{playlistId}", ApiClient.urlEncode(playlistId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/x-mpegURL");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets a hls video segment.
+   * 
+   * @param itemId The item id. (required)
+   * @param playlistId The playlist id. (required)
+   * @param segmentId The segment id. (required)
+   * @param segmentContainer The segment container. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getHlsVideoSegmentLegacy(String itemId, String playlistId, String segmentId, String segmentContainer) throws ApiException {
+    ApiResponse<File> localVarResponse = getHlsVideoSegmentLegacyWithHttpInfo(itemId, playlistId, segmentId, segmentContainer);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets a hls video segment.
+   * 
+   * @param itemId The item id. (required)
+   * @param playlistId The playlist id. (required)
+   * @param segmentId The segment id. (required)
+   * @param segmentContainer The segment container. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getHlsVideoSegmentLegacyWithHttpInfo(String itemId, String playlistId, String segmentId, String segmentContainer) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getHlsVideoSegmentLegacyRequestBuilder(itemId, playlistId, segmentId, segmentContainer);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getHlsVideoSegmentLegacy", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getHlsVideoSegmentLegacyRequestBuilder(String itemId, String playlistId, String segmentId, String segmentContainer) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getHlsVideoSegmentLegacy");
+    }
+    // verify the required parameter 'playlistId' is set
+    if (playlistId == null) {
+      throw new ApiException(400, "Missing the required parameter 'playlistId' when calling getHlsVideoSegmentLegacy");
+    }
+    // verify the required parameter 'segmentId' is set
+    if (segmentId == null) {
+      throw new ApiException(400, "Missing the required parameter 'segmentId' when calling getHlsVideoSegmentLegacy");
+    }
+    // verify the required parameter 'segmentContainer' is set
+    if (segmentContainer == null) {
+      throw new ApiException(400, "Missing the required parameter 'segmentContainer' when calling getHlsVideoSegmentLegacy");
     }
 
-    /**
-     * Gets the specified audio segment for an audio item. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param segmentId The segment id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Hls audio segment returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getHlsAudioSegmentLegacyAacAsync(String itemId, String segmentId, final ApiCallback<File> _callback) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
-        okhttp3.Call localVarCall = getHlsAudioSegmentLegacyAacValidateBeforeCall(itemId, segmentId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
+    String localVarPath = "/Videos/{itemId}/hls/{playlistId}/{segmentId}.{segmentContainer}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{playlistId}", ApiClient.urlEncode(playlistId.toString()))
+        .replace("{segmentId}", ApiClient.urlEncode(segmentId.toString()))
+        .replace("{segmentContainer}", ApiClient.urlEncode(segmentContainer.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "video/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-    /**
-     * Build call for getHlsAudioSegmentLegacyMp3
-     * @param itemId The item id. (required)
-     * @param segmentId The segment id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Hls audio segment returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getHlsAudioSegmentLegacyMp3Call(String itemId, String segmentId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Audio/{itemId}/hls/{segmentId}/stream.mp3"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "segmentId" + "}", localVarApiClient.escapeString(segmentId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "audio/*"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getHlsAudioSegmentLegacyMp3ValidateBeforeCall(String itemId, String segmentId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getHlsAudioSegmentLegacyMp3(Async)");
+  /**
+   * Stops an active encoding.
+   * 
+   * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (required)
+   * @param playSessionId The play session id. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void stopEncodingProcess(String deviceId, String playSessionId) throws ApiException {
+    stopEncodingProcessWithHttpInfo(deviceId, playSessionId);
+  }
+
+  /**
+   * Stops an active encoding.
+   * 
+   * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (required)
+   * @param playSessionId The play session id. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> stopEncodingProcessWithHttpInfo(String deviceId, String playSessionId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = stopEncodingProcessRequestBuilder(deviceId, playSessionId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("stopEncodingProcess", localVarResponse);
         }
-
-        // verify the required parameter 'segmentId' is set
-        if (segmentId == null) {
-            throw new ApiException("Missing the required parameter 'segmentId' when calling getHlsAudioSegmentLegacyMp3(Async)");
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
         }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        return getHlsAudioSegmentLegacyMp3Call(itemId, segmentId, _callback);
-
+  private HttpRequest.Builder stopEncodingProcessRequestBuilder(String deviceId, String playSessionId) throws ApiException {
+    // verify the required parameter 'deviceId' is set
+    if (deviceId == null) {
+      throw new ApiException(400, "Missing the required parameter 'deviceId' when calling stopEncodingProcess");
+    }
+    // verify the required parameter 'playSessionId' is set
+    if (playSessionId == null) {
+      throw new ApiException(400, "Missing the required parameter 'playSessionId' when calling stopEncodingProcess");
     }
 
-    /**
-     * Gets the specified audio segment for an audio item.
-     * 
-     * @param itemId The item id. (required)
-     * @param segmentId The segment id. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Hls audio segment returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getHlsAudioSegmentLegacyMp3(String itemId, String segmentId) throws ApiException {
-        ApiResponse<File> localVarResp = getHlsAudioSegmentLegacyMp3WithHttpInfo(itemId, segmentId);
-        return localVarResp.getData();
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Videos/ActiveEncodings";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "deviceId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("deviceId", deviceId));
+    localVarQueryParameterBaseName = "playSessionId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("playSessionId", playSessionId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Gets the specified audio segment for an audio item.
-     * 
-     * @param itemId The item id. (required)
-     * @param segmentId The segment id. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Hls audio segment returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getHlsAudioSegmentLegacyMp3WithHttpInfo(String itemId, String segmentId) throws ApiException {
-        okhttp3.Call localVarCall = getHlsAudioSegmentLegacyMp3ValidateBeforeCall(itemId, segmentId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Gets the specified audio segment for an audio item. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param segmentId The segment id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Hls audio segment returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getHlsAudioSegmentLegacyMp3Async(String itemId, String segmentId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getHlsAudioSegmentLegacyMp3ValidateBeforeCall(itemId, segmentId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
-    /**
-     * Build call for getHlsPlaylistLegacy
-     * @param itemId The video id. (required)
-     * @param playlistId The playlist id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Hls video playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getHlsPlaylistLegacyCall(String itemId, String playlistId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
+    return localVarRequestBuilder;
+  }
 
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Videos/{itemId}/hls/{playlistId}/stream.m3u8"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "playlistId" + "}", localVarApiClient.escapeString(playlistId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/x-mpegURL"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getHlsPlaylistLegacyValidateBeforeCall(String itemId, String playlistId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getHlsPlaylistLegacy(Async)");
-        }
-
-        // verify the required parameter 'playlistId' is set
-        if (playlistId == null) {
-            throw new ApiException("Missing the required parameter 'playlistId' when calling getHlsPlaylistLegacy(Async)");
-        }
-
-        return getHlsPlaylistLegacyCall(itemId, playlistId, _callback);
-
-    }
-
-    /**
-     * Gets a hls video playlist.
-     * 
-     * @param itemId The video id. (required)
-     * @param playlistId The playlist id. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Hls video playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getHlsPlaylistLegacy(String itemId, String playlistId) throws ApiException {
-        ApiResponse<File> localVarResp = getHlsPlaylistLegacyWithHttpInfo(itemId, playlistId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets a hls video playlist.
-     * 
-     * @param itemId The video id. (required)
-     * @param playlistId The playlist id. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Hls video playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getHlsPlaylistLegacyWithHttpInfo(String itemId, String playlistId) throws ApiException {
-        okhttp3.Call localVarCall = getHlsPlaylistLegacyValidateBeforeCall(itemId, playlistId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets a hls video playlist. (asynchronously)
-     * 
-     * @param itemId The video id. (required)
-     * @param playlistId The playlist id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Hls video playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getHlsPlaylistLegacyAsync(String itemId, String playlistId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getHlsPlaylistLegacyValidateBeforeCall(itemId, playlistId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getHlsVideoSegmentLegacy
-     * @param itemId The item id. (required)
-     * @param playlistId The playlist id. (required)
-     * @param segmentId The segment id. (required)
-     * @param segmentContainer The segment container. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Hls video segment returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Hls segment not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getHlsVideoSegmentLegacyCall(String itemId, String playlistId, String segmentId, String segmentContainer, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Videos/{itemId}/hls/{playlistId}/{segmentId}.{segmentContainer}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "playlistId" + "}", localVarApiClient.escapeString(playlistId.toString()))
-            .replace("{" + "segmentId" + "}", localVarApiClient.escapeString(segmentId.toString()))
-            .replace("{" + "segmentContainer" + "}", localVarApiClient.escapeString(segmentContainer.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "video/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getHlsVideoSegmentLegacyValidateBeforeCall(String itemId, String playlistId, String segmentId, String segmentContainer, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getHlsVideoSegmentLegacy(Async)");
-        }
-
-        // verify the required parameter 'playlistId' is set
-        if (playlistId == null) {
-            throw new ApiException("Missing the required parameter 'playlistId' when calling getHlsVideoSegmentLegacy(Async)");
-        }
-
-        // verify the required parameter 'segmentId' is set
-        if (segmentId == null) {
-            throw new ApiException("Missing the required parameter 'segmentId' when calling getHlsVideoSegmentLegacy(Async)");
-        }
-
-        // verify the required parameter 'segmentContainer' is set
-        if (segmentContainer == null) {
-            throw new ApiException("Missing the required parameter 'segmentContainer' when calling getHlsVideoSegmentLegacy(Async)");
-        }
-
-        return getHlsVideoSegmentLegacyCall(itemId, playlistId, segmentId, segmentContainer, _callback);
-
-    }
-
-    /**
-     * Gets a hls video segment.
-     * 
-     * @param itemId The item id. (required)
-     * @param playlistId The playlist id. (required)
-     * @param segmentId The segment id. (required)
-     * @param segmentContainer The segment container. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Hls video segment returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Hls segment not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getHlsVideoSegmentLegacy(String itemId, String playlistId, String segmentId, String segmentContainer) throws ApiException {
-        ApiResponse<File> localVarResp = getHlsVideoSegmentLegacyWithHttpInfo(itemId, playlistId, segmentId, segmentContainer);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets a hls video segment.
-     * 
-     * @param itemId The item id. (required)
-     * @param playlistId The playlist id. (required)
-     * @param segmentId The segment id. (required)
-     * @param segmentContainer The segment container. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Hls video segment returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Hls segment not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getHlsVideoSegmentLegacyWithHttpInfo(String itemId, String playlistId, String segmentId, String segmentContainer) throws ApiException {
-        okhttp3.Call localVarCall = getHlsVideoSegmentLegacyValidateBeforeCall(itemId, playlistId, segmentId, segmentContainer, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets a hls video segment. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param playlistId The playlist id. (required)
-     * @param segmentId The segment id. (required)
-     * @param segmentContainer The segment container. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Hls video segment returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Hls segment not found. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getHlsVideoSegmentLegacyAsync(String itemId, String playlistId, String segmentId, String segmentContainer, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getHlsVideoSegmentLegacyValidateBeforeCall(itemId, playlistId, segmentId, segmentContainer, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for stopEncodingProcess
-     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (required)
-     * @param playSessionId The play session id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Encoding stopped successfully. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call stopEncodingProcessCall(String deviceId, String playSessionId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Videos/ActiveEncodings";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (deviceId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("deviceId", deviceId));
-        }
-
-        if (playSessionId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("playSessionId", playSessionId));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call stopEncodingProcessValidateBeforeCall(String deviceId, String playSessionId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'deviceId' is set
-        if (deviceId == null) {
-            throw new ApiException("Missing the required parameter 'deviceId' when calling stopEncodingProcess(Async)");
-        }
-
-        // verify the required parameter 'playSessionId' is set
-        if (playSessionId == null) {
-            throw new ApiException("Missing the required parameter 'playSessionId' when calling stopEncodingProcess(Async)");
-        }
-
-        return stopEncodingProcessCall(deviceId, playSessionId, _callback);
-
-    }
-
-    /**
-     * Stops an active encoding.
-     * 
-     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (required)
-     * @param playSessionId The play session id. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Encoding stopped successfully. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void stopEncodingProcess(String deviceId, String playSessionId) throws ApiException {
-        stopEncodingProcessWithHttpInfo(deviceId, playSessionId);
-    }
-
-    /**
-     * Stops an active encoding.
-     * 
-     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (required)
-     * @param playSessionId The play session id. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Encoding stopped successfully. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> stopEncodingProcessWithHttpInfo(String deviceId, String playSessionId) throws ApiException {
-        okhttp3.Call localVarCall = stopEncodingProcessValidateBeforeCall(deviceId, playSessionId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Stops an active encoding. (asynchronously)
-     * 
-     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (required)
-     * @param playSessionId The play session id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Encoding stopped successfully. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call stopEncodingProcessAsync(String deviceId, String playSessionId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = stopEncodingProcessValidateBeforeCall(deviceId, playSessionId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
 }

@@ -13,78 +13,66 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.UUID;
 import org.openapitools.client.model.SendCommandType;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class SendCommand.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  SendCommand.JSON_PROPERTY_GROUP_ID,
+  SendCommand.JSON_PROPERTY_PLAYLIST_ITEM_ID,
+  SendCommand.JSON_PROPERTY_WHEN,
+  SendCommand.JSON_PROPERTY_POSITION_TICKS,
+  SendCommand.JSON_PROPERTY_COMMAND,
+  SendCommand.JSON_PROPERTY_EMITTED_AT
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class SendCommand {
-  public static final String SERIALIZED_NAME_GROUP_ID = "GroupId";
-  @SerializedName(SERIALIZED_NAME_GROUP_ID)
+  public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
   @javax.annotation.Nullable
   private UUID groupId;
 
-  public static final String SERIALIZED_NAME_PLAYLIST_ITEM_ID = "PlaylistItemId";
-  @SerializedName(SERIALIZED_NAME_PLAYLIST_ITEM_ID)
+  public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
   @javax.annotation.Nullable
   private UUID playlistItemId;
 
-  public static final String SERIALIZED_NAME_WHEN = "When";
-  @SerializedName(SERIALIZED_NAME_WHEN)
+  public static final String JSON_PROPERTY_WHEN = "When";
   @javax.annotation.Nullable
   private OffsetDateTime when;
 
-  public static final String SERIALIZED_NAME_POSITION_TICKS = "PositionTicks";
-  @SerializedName(SERIALIZED_NAME_POSITION_TICKS)
-  @javax.annotation.Nullable
-  private Long positionTicks;
+  public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
+  private JsonNullable<Long> positionTicks = JsonNullable.<Long>undefined();
 
-  public static final String SERIALIZED_NAME_COMMAND = "Command";
-  @SerializedName(SERIALIZED_NAME_COMMAND)
+  public static final String JSON_PROPERTY_COMMAND = "Command";
   @javax.annotation.Nullable
   private SendCommandType command;
 
-  public static final String SERIALIZED_NAME_EMITTED_AT = "EmittedAt";
-  @SerializedName(SERIALIZED_NAME_EMITTED_AT)
+  public static final String JSON_PROPERTY_EMITTED_AT = "EmittedAt";
   @javax.annotation.Nullable
   private OffsetDateTime emittedAt;
 
-  public SendCommand() {
+  public SendCommand() { 
   }
 
   public SendCommand groupId(@javax.annotation.Nullable UUID groupId) {
@@ -97,10 +85,15 @@ public class SendCommand {
    * @return groupId
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_GROUP_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getGroupId() {
     return groupId;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_GROUP_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGroupId(@javax.annotation.Nullable UUID groupId) {
     this.groupId = groupId;
   }
@@ -116,10 +109,15 @@ public class SendCommand {
    * @return playlistItemId
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getPlaylistItemId() {
     return playlistItemId;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlaylistItemId(@javax.annotation.Nullable UUID playlistItemId) {
     this.playlistItemId = playlistItemId;
   }
@@ -135,17 +133,22 @@ public class SendCommand {
    * @return when
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_WHEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getWhen() {
     return when;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_WHEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWhen(@javax.annotation.Nullable OffsetDateTime when) {
     this.when = when;
   }
 
 
   public SendCommand positionTicks(@javax.annotation.Nullable Long positionTicks) {
-    this.positionTicks = positionTicks;
+    this.positionTicks = JsonNullable.<Long>of(positionTicks);
     return this;
   }
 
@@ -154,12 +157,25 @@ public class SendCommand {
    * @return positionTicks
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Long getPositionTicks() {
+        return positionTicks.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Long> getPositionTicks_JsonNullable() {
     return positionTicks;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+  public void setPositionTicks_JsonNullable(JsonNullable<Long> positionTicks) {
+    this.positionTicks = positionTicks;
   }
 
   public void setPositionTicks(@javax.annotation.Nullable Long positionTicks) {
-    this.positionTicks = positionTicks;
+    this.positionTicks = JsonNullable.<Long>of(positionTicks);
   }
 
 
@@ -173,10 +189,15 @@ public class SendCommand {
    * @return command
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_COMMAND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public SendCommandType getCommand() {
     return command;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_COMMAND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCommand(@javax.annotation.Nullable SendCommandType command) {
     this.command = command;
   }
@@ -192,16 +213,23 @@ public class SendCommand {
    * @return emittedAt
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_EMITTED_AT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getEmittedAt() {
     return emittedAt;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_EMITTED_AT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEmittedAt(@javax.annotation.Nullable OffsetDateTime emittedAt) {
     this.emittedAt = emittedAt;
   }
 
 
-
+  /**
+   * Return true if this SendCommand object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -214,7 +242,7 @@ public class SendCommand {
     return Objects.equals(this.groupId, sendCommand.groupId) &&
         Objects.equals(this.playlistItemId, sendCommand.playlistItemId) &&
         Objects.equals(this.when, sendCommand.when) &&
-        Objects.equals(this.positionTicks, sendCommand.positionTicks) &&
+        equalsNullable(this.positionTicks, sendCommand.positionTicks) &&
         Objects.equals(this.command, sendCommand.command) &&
         Objects.equals(this.emittedAt, sendCommand.emittedAt);
   }
@@ -225,7 +253,7 @@ public class SendCommand {
 
   @Override
   public int hashCode() {
-    return Objects.hash(groupId, playlistItemId, when, positionTicks, command, emittedAt);
+    return Objects.hash(groupId, playlistItemId, when, hashCodeNullable(positionTicks), command, emittedAt);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -260,104 +288,69 @@ public class SendCommand {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("GroupId");
-    openapiFields.add("PlaylistItemId");
-    openapiFields.add("When");
-    openapiFields.add("PositionTicks");
-    openapiFields.add("Command");
-    openapiFields.add("EmittedAt");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to SendCommand
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!SendCommand.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in SendCommand is not found in the empty JSON string", SendCommand.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!SendCommand.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `SendCommand` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("GroupId") != null && !jsonObj.get("GroupId").isJsonNull()) && !jsonObj.get("GroupId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `GroupId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("GroupId").toString()));
-      }
-      if ((jsonObj.get("PlaylistItemId") != null && !jsonObj.get("PlaylistItemId").isJsonNull()) && !jsonObj.get("PlaylistItemId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `PlaylistItemId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("PlaylistItemId").toString()));
-      }
-      // validate the optional field `Command`
-      if (jsonObj.get("Command") != null && !jsonObj.get("Command").isJsonNull()) {
-        SendCommandType.validateJsonElement(jsonObj.get("Command"));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!SendCommand.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'SendCommand' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<SendCommand> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(SendCommand.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<SendCommand>() {
-           @Override
-           public void write(JsonWriter out, SendCommand value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public SendCommand read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of SendCommand given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of SendCommand
-   * @throws IOException if the JSON string is invalid with respect to SendCommand
-   */
-  public static SendCommand fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, SendCommand.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of SendCommand to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `GroupId` to the URL query string
+    if (getGroupId() != null) {
+      joiner.add(String.format("%sGroupId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getGroupId()))));
+    }
+
+    // add `PlaylistItemId` to the URL query string
+    if (getPlaylistItemId() != null) {
+      joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
+    }
+
+    // add `When` to the URL query string
+    if (getWhen() != null) {
+      joiner.add(String.format("%sWhen%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWhen()))));
+    }
+
+    // add `PositionTicks` to the URL query string
+    if (getPositionTicks() != null) {
+      joiner.add(String.format("%sPositionTicks%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
+    }
+
+    // add `Command` to the URL query string
+    if (getCommand() != null) {
+      joiner.add(String.format("%sCommand%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCommand()))));
+    }
+
+    // add `EmittedAt` to the URL query string
+    if (getEmittedAt() != null) {
+      joiner.add(String.format("%sEmittedAt%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEmittedAt()))));
+    }
+
+    return joiner.toString();
   }
 }
 

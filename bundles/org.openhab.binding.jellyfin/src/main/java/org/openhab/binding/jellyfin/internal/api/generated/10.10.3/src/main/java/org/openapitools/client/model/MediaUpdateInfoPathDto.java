@@ -13,59 +13,46 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * The media update info path.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  MediaUpdateInfoPathDto.JSON_PROPERTY_PATH,
+  MediaUpdateInfoPathDto.JSON_PROPERTY_UPDATE_TYPE
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class MediaUpdateInfoPathDto {
-  public static final String SERIALIZED_NAME_PATH = "Path";
-  @SerializedName(SERIALIZED_NAME_PATH)
-  @javax.annotation.Nullable
-  private String path;
+  public static final String JSON_PROPERTY_PATH = "Path";
+  private JsonNullable<String> path = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_UPDATE_TYPE = "UpdateType";
-  @SerializedName(SERIALIZED_NAME_UPDATE_TYPE)
-  @javax.annotation.Nullable
-  private String updateType;
+  public static final String JSON_PROPERTY_UPDATE_TYPE = "UpdateType";
+  private JsonNullable<String> updateType = JsonNullable.<String>undefined();
 
-  public MediaUpdateInfoPathDto() {
+  public MediaUpdateInfoPathDto() { 
   }
 
   public MediaUpdateInfoPathDto path(@javax.annotation.Nullable String path) {
-    this.path = path;
+    this.path = JsonNullable.<String>of(path);
     return this;
   }
 
@@ -74,17 +61,30 @@ public class MediaUpdateInfoPathDto {
    * @return path
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPath() {
+        return path.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPath_JsonNullable() {
     return path;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PATH)
+  public void setPath_JsonNullable(JsonNullable<String> path) {
+    this.path = path;
   }
 
   public void setPath(@javax.annotation.Nullable String path) {
-    this.path = path;
+    this.path = JsonNullable.<String>of(path);
   }
 
 
   public MediaUpdateInfoPathDto updateType(@javax.annotation.Nullable String updateType) {
-    this.updateType = updateType;
+    this.updateType = JsonNullable.<String>of(updateType);
     return this;
   }
 
@@ -93,16 +93,31 @@ public class MediaUpdateInfoPathDto {
    * @return updateType
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getUpdateType() {
-    return updateType;
+        return updateType.orElse(null);
   }
 
-  public void setUpdateType(@javax.annotation.Nullable String updateType) {
+  @JsonProperty(JSON_PROPERTY_UPDATE_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getUpdateType_JsonNullable() {
+    return updateType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_UPDATE_TYPE)
+  public void setUpdateType_JsonNullable(JsonNullable<String> updateType) {
     this.updateType = updateType;
   }
 
+  public void setUpdateType(@javax.annotation.Nullable String updateType) {
+    this.updateType = JsonNullable.<String>of(updateType);
+  }
 
 
+  /**
+   * Return true if this MediaUpdateInfoPathDto object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -112,8 +127,8 @@ public class MediaUpdateInfoPathDto {
       return false;
     }
     MediaUpdateInfoPathDto mediaUpdateInfoPathDto = (MediaUpdateInfoPathDto) o;
-    return Objects.equals(this.path, mediaUpdateInfoPathDto.path) &&
-        Objects.equals(this.updateType, mediaUpdateInfoPathDto.updateType);
+    return equalsNullable(this.path, mediaUpdateInfoPathDto.path) &&
+        equalsNullable(this.updateType, mediaUpdateInfoPathDto.updateType);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -122,7 +137,7 @@ public class MediaUpdateInfoPathDto {
 
   @Override
   public int hashCode() {
-    return Objects.hash(path, updateType);
+    return Objects.hash(hashCodeNullable(path), hashCodeNullable(updateType));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -153,96 +168,49 @@ public class MediaUpdateInfoPathDto {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Path");
-    openapiFields.add("UpdateType");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to MediaUpdateInfoPathDto
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!MediaUpdateInfoPathDto.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in MediaUpdateInfoPathDto is not found in the empty JSON string", MediaUpdateInfoPathDto.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!MediaUpdateInfoPathDto.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `MediaUpdateInfoPathDto` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Path") != null && !jsonObj.get("Path").isJsonNull()) && !jsonObj.get("Path").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Path` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Path").toString()));
-      }
-      if ((jsonObj.get("UpdateType") != null && !jsonObj.get("UpdateType").isJsonNull()) && !jsonObj.get("UpdateType").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `UpdateType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("UpdateType").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!MediaUpdateInfoPathDto.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'MediaUpdateInfoPathDto' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<MediaUpdateInfoPathDto> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(MediaUpdateInfoPathDto.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<MediaUpdateInfoPathDto>() {
-           @Override
-           public void write(JsonWriter out, MediaUpdateInfoPathDto value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public MediaUpdateInfoPathDto read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of MediaUpdateInfoPathDto given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of MediaUpdateInfoPathDto
-   * @throws IOException if the JSON string is invalid with respect to MediaUpdateInfoPathDto
-   */
-  public static MediaUpdateInfoPathDto fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, MediaUpdateInfoPathDto.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of MediaUpdateInfoPathDto to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Path` to the URL query string
+    if (getPath() != null) {
+      joiner.add(String.format("%sPath%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
+    }
+
+    // add `UpdateType` to the URL query string
+    if (getUpdateType() != null) {
+      joiner.add(String.format("%sUpdateType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUpdateType()))));
+    }
+
+    return joiner.toString();
   }
 }
 

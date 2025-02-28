@@ -13,70 +13,58 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class FontFile.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  FontFile.JSON_PROPERTY_NAME,
+  FontFile.JSON_PROPERTY_SIZE,
+  FontFile.JSON_PROPERTY_DATE_CREATED,
+  FontFile.JSON_PROPERTY_DATE_MODIFIED
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class FontFile {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_SIZE = "Size";
-  @SerializedName(SERIALIZED_NAME_SIZE)
+  public static final String JSON_PROPERTY_SIZE = "Size";
   @javax.annotation.Nullable
   private Long size;
 
-  public static final String SERIALIZED_NAME_DATE_CREATED = "DateCreated";
-  @SerializedName(SERIALIZED_NAME_DATE_CREATED)
+  public static final String JSON_PROPERTY_DATE_CREATED = "DateCreated";
   @javax.annotation.Nullable
   private OffsetDateTime dateCreated;
 
-  public static final String SERIALIZED_NAME_DATE_MODIFIED = "DateModified";
-  @SerializedName(SERIALIZED_NAME_DATE_MODIFIED)
+  public static final String JSON_PROPERTY_DATE_MODIFIED = "DateModified";
   @javax.annotation.Nullable
   private OffsetDateTime dateModified;
 
-  public FontFile() {
+  public FontFile() { 
   }
 
   public FontFile name(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
     return this;
   }
 
@@ -85,12 +73,25 @@ public class FontFile {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
   }
 
 
@@ -104,10 +105,15 @@ public class FontFile {
    * @return size
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getSize() {
     return size;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSize(@javax.annotation.Nullable Long size) {
     this.size = size;
   }
@@ -123,10 +129,15 @@ public class FontFile {
    * @return dateCreated
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DATE_CREATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getDateCreated() {
     return dateCreated;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DATE_CREATED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDateCreated(@javax.annotation.Nullable OffsetDateTime dateCreated) {
     this.dateCreated = dateCreated;
   }
@@ -142,16 +153,23 @@ public class FontFile {
    * @return dateModified
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DATE_MODIFIED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getDateModified() {
     return dateModified;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DATE_MODIFIED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDateModified(@javax.annotation.Nullable OffsetDateTime dateModified) {
     this.dateModified = dateModified;
   }
 
 
-
+  /**
+   * Return true if this FontFile object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -161,7 +179,7 @@ public class FontFile {
       return false;
     }
     FontFile fontFile = (FontFile) o;
-    return Objects.equals(this.name, fontFile.name) &&
+    return equalsNullable(this.name, fontFile.name) &&
         Objects.equals(this.size, fontFile.size) &&
         Objects.equals(this.dateCreated, fontFile.dateCreated) &&
         Objects.equals(this.dateModified, fontFile.dateModified);
@@ -173,7 +191,7 @@ public class FontFile {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, size, dateCreated, dateModified);
+    return Objects.hash(hashCodeNullable(name), size, dateCreated, dateModified);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -206,95 +224,59 @@ public class FontFile {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("Size");
-    openapiFields.add("DateCreated");
-    openapiFields.add("DateModified");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to FontFile
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!FontFile.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in FontFile is not found in the empty JSON string", FontFile.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!FontFile.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `FontFile` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!FontFile.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'FontFile' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<FontFile> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(FontFile.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<FontFile>() {
-           @Override
-           public void write(JsonWriter out, FontFile value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public FontFile read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of FontFile given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of FontFile
-   * @throws IOException if the JSON string is invalid with respect to FontFile
-   */
-  public static FontFile fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, FontFile.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of FontFile to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `Size` to the URL query string
+    if (getSize() != null) {
+      joiner.add(String.format("%sSize%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSize()))));
+    }
+
+    // add `DateCreated` to the URL query string
+    if (getDateCreated() != null) {
+      joiner.add(String.format("%sDateCreated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDateCreated()))));
+    }
+
+    // add `DateModified` to the URL query string
+    if (getDateModified() != null) {
+      joiner.add(String.format("%sDateModified%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDateModified()))));
+    }
+
+    return joiner.toString();
   }
 }
 

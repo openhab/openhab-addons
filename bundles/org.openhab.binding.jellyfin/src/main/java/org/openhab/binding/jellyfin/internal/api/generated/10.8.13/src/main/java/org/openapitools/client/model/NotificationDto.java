@@ -13,86 +13,72 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import org.openapitools.client.model.NotificationLevel;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * The notification DTO.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  NotificationDto.JSON_PROPERTY_ID,
+  NotificationDto.JSON_PROPERTY_USER_ID,
+  NotificationDto.JSON_PROPERTY_DATE,
+  NotificationDto.JSON_PROPERTY_IS_READ,
+  NotificationDto.JSON_PROPERTY_NAME,
+  NotificationDto.JSON_PROPERTY_DESCRIPTION,
+  NotificationDto.JSON_PROPERTY_URL,
+  NotificationDto.JSON_PROPERTY_LEVEL
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class NotificationDto {
-  public static final String SERIALIZED_NAME_ID = "Id";
-  @SerializedName(SERIALIZED_NAME_ID)
+  public static final String JSON_PROPERTY_ID = "Id";
   @javax.annotation.Nullable
   private String id;
 
-  public static final String SERIALIZED_NAME_USER_ID = "UserId";
-  @SerializedName(SERIALIZED_NAME_USER_ID)
+  public static final String JSON_PROPERTY_USER_ID = "UserId";
   @javax.annotation.Nullable
   private String userId;
 
-  public static final String SERIALIZED_NAME_DATE = "Date";
-  @SerializedName(SERIALIZED_NAME_DATE)
+  public static final String JSON_PROPERTY_DATE = "Date";
   @javax.annotation.Nullable
   private OffsetDateTime date;
 
-  public static final String SERIALIZED_NAME_IS_READ = "IsRead";
-  @SerializedName(SERIALIZED_NAME_IS_READ)
+  public static final String JSON_PROPERTY_IS_READ = "IsRead";
   @javax.annotation.Nullable
   private Boolean isRead;
 
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
+  public static final String JSON_PROPERTY_NAME = "Name";
   @javax.annotation.Nullable
   private String name;
 
-  public static final String SERIALIZED_NAME_DESCRIPTION = "Description";
-  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
+  public static final String JSON_PROPERTY_DESCRIPTION = "Description";
   @javax.annotation.Nullable
   private String description;
 
-  public static final String SERIALIZED_NAME_URL = "Url";
-  @SerializedName(SERIALIZED_NAME_URL)
+  public static final String JSON_PROPERTY_URL = "Url";
   @javax.annotation.Nullable
   private String url;
 
-  public static final String SERIALIZED_NAME_LEVEL = "Level";
-  @SerializedName(SERIALIZED_NAME_LEVEL)
+  public static final String JSON_PROPERTY_LEVEL = "Level";
   @javax.annotation.Nullable
   private NotificationLevel level;
 
-  public NotificationDto() {
+  public NotificationDto() { 
   }
 
   public NotificationDto id(@javax.annotation.Nullable String id) {
@@ -105,10 +91,15 @@ public class NotificationDto {
    * @return id
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable String id) {
     this.id = id;
   }
@@ -124,10 +115,15 @@ public class NotificationDto {
    * @return userId
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUserId() {
     return userId;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUserId(@javax.annotation.Nullable String userId) {
     this.userId = userId;
   }
@@ -143,10 +139,15 @@ public class NotificationDto {
    * @return date
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getDate() {
     return date;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDate(@javax.annotation.Nullable OffsetDateTime date) {
     this.date = date;
   }
@@ -162,10 +163,15 @@ public class NotificationDto {
    * @return isRead
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_READ)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsRead() {
     return isRead;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_READ)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsRead(@javax.annotation.Nullable Boolean isRead) {
     this.isRead = isRead;
   }
@@ -181,10 +187,15 @@ public class NotificationDto {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -200,10 +211,15 @@ public class NotificationDto {
    * @return description
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -219,10 +235,15 @@ public class NotificationDto {
    * @return url
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUrl() {
     return url;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUrl(@javax.annotation.Nullable String url) {
     this.url = url;
   }
@@ -238,16 +259,23 @@ public class NotificationDto {
    * @return level
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_LEVEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public NotificationLevel getLevel() {
     return level;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_LEVEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLevel(@javax.annotation.Nullable NotificationLevel level) {
     this.level = level;
   }
 
 
-
+  /**
+   * Return true if this NotificationDto object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -299,115 +327,79 @@ public class NotificationDto {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Id");
-    openapiFields.add("UserId");
-    openapiFields.add("Date");
-    openapiFields.add("IsRead");
-    openapiFields.add("Name");
-    openapiFields.add("Description");
-    openapiFields.add("Url");
-    openapiFields.add("Level");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to NotificationDto
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!NotificationDto.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in NotificationDto is not found in the empty JSON string", NotificationDto.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!NotificationDto.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `NotificationDto` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Id") != null && !jsonObj.get("Id").isJsonNull()) && !jsonObj.get("Id").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Id").toString()));
-      }
-      if ((jsonObj.get("UserId") != null && !jsonObj.get("UserId").isJsonNull()) && !jsonObj.get("UserId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `UserId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("UserId").toString()));
-      }
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("Description") != null && !jsonObj.get("Description").isJsonNull()) && !jsonObj.get("Description").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Description").toString()));
-      }
-      if ((jsonObj.get("Url") != null && !jsonObj.get("Url").isJsonNull()) && !jsonObj.get("Url").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Url` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Url").toString()));
-      }
-      // validate the optional field `Level`
-      if (jsonObj.get("Level") != null && !jsonObj.get("Level").isJsonNull()) {
-        NotificationLevel.validateJsonElement(jsonObj.get("Level"));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!NotificationDto.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'NotificationDto' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<NotificationDto> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(NotificationDto.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<NotificationDto>() {
-           @Override
-           public void write(JsonWriter out, NotificationDto value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public NotificationDto read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of NotificationDto given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of NotificationDto
-   * @throws IOException if the JSON string is invalid with respect to NotificationDto
-   */
-  public static NotificationDto fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, NotificationDto.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of NotificationDto to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+    }
+
+    // add `UserId` to the URL query string
+    if (getUserId() != null) {
+      joiner.add(String.format("%sUserId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
+    }
+
+    // add `Date` to the URL query string
+    if (getDate() != null) {
+      joiner.add(String.format("%sDate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDate()))));
+    }
+
+    // add `IsRead` to the URL query string
+    if (getIsRead() != null) {
+      joiner.add(String.format("%sIsRead%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsRead()))));
+    }
+
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `Description` to the URL query string
+    if (getDescription() != null) {
+      joiner.add(String.format("%sDescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
+    }
+
+    // add `Url` to the URL query string
+    if (getUrl() != null) {
+      joiner.add(String.format("%sUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
+    }
+
+    // add `Level` to the URL query string
+    if (getLevel() != null) {
+      joiner.add(String.format("%sLevel%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLevel()))));
+    }
+
+    return joiner.toString();
   }
 }
 

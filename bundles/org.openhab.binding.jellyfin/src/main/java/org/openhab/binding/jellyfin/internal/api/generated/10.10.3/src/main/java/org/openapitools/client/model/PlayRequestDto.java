@@ -13,62 +13,48 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class PlayRequestDto.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  PlayRequestDto.JSON_PROPERTY_PLAYING_QUEUE,
+  PlayRequestDto.JSON_PROPERTY_PLAYING_ITEM_POSITION,
+  PlayRequestDto.JSON_PROPERTY_START_POSITION_TICKS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PlayRequestDto {
-  public static final String SERIALIZED_NAME_PLAYING_QUEUE = "PlayingQueue";
-  @SerializedName(SERIALIZED_NAME_PLAYING_QUEUE)
+  public static final String JSON_PROPERTY_PLAYING_QUEUE = "PlayingQueue";
   @javax.annotation.Nullable
   private List<UUID> playingQueue = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_PLAYING_ITEM_POSITION = "PlayingItemPosition";
-  @SerializedName(SERIALIZED_NAME_PLAYING_ITEM_POSITION)
+  public static final String JSON_PROPERTY_PLAYING_ITEM_POSITION = "PlayingItemPosition";
   @javax.annotation.Nullable
   private Integer playingItemPosition;
 
-  public static final String SERIALIZED_NAME_START_POSITION_TICKS = "StartPositionTicks";
-  @SerializedName(SERIALIZED_NAME_START_POSITION_TICKS)
+  public static final String JSON_PROPERTY_START_POSITION_TICKS = "StartPositionTicks";
   @javax.annotation.Nullable
   private Long startPositionTicks;
 
-  public PlayRequestDto() {
+  public PlayRequestDto() { 
   }
 
   public PlayRequestDto playingQueue(@javax.annotation.Nullable List<UUID> playingQueue) {
@@ -89,10 +75,15 @@ public class PlayRequestDto {
    * @return playingQueue
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLAYING_QUEUE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<UUID> getPlayingQueue() {
     return playingQueue;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PLAYING_QUEUE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlayingQueue(@javax.annotation.Nullable List<UUID> playingQueue) {
     this.playingQueue = playingQueue;
   }
@@ -108,10 +99,15 @@ public class PlayRequestDto {
    * @return playingItemPosition
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLAYING_ITEM_POSITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getPlayingItemPosition() {
     return playingItemPosition;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PLAYING_ITEM_POSITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlayingItemPosition(@javax.annotation.Nullable Integer playingItemPosition) {
     this.playingItemPosition = playingItemPosition;
   }
@@ -127,16 +123,23 @@ public class PlayRequestDto {
    * @return startPositionTicks
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getStartPositionTicks() {
     return startPositionTicks;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartPositionTicks(@javax.annotation.Nullable Long startPositionTicks) {
     this.startPositionTicks = startPositionTicks;
   }
 
 
-
+  /**
+   * Return true if this PlayRequestDto object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -178,95 +181,60 @@ public class PlayRequestDto {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("PlayingQueue");
-    openapiFields.add("PlayingItemPosition");
-    openapiFields.add("StartPositionTicks");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to PlayRequestDto
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!PlayRequestDto.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in PlayRequestDto is not found in the empty JSON string", PlayRequestDto.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!PlayRequestDto.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `PlayRequestDto` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("PlayingQueue") != null && !jsonObj.get("PlayingQueue").isJsonNull() && !jsonObj.get("PlayingQueue").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `PlayingQueue` to be an array in the JSON string but got `%s`", jsonObj.get("PlayingQueue").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!PlayRequestDto.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'PlayRequestDto' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<PlayRequestDto> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(PlayRequestDto.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<PlayRequestDto>() {
-           @Override
-           public void write(JsonWriter out, PlayRequestDto value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public PlayRequestDto read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of PlayRequestDto given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of PlayRequestDto
-   * @throws IOException if the JSON string is invalid with respect to PlayRequestDto
-   */
-  public static PlayRequestDto fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, PlayRequestDto.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of PlayRequestDto to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `PlayingQueue` to the URL query string
+    if (getPlayingQueue() != null) {
+      for (int i = 0; i < getPlayingQueue().size(); i++) {
+        if (getPlayingQueue().get(i) != null) {
+          joiner.add(String.format("%sPlayingQueue%s%s=%s", prefix, suffix,
+              "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+              ApiClient.urlEncode(ApiClient.valueToString(getPlayingQueue().get(i)))));
+        }
+      }
+    }
+
+    // add `PlayingItemPosition` to the URL query string
+    if (getPlayingItemPosition() != null) {
+      joiner.add(String.format("%sPlayingItemPosition%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlayingItemPosition()))));
+    }
+
+    // add `StartPositionTicks` to the URL query string
+    if (getStartPositionTicks() != null) {
+      joiner.add(String.format("%sStartPositionTicks%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStartPositionTicks()))));
+    }
+
+    return joiner.toString();
   }
 }
 

@@ -10,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import org.openapitools.client.model.BaseItemKind;
 import org.openapitools.client.model.ClientCapabilitiesDto;
@@ -38,2386 +29,1539 @@ import org.openapitools.client.model.PlaystateCommand;
 import org.openapitools.client.model.SessionInfo;
 import java.util.UUID;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class SessionApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+
+  public SessionApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public SessionApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Adds an additional user to a session.
+   * 
+   * @param sessionId The session id. (required)
+   * @param userId The user id. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void addUserToSession(String sessionId, UUID userId) throws ApiException {
+    addUserToSessionWithHttpInfo(sessionId, userId);
+  }
+
+  /**
+   * Adds an additional user to a session.
+   * 
+   * @param sessionId The session id. (required)
+   * @param userId The user id. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> addUserToSessionWithHttpInfo(String sessionId, UUID userId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = addUserToSessionRequestBuilder(sessionId, userId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("addUserToSession", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder addUserToSessionRequestBuilder(String sessionId, UUID userId) throws ApiException {
+    // verify the required parameter 'sessionId' is set
+    if (sessionId == null) {
+      throw new ApiException(400, "Missing the required parameter 'sessionId' when calling addUserToSession");
+    }
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling addUserToSession");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Sessions/{sessionId}/User/{userId}"
+        .replace("{sessionId}", ApiClient.urlEncode(sessionId.toString()))
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Instructs a session to browse to an item or view.
+   * 
+   * @param sessionId The session Id. (required)
+   * @param itemType The type of item to browse to. (required)
+   * @param itemId The Id of the item. (required)
+   * @param itemName The name of the item. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void displayContent(String sessionId, BaseItemKind itemType, String itemId, String itemName) throws ApiException {
+    displayContentWithHttpInfo(sessionId, itemType, itemId, itemName);
+  }
+
+  /**
+   * Instructs a session to browse to an item or view.
+   * 
+   * @param sessionId The session Id. (required)
+   * @param itemType The type of item to browse to. (required)
+   * @param itemId The Id of the item. (required)
+   * @param itemName The name of the item. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> displayContentWithHttpInfo(String sessionId, BaseItemKind itemType, String itemId, String itemName) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = displayContentRequestBuilder(sessionId, itemType, itemId, itemName);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("displayContent", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder displayContentRequestBuilder(String sessionId, BaseItemKind itemType, String itemId, String itemName) throws ApiException {
+    // verify the required parameter 'sessionId' is set
+    if (sessionId == null) {
+      throw new ApiException(400, "Missing the required parameter 'sessionId' when calling displayContent");
+    }
+    // verify the required parameter 'itemType' is set
+    if (itemType == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemType' when calling displayContent");
+    }
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling displayContent");
+    }
+    // verify the required parameter 'itemName' is set
+    if (itemName == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemName' when calling displayContent");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Sessions/{sessionId}/Viewing"
+        .replace("{sessionId}", ApiClient.urlEncode(sessionId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "itemType";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("itemType", itemType));
+    localVarQueryParameterBaseName = "itemId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("itemId", itemId));
+    localVarQueryParameterBaseName = "itemName";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("itemName", itemName));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get all auth providers.
+   * 
+   * @return List&lt;NameIdPair&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<NameIdPair> getAuthProviders() throws ApiException {
+    ApiResponse<List<NameIdPair>> localVarResponse = getAuthProvidersWithHttpInfo();
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get all auth providers.
+   * 
+   * @return ApiResponse&lt;List&lt;NameIdPair&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<NameIdPair>> getAuthProvidersWithHttpInfo() throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getAuthProvidersRequestBuilder();
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getAuthProviders", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<NameIdPair>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<NameIdPair>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<NameIdPair>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getAuthProvidersRequestBuilder() throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Auth/Providers";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get all password reset providers.
+   * 
+   * @return List&lt;NameIdPair&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<NameIdPair> getPasswordResetProviders() throws ApiException {
+    ApiResponse<List<NameIdPair>> localVarResponse = getPasswordResetProvidersWithHttpInfo();
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get all password reset providers.
+   * 
+   * @return ApiResponse&lt;List&lt;NameIdPair&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<NameIdPair>> getPasswordResetProvidersWithHttpInfo() throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getPasswordResetProvidersRequestBuilder();
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getPasswordResetProviders", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<NameIdPair>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<NameIdPair>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<NameIdPair>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getPasswordResetProvidersRequestBuilder() throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Auth/PasswordResetProviders";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets a list of sessions.
+   * 
+   * @param controllableByUserId Filter by sessions that a given user is allowed to remote control. (optional)
+   * @param deviceId Filter by device Id. (optional)
+   * @param activeWithinSeconds Optional. Filter by sessions that were active in the last n seconds. (optional)
+   * @return List&lt;SessionInfo&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<SessionInfo> getSessions(UUID controllableByUserId, String deviceId, Integer activeWithinSeconds) throws ApiException {
+    ApiResponse<List<SessionInfo>> localVarResponse = getSessionsWithHttpInfo(controllableByUserId, deviceId, activeWithinSeconds);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets a list of sessions.
+   * 
+   * @param controllableByUserId Filter by sessions that a given user is allowed to remote control. (optional)
+   * @param deviceId Filter by device Id. (optional)
+   * @param activeWithinSeconds Optional. Filter by sessions that were active in the last n seconds. (optional)
+   * @return ApiResponse&lt;List&lt;SessionInfo&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<SessionInfo>> getSessionsWithHttpInfo(UUID controllableByUserId, String deviceId, Integer activeWithinSeconds) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getSessionsRequestBuilder(controllableByUserId, deviceId, activeWithinSeconds);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getSessions", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<SessionInfo>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<SessionInfo>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<SessionInfo>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getSessionsRequestBuilder(UUID controllableByUserId, String deviceId, Integer activeWithinSeconds) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Sessions";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "controllableByUserId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("controllableByUserId", controllableByUserId));
+    localVarQueryParameterBaseName = "deviceId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("deviceId", deviceId));
+    localVarQueryParameterBaseName = "activeWithinSeconds";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("activeWithinSeconds", activeWithinSeconds));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Instructs a session to play an item.
+   * 
+   * @param sessionId The session id. (required)
+   * @param playCommand The type of play command to issue (PlayNow, PlayNext, PlayLast). Clients who have not yet implemented play next and play last may play now. (required)
+   * @param itemIds The ids of the items to play, comma delimited. (required)
+   * @param startPositionTicks The starting position of the first item. (optional)
+   * @param mediaSourceId Optional. The media source id. (optional)
+   * @param audioStreamIndex Optional. The index of the audio stream to play. (optional)
+   * @param subtitleStreamIndex Optional. The index of the subtitle stream to play. (optional)
+   * @param startIndex Optional. The start index. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void play(String sessionId, PlayCommand playCommand, List<UUID> itemIds, Long startPositionTicks, String mediaSourceId, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer startIndex) throws ApiException {
+    playWithHttpInfo(sessionId, playCommand, itemIds, startPositionTicks, mediaSourceId, audioStreamIndex, subtitleStreamIndex, startIndex);
+  }
+
+  /**
+   * Instructs a session to play an item.
+   * 
+   * @param sessionId The session id. (required)
+   * @param playCommand The type of play command to issue (PlayNow, PlayNext, PlayLast). Clients who have not yet implemented play next and play last may play now. (required)
+   * @param itemIds The ids of the items to play, comma delimited. (required)
+   * @param startPositionTicks The starting position of the first item. (optional)
+   * @param mediaSourceId Optional. The media source id. (optional)
+   * @param audioStreamIndex Optional. The index of the audio stream to play. (optional)
+   * @param subtitleStreamIndex Optional. The index of the subtitle stream to play. (optional)
+   * @param startIndex Optional. The start index. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> playWithHttpInfo(String sessionId, PlayCommand playCommand, List<UUID> itemIds, Long startPositionTicks, String mediaSourceId, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer startIndex) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = playRequestBuilder(sessionId, playCommand, itemIds, startPositionTicks, mediaSourceId, audioStreamIndex, subtitleStreamIndex, startIndex);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("play", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder playRequestBuilder(String sessionId, PlayCommand playCommand, List<UUID> itemIds, Long startPositionTicks, String mediaSourceId, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer startIndex) throws ApiException {
+    // verify the required parameter 'sessionId' is set
+    if (sessionId == null) {
+      throw new ApiException(400, "Missing the required parameter 'sessionId' when calling play");
+    }
+    // verify the required parameter 'playCommand' is set
+    if (playCommand == null) {
+      throw new ApiException(400, "Missing the required parameter 'playCommand' when calling play");
+    }
+    // verify the required parameter 'itemIds' is set
+    if (itemIds == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemIds' when calling play");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Sessions/{sessionId}/Playing"
+        .replace("{sessionId}", ApiClient.urlEncode(sessionId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "playCommand";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("playCommand", playCommand));
+    localVarQueryParameterBaseName = "itemIds";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "itemIds", itemIds));
+    localVarQueryParameterBaseName = "startPositionTicks";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("startPositionTicks", startPositionTicks));
+    localVarQueryParameterBaseName = "mediaSourceId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("mediaSourceId", mediaSourceId));
+    localVarQueryParameterBaseName = "audioStreamIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("audioStreamIndex", audioStreamIndex));
+    localVarQueryParameterBaseName = "subtitleStreamIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("subtitleStreamIndex", subtitleStreamIndex));
+    localVarQueryParameterBaseName = "startIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("startIndex", startIndex));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Updates capabilities for a device.
+   * 
+   * @param id The session id. (optional)
+   * @param playableMediaTypes A list of playable media types, comma delimited. Audio, Video, Book, Photo. (optional)
+   * @param supportedCommands A list of supported remote control commands, comma delimited. (optional)
+   * @param supportsMediaControl Determines whether media can be played remotely.. (optional, default to false)
+   * @param supportsSync Determines whether sync is supported. (optional, default to false)
+   * @param supportsPersistentIdentifier Determines whether the device supports a unique identifier. (optional, default to true)
+   * @throws ApiException if fails to make API call
+   */
+  public void postCapabilities(String id, List<String> playableMediaTypes, List<GeneralCommandType> supportedCommands, Boolean supportsMediaControl, Boolean supportsSync, Boolean supportsPersistentIdentifier) throws ApiException {
+    postCapabilitiesWithHttpInfo(id, playableMediaTypes, supportedCommands, supportsMediaControl, supportsSync, supportsPersistentIdentifier);
+  }
+
+  /**
+   * Updates capabilities for a device.
+   * 
+   * @param id The session id. (optional)
+   * @param playableMediaTypes A list of playable media types, comma delimited. Audio, Video, Book, Photo. (optional)
+   * @param supportedCommands A list of supported remote control commands, comma delimited. (optional)
+   * @param supportsMediaControl Determines whether media can be played remotely.. (optional, default to false)
+   * @param supportsSync Determines whether sync is supported. (optional, default to false)
+   * @param supportsPersistentIdentifier Determines whether the device supports a unique identifier. (optional, default to true)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> postCapabilitiesWithHttpInfo(String id, List<String> playableMediaTypes, List<GeneralCommandType> supportedCommands, Boolean supportsMediaControl, Boolean supportsSync, Boolean supportsPersistentIdentifier) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = postCapabilitiesRequestBuilder(id, playableMediaTypes, supportedCommands, supportsMediaControl, supportsSync, supportsPersistentIdentifier);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("postCapabilities", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder postCapabilitiesRequestBuilder(String id, List<String> playableMediaTypes, List<GeneralCommandType> supportedCommands, Boolean supportsMediaControl, Boolean supportsSync, Boolean supportsPersistentIdentifier) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Sessions/Capabilities";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "id";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("id", id));
+    localVarQueryParameterBaseName = "playableMediaTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "playableMediaTypes", playableMediaTypes));
+    localVarQueryParameterBaseName = "supportedCommands";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "supportedCommands", supportedCommands));
+    localVarQueryParameterBaseName = "supportsMediaControl";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("supportsMediaControl", supportsMediaControl));
+    localVarQueryParameterBaseName = "supportsSync";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("supportsSync", supportsSync));
+    localVarQueryParameterBaseName = "supportsPersistentIdentifier";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("supportsPersistentIdentifier", supportsPersistentIdentifier));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Updates capabilities for a device.
+   * 
+   * @param clientCapabilitiesDto The MediaBrowser.Model.Session.ClientCapabilities. (required)
+   * @param id The session id. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void postFullCapabilities(ClientCapabilitiesDto clientCapabilitiesDto, String id) throws ApiException {
+    postFullCapabilitiesWithHttpInfo(clientCapabilitiesDto, id);
+  }
+
+  /**
+   * Updates capabilities for a device.
+   * 
+   * @param clientCapabilitiesDto The MediaBrowser.Model.Session.ClientCapabilities. (required)
+   * @param id The session id. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> postFullCapabilitiesWithHttpInfo(ClientCapabilitiesDto clientCapabilitiesDto, String id) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = postFullCapabilitiesRequestBuilder(clientCapabilitiesDto, id);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("postFullCapabilities", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder postFullCapabilitiesRequestBuilder(ClientCapabilitiesDto clientCapabilitiesDto, String id) throws ApiException {
+    // verify the required parameter 'clientCapabilitiesDto' is set
+    if (clientCapabilitiesDto == null) {
+      throw new ApiException(400, "Missing the required parameter 'clientCapabilitiesDto' when calling postFullCapabilities");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Sessions/Capabilities/Full";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "id";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("id", id));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(clientCapabilitiesDto);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Removes an additional user from a session.
+   * 
+   * @param sessionId The session id. (required)
+   * @param userId The user id. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void removeUserFromSession(String sessionId, UUID userId) throws ApiException {
+    removeUserFromSessionWithHttpInfo(sessionId, userId);
+  }
+
+  /**
+   * Removes an additional user from a session.
+   * 
+   * @param sessionId The session id. (required)
+   * @param userId The user id. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> removeUserFromSessionWithHttpInfo(String sessionId, UUID userId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = removeUserFromSessionRequestBuilder(sessionId, userId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("removeUserFromSession", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder removeUserFromSessionRequestBuilder(String sessionId, UUID userId) throws ApiException {
+    // verify the required parameter 'sessionId' is set
+    if (sessionId == null) {
+      throw new ApiException(400, "Missing the required parameter 'sessionId' when calling removeUserFromSession");
+    }
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling removeUserFromSession");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Sessions/{sessionId}/User/{userId}"
+        .replace("{sessionId}", ApiClient.urlEncode(sessionId.toString()))
+        .replace("{userId}", ApiClient.urlEncode(userId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Reports that a session has ended.
+   * 
+   * @throws ApiException if fails to make API call
+   */
+  public void reportSessionEnded() throws ApiException {
+    reportSessionEndedWithHttpInfo();
+  }
+
+  /**
+   * Reports that a session has ended.
+   * 
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> reportSessionEndedWithHttpInfo() throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = reportSessionEndedRequestBuilder();
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("reportSessionEnded", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder reportSessionEndedRequestBuilder() throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Sessions/Logout";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Reports that a session is viewing an item.
+   * 
+   * @param itemId The item id. (required)
+   * @param sessionId The session id. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void reportViewing(String itemId, String sessionId) throws ApiException {
+    reportViewingWithHttpInfo(itemId, sessionId);
+  }
+
+  /**
+   * Reports that a session is viewing an item.
+   * 
+   * @param itemId The item id. (required)
+   * @param sessionId The session id. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> reportViewingWithHttpInfo(String itemId, String sessionId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = reportViewingRequestBuilder(itemId, sessionId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("reportViewing", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder reportViewingRequestBuilder(String itemId, String sessionId) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling reportViewing");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Sessions/Viewing";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "sessionId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("sessionId", sessionId));
+    localVarQueryParameterBaseName = "itemId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("itemId", itemId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Issues a full general command to a client.
+   * 
+   * @param sessionId The session id. (required)
+   * @param generalCommand The MediaBrowser.Model.Session.GeneralCommand. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void sendFullGeneralCommand(String sessionId, GeneralCommand generalCommand) throws ApiException {
+    sendFullGeneralCommandWithHttpInfo(sessionId, generalCommand);
+  }
+
+  /**
+   * Issues a full general command to a client.
+   * 
+   * @param sessionId The session id. (required)
+   * @param generalCommand The MediaBrowser.Model.Session.GeneralCommand. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> sendFullGeneralCommandWithHttpInfo(String sessionId, GeneralCommand generalCommand) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = sendFullGeneralCommandRequestBuilder(sessionId, generalCommand);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("sendFullGeneralCommand", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder sendFullGeneralCommandRequestBuilder(String sessionId, GeneralCommand generalCommand) throws ApiException {
+    // verify the required parameter 'sessionId' is set
+    if (sessionId == null) {
+      throw new ApiException(400, "Missing the required parameter 'sessionId' when calling sendFullGeneralCommand");
+    }
+    // verify the required parameter 'generalCommand' is set
+    if (generalCommand == null) {
+      throw new ApiException(400, "Missing the required parameter 'generalCommand' when calling sendFullGeneralCommand");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Sessions/{sessionId}/Command"
+        .replace("{sessionId}", ApiClient.urlEncode(sessionId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(generalCommand);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Issues a general command to a client.
+   * 
+   * @param sessionId The session id. (required)
+   * @param command The command to send. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void sendGeneralCommand(String sessionId, GeneralCommandType command) throws ApiException {
+    sendGeneralCommandWithHttpInfo(sessionId, command);
+  }
+
+  /**
+   * Issues a general command to a client.
+   * 
+   * @param sessionId The session id. (required)
+   * @param command The command to send. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> sendGeneralCommandWithHttpInfo(String sessionId, GeneralCommandType command) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = sendGeneralCommandRequestBuilder(sessionId, command);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("sendGeneralCommand", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder sendGeneralCommandRequestBuilder(String sessionId, GeneralCommandType command) throws ApiException {
+    // verify the required parameter 'sessionId' is set
+    if (sessionId == null) {
+      throw new ApiException(400, "Missing the required parameter 'sessionId' when calling sendGeneralCommand");
+    }
+    // verify the required parameter 'command' is set
+    if (command == null) {
+      throw new ApiException(400, "Missing the required parameter 'command' when calling sendGeneralCommand");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Sessions/{sessionId}/Command/{command}"
+        .replace("{sessionId}", ApiClient.urlEncode(sessionId.toString()))
+        .replace("{command}", ApiClient.urlEncode(command.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Issues a command to a client to display a message to the user.
+   * 
+   * @param sessionId The session id. (required)
+   * @param messageCommand The MediaBrowser.Model.Session.MessageCommand object containing Header, Message Text, and TimeoutMs. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void sendMessageCommand(String sessionId, MessageCommand messageCommand) throws ApiException {
+    sendMessageCommandWithHttpInfo(sessionId, messageCommand);
+  }
+
+  /**
+   * Issues a command to a client to display a message to the user.
+   * 
+   * @param sessionId The session id. (required)
+   * @param messageCommand The MediaBrowser.Model.Session.MessageCommand object containing Header, Message Text, and TimeoutMs. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> sendMessageCommandWithHttpInfo(String sessionId, MessageCommand messageCommand) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = sendMessageCommandRequestBuilder(sessionId, messageCommand);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("sendMessageCommand", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder sendMessageCommandRequestBuilder(String sessionId, MessageCommand messageCommand) throws ApiException {
+    // verify the required parameter 'sessionId' is set
+    if (sessionId == null) {
+      throw new ApiException(400, "Missing the required parameter 'sessionId' when calling sendMessageCommand");
+    }
+    // verify the required parameter 'messageCommand' is set
+    if (messageCommand == null) {
+      throw new ApiException(400, "Missing the required parameter 'messageCommand' when calling sendMessageCommand");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Sessions/{sessionId}/Message"
+        .replace("{sessionId}", ApiClient.urlEncode(sessionId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(messageCommand);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Issues a playstate command to a client.
+   * 
+   * @param sessionId The session id. (required)
+   * @param command The MediaBrowser.Model.Session.PlaystateCommand. (required)
+   * @param seekPositionTicks The optional position ticks. (optional)
+   * @param controllingUserId The optional controlling user id. (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void sendPlaystateCommand(String sessionId, PlaystateCommand command, Long seekPositionTicks, String controllingUserId) throws ApiException {
+    sendPlaystateCommandWithHttpInfo(sessionId, command, seekPositionTicks, controllingUserId);
+  }
+
+  /**
+   * Issues a playstate command to a client.
+   * 
+   * @param sessionId The session id. (required)
+   * @param command The MediaBrowser.Model.Session.PlaystateCommand. (required)
+   * @param seekPositionTicks The optional position ticks. (optional)
+   * @param controllingUserId The optional controlling user id. (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> sendPlaystateCommandWithHttpInfo(String sessionId, PlaystateCommand command, Long seekPositionTicks, String controllingUserId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = sendPlaystateCommandRequestBuilder(sessionId, command, seekPositionTicks, controllingUserId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("sendPlaystateCommand", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder sendPlaystateCommandRequestBuilder(String sessionId, PlaystateCommand command, Long seekPositionTicks, String controllingUserId) throws ApiException {
+    // verify the required parameter 'sessionId' is set
+    if (sessionId == null) {
+      throw new ApiException(400, "Missing the required parameter 'sessionId' when calling sendPlaystateCommand");
+    }
+    // verify the required parameter 'command' is set
+    if (command == null) {
+      throw new ApiException(400, "Missing the required parameter 'command' when calling sendPlaystateCommand");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Sessions/{sessionId}/Playing/{command}"
+        .replace("{sessionId}", ApiClient.urlEncode(sessionId.toString()))
+        .replace("{command}", ApiClient.urlEncode(command.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "seekPositionTicks";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("seekPositionTicks", seekPositionTicks));
+    localVarQueryParameterBaseName = "controllingUserId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("controllingUserId", controllingUserId));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    }
+
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Issues a system command to a client.
+   * 
+   * @param sessionId The session id. (required)
+   * @param command The command to send. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void sendSystemCommand(String sessionId, GeneralCommandType command) throws ApiException {
+    sendSystemCommandWithHttpInfo(sessionId, command);
+  }
+
+  /**
+   * Issues a system command to a client.
+   * 
+   * @param sessionId The session id. (required)
+   * @param command The command to send. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> sendSystemCommandWithHttpInfo(String sessionId, GeneralCommandType command) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = sendSystemCommandRequestBuilder(sessionId, command);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("sendSystemCommand", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder sendSystemCommandRequestBuilder(String sessionId, GeneralCommandType command) throws ApiException {
+    // verify the required parameter 'sessionId' is set
+    if (sessionId == null) {
+      throw new ApiException(400, "Missing the required parameter 'sessionId' when calling sendSystemCommand");
+    }
+    // verify the required parameter 'command' is set
+    if (command == null) {
+      throw new ApiException(400, "Missing the required parameter 'command' when calling sendSystemCommand");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Sessions/{sessionId}/System/{command}"
+        .replace("{sessionId}", ApiClient.urlEncode(sessionId.toString()))
+        .replace("{command}", ApiClient.urlEncode(command.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
 
-    public SessionApi() {
-        this(Configuration.getDefaultApiClient());
-    }
-
-    public SessionApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
-
-    public ApiClient getApiClient() {
-        return localVarApiClient;
-    }
-
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
-
-    public int getHostIndex() {
-        return localHostIndex;
-    }
-
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
-    }
-
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for addUserToSession
-     * @param sessionId The session id. (required)
-     * @param userId The user id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User added to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call addUserToSessionCall(String sessionId, UUID userId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Sessions/{sessionId}/User/{userId}"
-            .replace("{" + "sessionId" + "}", localVarApiClient.escapeString(sessionId.toString()))
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call addUserToSessionValidateBeforeCall(String sessionId, UUID userId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'sessionId' is set
-        if (sessionId == null) {
-            throw new ApiException("Missing the required parameter 'sessionId' when calling addUserToSession(Async)");
-        }
-
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling addUserToSession(Async)");
-        }
-
-        return addUserToSessionCall(sessionId, userId, _callback);
-
-    }
-
-    /**
-     * Adds an additional user to a session.
-     * 
-     * @param sessionId The session id. (required)
-     * @param userId The user id. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User added to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void addUserToSession(String sessionId, UUID userId) throws ApiException {
-        addUserToSessionWithHttpInfo(sessionId, userId);
-    }
-
-    /**
-     * Adds an additional user to a session.
-     * 
-     * @param sessionId The session id. (required)
-     * @param userId The user id. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User added to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> addUserToSessionWithHttpInfo(String sessionId, UUID userId) throws ApiException {
-        okhttp3.Call localVarCall = addUserToSessionValidateBeforeCall(sessionId, userId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Adds an additional user to a session. (asynchronously)
-     * 
-     * @param sessionId The session id. (required)
-     * @param userId The user id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User added to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call addUserToSessionAsync(String sessionId, UUID userId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = addUserToSessionValidateBeforeCall(sessionId, userId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for displayContent
-     * @param sessionId The session Id. (required)
-     * @param itemType The type of item to browse to. (required)
-     * @param itemId The Id of the item. (required)
-     * @param itemName The name of the item. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Instruction sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call displayContentCall(String sessionId, BaseItemKind itemType, String itemId, String itemName, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Sessions/{sessionId}/Viewing"
-            .replace("{" + "sessionId" + "}", localVarApiClient.escapeString(sessionId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (itemType != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("itemType", itemType));
-        }
-
-        if (itemId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("itemId", itemId));
-        }
-
-        if (itemName != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("itemName", itemName));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call displayContentValidateBeforeCall(String sessionId, BaseItemKind itemType, String itemId, String itemName, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'sessionId' is set
-        if (sessionId == null) {
-            throw new ApiException("Missing the required parameter 'sessionId' when calling displayContent(Async)");
-        }
-
-        // verify the required parameter 'itemType' is set
-        if (itemType == null) {
-            throw new ApiException("Missing the required parameter 'itemType' when calling displayContent(Async)");
-        }
-
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling displayContent(Async)");
-        }
-
-        // verify the required parameter 'itemName' is set
-        if (itemName == null) {
-            throw new ApiException("Missing the required parameter 'itemName' when calling displayContent(Async)");
-        }
-
-        return displayContentCall(sessionId, itemType, itemId, itemName, _callback);
-
-    }
-
-    /**
-     * Instructs a session to browse to an item or view.
-     * 
-     * @param sessionId The session Id. (required)
-     * @param itemType The type of item to browse to. (required)
-     * @param itemId The Id of the item. (required)
-     * @param itemName The name of the item. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Instruction sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void displayContent(String sessionId, BaseItemKind itemType, String itemId, String itemName) throws ApiException {
-        displayContentWithHttpInfo(sessionId, itemType, itemId, itemName);
-    }
-
-    /**
-     * Instructs a session to browse to an item or view.
-     * 
-     * @param sessionId The session Id. (required)
-     * @param itemType The type of item to browse to. (required)
-     * @param itemId The Id of the item. (required)
-     * @param itemName The name of the item. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Instruction sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> displayContentWithHttpInfo(String sessionId, BaseItemKind itemType, String itemId, String itemName) throws ApiException {
-        okhttp3.Call localVarCall = displayContentValidateBeforeCall(sessionId, itemType, itemId, itemName, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Instructs a session to browse to an item or view. (asynchronously)
-     * 
-     * @param sessionId The session Id. (required)
-     * @param itemType The type of item to browse to. (required)
-     * @param itemId The Id of the item. (required)
-     * @param itemName The name of the item. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Instruction sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call displayContentAsync(String sessionId, BaseItemKind itemType, String itemId, String itemName, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = displayContentValidateBeforeCall(sessionId, itemType, itemId, itemName, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getAuthProviders
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Auth providers retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getAuthProvidersCall(final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Auth/Providers";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getAuthProvidersValidateBeforeCall(final ApiCallback _callback) throws ApiException {
-        return getAuthProvidersCall(_callback);
-
-    }
-
-    /**
-     * Get all auth providers.
-     * 
-     * @return List&lt;NameIdPair&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Auth providers retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<NameIdPair> getAuthProviders() throws ApiException {
-        ApiResponse<List<NameIdPair>> localVarResp = getAuthProvidersWithHttpInfo();
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get all auth providers.
-     * 
-     * @return ApiResponse&lt;List&lt;NameIdPair&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Auth providers retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<NameIdPair>> getAuthProvidersWithHttpInfo() throws ApiException {
-        okhttp3.Call localVarCall = getAuthProvidersValidateBeforeCall(null);
-        Type localVarReturnType = new TypeToken<List<NameIdPair>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get all auth providers. (asynchronously)
-     * 
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Auth providers retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getAuthProvidersAsync(final ApiCallback<List<NameIdPair>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getAuthProvidersValidateBeforeCall(_callback);
-        Type localVarReturnType = new TypeToken<List<NameIdPair>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getPasswordResetProviders
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Password reset providers retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPasswordResetProvidersCall(final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Auth/PasswordResetProviders";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getPasswordResetProvidersValidateBeforeCall(final ApiCallback _callback) throws ApiException {
-        return getPasswordResetProvidersCall(_callback);
-
-    }
-
-    /**
-     * Get all password reset providers.
-     * 
-     * @return List&lt;NameIdPair&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Password reset providers retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<NameIdPair> getPasswordResetProviders() throws ApiException {
-        ApiResponse<List<NameIdPair>> localVarResp = getPasswordResetProvidersWithHttpInfo();
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get all password reset providers.
-     * 
-     * @return ApiResponse&lt;List&lt;NameIdPair&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Password reset providers retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<NameIdPair>> getPasswordResetProvidersWithHttpInfo() throws ApiException {
-        okhttp3.Call localVarCall = getPasswordResetProvidersValidateBeforeCall(null);
-        Type localVarReturnType = new TypeToken<List<NameIdPair>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get all password reset providers. (asynchronously)
-     * 
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Password reset providers retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPasswordResetProvidersAsync(final ApiCallback<List<NameIdPair>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getPasswordResetProvidersValidateBeforeCall(_callback);
-        Type localVarReturnType = new TypeToken<List<NameIdPair>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getSessions
-     * @param controllableByUserId Filter by sessions that a given user is allowed to remote control. (optional)
-     * @param deviceId Filter by device Id. (optional)
-     * @param activeWithinSeconds Optional. Filter by sessions that were active in the last n seconds. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> List of sessions returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSessionsCall(UUID controllableByUserId, String deviceId, Integer activeWithinSeconds, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Sessions";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (controllableByUserId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("controllableByUserId", controllableByUserId));
-        }
-
-        if (deviceId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("deviceId", deviceId));
-        }
-
-        if (activeWithinSeconds != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("activeWithinSeconds", activeWithinSeconds));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getSessionsValidateBeforeCall(UUID controllableByUserId, String deviceId, Integer activeWithinSeconds, final ApiCallback _callback) throws ApiException {
-        return getSessionsCall(controllableByUserId, deviceId, activeWithinSeconds, _callback);
-
-    }
-
-    /**
-     * Gets a list of sessions.
-     * 
-     * @param controllableByUserId Filter by sessions that a given user is allowed to remote control. (optional)
-     * @param deviceId Filter by device Id. (optional)
-     * @param activeWithinSeconds Optional. Filter by sessions that were active in the last n seconds. (optional)
-     * @return List&lt;SessionInfo&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> List of sessions returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<SessionInfo> getSessions(UUID controllableByUserId, String deviceId, Integer activeWithinSeconds) throws ApiException {
-        ApiResponse<List<SessionInfo>> localVarResp = getSessionsWithHttpInfo(controllableByUserId, deviceId, activeWithinSeconds);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets a list of sessions.
-     * 
-     * @param controllableByUserId Filter by sessions that a given user is allowed to remote control. (optional)
-     * @param deviceId Filter by device Id. (optional)
-     * @param activeWithinSeconds Optional. Filter by sessions that were active in the last n seconds. (optional)
-     * @return ApiResponse&lt;List&lt;SessionInfo&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> List of sessions returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<SessionInfo>> getSessionsWithHttpInfo(UUID controllableByUserId, String deviceId, Integer activeWithinSeconds) throws ApiException {
-        okhttp3.Call localVarCall = getSessionsValidateBeforeCall(controllableByUserId, deviceId, activeWithinSeconds, null);
-        Type localVarReturnType = new TypeToken<List<SessionInfo>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets a list of sessions. (asynchronously)
-     * 
-     * @param controllableByUserId Filter by sessions that a given user is allowed to remote control. (optional)
-     * @param deviceId Filter by device Id. (optional)
-     * @param activeWithinSeconds Optional. Filter by sessions that were active in the last n seconds. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> List of sessions returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSessionsAsync(UUID controllableByUserId, String deviceId, Integer activeWithinSeconds, final ApiCallback<List<SessionInfo>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getSessionsValidateBeforeCall(controllableByUserId, deviceId, activeWithinSeconds, _callback);
-        Type localVarReturnType = new TypeToken<List<SessionInfo>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for play
-     * @param sessionId The session id. (required)
-     * @param playCommand The type of play command to issue (PlayNow, PlayNext, PlayLast). Clients who have not yet implemented play next and play last may play now. (required)
-     * @param itemIds The ids of the items to play, comma delimited. (required)
-     * @param startPositionTicks The starting position of the first item. (optional)
-     * @param mediaSourceId Optional. The media source id. (optional)
-     * @param audioStreamIndex Optional. The index of the audio stream to play. (optional)
-     * @param subtitleStreamIndex Optional. The index of the subtitle stream to play. (optional)
-     * @param startIndex Optional. The start index. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Instruction sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call playCall(String sessionId, PlayCommand playCommand, List<UUID> itemIds, Long startPositionTicks, String mediaSourceId, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer startIndex, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Sessions/{sessionId}/Playing"
-            .replace("{" + "sessionId" + "}", localVarApiClient.escapeString(sessionId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (playCommand != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("playCommand", playCommand));
-        }
-
-        if (itemIds != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "itemIds", itemIds));
-        }
-
-        if (startPositionTicks != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startPositionTicks", startPositionTicks));
-        }
-
-        if (mediaSourceId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("mediaSourceId", mediaSourceId));
-        }
-
-        if (audioStreamIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("audioStreamIndex", audioStreamIndex));
-        }
-
-        if (subtitleStreamIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("subtitleStreamIndex", subtitleStreamIndex));
-        }
-
-        if (startIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startIndex", startIndex));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call playValidateBeforeCall(String sessionId, PlayCommand playCommand, List<UUID> itemIds, Long startPositionTicks, String mediaSourceId, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer startIndex, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'sessionId' is set
-        if (sessionId == null) {
-            throw new ApiException("Missing the required parameter 'sessionId' when calling play(Async)");
-        }
-
-        // verify the required parameter 'playCommand' is set
-        if (playCommand == null) {
-            throw new ApiException("Missing the required parameter 'playCommand' when calling play(Async)");
-        }
-
-        // verify the required parameter 'itemIds' is set
-        if (itemIds == null) {
-            throw new ApiException("Missing the required parameter 'itemIds' when calling play(Async)");
-        }
-
-        return playCall(sessionId, playCommand, itemIds, startPositionTicks, mediaSourceId, audioStreamIndex, subtitleStreamIndex, startIndex, _callback);
-
-    }
-
-    /**
-     * Instructs a session to play an item.
-     * 
-     * @param sessionId The session id. (required)
-     * @param playCommand The type of play command to issue (PlayNow, PlayNext, PlayLast). Clients who have not yet implemented play next and play last may play now. (required)
-     * @param itemIds The ids of the items to play, comma delimited. (required)
-     * @param startPositionTicks The starting position of the first item. (optional)
-     * @param mediaSourceId Optional. The media source id. (optional)
-     * @param audioStreamIndex Optional. The index of the audio stream to play. (optional)
-     * @param subtitleStreamIndex Optional. The index of the subtitle stream to play. (optional)
-     * @param startIndex Optional. The start index. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Instruction sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void play(String sessionId, PlayCommand playCommand, List<UUID> itemIds, Long startPositionTicks, String mediaSourceId, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer startIndex) throws ApiException {
-        playWithHttpInfo(sessionId, playCommand, itemIds, startPositionTicks, mediaSourceId, audioStreamIndex, subtitleStreamIndex, startIndex);
-    }
-
-    /**
-     * Instructs a session to play an item.
-     * 
-     * @param sessionId The session id. (required)
-     * @param playCommand The type of play command to issue (PlayNow, PlayNext, PlayLast). Clients who have not yet implemented play next and play last may play now. (required)
-     * @param itemIds The ids of the items to play, comma delimited. (required)
-     * @param startPositionTicks The starting position of the first item. (optional)
-     * @param mediaSourceId Optional. The media source id. (optional)
-     * @param audioStreamIndex Optional. The index of the audio stream to play. (optional)
-     * @param subtitleStreamIndex Optional. The index of the subtitle stream to play. (optional)
-     * @param startIndex Optional. The start index. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Instruction sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> playWithHttpInfo(String sessionId, PlayCommand playCommand, List<UUID> itemIds, Long startPositionTicks, String mediaSourceId, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer startIndex) throws ApiException {
-        okhttp3.Call localVarCall = playValidateBeforeCall(sessionId, playCommand, itemIds, startPositionTicks, mediaSourceId, audioStreamIndex, subtitleStreamIndex, startIndex, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Instructs a session to play an item. (asynchronously)
-     * 
-     * @param sessionId The session id. (required)
-     * @param playCommand The type of play command to issue (PlayNow, PlayNext, PlayLast). Clients who have not yet implemented play next and play last may play now. (required)
-     * @param itemIds The ids of the items to play, comma delimited. (required)
-     * @param startPositionTicks The starting position of the first item. (optional)
-     * @param mediaSourceId Optional. The media source id. (optional)
-     * @param audioStreamIndex Optional. The index of the audio stream to play. (optional)
-     * @param subtitleStreamIndex Optional. The index of the subtitle stream to play. (optional)
-     * @param startIndex Optional. The start index. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Instruction sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call playAsync(String sessionId, PlayCommand playCommand, List<UUID> itemIds, Long startPositionTicks, String mediaSourceId, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer startIndex, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = playValidateBeforeCall(sessionId, playCommand, itemIds, startPositionTicks, mediaSourceId, audioStreamIndex, subtitleStreamIndex, startIndex, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for postCapabilities
-     * @param id The session id. (optional)
-     * @param playableMediaTypes A list of playable media types, comma delimited. Audio, Video, Book, Photo. (optional)
-     * @param supportedCommands A list of supported remote control commands, comma delimited. (optional)
-     * @param supportsMediaControl Determines whether media can be played remotely.. (optional, default to false)
-     * @param supportsSync Determines whether sync is supported. (optional, default to false)
-     * @param supportsPersistentIdentifier Determines whether the device supports a unique identifier. (optional, default to true)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Capabilities posted. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call postCapabilitiesCall(String id, List<String> playableMediaTypes, List<GeneralCommandType> supportedCommands, Boolean supportsMediaControl, Boolean supportsSync, Boolean supportsPersistentIdentifier, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Sessions/Capabilities";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (id != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("id", id));
-        }
-
-        if (playableMediaTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "playableMediaTypes", playableMediaTypes));
-        }
-
-        if (supportedCommands != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "supportedCommands", supportedCommands));
-        }
-
-        if (supportsMediaControl != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("supportsMediaControl", supportsMediaControl));
-        }
-
-        if (supportsSync != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("supportsSync", supportsSync));
-        }
-
-        if (supportsPersistentIdentifier != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("supportsPersistentIdentifier", supportsPersistentIdentifier));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call postCapabilitiesValidateBeforeCall(String id, List<String> playableMediaTypes, List<GeneralCommandType> supportedCommands, Boolean supportsMediaControl, Boolean supportsSync, Boolean supportsPersistentIdentifier, final ApiCallback _callback) throws ApiException {
-        return postCapabilitiesCall(id, playableMediaTypes, supportedCommands, supportsMediaControl, supportsSync, supportsPersistentIdentifier, _callback);
-
-    }
-
-    /**
-     * Updates capabilities for a device.
-     * 
-     * @param id The session id. (optional)
-     * @param playableMediaTypes A list of playable media types, comma delimited. Audio, Video, Book, Photo. (optional)
-     * @param supportedCommands A list of supported remote control commands, comma delimited. (optional)
-     * @param supportsMediaControl Determines whether media can be played remotely.. (optional, default to false)
-     * @param supportsSync Determines whether sync is supported. (optional, default to false)
-     * @param supportsPersistentIdentifier Determines whether the device supports a unique identifier. (optional, default to true)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Capabilities posted. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void postCapabilities(String id, List<String> playableMediaTypes, List<GeneralCommandType> supportedCommands, Boolean supportsMediaControl, Boolean supportsSync, Boolean supportsPersistentIdentifier) throws ApiException {
-        postCapabilitiesWithHttpInfo(id, playableMediaTypes, supportedCommands, supportsMediaControl, supportsSync, supportsPersistentIdentifier);
-    }
-
-    /**
-     * Updates capabilities for a device.
-     * 
-     * @param id The session id. (optional)
-     * @param playableMediaTypes A list of playable media types, comma delimited. Audio, Video, Book, Photo. (optional)
-     * @param supportedCommands A list of supported remote control commands, comma delimited. (optional)
-     * @param supportsMediaControl Determines whether media can be played remotely.. (optional, default to false)
-     * @param supportsSync Determines whether sync is supported. (optional, default to false)
-     * @param supportsPersistentIdentifier Determines whether the device supports a unique identifier. (optional, default to true)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Capabilities posted. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> postCapabilitiesWithHttpInfo(String id, List<String> playableMediaTypes, List<GeneralCommandType> supportedCommands, Boolean supportsMediaControl, Boolean supportsSync, Boolean supportsPersistentIdentifier) throws ApiException {
-        okhttp3.Call localVarCall = postCapabilitiesValidateBeforeCall(id, playableMediaTypes, supportedCommands, supportsMediaControl, supportsSync, supportsPersistentIdentifier, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Updates capabilities for a device. (asynchronously)
-     * 
-     * @param id The session id. (optional)
-     * @param playableMediaTypes A list of playable media types, comma delimited. Audio, Video, Book, Photo. (optional)
-     * @param supportedCommands A list of supported remote control commands, comma delimited. (optional)
-     * @param supportsMediaControl Determines whether media can be played remotely.. (optional, default to false)
-     * @param supportsSync Determines whether sync is supported. (optional, default to false)
-     * @param supportsPersistentIdentifier Determines whether the device supports a unique identifier. (optional, default to true)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Capabilities posted. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call postCapabilitiesAsync(String id, List<String> playableMediaTypes, List<GeneralCommandType> supportedCommands, Boolean supportsMediaControl, Boolean supportsSync, Boolean supportsPersistentIdentifier, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = postCapabilitiesValidateBeforeCall(id, playableMediaTypes, supportedCommands, supportsMediaControl, supportsSync, supportsPersistentIdentifier, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for postFullCapabilities
-     * @param clientCapabilitiesDto The MediaBrowser.Model.Session.ClientCapabilities. (required)
-     * @param id The session id. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Capabilities updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call postFullCapabilitiesCall(ClientCapabilitiesDto clientCapabilitiesDto, String id, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = clientCapabilitiesDto;
-
-        // create path and map variables
-        String localVarPath = "/Sessions/Capabilities/Full";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (id != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("id", id));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call postFullCapabilitiesValidateBeforeCall(ClientCapabilitiesDto clientCapabilitiesDto, String id, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'clientCapabilitiesDto' is set
-        if (clientCapabilitiesDto == null) {
-            throw new ApiException("Missing the required parameter 'clientCapabilitiesDto' when calling postFullCapabilities(Async)");
-        }
-
-        return postFullCapabilitiesCall(clientCapabilitiesDto, id, _callback);
-
-    }
-
-    /**
-     * Updates capabilities for a device.
-     * 
-     * @param clientCapabilitiesDto The MediaBrowser.Model.Session.ClientCapabilities. (required)
-     * @param id The session id. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Capabilities updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void postFullCapabilities(ClientCapabilitiesDto clientCapabilitiesDto, String id) throws ApiException {
-        postFullCapabilitiesWithHttpInfo(clientCapabilitiesDto, id);
-    }
-
-    /**
-     * Updates capabilities for a device.
-     * 
-     * @param clientCapabilitiesDto The MediaBrowser.Model.Session.ClientCapabilities. (required)
-     * @param id The session id. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Capabilities updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> postFullCapabilitiesWithHttpInfo(ClientCapabilitiesDto clientCapabilitiesDto, String id) throws ApiException {
-        okhttp3.Call localVarCall = postFullCapabilitiesValidateBeforeCall(clientCapabilitiesDto, id, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Updates capabilities for a device. (asynchronously)
-     * 
-     * @param clientCapabilitiesDto The MediaBrowser.Model.Session.ClientCapabilities. (required)
-     * @param id The session id. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Capabilities updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call postFullCapabilitiesAsync(ClientCapabilitiesDto clientCapabilitiesDto, String id, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = postFullCapabilitiesValidateBeforeCall(clientCapabilitiesDto, id, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for removeUserFromSession
-     * @param sessionId The session id. (required)
-     * @param userId The user id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User removed from session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call removeUserFromSessionCall(String sessionId, UUID userId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Sessions/{sessionId}/User/{userId}"
-            .replace("{" + "sessionId" + "}", localVarApiClient.escapeString(sessionId.toString()))
-            .replace("{" + "userId" + "}", localVarApiClient.escapeString(userId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call removeUserFromSessionValidateBeforeCall(String sessionId, UUID userId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'sessionId' is set
-        if (sessionId == null) {
-            throw new ApiException("Missing the required parameter 'sessionId' when calling removeUserFromSession(Async)");
-        }
-
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling removeUserFromSession(Async)");
-        }
-
-        return removeUserFromSessionCall(sessionId, userId, _callback);
-
-    }
-
-    /**
-     * Removes an additional user from a session.
-     * 
-     * @param sessionId The session id. (required)
-     * @param userId The user id. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User removed from session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void removeUserFromSession(String sessionId, UUID userId) throws ApiException {
-        removeUserFromSessionWithHttpInfo(sessionId, userId);
-    }
-
-    /**
-     * Removes an additional user from a session.
-     * 
-     * @param sessionId The session id. (required)
-     * @param userId The user id. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User removed from session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> removeUserFromSessionWithHttpInfo(String sessionId, UUID userId) throws ApiException {
-        okhttp3.Call localVarCall = removeUserFromSessionValidateBeforeCall(sessionId, userId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Removes an additional user from a session. (asynchronously)
-     * 
-     * @param sessionId The session id. (required)
-     * @param userId The user id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> User removed from session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call removeUserFromSessionAsync(String sessionId, UUID userId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = removeUserFromSessionValidateBeforeCall(sessionId, userId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for reportSessionEnded
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Session end reported to server. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call reportSessionEndedCall(final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Sessions/Logout";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call reportSessionEndedValidateBeforeCall(final ApiCallback _callback) throws ApiException {
-        return reportSessionEndedCall(_callback);
-
-    }
-
-    /**
-     * Reports that a session has ended.
-     * 
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Session end reported to server. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void reportSessionEnded() throws ApiException {
-        reportSessionEndedWithHttpInfo();
-    }
-
-    /**
-     * Reports that a session has ended.
-     * 
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Session end reported to server. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> reportSessionEndedWithHttpInfo() throws ApiException {
-        okhttp3.Call localVarCall = reportSessionEndedValidateBeforeCall(null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Reports that a session has ended. (asynchronously)
-     * 
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Session end reported to server. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call reportSessionEndedAsync(final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = reportSessionEndedValidateBeforeCall(_callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for reportViewing
-     * @param itemId The item id. (required)
-     * @param sessionId The session id. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Session reported to server. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call reportViewingCall(String itemId, String sessionId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Sessions/Viewing";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (sessionId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("sessionId", sessionId));
-        }
-
-        if (itemId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("itemId", itemId));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call reportViewingValidateBeforeCall(String itemId, String sessionId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling reportViewing(Async)");
-        }
-
-        return reportViewingCall(itemId, sessionId, _callback);
-
-    }
-
-    /**
-     * Reports that a session is viewing an item.
-     * 
-     * @param itemId The item id. (required)
-     * @param sessionId The session id. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Session reported to server. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void reportViewing(String itemId, String sessionId) throws ApiException {
-        reportViewingWithHttpInfo(itemId, sessionId);
-    }
-
-    /**
-     * Reports that a session is viewing an item.
-     * 
-     * @param itemId The item id. (required)
-     * @param sessionId The session id. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Session reported to server. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> reportViewingWithHttpInfo(String itemId, String sessionId) throws ApiException {
-        okhttp3.Call localVarCall = reportViewingValidateBeforeCall(itemId, sessionId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Reports that a session is viewing an item. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param sessionId The session id. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Session reported to server. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call reportViewingAsync(String itemId, String sessionId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = reportViewingValidateBeforeCall(itemId, sessionId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for sendFullGeneralCommand
-     * @param sessionId The session id. (required)
-     * @param generalCommand The MediaBrowser.Model.Session.GeneralCommand. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Full general command sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call sendFullGeneralCommandCall(String sessionId, GeneralCommand generalCommand, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = generalCommand;
-
-        // create path and map variables
-        String localVarPath = "/Sessions/{sessionId}/Command"
-            .replace("{" + "sessionId" + "}", localVarApiClient.escapeString(sessionId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call sendFullGeneralCommandValidateBeforeCall(String sessionId, GeneralCommand generalCommand, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'sessionId' is set
-        if (sessionId == null) {
-            throw new ApiException("Missing the required parameter 'sessionId' when calling sendFullGeneralCommand(Async)");
-        }
-
-        // verify the required parameter 'generalCommand' is set
-        if (generalCommand == null) {
-            throw new ApiException("Missing the required parameter 'generalCommand' when calling sendFullGeneralCommand(Async)");
-        }
-
-        return sendFullGeneralCommandCall(sessionId, generalCommand, _callback);
-
-    }
-
-    /**
-     * Issues a full general command to a client.
-     * 
-     * @param sessionId The session id. (required)
-     * @param generalCommand The MediaBrowser.Model.Session.GeneralCommand. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Full general command sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void sendFullGeneralCommand(String sessionId, GeneralCommand generalCommand) throws ApiException {
-        sendFullGeneralCommandWithHttpInfo(sessionId, generalCommand);
-    }
-
-    /**
-     * Issues a full general command to a client.
-     * 
-     * @param sessionId The session id. (required)
-     * @param generalCommand The MediaBrowser.Model.Session.GeneralCommand. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Full general command sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> sendFullGeneralCommandWithHttpInfo(String sessionId, GeneralCommand generalCommand) throws ApiException {
-        okhttp3.Call localVarCall = sendFullGeneralCommandValidateBeforeCall(sessionId, generalCommand, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Issues a full general command to a client. (asynchronously)
-     * 
-     * @param sessionId The session id. (required)
-     * @param generalCommand The MediaBrowser.Model.Session.GeneralCommand. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Full general command sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call sendFullGeneralCommandAsync(String sessionId, GeneralCommand generalCommand, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = sendFullGeneralCommandValidateBeforeCall(sessionId, generalCommand, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for sendGeneralCommand
-     * @param sessionId The session id. (required)
-     * @param command The command to send. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> General command sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call sendGeneralCommandCall(String sessionId, GeneralCommandType command, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Sessions/{sessionId}/Command/{command}"
-            .replace("{" + "sessionId" + "}", localVarApiClient.escapeString(sessionId.toString()))
-            .replace("{" + "command" + "}", localVarApiClient.escapeString(command.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call sendGeneralCommandValidateBeforeCall(String sessionId, GeneralCommandType command, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'sessionId' is set
-        if (sessionId == null) {
-            throw new ApiException("Missing the required parameter 'sessionId' when calling sendGeneralCommand(Async)");
-        }
-
-        // verify the required parameter 'command' is set
-        if (command == null) {
-            throw new ApiException("Missing the required parameter 'command' when calling sendGeneralCommand(Async)");
-        }
-
-        return sendGeneralCommandCall(sessionId, command, _callback);
-
-    }
-
-    /**
-     * Issues a general command to a client.
-     * 
-     * @param sessionId The session id. (required)
-     * @param command The command to send. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> General command sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void sendGeneralCommand(String sessionId, GeneralCommandType command) throws ApiException {
-        sendGeneralCommandWithHttpInfo(sessionId, command);
-    }
-
-    /**
-     * Issues a general command to a client.
-     * 
-     * @param sessionId The session id. (required)
-     * @param command The command to send. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> General command sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> sendGeneralCommandWithHttpInfo(String sessionId, GeneralCommandType command) throws ApiException {
-        okhttp3.Call localVarCall = sendGeneralCommandValidateBeforeCall(sessionId, command, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Issues a general command to a client. (asynchronously)
-     * 
-     * @param sessionId The session id. (required)
-     * @param command The command to send. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> General command sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call sendGeneralCommandAsync(String sessionId, GeneralCommandType command, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = sendGeneralCommandValidateBeforeCall(sessionId, command, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for sendMessageCommand
-     * @param sessionId The session id. (required)
-     * @param messageCommand The MediaBrowser.Model.Session.MessageCommand object containing Header, Message Text, and TimeoutMs. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Message sent. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call sendMessageCommandCall(String sessionId, MessageCommand messageCommand, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = messageCommand;
-
-        // create path and map variables
-        String localVarPath = "/Sessions/{sessionId}/Message"
-            .replace("{" + "sessionId" + "}", localVarApiClient.escapeString(sessionId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call sendMessageCommandValidateBeforeCall(String sessionId, MessageCommand messageCommand, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'sessionId' is set
-        if (sessionId == null) {
-            throw new ApiException("Missing the required parameter 'sessionId' when calling sendMessageCommand(Async)");
-        }
-
-        // verify the required parameter 'messageCommand' is set
-        if (messageCommand == null) {
-            throw new ApiException("Missing the required parameter 'messageCommand' when calling sendMessageCommand(Async)");
-        }
-
-        return sendMessageCommandCall(sessionId, messageCommand, _callback);
-
-    }
-
-    /**
-     * Issues a command to a client to display a message to the user.
-     * 
-     * @param sessionId The session id. (required)
-     * @param messageCommand The MediaBrowser.Model.Session.MessageCommand object containing Header, Message Text, and TimeoutMs. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Message sent. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void sendMessageCommand(String sessionId, MessageCommand messageCommand) throws ApiException {
-        sendMessageCommandWithHttpInfo(sessionId, messageCommand);
-    }
-
-    /**
-     * Issues a command to a client to display a message to the user.
-     * 
-     * @param sessionId The session id. (required)
-     * @param messageCommand The MediaBrowser.Model.Session.MessageCommand object containing Header, Message Text, and TimeoutMs. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Message sent. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> sendMessageCommandWithHttpInfo(String sessionId, MessageCommand messageCommand) throws ApiException {
-        okhttp3.Call localVarCall = sendMessageCommandValidateBeforeCall(sessionId, messageCommand, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Issues a command to a client to display a message to the user. (asynchronously)
-     * 
-     * @param sessionId The session id. (required)
-     * @param messageCommand The MediaBrowser.Model.Session.MessageCommand object containing Header, Message Text, and TimeoutMs. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Message sent. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call sendMessageCommandAsync(String sessionId, MessageCommand messageCommand, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = sendMessageCommandValidateBeforeCall(sessionId, messageCommand, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for sendPlaystateCommand
-     * @param sessionId The session id. (required)
-     * @param command The MediaBrowser.Model.Session.PlaystateCommand. (required)
-     * @param seekPositionTicks The optional position ticks. (optional)
-     * @param controllingUserId The optional controlling user id. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playstate command sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call sendPlaystateCommandCall(String sessionId, PlaystateCommand command, Long seekPositionTicks, String controllingUserId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Sessions/{sessionId}/Playing/{command}"
-            .replace("{" + "sessionId" + "}", localVarApiClient.escapeString(sessionId.toString()))
-            .replace("{" + "command" + "}", localVarApiClient.escapeString(command.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (seekPositionTicks != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("seekPositionTicks", seekPositionTicks));
-        }
-
-        if (controllingUserId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("controllingUserId", controllingUserId));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call sendPlaystateCommandValidateBeforeCall(String sessionId, PlaystateCommand command, Long seekPositionTicks, String controllingUserId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'sessionId' is set
-        if (sessionId == null) {
-            throw new ApiException("Missing the required parameter 'sessionId' when calling sendPlaystateCommand(Async)");
-        }
-
-        // verify the required parameter 'command' is set
-        if (command == null) {
-            throw new ApiException("Missing the required parameter 'command' when calling sendPlaystateCommand(Async)");
-        }
-
-        return sendPlaystateCommandCall(sessionId, command, seekPositionTicks, controllingUserId, _callback);
-
-    }
-
-    /**
-     * Issues a playstate command to a client.
-     * 
-     * @param sessionId The session id. (required)
-     * @param command The MediaBrowser.Model.Session.PlaystateCommand. (required)
-     * @param seekPositionTicks The optional position ticks. (optional)
-     * @param controllingUserId The optional controlling user id. (optional)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playstate command sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void sendPlaystateCommand(String sessionId, PlaystateCommand command, Long seekPositionTicks, String controllingUserId) throws ApiException {
-        sendPlaystateCommandWithHttpInfo(sessionId, command, seekPositionTicks, controllingUserId);
-    }
-
-    /**
-     * Issues a playstate command to a client.
-     * 
-     * @param sessionId The session id. (required)
-     * @param command The MediaBrowser.Model.Session.PlaystateCommand. (required)
-     * @param seekPositionTicks The optional position ticks. (optional)
-     * @param controllingUserId The optional controlling user id. (optional)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playstate command sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> sendPlaystateCommandWithHttpInfo(String sessionId, PlaystateCommand command, Long seekPositionTicks, String controllingUserId) throws ApiException {
-        okhttp3.Call localVarCall = sendPlaystateCommandValidateBeforeCall(sessionId, command, seekPositionTicks, controllingUserId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Issues a playstate command to a client. (asynchronously)
-     * 
-     * @param sessionId The session id. (required)
-     * @param command The MediaBrowser.Model.Session.PlaystateCommand. (required)
-     * @param seekPositionTicks The optional position ticks. (optional)
-     * @param controllingUserId The optional controlling user id. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Playstate command sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call sendPlaystateCommandAsync(String sessionId, PlaystateCommand command, Long seekPositionTicks, String controllingUserId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = sendPlaystateCommandValidateBeforeCall(sessionId, command, seekPositionTicks, controllingUserId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for sendSystemCommand
-     * @param sessionId The session id. (required)
-     * @param command The command to send. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> System command sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call sendSystemCommandCall(String sessionId, GeneralCommandType command, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Sessions/{sessionId}/System/{command}"
-            .replace("{" + "sessionId" + "}", localVarApiClient.escapeString(sessionId.toString()))
-            .replace("{" + "command" + "}", localVarApiClient.escapeString(command.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call sendSystemCommandValidateBeforeCall(String sessionId, GeneralCommandType command, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'sessionId' is set
-        if (sessionId == null) {
-            throw new ApiException("Missing the required parameter 'sessionId' when calling sendSystemCommand(Async)");
-        }
-
-        // verify the required parameter 'command' is set
-        if (command == null) {
-            throw new ApiException("Missing the required parameter 'command' when calling sendSystemCommand(Async)");
-        }
-
-        return sendSystemCommandCall(sessionId, command, _callback);
-
-    }
-
-    /**
-     * Issues a system command to a client.
-     * 
-     * @param sessionId The session id. (required)
-     * @param command The command to send. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> System command sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void sendSystemCommand(String sessionId, GeneralCommandType command) throws ApiException {
-        sendSystemCommandWithHttpInfo(sessionId, command);
-    }
-
-    /**
-     * Issues a system command to a client.
-     * 
-     * @param sessionId The session id. (required)
-     * @param command The command to send. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> System command sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> sendSystemCommandWithHttpInfo(String sessionId, GeneralCommandType command) throws ApiException {
-        okhttp3.Call localVarCall = sendSystemCommandValidateBeforeCall(sessionId, command, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Issues a system command to a client. (asynchronously)
-     * 
-     * @param sessionId The session id. (required)
-     * @param command The command to send. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> System command sent to session. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call sendSystemCommandAsync(String sessionId, GeneralCommandType command, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = sendSystemCommandValidateBeforeCall(sessionId, command, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
 }

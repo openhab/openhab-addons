@@ -10,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import org.openapitools.client.model.BaseItemKind;
 import org.openapitools.client.model.MediaType;
@@ -33,413 +24,302 @@ import org.openapitools.client.model.QueryFilters;
 import org.openapitools.client.model.QueryFiltersLegacy;
 import java.util.UUID;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class FilterApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public FilterApi() {
-        this(Configuration.getDefaultApiClient());
+  public FilterApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public FilterApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Gets query filters.
+   * 
+   * @param userId Optional. User id. (optional)
+   * @param parentId Optional. Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
+   * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
+   * @param isAiring Optional. Is item airing. (optional)
+   * @param isMovie Optional. Is item movie. (optional)
+   * @param isSports Optional. Is item sports. (optional)
+   * @param isKids Optional. Is item kids. (optional)
+   * @param isNews Optional. Is item news. (optional)
+   * @param isSeries Optional. Is item series. (optional)
+   * @param recursive Optional. Search recursive. (optional)
+   * @return QueryFilters
+   * @throws ApiException if fails to make API call
+   */
+  public QueryFilters getQueryFilters(UUID userId, UUID parentId, List<BaseItemKind> includeItemTypes, Boolean isAiring, Boolean isMovie, Boolean isSports, Boolean isKids, Boolean isNews, Boolean isSeries, Boolean recursive) throws ApiException {
+    ApiResponse<QueryFilters> localVarResponse = getQueryFiltersWithHttpInfo(userId, parentId, includeItemTypes, isAiring, isMovie, isSports, isKids, isNews, isSeries, recursive);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets query filters.
+   * 
+   * @param userId Optional. User id. (optional)
+   * @param parentId Optional. Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
+   * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
+   * @param isAiring Optional. Is item airing. (optional)
+   * @param isMovie Optional. Is item movie. (optional)
+   * @param isSports Optional. Is item sports. (optional)
+   * @param isKids Optional. Is item kids. (optional)
+   * @param isNews Optional. Is item news. (optional)
+   * @param isSeries Optional. Is item series. (optional)
+   * @param recursive Optional. Search recursive. (optional)
+   * @return ApiResponse&lt;QueryFilters&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<QueryFilters> getQueryFiltersWithHttpInfo(UUID userId, UUID parentId, List<BaseItemKind> includeItemTypes, Boolean isAiring, Boolean isMovie, Boolean isSports, Boolean isKids, Boolean isNews, Boolean isSeries, Boolean recursive) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getQueryFiltersRequestBuilder(userId, parentId, includeItemTypes, isAiring, isMovie, isSports, isKids, isNews, isSeries, recursive);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getQueryFilters", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<QueryFilters>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<QueryFilters>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<QueryFilters>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getQueryFiltersRequestBuilder(UUID userId, UUID parentId, List<BaseItemKind> includeItemTypes, Boolean isAiring, Boolean isMovie, Boolean isSports, Boolean isKids, Boolean isNews, Boolean isSeries, Boolean recursive) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/Filters2";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "parentId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("parentId", parentId));
+    localVarQueryParameterBaseName = "includeItemTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
+    localVarQueryParameterBaseName = "isAiring";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isAiring", isAiring));
+    localVarQueryParameterBaseName = "isMovie";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isMovie", isMovie));
+    localVarQueryParameterBaseName = "isSports";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isSports", isSports));
+    localVarQueryParameterBaseName = "isKids";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isKids", isKids));
+    localVarQueryParameterBaseName = "isNews";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isNews", isNews));
+    localVarQueryParameterBaseName = "isSeries";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isSeries", isSeries));
+    localVarQueryParameterBaseName = "recursive";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("recursive", recursive));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public FilterApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets legacy query filters.
+   * 
+   * @param userId Optional. User id. (optional)
+   * @param parentId Optional. Parent id. (optional)
+   * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
+   * @param mediaTypes Optional. Filter by MediaType. Allows multiple, comma delimited. (optional)
+   * @return QueryFiltersLegacy
+   * @throws ApiException if fails to make API call
+   */
+  public QueryFiltersLegacy getQueryFiltersLegacy(UUID userId, UUID parentId, List<BaseItemKind> includeItemTypes, List<MediaType> mediaTypes) throws ApiException {
+    ApiResponse<QueryFiltersLegacy> localVarResponse = getQueryFiltersLegacyWithHttpInfo(userId, parentId, includeItemTypes, mediaTypes);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets legacy query filters.
+   * 
+   * @param userId Optional. User id. (optional)
+   * @param parentId Optional. Parent id. (optional)
+   * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
+   * @param mediaTypes Optional. Filter by MediaType. Allows multiple, comma delimited. (optional)
+   * @return ApiResponse&lt;QueryFiltersLegacy&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<QueryFiltersLegacy> getQueryFiltersLegacyWithHttpInfo(UUID userId, UUID parentId, List<BaseItemKind> includeItemTypes, List<MediaType> mediaTypes) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getQueryFiltersLegacyRequestBuilder(userId, parentId, includeItemTypes, mediaTypes);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getQueryFiltersLegacy", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<QueryFiltersLegacy>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<QueryFiltersLegacy>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<QueryFiltersLegacy>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getQueryFiltersLegacyRequestBuilder(UUID userId, UUID parentId, List<BaseItemKind> includeItemTypes, List<MediaType> mediaTypes) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/Filters";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "parentId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("parentId", parentId));
+    localVarQueryParameterBaseName = "includeItemTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
+    localVarQueryParameterBaseName = "mediaTypes";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "mediaTypes", mediaTypes));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    public int getHostIndex() {
-        return localHostIndex;
-    }
-
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
-    }
-
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for getQueryFilters
-     * @param userId Optional. User id. (optional)
-     * @param parentId Optional. Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param isAiring Optional. Is item airing. (optional)
-     * @param isMovie Optional. Is item movie. (optional)
-     * @param isSports Optional. Is item sports. (optional)
-     * @param isKids Optional. Is item kids. (optional)
-     * @param isNews Optional. Is item news. (optional)
-     * @param isSeries Optional. Is item series. (optional)
-     * @param recursive Optional. Search recursive. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Filters retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getQueryFiltersCall(UUID userId, UUID parentId, List<BaseItemKind> includeItemTypes, Boolean isAiring, Boolean isMovie, Boolean isSports, Boolean isKids, Boolean isNews, Boolean isSeries, Boolean recursive, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/Filters2";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (parentId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("parentId", parentId));
-        }
-
-        if (includeItemTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
-        }
-
-        if (isAiring != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isAiring", isAiring));
-        }
-
-        if (isMovie != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isMovie", isMovie));
-        }
-
-        if (isSports != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isSports", isSports));
-        }
-
-        if (isKids != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isKids", isKids));
-        }
-
-        if (isNews != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isNews", isNews));
-        }
-
-        if (isSeries != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isSeries", isSeries));
-        }
-
-        if (recursive != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("recursive", recursive));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getQueryFiltersValidateBeforeCall(UUID userId, UUID parentId, List<BaseItemKind> includeItemTypes, Boolean isAiring, Boolean isMovie, Boolean isSports, Boolean isKids, Boolean isNews, Boolean isSeries, Boolean recursive, final ApiCallback _callback) throws ApiException {
-        return getQueryFiltersCall(userId, parentId, includeItemTypes, isAiring, isMovie, isSports, isKids, isNews, isSeries, recursive, _callback);
-
-    }
-
-    /**
-     * Gets query filters.
-     * 
-     * @param userId Optional. User id. (optional)
-     * @param parentId Optional. Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param isAiring Optional. Is item airing. (optional)
-     * @param isMovie Optional. Is item movie. (optional)
-     * @param isSports Optional. Is item sports. (optional)
-     * @param isKids Optional. Is item kids. (optional)
-     * @param isNews Optional. Is item news. (optional)
-     * @param isSeries Optional. Is item series. (optional)
-     * @param recursive Optional. Search recursive. (optional)
-     * @return QueryFilters
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Filters retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public QueryFilters getQueryFilters(UUID userId, UUID parentId, List<BaseItemKind> includeItemTypes, Boolean isAiring, Boolean isMovie, Boolean isSports, Boolean isKids, Boolean isNews, Boolean isSeries, Boolean recursive) throws ApiException {
-        ApiResponse<QueryFilters> localVarResp = getQueryFiltersWithHttpInfo(userId, parentId, includeItemTypes, isAiring, isMovie, isSports, isKids, isNews, isSeries, recursive);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets query filters.
-     * 
-     * @param userId Optional. User id. (optional)
-     * @param parentId Optional. Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param isAiring Optional. Is item airing. (optional)
-     * @param isMovie Optional. Is item movie. (optional)
-     * @param isSports Optional. Is item sports. (optional)
-     * @param isKids Optional. Is item kids. (optional)
-     * @param isNews Optional. Is item news. (optional)
-     * @param isSeries Optional. Is item series. (optional)
-     * @param recursive Optional. Search recursive. (optional)
-     * @return ApiResponse&lt;QueryFilters&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Filters retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<QueryFilters> getQueryFiltersWithHttpInfo(UUID userId, UUID parentId, List<BaseItemKind> includeItemTypes, Boolean isAiring, Boolean isMovie, Boolean isSports, Boolean isKids, Boolean isNews, Boolean isSeries, Boolean recursive) throws ApiException {
-        okhttp3.Call localVarCall = getQueryFiltersValidateBeforeCall(userId, parentId, includeItemTypes, isAiring, isMovie, isSports, isKids, isNews, isSeries, recursive, null);
-        Type localVarReturnType = new TypeToken<QueryFilters>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets query filters. (asynchronously)
-     * 
-     * @param userId Optional. User id. (optional)
-     * @param parentId Optional. Specify this to localize the search to a specific item or folder. Omit to use the root. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param isAiring Optional. Is item airing. (optional)
-     * @param isMovie Optional. Is item movie. (optional)
-     * @param isSports Optional. Is item sports. (optional)
-     * @param isKids Optional. Is item kids. (optional)
-     * @param isNews Optional. Is item news. (optional)
-     * @param isSeries Optional. Is item series. (optional)
-     * @param recursive Optional. Search recursive. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Filters retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getQueryFiltersAsync(UUID userId, UUID parentId, List<BaseItemKind> includeItemTypes, Boolean isAiring, Boolean isMovie, Boolean isSports, Boolean isKids, Boolean isNews, Boolean isSeries, Boolean recursive, final ApiCallback<QueryFilters> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getQueryFiltersValidateBeforeCall(userId, parentId, includeItemTypes, isAiring, isMovie, isSports, isKids, isNews, isSeries, recursive, _callback);
-        Type localVarReturnType = new TypeToken<QueryFilters>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getQueryFiltersLegacy
-     * @param userId Optional. User id. (optional)
-     * @param parentId Optional. Parent id. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param mediaTypes Optional. Filter by MediaType. Allows multiple, comma delimited. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Legacy filters retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getQueryFiltersLegacyCall(UUID userId, UUID parentId, List<BaseItemKind> includeItemTypes, List<MediaType> mediaTypes, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/Filters";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (parentId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("parentId", parentId));
-        }
-
-        if (includeItemTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "includeItemTypes", includeItemTypes));
-        }
-
-        if (mediaTypes != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "mediaTypes", mediaTypes));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getQueryFiltersLegacyValidateBeforeCall(UUID userId, UUID parentId, List<BaseItemKind> includeItemTypes, List<MediaType> mediaTypes, final ApiCallback _callback) throws ApiException {
-        return getQueryFiltersLegacyCall(userId, parentId, includeItemTypes, mediaTypes, _callback);
-
-    }
-
-    /**
-     * Gets legacy query filters.
-     * 
-     * @param userId Optional. User id. (optional)
-     * @param parentId Optional. Parent id. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param mediaTypes Optional. Filter by MediaType. Allows multiple, comma delimited. (optional)
-     * @return QueryFiltersLegacy
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Legacy filters retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public QueryFiltersLegacy getQueryFiltersLegacy(UUID userId, UUID parentId, List<BaseItemKind> includeItemTypes, List<MediaType> mediaTypes) throws ApiException {
-        ApiResponse<QueryFiltersLegacy> localVarResp = getQueryFiltersLegacyWithHttpInfo(userId, parentId, includeItemTypes, mediaTypes);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets legacy query filters.
-     * 
-     * @param userId Optional. User id. (optional)
-     * @param parentId Optional. Parent id. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param mediaTypes Optional. Filter by MediaType. Allows multiple, comma delimited. (optional)
-     * @return ApiResponse&lt;QueryFiltersLegacy&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Legacy filters retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<QueryFiltersLegacy> getQueryFiltersLegacyWithHttpInfo(UUID userId, UUID parentId, List<BaseItemKind> includeItemTypes, List<MediaType> mediaTypes) throws ApiException {
-        okhttp3.Call localVarCall = getQueryFiltersLegacyValidateBeforeCall(userId, parentId, includeItemTypes, mediaTypes, null);
-        Type localVarReturnType = new TypeToken<QueryFiltersLegacy>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets legacy query filters. (asynchronously)
-     * 
-     * @param userId Optional. User id. (optional)
-     * @param parentId Optional. Parent id. (optional)
-     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows multiple, comma delimited. (optional)
-     * @param mediaTypes Optional. Filter by MediaType. Allows multiple, comma delimited. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Legacy filters retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getQueryFiltersLegacyAsync(UUID userId, UUID parentId, List<BaseItemKind> includeItemTypes, List<MediaType> mediaTypes, final ApiCallback<QueryFiltersLegacy> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getQueryFiltersLegacyValidateBeforeCall(userId, parentId, includeItemTypes, mediaTypes, _callback);
-        Type localVarReturnType = new TypeToken<QueryFiltersLegacy>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
 }

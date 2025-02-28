@@ -13,82 +13,65 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import java.util.UUID;
 import org.openapitools.client.model.PackageInfo;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class InstallationInfo.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  InstallationInfo.JSON_PROPERTY_GUID,
+  InstallationInfo.JSON_PROPERTY_NAME,
+  InstallationInfo.JSON_PROPERTY_VERSION,
+  InstallationInfo.JSON_PROPERTY_CHANGELOG,
+  InstallationInfo.JSON_PROPERTY_SOURCE_URL,
+  InstallationInfo.JSON_PROPERTY_CHECKSUM,
+  InstallationInfo.JSON_PROPERTY_PACKAGE_INFO
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class InstallationInfo {
-  public static final String SERIALIZED_NAME_GUID = "Guid";
-  @SerializedName(SERIALIZED_NAME_GUID)
+  public static final String JSON_PROPERTY_GUID = "Guid";
   @javax.annotation.Nullable
   private UUID guid;
 
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_VERSION = "Version";
-  @SerializedName(SERIALIZED_NAME_VERSION)
-  @javax.annotation.Nullable
-  private String version;
+  public static final String JSON_PROPERTY_VERSION = "Version";
+  private JsonNullable<String> version = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_CHANGELOG = "Changelog";
-  @SerializedName(SERIALIZED_NAME_CHANGELOG)
-  @javax.annotation.Nullable
-  private String changelog;
+  public static final String JSON_PROPERTY_CHANGELOG = "Changelog";
+  private JsonNullable<String> changelog = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_SOURCE_URL = "SourceUrl";
-  @SerializedName(SERIALIZED_NAME_SOURCE_URL)
-  @javax.annotation.Nullable
-  private String sourceUrl;
+  public static final String JSON_PROPERTY_SOURCE_URL = "SourceUrl";
+  private JsonNullable<String> sourceUrl = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_CHECKSUM = "Checksum";
-  @SerializedName(SERIALIZED_NAME_CHECKSUM)
-  @javax.annotation.Nullable
-  private String checksum;
+  public static final String JSON_PROPERTY_CHECKSUM = "Checksum";
+  private JsonNullable<String> checksum = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PACKAGE_INFO = "PackageInfo";
-  @SerializedName(SERIALIZED_NAME_PACKAGE_INFO)
-  @javax.annotation.Nullable
-  private PackageInfo packageInfo;
+  public static final String JSON_PROPERTY_PACKAGE_INFO = "PackageInfo";
+  private JsonNullable<PackageInfo> packageInfo = JsonNullable.<PackageInfo>undefined();
 
-  public InstallationInfo() {
+  public InstallationInfo() { 
   }
 
   public InstallationInfo guid(@javax.annotation.Nullable UUID guid) {
@@ -101,17 +84,22 @@ public class InstallationInfo {
    * @return guid
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_GUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getGuid() {
     return guid;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_GUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGuid(@javax.annotation.Nullable UUID guid) {
     this.guid = guid;
   }
 
 
   public InstallationInfo name(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
     return this;
   }
 
@@ -120,17 +108,30 @@ public class InstallationInfo {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
   }
 
 
   public InstallationInfo version(@javax.annotation.Nullable String version) {
-    this.version = version;
+    this.version = JsonNullable.<String>of(version);
     return this;
   }
 
@@ -139,17 +140,30 @@ public class InstallationInfo {
    * @return version
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getVersion() {
+        return version.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getVersion_JsonNullable() {
     return version;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  public void setVersion_JsonNullable(JsonNullable<String> version) {
+    this.version = version;
   }
 
   public void setVersion(@javax.annotation.Nullable String version) {
-    this.version = version;
+    this.version = JsonNullable.<String>of(version);
   }
 
 
   public InstallationInfo changelog(@javax.annotation.Nullable String changelog) {
-    this.changelog = changelog;
+    this.changelog = JsonNullable.<String>of(changelog);
     return this;
   }
 
@@ -158,17 +172,30 @@ public class InstallationInfo {
    * @return changelog
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getChangelog() {
+        return changelog.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CHANGELOG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getChangelog_JsonNullable() {
     return changelog;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CHANGELOG)
+  public void setChangelog_JsonNullable(JsonNullable<String> changelog) {
+    this.changelog = changelog;
   }
 
   public void setChangelog(@javax.annotation.Nullable String changelog) {
-    this.changelog = changelog;
+    this.changelog = JsonNullable.<String>of(changelog);
   }
 
 
   public InstallationInfo sourceUrl(@javax.annotation.Nullable String sourceUrl) {
-    this.sourceUrl = sourceUrl;
+    this.sourceUrl = JsonNullable.<String>of(sourceUrl);
     return this;
   }
 
@@ -177,17 +204,30 @@ public class InstallationInfo {
    * @return sourceUrl
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getSourceUrl() {
+        return sourceUrl.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SOURCE_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getSourceUrl_JsonNullable() {
     return sourceUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SOURCE_URL)
+  public void setSourceUrl_JsonNullable(JsonNullable<String> sourceUrl) {
+    this.sourceUrl = sourceUrl;
   }
 
   public void setSourceUrl(@javax.annotation.Nullable String sourceUrl) {
-    this.sourceUrl = sourceUrl;
+    this.sourceUrl = JsonNullable.<String>of(sourceUrl);
   }
 
 
   public InstallationInfo checksum(@javax.annotation.Nullable String checksum) {
-    this.checksum = checksum;
+    this.checksum = JsonNullable.<String>of(checksum);
     return this;
   }
 
@@ -196,17 +236,30 @@ public class InstallationInfo {
    * @return checksum
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getChecksum() {
+        return checksum.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CHECKSUM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getChecksum_JsonNullable() {
     return checksum;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CHECKSUM)
+  public void setChecksum_JsonNullable(JsonNullable<String> checksum) {
+    this.checksum = checksum;
   }
 
   public void setChecksum(@javax.annotation.Nullable String checksum) {
-    this.checksum = checksum;
+    this.checksum = JsonNullable.<String>of(checksum);
   }
 
 
   public InstallationInfo packageInfo(@javax.annotation.Nullable PackageInfo packageInfo) {
-    this.packageInfo = packageInfo;
+    this.packageInfo = JsonNullable.<PackageInfo>of(packageInfo);
     return this;
   }
 
@@ -215,16 +268,31 @@ public class InstallationInfo {
    * @return packageInfo
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public PackageInfo getPackageInfo() {
-    return packageInfo;
+        return packageInfo.orElse(null);
   }
 
-  public void setPackageInfo(@javax.annotation.Nullable PackageInfo packageInfo) {
+  @JsonProperty(JSON_PROPERTY_PACKAGE_INFO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<PackageInfo> getPackageInfo_JsonNullable() {
+    return packageInfo;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PACKAGE_INFO)
+  public void setPackageInfo_JsonNullable(JsonNullable<PackageInfo> packageInfo) {
     this.packageInfo = packageInfo;
   }
 
+  public void setPackageInfo(@javax.annotation.Nullable PackageInfo packageInfo) {
+    this.packageInfo = JsonNullable.<PackageInfo>of(packageInfo);
+  }
 
 
+  /**
+   * Return true if this InstallationInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -235,12 +303,12 @@ public class InstallationInfo {
     }
     InstallationInfo installationInfo = (InstallationInfo) o;
     return Objects.equals(this.guid, installationInfo.guid) &&
-        Objects.equals(this.name, installationInfo.name) &&
-        Objects.equals(this.version, installationInfo.version) &&
-        Objects.equals(this.changelog, installationInfo.changelog) &&
-        Objects.equals(this.sourceUrl, installationInfo.sourceUrl) &&
-        Objects.equals(this.checksum, installationInfo.checksum) &&
-        Objects.equals(this.packageInfo, installationInfo.packageInfo);
+        equalsNullable(this.name, installationInfo.name) &&
+        equalsNullable(this.version, installationInfo.version) &&
+        equalsNullable(this.changelog, installationInfo.changelog) &&
+        equalsNullable(this.sourceUrl, installationInfo.sourceUrl) &&
+        equalsNullable(this.checksum, installationInfo.checksum) &&
+        equalsNullable(this.packageInfo, installationInfo.packageInfo);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -249,7 +317,7 @@ public class InstallationInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(guid, name, version, changelog, sourceUrl, checksum, packageInfo);
+    return Objects.hash(guid, hashCodeNullable(name), hashCodeNullable(version), hashCodeNullable(changelog), hashCodeNullable(sourceUrl), hashCodeNullable(checksum), hashCodeNullable(packageInfo));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -285,117 +353,74 @@ public class InstallationInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Guid");
-    openapiFields.add("Name");
-    openapiFields.add("Version");
-    openapiFields.add("Changelog");
-    openapiFields.add("SourceUrl");
-    openapiFields.add("Checksum");
-    openapiFields.add("PackageInfo");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to InstallationInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!InstallationInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in InstallationInfo is not found in the empty JSON string", InstallationInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!InstallationInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `InstallationInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Guid") != null && !jsonObj.get("Guid").isJsonNull()) && !jsonObj.get("Guid").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Guid` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Guid").toString()));
-      }
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("Version") != null && !jsonObj.get("Version").isJsonNull()) && !jsonObj.get("Version").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Version` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Version").toString()));
-      }
-      if ((jsonObj.get("Changelog") != null && !jsonObj.get("Changelog").isJsonNull()) && !jsonObj.get("Changelog").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Changelog` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Changelog").toString()));
-      }
-      if ((jsonObj.get("SourceUrl") != null && !jsonObj.get("SourceUrl").isJsonNull()) && !jsonObj.get("SourceUrl").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SourceUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("SourceUrl").toString()));
-      }
-      if ((jsonObj.get("Checksum") != null && !jsonObj.get("Checksum").isJsonNull()) && !jsonObj.get("Checksum").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Checksum` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Checksum").toString()));
-      }
-      // validate the optional field `PackageInfo`
-      if (jsonObj.get("PackageInfo") != null && !jsonObj.get("PackageInfo").isJsonNull()) {
-        PackageInfo.validateJsonElement(jsonObj.get("PackageInfo"));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!InstallationInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'InstallationInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<InstallationInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(InstallationInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<InstallationInfo>() {
-           @Override
-           public void write(JsonWriter out, InstallationInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public InstallationInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of InstallationInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of InstallationInfo
-   * @throws IOException if the JSON string is invalid with respect to InstallationInfo
-   */
-  public static InstallationInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, InstallationInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of InstallationInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Guid` to the URL query string
+    if (getGuid() != null) {
+      joiner.add(String.format("%sGuid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getGuid()))));
+    }
+
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `Version` to the URL query string
+    if (getVersion() != null) {
+      joiner.add(String.format("%sVersion%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
+    }
+
+    // add `Changelog` to the URL query string
+    if (getChangelog() != null) {
+      joiner.add(String.format("%sChangelog%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getChangelog()))));
+    }
+
+    // add `SourceUrl` to the URL query string
+    if (getSourceUrl() != null) {
+      joiner.add(String.format("%sSourceUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSourceUrl()))));
+    }
+
+    // add `Checksum` to the URL query string
+    if (getChecksum() != null) {
+      joiner.add(String.format("%sChecksum%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getChecksum()))));
+    }
+
+    // add `PackageInfo` to the URL query string
+    if (getPackageInfo() != null) {
+      joiner.add(getPackageInfo().toUrlQueryString(prefix + "PackageInfo" + suffix));
+    }
+
+    return joiner.toString();
   }
 }
 

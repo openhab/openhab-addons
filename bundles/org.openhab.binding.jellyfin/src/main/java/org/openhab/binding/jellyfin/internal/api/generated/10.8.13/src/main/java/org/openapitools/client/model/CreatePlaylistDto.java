@@ -13,72 +13,58 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Create new playlist dto.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  CreatePlaylistDto.JSON_PROPERTY_NAME,
+  CreatePlaylistDto.JSON_PROPERTY_IDS,
+  CreatePlaylistDto.JSON_PROPERTY_USER_ID,
+  CreatePlaylistDto.JSON_PROPERTY_MEDIA_TYPE
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class CreatePlaylistDto {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_IDS = "Ids";
-  @SerializedName(SERIALIZED_NAME_IDS)
+  public static final String JSON_PROPERTY_IDS = "Ids";
   @javax.annotation.Nullable
   private List<UUID> ids = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_USER_ID = "UserId";
-  @SerializedName(SERIALIZED_NAME_USER_ID)
-  @javax.annotation.Nullable
-  private UUID userId;
+  public static final String JSON_PROPERTY_USER_ID = "UserId";
+  private JsonNullable<UUID> userId = JsonNullable.<UUID>undefined();
 
-  public static final String SERIALIZED_NAME_MEDIA_TYPE = "MediaType";
-  @SerializedName(SERIALIZED_NAME_MEDIA_TYPE)
-  @javax.annotation.Nullable
-  private String mediaType;
+  public static final String JSON_PROPERTY_MEDIA_TYPE = "MediaType";
+  private JsonNullable<String> mediaType = JsonNullable.<String>undefined();
 
-  public CreatePlaylistDto() {
+  public CreatePlaylistDto() { 
   }
 
   public CreatePlaylistDto name(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
     return this;
   }
 
@@ -87,12 +73,25 @@ public class CreatePlaylistDto {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
   }
 
 
@@ -114,17 +113,22 @@ public class CreatePlaylistDto {
    * @return ids
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<UUID> getIds() {
     return ids;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIds(@javax.annotation.Nullable List<UUID> ids) {
     this.ids = ids;
   }
 
 
   public CreatePlaylistDto userId(@javax.annotation.Nullable UUID userId) {
-    this.userId = userId;
+    this.userId = JsonNullable.<UUID>of(userId);
     return this;
   }
 
@@ -133,17 +137,30 @@ public class CreatePlaylistDto {
    * @return userId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public UUID getUserId() {
+        return userId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<UUID> getUserId_JsonNullable() {
     return userId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_USER_ID)
+  public void setUserId_JsonNullable(JsonNullable<UUID> userId) {
+    this.userId = userId;
   }
 
   public void setUserId(@javax.annotation.Nullable UUID userId) {
-    this.userId = userId;
+    this.userId = JsonNullable.<UUID>of(userId);
   }
 
 
   public CreatePlaylistDto mediaType(@javax.annotation.Nullable String mediaType) {
-    this.mediaType = mediaType;
+    this.mediaType = JsonNullable.<String>of(mediaType);
     return this;
   }
 
@@ -152,16 +169,31 @@ public class CreatePlaylistDto {
    * @return mediaType
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getMediaType() {
-    return mediaType;
+        return mediaType.orElse(null);
   }
 
-  public void setMediaType(@javax.annotation.Nullable String mediaType) {
+  @JsonProperty(JSON_PROPERTY_MEDIA_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getMediaType_JsonNullable() {
+    return mediaType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MEDIA_TYPE)
+  public void setMediaType_JsonNullable(JsonNullable<String> mediaType) {
     this.mediaType = mediaType;
   }
 
+  public void setMediaType(@javax.annotation.Nullable String mediaType) {
+    this.mediaType = JsonNullable.<String>of(mediaType);
+  }
 
 
+  /**
+   * Return true if this CreatePlaylistDto object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -171,10 +203,10 @@ public class CreatePlaylistDto {
       return false;
     }
     CreatePlaylistDto createPlaylistDto = (CreatePlaylistDto) o;
-    return Objects.equals(this.name, createPlaylistDto.name) &&
+    return equalsNullable(this.name, createPlaylistDto.name) &&
         Objects.equals(this.ids, createPlaylistDto.ids) &&
-        Objects.equals(this.userId, createPlaylistDto.userId) &&
-        Objects.equals(this.mediaType, createPlaylistDto.mediaType);
+        equalsNullable(this.userId, createPlaylistDto.userId) &&
+        equalsNullable(this.mediaType, createPlaylistDto.mediaType);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -183,7 +215,7 @@ public class CreatePlaylistDto {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, ids, userId, mediaType);
+    return Objects.hash(hashCodeNullable(name), ids, hashCodeNullable(userId), hashCodeNullable(mediaType));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -216,105 +248,65 @@ public class CreatePlaylistDto {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("Ids");
-    openapiFields.add("UserId");
-    openapiFields.add("MediaType");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to CreatePlaylistDto
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!CreatePlaylistDto.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in CreatePlaylistDto is not found in the empty JSON string", CreatePlaylistDto.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!CreatePlaylistDto.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `CreatePlaylistDto` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("Ids") != null && !jsonObj.get("Ids").isJsonNull() && !jsonObj.get("Ids").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Ids` to be an array in the JSON string but got `%s`", jsonObj.get("Ids").toString()));
-      }
-      if ((jsonObj.get("UserId") != null && !jsonObj.get("UserId").isJsonNull()) && !jsonObj.get("UserId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `UserId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("UserId").toString()));
-      }
-      if ((jsonObj.get("MediaType") != null && !jsonObj.get("MediaType").isJsonNull()) && !jsonObj.get("MediaType").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MediaType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("MediaType").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!CreatePlaylistDto.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'CreatePlaylistDto' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<CreatePlaylistDto> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(CreatePlaylistDto.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<CreatePlaylistDto>() {
-           @Override
-           public void write(JsonWriter out, CreatePlaylistDto value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public CreatePlaylistDto read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of CreatePlaylistDto given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of CreatePlaylistDto
-   * @throws IOException if the JSON string is invalid with respect to CreatePlaylistDto
-   */
-  public static CreatePlaylistDto fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, CreatePlaylistDto.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of CreatePlaylistDto to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `Ids` to the URL query string
+    if (getIds() != null) {
+      for (int i = 0; i < getIds().size(); i++) {
+        if (getIds().get(i) != null) {
+          joiner.add(String.format("%sIds%s%s=%s", prefix, suffix,
+              "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+              ApiClient.urlEncode(ApiClient.valueToString(getIds().get(i)))));
+        }
+      }
+    }
+
+    // add `UserId` to the URL query string
+    if (getUserId() != null) {
+      joiner.add(String.format("%sUserId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
+    }
+
+    // add `MediaType` to the URL query string
+    if (getMediaType() != null) {
+      joiner.add(String.format("%sMediaType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMediaType()))));
+    }
+
+    return joiner.toString();
   }
 }
 

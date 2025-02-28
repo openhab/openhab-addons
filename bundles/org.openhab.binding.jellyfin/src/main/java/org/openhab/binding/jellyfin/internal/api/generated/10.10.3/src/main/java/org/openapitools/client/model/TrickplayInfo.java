@@ -13,79 +13,65 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
-import java.util.Arrays;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import org.openapitools.client.JSON;
 
+import org.openapitools.client.ApiClient;
 /**
  * An entity representing the metadata for a group of trickplay tiles.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  TrickplayInfo.JSON_PROPERTY_WIDTH,
+  TrickplayInfo.JSON_PROPERTY_HEIGHT,
+  TrickplayInfo.JSON_PROPERTY_TILE_WIDTH,
+  TrickplayInfo.JSON_PROPERTY_TILE_HEIGHT,
+  TrickplayInfo.JSON_PROPERTY_THUMBNAIL_COUNT,
+  TrickplayInfo.JSON_PROPERTY_INTERVAL,
+  TrickplayInfo.JSON_PROPERTY_BANDWIDTH
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class TrickplayInfo {
-  public static final String SERIALIZED_NAME_WIDTH = "Width";
-  @SerializedName(SERIALIZED_NAME_WIDTH)
+  public static final String JSON_PROPERTY_WIDTH = "Width";
   @javax.annotation.Nullable
   private Integer width;
 
-  public static final String SERIALIZED_NAME_HEIGHT = "Height";
-  @SerializedName(SERIALIZED_NAME_HEIGHT)
+  public static final String JSON_PROPERTY_HEIGHT = "Height";
   @javax.annotation.Nullable
   private Integer height;
 
-  public static final String SERIALIZED_NAME_TILE_WIDTH = "TileWidth";
-  @SerializedName(SERIALIZED_NAME_TILE_WIDTH)
+  public static final String JSON_PROPERTY_TILE_WIDTH = "TileWidth";
   @javax.annotation.Nullable
   private Integer tileWidth;
 
-  public static final String SERIALIZED_NAME_TILE_HEIGHT = "TileHeight";
-  @SerializedName(SERIALIZED_NAME_TILE_HEIGHT)
+  public static final String JSON_PROPERTY_TILE_HEIGHT = "TileHeight";
   @javax.annotation.Nullable
   private Integer tileHeight;
 
-  public static final String SERIALIZED_NAME_THUMBNAIL_COUNT = "ThumbnailCount";
-  @SerializedName(SERIALIZED_NAME_THUMBNAIL_COUNT)
+  public static final String JSON_PROPERTY_THUMBNAIL_COUNT = "ThumbnailCount";
   @javax.annotation.Nullable
   private Integer thumbnailCount;
 
-  public static final String SERIALIZED_NAME_INTERVAL = "Interval";
-  @SerializedName(SERIALIZED_NAME_INTERVAL)
+  public static final String JSON_PROPERTY_INTERVAL = "Interval";
   @javax.annotation.Nullable
   private Integer interval;
 
-  public static final String SERIALIZED_NAME_BANDWIDTH = "Bandwidth";
-  @SerializedName(SERIALIZED_NAME_BANDWIDTH)
+  public static final String JSON_PROPERTY_BANDWIDTH = "Bandwidth";
   @javax.annotation.Nullable
   private Integer bandwidth;
 
-  public TrickplayInfo() {
+  public TrickplayInfo() { 
   }
 
   public TrickplayInfo width(@javax.annotation.Nullable Integer width) {
@@ -98,10 +84,15 @@ public class TrickplayInfo {
    * @return width
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getWidth() {
     return width;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWidth(@javax.annotation.Nullable Integer width) {
     this.width = width;
   }
@@ -117,10 +108,15 @@ public class TrickplayInfo {
    * @return height
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getHeight() {
     return height;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setHeight(@javax.annotation.Nullable Integer height) {
     this.height = height;
   }
@@ -136,10 +132,15 @@ public class TrickplayInfo {
    * @return tileWidth
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TILE_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getTileWidth() {
     return tileWidth;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TILE_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTileWidth(@javax.annotation.Nullable Integer tileWidth) {
     this.tileWidth = tileWidth;
   }
@@ -155,10 +156,15 @@ public class TrickplayInfo {
    * @return tileHeight
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TILE_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getTileHeight() {
     return tileHeight;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TILE_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTileHeight(@javax.annotation.Nullable Integer tileHeight) {
     this.tileHeight = tileHeight;
   }
@@ -174,10 +180,15 @@ public class TrickplayInfo {
    * @return thumbnailCount
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_THUMBNAIL_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getThumbnailCount() {
     return thumbnailCount;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_THUMBNAIL_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setThumbnailCount(@javax.annotation.Nullable Integer thumbnailCount) {
     this.thumbnailCount = thumbnailCount;
   }
@@ -193,10 +204,15 @@ public class TrickplayInfo {
    * @return interval
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_INTERVAL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getInterval() {
     return interval;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_INTERVAL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setInterval(@javax.annotation.Nullable Integer interval) {
     this.interval = interval;
   }
@@ -212,16 +228,23 @@ public class TrickplayInfo {
    * @return bandwidth
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_BANDWIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getBandwidth() {
     return bandwidth;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_BANDWIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBandwidth(@javax.annotation.Nullable Integer bandwidth) {
     this.bandwidth = bandwidth;
   }
 
 
-
+  /**
+   * Return true if this TrickplayInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -271,95 +294,74 @@ public class TrickplayInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Width");
-    openapiFields.add("Height");
-    openapiFields.add("TileWidth");
-    openapiFields.add("TileHeight");
-    openapiFields.add("ThumbnailCount");
-    openapiFields.add("Interval");
-    openapiFields.add("Bandwidth");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to TrickplayInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!TrickplayInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in TrickplayInfo is not found in the empty JSON string", TrickplayInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!TrickplayInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `TrickplayInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!TrickplayInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'TrickplayInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<TrickplayInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(TrickplayInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<TrickplayInfo>() {
-           @Override
-           public void write(JsonWriter out, TrickplayInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public TrickplayInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of TrickplayInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of TrickplayInfo
-   * @throws IOException if the JSON string is invalid with respect to TrickplayInfo
-   */
-  public static TrickplayInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, TrickplayInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of TrickplayInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Width` to the URL query string
+    if (getWidth() != null) {
+      joiner.add(String.format("%sWidth%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
+    }
+
+    // add `Height` to the URL query string
+    if (getHeight() != null) {
+      joiner.add(String.format("%sHeight%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
+    }
+
+    // add `TileWidth` to the URL query string
+    if (getTileWidth() != null) {
+      joiner.add(String.format("%sTileWidth%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTileWidth()))));
+    }
+
+    // add `TileHeight` to the URL query string
+    if (getTileHeight() != null) {
+      joiner.add(String.format("%sTileHeight%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTileHeight()))));
+    }
+
+    // add `ThumbnailCount` to the URL query string
+    if (getThumbnailCount() != null) {
+      joiner.add(String.format("%sThumbnailCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getThumbnailCount()))));
+    }
+
+    // add `Interval` to the URL query string
+    if (getInterval() != null) {
+      joiner.add(String.format("%sInterval%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getInterval()))));
+    }
+
+    // add `Bandwidth` to the URL query string
+    if (getBandwidth() != null) {
+      joiner.add(String.format("%sBandwidth%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBandwidth()))));
+    }
+
+    return joiner.toString();
   }
 }
 

@@ -13,63 +13,49 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.openapitools.client.model.PlaylistUserPermissions;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * DTO for playlists.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  PlaylistDto.JSON_PROPERTY_OPEN_ACCESS,
+  PlaylistDto.JSON_PROPERTY_SHARES,
+  PlaylistDto.JSON_PROPERTY_ITEM_IDS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PlaylistDto {
-  public static final String SERIALIZED_NAME_OPEN_ACCESS = "OpenAccess";
-  @SerializedName(SERIALIZED_NAME_OPEN_ACCESS)
+  public static final String JSON_PROPERTY_OPEN_ACCESS = "OpenAccess";
   @javax.annotation.Nullable
   private Boolean openAccess;
 
-  public static final String SERIALIZED_NAME_SHARES = "Shares";
-  @SerializedName(SERIALIZED_NAME_SHARES)
+  public static final String JSON_PROPERTY_SHARES = "Shares";
   @javax.annotation.Nullable
   private List<PlaylistUserPermissions> shares = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_ITEM_IDS = "ItemIds";
-  @SerializedName(SERIALIZED_NAME_ITEM_IDS)
+  public static final String JSON_PROPERTY_ITEM_IDS = "ItemIds";
   @javax.annotation.Nullable
   private List<UUID> itemIds = new ArrayList<>();
 
-  public PlaylistDto() {
+  public PlaylistDto() { 
   }
 
   public PlaylistDto openAccess(@javax.annotation.Nullable Boolean openAccess) {
@@ -82,10 +68,15 @@ public class PlaylistDto {
    * @return openAccess
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_OPEN_ACCESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getOpenAccess() {
     return openAccess;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_OPEN_ACCESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOpenAccess(@javax.annotation.Nullable Boolean openAccess) {
     this.openAccess = openAccess;
   }
@@ -109,10 +100,15 @@ public class PlaylistDto {
    * @return shares
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SHARES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<PlaylistUserPermissions> getShares() {
     return shares;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SHARES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setShares(@javax.annotation.Nullable List<PlaylistUserPermissions> shares) {
     this.shares = shares;
   }
@@ -136,16 +132,23 @@ public class PlaylistDto {
    * @return itemIds
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ITEM_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<UUID> getItemIds() {
     return itemIds;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ITEM_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemIds(@javax.annotation.Nullable List<UUID> itemIds) {
     this.itemIds = itemIds;
   }
 
 
-
+  /**
+   * Return true if this PlaylistDto object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -187,109 +190,65 @@ public class PlaylistDto {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("OpenAccess");
-    openapiFields.add("Shares");
-    openapiFields.add("ItemIds");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to PlaylistDto
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!PlaylistDto.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in PlaylistDto is not found in the empty JSON string", PlaylistDto.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!PlaylistDto.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `PlaylistDto` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (jsonObj.get("Shares") != null && !jsonObj.get("Shares").isJsonNull()) {
-        JsonArray jsonArrayshares = jsonObj.getAsJsonArray("Shares");
-        if (jsonArrayshares != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("Shares").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `Shares` to be an array in the JSON string but got `%s`", jsonObj.get("Shares").toString()));
-          }
-
-          // validate the optional field `Shares` (array)
-          for (int i = 0; i < jsonArrayshares.size(); i++) {
-            PlaylistUserPermissions.validateJsonElement(jsonArrayshares.get(i));
-          };
-        }
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("ItemIds") != null && !jsonObj.get("ItemIds").isJsonNull() && !jsonObj.get("ItemIds").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ItemIds` to be an array in the JSON string but got `%s`", jsonObj.get("ItemIds").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!PlaylistDto.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'PlaylistDto' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<PlaylistDto> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(PlaylistDto.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<PlaylistDto>() {
-           @Override
-           public void write(JsonWriter out, PlaylistDto value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public PlaylistDto read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of PlaylistDto given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of PlaylistDto
-   * @throws IOException if the JSON string is invalid with respect to PlaylistDto
-   */
-  public static PlaylistDto fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, PlaylistDto.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of PlaylistDto to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `OpenAccess` to the URL query string
+    if (getOpenAccess() != null) {
+      joiner.add(String.format("%sOpenAccess%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOpenAccess()))));
+    }
+
+    // add `Shares` to the URL query string
+    if (getShares() != null) {
+      for (int i = 0; i < getShares().size(); i++) {
+        if (getShares().get(i) != null) {
+          joiner.add(getShares().get(i).toUrlQueryString(String.format("%sShares%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `ItemIds` to the URL query string
+    if (getItemIds() != null) {
+      for (int i = 0; i < getItemIds().size(); i++) {
+        if (getItemIds().get(i) != null) {
+          joiner.add(String.format("%sItemIds%s%s=%s", prefix, suffix,
+              "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+              ApiClient.urlEncode(ApiClient.valueToString(getItemIds().get(i)))));
+        }
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

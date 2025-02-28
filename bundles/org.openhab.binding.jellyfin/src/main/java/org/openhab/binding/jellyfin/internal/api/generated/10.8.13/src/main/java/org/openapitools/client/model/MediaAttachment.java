@@ -13,84 +13,67 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class MediaAttachment.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  MediaAttachment.JSON_PROPERTY_CODEC,
+  MediaAttachment.JSON_PROPERTY_CODEC_TAG,
+  MediaAttachment.JSON_PROPERTY_COMMENT,
+  MediaAttachment.JSON_PROPERTY_INDEX,
+  MediaAttachment.JSON_PROPERTY_FILE_NAME,
+  MediaAttachment.JSON_PROPERTY_MIME_TYPE,
+  MediaAttachment.JSON_PROPERTY_DELIVERY_URL
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class MediaAttachment {
-  public static final String SERIALIZED_NAME_CODEC = "Codec";
-  @SerializedName(SERIALIZED_NAME_CODEC)
-  @javax.annotation.Nullable
-  private String codec;
+  public static final String JSON_PROPERTY_CODEC = "Codec";
+  private JsonNullable<String> codec = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_CODEC_TAG = "CodecTag";
-  @SerializedName(SERIALIZED_NAME_CODEC_TAG)
-  @javax.annotation.Nullable
-  private String codecTag;
+  public static final String JSON_PROPERTY_CODEC_TAG = "CodecTag";
+  private JsonNullable<String> codecTag = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_COMMENT = "Comment";
-  @SerializedName(SERIALIZED_NAME_COMMENT)
-  @javax.annotation.Nullable
-  private String comment;
+  public static final String JSON_PROPERTY_COMMENT = "Comment";
+  private JsonNullable<String> comment = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_INDEX = "Index";
-  @SerializedName(SERIALIZED_NAME_INDEX)
+  public static final String JSON_PROPERTY_INDEX = "Index";
   @javax.annotation.Nullable
   private Integer index;
 
-  public static final String SERIALIZED_NAME_FILE_NAME = "FileName";
-  @SerializedName(SERIALIZED_NAME_FILE_NAME)
-  @javax.annotation.Nullable
-  private String fileName;
+  public static final String JSON_PROPERTY_FILE_NAME = "FileName";
+  private JsonNullable<String> fileName = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_MIME_TYPE = "MimeType";
-  @SerializedName(SERIALIZED_NAME_MIME_TYPE)
-  @javax.annotation.Nullable
-  private String mimeType;
+  public static final String JSON_PROPERTY_MIME_TYPE = "MimeType";
+  private JsonNullable<String> mimeType = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_DELIVERY_URL = "DeliveryUrl";
-  @SerializedName(SERIALIZED_NAME_DELIVERY_URL)
-  @javax.annotation.Nullable
-  private String deliveryUrl;
+  public static final String JSON_PROPERTY_DELIVERY_URL = "DeliveryUrl";
+  private JsonNullable<String> deliveryUrl = JsonNullable.<String>undefined();
 
-  public MediaAttachment() {
+  public MediaAttachment() { 
   }
 
   public MediaAttachment codec(@javax.annotation.Nullable String codec) {
-    this.codec = codec;
+    this.codec = JsonNullable.<String>of(codec);
     return this;
   }
 
@@ -99,17 +82,30 @@ public class MediaAttachment {
    * @return codec
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getCodec() {
+        return codec.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CODEC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getCodec_JsonNullable() {
     return codec;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CODEC)
+  public void setCodec_JsonNullable(JsonNullable<String> codec) {
+    this.codec = codec;
   }
 
   public void setCodec(@javax.annotation.Nullable String codec) {
-    this.codec = codec;
+    this.codec = JsonNullable.<String>of(codec);
   }
 
 
   public MediaAttachment codecTag(@javax.annotation.Nullable String codecTag) {
-    this.codecTag = codecTag;
+    this.codecTag = JsonNullable.<String>of(codecTag);
     return this;
   }
 
@@ -118,17 +114,30 @@ public class MediaAttachment {
    * @return codecTag
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getCodecTag() {
+        return codecTag.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CODEC_TAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getCodecTag_JsonNullable() {
     return codecTag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CODEC_TAG)
+  public void setCodecTag_JsonNullable(JsonNullable<String> codecTag) {
+    this.codecTag = codecTag;
   }
 
   public void setCodecTag(@javax.annotation.Nullable String codecTag) {
-    this.codecTag = codecTag;
+    this.codecTag = JsonNullable.<String>of(codecTag);
   }
 
 
   public MediaAttachment comment(@javax.annotation.Nullable String comment) {
-    this.comment = comment;
+    this.comment = JsonNullable.<String>of(comment);
     return this;
   }
 
@@ -137,12 +146,25 @@ public class MediaAttachment {
    * @return comment
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getComment() {
+        return comment.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_COMMENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getComment_JsonNullable() {
     return comment;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_COMMENT)
+  public void setComment_JsonNullable(JsonNullable<String> comment) {
+    this.comment = comment;
   }
 
   public void setComment(@javax.annotation.Nullable String comment) {
-    this.comment = comment;
+    this.comment = JsonNullable.<String>of(comment);
   }
 
 
@@ -156,17 +178,22 @@ public class MediaAttachment {
    * @return index
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getIndex() {
     return index;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIndex(@javax.annotation.Nullable Integer index) {
     this.index = index;
   }
 
 
   public MediaAttachment fileName(@javax.annotation.Nullable String fileName) {
-    this.fileName = fileName;
+    this.fileName = JsonNullable.<String>of(fileName);
     return this;
   }
 
@@ -175,17 +202,30 @@ public class MediaAttachment {
    * @return fileName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getFileName() {
+        return fileName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_FILE_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getFileName_JsonNullable() {
     return fileName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_FILE_NAME)
+  public void setFileName_JsonNullable(JsonNullable<String> fileName) {
+    this.fileName = fileName;
   }
 
   public void setFileName(@javax.annotation.Nullable String fileName) {
-    this.fileName = fileName;
+    this.fileName = JsonNullable.<String>of(fileName);
   }
 
 
   public MediaAttachment mimeType(@javax.annotation.Nullable String mimeType) {
-    this.mimeType = mimeType;
+    this.mimeType = JsonNullable.<String>of(mimeType);
     return this;
   }
 
@@ -194,17 +234,30 @@ public class MediaAttachment {
    * @return mimeType
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getMimeType() {
+        return mimeType.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_MIME_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getMimeType_JsonNullable() {
     return mimeType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_MIME_TYPE)
+  public void setMimeType_JsonNullable(JsonNullable<String> mimeType) {
+    this.mimeType = mimeType;
   }
 
   public void setMimeType(@javax.annotation.Nullable String mimeType) {
-    this.mimeType = mimeType;
+    this.mimeType = JsonNullable.<String>of(mimeType);
   }
 
 
   public MediaAttachment deliveryUrl(@javax.annotation.Nullable String deliveryUrl) {
-    this.deliveryUrl = deliveryUrl;
+    this.deliveryUrl = JsonNullable.<String>of(deliveryUrl);
     return this;
   }
 
@@ -213,16 +266,31 @@ public class MediaAttachment {
    * @return deliveryUrl
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getDeliveryUrl() {
-    return deliveryUrl;
+        return deliveryUrl.orElse(null);
   }
 
-  public void setDeliveryUrl(@javax.annotation.Nullable String deliveryUrl) {
+  @JsonProperty(JSON_PROPERTY_DELIVERY_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getDeliveryUrl_JsonNullable() {
+    return deliveryUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DELIVERY_URL)
+  public void setDeliveryUrl_JsonNullable(JsonNullable<String> deliveryUrl) {
     this.deliveryUrl = deliveryUrl;
   }
 
+  public void setDeliveryUrl(@javax.annotation.Nullable String deliveryUrl) {
+    this.deliveryUrl = JsonNullable.<String>of(deliveryUrl);
+  }
 
 
+  /**
+   * Return true if this MediaAttachment object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -232,13 +300,13 @@ public class MediaAttachment {
       return false;
     }
     MediaAttachment mediaAttachment = (MediaAttachment) o;
-    return Objects.equals(this.codec, mediaAttachment.codec) &&
-        Objects.equals(this.codecTag, mediaAttachment.codecTag) &&
-        Objects.equals(this.comment, mediaAttachment.comment) &&
+    return equalsNullable(this.codec, mediaAttachment.codec) &&
+        equalsNullable(this.codecTag, mediaAttachment.codecTag) &&
+        equalsNullable(this.comment, mediaAttachment.comment) &&
         Objects.equals(this.index, mediaAttachment.index) &&
-        Objects.equals(this.fileName, mediaAttachment.fileName) &&
-        Objects.equals(this.mimeType, mediaAttachment.mimeType) &&
-        Objects.equals(this.deliveryUrl, mediaAttachment.deliveryUrl);
+        equalsNullable(this.fileName, mediaAttachment.fileName) &&
+        equalsNullable(this.mimeType, mediaAttachment.mimeType) &&
+        equalsNullable(this.deliveryUrl, mediaAttachment.deliveryUrl);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -247,7 +315,7 @@ public class MediaAttachment {
 
   @Override
   public int hashCode() {
-    return Objects.hash(codec, codecTag, comment, index, fileName, mimeType, deliveryUrl);
+    return Objects.hash(hashCodeNullable(codec), hashCodeNullable(codecTag), hashCodeNullable(comment), index, hashCodeNullable(fileName), hashCodeNullable(mimeType), hashCodeNullable(deliveryUrl));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -283,113 +351,74 @@ public class MediaAttachment {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Codec");
-    openapiFields.add("CodecTag");
-    openapiFields.add("Comment");
-    openapiFields.add("Index");
-    openapiFields.add("FileName");
-    openapiFields.add("MimeType");
-    openapiFields.add("DeliveryUrl");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to MediaAttachment
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!MediaAttachment.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in MediaAttachment is not found in the empty JSON string", MediaAttachment.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!MediaAttachment.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `MediaAttachment` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Codec") != null && !jsonObj.get("Codec").isJsonNull()) && !jsonObj.get("Codec").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Codec` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Codec").toString()));
-      }
-      if ((jsonObj.get("CodecTag") != null && !jsonObj.get("CodecTag").isJsonNull()) && !jsonObj.get("CodecTag").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `CodecTag` to be a primitive type in the JSON string but got `%s`", jsonObj.get("CodecTag").toString()));
-      }
-      if ((jsonObj.get("Comment") != null && !jsonObj.get("Comment").isJsonNull()) && !jsonObj.get("Comment").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Comment` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Comment").toString()));
-      }
-      if ((jsonObj.get("FileName") != null && !jsonObj.get("FileName").isJsonNull()) && !jsonObj.get("FileName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `FileName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("FileName").toString()));
-      }
-      if ((jsonObj.get("MimeType") != null && !jsonObj.get("MimeType").isJsonNull()) && !jsonObj.get("MimeType").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MimeType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("MimeType").toString()));
-      }
-      if ((jsonObj.get("DeliveryUrl") != null && !jsonObj.get("DeliveryUrl").isJsonNull()) && !jsonObj.get("DeliveryUrl").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `DeliveryUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("DeliveryUrl").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!MediaAttachment.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'MediaAttachment' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<MediaAttachment> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(MediaAttachment.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<MediaAttachment>() {
-           @Override
-           public void write(JsonWriter out, MediaAttachment value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public MediaAttachment read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of MediaAttachment given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of MediaAttachment
-   * @throws IOException if the JSON string is invalid with respect to MediaAttachment
-   */
-  public static MediaAttachment fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, MediaAttachment.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of MediaAttachment to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Codec` to the URL query string
+    if (getCodec() != null) {
+      joiner.add(String.format("%sCodec%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCodec()))));
+    }
+
+    // add `CodecTag` to the URL query string
+    if (getCodecTag() != null) {
+      joiner.add(String.format("%sCodecTag%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCodecTag()))));
+    }
+
+    // add `Comment` to the URL query string
+    if (getComment() != null) {
+      joiner.add(String.format("%sComment%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getComment()))));
+    }
+
+    // add `Index` to the URL query string
+    if (getIndex() != null) {
+      joiner.add(String.format("%sIndex%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIndex()))));
+    }
+
+    // add `FileName` to the URL query string
+    if (getFileName() != null) {
+      joiner.add(String.format("%sFileName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFileName()))));
+    }
+
+    // add `MimeType` to the URL query string
+    if (getMimeType() != null) {
+      joiner.add(String.format("%sMimeType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMimeType()))));
+    }
+
+    // add `DeliveryUrl` to the URL query string
+    if (getDeliveryUrl() != null) {
+      joiner.add(String.format("%sDeliveryUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDeliveryUrl()))));
+    }
+
+    return joiner.toString();
   }
 }
 

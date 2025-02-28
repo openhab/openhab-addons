@@ -13,237 +13,213 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * EncodingOptions
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  EncodingOptions.JSON_PROPERTY_ENCODING_THREAD_COUNT,
+  EncodingOptions.JSON_PROPERTY_TRANSCODING_TEMP_PATH,
+  EncodingOptions.JSON_PROPERTY_FALLBACK_FONT_PATH,
+  EncodingOptions.JSON_PROPERTY_ENABLE_FALLBACK_FONT,
+  EncodingOptions.JSON_PROPERTY_DOWN_MIX_AUDIO_BOOST,
+  EncodingOptions.JSON_PROPERTY_MAX_MUXING_QUEUE_SIZE,
+  EncodingOptions.JSON_PROPERTY_ENABLE_THROTTLING,
+  EncodingOptions.JSON_PROPERTY_THROTTLE_DELAY_SECONDS,
+  EncodingOptions.JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE,
+  EncodingOptions.JSON_PROPERTY_ENCODER_APP_PATH,
+  EncodingOptions.JSON_PROPERTY_ENCODER_APP_PATH_DISPLAY,
+  EncodingOptions.JSON_PROPERTY_VAAPI_DEVICE,
+  EncodingOptions.JSON_PROPERTY_ENABLE_TONEMAPPING,
+  EncodingOptions.JSON_PROPERTY_ENABLE_VPP_TONEMAPPING,
+  EncodingOptions.JSON_PROPERTY_TONEMAPPING_ALGORITHM,
+  EncodingOptions.JSON_PROPERTY_TONEMAPPING_MODE,
+  EncodingOptions.JSON_PROPERTY_TONEMAPPING_RANGE,
+  EncodingOptions.JSON_PROPERTY_TONEMAPPING_DESAT,
+  EncodingOptions.JSON_PROPERTY_TONEMAPPING_PEAK,
+  EncodingOptions.JSON_PROPERTY_TONEMAPPING_PARAM,
+  EncodingOptions.JSON_PROPERTY_VPP_TONEMAPPING_BRIGHTNESS,
+  EncodingOptions.JSON_PROPERTY_VPP_TONEMAPPING_CONTRAST,
+  EncodingOptions.JSON_PROPERTY_H264_CRF,
+  EncodingOptions.JSON_PROPERTY_H265_CRF,
+  EncodingOptions.JSON_PROPERTY_ENCODER_PRESET,
+  EncodingOptions.JSON_PROPERTY_DEINTERLACE_DOUBLE_RATE,
+  EncodingOptions.JSON_PROPERTY_DEINTERLACE_METHOD,
+  EncodingOptions.JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC,
+  EncodingOptions.JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_VP9,
+  EncodingOptions.JSON_PROPERTY_ENABLE_ENHANCED_NVDEC_DECODER,
+  EncodingOptions.JSON_PROPERTY_PREFER_SYSTEM_NATIVE_HW_DECODER,
+  EncodingOptions.JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_H264_HW_ENCODER,
+  EncodingOptions.JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_HEVC_HW_ENCODER,
+  EncodingOptions.JSON_PROPERTY_ENABLE_HARDWARE_ENCODING,
+  EncodingOptions.JSON_PROPERTY_ALLOW_HEVC_ENCODING,
+  EncodingOptions.JSON_PROPERTY_ENABLE_SUBTITLE_EXTRACTION,
+  EncodingOptions.JSON_PROPERTY_HARDWARE_DECODING_CODECS,
+  EncodingOptions.JSON_PROPERTY_ALLOW_ON_DEMAND_METADATA_BASED_KEYFRAME_EXTRACTION_FOR_EXTENSIONS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class EncodingOptions {
-  public static final String SERIALIZED_NAME_ENCODING_THREAD_COUNT = "EncodingThreadCount";
-  @SerializedName(SERIALIZED_NAME_ENCODING_THREAD_COUNT)
+  public static final String JSON_PROPERTY_ENCODING_THREAD_COUNT = "EncodingThreadCount";
   @javax.annotation.Nullable
   private Integer encodingThreadCount;
 
-  public static final String SERIALIZED_NAME_TRANSCODING_TEMP_PATH = "TranscodingTempPath";
-  @SerializedName(SERIALIZED_NAME_TRANSCODING_TEMP_PATH)
-  @javax.annotation.Nullable
-  private String transcodingTempPath;
+  public static final String JSON_PROPERTY_TRANSCODING_TEMP_PATH = "TranscodingTempPath";
+  private JsonNullable<String> transcodingTempPath = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_FALLBACK_FONT_PATH = "FallbackFontPath";
-  @SerializedName(SERIALIZED_NAME_FALLBACK_FONT_PATH)
-  @javax.annotation.Nullable
-  private String fallbackFontPath;
+  public static final String JSON_PROPERTY_FALLBACK_FONT_PATH = "FallbackFontPath";
+  private JsonNullable<String> fallbackFontPath = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ENABLE_FALLBACK_FONT = "EnableFallbackFont";
-  @SerializedName(SERIALIZED_NAME_ENABLE_FALLBACK_FONT)
+  public static final String JSON_PROPERTY_ENABLE_FALLBACK_FONT = "EnableFallbackFont";
   @javax.annotation.Nullable
   private Boolean enableFallbackFont;
 
-  public static final String SERIALIZED_NAME_DOWN_MIX_AUDIO_BOOST = "DownMixAudioBoost";
-  @SerializedName(SERIALIZED_NAME_DOWN_MIX_AUDIO_BOOST)
+  public static final String JSON_PROPERTY_DOWN_MIX_AUDIO_BOOST = "DownMixAudioBoost";
   @javax.annotation.Nullable
   private Double downMixAudioBoost;
 
-  public static final String SERIALIZED_NAME_MAX_MUXING_QUEUE_SIZE = "MaxMuxingQueueSize";
-  @SerializedName(SERIALIZED_NAME_MAX_MUXING_QUEUE_SIZE)
+  public static final String JSON_PROPERTY_MAX_MUXING_QUEUE_SIZE = "MaxMuxingQueueSize";
   @javax.annotation.Nullable
   private Integer maxMuxingQueueSize;
 
-  public static final String SERIALIZED_NAME_ENABLE_THROTTLING = "EnableThrottling";
-  @SerializedName(SERIALIZED_NAME_ENABLE_THROTTLING)
+  public static final String JSON_PROPERTY_ENABLE_THROTTLING = "EnableThrottling";
   @javax.annotation.Nullable
   private Boolean enableThrottling;
 
-  public static final String SERIALIZED_NAME_THROTTLE_DELAY_SECONDS = "ThrottleDelaySeconds";
-  @SerializedName(SERIALIZED_NAME_THROTTLE_DELAY_SECONDS)
+  public static final String JSON_PROPERTY_THROTTLE_DELAY_SECONDS = "ThrottleDelaySeconds";
   @javax.annotation.Nullable
   private Integer throttleDelaySeconds;
 
-  public static final String SERIALIZED_NAME_HARDWARE_ACCELERATION_TYPE = "HardwareAccelerationType";
-  @SerializedName(SERIALIZED_NAME_HARDWARE_ACCELERATION_TYPE)
-  @javax.annotation.Nullable
-  private String hardwareAccelerationType;
+  public static final String JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE = "HardwareAccelerationType";
+  private JsonNullable<String> hardwareAccelerationType = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ENCODER_APP_PATH = "EncoderAppPath";
-  @SerializedName(SERIALIZED_NAME_ENCODER_APP_PATH)
-  @javax.annotation.Nullable
-  private String encoderAppPath;
+  public static final String JSON_PROPERTY_ENCODER_APP_PATH = "EncoderAppPath";
+  private JsonNullable<String> encoderAppPath = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ENCODER_APP_PATH_DISPLAY = "EncoderAppPathDisplay";
-  @SerializedName(SERIALIZED_NAME_ENCODER_APP_PATH_DISPLAY)
-  @javax.annotation.Nullable
-  private String encoderAppPathDisplay;
+  public static final String JSON_PROPERTY_ENCODER_APP_PATH_DISPLAY = "EncoderAppPathDisplay";
+  private JsonNullable<String> encoderAppPathDisplay = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_VAAPI_DEVICE = "VaapiDevice";
-  @SerializedName(SERIALIZED_NAME_VAAPI_DEVICE)
-  @javax.annotation.Nullable
-  private String vaapiDevice;
+  public static final String JSON_PROPERTY_VAAPI_DEVICE = "VaapiDevice";
+  private JsonNullable<String> vaapiDevice = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ENABLE_TONEMAPPING = "EnableTonemapping";
-  @SerializedName(SERIALIZED_NAME_ENABLE_TONEMAPPING)
+  public static final String JSON_PROPERTY_ENABLE_TONEMAPPING = "EnableTonemapping";
   @javax.annotation.Nullable
   private Boolean enableTonemapping;
 
-  public static final String SERIALIZED_NAME_ENABLE_VPP_TONEMAPPING = "EnableVppTonemapping";
-  @SerializedName(SERIALIZED_NAME_ENABLE_VPP_TONEMAPPING)
+  public static final String JSON_PROPERTY_ENABLE_VPP_TONEMAPPING = "EnableVppTonemapping";
   @javax.annotation.Nullable
   private Boolean enableVppTonemapping;
 
-  public static final String SERIALIZED_NAME_TONEMAPPING_ALGORITHM = "TonemappingAlgorithm";
-  @SerializedName(SERIALIZED_NAME_TONEMAPPING_ALGORITHM)
-  @javax.annotation.Nullable
-  private String tonemappingAlgorithm;
+  public static final String JSON_PROPERTY_TONEMAPPING_ALGORITHM = "TonemappingAlgorithm";
+  private JsonNullable<String> tonemappingAlgorithm = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TONEMAPPING_MODE = "TonemappingMode";
-  @SerializedName(SERIALIZED_NAME_TONEMAPPING_MODE)
-  @javax.annotation.Nullable
-  private String tonemappingMode;
+  public static final String JSON_PROPERTY_TONEMAPPING_MODE = "TonemappingMode";
+  private JsonNullable<String> tonemappingMode = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TONEMAPPING_RANGE = "TonemappingRange";
-  @SerializedName(SERIALIZED_NAME_TONEMAPPING_RANGE)
-  @javax.annotation.Nullable
-  private String tonemappingRange;
+  public static final String JSON_PROPERTY_TONEMAPPING_RANGE = "TonemappingRange";
+  private JsonNullable<String> tonemappingRange = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TONEMAPPING_DESAT = "TonemappingDesat";
-  @SerializedName(SERIALIZED_NAME_TONEMAPPING_DESAT)
+  public static final String JSON_PROPERTY_TONEMAPPING_DESAT = "TonemappingDesat";
   @javax.annotation.Nullable
   private Double tonemappingDesat;
 
-  public static final String SERIALIZED_NAME_TONEMAPPING_PEAK = "TonemappingPeak";
-  @SerializedName(SERIALIZED_NAME_TONEMAPPING_PEAK)
+  public static final String JSON_PROPERTY_TONEMAPPING_PEAK = "TonemappingPeak";
   @javax.annotation.Nullable
   private Double tonemappingPeak;
 
-  public static final String SERIALIZED_NAME_TONEMAPPING_PARAM = "TonemappingParam";
-  @SerializedName(SERIALIZED_NAME_TONEMAPPING_PARAM)
+  public static final String JSON_PROPERTY_TONEMAPPING_PARAM = "TonemappingParam";
   @javax.annotation.Nullable
   private Double tonemappingParam;
 
-  public static final String SERIALIZED_NAME_VPP_TONEMAPPING_BRIGHTNESS = "VppTonemappingBrightness";
-  @SerializedName(SERIALIZED_NAME_VPP_TONEMAPPING_BRIGHTNESS)
+  public static final String JSON_PROPERTY_VPP_TONEMAPPING_BRIGHTNESS = "VppTonemappingBrightness";
   @javax.annotation.Nullable
   private Double vppTonemappingBrightness;
 
-  public static final String SERIALIZED_NAME_VPP_TONEMAPPING_CONTRAST = "VppTonemappingContrast";
-  @SerializedName(SERIALIZED_NAME_VPP_TONEMAPPING_CONTRAST)
+  public static final String JSON_PROPERTY_VPP_TONEMAPPING_CONTRAST = "VppTonemappingContrast";
   @javax.annotation.Nullable
   private Double vppTonemappingContrast;
 
-  public static final String SERIALIZED_NAME_H264_CRF = "H264Crf";
-  @SerializedName(SERIALIZED_NAME_H264_CRF)
+  public static final String JSON_PROPERTY_H264_CRF = "H264Crf";
   @javax.annotation.Nullable
   private Integer h264Crf;
 
-  public static final String SERIALIZED_NAME_H265_CRF = "H265Crf";
-  @SerializedName(SERIALIZED_NAME_H265_CRF)
+  public static final String JSON_PROPERTY_H265_CRF = "H265Crf";
   @javax.annotation.Nullable
   private Integer h265Crf;
 
-  public static final String SERIALIZED_NAME_ENCODER_PRESET = "EncoderPreset";
-  @SerializedName(SERIALIZED_NAME_ENCODER_PRESET)
-  @javax.annotation.Nullable
-  private String encoderPreset;
+  public static final String JSON_PROPERTY_ENCODER_PRESET = "EncoderPreset";
+  private JsonNullable<String> encoderPreset = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_DEINTERLACE_DOUBLE_RATE = "DeinterlaceDoubleRate";
-  @SerializedName(SERIALIZED_NAME_DEINTERLACE_DOUBLE_RATE)
+  public static final String JSON_PROPERTY_DEINTERLACE_DOUBLE_RATE = "DeinterlaceDoubleRate";
   @javax.annotation.Nullable
   private Boolean deinterlaceDoubleRate;
 
-  public static final String SERIALIZED_NAME_DEINTERLACE_METHOD = "DeinterlaceMethod";
-  @SerializedName(SERIALIZED_NAME_DEINTERLACE_METHOD)
-  @javax.annotation.Nullable
-  private String deinterlaceMethod;
+  public static final String JSON_PROPERTY_DEINTERLACE_METHOD = "DeinterlaceMethod";
+  private JsonNullable<String> deinterlaceMethod = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ENABLE_DECODING_COLOR_DEPTH10_HEVC = "EnableDecodingColorDepth10Hevc";
-  @SerializedName(SERIALIZED_NAME_ENABLE_DECODING_COLOR_DEPTH10_HEVC)
+  public static final String JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC = "EnableDecodingColorDepth10Hevc";
   @javax.annotation.Nullable
   private Boolean enableDecodingColorDepth10Hevc;
 
-  public static final String SERIALIZED_NAME_ENABLE_DECODING_COLOR_DEPTH10_VP9 = "EnableDecodingColorDepth10Vp9";
-  @SerializedName(SERIALIZED_NAME_ENABLE_DECODING_COLOR_DEPTH10_VP9)
+  public static final String JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_VP9 = "EnableDecodingColorDepth10Vp9";
   @javax.annotation.Nullable
   private Boolean enableDecodingColorDepth10Vp9;
 
-  public static final String SERIALIZED_NAME_ENABLE_ENHANCED_NVDEC_DECODER = "EnableEnhancedNvdecDecoder";
-  @SerializedName(SERIALIZED_NAME_ENABLE_ENHANCED_NVDEC_DECODER)
+  public static final String JSON_PROPERTY_ENABLE_ENHANCED_NVDEC_DECODER = "EnableEnhancedNvdecDecoder";
   @javax.annotation.Nullable
   private Boolean enableEnhancedNvdecDecoder;
 
-  public static final String SERIALIZED_NAME_PREFER_SYSTEM_NATIVE_HW_DECODER = "PreferSystemNativeHwDecoder";
-  @SerializedName(SERIALIZED_NAME_PREFER_SYSTEM_NATIVE_HW_DECODER)
+  public static final String JSON_PROPERTY_PREFER_SYSTEM_NATIVE_HW_DECODER = "PreferSystemNativeHwDecoder";
   @javax.annotation.Nullable
   private Boolean preferSystemNativeHwDecoder;
 
-  public static final String SERIALIZED_NAME_ENABLE_INTEL_LOW_POWER_H264_HW_ENCODER = "EnableIntelLowPowerH264HwEncoder";
-  @SerializedName(SERIALIZED_NAME_ENABLE_INTEL_LOW_POWER_H264_HW_ENCODER)
+  public static final String JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_H264_HW_ENCODER = "EnableIntelLowPowerH264HwEncoder";
   @javax.annotation.Nullable
   private Boolean enableIntelLowPowerH264HwEncoder;
 
-  public static final String SERIALIZED_NAME_ENABLE_INTEL_LOW_POWER_HEVC_HW_ENCODER = "EnableIntelLowPowerHevcHwEncoder";
-  @SerializedName(SERIALIZED_NAME_ENABLE_INTEL_LOW_POWER_HEVC_HW_ENCODER)
+  public static final String JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_HEVC_HW_ENCODER = "EnableIntelLowPowerHevcHwEncoder";
   @javax.annotation.Nullable
   private Boolean enableIntelLowPowerHevcHwEncoder;
 
-  public static final String SERIALIZED_NAME_ENABLE_HARDWARE_ENCODING = "EnableHardwareEncoding";
-  @SerializedName(SERIALIZED_NAME_ENABLE_HARDWARE_ENCODING)
+  public static final String JSON_PROPERTY_ENABLE_HARDWARE_ENCODING = "EnableHardwareEncoding";
   @javax.annotation.Nullable
   private Boolean enableHardwareEncoding;
 
-  public static final String SERIALIZED_NAME_ALLOW_HEVC_ENCODING = "AllowHevcEncoding";
-  @SerializedName(SERIALIZED_NAME_ALLOW_HEVC_ENCODING)
+  public static final String JSON_PROPERTY_ALLOW_HEVC_ENCODING = "AllowHevcEncoding";
   @javax.annotation.Nullable
   private Boolean allowHevcEncoding;
 
-  public static final String SERIALIZED_NAME_ENABLE_SUBTITLE_EXTRACTION = "EnableSubtitleExtraction";
-  @SerializedName(SERIALIZED_NAME_ENABLE_SUBTITLE_EXTRACTION)
+  public static final String JSON_PROPERTY_ENABLE_SUBTITLE_EXTRACTION = "EnableSubtitleExtraction";
   @javax.annotation.Nullable
   private Boolean enableSubtitleExtraction;
 
-  public static final String SERIALIZED_NAME_HARDWARE_DECODING_CODECS = "HardwareDecodingCodecs";
-  @SerializedName(SERIALIZED_NAME_HARDWARE_DECODING_CODECS)
-  @javax.annotation.Nullable
-  private List<String> hardwareDecodingCodecs;
+  public static final String JSON_PROPERTY_HARDWARE_DECODING_CODECS = "HardwareDecodingCodecs";
+  private JsonNullable<List<String>> hardwareDecodingCodecs = JsonNullable.<List<String>>undefined();
 
-  public static final String SERIALIZED_NAME_ALLOW_ON_DEMAND_METADATA_BASED_KEYFRAME_EXTRACTION_FOR_EXTENSIONS = "AllowOnDemandMetadataBasedKeyframeExtractionForExtensions";
-  @SerializedName(SERIALIZED_NAME_ALLOW_ON_DEMAND_METADATA_BASED_KEYFRAME_EXTRACTION_FOR_EXTENSIONS)
-  @javax.annotation.Nullable
-  private List<String> allowOnDemandMetadataBasedKeyframeExtractionForExtensions;
+  public static final String JSON_PROPERTY_ALLOW_ON_DEMAND_METADATA_BASED_KEYFRAME_EXTRACTION_FOR_EXTENSIONS = "AllowOnDemandMetadataBasedKeyframeExtractionForExtensions";
+  private JsonNullable<List<String>> allowOnDemandMetadataBasedKeyframeExtractionForExtensions = JsonNullable.<List<String>>undefined();
 
-  public EncodingOptions() {
+  public EncodingOptions() { 
   }
 
   public EncodingOptions encodingThreadCount(@javax.annotation.Nullable Integer encodingThreadCount) {
@@ -256,17 +232,22 @@ public class EncodingOptions {
    * @return encodingThreadCount
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENCODING_THREAD_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getEncodingThreadCount() {
     return encodingThreadCount;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENCODING_THREAD_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEncodingThreadCount(@javax.annotation.Nullable Integer encodingThreadCount) {
     this.encodingThreadCount = encodingThreadCount;
   }
 
 
   public EncodingOptions transcodingTempPath(@javax.annotation.Nullable String transcodingTempPath) {
-    this.transcodingTempPath = transcodingTempPath;
+    this.transcodingTempPath = JsonNullable.<String>of(transcodingTempPath);
     return this;
   }
 
@@ -275,17 +256,30 @@ public class EncodingOptions {
    * @return transcodingTempPath
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getTranscodingTempPath() {
+        return transcodingTempPath.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TRANSCODING_TEMP_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getTranscodingTempPath_JsonNullable() {
     return transcodingTempPath;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TRANSCODING_TEMP_PATH)
+  public void setTranscodingTempPath_JsonNullable(JsonNullable<String> transcodingTempPath) {
+    this.transcodingTempPath = transcodingTempPath;
   }
 
   public void setTranscodingTempPath(@javax.annotation.Nullable String transcodingTempPath) {
-    this.transcodingTempPath = transcodingTempPath;
+    this.transcodingTempPath = JsonNullable.<String>of(transcodingTempPath);
   }
 
 
   public EncodingOptions fallbackFontPath(@javax.annotation.Nullable String fallbackFontPath) {
-    this.fallbackFontPath = fallbackFontPath;
+    this.fallbackFontPath = JsonNullable.<String>of(fallbackFontPath);
     return this;
   }
 
@@ -294,12 +288,25 @@ public class EncodingOptions {
    * @return fallbackFontPath
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getFallbackFontPath() {
+        return fallbackFontPath.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_FALLBACK_FONT_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getFallbackFontPath_JsonNullable() {
     return fallbackFontPath;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_FALLBACK_FONT_PATH)
+  public void setFallbackFontPath_JsonNullable(JsonNullable<String> fallbackFontPath) {
+    this.fallbackFontPath = fallbackFontPath;
   }
 
   public void setFallbackFontPath(@javax.annotation.Nullable String fallbackFontPath) {
-    this.fallbackFontPath = fallbackFontPath;
+    this.fallbackFontPath = JsonNullable.<String>of(fallbackFontPath);
   }
 
 
@@ -313,10 +320,15 @@ public class EncodingOptions {
    * @return enableFallbackFont
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_FALLBACK_FONT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableFallbackFont() {
     return enableFallbackFont;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_FALLBACK_FONT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableFallbackFont(@javax.annotation.Nullable Boolean enableFallbackFont) {
     this.enableFallbackFont = enableFallbackFont;
   }
@@ -332,10 +344,15 @@ public class EncodingOptions {
    * @return downMixAudioBoost
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DOWN_MIX_AUDIO_BOOST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getDownMixAudioBoost() {
     return downMixAudioBoost;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DOWN_MIX_AUDIO_BOOST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDownMixAudioBoost(@javax.annotation.Nullable Double downMixAudioBoost) {
     this.downMixAudioBoost = downMixAudioBoost;
   }
@@ -351,10 +368,15 @@ public class EncodingOptions {
    * @return maxMuxingQueueSize
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MAX_MUXING_QUEUE_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMaxMuxingQueueSize() {
     return maxMuxingQueueSize;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MAX_MUXING_QUEUE_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMaxMuxingQueueSize(@javax.annotation.Nullable Integer maxMuxingQueueSize) {
     this.maxMuxingQueueSize = maxMuxingQueueSize;
   }
@@ -370,10 +392,15 @@ public class EncodingOptions {
    * @return enableThrottling
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_THROTTLING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableThrottling() {
     return enableThrottling;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_THROTTLING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableThrottling(@javax.annotation.Nullable Boolean enableThrottling) {
     this.enableThrottling = enableThrottling;
   }
@@ -389,17 +416,22 @@ public class EncodingOptions {
    * @return throttleDelaySeconds
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_THROTTLE_DELAY_SECONDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getThrottleDelaySeconds() {
     return throttleDelaySeconds;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_THROTTLE_DELAY_SECONDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setThrottleDelaySeconds(@javax.annotation.Nullable Integer throttleDelaySeconds) {
     this.throttleDelaySeconds = throttleDelaySeconds;
   }
 
 
   public EncodingOptions hardwareAccelerationType(@javax.annotation.Nullable String hardwareAccelerationType) {
-    this.hardwareAccelerationType = hardwareAccelerationType;
+    this.hardwareAccelerationType = JsonNullable.<String>of(hardwareAccelerationType);
     return this;
   }
 
@@ -408,17 +440,30 @@ public class EncodingOptions {
    * @return hardwareAccelerationType
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getHardwareAccelerationType() {
+        return hardwareAccelerationType.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getHardwareAccelerationType_JsonNullable() {
     return hardwareAccelerationType;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE)
+  public void setHardwareAccelerationType_JsonNullable(JsonNullable<String> hardwareAccelerationType) {
+    this.hardwareAccelerationType = hardwareAccelerationType;
   }
 
   public void setHardwareAccelerationType(@javax.annotation.Nullable String hardwareAccelerationType) {
-    this.hardwareAccelerationType = hardwareAccelerationType;
+    this.hardwareAccelerationType = JsonNullable.<String>of(hardwareAccelerationType);
   }
 
 
   public EncodingOptions encoderAppPath(@javax.annotation.Nullable String encoderAppPath) {
-    this.encoderAppPath = encoderAppPath;
+    this.encoderAppPath = JsonNullable.<String>of(encoderAppPath);
     return this;
   }
 
@@ -427,17 +472,30 @@ public class EncodingOptions {
    * @return encoderAppPath
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getEncoderAppPath() {
+        return encoderAppPath.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ENCODER_APP_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getEncoderAppPath_JsonNullable() {
     return encoderAppPath;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ENCODER_APP_PATH)
+  public void setEncoderAppPath_JsonNullable(JsonNullable<String> encoderAppPath) {
+    this.encoderAppPath = encoderAppPath;
   }
 
   public void setEncoderAppPath(@javax.annotation.Nullable String encoderAppPath) {
-    this.encoderAppPath = encoderAppPath;
+    this.encoderAppPath = JsonNullable.<String>of(encoderAppPath);
   }
 
 
   public EncodingOptions encoderAppPathDisplay(@javax.annotation.Nullable String encoderAppPathDisplay) {
-    this.encoderAppPathDisplay = encoderAppPathDisplay;
+    this.encoderAppPathDisplay = JsonNullable.<String>of(encoderAppPathDisplay);
     return this;
   }
 
@@ -446,17 +504,30 @@ public class EncodingOptions {
    * @return encoderAppPathDisplay
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getEncoderAppPathDisplay() {
+        return encoderAppPathDisplay.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ENCODER_APP_PATH_DISPLAY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getEncoderAppPathDisplay_JsonNullable() {
     return encoderAppPathDisplay;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ENCODER_APP_PATH_DISPLAY)
+  public void setEncoderAppPathDisplay_JsonNullable(JsonNullable<String> encoderAppPathDisplay) {
+    this.encoderAppPathDisplay = encoderAppPathDisplay;
   }
 
   public void setEncoderAppPathDisplay(@javax.annotation.Nullable String encoderAppPathDisplay) {
-    this.encoderAppPathDisplay = encoderAppPathDisplay;
+    this.encoderAppPathDisplay = JsonNullable.<String>of(encoderAppPathDisplay);
   }
 
 
   public EncodingOptions vaapiDevice(@javax.annotation.Nullable String vaapiDevice) {
-    this.vaapiDevice = vaapiDevice;
+    this.vaapiDevice = JsonNullable.<String>of(vaapiDevice);
     return this;
   }
 
@@ -465,12 +536,25 @@ public class EncodingOptions {
    * @return vaapiDevice
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getVaapiDevice() {
+        return vaapiDevice.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_VAAPI_DEVICE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getVaapiDevice_JsonNullable() {
     return vaapiDevice;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_VAAPI_DEVICE)
+  public void setVaapiDevice_JsonNullable(JsonNullable<String> vaapiDevice) {
+    this.vaapiDevice = vaapiDevice;
   }
 
   public void setVaapiDevice(@javax.annotation.Nullable String vaapiDevice) {
-    this.vaapiDevice = vaapiDevice;
+    this.vaapiDevice = JsonNullable.<String>of(vaapiDevice);
   }
 
 
@@ -484,10 +568,15 @@ public class EncodingOptions {
    * @return enableTonemapping
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_TONEMAPPING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableTonemapping() {
     return enableTonemapping;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_TONEMAPPING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableTonemapping(@javax.annotation.Nullable Boolean enableTonemapping) {
     this.enableTonemapping = enableTonemapping;
   }
@@ -503,17 +592,22 @@ public class EncodingOptions {
    * @return enableVppTonemapping
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_VPP_TONEMAPPING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableVppTonemapping() {
     return enableVppTonemapping;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_VPP_TONEMAPPING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableVppTonemapping(@javax.annotation.Nullable Boolean enableVppTonemapping) {
     this.enableVppTonemapping = enableVppTonemapping;
   }
 
 
   public EncodingOptions tonemappingAlgorithm(@javax.annotation.Nullable String tonemappingAlgorithm) {
-    this.tonemappingAlgorithm = tonemappingAlgorithm;
+    this.tonemappingAlgorithm = JsonNullable.<String>of(tonemappingAlgorithm);
     return this;
   }
 
@@ -522,17 +616,30 @@ public class EncodingOptions {
    * @return tonemappingAlgorithm
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getTonemappingAlgorithm() {
+        return tonemappingAlgorithm.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TONEMAPPING_ALGORITHM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getTonemappingAlgorithm_JsonNullable() {
     return tonemappingAlgorithm;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TONEMAPPING_ALGORITHM)
+  public void setTonemappingAlgorithm_JsonNullable(JsonNullable<String> tonemappingAlgorithm) {
+    this.tonemappingAlgorithm = tonemappingAlgorithm;
   }
 
   public void setTonemappingAlgorithm(@javax.annotation.Nullable String tonemappingAlgorithm) {
-    this.tonemappingAlgorithm = tonemappingAlgorithm;
+    this.tonemappingAlgorithm = JsonNullable.<String>of(tonemappingAlgorithm);
   }
 
 
   public EncodingOptions tonemappingMode(@javax.annotation.Nullable String tonemappingMode) {
-    this.tonemappingMode = tonemappingMode;
+    this.tonemappingMode = JsonNullable.<String>of(tonemappingMode);
     return this;
   }
 
@@ -541,17 +648,30 @@ public class EncodingOptions {
    * @return tonemappingMode
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getTonemappingMode() {
+        return tonemappingMode.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TONEMAPPING_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getTonemappingMode_JsonNullable() {
     return tonemappingMode;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TONEMAPPING_MODE)
+  public void setTonemappingMode_JsonNullable(JsonNullable<String> tonemappingMode) {
+    this.tonemappingMode = tonemappingMode;
   }
 
   public void setTonemappingMode(@javax.annotation.Nullable String tonemappingMode) {
-    this.tonemappingMode = tonemappingMode;
+    this.tonemappingMode = JsonNullable.<String>of(tonemappingMode);
   }
 
 
   public EncodingOptions tonemappingRange(@javax.annotation.Nullable String tonemappingRange) {
-    this.tonemappingRange = tonemappingRange;
+    this.tonemappingRange = JsonNullable.<String>of(tonemappingRange);
     return this;
   }
 
@@ -560,12 +680,25 @@ public class EncodingOptions {
    * @return tonemappingRange
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getTonemappingRange() {
+        return tonemappingRange.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TONEMAPPING_RANGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getTonemappingRange_JsonNullable() {
     return tonemappingRange;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TONEMAPPING_RANGE)
+  public void setTonemappingRange_JsonNullable(JsonNullable<String> tonemappingRange) {
+    this.tonemappingRange = tonemappingRange;
   }
 
   public void setTonemappingRange(@javax.annotation.Nullable String tonemappingRange) {
-    this.tonemappingRange = tonemappingRange;
+    this.tonemappingRange = JsonNullable.<String>of(tonemappingRange);
   }
 
 
@@ -579,10 +712,15 @@ public class EncodingOptions {
    * @return tonemappingDesat
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TONEMAPPING_DESAT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getTonemappingDesat() {
     return tonemappingDesat;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TONEMAPPING_DESAT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTonemappingDesat(@javax.annotation.Nullable Double tonemappingDesat) {
     this.tonemappingDesat = tonemappingDesat;
   }
@@ -598,10 +736,15 @@ public class EncodingOptions {
    * @return tonemappingPeak
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TONEMAPPING_PEAK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getTonemappingPeak() {
     return tonemappingPeak;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TONEMAPPING_PEAK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTonemappingPeak(@javax.annotation.Nullable Double tonemappingPeak) {
     this.tonemappingPeak = tonemappingPeak;
   }
@@ -617,10 +760,15 @@ public class EncodingOptions {
    * @return tonemappingParam
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TONEMAPPING_PARAM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getTonemappingParam() {
     return tonemappingParam;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TONEMAPPING_PARAM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTonemappingParam(@javax.annotation.Nullable Double tonemappingParam) {
     this.tonemappingParam = tonemappingParam;
   }
@@ -636,10 +784,15 @@ public class EncodingOptions {
    * @return vppTonemappingBrightness
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_VPP_TONEMAPPING_BRIGHTNESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getVppTonemappingBrightness() {
     return vppTonemappingBrightness;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_VPP_TONEMAPPING_BRIGHTNESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVppTonemappingBrightness(@javax.annotation.Nullable Double vppTonemappingBrightness) {
     this.vppTonemappingBrightness = vppTonemappingBrightness;
   }
@@ -655,10 +808,15 @@ public class EncodingOptions {
    * @return vppTonemappingContrast
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_VPP_TONEMAPPING_CONTRAST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getVppTonemappingContrast() {
     return vppTonemappingContrast;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_VPP_TONEMAPPING_CONTRAST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVppTonemappingContrast(@javax.annotation.Nullable Double vppTonemappingContrast) {
     this.vppTonemappingContrast = vppTonemappingContrast;
   }
@@ -674,10 +832,15 @@ public class EncodingOptions {
    * @return h264Crf
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_H264_CRF)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getH264Crf() {
     return h264Crf;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_H264_CRF)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setH264Crf(@javax.annotation.Nullable Integer h264Crf) {
     this.h264Crf = h264Crf;
   }
@@ -693,17 +856,22 @@ public class EncodingOptions {
    * @return h265Crf
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_H265_CRF)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getH265Crf() {
     return h265Crf;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_H265_CRF)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setH265Crf(@javax.annotation.Nullable Integer h265Crf) {
     this.h265Crf = h265Crf;
   }
 
 
   public EncodingOptions encoderPreset(@javax.annotation.Nullable String encoderPreset) {
-    this.encoderPreset = encoderPreset;
+    this.encoderPreset = JsonNullable.<String>of(encoderPreset);
     return this;
   }
 
@@ -712,12 +880,25 @@ public class EncodingOptions {
    * @return encoderPreset
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getEncoderPreset() {
+        return encoderPreset.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ENCODER_PRESET)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getEncoderPreset_JsonNullable() {
     return encoderPreset;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ENCODER_PRESET)
+  public void setEncoderPreset_JsonNullable(JsonNullable<String> encoderPreset) {
+    this.encoderPreset = encoderPreset;
   }
 
   public void setEncoderPreset(@javax.annotation.Nullable String encoderPreset) {
-    this.encoderPreset = encoderPreset;
+    this.encoderPreset = JsonNullable.<String>of(encoderPreset);
   }
 
 
@@ -731,17 +912,22 @@ public class EncodingOptions {
    * @return deinterlaceDoubleRate
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DEINTERLACE_DOUBLE_RATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getDeinterlaceDoubleRate() {
     return deinterlaceDoubleRate;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DEINTERLACE_DOUBLE_RATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDeinterlaceDoubleRate(@javax.annotation.Nullable Boolean deinterlaceDoubleRate) {
     this.deinterlaceDoubleRate = deinterlaceDoubleRate;
   }
 
 
   public EncodingOptions deinterlaceMethod(@javax.annotation.Nullable String deinterlaceMethod) {
-    this.deinterlaceMethod = deinterlaceMethod;
+    this.deinterlaceMethod = JsonNullable.<String>of(deinterlaceMethod);
     return this;
   }
 
@@ -750,12 +936,25 @@ public class EncodingOptions {
    * @return deinterlaceMethod
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getDeinterlaceMethod() {
+        return deinterlaceMethod.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DEINTERLACE_METHOD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getDeinterlaceMethod_JsonNullable() {
     return deinterlaceMethod;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DEINTERLACE_METHOD)
+  public void setDeinterlaceMethod_JsonNullable(JsonNullable<String> deinterlaceMethod) {
+    this.deinterlaceMethod = deinterlaceMethod;
   }
 
   public void setDeinterlaceMethod(@javax.annotation.Nullable String deinterlaceMethod) {
-    this.deinterlaceMethod = deinterlaceMethod;
+    this.deinterlaceMethod = JsonNullable.<String>of(deinterlaceMethod);
   }
 
 
@@ -769,10 +968,15 @@ public class EncodingOptions {
    * @return enableDecodingColorDepth10Hevc
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableDecodingColorDepth10Hevc() {
     return enableDecodingColorDepth10Hevc;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableDecodingColorDepth10Hevc(@javax.annotation.Nullable Boolean enableDecodingColorDepth10Hevc) {
     this.enableDecodingColorDepth10Hevc = enableDecodingColorDepth10Hevc;
   }
@@ -788,10 +992,15 @@ public class EncodingOptions {
    * @return enableDecodingColorDepth10Vp9
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_VP9)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableDecodingColorDepth10Vp9() {
     return enableDecodingColorDepth10Vp9;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_VP9)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableDecodingColorDepth10Vp9(@javax.annotation.Nullable Boolean enableDecodingColorDepth10Vp9) {
     this.enableDecodingColorDepth10Vp9 = enableDecodingColorDepth10Vp9;
   }
@@ -807,10 +1016,15 @@ public class EncodingOptions {
    * @return enableEnhancedNvdecDecoder
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_ENHANCED_NVDEC_DECODER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableEnhancedNvdecDecoder() {
     return enableEnhancedNvdecDecoder;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_ENHANCED_NVDEC_DECODER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableEnhancedNvdecDecoder(@javax.annotation.Nullable Boolean enableEnhancedNvdecDecoder) {
     this.enableEnhancedNvdecDecoder = enableEnhancedNvdecDecoder;
   }
@@ -826,10 +1040,15 @@ public class EncodingOptions {
    * @return preferSystemNativeHwDecoder
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PREFER_SYSTEM_NATIVE_HW_DECODER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getPreferSystemNativeHwDecoder() {
     return preferSystemNativeHwDecoder;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PREFER_SYSTEM_NATIVE_HW_DECODER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPreferSystemNativeHwDecoder(@javax.annotation.Nullable Boolean preferSystemNativeHwDecoder) {
     this.preferSystemNativeHwDecoder = preferSystemNativeHwDecoder;
   }
@@ -845,10 +1064,15 @@ public class EncodingOptions {
    * @return enableIntelLowPowerH264HwEncoder
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_H264_HW_ENCODER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableIntelLowPowerH264HwEncoder() {
     return enableIntelLowPowerH264HwEncoder;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_H264_HW_ENCODER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableIntelLowPowerH264HwEncoder(@javax.annotation.Nullable Boolean enableIntelLowPowerH264HwEncoder) {
     this.enableIntelLowPowerH264HwEncoder = enableIntelLowPowerH264HwEncoder;
   }
@@ -864,10 +1088,15 @@ public class EncodingOptions {
    * @return enableIntelLowPowerHevcHwEncoder
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_HEVC_HW_ENCODER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableIntelLowPowerHevcHwEncoder() {
     return enableIntelLowPowerHevcHwEncoder;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_HEVC_HW_ENCODER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableIntelLowPowerHevcHwEncoder(@javax.annotation.Nullable Boolean enableIntelLowPowerHevcHwEncoder) {
     this.enableIntelLowPowerHevcHwEncoder = enableIntelLowPowerHevcHwEncoder;
   }
@@ -883,10 +1112,15 @@ public class EncodingOptions {
    * @return enableHardwareEncoding
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_HARDWARE_ENCODING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableHardwareEncoding() {
     return enableHardwareEncoding;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_HARDWARE_ENCODING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableHardwareEncoding(@javax.annotation.Nullable Boolean enableHardwareEncoding) {
     this.enableHardwareEncoding = enableHardwareEncoding;
   }
@@ -902,10 +1136,15 @@ public class EncodingOptions {
    * @return allowHevcEncoding
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ALLOW_HEVC_ENCODING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getAllowHevcEncoding() {
     return allowHevcEncoding;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ALLOW_HEVC_ENCODING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAllowHevcEncoding(@javax.annotation.Nullable Boolean allowHevcEncoding) {
     this.allowHevcEncoding = allowHevcEncoding;
   }
@@ -921,25 +1160,34 @@ public class EncodingOptions {
    * @return enableSubtitleExtraction
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_SUBTITLE_EXTRACTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableSubtitleExtraction() {
     return enableSubtitleExtraction;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_SUBTITLE_EXTRACTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableSubtitleExtraction(@javax.annotation.Nullable Boolean enableSubtitleExtraction) {
     this.enableSubtitleExtraction = enableSubtitleExtraction;
   }
 
 
   public EncodingOptions hardwareDecodingCodecs(@javax.annotation.Nullable List<String> hardwareDecodingCodecs) {
-    this.hardwareDecodingCodecs = hardwareDecodingCodecs;
+    this.hardwareDecodingCodecs = JsonNullable.<List<String>>of(hardwareDecodingCodecs);
     return this;
   }
 
   public EncodingOptions addHardwareDecodingCodecsItem(String hardwareDecodingCodecsItem) {
-    if (this.hardwareDecodingCodecs == null) {
-      this.hardwareDecodingCodecs = new ArrayList<>();
+    if (this.hardwareDecodingCodecs == null || !this.hardwareDecodingCodecs.isPresent()) {
+      this.hardwareDecodingCodecs = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.hardwareDecodingCodecs.add(hardwareDecodingCodecsItem);
+    try {
+      this.hardwareDecodingCodecs.get().add(hardwareDecodingCodecsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -948,25 +1196,42 @@ public class EncodingOptions {
    * @return hardwareDecodingCodecs
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getHardwareDecodingCodecs() {
+        return hardwareDecodingCodecs.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_HARDWARE_DECODING_CODECS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getHardwareDecodingCodecs_JsonNullable() {
     return hardwareDecodingCodecs;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_HARDWARE_DECODING_CODECS)
+  public void setHardwareDecodingCodecs_JsonNullable(JsonNullable<List<String>> hardwareDecodingCodecs) {
+    this.hardwareDecodingCodecs = hardwareDecodingCodecs;
   }
 
   public void setHardwareDecodingCodecs(@javax.annotation.Nullable List<String> hardwareDecodingCodecs) {
-    this.hardwareDecodingCodecs = hardwareDecodingCodecs;
+    this.hardwareDecodingCodecs = JsonNullable.<List<String>>of(hardwareDecodingCodecs);
   }
 
 
   public EncodingOptions allowOnDemandMetadataBasedKeyframeExtractionForExtensions(@javax.annotation.Nullable List<String> allowOnDemandMetadataBasedKeyframeExtractionForExtensions) {
-    this.allowOnDemandMetadataBasedKeyframeExtractionForExtensions = allowOnDemandMetadataBasedKeyframeExtractionForExtensions;
+    this.allowOnDemandMetadataBasedKeyframeExtractionForExtensions = JsonNullable.<List<String>>of(allowOnDemandMetadataBasedKeyframeExtractionForExtensions);
     return this;
   }
 
   public EncodingOptions addAllowOnDemandMetadataBasedKeyframeExtractionForExtensionsItem(String allowOnDemandMetadataBasedKeyframeExtractionForExtensionsItem) {
-    if (this.allowOnDemandMetadataBasedKeyframeExtractionForExtensions == null) {
-      this.allowOnDemandMetadataBasedKeyframeExtractionForExtensions = new ArrayList<>();
+    if (this.allowOnDemandMetadataBasedKeyframeExtractionForExtensions == null || !this.allowOnDemandMetadataBasedKeyframeExtractionForExtensions.isPresent()) {
+      this.allowOnDemandMetadataBasedKeyframeExtractionForExtensions = JsonNullable.<List<String>>of(new ArrayList<>());
     }
-    this.allowOnDemandMetadataBasedKeyframeExtractionForExtensions.add(allowOnDemandMetadataBasedKeyframeExtractionForExtensionsItem);
+    try {
+      this.allowOnDemandMetadataBasedKeyframeExtractionForExtensions.get().add(allowOnDemandMetadataBasedKeyframeExtractionForExtensionsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -975,16 +1240,31 @@ public class EncodingOptions {
    * @return allowOnDemandMetadataBasedKeyframeExtractionForExtensions
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<String> getAllowOnDemandMetadataBasedKeyframeExtractionForExtensions() {
-    return allowOnDemandMetadataBasedKeyframeExtractionForExtensions;
+        return allowOnDemandMetadataBasedKeyframeExtractionForExtensions.orElse(null);
   }
 
-  public void setAllowOnDemandMetadataBasedKeyframeExtractionForExtensions(@javax.annotation.Nullable List<String> allowOnDemandMetadataBasedKeyframeExtractionForExtensions) {
+  @JsonProperty(JSON_PROPERTY_ALLOW_ON_DEMAND_METADATA_BASED_KEYFRAME_EXTRACTION_FOR_EXTENSIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<String>> getAllowOnDemandMetadataBasedKeyframeExtractionForExtensions_JsonNullable() {
+    return allowOnDemandMetadataBasedKeyframeExtractionForExtensions;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ALLOW_ON_DEMAND_METADATA_BASED_KEYFRAME_EXTRACTION_FOR_EXTENSIONS)
+  public void setAllowOnDemandMetadataBasedKeyframeExtractionForExtensions_JsonNullable(JsonNullable<List<String>> allowOnDemandMetadataBasedKeyframeExtractionForExtensions) {
     this.allowOnDemandMetadataBasedKeyframeExtractionForExtensions = allowOnDemandMetadataBasedKeyframeExtractionForExtensions;
   }
 
+  public void setAllowOnDemandMetadataBasedKeyframeExtractionForExtensions(@javax.annotation.Nullable List<String> allowOnDemandMetadataBasedKeyframeExtractionForExtensions) {
+    this.allowOnDemandMetadataBasedKeyframeExtractionForExtensions = JsonNullable.<List<String>>of(allowOnDemandMetadataBasedKeyframeExtractionForExtensions);
+  }
 
 
+  /**
+   * Return true if this EncodingOptions object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -995,22 +1275,22 @@ public class EncodingOptions {
     }
     EncodingOptions encodingOptions = (EncodingOptions) o;
     return Objects.equals(this.encodingThreadCount, encodingOptions.encodingThreadCount) &&
-        Objects.equals(this.transcodingTempPath, encodingOptions.transcodingTempPath) &&
-        Objects.equals(this.fallbackFontPath, encodingOptions.fallbackFontPath) &&
+        equalsNullable(this.transcodingTempPath, encodingOptions.transcodingTempPath) &&
+        equalsNullable(this.fallbackFontPath, encodingOptions.fallbackFontPath) &&
         Objects.equals(this.enableFallbackFont, encodingOptions.enableFallbackFont) &&
         Objects.equals(this.downMixAudioBoost, encodingOptions.downMixAudioBoost) &&
         Objects.equals(this.maxMuxingQueueSize, encodingOptions.maxMuxingQueueSize) &&
         Objects.equals(this.enableThrottling, encodingOptions.enableThrottling) &&
         Objects.equals(this.throttleDelaySeconds, encodingOptions.throttleDelaySeconds) &&
-        Objects.equals(this.hardwareAccelerationType, encodingOptions.hardwareAccelerationType) &&
-        Objects.equals(this.encoderAppPath, encodingOptions.encoderAppPath) &&
-        Objects.equals(this.encoderAppPathDisplay, encodingOptions.encoderAppPathDisplay) &&
-        Objects.equals(this.vaapiDevice, encodingOptions.vaapiDevice) &&
+        equalsNullable(this.hardwareAccelerationType, encodingOptions.hardwareAccelerationType) &&
+        equalsNullable(this.encoderAppPath, encodingOptions.encoderAppPath) &&
+        equalsNullable(this.encoderAppPathDisplay, encodingOptions.encoderAppPathDisplay) &&
+        equalsNullable(this.vaapiDevice, encodingOptions.vaapiDevice) &&
         Objects.equals(this.enableTonemapping, encodingOptions.enableTonemapping) &&
         Objects.equals(this.enableVppTonemapping, encodingOptions.enableVppTonemapping) &&
-        Objects.equals(this.tonemappingAlgorithm, encodingOptions.tonemappingAlgorithm) &&
-        Objects.equals(this.tonemappingMode, encodingOptions.tonemappingMode) &&
-        Objects.equals(this.tonemappingRange, encodingOptions.tonemappingRange) &&
+        equalsNullable(this.tonemappingAlgorithm, encodingOptions.tonemappingAlgorithm) &&
+        equalsNullable(this.tonemappingMode, encodingOptions.tonemappingMode) &&
+        equalsNullable(this.tonemappingRange, encodingOptions.tonemappingRange) &&
         Objects.equals(this.tonemappingDesat, encodingOptions.tonemappingDesat) &&
         Objects.equals(this.tonemappingPeak, encodingOptions.tonemappingPeak) &&
         Objects.equals(this.tonemappingParam, encodingOptions.tonemappingParam) &&
@@ -1018,9 +1298,9 @@ public class EncodingOptions {
         Objects.equals(this.vppTonemappingContrast, encodingOptions.vppTonemappingContrast) &&
         Objects.equals(this.h264Crf, encodingOptions.h264Crf) &&
         Objects.equals(this.h265Crf, encodingOptions.h265Crf) &&
-        Objects.equals(this.encoderPreset, encodingOptions.encoderPreset) &&
+        equalsNullable(this.encoderPreset, encodingOptions.encoderPreset) &&
         Objects.equals(this.deinterlaceDoubleRate, encodingOptions.deinterlaceDoubleRate) &&
-        Objects.equals(this.deinterlaceMethod, encodingOptions.deinterlaceMethod) &&
+        equalsNullable(this.deinterlaceMethod, encodingOptions.deinterlaceMethod) &&
         Objects.equals(this.enableDecodingColorDepth10Hevc, encodingOptions.enableDecodingColorDepth10Hevc) &&
         Objects.equals(this.enableDecodingColorDepth10Vp9, encodingOptions.enableDecodingColorDepth10Vp9) &&
         Objects.equals(this.enableEnhancedNvdecDecoder, encodingOptions.enableEnhancedNvdecDecoder) &&
@@ -1030,8 +1310,8 @@ public class EncodingOptions {
         Objects.equals(this.enableHardwareEncoding, encodingOptions.enableHardwareEncoding) &&
         Objects.equals(this.allowHevcEncoding, encodingOptions.allowHevcEncoding) &&
         Objects.equals(this.enableSubtitleExtraction, encodingOptions.enableSubtitleExtraction) &&
-        Objects.equals(this.hardwareDecodingCodecs, encodingOptions.hardwareDecodingCodecs) &&
-        Objects.equals(this.allowOnDemandMetadataBasedKeyframeExtractionForExtensions, encodingOptions.allowOnDemandMetadataBasedKeyframeExtractionForExtensions);
+        equalsNullable(this.hardwareDecodingCodecs, encodingOptions.hardwareDecodingCodecs) &&
+        equalsNullable(this.allowOnDemandMetadataBasedKeyframeExtractionForExtensions, encodingOptions.allowOnDemandMetadataBasedKeyframeExtractionForExtensions);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -1040,7 +1320,7 @@ public class EncodingOptions {
 
   @Override
   public int hashCode() {
-    return Objects.hash(encodingThreadCount, transcodingTempPath, fallbackFontPath, enableFallbackFont, downMixAudioBoost, maxMuxingQueueSize, enableThrottling, throttleDelaySeconds, hardwareAccelerationType, encoderAppPath, encoderAppPathDisplay, vaapiDevice, enableTonemapping, enableVppTonemapping, tonemappingAlgorithm, tonemappingMode, tonemappingRange, tonemappingDesat, tonemappingPeak, tonemappingParam, vppTonemappingBrightness, vppTonemappingContrast, h264Crf, h265Crf, encoderPreset, deinterlaceDoubleRate, deinterlaceMethod, enableDecodingColorDepth10Hevc, enableDecodingColorDepth10Vp9, enableEnhancedNvdecDecoder, preferSystemNativeHwDecoder, enableIntelLowPowerH264HwEncoder, enableIntelLowPowerHevcHwEncoder, enableHardwareEncoding, allowHevcEncoding, enableSubtitleExtraction, hardwareDecodingCodecs, allowOnDemandMetadataBasedKeyframeExtractionForExtensions);
+    return Objects.hash(encodingThreadCount, hashCodeNullable(transcodingTempPath), hashCodeNullable(fallbackFontPath), enableFallbackFont, downMixAudioBoost, maxMuxingQueueSize, enableThrottling, throttleDelaySeconds, hashCodeNullable(hardwareAccelerationType), hashCodeNullable(encoderAppPath), hashCodeNullable(encoderAppPathDisplay), hashCodeNullable(vaapiDevice), enableTonemapping, enableVppTonemapping, hashCodeNullable(tonemappingAlgorithm), hashCodeNullable(tonemappingMode), hashCodeNullable(tonemappingRange), tonemappingDesat, tonemappingPeak, tonemappingParam, vppTonemappingBrightness, vppTonemappingContrast, h264Crf, h265Crf, hashCodeNullable(encoderPreset), deinterlaceDoubleRate, hashCodeNullable(deinterlaceMethod), enableDecodingColorDepth10Hevc, enableDecodingColorDepth10Vp9, enableEnhancedNvdecDecoder, preferSystemNativeHwDecoder, enableIntelLowPowerH264HwEncoder, enableIntelLowPowerHevcHwEncoder, enableHardwareEncoding, allowHevcEncoding, enableSubtitleExtraction, hashCodeNullable(hardwareDecodingCodecs), hashCodeNullable(allowOnDemandMetadataBasedKeyframeExtractionForExtensions));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -1107,167 +1387,237 @@ public class EncodingOptions {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("EncodingThreadCount");
-    openapiFields.add("TranscodingTempPath");
-    openapiFields.add("FallbackFontPath");
-    openapiFields.add("EnableFallbackFont");
-    openapiFields.add("DownMixAudioBoost");
-    openapiFields.add("MaxMuxingQueueSize");
-    openapiFields.add("EnableThrottling");
-    openapiFields.add("ThrottleDelaySeconds");
-    openapiFields.add("HardwareAccelerationType");
-    openapiFields.add("EncoderAppPath");
-    openapiFields.add("EncoderAppPathDisplay");
-    openapiFields.add("VaapiDevice");
-    openapiFields.add("EnableTonemapping");
-    openapiFields.add("EnableVppTonemapping");
-    openapiFields.add("TonemappingAlgorithm");
-    openapiFields.add("TonemappingMode");
-    openapiFields.add("TonemappingRange");
-    openapiFields.add("TonemappingDesat");
-    openapiFields.add("TonemappingPeak");
-    openapiFields.add("TonemappingParam");
-    openapiFields.add("VppTonemappingBrightness");
-    openapiFields.add("VppTonemappingContrast");
-    openapiFields.add("H264Crf");
-    openapiFields.add("H265Crf");
-    openapiFields.add("EncoderPreset");
-    openapiFields.add("DeinterlaceDoubleRate");
-    openapiFields.add("DeinterlaceMethod");
-    openapiFields.add("EnableDecodingColorDepth10Hevc");
-    openapiFields.add("EnableDecodingColorDepth10Vp9");
-    openapiFields.add("EnableEnhancedNvdecDecoder");
-    openapiFields.add("PreferSystemNativeHwDecoder");
-    openapiFields.add("EnableIntelLowPowerH264HwEncoder");
-    openapiFields.add("EnableIntelLowPowerHevcHwEncoder");
-    openapiFields.add("EnableHardwareEncoding");
-    openapiFields.add("AllowHevcEncoding");
-    openapiFields.add("EnableSubtitleExtraction");
-    openapiFields.add("HardwareDecodingCodecs");
-    openapiFields.add("AllowOnDemandMetadataBasedKeyframeExtractionForExtensions");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to EncodingOptions
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!EncodingOptions.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in EncodingOptions is not found in the empty JSON string", EncodingOptions.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!EncodingOptions.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `EncodingOptions` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("TranscodingTempPath") != null && !jsonObj.get("TranscodingTempPath").isJsonNull()) && !jsonObj.get("TranscodingTempPath").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `TranscodingTempPath` to be a primitive type in the JSON string but got `%s`", jsonObj.get("TranscodingTempPath").toString()));
-      }
-      if ((jsonObj.get("FallbackFontPath") != null && !jsonObj.get("FallbackFontPath").isJsonNull()) && !jsonObj.get("FallbackFontPath").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `FallbackFontPath` to be a primitive type in the JSON string but got `%s`", jsonObj.get("FallbackFontPath").toString()));
-      }
-      if ((jsonObj.get("HardwareAccelerationType") != null && !jsonObj.get("HardwareAccelerationType").isJsonNull()) && !jsonObj.get("HardwareAccelerationType").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `HardwareAccelerationType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("HardwareAccelerationType").toString()));
-      }
-      if ((jsonObj.get("EncoderAppPath") != null && !jsonObj.get("EncoderAppPath").isJsonNull()) && !jsonObj.get("EncoderAppPath").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `EncoderAppPath` to be a primitive type in the JSON string but got `%s`", jsonObj.get("EncoderAppPath").toString()));
-      }
-      if ((jsonObj.get("EncoderAppPathDisplay") != null && !jsonObj.get("EncoderAppPathDisplay").isJsonNull()) && !jsonObj.get("EncoderAppPathDisplay").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `EncoderAppPathDisplay` to be a primitive type in the JSON string but got `%s`", jsonObj.get("EncoderAppPathDisplay").toString()));
-      }
-      if ((jsonObj.get("VaapiDevice") != null && !jsonObj.get("VaapiDevice").isJsonNull()) && !jsonObj.get("VaapiDevice").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `VaapiDevice` to be a primitive type in the JSON string but got `%s`", jsonObj.get("VaapiDevice").toString()));
-      }
-      if ((jsonObj.get("TonemappingAlgorithm") != null && !jsonObj.get("TonemappingAlgorithm").isJsonNull()) && !jsonObj.get("TonemappingAlgorithm").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `TonemappingAlgorithm` to be a primitive type in the JSON string but got `%s`", jsonObj.get("TonemappingAlgorithm").toString()));
-      }
-      if ((jsonObj.get("TonemappingMode") != null && !jsonObj.get("TonemappingMode").isJsonNull()) && !jsonObj.get("TonemappingMode").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `TonemappingMode` to be a primitive type in the JSON string but got `%s`", jsonObj.get("TonemappingMode").toString()));
-      }
-      if ((jsonObj.get("TonemappingRange") != null && !jsonObj.get("TonemappingRange").isJsonNull()) && !jsonObj.get("TonemappingRange").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `TonemappingRange` to be a primitive type in the JSON string but got `%s`", jsonObj.get("TonemappingRange").toString()));
-      }
-      if ((jsonObj.get("EncoderPreset") != null && !jsonObj.get("EncoderPreset").isJsonNull()) && !jsonObj.get("EncoderPreset").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `EncoderPreset` to be a primitive type in the JSON string but got `%s`", jsonObj.get("EncoderPreset").toString()));
-      }
-      if ((jsonObj.get("DeinterlaceMethod") != null && !jsonObj.get("DeinterlaceMethod").isJsonNull()) && !jsonObj.get("DeinterlaceMethod").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `DeinterlaceMethod` to be a primitive type in the JSON string but got `%s`", jsonObj.get("DeinterlaceMethod").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("HardwareDecodingCodecs") != null && !jsonObj.get("HardwareDecodingCodecs").isJsonNull() && !jsonObj.get("HardwareDecodingCodecs").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `HardwareDecodingCodecs` to be an array in the JSON string but got `%s`", jsonObj.get("HardwareDecodingCodecs").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("AllowOnDemandMetadataBasedKeyframeExtractionForExtensions") != null && !jsonObj.get("AllowOnDemandMetadataBasedKeyframeExtractionForExtensions").isJsonNull() && !jsonObj.get("AllowOnDemandMetadataBasedKeyframeExtractionForExtensions").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `AllowOnDemandMetadataBasedKeyframeExtractionForExtensions` to be an array in the JSON string but got `%s`", jsonObj.get("AllowOnDemandMetadataBasedKeyframeExtractionForExtensions").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!EncodingOptions.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'EncodingOptions' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<EncodingOptions> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(EncodingOptions.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<EncodingOptions>() {
-           @Override
-           public void write(JsonWriter out, EncodingOptions value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public EncodingOptions read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of EncodingOptions given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of EncodingOptions
-   * @throws IOException if the JSON string is invalid with respect to EncodingOptions
-   */
-  public static EncodingOptions fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, EncodingOptions.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of EncodingOptions to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `EncodingThreadCount` to the URL query string
+    if (getEncodingThreadCount() != null) {
+      joiner.add(String.format("%sEncodingThreadCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEncodingThreadCount()))));
+    }
+
+    // add `TranscodingTempPath` to the URL query string
+    if (getTranscodingTempPath() != null) {
+      joiner.add(String.format("%sTranscodingTempPath%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTranscodingTempPath()))));
+    }
+
+    // add `FallbackFontPath` to the URL query string
+    if (getFallbackFontPath() != null) {
+      joiner.add(String.format("%sFallbackFontPath%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFallbackFontPath()))));
+    }
+
+    // add `EnableFallbackFont` to the URL query string
+    if (getEnableFallbackFont() != null) {
+      joiner.add(String.format("%sEnableFallbackFont%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableFallbackFont()))));
+    }
+
+    // add `DownMixAudioBoost` to the URL query string
+    if (getDownMixAudioBoost() != null) {
+      joiner.add(String.format("%sDownMixAudioBoost%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDownMixAudioBoost()))));
+    }
+
+    // add `MaxMuxingQueueSize` to the URL query string
+    if (getMaxMuxingQueueSize() != null) {
+      joiner.add(String.format("%sMaxMuxingQueueSize%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxMuxingQueueSize()))));
+    }
+
+    // add `EnableThrottling` to the URL query string
+    if (getEnableThrottling() != null) {
+      joiner.add(String.format("%sEnableThrottling%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableThrottling()))));
+    }
+
+    // add `ThrottleDelaySeconds` to the URL query string
+    if (getThrottleDelaySeconds() != null) {
+      joiner.add(String.format("%sThrottleDelaySeconds%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getThrottleDelaySeconds()))));
+    }
+
+    // add `HardwareAccelerationType` to the URL query string
+    if (getHardwareAccelerationType() != null) {
+      joiner.add(String.format("%sHardwareAccelerationType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHardwareAccelerationType()))));
+    }
+
+    // add `EncoderAppPath` to the URL query string
+    if (getEncoderAppPath() != null) {
+      joiner.add(String.format("%sEncoderAppPath%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEncoderAppPath()))));
+    }
+
+    // add `EncoderAppPathDisplay` to the URL query string
+    if (getEncoderAppPathDisplay() != null) {
+      joiner.add(String.format("%sEncoderAppPathDisplay%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEncoderAppPathDisplay()))));
+    }
+
+    // add `VaapiDevice` to the URL query string
+    if (getVaapiDevice() != null) {
+      joiner.add(String.format("%sVaapiDevice%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVaapiDevice()))));
+    }
+
+    // add `EnableTonemapping` to the URL query string
+    if (getEnableTonemapping() != null) {
+      joiner.add(String.format("%sEnableTonemapping%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableTonemapping()))));
+    }
+
+    // add `EnableVppTonemapping` to the URL query string
+    if (getEnableVppTonemapping() != null) {
+      joiner.add(String.format("%sEnableVppTonemapping%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableVppTonemapping()))));
+    }
+
+    // add `TonemappingAlgorithm` to the URL query string
+    if (getTonemappingAlgorithm() != null) {
+      joiner.add(String.format("%sTonemappingAlgorithm%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTonemappingAlgorithm()))));
+    }
+
+    // add `TonemappingMode` to the URL query string
+    if (getTonemappingMode() != null) {
+      joiner.add(String.format("%sTonemappingMode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTonemappingMode()))));
+    }
+
+    // add `TonemappingRange` to the URL query string
+    if (getTonemappingRange() != null) {
+      joiner.add(String.format("%sTonemappingRange%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTonemappingRange()))));
+    }
+
+    // add `TonemappingDesat` to the URL query string
+    if (getTonemappingDesat() != null) {
+      joiner.add(String.format("%sTonemappingDesat%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTonemappingDesat()))));
+    }
+
+    // add `TonemappingPeak` to the URL query string
+    if (getTonemappingPeak() != null) {
+      joiner.add(String.format("%sTonemappingPeak%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTonemappingPeak()))));
+    }
+
+    // add `TonemappingParam` to the URL query string
+    if (getTonemappingParam() != null) {
+      joiner.add(String.format("%sTonemappingParam%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTonemappingParam()))));
+    }
+
+    // add `VppTonemappingBrightness` to the URL query string
+    if (getVppTonemappingBrightness() != null) {
+      joiner.add(String.format("%sVppTonemappingBrightness%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVppTonemappingBrightness()))));
+    }
+
+    // add `VppTonemappingContrast` to the URL query string
+    if (getVppTonemappingContrast() != null) {
+      joiner.add(String.format("%sVppTonemappingContrast%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVppTonemappingContrast()))));
+    }
+
+    // add `H264Crf` to the URL query string
+    if (getH264Crf() != null) {
+      joiner.add(String.format("%sH264Crf%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getH264Crf()))));
+    }
+
+    // add `H265Crf` to the URL query string
+    if (getH265Crf() != null) {
+      joiner.add(String.format("%sH265Crf%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getH265Crf()))));
+    }
+
+    // add `EncoderPreset` to the URL query string
+    if (getEncoderPreset() != null) {
+      joiner.add(String.format("%sEncoderPreset%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEncoderPreset()))));
+    }
+
+    // add `DeinterlaceDoubleRate` to the URL query string
+    if (getDeinterlaceDoubleRate() != null) {
+      joiner.add(String.format("%sDeinterlaceDoubleRate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDeinterlaceDoubleRate()))));
+    }
+
+    // add `DeinterlaceMethod` to the URL query string
+    if (getDeinterlaceMethod() != null) {
+      joiner.add(String.format("%sDeinterlaceMethod%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDeinterlaceMethod()))));
+    }
+
+    // add `EnableDecodingColorDepth10Hevc` to the URL query string
+    if (getEnableDecodingColorDepth10Hevc() != null) {
+      joiner.add(String.format("%sEnableDecodingColorDepth10Hevc%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableDecodingColorDepth10Hevc()))));
+    }
+
+    // add `EnableDecodingColorDepth10Vp9` to the URL query string
+    if (getEnableDecodingColorDepth10Vp9() != null) {
+      joiner.add(String.format("%sEnableDecodingColorDepth10Vp9%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableDecodingColorDepth10Vp9()))));
+    }
+
+    // add `EnableEnhancedNvdecDecoder` to the URL query string
+    if (getEnableEnhancedNvdecDecoder() != null) {
+      joiner.add(String.format("%sEnableEnhancedNvdecDecoder%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableEnhancedNvdecDecoder()))));
+    }
+
+    // add `PreferSystemNativeHwDecoder` to the URL query string
+    if (getPreferSystemNativeHwDecoder() != null) {
+      joiner.add(String.format("%sPreferSystemNativeHwDecoder%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPreferSystemNativeHwDecoder()))));
+    }
+
+    // add `EnableIntelLowPowerH264HwEncoder` to the URL query string
+    if (getEnableIntelLowPowerH264HwEncoder() != null) {
+      joiner.add(String.format("%sEnableIntelLowPowerH264HwEncoder%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableIntelLowPowerH264HwEncoder()))));
+    }
+
+    // add `EnableIntelLowPowerHevcHwEncoder` to the URL query string
+    if (getEnableIntelLowPowerHevcHwEncoder() != null) {
+      joiner.add(String.format("%sEnableIntelLowPowerHevcHwEncoder%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableIntelLowPowerHevcHwEncoder()))));
+    }
+
+    // add `EnableHardwareEncoding` to the URL query string
+    if (getEnableHardwareEncoding() != null) {
+      joiner.add(String.format("%sEnableHardwareEncoding%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableHardwareEncoding()))));
+    }
+
+    // add `AllowHevcEncoding` to the URL query string
+    if (getAllowHevcEncoding() != null) {
+      joiner.add(String.format("%sAllowHevcEncoding%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAllowHevcEncoding()))));
+    }
+
+    // add `EnableSubtitleExtraction` to the URL query string
+    if (getEnableSubtitleExtraction() != null) {
+      joiner.add(String.format("%sEnableSubtitleExtraction%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableSubtitleExtraction()))));
+    }
+
+    // add `HardwareDecodingCodecs` to the URL query string
+    if (getHardwareDecodingCodecs() != null) {
+      for (int i = 0; i < getHardwareDecodingCodecs().size(); i++) {
+        joiner.add(String.format("%sHardwareDecodingCodecs%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getHardwareDecodingCodecs().get(i)))));
+      }
+    }
+
+    // add `AllowOnDemandMetadataBasedKeyframeExtractionForExtensions` to the URL query string
+    if (getAllowOnDemandMetadataBasedKeyframeExtractionForExtensions() != null) {
+      for (int i = 0; i < getAllowOnDemandMetadataBasedKeyframeExtractionForExtensions().size(); i++) {
+        joiner.add(String.format("%sAllowOnDemandMetadataBasedKeyframeExtractionForExtensions%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getAllowOnDemandMetadataBasedKeyframeExtractionForExtensions().get(i)))));
+      }
+    }
+
+    return joiner.toString();
   }
 }
 

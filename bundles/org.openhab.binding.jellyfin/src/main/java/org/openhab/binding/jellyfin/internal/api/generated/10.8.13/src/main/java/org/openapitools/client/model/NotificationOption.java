@@ -13,82 +13,70 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.client.model.SendToUserType;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * NotificationOption
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  NotificationOption.JSON_PROPERTY_TYPE,
+  NotificationOption.JSON_PROPERTY_DISABLED_MONITOR_USERS,
+  NotificationOption.JSON_PROPERTY_SEND_TO_USERS,
+  NotificationOption.JSON_PROPERTY_ENABLED,
+  NotificationOption.JSON_PROPERTY_DISABLED_SERVICES,
+  NotificationOption.JSON_PROPERTY_SEND_TO_USER_MODE
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class NotificationOption {
-  public static final String SERIALIZED_NAME_TYPE = "Type";
-  @SerializedName(SERIALIZED_NAME_TYPE)
-  @javax.annotation.Nullable
-  private String type;
+  public static final String JSON_PROPERTY_TYPE = "Type";
+  private JsonNullable<String> type = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_DISABLED_MONITOR_USERS = "DisabledMonitorUsers";
-  @SerializedName(SERIALIZED_NAME_DISABLED_MONITOR_USERS)
+  public static final String JSON_PROPERTY_DISABLED_MONITOR_USERS = "DisabledMonitorUsers";
   @javax.annotation.Nullable
   private List<String> disabledMonitorUsers = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_SEND_TO_USERS = "SendToUsers";
-  @SerializedName(SERIALIZED_NAME_SEND_TO_USERS)
+  public static final String JSON_PROPERTY_SEND_TO_USERS = "SendToUsers";
   @javax.annotation.Nullable
   private List<String> sendToUsers = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_ENABLED = "Enabled";
-  @SerializedName(SERIALIZED_NAME_ENABLED)
+  public static final String JSON_PROPERTY_ENABLED = "Enabled";
   @javax.annotation.Nullable
   private Boolean enabled;
 
-  public static final String SERIALIZED_NAME_DISABLED_SERVICES = "DisabledServices";
-  @SerializedName(SERIALIZED_NAME_DISABLED_SERVICES)
+  public static final String JSON_PROPERTY_DISABLED_SERVICES = "DisabledServices";
   @javax.annotation.Nullable
   private List<String> disabledServices = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_SEND_TO_USER_MODE = "SendToUserMode";
-  @SerializedName(SERIALIZED_NAME_SEND_TO_USER_MODE)
+  public static final String JSON_PROPERTY_SEND_TO_USER_MODE = "SendToUserMode";
   @javax.annotation.Nullable
   private SendToUserType sendToUserMode;
 
-  public NotificationOption() {
+  public NotificationOption() { 
   }
 
   public NotificationOption type(@javax.annotation.Nullable String type) {
-    this.type = type;
+    this.type = JsonNullable.<String>of(type);
     return this;
   }
 
@@ -97,12 +85,25 @@ public class NotificationOption {
    * @return type
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getType() {
+        return type.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getType_JsonNullable() {
     return type;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  public void setType_JsonNullable(JsonNullable<String> type) {
+    this.type = type;
   }
 
   public void setType(@javax.annotation.Nullable String type) {
-    this.type = type;
+    this.type = JsonNullable.<String>of(type);
   }
 
 
@@ -124,10 +125,15 @@ public class NotificationOption {
    * @return disabledMonitorUsers
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DISABLED_MONITOR_USERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getDisabledMonitorUsers() {
     return disabledMonitorUsers;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DISABLED_MONITOR_USERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisabledMonitorUsers(@javax.annotation.Nullable List<String> disabledMonitorUsers) {
     this.disabledMonitorUsers = disabledMonitorUsers;
   }
@@ -151,10 +157,15 @@ public class NotificationOption {
    * @return sendToUsers
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SEND_TO_USERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getSendToUsers() {
     return sendToUsers;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SEND_TO_USERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSendToUsers(@javax.annotation.Nullable List<String> sendToUsers) {
     this.sendToUsers = sendToUsers;
   }
@@ -170,10 +181,15 @@ public class NotificationOption {
    * @return enabled
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnabled() {
     return enabled;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnabled(@javax.annotation.Nullable Boolean enabled) {
     this.enabled = enabled;
   }
@@ -197,10 +213,15 @@ public class NotificationOption {
    * @return disabledServices
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DISABLED_SERVICES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getDisabledServices() {
     return disabledServices;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DISABLED_SERVICES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisabledServices(@javax.annotation.Nullable List<String> disabledServices) {
     this.disabledServices = disabledServices;
   }
@@ -216,16 +237,23 @@ public class NotificationOption {
    * @return sendToUserMode
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SEND_TO_USER_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public SendToUserType getSendToUserMode() {
     return sendToUserMode;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SEND_TO_USER_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSendToUserMode(@javax.annotation.Nullable SendToUserType sendToUserMode) {
     this.sendToUserMode = sendToUserMode;
   }
 
 
-
+  /**
+   * Return true if this NotificationOption object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -235,7 +263,7 @@ public class NotificationOption {
       return false;
     }
     NotificationOption notificationOption = (NotificationOption) o;
-    return Objects.equals(this.type, notificationOption.type) &&
+    return equalsNullable(this.type, notificationOption.type) &&
         Objects.equals(this.disabledMonitorUsers, notificationOption.disabledMonitorUsers) &&
         Objects.equals(this.sendToUsers, notificationOption.sendToUsers) &&
         Objects.equals(this.enabled, notificationOption.enabled) &&
@@ -249,7 +277,7 @@ public class NotificationOption {
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, disabledMonitorUsers, sendToUsers, enabled, disabledServices, sendToUserMode);
+    return Objects.hash(hashCodeNullable(type), disabledMonitorUsers, sendToUsers, enabled, disabledServices, sendToUserMode);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -284,113 +312,81 @@ public class NotificationOption {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Type");
-    openapiFields.add("DisabledMonitorUsers");
-    openapiFields.add("SendToUsers");
-    openapiFields.add("Enabled");
-    openapiFields.add("DisabledServices");
-    openapiFields.add("SendToUserMode");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to NotificationOption
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!NotificationOption.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in NotificationOption is not found in the empty JSON string", NotificationOption.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!NotificationOption.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `NotificationOption` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Type") != null && !jsonObj.get("Type").isJsonNull()) && !jsonObj.get("Type").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Type").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("DisabledMonitorUsers") != null && !jsonObj.get("DisabledMonitorUsers").isJsonNull() && !jsonObj.get("DisabledMonitorUsers").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `DisabledMonitorUsers` to be an array in the JSON string but got `%s`", jsonObj.get("DisabledMonitorUsers").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("SendToUsers") != null && !jsonObj.get("SendToUsers").isJsonNull() && !jsonObj.get("SendToUsers").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SendToUsers` to be an array in the JSON string but got `%s`", jsonObj.get("SendToUsers").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("DisabledServices") != null && !jsonObj.get("DisabledServices").isJsonNull() && !jsonObj.get("DisabledServices").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `DisabledServices` to be an array in the JSON string but got `%s`", jsonObj.get("DisabledServices").toString()));
-      }
-      // validate the optional field `SendToUserMode`
-      if (jsonObj.get("SendToUserMode") != null && !jsonObj.get("SendToUserMode").isJsonNull()) {
-        SendToUserType.validateJsonElement(jsonObj.get("SendToUserMode"));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!NotificationOption.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'NotificationOption' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<NotificationOption> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(NotificationOption.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<NotificationOption>() {
-           @Override
-           public void write(JsonWriter out, NotificationOption value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public NotificationOption read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of NotificationOption given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of NotificationOption
-   * @throws IOException if the JSON string is invalid with respect to NotificationOption
-   */
-  public static NotificationOption fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, NotificationOption.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of NotificationOption to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Type` to the URL query string
+    if (getType() != null) {
+      joiner.add(String.format("%sType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+    }
+
+    // add `DisabledMonitorUsers` to the URL query string
+    if (getDisabledMonitorUsers() != null) {
+      for (int i = 0; i < getDisabledMonitorUsers().size(); i++) {
+        joiner.add(String.format("%sDisabledMonitorUsers%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getDisabledMonitorUsers().get(i)))));
+      }
+    }
+
+    // add `SendToUsers` to the URL query string
+    if (getSendToUsers() != null) {
+      for (int i = 0; i < getSendToUsers().size(); i++) {
+        joiner.add(String.format("%sSendToUsers%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getSendToUsers().get(i)))));
+      }
+    }
+
+    // add `Enabled` to the URL query string
+    if (getEnabled() != null) {
+      joiner.add(String.format("%sEnabled%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnabled()))));
+    }
+
+    // add `DisabledServices` to the URL query string
+    if (getDisabledServices() != null) {
+      for (int i = 0; i < getDisabledServices().size(); i++) {
+        joiner.add(String.format("%sDisabledServices%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getDisabledServices().get(i)))));
+      }
+    }
+
+    // add `SendToUserMode` to the URL query string
+    if (getSendToUserMode() != null) {
+      joiner.add(String.format("%sSendToUserMode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSendToUserMode()))));
+    }
+
+    return joiner.toString();
   }
 }
 

@@ -10,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import org.openapitools.client.model.BaseItemDtoQueryResult;
 import org.openapitools.client.model.ChannelFeatures;
@@ -35,862 +26,584 @@ import org.openapitools.client.model.ItemSortBy;
 import org.openapitools.client.model.SortOrder;
 import java.util.UUID;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ChannelsApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public ChannelsApi() {
-        this(Configuration.getDefaultApiClient());
+  public ChannelsApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public ChannelsApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Get all channel features.
+   * 
+   * @return List&lt;ChannelFeatures&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<ChannelFeatures> getAllChannelFeatures() throws ApiException {
+    ApiResponse<List<ChannelFeatures>> localVarResponse = getAllChannelFeaturesWithHttpInfo();
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get all channel features.
+   * 
+   * @return ApiResponse&lt;List&lt;ChannelFeatures&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<ChannelFeatures>> getAllChannelFeaturesWithHttpInfo() throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getAllChannelFeaturesRequestBuilder();
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getAllChannelFeatures", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<ChannelFeatures>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<ChannelFeatures>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<ChannelFeatures>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getAllChannelFeaturesRequestBuilder() throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Channels/Features";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get channel features.
+   * 
+   * @param channelId Channel id. (required)
+   * @return ChannelFeatures
+   * @throws ApiException if fails to make API call
+   */
+  public ChannelFeatures getChannelFeatures(UUID channelId) throws ApiException {
+    ApiResponse<ChannelFeatures> localVarResponse = getChannelFeaturesWithHttpInfo(channelId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get channel features.
+   * 
+   * @param channelId Channel id. (required)
+   * @return ApiResponse&lt;ChannelFeatures&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<ChannelFeatures> getChannelFeaturesWithHttpInfo(UUID channelId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getChannelFeaturesRequestBuilder(channelId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getChannelFeatures", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<ChannelFeatures>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<ChannelFeatures>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ChannelFeatures>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getChannelFeaturesRequestBuilder(UUID channelId) throws ApiException {
+    // verify the required parameter 'channelId' is set
+    if (channelId == null) {
+      throw new ApiException(400, "Missing the required parameter 'channelId' when calling getChannelFeatures");
     }
 
-    public ChannelsApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Channels/{channelId}/Features"
+        .replace("{channelId}", ApiClient.urlEncode(channelId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Get channel items.
+   * 
+   * @param channelId Channel Id. (required)
+   * @param folderId Optional. Folder Id. (optional)
+   * @param userId Optional. User Id. (optional)
+   * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param sortOrder Optional. Sort Order - Ascending,Descending. (optional)
+   * @param filters Optional. Specify additional filters to apply. (optional)
+   * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getChannelItems(UUID channelId, UUID folderId, UUID userId, Integer startIndex, Integer limit, List<SortOrder> sortOrder, List<ItemFilter> filters, List<ItemSortBy> sortBy, List<ItemFields> fields) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getChannelItemsWithHttpInfo(channelId, folderId, userId, startIndex, limit, sortOrder, filters, sortBy, fields);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Get channel items.
+   * 
+   * @param channelId Channel Id. (required)
+   * @param folderId Optional. Folder Id. (optional)
+   * @param userId Optional. User Id. (optional)
+   * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param sortOrder Optional. Sort Order - Ascending,Descending. (optional)
+   * @param filters Optional. Specify additional filters to apply. (optional)
+   * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getChannelItemsWithHttpInfo(UUID channelId, UUID folderId, UUID userId, Integer startIndex, Integer limit, List<SortOrder> sortOrder, List<ItemFilter> filters, List<ItemSortBy> sortBy, List<ItemFields> fields) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getChannelItemsRequestBuilder(channelId, folderId, userId, startIndex, limit, sortOrder, filters, sortBy, fields);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getChannelItems", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getChannelItemsRequestBuilder(UUID channelId, UUID folderId, UUID userId, Integer startIndex, Integer limit, List<SortOrder> sortOrder, List<ItemFilter> filters, List<ItemSortBy> sortBy, List<ItemFields> fields) throws ApiException {
+    // verify the required parameter 'channelId' is set
+    if (channelId == null) {
+      throw new ApiException(400, "Missing the required parameter 'channelId' when calling getChannelItems");
     }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Channels/{channelId}/Items"
+        .replace("{channelId}", ApiClient.urlEncode(channelId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "folderId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("folderId", folderId));
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "startIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("startIndex", startIndex));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "sortOrder";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "sortOrder", sortOrder));
+    localVarQueryParameterBaseName = "filters";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "filters", filters));
+    localVarQueryParameterBaseName = "sortBy";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "sortBy", sortBy));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets available channels.
+   * 
+   * @param userId User Id to filter by. Use System.Guid.Empty to not filter by user. (optional)
+   * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param supportsLatestItems Optional. Filter by channels that support getting latest items. (optional)
+   * @param supportsMediaDeletion Optional. Filter by channels that support media deletion. (optional)
+   * @param isFavorite Optional. Filter by channels that are favorite. (optional)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getChannels(UUID userId, Integer startIndex, Integer limit, Boolean supportsLatestItems, Boolean supportsMediaDeletion, Boolean isFavorite) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getChannelsWithHttpInfo(userId, startIndex, limit, supportsLatestItems, supportsMediaDeletion, isFavorite);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets available channels.
+   * 
+   * @param userId User Id to filter by. Use System.Guid.Empty to not filter by user. (optional)
+   * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param supportsLatestItems Optional. Filter by channels that support getting latest items. (optional)
+   * @param supportsMediaDeletion Optional. Filter by channels that support media deletion. (optional)
+   * @param isFavorite Optional. Filter by channels that are favorite. (optional)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getChannelsWithHttpInfo(UUID userId, Integer startIndex, Integer limit, Boolean supportsLatestItems, Boolean supportsMediaDeletion, Boolean isFavorite) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getChannelsRequestBuilder(userId, startIndex, limit, supportsLatestItems, supportsMediaDeletion, isFavorite);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getChannels", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getChannelsRequestBuilder(UUID userId, Integer startIndex, Integer limit, Boolean supportsLatestItems, Boolean supportsMediaDeletion, Boolean isFavorite) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Channels";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "startIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("startIndex", startIndex));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "supportsLatestItems";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("supportsLatestItems", supportsLatestItems));
+    localVarQueryParameterBaseName = "supportsMediaDeletion";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("supportsMediaDeletion", supportsMediaDeletion));
+    localVarQueryParameterBaseName = "isFavorite";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isFavorite", isFavorite));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public int getHostIndex() {
-        return localHostIndex;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets latest channel items.
+   * 
+   * @param userId Optional. User Id. (optional)
+   * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param filters Optional. Specify additional filters to apply. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param channelIds Optional. Specify one or more channel id&#39;s, comma delimited. (optional)
+   * @return BaseItemDtoQueryResult
+   * @throws ApiException if fails to make API call
+   */
+  public BaseItemDtoQueryResult getLatestChannelItems(UUID userId, Integer startIndex, Integer limit, List<ItemFilter> filters, List<ItemFields> fields, List<UUID> channelIds) throws ApiException {
+    ApiResponse<BaseItemDtoQueryResult> localVarResponse = getLatestChannelItemsWithHttpInfo(userId, startIndex, limit, filters, fields, channelIds);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets latest channel items.
+   * 
+   * @param userId Optional. User Id. (optional)
+   * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
+   * @param limit Optional. The maximum number of records to return. (optional)
+   * @param filters Optional. Specify additional filters to apply. (optional)
+   * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+   * @param channelIds Optional. Specify one or more channel id&#39;s, comma delimited. (optional)
+   * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<BaseItemDtoQueryResult> getLatestChannelItemsWithHttpInfo(UUID userId, Integer startIndex, Integer limit, List<ItemFilter> filters, List<ItemFields> fields, List<UUID> channelIds) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getLatestChannelItemsRequestBuilder(userId, startIndex, limit, filters, fields, channelIds);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getLatestChannelItems", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<BaseItemDtoQueryResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<BaseItemDtoQueryResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getLatestChannelItemsRequestBuilder(UUID userId, Integer startIndex, Integer limit, List<ItemFilter> filters, List<ItemFields> fields, List<UUID> channelIds) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Channels/Items/Latest";
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "startIndex";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("startIndex", startIndex));
+    localVarQueryParameterBaseName = "limit";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
+    localVarQueryParameterBaseName = "filters";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "filters", filters));
+    localVarQueryParameterBaseName = "fields";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fields", fields));
+    localVarQueryParameterBaseName = "channelIds";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "channelIds", channelIds));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for getAllChannelFeatures
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> All channel features returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getAllChannelFeaturesCall(final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Channels/Features";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getAllChannelFeaturesValidateBeforeCall(final ApiCallback _callback) throws ApiException {
-        return getAllChannelFeaturesCall(_callback);
-
-    }
-
-    /**
-     * Get all channel features.
-     * 
-     * @return List&lt;ChannelFeatures&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> All channel features returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<ChannelFeatures> getAllChannelFeatures() throws ApiException {
-        ApiResponse<List<ChannelFeatures>> localVarResp = getAllChannelFeaturesWithHttpInfo();
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get all channel features.
-     * 
-     * @return ApiResponse&lt;List&lt;ChannelFeatures&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> All channel features returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<ChannelFeatures>> getAllChannelFeaturesWithHttpInfo() throws ApiException {
-        okhttp3.Call localVarCall = getAllChannelFeaturesValidateBeforeCall(null);
-        Type localVarReturnType = new TypeToken<List<ChannelFeatures>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get all channel features. (asynchronously)
-     * 
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> All channel features returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getAllChannelFeaturesAsync(final ApiCallback<List<ChannelFeatures>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getAllChannelFeaturesValidateBeforeCall(_callback);
-        Type localVarReturnType = new TypeToken<List<ChannelFeatures>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getChannelFeatures
-     * @param channelId Channel id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Channel features returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getChannelFeaturesCall(UUID channelId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Channels/{channelId}/Features"
-            .replace("{" + "channelId" + "}", localVarApiClient.escapeString(channelId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getChannelFeaturesValidateBeforeCall(UUID channelId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'channelId' is set
-        if (channelId == null) {
-            throw new ApiException("Missing the required parameter 'channelId' when calling getChannelFeatures(Async)");
-        }
-
-        return getChannelFeaturesCall(channelId, _callback);
-
-    }
-
-    /**
-     * Get channel features.
-     * 
-     * @param channelId Channel id. (required)
-     * @return ChannelFeatures
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Channel features returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ChannelFeatures getChannelFeatures(UUID channelId) throws ApiException {
-        ApiResponse<ChannelFeatures> localVarResp = getChannelFeaturesWithHttpInfo(channelId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get channel features.
-     * 
-     * @param channelId Channel id. (required)
-     * @return ApiResponse&lt;ChannelFeatures&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Channel features returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<ChannelFeatures> getChannelFeaturesWithHttpInfo(UUID channelId) throws ApiException {
-        okhttp3.Call localVarCall = getChannelFeaturesValidateBeforeCall(channelId, null);
-        Type localVarReturnType = new TypeToken<ChannelFeatures>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get channel features. (asynchronously)
-     * 
-     * @param channelId Channel id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Channel features returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getChannelFeaturesAsync(UUID channelId, final ApiCallback<ChannelFeatures> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getChannelFeaturesValidateBeforeCall(channelId, _callback);
-        Type localVarReturnType = new TypeToken<ChannelFeatures>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getChannelItems
-     * @param channelId Channel Id. (required)
-     * @param folderId Optional. Folder Id. (optional)
-     * @param userId Optional. User Id. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param sortOrder Optional. Sort Order - Ascending,Descending. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Channel items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getChannelItemsCall(UUID channelId, UUID folderId, UUID userId, Integer startIndex, Integer limit, List<SortOrder> sortOrder, List<ItemFilter> filters, List<ItemSortBy> sortBy, List<ItemFields> fields, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Channels/{channelId}/Items"
-            .replace("{" + "channelId" + "}", localVarApiClient.escapeString(channelId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (folderId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("folderId", folderId));
-        }
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (startIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startIndex", startIndex));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (sortOrder != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "sortOrder", sortOrder));
-        }
-
-        if (filters != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "filters", filters));
-        }
-
-        if (sortBy != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "sortBy", sortBy));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getChannelItemsValidateBeforeCall(UUID channelId, UUID folderId, UUID userId, Integer startIndex, Integer limit, List<SortOrder> sortOrder, List<ItemFilter> filters, List<ItemSortBy> sortBy, List<ItemFields> fields, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'channelId' is set
-        if (channelId == null) {
-            throw new ApiException("Missing the required parameter 'channelId' when calling getChannelItems(Async)");
-        }
-
-        return getChannelItemsCall(channelId, folderId, userId, startIndex, limit, sortOrder, filters, sortBy, fields, _callback);
-
-    }
-
-    /**
-     * Get channel items.
-     * 
-     * @param channelId Channel Id. (required)
-     * @param folderId Optional. Folder Id. (optional)
-     * @param userId Optional. User Id. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param sortOrder Optional. Sort Order - Ascending,Descending. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Channel items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getChannelItems(UUID channelId, UUID folderId, UUID userId, Integer startIndex, Integer limit, List<SortOrder> sortOrder, List<ItemFilter> filters, List<ItemSortBy> sortBy, List<ItemFields> fields) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getChannelItemsWithHttpInfo(channelId, folderId, userId, startIndex, limit, sortOrder, filters, sortBy, fields);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Get channel items.
-     * 
-     * @param channelId Channel Id. (required)
-     * @param folderId Optional. Folder Id. (optional)
-     * @param userId Optional. User Id. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param sortOrder Optional. Sort Order - Ascending,Descending. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Channel items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getChannelItemsWithHttpInfo(UUID channelId, UUID folderId, UUID userId, Integer startIndex, Integer limit, List<SortOrder> sortOrder, List<ItemFilter> filters, List<ItemSortBy> sortBy, List<ItemFields> fields) throws ApiException {
-        okhttp3.Call localVarCall = getChannelItemsValidateBeforeCall(channelId, folderId, userId, startIndex, limit, sortOrder, filters, sortBy, fields, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Get channel items. (asynchronously)
-     * 
-     * @param channelId Channel Id. (required)
-     * @param folderId Optional. Folder Id. (optional)
-     * @param userId Optional. User Id. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param sortOrder Optional. Sort Order - Ascending,Descending. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist, Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate, ProductionYear, SortName, Random, Revenue, Runtime. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Channel items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getChannelItemsAsync(UUID channelId, UUID folderId, UUID userId, Integer startIndex, Integer limit, List<SortOrder> sortOrder, List<ItemFilter> filters, List<ItemSortBy> sortBy, List<ItemFields> fields, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getChannelItemsValidateBeforeCall(channelId, folderId, userId, startIndex, limit, sortOrder, filters, sortBy, fields, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getChannels
-     * @param userId User Id to filter by. Use System.Guid.Empty to not filter by user. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param supportsLatestItems Optional. Filter by channels that support getting latest items. (optional)
-     * @param supportsMediaDeletion Optional. Filter by channels that support media deletion. (optional)
-     * @param isFavorite Optional. Filter by channels that are favorite. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Channels returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getChannelsCall(UUID userId, Integer startIndex, Integer limit, Boolean supportsLatestItems, Boolean supportsMediaDeletion, Boolean isFavorite, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Channels";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (startIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startIndex", startIndex));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (supportsLatestItems != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("supportsLatestItems", supportsLatestItems));
-        }
-
-        if (supportsMediaDeletion != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("supportsMediaDeletion", supportsMediaDeletion));
-        }
-
-        if (isFavorite != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isFavorite", isFavorite));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getChannelsValidateBeforeCall(UUID userId, Integer startIndex, Integer limit, Boolean supportsLatestItems, Boolean supportsMediaDeletion, Boolean isFavorite, final ApiCallback _callback) throws ApiException {
-        return getChannelsCall(userId, startIndex, limit, supportsLatestItems, supportsMediaDeletion, isFavorite, _callback);
-
-    }
-
-    /**
-     * Gets available channels.
-     * 
-     * @param userId User Id to filter by. Use System.Guid.Empty to not filter by user. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param supportsLatestItems Optional. Filter by channels that support getting latest items. (optional)
-     * @param supportsMediaDeletion Optional. Filter by channels that support media deletion. (optional)
-     * @param isFavorite Optional. Filter by channels that are favorite. (optional)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Channels returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getChannels(UUID userId, Integer startIndex, Integer limit, Boolean supportsLatestItems, Boolean supportsMediaDeletion, Boolean isFavorite) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getChannelsWithHttpInfo(userId, startIndex, limit, supportsLatestItems, supportsMediaDeletion, isFavorite);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets available channels.
-     * 
-     * @param userId User Id to filter by. Use System.Guid.Empty to not filter by user. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param supportsLatestItems Optional. Filter by channels that support getting latest items. (optional)
-     * @param supportsMediaDeletion Optional. Filter by channels that support media deletion. (optional)
-     * @param isFavorite Optional. Filter by channels that are favorite. (optional)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Channels returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getChannelsWithHttpInfo(UUID userId, Integer startIndex, Integer limit, Boolean supportsLatestItems, Boolean supportsMediaDeletion, Boolean isFavorite) throws ApiException {
-        okhttp3.Call localVarCall = getChannelsValidateBeforeCall(userId, startIndex, limit, supportsLatestItems, supportsMediaDeletion, isFavorite, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets available channels. (asynchronously)
-     * 
-     * @param userId User Id to filter by. Use System.Guid.Empty to not filter by user. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param supportsLatestItems Optional. Filter by channels that support getting latest items. (optional)
-     * @param supportsMediaDeletion Optional. Filter by channels that support media deletion. (optional)
-     * @param isFavorite Optional. Filter by channels that are favorite. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Channels returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getChannelsAsync(UUID userId, Integer startIndex, Integer limit, Boolean supportsLatestItems, Boolean supportsMediaDeletion, Boolean isFavorite, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getChannelsValidateBeforeCall(userId, startIndex, limit, supportsLatestItems, supportsMediaDeletion, isFavorite, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getLatestChannelItems
-     * @param userId Optional. User Id. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param channelIds Optional. Specify one or more channel id&#39;s, comma delimited. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Latest channel items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getLatestChannelItemsCall(UUID userId, Integer startIndex, Integer limit, List<ItemFilter> filters, List<ItemFields> fields, List<UUID> channelIds, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Channels/Items/Latest";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (startIndex != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startIndex", startIndex));
-        }
-
-        if (limit != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("limit", limit));
-        }
-
-        if (filters != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "filters", filters));
-        }
-
-        if (fields != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fields", fields));
-        }
-
-        if (channelIds != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "channelIds", channelIds));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getLatestChannelItemsValidateBeforeCall(UUID userId, Integer startIndex, Integer limit, List<ItemFilter> filters, List<ItemFields> fields, List<UUID> channelIds, final ApiCallback _callback) throws ApiException {
-        return getLatestChannelItemsCall(userId, startIndex, limit, filters, fields, channelIds, _callback);
-
-    }
-
-    /**
-     * Gets latest channel items.
-     * 
-     * @param userId Optional. User Id. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param channelIds Optional. Specify one or more channel id&#39;s, comma delimited. (optional)
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Latest channel items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public BaseItemDtoQueryResult getLatestChannelItems(UUID userId, Integer startIndex, Integer limit, List<ItemFilter> filters, List<ItemFields> fields, List<UUID> channelIds) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResp = getLatestChannelItemsWithHttpInfo(userId, startIndex, limit, filters, fields, channelIds);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets latest channel items.
-     * 
-     * @param userId Optional. User Id. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param channelIds Optional. Specify one or more channel id&#39;s, comma delimited. (optional)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Latest channel items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getLatestChannelItemsWithHttpInfo(UUID userId, Integer startIndex, Integer limit, List<ItemFilter> filters, List<ItemFields> fields, List<UUID> channelIds) throws ApiException {
-        okhttp3.Call localVarCall = getLatestChannelItemsValidateBeforeCall(userId, startIndex, limit, filters, fields, channelIds, null);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets latest channel items. (asynchronously)
-     * 
-     * @param userId Optional. User Id. (optional)
-     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the results. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param filters Optional. Specify additional filters to apply. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param channelIds Optional. Specify one or more channel id&#39;s, comma delimited. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Latest channel items returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getLatestChannelItemsAsync(UUID userId, Integer startIndex, Integer limit, List<ItemFilter> filters, List<ItemFields> fields, List<UUID> channelIds, final ApiCallback<BaseItemDtoQueryResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getLatestChannelItemsValidateBeforeCall(userId, startIndex, limit, filters, fields, channelIds, _callback);
-        Type localVarReturnType = new TypeToken<BaseItemDtoQueryResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
 }

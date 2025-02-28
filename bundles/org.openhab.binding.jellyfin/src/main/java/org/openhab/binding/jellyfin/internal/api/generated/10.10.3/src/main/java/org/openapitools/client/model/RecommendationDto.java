@@ -13,13 +13,17 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,68 +31,55 @@ import java.util.UUID;
 import org.openapitools.client.model.BaseItemDto;
 import org.openapitools.client.model.RecommendationType;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * RecommendationDto
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  RecommendationDto.JSON_PROPERTY_ITEMS,
+  RecommendationDto.JSON_PROPERTY_RECOMMENDATION_TYPE,
+  RecommendationDto.JSON_PROPERTY_BASELINE_ITEM_NAME,
+  RecommendationDto.JSON_PROPERTY_CATEGORY_ID
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class RecommendationDto {
-  public static final String SERIALIZED_NAME_ITEMS = "Items";
-  @SerializedName(SERIALIZED_NAME_ITEMS)
-  @javax.annotation.Nullable
-  private List<BaseItemDto> items;
+  public static final String JSON_PROPERTY_ITEMS = "Items";
+  private JsonNullable<List<BaseItemDto>> items = JsonNullable.<List<BaseItemDto>>undefined();
 
-  public static final String SERIALIZED_NAME_RECOMMENDATION_TYPE = "RecommendationType";
-  @SerializedName(SERIALIZED_NAME_RECOMMENDATION_TYPE)
+  public static final String JSON_PROPERTY_RECOMMENDATION_TYPE = "RecommendationType";
   @javax.annotation.Nullable
   private RecommendationType recommendationType;
 
-  public static final String SERIALIZED_NAME_BASELINE_ITEM_NAME = "BaselineItemName";
-  @SerializedName(SERIALIZED_NAME_BASELINE_ITEM_NAME)
-  @javax.annotation.Nullable
-  private String baselineItemName;
+  public static final String JSON_PROPERTY_BASELINE_ITEM_NAME = "BaselineItemName";
+  private JsonNullable<String> baselineItemName = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_CATEGORY_ID = "CategoryId";
-  @SerializedName(SERIALIZED_NAME_CATEGORY_ID)
+  public static final String JSON_PROPERTY_CATEGORY_ID = "CategoryId";
   @javax.annotation.Nullable
   private UUID categoryId;
 
-  public RecommendationDto() {
+  public RecommendationDto() { 
   }
 
   public RecommendationDto items(@javax.annotation.Nullable List<BaseItemDto> items) {
-    this.items = items;
+    this.items = JsonNullable.<List<BaseItemDto>>of(items);
     return this;
   }
 
   public RecommendationDto addItemsItem(BaseItemDto itemsItem) {
-    if (this.items == null) {
-      this.items = new ArrayList<>();
+    if (this.items == null || !this.items.isPresent()) {
+      this.items = JsonNullable.<List<BaseItemDto>>of(new ArrayList<>());
     }
-    this.items.add(itemsItem);
+    try {
+      this.items.get().add(itemsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -97,12 +88,25 @@ public class RecommendationDto {
    * @return items
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<BaseItemDto> getItems() {
+        return items.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ITEMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<BaseItemDto>> getItems_JsonNullable() {
     return items;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ITEMS)
+  public void setItems_JsonNullable(JsonNullable<List<BaseItemDto>> items) {
+    this.items = items;
   }
 
   public void setItems(@javax.annotation.Nullable List<BaseItemDto> items) {
-    this.items = items;
+    this.items = JsonNullable.<List<BaseItemDto>>of(items);
   }
 
 
@@ -116,17 +120,22 @@ public class RecommendationDto {
    * @return recommendationType
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_RECOMMENDATION_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public RecommendationType getRecommendationType() {
     return recommendationType;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_RECOMMENDATION_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRecommendationType(@javax.annotation.Nullable RecommendationType recommendationType) {
     this.recommendationType = recommendationType;
   }
 
 
   public RecommendationDto baselineItemName(@javax.annotation.Nullable String baselineItemName) {
-    this.baselineItemName = baselineItemName;
+    this.baselineItemName = JsonNullable.<String>of(baselineItemName);
     return this;
   }
 
@@ -135,12 +144,25 @@ public class RecommendationDto {
    * @return baselineItemName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getBaselineItemName() {
+        return baselineItemName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_BASELINE_ITEM_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getBaselineItemName_JsonNullable() {
     return baselineItemName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_BASELINE_ITEM_NAME)
+  public void setBaselineItemName_JsonNullable(JsonNullable<String> baselineItemName) {
+    this.baselineItemName = baselineItemName;
   }
 
   public void setBaselineItemName(@javax.annotation.Nullable String baselineItemName) {
-    this.baselineItemName = baselineItemName;
+    this.baselineItemName = JsonNullable.<String>of(baselineItemName);
   }
 
 
@@ -154,16 +176,23 @@ public class RecommendationDto {
    * @return categoryId
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CATEGORY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getCategoryId() {
     return categoryId;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CATEGORY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCategoryId(@javax.annotation.Nullable UUID categoryId) {
     this.categoryId = categoryId;
   }
 
 
-
+  /**
+   * Return true if this RecommendationDto object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -173,9 +202,9 @@ public class RecommendationDto {
       return false;
     }
     RecommendationDto recommendationDto = (RecommendationDto) o;
-    return Objects.equals(this.items, recommendationDto.items) &&
+    return equalsNullable(this.items, recommendationDto.items) &&
         Objects.equals(this.recommendationType, recommendationDto.recommendationType) &&
-        Objects.equals(this.baselineItemName, recommendationDto.baselineItemName) &&
+        equalsNullable(this.baselineItemName, recommendationDto.baselineItemName) &&
         Objects.equals(this.categoryId, recommendationDto.categoryId);
   }
 
@@ -185,7 +214,7 @@ public class RecommendationDto {
 
   @Override
   public int hashCode() {
-    return Objects.hash(items, recommendationType, baselineItemName, categoryId);
+    return Objects.hash(hashCodeNullable(items), recommendationType, hashCodeNullable(baselineItemName), categoryId);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -218,116 +247,64 @@ public class RecommendationDto {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Items");
-    openapiFields.add("RecommendationType");
-    openapiFields.add("BaselineItemName");
-    openapiFields.add("CategoryId");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to RecommendationDto
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!RecommendationDto.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in RecommendationDto is not found in the empty JSON string", RecommendationDto.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!RecommendationDto.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `RecommendationDto` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (jsonObj.get("Items") != null && !jsonObj.get("Items").isJsonNull()) {
-        JsonArray jsonArrayitems = jsonObj.getAsJsonArray("Items");
-        if (jsonArrayitems != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("Items").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `Items` to be an array in the JSON string but got `%s`", jsonObj.get("Items").toString()));
-          }
-
-          // validate the optional field `Items` (array)
-          for (int i = 0; i < jsonArrayitems.size(); i++) {
-            BaseItemDto.validateJsonElement(jsonArrayitems.get(i));
-          };
-        }
-      }
-      // validate the optional field `RecommendationType`
-      if (jsonObj.get("RecommendationType") != null && !jsonObj.get("RecommendationType").isJsonNull()) {
-        RecommendationType.validateJsonElement(jsonObj.get("RecommendationType"));
-      }
-      if ((jsonObj.get("BaselineItemName") != null && !jsonObj.get("BaselineItemName").isJsonNull()) && !jsonObj.get("BaselineItemName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `BaselineItemName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("BaselineItemName").toString()));
-      }
-      if ((jsonObj.get("CategoryId") != null && !jsonObj.get("CategoryId").isJsonNull()) && !jsonObj.get("CategoryId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `CategoryId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("CategoryId").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!RecommendationDto.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'RecommendationDto' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<RecommendationDto> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(RecommendationDto.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<RecommendationDto>() {
-           @Override
-           public void write(JsonWriter out, RecommendationDto value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public RecommendationDto read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of RecommendationDto given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of RecommendationDto
-   * @throws IOException if the JSON string is invalid with respect to RecommendationDto
-   */
-  public static RecommendationDto fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, RecommendationDto.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of RecommendationDto to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Items` to the URL query string
+    if (getItems() != null) {
+      for (int i = 0; i < getItems().size(); i++) {
+        if (getItems().get(i) != null) {
+          joiner.add(getItems().get(i).toUrlQueryString(String.format("%sItems%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `RecommendationType` to the URL query string
+    if (getRecommendationType() != null) {
+      joiner.add(String.format("%sRecommendationType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRecommendationType()))));
+    }
+
+    // add `BaselineItemName` to the URL query string
+    if (getBaselineItemName() != null) {
+      joiner.add(String.format("%sBaselineItemName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBaselineItemName()))));
+    }
+
+    // add `CategoryId` to the URL query string
+    if (getCategoryId() != null) {
+      joiner.add(String.format("%sCategoryId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCategoryId()))));
+    }
+
+    return joiner.toString();
   }
 }
 

@@ -13,13 +13,17 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,56 +31,40 @@ import org.openapitools.client.model.NameIdPair;
 import org.openapitools.client.model.NameValuePair;
 import org.openapitools.client.model.TunerChannelMapping;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Channel mapping options dto.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  ChannelMappingOptionsDto.JSON_PROPERTY_TUNER_CHANNELS,
+  ChannelMappingOptionsDto.JSON_PROPERTY_PROVIDER_CHANNELS,
+  ChannelMappingOptionsDto.JSON_PROPERTY_MAPPINGS,
+  ChannelMappingOptionsDto.JSON_PROPERTY_PROVIDER_NAME
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ChannelMappingOptionsDto {
-  public static final String SERIALIZED_NAME_TUNER_CHANNELS = "TunerChannels";
-  @SerializedName(SERIALIZED_NAME_TUNER_CHANNELS)
+  public static final String JSON_PROPERTY_TUNER_CHANNELS = "TunerChannels";
   @javax.annotation.Nullable
   private List<TunerChannelMapping> tunerChannels = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_PROVIDER_CHANNELS = "ProviderChannels";
-  @SerializedName(SERIALIZED_NAME_PROVIDER_CHANNELS)
+  public static final String JSON_PROPERTY_PROVIDER_CHANNELS = "ProviderChannels";
   @javax.annotation.Nullable
   private List<NameIdPair> providerChannels = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_MAPPINGS = "Mappings";
-  @SerializedName(SERIALIZED_NAME_MAPPINGS)
+  public static final String JSON_PROPERTY_MAPPINGS = "Mappings";
   @javax.annotation.Nullable
   private List<NameValuePair> mappings = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_PROVIDER_NAME = "ProviderName";
-  @SerializedName(SERIALIZED_NAME_PROVIDER_NAME)
-  @javax.annotation.Nullable
-  private String providerName;
+  public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
+  private JsonNullable<String> providerName = JsonNullable.<String>undefined();
 
-  public ChannelMappingOptionsDto() {
+  public ChannelMappingOptionsDto() { 
   }
 
   public ChannelMappingOptionsDto tunerChannels(@javax.annotation.Nullable List<TunerChannelMapping> tunerChannels) {
@@ -97,10 +85,15 @@ public class ChannelMappingOptionsDto {
    * @return tunerChannels
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TUNER_CHANNELS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<TunerChannelMapping> getTunerChannels() {
     return tunerChannels;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TUNER_CHANNELS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTunerChannels(@javax.annotation.Nullable List<TunerChannelMapping> tunerChannels) {
     this.tunerChannels = tunerChannels;
   }
@@ -124,10 +117,15 @@ public class ChannelMappingOptionsDto {
    * @return providerChannels
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNELS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<NameIdPair> getProviderChannels() {
     return providerChannels;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNELS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProviderChannels(@javax.annotation.Nullable List<NameIdPair> providerChannels) {
     this.providerChannels = providerChannels;
   }
@@ -151,17 +149,22 @@ public class ChannelMappingOptionsDto {
    * @return mappings
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MAPPINGS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<NameValuePair> getMappings() {
     return mappings;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MAPPINGS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMappings(@javax.annotation.Nullable List<NameValuePair> mappings) {
     this.mappings = mappings;
   }
 
 
   public ChannelMappingOptionsDto providerName(@javax.annotation.Nullable String providerName) {
-    this.providerName = providerName;
+    this.providerName = JsonNullable.<String>of(providerName);
     return this;
   }
 
@@ -170,16 +173,31 @@ public class ChannelMappingOptionsDto {
    * @return providerName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getProviderName() {
-    return providerName;
+        return providerName.orElse(null);
   }
 
-  public void setProviderName(@javax.annotation.Nullable String providerName) {
+  @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getProviderName_JsonNullable() {
+    return providerName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
+  public void setProviderName_JsonNullable(JsonNullable<String> providerName) {
     this.providerName = providerName;
   }
 
+  public void setProviderName(@javax.annotation.Nullable String providerName) {
+    this.providerName = JsonNullable.<String>of(providerName);
+  }
 
 
+  /**
+   * Return true if this ChannelMappingOptionsDto object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -192,7 +210,7 @@ public class ChannelMappingOptionsDto {
     return Objects.equals(this.tunerChannels, channelMappingOptionsDto.tunerChannels) &&
         Objects.equals(this.providerChannels, channelMappingOptionsDto.providerChannels) &&
         Objects.equals(this.mappings, channelMappingOptionsDto.mappings) &&
-        Objects.equals(this.providerName, channelMappingOptionsDto.providerName);
+        equalsNullable(this.providerName, channelMappingOptionsDto.providerName);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -201,7 +219,7 @@ public class ChannelMappingOptionsDto {
 
   @Override
   public int hashCode() {
-    return Objects.hash(tunerChannels, providerChannels, mappings, providerName);
+    return Objects.hash(tunerChannels, providerChannels, mappings, hashCodeNullable(providerName));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -234,137 +252,74 @@ public class ChannelMappingOptionsDto {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("TunerChannels");
-    openapiFields.add("ProviderChannels");
-    openapiFields.add("Mappings");
-    openapiFields.add("ProviderName");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to ChannelMappingOptionsDto
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!ChannelMappingOptionsDto.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in ChannelMappingOptionsDto is not found in the empty JSON string", ChannelMappingOptionsDto.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!ChannelMappingOptionsDto.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `ChannelMappingOptionsDto` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (jsonObj.get("TunerChannels") != null && !jsonObj.get("TunerChannels").isJsonNull()) {
-        JsonArray jsonArraytunerChannels = jsonObj.getAsJsonArray("TunerChannels");
-        if (jsonArraytunerChannels != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("TunerChannels").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `TunerChannels` to be an array in the JSON string but got `%s`", jsonObj.get("TunerChannels").toString()));
-          }
-
-          // validate the optional field `TunerChannels` (array)
-          for (int i = 0; i < jsonArraytunerChannels.size(); i++) {
-            TunerChannelMapping.validateJsonElement(jsonArraytunerChannels.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("ProviderChannels") != null && !jsonObj.get("ProviderChannels").isJsonNull()) {
-        JsonArray jsonArrayproviderChannels = jsonObj.getAsJsonArray("ProviderChannels");
-        if (jsonArrayproviderChannels != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("ProviderChannels").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `ProviderChannels` to be an array in the JSON string but got `%s`", jsonObj.get("ProviderChannels").toString()));
-          }
-
-          // validate the optional field `ProviderChannels` (array)
-          for (int i = 0; i < jsonArrayproviderChannels.size(); i++) {
-            NameIdPair.validateJsonElement(jsonArrayproviderChannels.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("Mappings") != null && !jsonObj.get("Mappings").isJsonNull()) {
-        JsonArray jsonArraymappings = jsonObj.getAsJsonArray("Mappings");
-        if (jsonArraymappings != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("Mappings").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `Mappings` to be an array in the JSON string but got `%s`", jsonObj.get("Mappings").toString()));
-          }
-
-          // validate the optional field `Mappings` (array)
-          for (int i = 0; i < jsonArraymappings.size(); i++) {
-            NameValuePair.validateJsonElement(jsonArraymappings.get(i));
-          };
-        }
-      }
-      if ((jsonObj.get("ProviderName") != null && !jsonObj.get("ProviderName").isJsonNull()) && !jsonObj.get("ProviderName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ProviderName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ProviderName").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!ChannelMappingOptionsDto.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'ChannelMappingOptionsDto' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<ChannelMappingOptionsDto> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(ChannelMappingOptionsDto.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<ChannelMappingOptionsDto>() {
-           @Override
-           public void write(JsonWriter out, ChannelMappingOptionsDto value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public ChannelMappingOptionsDto read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of ChannelMappingOptionsDto given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of ChannelMappingOptionsDto
-   * @throws IOException if the JSON string is invalid with respect to ChannelMappingOptionsDto
-   */
-  public static ChannelMappingOptionsDto fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, ChannelMappingOptionsDto.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of ChannelMappingOptionsDto to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `TunerChannels` to the URL query string
+    if (getTunerChannels() != null) {
+      for (int i = 0; i < getTunerChannels().size(); i++) {
+        if (getTunerChannels().get(i) != null) {
+          joiner.add(getTunerChannels().get(i).toUrlQueryString(String.format("%sTunerChannels%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `ProviderChannels` to the URL query string
+    if (getProviderChannels() != null) {
+      for (int i = 0; i < getProviderChannels().size(); i++) {
+        if (getProviderChannels().get(i) != null) {
+          joiner.add(getProviderChannels().get(i).toUrlQueryString(String.format("%sProviderChannels%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `Mappings` to the URL query string
+    if (getMappings() != null) {
+      for (int i = 0; i < getMappings().size(); i++) {
+        if (getMappings().get(i) != null) {
+          joiner.add(getMappings().get(i).toUrlQueryString(String.format("%sMappings%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `ProviderName` to the URL query string
+    if (getProviderName() != null) {
+      joiner.add(String.format("%sProviderName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProviderName()))));
+    }
+
+    return joiner.toString();
   }
 }
 

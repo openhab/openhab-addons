@@ -13,87 +13,75 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import java.util.UUID;
 import org.openapitools.client.model.PluginStatus;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * This is a serializable stub class that is used by the api to provide information about installed plugins.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  PluginInfo.JSON_PROPERTY_NAME,
+  PluginInfo.JSON_PROPERTY_VERSION,
+  PluginInfo.JSON_PROPERTY_CONFIGURATION_FILE_NAME,
+  PluginInfo.JSON_PROPERTY_DESCRIPTION,
+  PluginInfo.JSON_PROPERTY_ID,
+  PluginInfo.JSON_PROPERTY_CAN_UNINSTALL,
+  PluginInfo.JSON_PROPERTY_HAS_IMAGE,
+  PluginInfo.JSON_PROPERTY_STATUS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PluginInfo {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
+  public static final String JSON_PROPERTY_NAME = "Name";
   @javax.annotation.Nullable
   private String name;
 
-  public static final String SERIALIZED_NAME_VERSION = "Version";
-  @SerializedName(SERIALIZED_NAME_VERSION)
+  public static final String JSON_PROPERTY_VERSION = "Version";
   @javax.annotation.Nullable
   private String version;
 
-  public static final String SERIALIZED_NAME_CONFIGURATION_FILE_NAME = "ConfigurationFileName";
-  @SerializedName(SERIALIZED_NAME_CONFIGURATION_FILE_NAME)
-  @javax.annotation.Nullable
-  private String configurationFileName;
+  public static final String JSON_PROPERTY_CONFIGURATION_FILE_NAME = "ConfigurationFileName";
+  private JsonNullable<String> configurationFileName = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_DESCRIPTION = "Description";
-  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
+  public static final String JSON_PROPERTY_DESCRIPTION = "Description";
   @javax.annotation.Nullable
   private String description;
 
-  public static final String SERIALIZED_NAME_ID = "Id";
-  @SerializedName(SERIALIZED_NAME_ID)
+  public static final String JSON_PROPERTY_ID = "Id";
   @javax.annotation.Nullable
   private UUID id;
 
-  public static final String SERIALIZED_NAME_CAN_UNINSTALL = "CanUninstall";
-  @SerializedName(SERIALIZED_NAME_CAN_UNINSTALL)
+  public static final String JSON_PROPERTY_CAN_UNINSTALL = "CanUninstall";
   @javax.annotation.Nullable
   private Boolean canUninstall;
 
-  public static final String SERIALIZED_NAME_HAS_IMAGE = "HasImage";
-  @SerializedName(SERIALIZED_NAME_HAS_IMAGE)
+  public static final String JSON_PROPERTY_HAS_IMAGE = "HasImage";
   @javax.annotation.Nullable
   private Boolean hasImage;
 
-  public static final String SERIALIZED_NAME_STATUS = "Status";
-  @SerializedName(SERIALIZED_NAME_STATUS)
+  public static final String JSON_PROPERTY_STATUS = "Status";
   @javax.annotation.Nullable
   private PluginStatus status;
 
-  public PluginInfo() {
+  public PluginInfo() { 
   }
 
   public PluginInfo name(@javax.annotation.Nullable String name) {
@@ -106,10 +94,15 @@ public class PluginInfo {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -125,17 +118,22 @@ public class PluginInfo {
    * @return version
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getVersion() {
     return version;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVersion(@javax.annotation.Nullable String version) {
     this.version = version;
   }
 
 
   public PluginInfo configurationFileName(@javax.annotation.Nullable String configurationFileName) {
-    this.configurationFileName = configurationFileName;
+    this.configurationFileName = JsonNullable.<String>of(configurationFileName);
     return this;
   }
 
@@ -144,12 +142,25 @@ public class PluginInfo {
    * @return configurationFileName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getConfigurationFileName() {
+        return configurationFileName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CONFIGURATION_FILE_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getConfigurationFileName_JsonNullable() {
     return configurationFileName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CONFIGURATION_FILE_NAME)
+  public void setConfigurationFileName_JsonNullable(JsonNullable<String> configurationFileName) {
+    this.configurationFileName = configurationFileName;
   }
 
   public void setConfigurationFileName(@javax.annotation.Nullable String configurationFileName) {
-    this.configurationFileName = configurationFileName;
+    this.configurationFileName = JsonNullable.<String>of(configurationFileName);
   }
 
 
@@ -163,10 +174,15 @@ public class PluginInfo {
    * @return description
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -182,10 +198,15 @@ public class PluginInfo {
    * @return id
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getId() {
     return id;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable UUID id) {
     this.id = id;
   }
@@ -201,10 +222,15 @@ public class PluginInfo {
    * @return canUninstall
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CAN_UNINSTALL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getCanUninstall() {
     return canUninstall;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CAN_UNINSTALL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCanUninstall(@javax.annotation.Nullable Boolean canUninstall) {
     this.canUninstall = canUninstall;
   }
@@ -220,10 +246,15 @@ public class PluginInfo {
    * @return hasImage
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_HAS_IMAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getHasImage() {
     return hasImage;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_HAS_IMAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setHasImage(@javax.annotation.Nullable Boolean hasImage) {
     this.hasImage = hasImage;
   }
@@ -239,16 +270,23 @@ public class PluginInfo {
    * @return status
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_STATUS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PluginStatus getStatus() {
     return status;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_STATUS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStatus(@javax.annotation.Nullable PluginStatus status) {
     this.status = status;
   }
 
 
-
+  /**
+   * Return true if this PluginInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -260,7 +298,7 @@ public class PluginInfo {
     PluginInfo pluginInfo = (PluginInfo) o;
     return Objects.equals(this.name, pluginInfo.name) &&
         Objects.equals(this.version, pluginInfo.version) &&
-        Objects.equals(this.configurationFileName, pluginInfo.configurationFileName) &&
+        equalsNullable(this.configurationFileName, pluginInfo.configurationFileName) &&
         Objects.equals(this.description, pluginInfo.description) &&
         Objects.equals(this.id, pluginInfo.id) &&
         Objects.equals(this.canUninstall, pluginInfo.canUninstall) &&
@@ -274,7 +312,7 @@ public class PluginInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, version, configurationFileName, description, id, canUninstall, hasImage, status);
+    return Objects.hash(name, version, hashCodeNullable(configurationFileName), description, id, canUninstall, hasImage, status);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -311,115 +349,79 @@ public class PluginInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("Version");
-    openapiFields.add("ConfigurationFileName");
-    openapiFields.add("Description");
-    openapiFields.add("Id");
-    openapiFields.add("CanUninstall");
-    openapiFields.add("HasImage");
-    openapiFields.add("Status");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to PluginInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!PluginInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in PluginInfo is not found in the empty JSON string", PluginInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!PluginInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `PluginInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("Version") != null && !jsonObj.get("Version").isJsonNull()) && !jsonObj.get("Version").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Version` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Version").toString()));
-      }
-      if ((jsonObj.get("ConfigurationFileName") != null && !jsonObj.get("ConfigurationFileName").isJsonNull()) && !jsonObj.get("ConfigurationFileName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ConfigurationFileName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ConfigurationFileName").toString()));
-      }
-      if ((jsonObj.get("Description") != null && !jsonObj.get("Description").isJsonNull()) && !jsonObj.get("Description").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Description").toString()));
-      }
-      if ((jsonObj.get("Id") != null && !jsonObj.get("Id").isJsonNull()) && !jsonObj.get("Id").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Id").toString()));
-      }
-      // validate the optional field `Status`
-      if (jsonObj.get("Status") != null && !jsonObj.get("Status").isJsonNull()) {
-        PluginStatus.validateJsonElement(jsonObj.get("Status"));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!PluginInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'PluginInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<PluginInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(PluginInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<PluginInfo>() {
-           @Override
-           public void write(JsonWriter out, PluginInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public PluginInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of PluginInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of PluginInfo
-   * @throws IOException if the JSON string is invalid with respect to PluginInfo
-   */
-  public static PluginInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, PluginInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of PluginInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `Version` to the URL query string
+    if (getVersion() != null) {
+      joiner.add(String.format("%sVersion%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
+    }
+
+    // add `ConfigurationFileName` to the URL query string
+    if (getConfigurationFileName() != null) {
+      joiner.add(String.format("%sConfigurationFileName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getConfigurationFileName()))));
+    }
+
+    // add `Description` to the URL query string
+    if (getDescription() != null) {
+      joiner.add(String.format("%sDescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
+    }
+
+    // add `Id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+    }
+
+    // add `CanUninstall` to the URL query string
+    if (getCanUninstall() != null) {
+      joiner.add(String.format("%sCanUninstall%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCanUninstall()))));
+    }
+
+    // add `HasImage` to the URL query string
+    if (getHasImage() != null) {
+      joiner.add(String.format("%sHasImage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHasImage()))));
+    }
+
+    // add `Status` to the URL query string
+    if (getStatus() != null) {
+      joiner.add(String.format("%sStatus%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
+    }
+
+    return joiner.toString();
   }
 }
 

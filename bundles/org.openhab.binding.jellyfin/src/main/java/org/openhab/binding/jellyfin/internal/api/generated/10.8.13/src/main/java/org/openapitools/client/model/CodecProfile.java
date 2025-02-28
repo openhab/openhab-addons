@@ -13,74 +13,59 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.client.model.CodecType;
 import org.openapitools.client.model.ProfileCondition;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * CodecProfile
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  CodecProfile.JSON_PROPERTY_TYPE,
+  CodecProfile.JSON_PROPERTY_CONDITIONS,
+  CodecProfile.JSON_PROPERTY_APPLY_CONDITIONS,
+  CodecProfile.JSON_PROPERTY_CODEC,
+  CodecProfile.JSON_PROPERTY_CONTAINER
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class CodecProfile {
-  public static final String SERIALIZED_NAME_TYPE = "Type";
-  @SerializedName(SERIALIZED_NAME_TYPE)
+  public static final String JSON_PROPERTY_TYPE = "Type";
   @javax.annotation.Nullable
   private CodecType type;
 
-  public static final String SERIALIZED_NAME_CONDITIONS = "Conditions";
-  @SerializedName(SERIALIZED_NAME_CONDITIONS)
-  @javax.annotation.Nullable
-  private List<ProfileCondition> conditions;
+  public static final String JSON_PROPERTY_CONDITIONS = "Conditions";
+  private JsonNullable<List<ProfileCondition>> conditions = JsonNullable.<List<ProfileCondition>>undefined();
 
-  public static final String SERIALIZED_NAME_APPLY_CONDITIONS = "ApplyConditions";
-  @SerializedName(SERIALIZED_NAME_APPLY_CONDITIONS)
-  @javax.annotation.Nullable
-  private List<ProfileCondition> applyConditions;
+  public static final String JSON_PROPERTY_APPLY_CONDITIONS = "ApplyConditions";
+  private JsonNullable<List<ProfileCondition>> applyConditions = JsonNullable.<List<ProfileCondition>>undefined();
 
-  public static final String SERIALIZED_NAME_CODEC = "Codec";
-  @SerializedName(SERIALIZED_NAME_CODEC)
-  @javax.annotation.Nullable
-  private String codec;
+  public static final String JSON_PROPERTY_CODEC = "Codec";
+  private JsonNullable<String> codec = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_CONTAINER = "Container";
-  @SerializedName(SERIALIZED_NAME_CONTAINER)
-  @javax.annotation.Nullable
-  private String container;
+  public static final String JSON_PROPERTY_CONTAINER = "Container";
+  private JsonNullable<String> container = JsonNullable.<String>undefined();
 
-  public CodecProfile() {
+  public CodecProfile() { 
   }
 
   public CodecProfile type(@javax.annotation.Nullable CodecType type) {
@@ -93,25 +78,34 @@ public class CodecProfile {
    * @return type
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public CodecType getType() {
     return type;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@javax.annotation.Nullable CodecType type) {
     this.type = type;
   }
 
 
   public CodecProfile conditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
-    this.conditions = conditions;
+    this.conditions = JsonNullable.<List<ProfileCondition>>of(conditions);
     return this;
   }
 
   public CodecProfile addConditionsItem(ProfileCondition conditionsItem) {
-    if (this.conditions == null) {
-      this.conditions = new ArrayList<>();
+    if (this.conditions == null || !this.conditions.isPresent()) {
+      this.conditions = JsonNullable.<List<ProfileCondition>>of(new ArrayList<>());
     }
-    this.conditions.add(conditionsItem);
+    try {
+      this.conditions.get().add(conditionsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -120,25 +114,42 @@ public class CodecProfile {
    * @return conditions
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<ProfileCondition> getConditions() {
+        return conditions.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CONDITIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<ProfileCondition>> getConditions_JsonNullable() {
     return conditions;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CONDITIONS)
+  public void setConditions_JsonNullable(JsonNullable<List<ProfileCondition>> conditions) {
+    this.conditions = conditions;
   }
 
   public void setConditions(@javax.annotation.Nullable List<ProfileCondition> conditions) {
-    this.conditions = conditions;
+    this.conditions = JsonNullable.<List<ProfileCondition>>of(conditions);
   }
 
 
   public CodecProfile applyConditions(@javax.annotation.Nullable List<ProfileCondition> applyConditions) {
-    this.applyConditions = applyConditions;
+    this.applyConditions = JsonNullable.<List<ProfileCondition>>of(applyConditions);
     return this;
   }
 
   public CodecProfile addApplyConditionsItem(ProfileCondition applyConditionsItem) {
-    if (this.applyConditions == null) {
-      this.applyConditions = new ArrayList<>();
+    if (this.applyConditions == null || !this.applyConditions.isPresent()) {
+      this.applyConditions = JsonNullable.<List<ProfileCondition>>of(new ArrayList<>());
     }
-    this.applyConditions.add(applyConditionsItem);
+    try {
+      this.applyConditions.get().add(applyConditionsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -147,17 +158,30 @@ public class CodecProfile {
    * @return applyConditions
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<ProfileCondition> getApplyConditions() {
+        return applyConditions.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_APPLY_CONDITIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<ProfileCondition>> getApplyConditions_JsonNullable() {
     return applyConditions;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_APPLY_CONDITIONS)
+  public void setApplyConditions_JsonNullable(JsonNullable<List<ProfileCondition>> applyConditions) {
+    this.applyConditions = applyConditions;
   }
 
   public void setApplyConditions(@javax.annotation.Nullable List<ProfileCondition> applyConditions) {
-    this.applyConditions = applyConditions;
+    this.applyConditions = JsonNullable.<List<ProfileCondition>>of(applyConditions);
   }
 
 
   public CodecProfile codec(@javax.annotation.Nullable String codec) {
-    this.codec = codec;
+    this.codec = JsonNullable.<String>of(codec);
     return this;
   }
 
@@ -166,17 +190,30 @@ public class CodecProfile {
    * @return codec
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getCodec() {
+        return codec.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CODEC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getCodec_JsonNullable() {
     return codec;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CODEC)
+  public void setCodec_JsonNullable(JsonNullable<String> codec) {
+    this.codec = codec;
   }
 
   public void setCodec(@javax.annotation.Nullable String codec) {
-    this.codec = codec;
+    this.codec = JsonNullable.<String>of(codec);
   }
 
 
   public CodecProfile container(@javax.annotation.Nullable String container) {
-    this.container = container;
+    this.container = JsonNullable.<String>of(container);
     return this;
   }
 
@@ -185,16 +222,31 @@ public class CodecProfile {
    * @return container
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getContainer() {
-    return container;
+        return container.orElse(null);
   }
 
-  public void setContainer(@javax.annotation.Nullable String container) {
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getContainer_JsonNullable() {
+    return container;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  public void setContainer_JsonNullable(JsonNullable<String> container) {
     this.container = container;
   }
 
+  public void setContainer(@javax.annotation.Nullable String container) {
+    this.container = JsonNullable.<String>of(container);
+  }
 
 
+  /**
+   * Return true if this CodecProfile object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -205,10 +257,10 @@ public class CodecProfile {
     }
     CodecProfile codecProfile = (CodecProfile) o;
     return Objects.equals(this.type, codecProfile.type) &&
-        Objects.equals(this.conditions, codecProfile.conditions) &&
-        Objects.equals(this.applyConditions, codecProfile.applyConditions) &&
-        Objects.equals(this.codec, codecProfile.codec) &&
-        Objects.equals(this.container, codecProfile.container);
+        equalsNullable(this.conditions, codecProfile.conditions) &&
+        equalsNullable(this.applyConditions, codecProfile.applyConditions) &&
+        equalsNullable(this.codec, codecProfile.codec) &&
+        equalsNullable(this.container, codecProfile.container);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -217,7 +269,7 @@ public class CodecProfile {
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, conditions, applyConditions, codec, container);
+    return Objects.hash(type, hashCodeNullable(conditions), hashCodeNullable(applyConditions), hashCodeNullable(codec), hashCodeNullable(container));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -251,131 +303,74 @@ public class CodecProfile {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Type");
-    openapiFields.add("Conditions");
-    openapiFields.add("ApplyConditions");
-    openapiFields.add("Codec");
-    openapiFields.add("Container");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to CodecProfile
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!CodecProfile.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in CodecProfile is not found in the empty JSON string", CodecProfile.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!CodecProfile.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `CodecProfile` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // validate the optional field `Type`
-      if (jsonObj.get("Type") != null && !jsonObj.get("Type").isJsonNull()) {
-        CodecType.validateJsonElement(jsonObj.get("Type"));
-      }
-      if (jsonObj.get("Conditions") != null && !jsonObj.get("Conditions").isJsonNull()) {
-        JsonArray jsonArrayconditions = jsonObj.getAsJsonArray("Conditions");
-        if (jsonArrayconditions != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("Conditions").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `Conditions` to be an array in the JSON string but got `%s`", jsonObj.get("Conditions").toString()));
-          }
-
-          // validate the optional field `Conditions` (array)
-          for (int i = 0; i < jsonArrayconditions.size(); i++) {
-            ProfileCondition.validateJsonElement(jsonArrayconditions.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("ApplyConditions") != null && !jsonObj.get("ApplyConditions").isJsonNull()) {
-        JsonArray jsonArrayapplyConditions = jsonObj.getAsJsonArray("ApplyConditions");
-        if (jsonArrayapplyConditions != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("ApplyConditions").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `ApplyConditions` to be an array in the JSON string but got `%s`", jsonObj.get("ApplyConditions").toString()));
-          }
-
-          // validate the optional field `ApplyConditions` (array)
-          for (int i = 0; i < jsonArrayapplyConditions.size(); i++) {
-            ProfileCondition.validateJsonElement(jsonArrayapplyConditions.get(i));
-          };
-        }
-      }
-      if ((jsonObj.get("Codec") != null && !jsonObj.get("Codec").isJsonNull()) && !jsonObj.get("Codec").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Codec` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Codec").toString()));
-      }
-      if ((jsonObj.get("Container") != null && !jsonObj.get("Container").isJsonNull()) && !jsonObj.get("Container").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Container` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Container").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!CodecProfile.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'CodecProfile' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<CodecProfile> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(CodecProfile.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<CodecProfile>() {
-           @Override
-           public void write(JsonWriter out, CodecProfile value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public CodecProfile read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of CodecProfile given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of CodecProfile
-   * @throws IOException if the JSON string is invalid with respect to CodecProfile
-   */
-  public static CodecProfile fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, CodecProfile.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of CodecProfile to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Type` to the URL query string
+    if (getType() != null) {
+      joiner.add(String.format("%sType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+    }
+
+    // add `Conditions` to the URL query string
+    if (getConditions() != null) {
+      for (int i = 0; i < getConditions().size(); i++) {
+        if (getConditions().get(i) != null) {
+          joiner.add(getConditions().get(i).toUrlQueryString(String.format("%sConditions%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `ApplyConditions` to the URL query string
+    if (getApplyConditions() != null) {
+      for (int i = 0; i < getApplyConditions().size(); i++) {
+        if (getApplyConditions().get(i) != null) {
+          joiner.add(getApplyConditions().get(i).toUrlQueryString(String.format("%sApplyConditions%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `Codec` to the URL query string
+    if (getCodec() != null) {
+      joiner.add(String.format("%sCodec%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCodec()))));
+    }
+
+    // add `Container` to the URL query string
+    if (getContainer() != null) {
+      joiner.add(String.format("%sContainer%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
+    }
+
+    return joiner.toString();
   }
 }
 

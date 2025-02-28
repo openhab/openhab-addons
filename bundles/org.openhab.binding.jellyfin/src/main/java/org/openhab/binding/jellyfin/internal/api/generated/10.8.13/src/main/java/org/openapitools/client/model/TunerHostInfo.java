@@ -13,104 +13,86 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * TunerHostInfo
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  TunerHostInfo.JSON_PROPERTY_ID,
+  TunerHostInfo.JSON_PROPERTY_URL,
+  TunerHostInfo.JSON_PROPERTY_TYPE,
+  TunerHostInfo.JSON_PROPERTY_DEVICE_ID,
+  TunerHostInfo.JSON_PROPERTY_FRIENDLY_NAME,
+  TunerHostInfo.JSON_PROPERTY_IMPORT_FAVORITES_ONLY,
+  TunerHostInfo.JSON_PROPERTY_ALLOW_H_W_TRANSCODING,
+  TunerHostInfo.JSON_PROPERTY_ENABLE_STREAM_LOOPING,
+  TunerHostInfo.JSON_PROPERTY_SOURCE,
+  TunerHostInfo.JSON_PROPERTY_TUNER_COUNT,
+  TunerHostInfo.JSON_PROPERTY_USER_AGENT
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class TunerHostInfo {
-  public static final String SERIALIZED_NAME_ID = "Id";
-  @SerializedName(SERIALIZED_NAME_ID)
-  @javax.annotation.Nullable
-  private String id;
+  public static final String JSON_PROPERTY_ID = "Id";
+  private JsonNullable<String> id = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_URL = "Url";
-  @SerializedName(SERIALIZED_NAME_URL)
-  @javax.annotation.Nullable
-  private String url;
+  public static final String JSON_PROPERTY_URL = "Url";
+  private JsonNullable<String> url = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TYPE = "Type";
-  @SerializedName(SERIALIZED_NAME_TYPE)
-  @javax.annotation.Nullable
-  private String type;
+  public static final String JSON_PROPERTY_TYPE = "Type";
+  private JsonNullable<String> type = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_DEVICE_ID = "DeviceId";
-  @SerializedName(SERIALIZED_NAME_DEVICE_ID)
-  @javax.annotation.Nullable
-  private String deviceId;
+  public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
+  private JsonNullable<String> deviceId = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_FRIENDLY_NAME = "FriendlyName";
-  @SerializedName(SERIALIZED_NAME_FRIENDLY_NAME)
-  @javax.annotation.Nullable
-  private String friendlyName;
+  public static final String JSON_PROPERTY_FRIENDLY_NAME = "FriendlyName";
+  private JsonNullable<String> friendlyName = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_IMPORT_FAVORITES_ONLY = "ImportFavoritesOnly";
-  @SerializedName(SERIALIZED_NAME_IMPORT_FAVORITES_ONLY)
+  public static final String JSON_PROPERTY_IMPORT_FAVORITES_ONLY = "ImportFavoritesOnly";
   @javax.annotation.Nullable
   private Boolean importFavoritesOnly;
 
-  public static final String SERIALIZED_NAME_ALLOW_H_W_TRANSCODING = "AllowHWTranscoding";
-  @SerializedName(SERIALIZED_NAME_ALLOW_H_W_TRANSCODING)
+  public static final String JSON_PROPERTY_ALLOW_H_W_TRANSCODING = "AllowHWTranscoding";
   @javax.annotation.Nullable
   private Boolean allowHWTranscoding;
 
-  public static final String SERIALIZED_NAME_ENABLE_STREAM_LOOPING = "EnableStreamLooping";
-  @SerializedName(SERIALIZED_NAME_ENABLE_STREAM_LOOPING)
+  public static final String JSON_PROPERTY_ENABLE_STREAM_LOOPING = "EnableStreamLooping";
   @javax.annotation.Nullable
   private Boolean enableStreamLooping;
 
-  public static final String SERIALIZED_NAME_SOURCE = "Source";
-  @SerializedName(SERIALIZED_NAME_SOURCE)
-  @javax.annotation.Nullable
-  private String source;
+  public static final String JSON_PROPERTY_SOURCE = "Source";
+  private JsonNullable<String> source = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_TUNER_COUNT = "TunerCount";
-  @SerializedName(SERIALIZED_NAME_TUNER_COUNT)
+  public static final String JSON_PROPERTY_TUNER_COUNT = "TunerCount";
   @javax.annotation.Nullable
   private Integer tunerCount;
 
-  public static final String SERIALIZED_NAME_USER_AGENT = "UserAgent";
-  @SerializedName(SERIALIZED_NAME_USER_AGENT)
-  @javax.annotation.Nullable
-  private String userAgent;
+  public static final String JSON_PROPERTY_USER_AGENT = "UserAgent";
+  private JsonNullable<String> userAgent = JsonNullable.<String>undefined();
 
-  public TunerHostInfo() {
+  public TunerHostInfo() { 
   }
 
   public TunerHostInfo id(@javax.annotation.Nullable String id) {
-    this.id = id;
+    this.id = JsonNullable.<String>of(id);
     return this;
   }
 
@@ -119,17 +101,30 @@ public class TunerHostInfo {
    * @return id
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getId() {
+        return id.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getId_JsonNullable() {
     return id;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ID)
+  public void setId_JsonNullable(JsonNullable<String> id) {
+    this.id = id;
   }
 
   public void setId(@javax.annotation.Nullable String id) {
-    this.id = id;
+    this.id = JsonNullable.<String>of(id);
   }
 
 
   public TunerHostInfo url(@javax.annotation.Nullable String url) {
-    this.url = url;
+    this.url = JsonNullable.<String>of(url);
     return this;
   }
 
@@ -138,17 +133,30 @@ public class TunerHostInfo {
    * @return url
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getUrl() {
+        return url.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getUrl_JsonNullable() {
     return url;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_URL)
+  public void setUrl_JsonNullable(JsonNullable<String> url) {
+    this.url = url;
   }
 
   public void setUrl(@javax.annotation.Nullable String url) {
-    this.url = url;
+    this.url = JsonNullable.<String>of(url);
   }
 
 
   public TunerHostInfo type(@javax.annotation.Nullable String type) {
-    this.type = type;
+    this.type = JsonNullable.<String>of(type);
     return this;
   }
 
@@ -157,17 +165,30 @@ public class TunerHostInfo {
    * @return type
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getType() {
+        return type.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getType_JsonNullable() {
     return type;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  public void setType_JsonNullable(JsonNullable<String> type) {
+    this.type = type;
   }
 
   public void setType(@javax.annotation.Nullable String type) {
-    this.type = type;
+    this.type = JsonNullable.<String>of(type);
   }
 
 
   public TunerHostInfo deviceId(@javax.annotation.Nullable String deviceId) {
-    this.deviceId = deviceId;
+    this.deviceId = JsonNullable.<String>of(deviceId);
     return this;
   }
 
@@ -176,17 +197,30 @@ public class TunerHostInfo {
    * @return deviceId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getDeviceId() {
+        return deviceId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DEVICE_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getDeviceId_JsonNullable() {
     return deviceId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DEVICE_ID)
+  public void setDeviceId_JsonNullable(JsonNullable<String> deviceId) {
+    this.deviceId = deviceId;
   }
 
   public void setDeviceId(@javax.annotation.Nullable String deviceId) {
-    this.deviceId = deviceId;
+    this.deviceId = JsonNullable.<String>of(deviceId);
   }
 
 
   public TunerHostInfo friendlyName(@javax.annotation.Nullable String friendlyName) {
-    this.friendlyName = friendlyName;
+    this.friendlyName = JsonNullable.<String>of(friendlyName);
     return this;
   }
 
@@ -195,12 +229,25 @@ public class TunerHostInfo {
    * @return friendlyName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getFriendlyName() {
+        return friendlyName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_FRIENDLY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getFriendlyName_JsonNullable() {
     return friendlyName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_FRIENDLY_NAME)
+  public void setFriendlyName_JsonNullable(JsonNullable<String> friendlyName) {
+    this.friendlyName = friendlyName;
   }
 
   public void setFriendlyName(@javax.annotation.Nullable String friendlyName) {
-    this.friendlyName = friendlyName;
+    this.friendlyName = JsonNullable.<String>of(friendlyName);
   }
 
 
@@ -214,10 +261,15 @@ public class TunerHostInfo {
    * @return importFavoritesOnly
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IMPORT_FAVORITES_ONLY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getImportFavoritesOnly() {
     return importFavoritesOnly;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IMPORT_FAVORITES_ONLY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setImportFavoritesOnly(@javax.annotation.Nullable Boolean importFavoritesOnly) {
     this.importFavoritesOnly = importFavoritesOnly;
   }
@@ -233,10 +285,15 @@ public class TunerHostInfo {
    * @return allowHWTranscoding
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ALLOW_H_W_TRANSCODING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getAllowHWTranscoding() {
     return allowHWTranscoding;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ALLOW_H_W_TRANSCODING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAllowHWTranscoding(@javax.annotation.Nullable Boolean allowHWTranscoding) {
     this.allowHWTranscoding = allowHWTranscoding;
   }
@@ -252,17 +309,22 @@ public class TunerHostInfo {
    * @return enableStreamLooping
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_STREAM_LOOPING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableStreamLooping() {
     return enableStreamLooping;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_STREAM_LOOPING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableStreamLooping(@javax.annotation.Nullable Boolean enableStreamLooping) {
     this.enableStreamLooping = enableStreamLooping;
   }
 
 
   public TunerHostInfo source(@javax.annotation.Nullable String source) {
-    this.source = source;
+    this.source = JsonNullable.<String>of(source);
     return this;
   }
 
@@ -271,12 +333,25 @@ public class TunerHostInfo {
    * @return source
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getSource() {
+        return source.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SOURCE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getSource_JsonNullable() {
     return source;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SOURCE)
+  public void setSource_JsonNullable(JsonNullable<String> source) {
+    this.source = source;
   }
 
   public void setSource(@javax.annotation.Nullable String source) {
-    this.source = source;
+    this.source = JsonNullable.<String>of(source);
   }
 
 
@@ -290,17 +365,22 @@ public class TunerHostInfo {
    * @return tunerCount
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TUNER_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getTunerCount() {
     return tunerCount;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TUNER_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTunerCount(@javax.annotation.Nullable Integer tunerCount) {
     this.tunerCount = tunerCount;
   }
 
 
   public TunerHostInfo userAgent(@javax.annotation.Nullable String userAgent) {
-    this.userAgent = userAgent;
+    this.userAgent = JsonNullable.<String>of(userAgent);
     return this;
   }
 
@@ -309,16 +389,31 @@ public class TunerHostInfo {
    * @return userAgent
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getUserAgent() {
-    return userAgent;
+        return userAgent.orElse(null);
   }
 
-  public void setUserAgent(@javax.annotation.Nullable String userAgent) {
+  @JsonProperty(JSON_PROPERTY_USER_AGENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getUserAgent_JsonNullable() {
+    return userAgent;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_USER_AGENT)
+  public void setUserAgent_JsonNullable(JsonNullable<String> userAgent) {
     this.userAgent = userAgent;
   }
 
+  public void setUserAgent(@javax.annotation.Nullable String userAgent) {
+    this.userAgent = JsonNullable.<String>of(userAgent);
+  }
 
 
+  /**
+   * Return true if this TunerHostInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -328,17 +423,17 @@ public class TunerHostInfo {
       return false;
     }
     TunerHostInfo tunerHostInfo = (TunerHostInfo) o;
-    return Objects.equals(this.id, tunerHostInfo.id) &&
-        Objects.equals(this.url, tunerHostInfo.url) &&
-        Objects.equals(this.type, tunerHostInfo.type) &&
-        Objects.equals(this.deviceId, tunerHostInfo.deviceId) &&
-        Objects.equals(this.friendlyName, tunerHostInfo.friendlyName) &&
+    return equalsNullable(this.id, tunerHostInfo.id) &&
+        equalsNullable(this.url, tunerHostInfo.url) &&
+        equalsNullable(this.type, tunerHostInfo.type) &&
+        equalsNullable(this.deviceId, tunerHostInfo.deviceId) &&
+        equalsNullable(this.friendlyName, tunerHostInfo.friendlyName) &&
         Objects.equals(this.importFavoritesOnly, tunerHostInfo.importFavoritesOnly) &&
         Objects.equals(this.allowHWTranscoding, tunerHostInfo.allowHWTranscoding) &&
         Objects.equals(this.enableStreamLooping, tunerHostInfo.enableStreamLooping) &&
-        Objects.equals(this.source, tunerHostInfo.source) &&
+        equalsNullable(this.source, tunerHostInfo.source) &&
         Objects.equals(this.tunerCount, tunerHostInfo.tunerCount) &&
-        Objects.equals(this.userAgent, tunerHostInfo.userAgent);
+        equalsNullable(this.userAgent, tunerHostInfo.userAgent);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -347,7 +442,7 @@ public class TunerHostInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, url, type, deviceId, friendlyName, importFavoritesOnly, allowHWTranscoding, enableStreamLooping, source, tunerCount, userAgent);
+    return Objects.hash(hashCodeNullable(id), hashCodeNullable(url), hashCodeNullable(type), hashCodeNullable(deviceId), hashCodeNullable(friendlyName), importFavoritesOnly, allowHWTranscoding, enableStreamLooping, hashCodeNullable(source), tunerCount, hashCodeNullable(userAgent));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -387,120 +482,94 @@ public class TunerHostInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Id");
-    openapiFields.add("Url");
-    openapiFields.add("Type");
-    openapiFields.add("DeviceId");
-    openapiFields.add("FriendlyName");
-    openapiFields.add("ImportFavoritesOnly");
-    openapiFields.add("AllowHWTranscoding");
-    openapiFields.add("EnableStreamLooping");
-    openapiFields.add("Source");
-    openapiFields.add("TunerCount");
-    openapiFields.add("UserAgent");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to TunerHostInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!TunerHostInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in TunerHostInfo is not found in the empty JSON string", TunerHostInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!TunerHostInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `TunerHostInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Id") != null && !jsonObj.get("Id").isJsonNull()) && !jsonObj.get("Id").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Id").toString()));
-      }
-      if ((jsonObj.get("Url") != null && !jsonObj.get("Url").isJsonNull()) && !jsonObj.get("Url").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Url` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Url").toString()));
-      }
-      if ((jsonObj.get("Type") != null && !jsonObj.get("Type").isJsonNull()) && !jsonObj.get("Type").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Type").toString()));
-      }
-      if ((jsonObj.get("DeviceId") != null && !jsonObj.get("DeviceId").isJsonNull()) && !jsonObj.get("DeviceId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `DeviceId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("DeviceId").toString()));
-      }
-      if ((jsonObj.get("FriendlyName") != null && !jsonObj.get("FriendlyName").isJsonNull()) && !jsonObj.get("FriendlyName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `FriendlyName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("FriendlyName").toString()));
-      }
-      if ((jsonObj.get("Source") != null && !jsonObj.get("Source").isJsonNull()) && !jsonObj.get("Source").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Source` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Source").toString()));
-      }
-      if ((jsonObj.get("UserAgent") != null && !jsonObj.get("UserAgent").isJsonNull()) && !jsonObj.get("UserAgent").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `UserAgent` to be a primitive type in the JSON string but got `%s`", jsonObj.get("UserAgent").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!TunerHostInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'TunerHostInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<TunerHostInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(TunerHostInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<TunerHostInfo>() {
-           @Override
-           public void write(JsonWriter out, TunerHostInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public TunerHostInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of TunerHostInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of TunerHostInfo
-   * @throws IOException if the JSON string is invalid with respect to TunerHostInfo
-   */
-  public static TunerHostInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, TunerHostInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of TunerHostInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+    }
+
+    // add `Url` to the URL query string
+    if (getUrl() != null) {
+      joiner.add(String.format("%sUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
+    }
+
+    // add `Type` to the URL query string
+    if (getType() != null) {
+      joiner.add(String.format("%sType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+    }
+
+    // add `DeviceId` to the URL query string
+    if (getDeviceId() != null) {
+      joiner.add(String.format("%sDeviceId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDeviceId()))));
+    }
+
+    // add `FriendlyName` to the URL query string
+    if (getFriendlyName() != null) {
+      joiner.add(String.format("%sFriendlyName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFriendlyName()))));
+    }
+
+    // add `ImportFavoritesOnly` to the URL query string
+    if (getImportFavoritesOnly() != null) {
+      joiner.add(String.format("%sImportFavoritesOnly%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getImportFavoritesOnly()))));
+    }
+
+    // add `AllowHWTranscoding` to the URL query string
+    if (getAllowHWTranscoding() != null) {
+      joiner.add(String.format("%sAllowHWTranscoding%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAllowHWTranscoding()))));
+    }
+
+    // add `EnableStreamLooping` to the URL query string
+    if (getEnableStreamLooping() != null) {
+      joiner.add(String.format("%sEnableStreamLooping%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableStreamLooping()))));
+    }
+
+    // add `Source` to the URL query string
+    if (getSource() != null) {
+      joiner.add(String.format("%sSource%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSource()))));
+    }
+
+    // add `TunerCount` to the URL query string
+    if (getTunerCount() != null) {
+      joiner.add(String.format("%sTunerCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTunerCount()))));
+    }
+
+    // add `UserAgent` to the URL query string
+    if (getUserAgent() != null) {
+      joiner.add(String.format("%sUserAgent%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUserAgent()))));
+    }
+
+    return joiner.toString();
   }
 }
 

@@ -13,61 +13,48 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.client.model.PlaystateCommand;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * PlaystateRequest
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  PlaystateRequest.JSON_PROPERTY_COMMAND,
+  PlaystateRequest.JSON_PROPERTY_SEEK_POSITION_TICKS,
+  PlaystateRequest.JSON_PROPERTY_CONTROLLING_USER_ID
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PlaystateRequest {
-  public static final String SERIALIZED_NAME_COMMAND = "Command";
-  @SerializedName(SERIALIZED_NAME_COMMAND)
+  public static final String JSON_PROPERTY_COMMAND = "Command";
   @javax.annotation.Nullable
   private PlaystateCommand command;
 
-  public static final String SERIALIZED_NAME_SEEK_POSITION_TICKS = "SeekPositionTicks";
-  @SerializedName(SERIALIZED_NAME_SEEK_POSITION_TICKS)
-  @javax.annotation.Nullable
-  private Long seekPositionTicks;
+  public static final String JSON_PROPERTY_SEEK_POSITION_TICKS = "SeekPositionTicks";
+  private JsonNullable<Long> seekPositionTicks = JsonNullable.<Long>undefined();
 
-  public static final String SERIALIZED_NAME_CONTROLLING_USER_ID = "ControllingUserId";
-  @SerializedName(SERIALIZED_NAME_CONTROLLING_USER_ID)
-  @javax.annotation.Nullable
-  private String controllingUserId;
+  public static final String JSON_PROPERTY_CONTROLLING_USER_ID = "ControllingUserId";
+  private JsonNullable<String> controllingUserId = JsonNullable.<String>undefined();
 
-  public PlaystateRequest() {
+  public PlaystateRequest() { 
   }
 
   public PlaystateRequest command(@javax.annotation.Nullable PlaystateCommand command) {
@@ -80,17 +67,22 @@ public class PlaystateRequest {
    * @return command
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_COMMAND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PlaystateCommand getCommand() {
     return command;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_COMMAND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCommand(@javax.annotation.Nullable PlaystateCommand command) {
     this.command = command;
   }
 
 
   public PlaystateRequest seekPositionTicks(@javax.annotation.Nullable Long seekPositionTicks) {
-    this.seekPositionTicks = seekPositionTicks;
+    this.seekPositionTicks = JsonNullable.<Long>of(seekPositionTicks);
     return this;
   }
 
@@ -99,17 +91,30 @@ public class PlaystateRequest {
    * @return seekPositionTicks
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Long getSeekPositionTicks() {
+        return seekPositionTicks.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SEEK_POSITION_TICKS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Long> getSeekPositionTicks_JsonNullable() {
     return seekPositionTicks;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SEEK_POSITION_TICKS)
+  public void setSeekPositionTicks_JsonNullable(JsonNullable<Long> seekPositionTicks) {
+    this.seekPositionTicks = seekPositionTicks;
   }
 
   public void setSeekPositionTicks(@javax.annotation.Nullable Long seekPositionTicks) {
-    this.seekPositionTicks = seekPositionTicks;
+    this.seekPositionTicks = JsonNullable.<Long>of(seekPositionTicks);
   }
 
 
   public PlaystateRequest controllingUserId(@javax.annotation.Nullable String controllingUserId) {
-    this.controllingUserId = controllingUserId;
+    this.controllingUserId = JsonNullable.<String>of(controllingUserId);
     return this;
   }
 
@@ -118,16 +123,31 @@ public class PlaystateRequest {
    * @return controllingUserId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getControllingUserId() {
-    return controllingUserId;
+        return controllingUserId.orElse(null);
   }
 
-  public void setControllingUserId(@javax.annotation.Nullable String controllingUserId) {
+  @JsonProperty(JSON_PROPERTY_CONTROLLING_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getControllingUserId_JsonNullable() {
+    return controllingUserId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CONTROLLING_USER_ID)
+  public void setControllingUserId_JsonNullable(JsonNullable<String> controllingUserId) {
     this.controllingUserId = controllingUserId;
   }
 
+  public void setControllingUserId(@javax.annotation.Nullable String controllingUserId) {
+    this.controllingUserId = JsonNullable.<String>of(controllingUserId);
+  }
 
 
+  /**
+   * Return true if this PlaystateRequest object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -138,8 +158,8 @@ public class PlaystateRequest {
     }
     PlaystateRequest playstateRequest = (PlaystateRequest) o;
     return Objects.equals(this.command, playstateRequest.command) &&
-        Objects.equals(this.seekPositionTicks, playstateRequest.seekPositionTicks) &&
-        Objects.equals(this.controllingUserId, playstateRequest.controllingUserId);
+        equalsNullable(this.seekPositionTicks, playstateRequest.seekPositionTicks) &&
+        equalsNullable(this.controllingUserId, playstateRequest.controllingUserId);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -148,7 +168,7 @@ public class PlaystateRequest {
 
   @Override
   public int hashCode() {
-    return Objects.hash(command, seekPositionTicks, controllingUserId);
+    return Objects.hash(command, hashCodeNullable(seekPositionTicks), hashCodeNullable(controllingUserId));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -180,98 +200,54 @@ public class PlaystateRequest {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Command");
-    openapiFields.add("SeekPositionTicks");
-    openapiFields.add("ControllingUserId");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to PlaystateRequest
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!PlaystateRequest.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in PlaystateRequest is not found in the empty JSON string", PlaystateRequest.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!PlaystateRequest.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `PlaystateRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // validate the optional field `Command`
-      if (jsonObj.get("Command") != null && !jsonObj.get("Command").isJsonNull()) {
-        PlaystateCommand.validateJsonElement(jsonObj.get("Command"));
-      }
-      if ((jsonObj.get("ControllingUserId") != null && !jsonObj.get("ControllingUserId").isJsonNull()) && !jsonObj.get("ControllingUserId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ControllingUserId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ControllingUserId").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!PlaystateRequest.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'PlaystateRequest' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<PlaystateRequest> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(PlaystateRequest.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<PlaystateRequest>() {
-           @Override
-           public void write(JsonWriter out, PlaystateRequest value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public PlaystateRequest read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of PlaystateRequest given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of PlaystateRequest
-   * @throws IOException if the JSON string is invalid with respect to PlaystateRequest
-   */
-  public static PlaystateRequest fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, PlaystateRequest.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of PlaystateRequest to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Command` to the URL query string
+    if (getCommand() != null) {
+      joiner.add(String.format("%sCommand%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCommand()))));
+    }
+
+    // add `SeekPositionTicks` to the URL query string
+    if (getSeekPositionTicks() != null) {
+      joiner.add(String.format("%sSeekPositionTicks%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSeekPositionTicks()))));
+    }
+
+    // add `ControllingUserId` to the URL query string
+    if (getControllingUserId() != null) {
+      joiner.add(String.format("%sControllingUserId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getControllingUserId()))));
+    }
+
+    return joiner.toString();
   }
 }
 

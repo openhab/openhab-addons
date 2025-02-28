@@ -13,13 +13,17 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,104 +31,85 @@ import java.util.List;
 import java.util.UUID;
 import org.openapitools.client.model.MediaUrl;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class BaseItem.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  BaseItem.JSON_PROPERTY_SIZE,
+  BaseItem.JSON_PROPERTY_CONTAINER,
+  BaseItem.JSON_PROPERTY_IS_H_D,
+  BaseItem.JSON_PROPERTY_IS_SHORTCUT,
+  BaseItem.JSON_PROPERTY_SHORTCUT_PATH,
+  BaseItem.JSON_PROPERTY_WIDTH,
+  BaseItem.JSON_PROPERTY_HEIGHT,
+  BaseItem.JSON_PROPERTY_EXTRA_IDS,
+  BaseItem.JSON_PROPERTY_DATE_LAST_SAVED,
+  BaseItem.JSON_PROPERTY_REMOTE_TRAILERS,
+  BaseItem.JSON_PROPERTY_SUPPORTS_EXTERNAL_TRANSFER
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class BaseItem {
-  public static final String SERIALIZED_NAME_SIZE = "Size";
-  @SerializedName(SERIALIZED_NAME_SIZE)
-  @javax.annotation.Nullable
-  private Long size;
+  public static final String JSON_PROPERTY_SIZE = "Size";
+  private JsonNullable<Long> size = JsonNullable.<Long>undefined();
 
-  public static final String SERIALIZED_NAME_CONTAINER = "Container";
-  @SerializedName(SERIALIZED_NAME_CONTAINER)
-  @javax.annotation.Nullable
-  private String container;
+  public static final String JSON_PROPERTY_CONTAINER = "Container";
+  private JsonNullable<String> container = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_IS_H_D = "IsHD";
-  @SerializedName(SERIALIZED_NAME_IS_H_D)
+  public static final String JSON_PROPERTY_IS_H_D = "IsHD";
   @javax.annotation.Nullable
   private Boolean isHD;
 
-  public static final String SERIALIZED_NAME_IS_SHORTCUT = "IsShortcut";
-  @SerializedName(SERIALIZED_NAME_IS_SHORTCUT)
+  public static final String JSON_PROPERTY_IS_SHORTCUT = "IsShortcut";
   @javax.annotation.Nullable
   private Boolean isShortcut;
 
-  public static final String SERIALIZED_NAME_SHORTCUT_PATH = "ShortcutPath";
-  @SerializedName(SERIALIZED_NAME_SHORTCUT_PATH)
-  @javax.annotation.Nullable
-  private String shortcutPath;
+  public static final String JSON_PROPERTY_SHORTCUT_PATH = "ShortcutPath";
+  private JsonNullable<String> shortcutPath = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_WIDTH = "Width";
-  @SerializedName(SERIALIZED_NAME_WIDTH)
+  public static final String JSON_PROPERTY_WIDTH = "Width";
   @javax.annotation.Nullable
   private Integer width;
 
-  public static final String SERIALIZED_NAME_HEIGHT = "Height";
-  @SerializedName(SERIALIZED_NAME_HEIGHT)
+  public static final String JSON_PROPERTY_HEIGHT = "Height";
   @javax.annotation.Nullable
   private Integer height;
 
-  public static final String SERIALIZED_NAME_EXTRA_IDS = "ExtraIds";
-  @SerializedName(SERIALIZED_NAME_EXTRA_IDS)
-  @javax.annotation.Nullable
-  private List<UUID> extraIds;
+  public static final String JSON_PROPERTY_EXTRA_IDS = "ExtraIds";
+  private JsonNullable<List<UUID>> extraIds = JsonNullable.<List<UUID>>undefined();
 
-  public static final String SERIALIZED_NAME_DATE_LAST_SAVED = "DateLastSaved";
-  @SerializedName(SERIALIZED_NAME_DATE_LAST_SAVED)
+  public static final String JSON_PROPERTY_DATE_LAST_SAVED = "DateLastSaved";
   @javax.annotation.Nullable
   private OffsetDateTime dateLastSaved;
 
-  public static final String SERIALIZED_NAME_REMOTE_TRAILERS = "RemoteTrailers";
-  @SerializedName(SERIALIZED_NAME_REMOTE_TRAILERS)
-  @javax.annotation.Nullable
-  private List<MediaUrl> remoteTrailers;
+  public static final String JSON_PROPERTY_REMOTE_TRAILERS = "RemoteTrailers";
+  private JsonNullable<List<MediaUrl>> remoteTrailers = JsonNullable.<List<MediaUrl>>undefined();
 
-  public static final String SERIALIZED_NAME_SUPPORTS_EXTERNAL_TRANSFER = "SupportsExternalTransfer";
-  @SerializedName(SERIALIZED_NAME_SUPPORTS_EXTERNAL_TRANSFER)
+  public static final String JSON_PROPERTY_SUPPORTS_EXTERNAL_TRANSFER = "SupportsExternalTransfer";
   @javax.annotation.Nullable
   private Boolean supportsExternalTransfer;
 
-  public BaseItem() {
+  public BaseItem() { 
   }
 
+  @JsonCreator
   public BaseItem(
-     Boolean isHD, 
-     Boolean supportsExternalTransfer
+    @JsonProperty(JSON_PROPERTY_IS_H_D) Boolean isHD, 
+    @JsonProperty(JSON_PROPERTY_SUPPORTS_EXTERNAL_TRANSFER) Boolean supportsExternalTransfer
   ) {
-    this();
+  this();
     this.isHD = isHD;
     this.supportsExternalTransfer = supportsExternalTransfer;
   }
 
   public BaseItem size(@javax.annotation.Nullable Long size) {
-    this.size = size;
+    this.size = JsonNullable.<Long>of(size);
     return this;
   }
 
@@ -133,17 +118,30 @@ public class BaseItem {
    * @return size
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Long getSize() {
+        return size.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Long> getSize_JsonNullable() {
     return size;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SIZE)
+  public void setSize_JsonNullable(JsonNullable<Long> size) {
+    this.size = size;
   }
 
   public void setSize(@javax.annotation.Nullable Long size) {
-    this.size = size;
+    this.size = JsonNullable.<Long>of(size);
   }
 
 
   public BaseItem container(@javax.annotation.Nullable String container) {
-    this.container = container;
+    this.container = JsonNullable.<String>of(container);
     return this;
   }
 
@@ -152,12 +150,25 @@ public class BaseItem {
    * @return container
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getContainer() {
+        return container.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getContainer_JsonNullable() {
     return container;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CONTAINER)
+  public void setContainer_JsonNullable(JsonNullable<String> container) {
+    this.container = container;
   }
 
   public void setContainer(@javax.annotation.Nullable String container) {
-    this.container = container;
+    this.container = JsonNullable.<String>of(container);
   }
 
 
@@ -166,9 +177,12 @@ public class BaseItem {
    * @return isHD
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_H_D)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsHD() {
     return isHD;
   }
+
 
 
 
@@ -182,17 +196,22 @@ public class BaseItem {
    * @return isShortcut
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_SHORTCUT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsShortcut() {
     return isShortcut;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_SHORTCUT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsShortcut(@javax.annotation.Nullable Boolean isShortcut) {
     this.isShortcut = isShortcut;
   }
 
 
   public BaseItem shortcutPath(@javax.annotation.Nullable String shortcutPath) {
-    this.shortcutPath = shortcutPath;
+    this.shortcutPath = JsonNullable.<String>of(shortcutPath);
     return this;
   }
 
@@ -201,12 +220,25 @@ public class BaseItem {
    * @return shortcutPath
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getShortcutPath() {
+        return shortcutPath.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SHORTCUT_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getShortcutPath_JsonNullable() {
     return shortcutPath;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SHORTCUT_PATH)
+  public void setShortcutPath_JsonNullable(JsonNullable<String> shortcutPath) {
+    this.shortcutPath = shortcutPath;
   }
 
   public void setShortcutPath(@javax.annotation.Nullable String shortcutPath) {
-    this.shortcutPath = shortcutPath;
+    this.shortcutPath = JsonNullable.<String>of(shortcutPath);
   }
 
 
@@ -220,10 +252,15 @@ public class BaseItem {
    * @return width
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getWidth() {
     return width;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWidth(@javax.annotation.Nullable Integer width) {
     this.width = width;
   }
@@ -239,25 +276,34 @@ public class BaseItem {
    * @return height
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getHeight() {
     return height;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setHeight(@javax.annotation.Nullable Integer height) {
     this.height = height;
   }
 
 
   public BaseItem extraIds(@javax.annotation.Nullable List<UUID> extraIds) {
-    this.extraIds = extraIds;
+    this.extraIds = JsonNullable.<List<UUID>>of(extraIds);
     return this;
   }
 
   public BaseItem addExtraIdsItem(UUID extraIdsItem) {
-    if (this.extraIds == null) {
-      this.extraIds = new ArrayList<>();
+    if (this.extraIds == null || !this.extraIds.isPresent()) {
+      this.extraIds = JsonNullable.<List<UUID>>of(new ArrayList<>());
     }
-    this.extraIds.add(extraIdsItem);
+    try {
+      this.extraIds.get().add(extraIdsItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -266,12 +312,25 @@ public class BaseItem {
    * @return extraIds
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<UUID> getExtraIds() {
+        return extraIds.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_EXTRA_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<UUID>> getExtraIds_JsonNullable() {
     return extraIds;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_EXTRA_IDS)
+  public void setExtraIds_JsonNullable(JsonNullable<List<UUID>> extraIds) {
+    this.extraIds = extraIds;
   }
 
   public void setExtraIds(@javax.annotation.Nullable List<UUID> extraIds) {
-    this.extraIds = extraIds;
+    this.extraIds = JsonNullable.<List<UUID>>of(extraIds);
   }
 
 
@@ -285,25 +344,34 @@ public class BaseItem {
    * @return dateLastSaved
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DATE_LAST_SAVED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getDateLastSaved() {
     return dateLastSaved;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DATE_LAST_SAVED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDateLastSaved(@javax.annotation.Nullable OffsetDateTime dateLastSaved) {
     this.dateLastSaved = dateLastSaved;
   }
 
 
   public BaseItem remoteTrailers(@javax.annotation.Nullable List<MediaUrl> remoteTrailers) {
-    this.remoteTrailers = remoteTrailers;
+    this.remoteTrailers = JsonNullable.<List<MediaUrl>>of(remoteTrailers);
     return this;
   }
 
   public BaseItem addRemoteTrailersItem(MediaUrl remoteTrailersItem) {
-    if (this.remoteTrailers == null) {
-      this.remoteTrailers = new ArrayList<>();
+    if (this.remoteTrailers == null || !this.remoteTrailers.isPresent()) {
+      this.remoteTrailers = JsonNullable.<List<MediaUrl>>of(new ArrayList<>());
     }
-    this.remoteTrailers.add(remoteTrailersItem);
+    try {
+      this.remoteTrailers.get().add(remoteTrailersItem);
+    } catch (java.util.NoSuchElementException e) {
+      // this can never happen, as we make sure above that the value is present
+    }
     return this;
   }
 
@@ -312,12 +380,25 @@ public class BaseItem {
    * @return remoteTrailers
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public List<MediaUrl> getRemoteTrailers() {
+        return remoteTrailers.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_REMOTE_TRAILERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<List<MediaUrl>> getRemoteTrailers_JsonNullable() {
     return remoteTrailers;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_REMOTE_TRAILERS)
+  public void setRemoteTrailers_JsonNullable(JsonNullable<List<MediaUrl>> remoteTrailers) {
+    this.remoteTrailers = remoteTrailers;
   }
 
   public void setRemoteTrailers(@javax.annotation.Nullable List<MediaUrl> remoteTrailers) {
-    this.remoteTrailers = remoteTrailers;
+    this.remoteTrailers = JsonNullable.<List<MediaUrl>>of(remoteTrailers);
   }
 
 
@@ -326,6 +407,8 @@ public class BaseItem {
    * @return supportsExternalTransfer
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUPPORTS_EXTERNAL_TRANSFER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSupportsExternalTransfer() {
     return supportsExternalTransfer;
   }
@@ -333,6 +416,9 @@ public class BaseItem {
 
 
 
+  /**
+   * Return true if this BaseItem object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -342,16 +428,16 @@ public class BaseItem {
       return false;
     }
     BaseItem baseItem = (BaseItem) o;
-    return Objects.equals(this.size, baseItem.size) &&
-        Objects.equals(this.container, baseItem.container) &&
+    return equalsNullable(this.size, baseItem.size) &&
+        equalsNullable(this.container, baseItem.container) &&
         Objects.equals(this.isHD, baseItem.isHD) &&
         Objects.equals(this.isShortcut, baseItem.isShortcut) &&
-        Objects.equals(this.shortcutPath, baseItem.shortcutPath) &&
+        equalsNullable(this.shortcutPath, baseItem.shortcutPath) &&
         Objects.equals(this.width, baseItem.width) &&
         Objects.equals(this.height, baseItem.height) &&
-        Objects.equals(this.extraIds, baseItem.extraIds) &&
+        equalsNullable(this.extraIds, baseItem.extraIds) &&
         Objects.equals(this.dateLastSaved, baseItem.dateLastSaved) &&
-        Objects.equals(this.remoteTrailers, baseItem.remoteTrailers) &&
+        equalsNullable(this.remoteTrailers, baseItem.remoteTrailers) &&
         Objects.equals(this.supportsExternalTransfer, baseItem.supportsExternalTransfer);
   }
 
@@ -361,7 +447,7 @@ public class BaseItem {
 
   @Override
   public int hashCode() {
-    return Objects.hash(size, container, isHD, isShortcut, shortcutPath, width, height, extraIds, dateLastSaved, remoteTrailers, supportsExternalTransfer);
+    return Objects.hash(hashCodeNullable(size), hashCodeNullable(container), isHD, isShortcut, hashCodeNullable(shortcutPath), width, height, hashCodeNullable(extraIds), dateLastSaved, hashCodeNullable(remoteTrailers), supportsExternalTransfer);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -401,123 +487,105 @@ public class BaseItem {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Size");
-    openapiFields.add("Container");
-    openapiFields.add("IsHD");
-    openapiFields.add("IsShortcut");
-    openapiFields.add("ShortcutPath");
-    openapiFields.add("Width");
-    openapiFields.add("Height");
-    openapiFields.add("ExtraIds");
-    openapiFields.add("DateLastSaved");
-    openapiFields.add("RemoteTrailers");
-    openapiFields.add("SupportsExternalTransfer");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to BaseItem
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!BaseItem.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in BaseItem is not found in the empty JSON string", BaseItem.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!BaseItem.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `BaseItem` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Container") != null && !jsonObj.get("Container").isJsonNull()) && !jsonObj.get("Container").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Container` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Container").toString()));
-      }
-      if ((jsonObj.get("ShortcutPath") != null && !jsonObj.get("ShortcutPath").isJsonNull()) && !jsonObj.get("ShortcutPath").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ShortcutPath` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ShortcutPath").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("ExtraIds") != null && !jsonObj.get("ExtraIds").isJsonNull() && !jsonObj.get("ExtraIds").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ExtraIds` to be an array in the JSON string but got `%s`", jsonObj.get("ExtraIds").toString()));
-      }
-      if (jsonObj.get("RemoteTrailers") != null && !jsonObj.get("RemoteTrailers").isJsonNull()) {
-        JsonArray jsonArrayremoteTrailers = jsonObj.getAsJsonArray("RemoteTrailers");
-        if (jsonArrayremoteTrailers != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("RemoteTrailers").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `RemoteTrailers` to be an array in the JSON string but got `%s`", jsonObj.get("RemoteTrailers").toString()));
-          }
-
-          // validate the optional field `RemoteTrailers` (array)
-          for (int i = 0; i < jsonArrayremoteTrailers.size(); i++) {
-            MediaUrl.validateJsonElement(jsonArrayremoteTrailers.get(i));
-          };
-        }
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!BaseItem.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'BaseItem' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<BaseItem> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(BaseItem.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<BaseItem>() {
-           @Override
-           public void write(JsonWriter out, BaseItem value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public BaseItem read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of BaseItem given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of BaseItem
-   * @throws IOException if the JSON string is invalid with respect to BaseItem
-   */
-  public static BaseItem fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, BaseItem.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of BaseItem to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Size` to the URL query string
+    if (getSize() != null) {
+      joiner.add(String.format("%sSize%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSize()))));
+    }
+
+    // add `Container` to the URL query string
+    if (getContainer() != null) {
+      joiner.add(String.format("%sContainer%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
+    }
+
+    // add `IsHD` to the URL query string
+    if (getIsHD() != null) {
+      joiner.add(String.format("%sIsHD%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsHD()))));
+    }
+
+    // add `IsShortcut` to the URL query string
+    if (getIsShortcut() != null) {
+      joiner.add(String.format("%sIsShortcut%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsShortcut()))));
+    }
+
+    // add `ShortcutPath` to the URL query string
+    if (getShortcutPath() != null) {
+      joiner.add(String.format("%sShortcutPath%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getShortcutPath()))));
+    }
+
+    // add `Width` to the URL query string
+    if (getWidth() != null) {
+      joiner.add(String.format("%sWidth%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
+    }
+
+    // add `Height` to the URL query string
+    if (getHeight() != null) {
+      joiner.add(String.format("%sHeight%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
+    }
+
+    // add `ExtraIds` to the URL query string
+    if (getExtraIds() != null) {
+      for (int i = 0; i < getExtraIds().size(); i++) {
+        if (getExtraIds().get(i) != null) {
+          joiner.add(String.format("%sExtraIds%s%s=%s", prefix, suffix,
+              "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+              ApiClient.urlEncode(ApiClient.valueToString(getExtraIds().get(i)))));
+        }
+      }
+    }
+
+    // add `DateLastSaved` to the URL query string
+    if (getDateLastSaved() != null) {
+      joiner.add(String.format("%sDateLastSaved%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDateLastSaved()))));
+    }
+
+    // add `RemoteTrailers` to the URL query string
+    if (getRemoteTrailers() != null) {
+      for (int i = 0; i < getRemoteTrailers().size(); i++) {
+        if (getRemoteTrailers().get(i) != null) {
+          joiner.add(getRemoteTrailers().get(i).toUrlQueryString(String.format("%sRemoteTrailers%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `SupportsExternalTransfer` to the URL query string
+    if (getSupportsExternalTransfer() != null) {
+      joiner.add(String.format("%sSupportsExternalTransfer%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSupportsExternalTransfer()))));
+    }
+
+    return joiner.toString();
   }
 }
 

@@ -13,100 +13,88 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * The DlnaOptions class contains the user definable parameters for the dlna subsystems.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  DlnaOptions.JSON_PROPERTY_ENABLE_PLAY_TO,
+  DlnaOptions.JSON_PROPERTY_ENABLE_SERVER,
+  DlnaOptions.JSON_PROPERTY_ENABLE_DEBUG_LOG,
+  DlnaOptions.JSON_PROPERTY_ENABLE_PLAY_TO_TRACING,
+  DlnaOptions.JSON_PROPERTY_CLIENT_DISCOVERY_INTERVAL_SECONDS,
+  DlnaOptions.JSON_PROPERTY_ALIVE_MESSAGE_INTERVAL_SECONDS,
+  DlnaOptions.JSON_PROPERTY_BLAST_ALIVE_MESSAGE_INTERVAL_SECONDS,
+  DlnaOptions.JSON_PROPERTY_DEFAULT_USER_ID,
+  DlnaOptions.JSON_PROPERTY_AUTO_CREATE_PLAY_TO_PROFILES,
+  DlnaOptions.JSON_PROPERTY_BLAST_ALIVE_MESSAGES,
+  DlnaOptions.JSON_PROPERTY_SEND_ONLY_MATCHED_HOST
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class DlnaOptions {
-  public static final String SERIALIZED_NAME_ENABLE_PLAY_TO = "EnablePlayTo";
-  @SerializedName(SERIALIZED_NAME_ENABLE_PLAY_TO)
+  public static final String JSON_PROPERTY_ENABLE_PLAY_TO = "EnablePlayTo";
   @javax.annotation.Nullable
   private Boolean enablePlayTo;
 
-  public static final String SERIALIZED_NAME_ENABLE_SERVER = "EnableServer";
-  @SerializedName(SERIALIZED_NAME_ENABLE_SERVER)
+  public static final String JSON_PROPERTY_ENABLE_SERVER = "EnableServer";
   @javax.annotation.Nullable
   private Boolean enableServer;
 
-  public static final String SERIALIZED_NAME_ENABLE_DEBUG_LOG = "EnableDebugLog";
-  @SerializedName(SERIALIZED_NAME_ENABLE_DEBUG_LOG)
+  public static final String JSON_PROPERTY_ENABLE_DEBUG_LOG = "EnableDebugLog";
   @javax.annotation.Nullable
   private Boolean enableDebugLog;
 
-  public static final String SERIALIZED_NAME_ENABLE_PLAY_TO_TRACING = "EnablePlayToTracing";
-  @SerializedName(SERIALIZED_NAME_ENABLE_PLAY_TO_TRACING)
+  public static final String JSON_PROPERTY_ENABLE_PLAY_TO_TRACING = "EnablePlayToTracing";
   @javax.annotation.Nullable
   private Boolean enablePlayToTracing;
 
-  public static final String SERIALIZED_NAME_CLIENT_DISCOVERY_INTERVAL_SECONDS = "ClientDiscoveryIntervalSeconds";
-  @SerializedName(SERIALIZED_NAME_CLIENT_DISCOVERY_INTERVAL_SECONDS)
+  public static final String JSON_PROPERTY_CLIENT_DISCOVERY_INTERVAL_SECONDS = "ClientDiscoveryIntervalSeconds";
   @javax.annotation.Nullable
   private Integer clientDiscoveryIntervalSeconds;
 
-  public static final String SERIALIZED_NAME_ALIVE_MESSAGE_INTERVAL_SECONDS = "AliveMessageIntervalSeconds";
-  @SerializedName(SERIALIZED_NAME_ALIVE_MESSAGE_INTERVAL_SECONDS)
+  public static final String JSON_PROPERTY_ALIVE_MESSAGE_INTERVAL_SECONDS = "AliveMessageIntervalSeconds";
   @javax.annotation.Nullable
   private Integer aliveMessageIntervalSeconds;
 
-  public static final String SERIALIZED_NAME_BLAST_ALIVE_MESSAGE_INTERVAL_SECONDS = "BlastAliveMessageIntervalSeconds";
-  @SerializedName(SERIALIZED_NAME_BLAST_ALIVE_MESSAGE_INTERVAL_SECONDS)
+  public static final String JSON_PROPERTY_BLAST_ALIVE_MESSAGE_INTERVAL_SECONDS = "BlastAliveMessageIntervalSeconds";
   @javax.annotation.Nullable
   private Integer blastAliveMessageIntervalSeconds;
 
-  public static final String SERIALIZED_NAME_DEFAULT_USER_ID = "DefaultUserId";
-  @SerializedName(SERIALIZED_NAME_DEFAULT_USER_ID)
-  @javax.annotation.Nullable
-  private String defaultUserId;
+  public static final String JSON_PROPERTY_DEFAULT_USER_ID = "DefaultUserId";
+  private JsonNullable<String> defaultUserId = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_AUTO_CREATE_PLAY_TO_PROFILES = "AutoCreatePlayToProfiles";
-  @SerializedName(SERIALIZED_NAME_AUTO_CREATE_PLAY_TO_PROFILES)
+  public static final String JSON_PROPERTY_AUTO_CREATE_PLAY_TO_PROFILES = "AutoCreatePlayToProfiles";
   @javax.annotation.Nullable
   private Boolean autoCreatePlayToProfiles;
 
-  public static final String SERIALIZED_NAME_BLAST_ALIVE_MESSAGES = "BlastAliveMessages";
-  @SerializedName(SERIALIZED_NAME_BLAST_ALIVE_MESSAGES)
+  public static final String JSON_PROPERTY_BLAST_ALIVE_MESSAGES = "BlastAliveMessages";
   @javax.annotation.Nullable
   private Boolean blastAliveMessages;
 
-  public static final String SERIALIZED_NAME_SEND_ONLY_MATCHED_HOST = "SendOnlyMatchedHost";
-  @SerializedName(SERIALIZED_NAME_SEND_ONLY_MATCHED_HOST)
+  public static final String JSON_PROPERTY_SEND_ONLY_MATCHED_HOST = "SendOnlyMatchedHost";
   @javax.annotation.Nullable
   private Boolean sendOnlyMatchedHost;
 
-  public DlnaOptions() {
+  public DlnaOptions() { 
   }
 
   public DlnaOptions enablePlayTo(@javax.annotation.Nullable Boolean enablePlayTo) {
@@ -119,10 +107,15 @@ public class DlnaOptions {
    * @return enablePlayTo
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_PLAY_TO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnablePlayTo() {
     return enablePlayTo;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_PLAY_TO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnablePlayTo(@javax.annotation.Nullable Boolean enablePlayTo) {
     this.enablePlayTo = enablePlayTo;
   }
@@ -138,10 +131,15 @@ public class DlnaOptions {
    * @return enableServer
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_SERVER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableServer() {
     return enableServer;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_SERVER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableServer(@javax.annotation.Nullable Boolean enableServer) {
     this.enableServer = enableServer;
   }
@@ -157,10 +155,15 @@ public class DlnaOptions {
    * @return enableDebugLog
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_DEBUG_LOG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableDebugLog() {
     return enableDebugLog;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_DEBUG_LOG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableDebugLog(@javax.annotation.Nullable Boolean enableDebugLog) {
     this.enableDebugLog = enableDebugLog;
   }
@@ -176,10 +179,15 @@ public class DlnaOptions {
    * @return enablePlayToTracing
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_PLAY_TO_TRACING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnablePlayToTracing() {
     return enablePlayToTracing;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_PLAY_TO_TRACING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnablePlayToTracing(@javax.annotation.Nullable Boolean enablePlayToTracing) {
     this.enablePlayToTracing = enablePlayToTracing;
   }
@@ -195,10 +203,15 @@ public class DlnaOptions {
    * @return clientDiscoveryIntervalSeconds
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CLIENT_DISCOVERY_INTERVAL_SECONDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getClientDiscoveryIntervalSeconds() {
     return clientDiscoveryIntervalSeconds;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CLIENT_DISCOVERY_INTERVAL_SECONDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setClientDiscoveryIntervalSeconds(@javax.annotation.Nullable Integer clientDiscoveryIntervalSeconds) {
     this.clientDiscoveryIntervalSeconds = clientDiscoveryIntervalSeconds;
   }
@@ -214,10 +227,15 @@ public class DlnaOptions {
    * @return aliveMessageIntervalSeconds
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ALIVE_MESSAGE_INTERVAL_SECONDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getAliveMessageIntervalSeconds() {
     return aliveMessageIntervalSeconds;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ALIVE_MESSAGE_INTERVAL_SECONDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAliveMessageIntervalSeconds(@javax.annotation.Nullable Integer aliveMessageIntervalSeconds) {
     this.aliveMessageIntervalSeconds = aliveMessageIntervalSeconds;
   }
@@ -233,17 +251,22 @@ public class DlnaOptions {
    * @return blastAliveMessageIntervalSeconds
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_BLAST_ALIVE_MESSAGE_INTERVAL_SECONDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getBlastAliveMessageIntervalSeconds() {
     return blastAliveMessageIntervalSeconds;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_BLAST_ALIVE_MESSAGE_INTERVAL_SECONDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBlastAliveMessageIntervalSeconds(@javax.annotation.Nullable Integer blastAliveMessageIntervalSeconds) {
     this.blastAliveMessageIntervalSeconds = blastAliveMessageIntervalSeconds;
   }
 
 
   public DlnaOptions defaultUserId(@javax.annotation.Nullable String defaultUserId) {
-    this.defaultUserId = defaultUserId;
+    this.defaultUserId = JsonNullable.<String>of(defaultUserId);
     return this;
   }
 
@@ -252,12 +275,25 @@ public class DlnaOptions {
    * @return defaultUserId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getDefaultUserId() {
+        return defaultUserId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_DEFAULT_USER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getDefaultUserId_JsonNullable() {
     return defaultUserId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_DEFAULT_USER_ID)
+  public void setDefaultUserId_JsonNullable(JsonNullable<String> defaultUserId) {
+    this.defaultUserId = defaultUserId;
   }
 
   public void setDefaultUserId(@javax.annotation.Nullable String defaultUserId) {
-    this.defaultUserId = defaultUserId;
+    this.defaultUserId = JsonNullable.<String>of(defaultUserId);
   }
 
 
@@ -271,10 +307,15 @@ public class DlnaOptions {
    * @return autoCreatePlayToProfiles
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_AUTO_CREATE_PLAY_TO_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getAutoCreatePlayToProfiles() {
     return autoCreatePlayToProfiles;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_AUTO_CREATE_PLAY_TO_PROFILES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAutoCreatePlayToProfiles(@javax.annotation.Nullable Boolean autoCreatePlayToProfiles) {
     this.autoCreatePlayToProfiles = autoCreatePlayToProfiles;
   }
@@ -290,10 +331,15 @@ public class DlnaOptions {
    * @return blastAliveMessages
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_BLAST_ALIVE_MESSAGES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getBlastAliveMessages() {
     return blastAliveMessages;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_BLAST_ALIVE_MESSAGES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBlastAliveMessages(@javax.annotation.Nullable Boolean blastAliveMessages) {
     this.blastAliveMessages = blastAliveMessages;
   }
@@ -309,16 +355,23 @@ public class DlnaOptions {
    * @return sendOnlyMatchedHost
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SEND_ONLY_MATCHED_HOST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSendOnlyMatchedHost() {
     return sendOnlyMatchedHost;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SEND_ONLY_MATCHED_HOST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSendOnlyMatchedHost(@javax.annotation.Nullable Boolean sendOnlyMatchedHost) {
     this.sendOnlyMatchedHost = sendOnlyMatchedHost;
   }
 
 
-
+  /**
+   * Return true if this DlnaOptions object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -335,7 +388,7 @@ public class DlnaOptions {
         Objects.equals(this.clientDiscoveryIntervalSeconds, dlnaOptions.clientDiscoveryIntervalSeconds) &&
         Objects.equals(this.aliveMessageIntervalSeconds, dlnaOptions.aliveMessageIntervalSeconds) &&
         Objects.equals(this.blastAliveMessageIntervalSeconds, dlnaOptions.blastAliveMessageIntervalSeconds) &&
-        Objects.equals(this.defaultUserId, dlnaOptions.defaultUserId) &&
+        equalsNullable(this.defaultUserId, dlnaOptions.defaultUserId) &&
         Objects.equals(this.autoCreatePlayToProfiles, dlnaOptions.autoCreatePlayToProfiles) &&
         Objects.equals(this.blastAliveMessages, dlnaOptions.blastAliveMessages) &&
         Objects.equals(this.sendOnlyMatchedHost, dlnaOptions.sendOnlyMatchedHost);
@@ -347,7 +400,7 @@ public class DlnaOptions {
 
   @Override
   public int hashCode() {
-    return Objects.hash(enablePlayTo, enableServer, enableDebugLog, enablePlayToTracing, clientDiscoveryIntervalSeconds, aliveMessageIntervalSeconds, blastAliveMessageIntervalSeconds, defaultUserId, autoCreatePlayToProfiles, blastAliveMessages, sendOnlyMatchedHost);
+    return Objects.hash(enablePlayTo, enableServer, enableDebugLog, enablePlayToTracing, clientDiscoveryIntervalSeconds, aliveMessageIntervalSeconds, blastAliveMessageIntervalSeconds, hashCodeNullable(defaultUserId), autoCreatePlayToProfiles, blastAliveMessages, sendOnlyMatchedHost);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -387,102 +440,94 @@ public class DlnaOptions {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("EnablePlayTo");
-    openapiFields.add("EnableServer");
-    openapiFields.add("EnableDebugLog");
-    openapiFields.add("EnablePlayToTracing");
-    openapiFields.add("ClientDiscoveryIntervalSeconds");
-    openapiFields.add("AliveMessageIntervalSeconds");
-    openapiFields.add("BlastAliveMessageIntervalSeconds");
-    openapiFields.add("DefaultUserId");
-    openapiFields.add("AutoCreatePlayToProfiles");
-    openapiFields.add("BlastAliveMessages");
-    openapiFields.add("SendOnlyMatchedHost");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to DlnaOptions
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!DlnaOptions.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in DlnaOptions is not found in the empty JSON string", DlnaOptions.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!DlnaOptions.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `DlnaOptions` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("DefaultUserId") != null && !jsonObj.get("DefaultUserId").isJsonNull()) && !jsonObj.get("DefaultUserId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `DefaultUserId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("DefaultUserId").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!DlnaOptions.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'DlnaOptions' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<DlnaOptions> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(DlnaOptions.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<DlnaOptions>() {
-           @Override
-           public void write(JsonWriter out, DlnaOptions value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public DlnaOptions read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of DlnaOptions given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of DlnaOptions
-   * @throws IOException if the JSON string is invalid with respect to DlnaOptions
-   */
-  public static DlnaOptions fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, DlnaOptions.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of DlnaOptions to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `EnablePlayTo` to the URL query string
+    if (getEnablePlayTo() != null) {
+      joiner.add(String.format("%sEnablePlayTo%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnablePlayTo()))));
+    }
+
+    // add `EnableServer` to the URL query string
+    if (getEnableServer() != null) {
+      joiner.add(String.format("%sEnableServer%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableServer()))));
+    }
+
+    // add `EnableDebugLog` to the URL query string
+    if (getEnableDebugLog() != null) {
+      joiner.add(String.format("%sEnableDebugLog%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableDebugLog()))));
+    }
+
+    // add `EnablePlayToTracing` to the URL query string
+    if (getEnablePlayToTracing() != null) {
+      joiner.add(String.format("%sEnablePlayToTracing%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnablePlayToTracing()))));
+    }
+
+    // add `ClientDiscoveryIntervalSeconds` to the URL query string
+    if (getClientDiscoveryIntervalSeconds() != null) {
+      joiner.add(String.format("%sClientDiscoveryIntervalSeconds%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getClientDiscoveryIntervalSeconds()))));
+    }
+
+    // add `AliveMessageIntervalSeconds` to the URL query string
+    if (getAliveMessageIntervalSeconds() != null) {
+      joiner.add(String.format("%sAliveMessageIntervalSeconds%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAliveMessageIntervalSeconds()))));
+    }
+
+    // add `BlastAliveMessageIntervalSeconds` to the URL query string
+    if (getBlastAliveMessageIntervalSeconds() != null) {
+      joiner.add(String.format("%sBlastAliveMessageIntervalSeconds%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBlastAliveMessageIntervalSeconds()))));
+    }
+
+    // add `DefaultUserId` to the URL query string
+    if (getDefaultUserId() != null) {
+      joiner.add(String.format("%sDefaultUserId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDefaultUserId()))));
+    }
+
+    // add `AutoCreatePlayToProfiles` to the URL query string
+    if (getAutoCreatePlayToProfiles() != null) {
+      joiner.add(String.format("%sAutoCreatePlayToProfiles%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAutoCreatePlayToProfiles()))));
+    }
+
+    // add `BlastAliveMessages` to the URL query string
+    if (getBlastAliveMessages() != null) {
+      joiner.add(String.format("%sBlastAliveMessages%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBlastAliveMessages()))));
+    }
+
+    // add `SendOnlyMatchedHost` to the URL query string
+    if (getSendOnlyMatchedHost() != null) {
+      joiner.add(String.format("%sSendOnlyMatchedHost%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSendOnlyMatchedHost()))));
+    }
+
+    return joiner.toString();
   }
 }
 

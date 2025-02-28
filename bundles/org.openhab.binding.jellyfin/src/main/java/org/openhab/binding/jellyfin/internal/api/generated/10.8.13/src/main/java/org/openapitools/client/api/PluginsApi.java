@@ -10,1350 +10,812 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import java.io.File;
 import org.openapitools.client.model.PluginInfo;
 import org.openapitools.client.model.ProblemDetails;
 import java.util.UUID;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PluginsApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public PluginsApi() {
-        this(Configuration.getDefaultApiClient());
+  public PluginsApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public PluginsApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Disable a plugin.
+   * 
+   * @param pluginId Plugin id. (required)
+   * @param version Plugin version. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void disablePlugin(UUID pluginId, String version) throws ApiException {
+    disablePluginWithHttpInfo(pluginId, version);
+  }
+
+  /**
+   * Disable a plugin.
+   * 
+   * @param pluginId Plugin id. (required)
+   * @param version Plugin version. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> disablePluginWithHttpInfo(UUID pluginId, String version) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = disablePluginRequestBuilder(pluginId, version);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("disablePlugin", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder disablePluginRequestBuilder(UUID pluginId, String version) throws ApiException {
+    // verify the required parameter 'pluginId' is set
+    if (pluginId == null) {
+      throw new ApiException(400, "Missing the required parameter 'pluginId' when calling disablePlugin");
+    }
+    // verify the required parameter 'version' is set
+    if (version == null) {
+      throw new ApiException(400, "Missing the required parameter 'version' when calling disablePlugin");
     }
 
-    public PluginsApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Plugins/{pluginId}/{version}/Disable"
+        .replace("{pluginId}", ApiClient.urlEncode(pluginId.toString()))
+        .replace("{version}", ApiClient.urlEncode(version.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Enables a disabled plugin.
+   * 
+   * @param pluginId Plugin id. (required)
+   * @param version Plugin version. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void enablePlugin(UUID pluginId, String version) throws ApiException {
+    enablePluginWithHttpInfo(pluginId, version);
+  }
+
+  /**
+   * Enables a disabled plugin.
+   * 
+   * @param pluginId Plugin id. (required)
+   * @param version Plugin version. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> enablePluginWithHttpInfo(UUID pluginId, String version) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = enablePluginRequestBuilder(pluginId, version);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("enablePlugin", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder enablePluginRequestBuilder(UUID pluginId, String version) throws ApiException {
+    // verify the required parameter 'pluginId' is set
+    if (pluginId == null) {
+      throw new ApiException(400, "Missing the required parameter 'pluginId' when calling enablePlugin");
+    }
+    // verify the required parameter 'version' is set
+    if (version == null) {
+      throw new ApiException(400, "Missing the required parameter 'version' when calling enablePlugin");
     }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Plugins/{pluginId}/{version}/Enable"
+        .replace("{pluginId}", ApiClient.urlEncode(pluginId.toString()))
+        .replace("{version}", ApiClient.urlEncode(version.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    public int getHostIndex() {
-        return localHostIndex;
-    }
+  /**
+   * Gets plugin configuration.
+   * 
+   * @param pluginId Plugin id. (required)
+   * @return Object
+   * @throws ApiException if fails to make API call
+   */
+  public Object getPluginConfiguration(UUID pluginId) throws ApiException {
+    ApiResponse<Object> localVarResponse = getPluginConfigurationWithHttpInfo(pluginId);
+    return localVarResponse.getData();
+  }
 
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
-    }
-
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for disablePlugin
-     * @param pluginId Plugin id. (required)
-     * @param version Plugin version. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin disabled. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call disablePluginCall(UUID pluginId, String version, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Gets plugin configuration.
+   * 
+   * @param pluginId Plugin id. (required)
+   * @return ApiResponse&lt;Object&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Object> getPluginConfigurationWithHttpInfo(UUID pluginId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getPluginConfigurationRequestBuilder(pluginId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getPluginConfiguration", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<Object>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = null;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/Plugins/{pluginId}/{version}/Disable"
-            .replace("{" + "pluginId" + "}", localVarApiClient.escapeString(pluginId.toString()))
-            .replace("{" + "version" + "}", localVarApiClient.escapeString(version.toString()));
+        return new ApiResponse<Object>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+  private HttpRequest.Builder getPluginConfigurationRequestBuilder(UUID pluginId) throws ApiException {
+    // verify the required parameter 'pluginId' is set
+    if (pluginId == null) {
+      throw new ApiException(400, "Missing the required parameter 'pluginId' when calling getPluginConfiguration");
+    }
 
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Plugins/{pluginId}/Configuration"
+        .replace("{pluginId}", ApiClient.urlEncode(pluginId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets a plugin&#39;s image.
+   * 
+   * @param pluginId Plugin id. (required)
+   * @param version Plugin version. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getPluginImage(UUID pluginId, String version) throws ApiException {
+    ApiResponse<File> localVarResponse = getPluginImageWithHttpInfo(pluginId, version);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets a plugin&#39;s image.
+   * 
+   * @param pluginId Plugin id. (required)
+   * @param version Plugin version. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getPluginImageWithHttpInfo(UUID pluginId, String version) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getPluginImageRequestBuilder(pluginId, version);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getPluginImage", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getPluginImageRequestBuilder(UUID pluginId, String version) throws ApiException {
+    // verify the required parameter 'pluginId' is set
+    if (pluginId == null) {
+      throw new ApiException(400, "Missing the required parameter 'pluginId' when calling getPluginImage");
+    }
+    // verify the required parameter 'version' is set
+    if (version == null) {
+      throw new ApiException(400, "Missing the required parameter 'version' when calling getPluginImage");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Plugins/{pluginId}/{version}/Image"
+        .replace("{pluginId}", ApiClient.urlEncode(pluginId.toString()))
+        .replace("{version}", ApiClient.urlEncode(version.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets a plugin&#39;s manifest.
+   * 
+   * @param pluginId Plugin id. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void getPluginManifest(UUID pluginId) throws ApiException {
+    getPluginManifestWithHttpInfo(pluginId);
+  }
+
+  /**
+   * Gets a plugin&#39;s manifest.
+   * 
+   * @param pluginId Plugin id. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> getPluginManifestWithHttpInfo(UUID pluginId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getPluginManifestRequestBuilder(pluginId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getPluginManifest", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getPluginManifestRequestBuilder(UUID pluginId) throws ApiException {
+    // verify the required parameter 'pluginId' is set
+    if (pluginId == null) {
+      throw new ApiException(400, "Missing the required parameter 'pluginId' when calling getPluginManifest");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Plugins/{pluginId}/Manifest"
+        .replace("{pluginId}", ApiClient.urlEncode(pluginId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets a list of currently installed plugins.
+   * 
+   * @return List&lt;PluginInfo&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<PluginInfo> getPlugins() throws ApiException {
+    ApiResponse<List<PluginInfo>> localVarResponse = getPluginsWithHttpInfo();
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets a list of currently installed plugins.
+   * 
+   * @return ApiResponse&lt;List&lt;PluginInfo&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<PluginInfo>> getPluginsWithHttpInfo() throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getPluginsRequestBuilder();
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getPlugins", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<PluginInfo>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call disablePluginValidateBeforeCall(UUID pluginId, String version, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'pluginId' is set
-        if (pluginId == null) {
-            throw new ApiException("Missing the required parameter 'pluginId' when calling disablePlugin(Async)");
+        return new ApiResponse<List<PluginInfo>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<PluginInfo>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getPluginsRequestBuilder() throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Plugins";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Uninstalls a plugin.
+   * 
+   * @param pluginId Plugin id. (required)
+   * @throws ApiException if fails to make API call
+   * @deprecated
+   */
+  @Deprecated
+  public void uninstallPlugin(UUID pluginId) throws ApiException {
+    uninstallPluginWithHttpInfo(pluginId);
+  }
+
+  /**
+   * Uninstalls a plugin.
+   * 
+   * @param pluginId Plugin id. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   * @deprecated
+   */
+  @Deprecated
+  public ApiResponse<Void> uninstallPluginWithHttpInfo(UUID pluginId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = uninstallPluginRequestBuilder(pluginId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("uninstallPlugin", localVarResponse);
         }
-
-        // verify the required parameter 'version' is set
-        if (version == null) {
-            throw new ApiException("Missing the required parameter 'version' when calling disablePlugin(Async)");
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
         }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        return disablePluginCall(pluginId, version, _callback);
-
+  private HttpRequest.Builder uninstallPluginRequestBuilder(UUID pluginId) throws ApiException {
+    // verify the required parameter 'pluginId' is set
+    if (pluginId == null) {
+      throw new ApiException(400, "Missing the required parameter 'pluginId' when calling uninstallPlugin");
     }
 
-    /**
-     * Disable a plugin.
-     * 
-     * @param pluginId Plugin id. (required)
-     * @param version Plugin version. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin disabled. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void disablePlugin(UUID pluginId, String version) throws ApiException {
-        disablePluginWithHttpInfo(pluginId, version);
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Plugins/{pluginId}"
+        .replace("{pluginId}", ApiClient.urlEncode(pluginId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Disable a plugin.
-     * 
-     * @param pluginId Plugin id. (required)
-     * @param version Plugin version. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin disabled. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> disablePluginWithHttpInfo(UUID pluginId, String version) throws ApiException {
-        okhttp3.Call localVarCall = disablePluginValidateBeforeCall(pluginId, version, null);
-        return localVarApiClient.execute(localVarCall);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    /**
-     * Disable a plugin. (asynchronously)
-     * 
-     * @param pluginId Plugin id. (required)
-     * @param version Plugin version. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin disabled. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call disablePluginAsync(UUID pluginId, String version, final ApiCallback<Void> _callback) throws ApiException {
+  /**
+   * Uninstalls a plugin by version.
+   * 
+   * @param pluginId Plugin id. (required)
+   * @param version Plugin version. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void uninstallPluginByVersion(UUID pluginId, String version) throws ApiException {
+    uninstallPluginByVersionWithHttpInfo(pluginId, version);
+  }
 
-        okhttp3.Call localVarCall = disablePluginValidateBeforeCall(pluginId, version, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for enablePlugin
-     * @param pluginId Plugin id. (required)
-     * @param version Plugin version. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin enabled. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call enablePluginCall(UUID pluginId, String version, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Uninstalls a plugin by version.
+   * 
+   * @param pluginId Plugin id. (required)
+   * @param version Plugin version. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> uninstallPluginByVersionWithHttpInfo(UUID pluginId, String version) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = uninstallPluginByVersionRequestBuilder(pluginId, version);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("uninstallPluginByVersion", localVarResponse);
         }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Plugins/{pluginId}/{version}/Enable"
-            .replace("{" + "pluginId" + "}", localVarApiClient.escapeString(pluginId.toString()))
-            .replace("{" + "version" + "}", localVarApiClient.escapeString(version.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
         }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
+  private HttpRequest.Builder uninstallPluginByVersionRequestBuilder(UUID pluginId, String version) throws ApiException {
+    // verify the required parameter 'pluginId' is set
+    if (pluginId == null) {
+      throw new ApiException(400, "Missing the required parameter 'pluginId' when calling uninstallPluginByVersion");
+    }
+    // verify the required parameter 'version' is set
+    if (version == null) {
+      throw new ApiException(400, "Missing the required parameter 'version' when calling uninstallPluginByVersion");
+    }
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Plugins/{pluginId}/{version}"
+        .replace("{pluginId}", ApiClient.urlEncode(pluginId.toString()))
+        .replace("{version}", ApiClient.urlEncode(version.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Updates plugin configuration.
+   * Accepts plugin configuration as JSON body.
+   * @param pluginId Plugin id. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void updatePluginConfiguration(UUID pluginId) throws ApiException {
+    updatePluginConfigurationWithHttpInfo(pluginId);
+  }
+
+  /**
+   * Updates plugin configuration.
+   * Accepts plugin configuration as JSON body.
+   * @param pluginId Plugin id. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> updatePluginConfigurationWithHttpInfo(UUID pluginId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = updatePluginConfigurationRequestBuilder(pluginId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("updatePluginConfiguration", localVarResponse);
         }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call enablePluginValidateBeforeCall(UUID pluginId, String version, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'pluginId' is set
-        if (pluginId == null) {
-            throw new ApiException("Missing the required parameter 'pluginId' when calling enablePlugin(Async)");
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
         }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        // verify the required parameter 'version' is set
-        if (version == null) {
-            throw new ApiException("Missing the required parameter 'version' when calling enablePlugin(Async)");
-        }
-
-        return enablePluginCall(pluginId, version, _callback);
-
+  private HttpRequest.Builder updatePluginConfigurationRequestBuilder(UUID pluginId) throws ApiException {
+    // verify the required parameter 'pluginId' is set
+    if (pluginId == null) {
+      throw new ApiException(400, "Missing the required parameter 'pluginId' when calling updatePluginConfiguration");
     }
 
-    /**
-     * Enables a disabled plugin.
-     * 
-     * @param pluginId Plugin id. (required)
-     * @param version Plugin version. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin enabled. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void enablePlugin(UUID pluginId, String version) throws ApiException {
-        enablePluginWithHttpInfo(pluginId, version);
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Plugins/{pluginId}/Configuration"
+        .replace("{pluginId}", ApiClient.urlEncode(pluginId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Enables a disabled plugin.
-     * 
-     * @param pluginId Plugin id. (required)
-     * @param version Plugin version. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin enabled. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> enablePluginWithHttpInfo(UUID pluginId, String version) throws ApiException {
-        okhttp3.Call localVarCall = enablePluginValidateBeforeCall(pluginId, version, null);
-        return localVarApiClient.execute(localVarCall);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    /**
-     * Enables a disabled plugin. (asynchronously)
-     * 
-     * @param pluginId Plugin id. (required)
-     * @param version Plugin version. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin enabled. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call enablePluginAsync(UUID pluginId, String version, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = enablePluginValidateBeforeCall(pluginId, version, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getPluginConfiguration
-     * @param pluginId Plugin id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Plugin configuration returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found or plugin configuration not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPluginConfigurationCall(UUID pluginId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Plugins/{pluginId}/Configuration"
-            .replace("{" + "pluginId" + "}", localVarApiClient.escapeString(pluginId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getPluginConfigurationValidateBeforeCall(UUID pluginId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'pluginId' is set
-        if (pluginId == null) {
-            throw new ApiException("Missing the required parameter 'pluginId' when calling getPluginConfiguration(Async)");
-        }
-
-        return getPluginConfigurationCall(pluginId, _callback);
-
-    }
-
-    /**
-     * Gets plugin configuration.
-     * 
-     * @param pluginId Plugin id. (required)
-     * @return Object
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Plugin configuration returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found or plugin configuration not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public Object getPluginConfiguration(UUID pluginId) throws ApiException {
-        ApiResponse<Object> localVarResp = getPluginConfigurationWithHttpInfo(pluginId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets plugin configuration.
-     * 
-     * @param pluginId Plugin id. (required)
-     * @return ApiResponse&lt;Object&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Plugin configuration returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found or plugin configuration not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Object> getPluginConfigurationWithHttpInfo(UUID pluginId) throws ApiException {
-        okhttp3.Call localVarCall = getPluginConfigurationValidateBeforeCall(pluginId, null);
-        Type localVarReturnType = new TypeToken<Object>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets plugin configuration. (asynchronously)
-     * 
-     * @param pluginId Plugin id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Plugin configuration returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found or plugin configuration not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPluginConfigurationAsync(UUID pluginId, final ApiCallback<Object> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getPluginConfigurationValidateBeforeCall(pluginId, _callback);
-        Type localVarReturnType = new TypeToken<Object>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getPluginImage
-     * @param pluginId Plugin id. (required)
-     * @param version Plugin version. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Plugin image returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPluginImageCall(UUID pluginId, String version, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Plugins/{pluginId}/{version}/Image"
-            .replace("{" + "pluginId" + "}", localVarApiClient.escapeString(pluginId.toString()))
-            .replace("{" + "version" + "}", localVarApiClient.escapeString(version.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getPluginImageValidateBeforeCall(UUID pluginId, String version, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'pluginId' is set
-        if (pluginId == null) {
-            throw new ApiException("Missing the required parameter 'pluginId' when calling getPluginImage(Async)");
-        }
-
-        // verify the required parameter 'version' is set
-        if (version == null) {
-            throw new ApiException("Missing the required parameter 'version' when calling getPluginImage(Async)");
-        }
-
-        return getPluginImageCall(pluginId, version, _callback);
-
-    }
-
-    /**
-     * Gets a plugin&#39;s image.
-     * 
-     * @param pluginId Plugin id. (required)
-     * @param version Plugin version. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Plugin image returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getPluginImage(UUID pluginId, String version) throws ApiException {
-        ApiResponse<File> localVarResp = getPluginImageWithHttpInfo(pluginId, version);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets a plugin&#39;s image.
-     * 
-     * @param pluginId Plugin id. (required)
-     * @param version Plugin version. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Plugin image returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getPluginImageWithHttpInfo(UUID pluginId, String version) throws ApiException {
-        okhttp3.Call localVarCall = getPluginImageValidateBeforeCall(pluginId, version, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets a plugin&#39;s image. (asynchronously)
-     * 
-     * @param pluginId Plugin id. (required)
-     * @param version Plugin version. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Plugin image returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPluginImageAsync(UUID pluginId, String version, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getPluginImageValidateBeforeCall(pluginId, version, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getPluginManifest
-     * @param pluginId Plugin id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin manifest returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPluginManifestCall(UUID pluginId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Plugins/{pluginId}/Manifest"
-            .replace("{" + "pluginId" + "}", localVarApiClient.escapeString(pluginId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getPluginManifestValidateBeforeCall(UUID pluginId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'pluginId' is set
-        if (pluginId == null) {
-            throw new ApiException("Missing the required parameter 'pluginId' when calling getPluginManifest(Async)");
-        }
-
-        return getPluginManifestCall(pluginId, _callback);
-
-    }
-
-    /**
-     * Gets a plugin&#39;s manifest.
-     * 
-     * @param pluginId Plugin id. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin manifest returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void getPluginManifest(UUID pluginId) throws ApiException {
-        getPluginManifestWithHttpInfo(pluginId);
-    }
-
-    /**
-     * Gets a plugin&#39;s manifest.
-     * 
-     * @param pluginId Plugin id. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin manifest returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> getPluginManifestWithHttpInfo(UUID pluginId) throws ApiException {
-        okhttp3.Call localVarCall = getPluginManifestValidateBeforeCall(pluginId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Gets a plugin&#39;s manifest. (asynchronously)
-     * 
-     * @param pluginId Plugin id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin manifest returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPluginManifestAsync(UUID pluginId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getPluginManifestValidateBeforeCall(pluginId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getPlugins
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Installed plugins returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPluginsCall(final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Plugins";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getPluginsValidateBeforeCall(final ApiCallback _callback) throws ApiException {
-        return getPluginsCall(_callback);
-
-    }
-
-    /**
-     * Gets a list of currently installed plugins.
-     * 
-     * @return List&lt;PluginInfo&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Installed plugins returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<PluginInfo> getPlugins() throws ApiException {
-        ApiResponse<List<PluginInfo>> localVarResp = getPluginsWithHttpInfo();
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets a list of currently installed plugins.
-     * 
-     * @return ApiResponse&lt;List&lt;PluginInfo&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Installed plugins returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<PluginInfo>> getPluginsWithHttpInfo() throws ApiException {
-        okhttp3.Call localVarCall = getPluginsValidateBeforeCall(null);
-        Type localVarReturnType = new TypeToken<List<PluginInfo>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets a list of currently installed plugins. (asynchronously)
-     * 
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Installed plugins returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getPluginsAsync(final ApiCallback<List<PluginInfo>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getPluginsValidateBeforeCall(_callback);
-        Type localVarReturnType = new TypeToken<List<PluginInfo>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for uninstallPlugin
-     * @param pluginId Plugin id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin uninstalled. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public okhttp3.Call uninstallPluginCall(UUID pluginId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Plugins/{pluginId}"
-            .replace("{" + "pluginId" + "}", localVarApiClient.escapeString(pluginId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @Deprecated
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call uninstallPluginValidateBeforeCall(UUID pluginId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'pluginId' is set
-        if (pluginId == null) {
-            throw new ApiException("Missing the required parameter 'pluginId' when calling uninstallPlugin(Async)");
-        }
-
-        return uninstallPluginCall(pluginId, _callback);
-
-    }
-
-    /**
-     * Uninstalls a plugin.
-     * 
-     * @param pluginId Plugin id. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin uninstalled. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public void uninstallPlugin(UUID pluginId) throws ApiException {
-        uninstallPluginWithHttpInfo(pluginId);
-    }
-
-    /**
-     * Uninstalls a plugin.
-     * 
-     * @param pluginId Plugin id. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin uninstalled. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public ApiResponse<Void> uninstallPluginWithHttpInfo(UUID pluginId) throws ApiException {
-        okhttp3.Call localVarCall = uninstallPluginValidateBeforeCall(pluginId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Uninstalls a plugin. (asynchronously)
-     * 
-     * @param pluginId Plugin id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin uninstalled. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     * @deprecated
-     */
-    @Deprecated
-    public okhttp3.Call uninstallPluginAsync(UUID pluginId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = uninstallPluginValidateBeforeCall(pluginId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for uninstallPluginByVersion
-     * @param pluginId Plugin id. (required)
-     * @param version Plugin version. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin uninstalled. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call uninstallPluginByVersionCall(UUID pluginId, String version, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Plugins/{pluginId}/{version}"
-            .replace("{" + "pluginId" + "}", localVarApiClient.escapeString(pluginId.toString()))
-            .replace("{" + "version" + "}", localVarApiClient.escapeString(version.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call uninstallPluginByVersionValidateBeforeCall(UUID pluginId, String version, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'pluginId' is set
-        if (pluginId == null) {
-            throw new ApiException("Missing the required parameter 'pluginId' when calling uninstallPluginByVersion(Async)");
-        }
-
-        // verify the required parameter 'version' is set
-        if (version == null) {
-            throw new ApiException("Missing the required parameter 'version' when calling uninstallPluginByVersion(Async)");
-        }
-
-        return uninstallPluginByVersionCall(pluginId, version, _callback);
-
-    }
-
-    /**
-     * Uninstalls a plugin by version.
-     * 
-     * @param pluginId Plugin id. (required)
-     * @param version Plugin version. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin uninstalled. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void uninstallPluginByVersion(UUID pluginId, String version) throws ApiException {
-        uninstallPluginByVersionWithHttpInfo(pluginId, version);
-    }
-
-    /**
-     * Uninstalls a plugin by version.
-     * 
-     * @param pluginId Plugin id. (required)
-     * @param version Plugin version. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin uninstalled. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> uninstallPluginByVersionWithHttpInfo(UUID pluginId, String version) throws ApiException {
-        okhttp3.Call localVarCall = uninstallPluginByVersionValidateBeforeCall(pluginId, version, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Uninstalls a plugin by version. (asynchronously)
-     * 
-     * @param pluginId Plugin id. (required)
-     * @param version Plugin version. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin uninstalled. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call uninstallPluginByVersionAsync(UUID pluginId, String version, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = uninstallPluginByVersionValidateBeforeCall(pluginId, version, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for updatePluginConfiguration
-     * @param pluginId Plugin id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin configuration updated. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found or plugin does not have configuration. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updatePluginConfigurationCall(UUID pluginId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Plugins/{pluginId}/Configuration"
-            .replace("{" + "pluginId" + "}", localVarApiClient.escapeString(pluginId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call updatePluginConfigurationValidateBeforeCall(UUID pluginId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'pluginId' is set
-        if (pluginId == null) {
-            throw new ApiException("Missing the required parameter 'pluginId' when calling updatePluginConfiguration(Async)");
-        }
-
-        return updatePluginConfigurationCall(pluginId, _callback);
-
-    }
-
-    /**
-     * Updates plugin configuration.
-     * Accepts plugin configuration as JSON body.
-     * @param pluginId Plugin id. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin configuration updated. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found or plugin does not have configuration. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void updatePluginConfiguration(UUID pluginId) throws ApiException {
-        updatePluginConfigurationWithHttpInfo(pluginId);
-    }
-
-    /**
-     * Updates plugin configuration.
-     * Accepts plugin configuration as JSON body.
-     * @param pluginId Plugin id. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin configuration updated. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found or plugin does not have configuration. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> updatePluginConfigurationWithHttpInfo(UUID pluginId) throws ApiException {
-        okhttp3.Call localVarCall = updatePluginConfigurationValidateBeforeCall(pluginId, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Updates plugin configuration. (asynchronously)
-     * Accepts plugin configuration as JSON body.
-     * @param pluginId Plugin id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Plugin configuration updated. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Plugin not found or plugin does not have configuration. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updatePluginConfigurationAsync(UUID pluginId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = updatePluginConfigurationValidateBeforeCall(pluginId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
 }

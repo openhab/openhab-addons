@@ -10,22 +10,13 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import java.io.File;
 import org.openapitools.client.model.FontFile;
@@ -34,1673 +25,1099 @@ import org.openapitools.client.model.RemoteSubtitleInfo;
 import java.util.UUID;
 import org.openapitools.client.model.UploadSubtitleDto;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class SubtitleApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public SubtitleApi() {
-        this(Configuration.getDefaultApiClient());
+  public SubtitleApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public SubtitleApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Deletes an external subtitle file.
+   * 
+   * @param itemId The item id. (required)
+   * @param index The index of the subtitle file. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void deleteSubtitle(UUID itemId, Integer index) throws ApiException {
+    deleteSubtitleWithHttpInfo(itemId, index);
+  }
+
+  /**
+   * Deletes an external subtitle file.
+   * 
+   * @param itemId The item id. (required)
+   * @param index The index of the subtitle file. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> deleteSubtitleWithHttpInfo(UUID itemId, Integer index) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = deleteSubtitleRequestBuilder(itemId, index);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("deleteSubtitle", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder deleteSubtitleRequestBuilder(UUID itemId, Integer index) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling deleteSubtitle");
+    }
+    // verify the required parameter 'index' is set
+    if (index == null) {
+      throw new ApiException(400, "Missing the required parameter 'index' when calling deleteSubtitle");
     }
 
-    public SubtitleApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Videos/{itemId}/Subtitles/{index}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{index}", ApiClient.urlEncode(index.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Downloads a remote subtitle.
+   * 
+   * @param itemId The item id. (required)
+   * @param subtitleId The subtitle id. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void downloadRemoteSubtitles(UUID itemId, String subtitleId) throws ApiException {
+    downloadRemoteSubtitlesWithHttpInfo(itemId, subtitleId);
+  }
+
+  /**
+   * Downloads a remote subtitle.
+   * 
+   * @param itemId The item id. (required)
+   * @param subtitleId The subtitle id. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> downloadRemoteSubtitlesWithHttpInfo(UUID itemId, String subtitleId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = downloadRemoteSubtitlesRequestBuilder(itemId, subtitleId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("downloadRemoteSubtitles", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder downloadRemoteSubtitlesRequestBuilder(UUID itemId, String subtitleId) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling downloadRemoteSubtitles");
+    }
+    // verify the required parameter 'subtitleId' is set
+    if (subtitleId == null) {
+      throw new ApiException(400, "Missing the required parameter 'subtitleId' when calling downloadRemoteSubtitles");
     }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/RemoteSearch/Subtitles/{subtitleId}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{subtitleId}", ApiClient.urlEncode(subtitleId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets a fallback font file.
+   * 
+   * @param name The name of the fallback font file to get. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getFallbackFont(String name) throws ApiException {
+    ApiResponse<File> localVarResponse = getFallbackFontWithHttpInfo(name);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets a fallback font file.
+   * 
+   * @param name The name of the fallback font file to get. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getFallbackFontWithHttpInfo(String name) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getFallbackFontRequestBuilder(name);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getFallbackFont", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getFallbackFontRequestBuilder(String name) throws ApiException {
+    // verify the required parameter 'name' is set
+    if (name == null) {
+      throw new ApiException(400, "Missing the required parameter 'name' when calling getFallbackFont");
     }
 
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/FallbackFont/Fonts/{name}"
+        .replace("{name}", ApiClient.urlEncode(name.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "font/*");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets a list of available fallback font files.
+   * 
+   * @return List&lt;FontFile&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<FontFile> getFallbackFontList() throws ApiException {
+    ApiResponse<List<FontFile>> localVarResponse = getFallbackFontListWithHttpInfo();
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets a list of available fallback font files.
+   * 
+   * @return ApiResponse&lt;List&lt;FontFile&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<FontFile>> getFallbackFontListWithHttpInfo() throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getFallbackFontListRequestBuilder();
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getFallbackFontList", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<FontFile>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<FontFile>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<FontFile>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getFallbackFontListRequestBuilder() throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/FallbackFont/Fonts";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets the remote subtitles.
+   * 
+   * @param subtitleId The item id. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getRemoteSubtitles(String subtitleId) throws ApiException {
+    ApiResponse<File> localVarResponse = getRemoteSubtitlesWithHttpInfo(subtitleId);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets the remote subtitles.
+   * 
+   * @param subtitleId The item id. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getRemoteSubtitlesWithHttpInfo(String subtitleId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getRemoteSubtitlesRequestBuilder(subtitleId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getRemoteSubtitles", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getRemoteSubtitlesRequestBuilder(String subtitleId) throws ApiException {
+    // verify the required parameter 'subtitleId' is set
+    if (subtitleId == null) {
+      throw new ApiException(400, "Missing the required parameter 'subtitleId' when calling getRemoteSubtitles");
     }
 
-    public int getHostIndex() {
-        return localHostIndex;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Providers/Subtitles/Subtitles/{subtitleId}"
+        .replace("{subtitleId}", ApiClient.urlEncode(subtitleId.toString()));
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Accept", "text/*");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets subtitles in a specified format.
+   * 
+   * @param routeItemId The (route) item id. (required)
+   * @param routeMediaSourceId The (route) media source id. (required)
+   * @param routeIndex The (route) subtitle stream index. (required)
+   * @param routeFormat The (route) format of the returned subtitle. (required)
+   * @param itemId The item id. (optional)
+   * @param mediaSourceId The media source id. (optional)
+   * @param index The subtitle stream index. (optional)
+   * @param format The format of the returned subtitle. (optional)
+   * @param endPositionTicks Optional. The end position of the subtitle in ticks. (optional)
+   * @param copyTimestamps Optional. Whether to copy the timestamps. (optional, default to false)
+   * @param addVttTimeMap Optional. Whether to add a VTT time map. (optional, default to false)
+   * @param startPositionTicks The start position of the subtitle in ticks. (optional, default to 0)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getSubtitle(UUID routeItemId, String routeMediaSourceId, Integer routeIndex, String routeFormat, UUID itemId, String mediaSourceId, Integer index, String format, Long endPositionTicks, Boolean copyTimestamps, Boolean addVttTimeMap, Long startPositionTicks) throws ApiException {
+    ApiResponse<File> localVarResponse = getSubtitleWithHttpInfo(routeItemId, routeMediaSourceId, routeIndex, routeFormat, itemId, mediaSourceId, index, format, endPositionTicks, copyTimestamps, addVttTimeMap, startPositionTicks);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets subtitles in a specified format.
+   * 
+   * @param routeItemId The (route) item id. (required)
+   * @param routeMediaSourceId The (route) media source id. (required)
+   * @param routeIndex The (route) subtitle stream index. (required)
+   * @param routeFormat The (route) format of the returned subtitle. (required)
+   * @param itemId The item id. (optional)
+   * @param mediaSourceId The media source id. (optional)
+   * @param index The subtitle stream index. (optional)
+   * @param format The format of the returned subtitle. (optional)
+   * @param endPositionTicks Optional. The end position of the subtitle in ticks. (optional)
+   * @param copyTimestamps Optional. Whether to copy the timestamps. (optional, default to false)
+   * @param addVttTimeMap Optional. Whether to add a VTT time map. (optional, default to false)
+   * @param startPositionTicks The start position of the subtitle in ticks. (optional, default to 0)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getSubtitleWithHttpInfo(UUID routeItemId, String routeMediaSourceId, Integer routeIndex, String routeFormat, UUID itemId, String mediaSourceId, Integer index, String format, Long endPositionTicks, Boolean copyTimestamps, Boolean addVttTimeMap, Long startPositionTicks) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getSubtitleRequestBuilder(routeItemId, routeMediaSourceId, routeIndex, routeFormat, itemId, mediaSourceId, index, format, endPositionTicks, copyTimestamps, addVttTimeMap, startPositionTicks);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getSubtitle", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getSubtitleRequestBuilder(UUID routeItemId, String routeMediaSourceId, Integer routeIndex, String routeFormat, UUID itemId, String mediaSourceId, Integer index, String format, Long endPositionTicks, Boolean copyTimestamps, Boolean addVttTimeMap, Long startPositionTicks) throws ApiException {
+    // verify the required parameter 'routeItemId' is set
+    if (routeItemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'routeItemId' when calling getSubtitle");
+    }
+    // verify the required parameter 'routeMediaSourceId' is set
+    if (routeMediaSourceId == null) {
+      throw new ApiException(400, "Missing the required parameter 'routeMediaSourceId' when calling getSubtitle");
+    }
+    // verify the required parameter 'routeIndex' is set
+    if (routeIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'routeIndex' when calling getSubtitle");
+    }
+    // verify the required parameter 'routeFormat' is set
+    if (routeFormat == null) {
+      throw new ApiException(400, "Missing the required parameter 'routeFormat' when calling getSubtitle");
     }
 
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Videos/{routeItemId}/{routeMediaSourceId}/Subtitles/{routeIndex}/Stream.{routeFormat}"
+        .replace("{routeItemId}", ApiClient.urlEncode(routeItemId.toString()))
+        .replace("{routeMediaSourceId}", ApiClient.urlEncode(routeMediaSourceId.toString()))
+        .replace("{routeIndex}", ApiClient.urlEncode(routeIndex.toString()))
+        .replace("{routeFormat}", ApiClient.urlEncode(routeFormat.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "itemId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("itemId", itemId));
+    localVarQueryParameterBaseName = "mediaSourceId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("mediaSourceId", mediaSourceId));
+    localVarQueryParameterBaseName = "index";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("index", index));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "endPositionTicks";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("endPositionTicks", endPositionTicks));
+    localVarQueryParameterBaseName = "copyTimestamps";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("copyTimestamps", copyTimestamps));
+    localVarQueryParameterBaseName = "addVttTimeMap";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addVttTimeMap", addVttTimeMap));
+    localVarQueryParameterBaseName = "startPositionTicks";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("startPositionTicks", startPositionTicks));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
+    localVarRequestBuilder.header("Accept", "text/*");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets an HLS subtitle playlist.
+   * 
+   * @param itemId The item id. (required)
+   * @param index The subtitle stream index. (required)
+   * @param mediaSourceId The media source id. (required)
+   * @param segmentLength The subtitle segment length. (required)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getSubtitlePlaylist(UUID itemId, Integer index, String mediaSourceId, Integer segmentLength) throws ApiException {
+    ApiResponse<File> localVarResponse = getSubtitlePlaylistWithHttpInfo(itemId, index, mediaSourceId, segmentLength);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets an HLS subtitle playlist.
+   * 
+   * @param itemId The item id. (required)
+   * @param index The subtitle stream index. (required)
+   * @param mediaSourceId The media source id. (required)
+   * @param segmentLength The subtitle segment length. (required)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getSubtitlePlaylistWithHttpInfo(UUID itemId, Integer index, String mediaSourceId, Integer segmentLength) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getSubtitlePlaylistRequestBuilder(itemId, index, mediaSourceId, segmentLength);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getSubtitlePlaylist", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder getSubtitlePlaylistRequestBuilder(UUID itemId, Integer index, String mediaSourceId, Integer segmentLength) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getSubtitlePlaylist");
+    }
+    // verify the required parameter 'index' is set
+    if (index == null) {
+      throw new ApiException(400, "Missing the required parameter 'index' when calling getSubtitlePlaylist");
+    }
+    // verify the required parameter 'mediaSourceId' is set
+    if (mediaSourceId == null) {
+      throw new ApiException(400, "Missing the required parameter 'mediaSourceId' when calling getSubtitlePlaylist");
+    }
+    // verify the required parameter 'segmentLength' is set
+    if (segmentLength == null) {
+      throw new ApiException(400, "Missing the required parameter 'segmentLength' when calling getSubtitlePlaylist");
     }
 
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Videos/{itemId}/{mediaSourceId}/Subtitles/{index}/subtitles.m3u8"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{index}", ApiClient.urlEncode(index.toString()))
+        .replace("{mediaSourceId}", ApiClient.urlEncode(mediaSourceId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "segmentLength";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("segmentLength", segmentLength));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Build call for deleteSubtitle
-     * @param itemId The item id. (required)
-     * @param index The index of the subtitle file. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Subtitle deleted. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteSubtitleCall(UUID itemId, Integer index, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
+    localVarRequestBuilder.header("Accept", "application/x-mpegURL, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
 
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Gets subtitles in a specified format.
+   * 
+   * @param routeItemId The (route) item id. (required)
+   * @param routeMediaSourceId The (route) media source id. (required)
+   * @param routeIndex The (route) subtitle stream index. (required)
+   * @param routeStartPositionTicks The (route) start position of the subtitle in ticks. (required)
+   * @param routeFormat The (route) format of the returned subtitle. (required)
+   * @param itemId The item id. (optional)
+   * @param mediaSourceId The media source id. (optional)
+   * @param index The subtitle stream index. (optional)
+   * @param startPositionTicks The start position of the subtitle in ticks. (optional)
+   * @param format The format of the returned subtitle. (optional)
+   * @param endPositionTicks Optional. The end position of the subtitle in ticks. (optional)
+   * @param copyTimestamps Optional. Whether to copy the timestamps. (optional, default to false)
+   * @param addVttTimeMap Optional. Whether to add a VTT time map. (optional, default to false)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getSubtitleWithTicks(UUID routeItemId, String routeMediaSourceId, Integer routeIndex, Long routeStartPositionTicks, String routeFormat, UUID itemId, String mediaSourceId, Integer index, Long startPositionTicks, String format, Long endPositionTicks, Boolean copyTimestamps, Boolean addVttTimeMap) throws ApiException {
+    ApiResponse<File> localVarResponse = getSubtitleWithTicksWithHttpInfo(routeItemId, routeMediaSourceId, routeIndex, routeStartPositionTicks, routeFormat, itemId, mediaSourceId, index, startPositionTicks, format, endPositionTicks, copyTimestamps, addVttTimeMap);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Gets subtitles in a specified format.
+   * 
+   * @param routeItemId The (route) item id. (required)
+   * @param routeMediaSourceId The (route) media source id. (required)
+   * @param routeIndex The (route) subtitle stream index. (required)
+   * @param routeStartPositionTicks The (route) start position of the subtitle in ticks. (required)
+   * @param routeFormat The (route) format of the returned subtitle. (required)
+   * @param itemId The item id. (optional)
+   * @param mediaSourceId The media source id. (optional)
+   * @param index The subtitle stream index. (optional)
+   * @param startPositionTicks The start position of the subtitle in ticks. (optional)
+   * @param format The format of the returned subtitle. (optional)
+   * @param endPositionTicks Optional. The end position of the subtitle in ticks. (optional)
+   * @param copyTimestamps Optional. Whether to copy the timestamps. (optional, default to false)
+   * @param addVttTimeMap Optional. Whether to add a VTT time map. (optional, default to false)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getSubtitleWithTicksWithHttpInfo(UUID routeItemId, String routeMediaSourceId, Integer routeIndex, Long routeStartPositionTicks, String routeFormat, UUID itemId, String mediaSourceId, Integer index, Long startPositionTicks, String format, Long endPositionTicks, Boolean copyTimestamps, Boolean addVttTimeMap) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getSubtitleWithTicksRequestBuilder(routeItemId, routeMediaSourceId, routeIndex, routeStartPositionTicks, routeFormat, itemId, mediaSourceId, index, startPositionTicks, format, endPositionTicks, copyTimestamps, addVttTimeMap);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getSubtitleWithTicks", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = null;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/Videos/{itemId}/Subtitles/{index}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "index" + "}", localVarApiClient.escapeString(index.toString()));
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+  private HttpRequest.Builder getSubtitleWithTicksRequestBuilder(UUID routeItemId, String routeMediaSourceId, Integer routeIndex, Long routeStartPositionTicks, String routeFormat, UUID itemId, String mediaSourceId, Integer index, Long startPositionTicks, String format, Long endPositionTicks, Boolean copyTimestamps, Boolean addVttTimeMap) throws ApiException {
+    // verify the required parameter 'routeItemId' is set
+    if (routeItemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'routeItemId' when calling getSubtitleWithTicks");
+    }
+    // verify the required parameter 'routeMediaSourceId' is set
+    if (routeMediaSourceId == null) {
+      throw new ApiException(400, "Missing the required parameter 'routeMediaSourceId' when calling getSubtitleWithTicks");
+    }
+    // verify the required parameter 'routeIndex' is set
+    if (routeIndex == null) {
+      throw new ApiException(400, "Missing the required parameter 'routeIndex' when calling getSubtitleWithTicks");
+    }
+    // verify the required parameter 'routeStartPositionTicks' is set
+    if (routeStartPositionTicks == null) {
+      throw new ApiException(400, "Missing the required parameter 'routeStartPositionTicks' when calling getSubtitleWithTicks");
+    }
+    // verify the required parameter 'routeFormat' is set
+    if (routeFormat == null) {
+      throw new ApiException(400, "Missing the required parameter 'routeFormat' when calling getSubtitleWithTicks");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call deleteSubtitleValidateBeforeCall(UUID itemId, Integer index, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling deleteSubtitle(Async)");
-        }
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
-        // verify the required parameter 'index' is set
-        if (index == null) {
-            throw new ApiException("Missing the required parameter 'index' when calling deleteSubtitle(Async)");
-        }
+    String localVarPath = "/Videos/{routeItemId}/{routeMediaSourceId}/Subtitles/{routeIndex}/{routeStartPositionTicks}/Stream.{routeFormat}"
+        .replace("{routeItemId}", ApiClient.urlEncode(routeItemId.toString()))
+        .replace("{routeMediaSourceId}", ApiClient.urlEncode(routeMediaSourceId.toString()))
+        .replace("{routeIndex}", ApiClient.urlEncode(routeIndex.toString()))
+        .replace("{routeStartPositionTicks}", ApiClient.urlEncode(routeStartPositionTicks.toString()))
+        .replace("{routeFormat}", ApiClient.urlEncode(routeFormat.toString()));
 
-        return deleteSubtitleCall(itemId, index, _callback);
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "itemId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("itemId", itemId));
+    localVarQueryParameterBaseName = "mediaSourceId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("mediaSourceId", mediaSourceId));
+    localVarQueryParameterBaseName = "index";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("index", index));
+    localVarQueryParameterBaseName = "startPositionTicks";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("startPositionTicks", startPositionTicks));
+    localVarQueryParameterBaseName = "format";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
+    localVarQueryParameterBaseName = "endPositionTicks";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("endPositionTicks", endPositionTicks));
+    localVarQueryParameterBaseName = "copyTimestamps";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("copyTimestamps", copyTimestamps));
+    localVarQueryParameterBaseName = "addVttTimeMap";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("addVttTimeMap", addVttTimeMap));
 
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Deletes an external subtitle file.
-     * 
-     * @param itemId The item id. (required)
-     * @param index The index of the subtitle file. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Subtitle deleted. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void deleteSubtitle(UUID itemId, Integer index) throws ApiException {
-        deleteSubtitleWithHttpInfo(itemId, index);
+    localVarRequestBuilder.header("Accept", "text/*");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Search remote subtitles.
+   * 
+   * @param itemId The item id. (required)
+   * @param language The language of the subtitles. (required)
+   * @param isPerfectMatch Optional. Only show subtitles which are a perfect match. (optional)
+   * @return List&lt;RemoteSubtitleInfo&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<RemoteSubtitleInfo> searchRemoteSubtitles(UUID itemId, String language, Boolean isPerfectMatch) throws ApiException {
+    ApiResponse<List<RemoteSubtitleInfo>> localVarResponse = searchRemoteSubtitlesWithHttpInfo(itemId, language, isPerfectMatch);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Search remote subtitles.
+   * 
+   * @param itemId The item id. (required)
+   * @param language The language of the subtitles. (required)
+   * @param isPerfectMatch Optional. Only show subtitles which are a perfect match. (optional)
+   * @return ApiResponse&lt;List&lt;RemoteSubtitleInfo&gt;&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<List<RemoteSubtitleInfo>> searchRemoteSubtitlesWithHttpInfo(UUID itemId, String language, Boolean isPerfectMatch) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = searchRemoteSubtitlesRequestBuilder(itemId, language, isPerfectMatch);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("searchRemoteSubtitles", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<List<RemoteSubtitleInfo>>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
+
+        return new ApiResponse<List<RemoteSubtitleInfo>>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteSubtitleInfo>>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder searchRemoteSubtitlesRequestBuilder(UUID itemId, String language, Boolean isPerfectMatch) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling searchRemoteSubtitles");
+    }
+    // verify the required parameter 'language' is set
+    if (language == null) {
+      throw new ApiException(400, "Missing the required parameter 'language' when calling searchRemoteSubtitles");
     }
 
-    /**
-     * Deletes an external subtitle file.
-     * 
-     * @param itemId The item id. (required)
-     * @param index The index of the subtitle file. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Subtitle deleted. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> deleteSubtitleWithHttpInfo(UUID itemId, Integer index) throws ApiException {
-        okhttp3.Call localVarCall = deleteSubtitleValidateBeforeCall(itemId, index, null);
-        return localVarApiClient.execute(localVarCall);
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Items/{itemId}/RemoteSearch/Subtitles/{language}"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{language}", ApiClient.urlEncode(language.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "isPerfectMatch";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isPerfectMatch", isPerfectMatch));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Deletes an external subtitle file. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param index The index of the subtitle file. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Subtitle deleted. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call deleteSubtitleAsync(UUID itemId, Integer index, final ApiCallback<Void> _callback) throws ApiException {
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
 
-        okhttp3.Call localVarCall = deleteSubtitleValidateBeforeCall(itemId, index, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-    /**
-     * Build call for downloadRemoteSubtitles
-     * @param itemId The item id. (required)
-     * @param subtitleId The subtitle id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Subtitle downloaded. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call downloadRemoteSubtitlesCall(UUID itemId, String subtitleId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
 
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Upload an external subtitle file.
+   * 
+   * @param itemId The item the subtitle belongs to. (required)
+   * @param uploadSubtitleDto The request body. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void uploadSubtitle(UUID itemId, UploadSubtitleDto uploadSubtitleDto) throws ApiException {
+    uploadSubtitleWithHttpInfo(itemId, uploadSubtitleDto);
+  }
+
+  /**
+   * Upload an external subtitle file.
+   * 
+   * @param itemId The item the subtitle belongs to. (required)
+   * @param uploadSubtitleDto The request body. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> uploadSubtitleWithHttpInfo(UUID itemId, UploadSubtitleDto uploadSubtitleDto) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = uploadSubtitleRequestBuilder(itemId, uploadSubtitleDto);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("uploadSubtitle", localVarResponse);
         }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/RemoteSearch/Subtitles/{subtitleId}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "subtitleId" + "}", localVarApiClient.escapeString(subtitleId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
         }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+  private HttpRequest.Builder uploadSubtitleRequestBuilder(UUID itemId, UploadSubtitleDto uploadSubtitleDto) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling uploadSubtitle");
+    }
+    // verify the required parameter 'uploadSubtitleDto' is set
+    if (uploadSubtitleDto == null) {
+      throw new ApiException(400, "Missing the required parameter 'uploadSubtitleDto' when calling uploadSubtitle");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call downloadRemoteSubtitlesValidateBeforeCall(UUID itemId, String subtitleId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling downloadRemoteSubtitles(Async)");
-        }
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
-        // verify the required parameter 'subtitleId' is set
-        if (subtitleId == null) {
-            throw new ApiException("Missing the required parameter 'subtitleId' when calling downloadRemoteSubtitles(Async)");
-        }
+    String localVarPath = "/Videos/{itemId}/Subtitles"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()));
 
-        return downloadRemoteSubtitlesCall(itemId, subtitleId, _callback);
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(uploadSubtitleDto);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
     }
-
-    /**
-     * Downloads a remote subtitle.
-     * 
-     * @param itemId The item id. (required)
-     * @param subtitleId The subtitle id. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Subtitle downloaded. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void downloadRemoteSubtitles(UUID itemId, String subtitleId) throws ApiException {
-        downloadRemoteSubtitlesWithHttpInfo(itemId, subtitleId);
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Downloads a remote subtitle.
-     * 
-     * @param itemId The item id. (required)
-     * @param subtitleId The subtitle id. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Subtitle downloaded. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> downloadRemoteSubtitlesWithHttpInfo(UUID itemId, String subtitleId) throws ApiException {
-        okhttp3.Call localVarCall = downloadRemoteSubtitlesValidateBeforeCall(itemId, subtitleId, null);
-        return localVarApiClient.execute(localVarCall);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    /**
-     * Downloads a remote subtitle. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param subtitleId The subtitle id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Subtitle downloaded. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call downloadRemoteSubtitlesAsync(UUID itemId, String subtitleId, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = downloadRemoteSubtitlesValidateBeforeCall(itemId, subtitleId, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getFallbackFont
-     * @param name The name of the fallback font file to get. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Fallback font file retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getFallbackFontCall(String name, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/FallbackFont/Fonts/{name}"
-            .replace("{" + "name" + "}", localVarApiClient.escapeString(name.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "font/*"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getFallbackFontValidateBeforeCall(String name, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'name' is set
-        if (name == null) {
-            throw new ApiException("Missing the required parameter 'name' when calling getFallbackFont(Async)");
-        }
-
-        return getFallbackFontCall(name, _callback);
-
-    }
-
-    /**
-     * Gets a fallback font file.
-     * 
-     * @param name The name of the fallback font file to get. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Fallback font file retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getFallbackFont(String name) throws ApiException {
-        ApiResponse<File> localVarResp = getFallbackFontWithHttpInfo(name);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets a fallback font file.
-     * 
-     * @param name The name of the fallback font file to get. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Fallback font file retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getFallbackFontWithHttpInfo(String name) throws ApiException {
-        okhttp3.Call localVarCall = getFallbackFontValidateBeforeCall(name, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets a fallback font file. (asynchronously)
-     * 
-     * @param name The name of the fallback font file to get. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Fallback font file retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getFallbackFontAsync(String name, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getFallbackFontValidateBeforeCall(name, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getFallbackFontList
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Information retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getFallbackFontListCall(final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/FallbackFont/Fonts";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getFallbackFontListValidateBeforeCall(final ApiCallback _callback) throws ApiException {
-        return getFallbackFontListCall(_callback);
-
-    }
-
-    /**
-     * Gets a list of available fallback font files.
-     * 
-     * @return List&lt;FontFile&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Information retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<FontFile> getFallbackFontList() throws ApiException {
-        ApiResponse<List<FontFile>> localVarResp = getFallbackFontListWithHttpInfo();
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets a list of available fallback font files.
-     * 
-     * @return ApiResponse&lt;List&lt;FontFile&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Information retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<FontFile>> getFallbackFontListWithHttpInfo() throws ApiException {
-        okhttp3.Call localVarCall = getFallbackFontListValidateBeforeCall(null);
-        Type localVarReturnType = new TypeToken<List<FontFile>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets a list of available fallback font files. (asynchronously)
-     * 
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Information retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getFallbackFontListAsync(final ApiCallback<List<FontFile>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getFallbackFontListValidateBeforeCall(_callback);
-        Type localVarReturnType = new TypeToken<List<FontFile>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getRemoteSubtitles
-     * @param subtitleId The item id. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> File returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getRemoteSubtitlesCall(String subtitleId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Providers/Subtitles/Subtitles/{subtitleId}"
-            .replace("{" + "subtitleId" + "}", localVarApiClient.escapeString(subtitleId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "text/*"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getRemoteSubtitlesValidateBeforeCall(String subtitleId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'subtitleId' is set
-        if (subtitleId == null) {
-            throw new ApiException("Missing the required parameter 'subtitleId' when calling getRemoteSubtitles(Async)");
-        }
-
-        return getRemoteSubtitlesCall(subtitleId, _callback);
-
-    }
-
-    /**
-     * Gets the remote subtitles.
-     * 
-     * @param subtitleId The item id. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> File returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getRemoteSubtitles(String subtitleId) throws ApiException {
-        ApiResponse<File> localVarResp = getRemoteSubtitlesWithHttpInfo(subtitleId);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets the remote subtitles.
-     * 
-     * @param subtitleId The item id. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> File returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getRemoteSubtitlesWithHttpInfo(String subtitleId) throws ApiException {
-        okhttp3.Call localVarCall = getRemoteSubtitlesValidateBeforeCall(subtitleId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets the remote subtitles. (asynchronously)
-     * 
-     * @param subtitleId The item id. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> File returned. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getRemoteSubtitlesAsync(String subtitleId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getRemoteSubtitlesValidateBeforeCall(subtitleId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getSubtitle
-     * @param routeItemId The (route) item id. (required)
-     * @param routeMediaSourceId The (route) media source id. (required)
-     * @param routeIndex The (route) subtitle stream index. (required)
-     * @param routeFormat The (route) format of the returned subtitle. (required)
-     * @param itemId The item id. (optional)
-     * @param mediaSourceId The media source id. (optional)
-     * @param index The subtitle stream index. (optional)
-     * @param format The format of the returned subtitle. (optional)
-     * @param endPositionTicks Optional. The end position of the subtitle in ticks. (optional)
-     * @param copyTimestamps Optional. Whether to copy the timestamps. (optional, default to false)
-     * @param addVttTimeMap Optional. Whether to add a VTT time map. (optional, default to false)
-     * @param startPositionTicks The start position of the subtitle in ticks. (optional, default to 0)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> File returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSubtitleCall(UUID routeItemId, String routeMediaSourceId, Integer routeIndex, String routeFormat, UUID itemId, String mediaSourceId, Integer index, String format, Long endPositionTicks, Boolean copyTimestamps, Boolean addVttTimeMap, Long startPositionTicks, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Videos/{routeItemId}/{routeMediaSourceId}/Subtitles/{routeIndex}/Stream.{routeFormat}"
-            .replace("{" + "routeItemId" + "}", localVarApiClient.escapeString(routeItemId.toString()))
-            .replace("{" + "routeMediaSourceId" + "}", localVarApiClient.escapeString(routeMediaSourceId.toString()))
-            .replace("{" + "routeIndex" + "}", localVarApiClient.escapeString(routeIndex.toString()))
-            .replace("{" + "routeFormat" + "}", localVarApiClient.escapeString(routeFormat.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (itemId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("itemId", itemId));
-        }
-
-        if (mediaSourceId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("mediaSourceId", mediaSourceId));
-        }
-
-        if (index != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("index", index));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (endPositionTicks != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("endPositionTicks", endPositionTicks));
-        }
-
-        if (copyTimestamps != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("copyTimestamps", copyTimestamps));
-        }
-
-        if (addVttTimeMap != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addVttTimeMap", addVttTimeMap));
-        }
-
-        if (startPositionTicks != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startPositionTicks", startPositionTicks));
-        }
-
-        final String[] localVarAccepts = {
-            "text/*"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getSubtitleValidateBeforeCall(UUID routeItemId, String routeMediaSourceId, Integer routeIndex, String routeFormat, UUID itemId, String mediaSourceId, Integer index, String format, Long endPositionTicks, Boolean copyTimestamps, Boolean addVttTimeMap, Long startPositionTicks, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'routeItemId' is set
-        if (routeItemId == null) {
-            throw new ApiException("Missing the required parameter 'routeItemId' when calling getSubtitle(Async)");
-        }
-
-        // verify the required parameter 'routeMediaSourceId' is set
-        if (routeMediaSourceId == null) {
-            throw new ApiException("Missing the required parameter 'routeMediaSourceId' when calling getSubtitle(Async)");
-        }
-
-        // verify the required parameter 'routeIndex' is set
-        if (routeIndex == null) {
-            throw new ApiException("Missing the required parameter 'routeIndex' when calling getSubtitle(Async)");
-        }
-
-        // verify the required parameter 'routeFormat' is set
-        if (routeFormat == null) {
-            throw new ApiException("Missing the required parameter 'routeFormat' when calling getSubtitle(Async)");
-        }
-
-        return getSubtitleCall(routeItemId, routeMediaSourceId, routeIndex, routeFormat, itemId, mediaSourceId, index, format, endPositionTicks, copyTimestamps, addVttTimeMap, startPositionTicks, _callback);
-
-    }
-
-    /**
-     * Gets subtitles in a specified format.
-     * 
-     * @param routeItemId The (route) item id. (required)
-     * @param routeMediaSourceId The (route) media source id. (required)
-     * @param routeIndex The (route) subtitle stream index. (required)
-     * @param routeFormat The (route) format of the returned subtitle. (required)
-     * @param itemId The item id. (optional)
-     * @param mediaSourceId The media source id. (optional)
-     * @param index The subtitle stream index. (optional)
-     * @param format The format of the returned subtitle. (optional)
-     * @param endPositionTicks Optional. The end position of the subtitle in ticks. (optional)
-     * @param copyTimestamps Optional. Whether to copy the timestamps. (optional, default to false)
-     * @param addVttTimeMap Optional. Whether to add a VTT time map. (optional, default to false)
-     * @param startPositionTicks The start position of the subtitle in ticks. (optional, default to 0)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> File returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getSubtitle(UUID routeItemId, String routeMediaSourceId, Integer routeIndex, String routeFormat, UUID itemId, String mediaSourceId, Integer index, String format, Long endPositionTicks, Boolean copyTimestamps, Boolean addVttTimeMap, Long startPositionTicks) throws ApiException {
-        ApiResponse<File> localVarResp = getSubtitleWithHttpInfo(routeItemId, routeMediaSourceId, routeIndex, routeFormat, itemId, mediaSourceId, index, format, endPositionTicks, copyTimestamps, addVttTimeMap, startPositionTicks);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets subtitles in a specified format.
-     * 
-     * @param routeItemId The (route) item id. (required)
-     * @param routeMediaSourceId The (route) media source id. (required)
-     * @param routeIndex The (route) subtitle stream index. (required)
-     * @param routeFormat The (route) format of the returned subtitle. (required)
-     * @param itemId The item id. (optional)
-     * @param mediaSourceId The media source id. (optional)
-     * @param index The subtitle stream index. (optional)
-     * @param format The format of the returned subtitle. (optional)
-     * @param endPositionTicks Optional. The end position of the subtitle in ticks. (optional)
-     * @param copyTimestamps Optional. Whether to copy the timestamps. (optional, default to false)
-     * @param addVttTimeMap Optional. Whether to add a VTT time map. (optional, default to false)
-     * @param startPositionTicks The start position of the subtitle in ticks. (optional, default to 0)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> File returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getSubtitleWithHttpInfo(UUID routeItemId, String routeMediaSourceId, Integer routeIndex, String routeFormat, UUID itemId, String mediaSourceId, Integer index, String format, Long endPositionTicks, Boolean copyTimestamps, Boolean addVttTimeMap, Long startPositionTicks) throws ApiException {
-        okhttp3.Call localVarCall = getSubtitleValidateBeforeCall(routeItemId, routeMediaSourceId, routeIndex, routeFormat, itemId, mediaSourceId, index, format, endPositionTicks, copyTimestamps, addVttTimeMap, startPositionTicks, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets subtitles in a specified format. (asynchronously)
-     * 
-     * @param routeItemId The (route) item id. (required)
-     * @param routeMediaSourceId The (route) media source id. (required)
-     * @param routeIndex The (route) subtitle stream index. (required)
-     * @param routeFormat The (route) format of the returned subtitle. (required)
-     * @param itemId The item id. (optional)
-     * @param mediaSourceId The media source id. (optional)
-     * @param index The subtitle stream index. (optional)
-     * @param format The format of the returned subtitle. (optional)
-     * @param endPositionTicks Optional. The end position of the subtitle in ticks. (optional)
-     * @param copyTimestamps Optional. Whether to copy the timestamps. (optional, default to false)
-     * @param addVttTimeMap Optional. Whether to add a VTT time map. (optional, default to false)
-     * @param startPositionTicks The start position of the subtitle in ticks. (optional, default to 0)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> File returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSubtitleAsync(UUID routeItemId, String routeMediaSourceId, Integer routeIndex, String routeFormat, UUID itemId, String mediaSourceId, Integer index, String format, Long endPositionTicks, Boolean copyTimestamps, Boolean addVttTimeMap, Long startPositionTicks, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getSubtitleValidateBeforeCall(routeItemId, routeMediaSourceId, routeIndex, routeFormat, itemId, mediaSourceId, index, format, endPositionTicks, copyTimestamps, addVttTimeMap, startPositionTicks, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getSubtitlePlaylist
-     * @param itemId The item id. (required)
-     * @param index The subtitle stream index. (required)
-     * @param mediaSourceId The media source id. (required)
-     * @param segmentLength The subtitle segment length. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Subtitle playlist retrieved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSubtitlePlaylistCall(UUID itemId, Integer index, String mediaSourceId, Integer segmentLength, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Videos/{itemId}/{mediaSourceId}/Subtitles/{index}/subtitles.m3u8"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "index" + "}", localVarApiClient.escapeString(index.toString()))
-            .replace("{" + "mediaSourceId" + "}", localVarApiClient.escapeString(mediaSourceId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (segmentLength != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("segmentLength", segmentLength));
-        }
-
-        final String[] localVarAccepts = {
-            "application/x-mpegURL",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getSubtitlePlaylistValidateBeforeCall(UUID itemId, Integer index, String mediaSourceId, Integer segmentLength, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getSubtitlePlaylist(Async)");
-        }
-
-        // verify the required parameter 'index' is set
-        if (index == null) {
-            throw new ApiException("Missing the required parameter 'index' when calling getSubtitlePlaylist(Async)");
-        }
-
-        // verify the required parameter 'mediaSourceId' is set
-        if (mediaSourceId == null) {
-            throw new ApiException("Missing the required parameter 'mediaSourceId' when calling getSubtitlePlaylist(Async)");
-        }
-
-        // verify the required parameter 'segmentLength' is set
-        if (segmentLength == null) {
-            throw new ApiException("Missing the required parameter 'segmentLength' when calling getSubtitlePlaylist(Async)");
-        }
-
-        return getSubtitlePlaylistCall(itemId, index, mediaSourceId, segmentLength, _callback);
-
-    }
-
-    /**
-     * Gets an HLS subtitle playlist.
-     * 
-     * @param itemId The item id. (required)
-     * @param index The subtitle stream index. (required)
-     * @param mediaSourceId The media source id. (required)
-     * @param segmentLength The subtitle segment length. (required)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Subtitle playlist retrieved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getSubtitlePlaylist(UUID itemId, Integer index, String mediaSourceId, Integer segmentLength) throws ApiException {
-        ApiResponse<File> localVarResp = getSubtitlePlaylistWithHttpInfo(itemId, index, mediaSourceId, segmentLength);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets an HLS subtitle playlist.
-     * 
-     * @param itemId The item id. (required)
-     * @param index The subtitle stream index. (required)
-     * @param mediaSourceId The media source id. (required)
-     * @param segmentLength The subtitle segment length. (required)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Subtitle playlist retrieved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getSubtitlePlaylistWithHttpInfo(UUID itemId, Integer index, String mediaSourceId, Integer segmentLength) throws ApiException {
-        okhttp3.Call localVarCall = getSubtitlePlaylistValidateBeforeCall(itemId, index, mediaSourceId, segmentLength, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets an HLS subtitle playlist. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param index The subtitle stream index. (required)
-     * @param mediaSourceId The media source id. (required)
-     * @param segmentLength The subtitle segment length. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Subtitle playlist retrieved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSubtitlePlaylistAsync(UUID itemId, Integer index, String mediaSourceId, Integer segmentLength, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getSubtitlePlaylistValidateBeforeCall(itemId, index, mediaSourceId, segmentLength, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getSubtitleWithTicks
-     * @param routeItemId The (route) item id. (required)
-     * @param routeMediaSourceId The (route) media source id. (required)
-     * @param routeIndex The (route) subtitle stream index. (required)
-     * @param routeStartPositionTicks The (route) start position of the subtitle in ticks. (required)
-     * @param routeFormat The (route) format of the returned subtitle. (required)
-     * @param itemId The item id. (optional)
-     * @param mediaSourceId The media source id. (optional)
-     * @param index The subtitle stream index. (optional)
-     * @param startPositionTicks The start position of the subtitle in ticks. (optional)
-     * @param format The format of the returned subtitle. (optional)
-     * @param endPositionTicks Optional. The end position of the subtitle in ticks. (optional)
-     * @param copyTimestamps Optional. Whether to copy the timestamps. (optional, default to false)
-     * @param addVttTimeMap Optional. Whether to add a VTT time map. (optional, default to false)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> File returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSubtitleWithTicksCall(UUID routeItemId, String routeMediaSourceId, Integer routeIndex, Long routeStartPositionTicks, String routeFormat, UUID itemId, String mediaSourceId, Integer index, Long startPositionTicks, String format, Long endPositionTicks, Boolean copyTimestamps, Boolean addVttTimeMap, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Videos/{routeItemId}/{routeMediaSourceId}/Subtitles/{routeIndex}/{routeStartPositionTicks}/Stream.{routeFormat}"
-            .replace("{" + "routeItemId" + "}", localVarApiClient.escapeString(routeItemId.toString()))
-            .replace("{" + "routeMediaSourceId" + "}", localVarApiClient.escapeString(routeMediaSourceId.toString()))
-            .replace("{" + "routeIndex" + "}", localVarApiClient.escapeString(routeIndex.toString()))
-            .replace("{" + "routeStartPositionTicks" + "}", localVarApiClient.escapeString(routeStartPositionTicks.toString()))
-            .replace("{" + "routeFormat" + "}", localVarApiClient.escapeString(routeFormat.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (itemId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("itemId", itemId));
-        }
-
-        if (mediaSourceId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("mediaSourceId", mediaSourceId));
-        }
-
-        if (index != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("index", index));
-        }
-
-        if (startPositionTicks != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startPositionTicks", startPositionTicks));
-        }
-
-        if (format != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("format", format));
-        }
-
-        if (endPositionTicks != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("endPositionTicks", endPositionTicks));
-        }
-
-        if (copyTimestamps != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("copyTimestamps", copyTimestamps));
-        }
-
-        if (addVttTimeMap != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("addVttTimeMap", addVttTimeMap));
-        }
-
-        final String[] localVarAccepts = {
-            "text/*"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] {  };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getSubtitleWithTicksValidateBeforeCall(UUID routeItemId, String routeMediaSourceId, Integer routeIndex, Long routeStartPositionTicks, String routeFormat, UUID itemId, String mediaSourceId, Integer index, Long startPositionTicks, String format, Long endPositionTicks, Boolean copyTimestamps, Boolean addVttTimeMap, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'routeItemId' is set
-        if (routeItemId == null) {
-            throw new ApiException("Missing the required parameter 'routeItemId' when calling getSubtitleWithTicks(Async)");
-        }
-
-        // verify the required parameter 'routeMediaSourceId' is set
-        if (routeMediaSourceId == null) {
-            throw new ApiException("Missing the required parameter 'routeMediaSourceId' when calling getSubtitleWithTicks(Async)");
-        }
-
-        // verify the required parameter 'routeIndex' is set
-        if (routeIndex == null) {
-            throw new ApiException("Missing the required parameter 'routeIndex' when calling getSubtitleWithTicks(Async)");
-        }
-
-        // verify the required parameter 'routeStartPositionTicks' is set
-        if (routeStartPositionTicks == null) {
-            throw new ApiException("Missing the required parameter 'routeStartPositionTicks' when calling getSubtitleWithTicks(Async)");
-        }
-
-        // verify the required parameter 'routeFormat' is set
-        if (routeFormat == null) {
-            throw new ApiException("Missing the required parameter 'routeFormat' when calling getSubtitleWithTicks(Async)");
-        }
-
-        return getSubtitleWithTicksCall(routeItemId, routeMediaSourceId, routeIndex, routeStartPositionTicks, routeFormat, itemId, mediaSourceId, index, startPositionTicks, format, endPositionTicks, copyTimestamps, addVttTimeMap, _callback);
-
-    }
-
-    /**
-     * Gets subtitles in a specified format.
-     * 
-     * @param routeItemId The (route) item id. (required)
-     * @param routeMediaSourceId The (route) media source id. (required)
-     * @param routeIndex The (route) subtitle stream index. (required)
-     * @param routeStartPositionTicks The (route) start position of the subtitle in ticks. (required)
-     * @param routeFormat The (route) format of the returned subtitle. (required)
-     * @param itemId The item id. (optional)
-     * @param mediaSourceId The media source id. (optional)
-     * @param index The subtitle stream index. (optional)
-     * @param startPositionTicks The start position of the subtitle in ticks. (optional)
-     * @param format The format of the returned subtitle. (optional)
-     * @param endPositionTicks Optional. The end position of the subtitle in ticks. (optional)
-     * @param copyTimestamps Optional. Whether to copy the timestamps. (optional, default to false)
-     * @param addVttTimeMap Optional. Whether to add a VTT time map. (optional, default to false)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> File returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getSubtitleWithTicks(UUID routeItemId, String routeMediaSourceId, Integer routeIndex, Long routeStartPositionTicks, String routeFormat, UUID itemId, String mediaSourceId, Integer index, Long startPositionTicks, String format, Long endPositionTicks, Boolean copyTimestamps, Boolean addVttTimeMap) throws ApiException {
-        ApiResponse<File> localVarResp = getSubtitleWithTicksWithHttpInfo(routeItemId, routeMediaSourceId, routeIndex, routeStartPositionTicks, routeFormat, itemId, mediaSourceId, index, startPositionTicks, format, endPositionTicks, copyTimestamps, addVttTimeMap);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Gets subtitles in a specified format.
-     * 
-     * @param routeItemId The (route) item id. (required)
-     * @param routeMediaSourceId The (route) media source id. (required)
-     * @param routeIndex The (route) subtitle stream index. (required)
-     * @param routeStartPositionTicks The (route) start position of the subtitle in ticks. (required)
-     * @param routeFormat The (route) format of the returned subtitle. (required)
-     * @param itemId The item id. (optional)
-     * @param mediaSourceId The media source id. (optional)
-     * @param index The subtitle stream index. (optional)
-     * @param startPositionTicks The start position of the subtitle in ticks. (optional)
-     * @param format The format of the returned subtitle. (optional)
-     * @param endPositionTicks Optional. The end position of the subtitle in ticks. (optional)
-     * @param copyTimestamps Optional. Whether to copy the timestamps. (optional, default to false)
-     * @param addVttTimeMap Optional. Whether to add a VTT time map. (optional, default to false)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> File returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getSubtitleWithTicksWithHttpInfo(UUID routeItemId, String routeMediaSourceId, Integer routeIndex, Long routeStartPositionTicks, String routeFormat, UUID itemId, String mediaSourceId, Integer index, Long startPositionTicks, String format, Long endPositionTicks, Boolean copyTimestamps, Boolean addVttTimeMap) throws ApiException {
-        okhttp3.Call localVarCall = getSubtitleWithTicksValidateBeforeCall(routeItemId, routeMediaSourceId, routeIndex, routeStartPositionTicks, routeFormat, itemId, mediaSourceId, index, startPositionTicks, format, endPositionTicks, copyTimestamps, addVttTimeMap, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Gets subtitles in a specified format. (asynchronously)
-     * 
-     * @param routeItemId The (route) item id. (required)
-     * @param routeMediaSourceId The (route) media source id. (required)
-     * @param routeIndex The (route) subtitle stream index. (required)
-     * @param routeStartPositionTicks The (route) start position of the subtitle in ticks. (required)
-     * @param routeFormat The (route) format of the returned subtitle. (required)
-     * @param itemId The item id. (optional)
-     * @param mediaSourceId The media source id. (optional)
-     * @param index The subtitle stream index. (optional)
-     * @param startPositionTicks The start position of the subtitle in ticks. (optional)
-     * @param format The format of the returned subtitle. (optional)
-     * @param endPositionTicks Optional. The end position of the subtitle in ticks. (optional)
-     * @param copyTimestamps Optional. Whether to copy the timestamps. (optional, default to false)
-     * @param addVttTimeMap Optional. Whether to add a VTT time map. (optional, default to false)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> File returned. </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getSubtitleWithTicksAsync(UUID routeItemId, String routeMediaSourceId, Integer routeIndex, Long routeStartPositionTicks, String routeFormat, UUID itemId, String mediaSourceId, Integer index, Long startPositionTicks, String format, Long endPositionTicks, Boolean copyTimestamps, Boolean addVttTimeMap, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getSubtitleWithTicksValidateBeforeCall(routeItemId, routeMediaSourceId, routeIndex, routeStartPositionTicks, routeFormat, itemId, mediaSourceId, index, startPositionTicks, format, endPositionTicks, copyTimestamps, addVttTimeMap, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for searchRemoteSubtitles
-     * @param itemId The item id. (required)
-     * @param language The language of the subtitles. (required)
-     * @param isPerfectMatch Optional. Only show subtitles which are a perfect match. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Subtitles retrieved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call searchRemoteSubtitlesCall(UUID itemId, String language, Boolean isPerfectMatch, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Items/{itemId}/RemoteSearch/Subtitles/{language}"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "language" + "}", localVarApiClient.escapeString(language.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (isPerfectMatch != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isPerfectMatch", isPerfectMatch));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call searchRemoteSubtitlesValidateBeforeCall(UUID itemId, String language, Boolean isPerfectMatch, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling searchRemoteSubtitles(Async)");
-        }
-
-        // verify the required parameter 'language' is set
-        if (language == null) {
-            throw new ApiException("Missing the required parameter 'language' when calling searchRemoteSubtitles(Async)");
-        }
-
-        return searchRemoteSubtitlesCall(itemId, language, isPerfectMatch, _callback);
-
-    }
-
-    /**
-     * Search remote subtitles.
-     * 
-     * @param itemId The item id. (required)
-     * @param language The language of the subtitles. (required)
-     * @param isPerfectMatch Optional. Only show subtitles which are a perfect match. (optional)
-     * @return List&lt;RemoteSubtitleInfo&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Subtitles retrieved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public List<RemoteSubtitleInfo> searchRemoteSubtitles(UUID itemId, String language, Boolean isPerfectMatch) throws ApiException {
-        ApiResponse<List<RemoteSubtitleInfo>> localVarResp = searchRemoteSubtitlesWithHttpInfo(itemId, language, isPerfectMatch);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Search remote subtitles.
-     * 
-     * @param itemId The item id. (required)
-     * @param language The language of the subtitles. (required)
-     * @param isPerfectMatch Optional. Only show subtitles which are a perfect match. (optional)
-     * @return ApiResponse&lt;List&lt;RemoteSubtitleInfo&gt;&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Subtitles retrieved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<List<RemoteSubtitleInfo>> searchRemoteSubtitlesWithHttpInfo(UUID itemId, String language, Boolean isPerfectMatch) throws ApiException {
-        okhttp3.Call localVarCall = searchRemoteSubtitlesValidateBeforeCall(itemId, language, isPerfectMatch, null);
-        Type localVarReturnType = new TypeToken<List<RemoteSubtitleInfo>>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Search remote subtitles. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param language The language of the subtitles. (required)
-     * @param isPerfectMatch Optional. Only show subtitles which are a perfect match. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Subtitles retrieved. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call searchRemoteSubtitlesAsync(UUID itemId, String language, Boolean isPerfectMatch, final ApiCallback<List<RemoteSubtitleInfo>> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = searchRemoteSubtitlesValidateBeforeCall(itemId, language, isPerfectMatch, _callback);
-        Type localVarReturnType = new TypeToken<List<RemoteSubtitleInfo>>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for uploadSubtitle
-     * @param itemId The item the subtitle belongs to. (required)
-     * @param uploadSubtitleDto The request body. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Subtitle uploaded. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call uploadSubtitleCall(UUID itemId, UploadSubtitleDto uploadSubtitleDto, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = uploadSubtitleDto;
-
-        // create path and map variables
-        String localVarPath = "/Videos/{itemId}/Subtitles"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call uploadSubtitleValidateBeforeCall(UUID itemId, UploadSubtitleDto uploadSubtitleDto, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling uploadSubtitle(Async)");
-        }
-
-        // verify the required parameter 'uploadSubtitleDto' is set
-        if (uploadSubtitleDto == null) {
-            throw new ApiException("Missing the required parameter 'uploadSubtitleDto' when calling uploadSubtitle(Async)");
-        }
-
-        return uploadSubtitleCall(itemId, uploadSubtitleDto, _callback);
-
-    }
-
-    /**
-     * Upload an external subtitle file.
-     * 
-     * @param itemId The item the subtitle belongs to. (required)
-     * @param uploadSubtitleDto The request body. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Subtitle uploaded. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void uploadSubtitle(UUID itemId, UploadSubtitleDto uploadSubtitleDto) throws ApiException {
-        uploadSubtitleWithHttpInfo(itemId, uploadSubtitleDto);
-    }
-
-    /**
-     * Upload an external subtitle file.
-     * 
-     * @param itemId The item the subtitle belongs to. (required)
-     * @param uploadSubtitleDto The request body. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Subtitle uploaded. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> uploadSubtitleWithHttpInfo(UUID itemId, UploadSubtitleDto uploadSubtitleDto) throws ApiException {
-        okhttp3.Call localVarCall = uploadSubtitleValidateBeforeCall(itemId, uploadSubtitleDto, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Upload an external subtitle file. (asynchronously)
-     * 
-     * @param itemId The item the subtitle belongs to. (required)
-     * @param uploadSubtitleDto The request body. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Subtitle uploaded. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Item not found. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call uploadSubtitleAsync(UUID itemId, UploadSubtitleDto uploadSubtitleDto, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = uploadSubtitleValidateBeforeCall(itemId, uploadSubtitleDto, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
 }

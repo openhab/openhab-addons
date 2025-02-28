@@ -13,89 +13,77 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.openapitools.client.model.VersionInfo;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class PackageInfo.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  PackageInfo.JSON_PROPERTY_NAME,
+  PackageInfo.JSON_PROPERTY_DESCRIPTION,
+  PackageInfo.JSON_PROPERTY_OVERVIEW,
+  PackageInfo.JSON_PROPERTY_OWNER,
+  PackageInfo.JSON_PROPERTY_CATEGORY,
+  PackageInfo.JSON_PROPERTY_GUID,
+  PackageInfo.JSON_PROPERTY_VERSIONS,
+  PackageInfo.JSON_PROPERTY_IMAGE_URL
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PackageInfo {
-  public static final String SERIALIZED_NAME_NAME = "name";
-  @SerializedName(SERIALIZED_NAME_NAME)
+  public static final String JSON_PROPERTY_NAME = "name";
   @javax.annotation.Nullable
   private String name;
 
-  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
-  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
+  public static final String JSON_PROPERTY_DESCRIPTION = "description";
   @javax.annotation.Nullable
   private String description;
 
-  public static final String SERIALIZED_NAME_OVERVIEW = "overview";
-  @SerializedName(SERIALIZED_NAME_OVERVIEW)
+  public static final String JSON_PROPERTY_OVERVIEW = "overview";
   @javax.annotation.Nullable
   private String overview;
 
-  public static final String SERIALIZED_NAME_OWNER = "owner";
-  @SerializedName(SERIALIZED_NAME_OWNER)
+  public static final String JSON_PROPERTY_OWNER = "owner";
   @javax.annotation.Nullable
   private String owner;
 
-  public static final String SERIALIZED_NAME_CATEGORY = "category";
-  @SerializedName(SERIALIZED_NAME_CATEGORY)
+  public static final String JSON_PROPERTY_CATEGORY = "category";
   @javax.annotation.Nullable
   private String category;
 
-  public static final String SERIALIZED_NAME_GUID = "guid";
-  @SerializedName(SERIALIZED_NAME_GUID)
+  public static final String JSON_PROPERTY_GUID = "guid";
   @javax.annotation.Nullable
   private UUID guid;
 
-  public static final String SERIALIZED_NAME_VERSIONS = "versions";
-  @SerializedName(SERIALIZED_NAME_VERSIONS)
+  public static final String JSON_PROPERTY_VERSIONS = "versions";
   @javax.annotation.Nullable
   private List<VersionInfo> versions = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_IMAGE_URL = "imageUrl";
-  @SerializedName(SERIALIZED_NAME_IMAGE_URL)
-  @javax.annotation.Nullable
-  private String imageUrl;
+  public static final String JSON_PROPERTY_IMAGE_URL = "imageUrl";
+  private JsonNullable<String> imageUrl = JsonNullable.<String>undefined();
 
-  public PackageInfo() {
+  public PackageInfo() { 
   }
 
   public PackageInfo name(@javax.annotation.Nullable String name) {
@@ -108,10 +96,15 @@ public class PackageInfo {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -127,10 +120,15 @@ public class PackageInfo {
    * @return description
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -146,10 +144,15 @@ public class PackageInfo {
    * @return overview
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_OVERVIEW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getOverview() {
     return overview;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_OVERVIEW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOverview(@javax.annotation.Nullable String overview) {
     this.overview = overview;
   }
@@ -165,10 +168,15 @@ public class PackageInfo {
    * @return owner
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_OWNER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getOwner() {
     return owner;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_OWNER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOwner(@javax.annotation.Nullable String owner) {
     this.owner = owner;
   }
@@ -184,10 +192,15 @@ public class PackageInfo {
    * @return category
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CATEGORY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCategory() {
     return category;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CATEGORY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCategory(@javax.annotation.Nullable String category) {
     this.category = category;
   }
@@ -203,10 +216,15 @@ public class PackageInfo {
    * @return guid
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_GUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getGuid() {
     return guid;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_GUID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGuid(@javax.annotation.Nullable UUID guid) {
     this.guid = guid;
   }
@@ -230,17 +248,22 @@ public class PackageInfo {
    * @return versions
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_VERSIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<VersionInfo> getVersions() {
     return versions;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_VERSIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVersions(@javax.annotation.Nullable List<VersionInfo> versions) {
     this.versions = versions;
   }
 
 
   public PackageInfo imageUrl(@javax.annotation.Nullable String imageUrl) {
-    this.imageUrl = imageUrl;
+    this.imageUrl = JsonNullable.<String>of(imageUrl);
     return this;
   }
 
@@ -249,16 +272,31 @@ public class PackageInfo {
    * @return imageUrl
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getImageUrl() {
-    return imageUrl;
+        return imageUrl.orElse(null);
   }
 
-  public void setImageUrl(@javax.annotation.Nullable String imageUrl) {
+  @JsonProperty(JSON_PROPERTY_IMAGE_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getImageUrl_JsonNullable() {
+    return imageUrl;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_IMAGE_URL)
+  public void setImageUrl_JsonNullable(JsonNullable<String> imageUrl) {
     this.imageUrl = imageUrl;
   }
 
+  public void setImageUrl(@javax.annotation.Nullable String imageUrl) {
+    this.imageUrl = JsonNullable.<String>of(imageUrl);
+  }
 
 
+  /**
+   * Return true if this PackageInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -275,7 +313,7 @@ public class PackageInfo {
         Objects.equals(this.category, packageInfo.category) &&
         Objects.equals(this.guid, packageInfo.guid) &&
         Objects.equals(this.versions, packageInfo.versions) &&
-        Objects.equals(this.imageUrl, packageInfo.imageUrl);
+        equalsNullable(this.imageUrl, packageInfo.imageUrl);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -284,7 +322,7 @@ public class PackageInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, description, overview, owner, category, guid, versions, imageUrl);
+    return Objects.hash(name, description, overview, owner, category, guid, versions, hashCodeNullable(imageUrl));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -321,131 +359,84 @@ public class PackageInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("name");
-    openapiFields.add("description");
-    openapiFields.add("overview");
-    openapiFields.add("owner");
-    openapiFields.add("category");
-    openapiFields.add("guid");
-    openapiFields.add("versions");
-    openapiFields.add("imageUrl");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to PackageInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!PackageInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in PackageInfo is not found in the empty JSON string", PackageInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!PackageInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `PackageInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
-      }
-      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
-      }
-      if ((jsonObj.get("overview") != null && !jsonObj.get("overview").isJsonNull()) && !jsonObj.get("overview").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `overview` to be a primitive type in the JSON string but got `%s`", jsonObj.get("overview").toString()));
-      }
-      if ((jsonObj.get("owner") != null && !jsonObj.get("owner").isJsonNull()) && !jsonObj.get("owner").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `owner` to be a primitive type in the JSON string but got `%s`", jsonObj.get("owner").toString()));
-      }
-      if ((jsonObj.get("category") != null && !jsonObj.get("category").isJsonNull()) && !jsonObj.get("category").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `category` to be a primitive type in the JSON string but got `%s`", jsonObj.get("category").toString()));
-      }
-      if ((jsonObj.get("guid") != null && !jsonObj.get("guid").isJsonNull()) && !jsonObj.get("guid").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `guid` to be a primitive type in the JSON string but got `%s`", jsonObj.get("guid").toString()));
-      }
-      if (jsonObj.get("versions") != null && !jsonObj.get("versions").isJsonNull()) {
-        JsonArray jsonArrayversions = jsonObj.getAsJsonArray("versions");
-        if (jsonArrayversions != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("versions").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `versions` to be an array in the JSON string but got `%s`", jsonObj.get("versions").toString()));
-          }
-
-          // validate the optional field `versions` (array)
-          for (int i = 0; i < jsonArrayversions.size(); i++) {
-            VersionInfo.validateJsonElement(jsonArrayversions.get(i));
-          };
-        }
-      }
-      if ((jsonObj.get("imageUrl") != null && !jsonObj.get("imageUrl").isJsonNull()) && !jsonObj.get("imageUrl").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `imageUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("imageUrl").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!PackageInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'PackageInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<PackageInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(PackageInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<PackageInfo>() {
-           @Override
-           public void write(JsonWriter out, PackageInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public PackageInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of PackageInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of PackageInfo
-   * @throws IOException if the JSON string is invalid with respect to PackageInfo
-   */
-  public static PackageInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, PackageInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of PackageInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `description` to the URL query string
+    if (getDescription() != null) {
+      joiner.add(String.format("%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
+    }
+
+    // add `overview` to the URL query string
+    if (getOverview() != null) {
+      joiner.add(String.format("%soverview%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
+    }
+
+    // add `owner` to the URL query string
+    if (getOwner() != null) {
+      joiner.add(String.format("%sowner%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOwner()))));
+    }
+
+    // add `category` to the URL query string
+    if (getCategory() != null) {
+      joiner.add(String.format("%scategory%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCategory()))));
+    }
+
+    // add `guid` to the URL query string
+    if (getGuid() != null) {
+      joiner.add(String.format("%sguid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getGuid()))));
+    }
+
+    // add `versions` to the URL query string
+    if (getVersions() != null) {
+      for (int i = 0; i < getVersions().size(); i++) {
+        if (getVersions().get(i) != null) {
+          joiner.add(getVersions().get(i).toUrlQueryString(String.format("%sversions%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `imageUrl` to the URL query string
+    if (getImageUrl() != null) {
+      joiner.add(String.format("%simageUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getImageUrl()))));
+    }
+
+    return joiner.toString();
   }
 }
 

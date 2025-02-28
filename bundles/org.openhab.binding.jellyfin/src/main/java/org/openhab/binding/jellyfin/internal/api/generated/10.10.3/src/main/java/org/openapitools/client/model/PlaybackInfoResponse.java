@@ -13,64 +13,51 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.client.model.MediaSourceInfo;
 import org.openapitools.client.model.PlaybackErrorCode;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class PlaybackInfoResponse.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  PlaybackInfoResponse.JSON_PROPERTY_MEDIA_SOURCES,
+  PlaybackInfoResponse.JSON_PROPERTY_PLAY_SESSION_ID,
+  PlaybackInfoResponse.JSON_PROPERTY_ERROR_CODE
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PlaybackInfoResponse {
-  public static final String SERIALIZED_NAME_MEDIA_SOURCES = "MediaSources";
-  @SerializedName(SERIALIZED_NAME_MEDIA_SOURCES)
+  public static final String JSON_PROPERTY_MEDIA_SOURCES = "MediaSources";
   @javax.annotation.Nullable
   private List<MediaSourceInfo> mediaSources = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_PLAY_SESSION_ID = "PlaySessionId";
-  @SerializedName(SERIALIZED_NAME_PLAY_SESSION_ID)
-  @javax.annotation.Nullable
-  private String playSessionId;
+  public static final String JSON_PROPERTY_PLAY_SESSION_ID = "PlaySessionId";
+  private JsonNullable<String> playSessionId = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ERROR_CODE = "ErrorCode";
-  @SerializedName(SERIALIZED_NAME_ERROR_CODE)
-  @javax.annotation.Nullable
-  private PlaybackErrorCode errorCode;
+  public static final String JSON_PROPERTY_ERROR_CODE = "ErrorCode";
+  private JsonNullable<PlaybackErrorCode> errorCode = JsonNullable.<PlaybackErrorCode>undefined();
 
-  public PlaybackInfoResponse() {
+  public PlaybackInfoResponse() { 
   }
 
   public PlaybackInfoResponse mediaSources(@javax.annotation.Nullable List<MediaSourceInfo> mediaSources) {
@@ -91,17 +78,22 @@ public class PlaybackInfoResponse {
    * @return mediaSources
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MEDIA_SOURCES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<MediaSourceInfo> getMediaSources() {
     return mediaSources;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MEDIA_SOURCES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMediaSources(@javax.annotation.Nullable List<MediaSourceInfo> mediaSources) {
     this.mediaSources = mediaSources;
   }
 
 
   public PlaybackInfoResponse playSessionId(@javax.annotation.Nullable String playSessionId) {
-    this.playSessionId = playSessionId;
+    this.playSessionId = JsonNullable.<String>of(playSessionId);
     return this;
   }
 
@@ -110,17 +102,30 @@ public class PlaybackInfoResponse {
    * @return playSessionId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPlaySessionId() {
+        return playSessionId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPlaySessionId_JsonNullable() {
     return playSessionId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
+  public void setPlaySessionId_JsonNullable(JsonNullable<String> playSessionId) {
+    this.playSessionId = playSessionId;
   }
 
   public void setPlaySessionId(@javax.annotation.Nullable String playSessionId) {
-    this.playSessionId = playSessionId;
+    this.playSessionId = JsonNullable.<String>of(playSessionId);
   }
 
 
   public PlaybackInfoResponse errorCode(@javax.annotation.Nullable PlaybackErrorCode errorCode) {
-    this.errorCode = errorCode;
+    this.errorCode = JsonNullable.<PlaybackErrorCode>of(errorCode);
     return this;
   }
 
@@ -129,16 +134,31 @@ public class PlaybackInfoResponse {
    * @return errorCode
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public PlaybackErrorCode getErrorCode() {
-    return errorCode;
+        return errorCode.orElse(null);
   }
 
-  public void setErrorCode(@javax.annotation.Nullable PlaybackErrorCode errorCode) {
+  @JsonProperty(JSON_PROPERTY_ERROR_CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<PlaybackErrorCode> getErrorCode_JsonNullable() {
+    return errorCode;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ERROR_CODE)
+  public void setErrorCode_JsonNullable(JsonNullable<PlaybackErrorCode> errorCode) {
     this.errorCode = errorCode;
   }
 
+  public void setErrorCode(@javax.annotation.Nullable PlaybackErrorCode errorCode) {
+    this.errorCode = JsonNullable.<PlaybackErrorCode>of(errorCode);
+  }
 
 
+  /**
+   * Return true if this PlaybackInfoResponse object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -149,8 +169,8 @@ public class PlaybackInfoResponse {
     }
     PlaybackInfoResponse playbackInfoResponse = (PlaybackInfoResponse) o;
     return Objects.equals(this.mediaSources, playbackInfoResponse.mediaSources) &&
-        Objects.equals(this.playSessionId, playbackInfoResponse.playSessionId) &&
-        Objects.equals(this.errorCode, playbackInfoResponse.errorCode);
+        equalsNullable(this.playSessionId, playbackInfoResponse.playSessionId) &&
+        equalsNullable(this.errorCode, playbackInfoResponse.errorCode);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -159,7 +179,7 @@ public class PlaybackInfoResponse {
 
   @Override
   public int hashCode() {
-    return Objects.hash(mediaSources, playSessionId, errorCode);
+    return Objects.hash(mediaSources, hashCodeNullable(playSessionId), hashCodeNullable(errorCode));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -191,112 +211,59 @@ public class PlaybackInfoResponse {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("MediaSources");
-    openapiFields.add("PlaySessionId");
-    openapiFields.add("ErrorCode");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to PlaybackInfoResponse
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!PlaybackInfoResponse.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in PlaybackInfoResponse is not found in the empty JSON string", PlaybackInfoResponse.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!PlaybackInfoResponse.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `PlaybackInfoResponse` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (jsonObj.get("MediaSources") != null && !jsonObj.get("MediaSources").isJsonNull()) {
-        JsonArray jsonArraymediaSources = jsonObj.getAsJsonArray("MediaSources");
-        if (jsonArraymediaSources != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("MediaSources").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `MediaSources` to be an array in the JSON string but got `%s`", jsonObj.get("MediaSources").toString()));
-          }
-
-          // validate the optional field `MediaSources` (array)
-          for (int i = 0; i < jsonArraymediaSources.size(); i++) {
-            MediaSourceInfo.validateJsonElement(jsonArraymediaSources.get(i));
-          };
-        }
-      }
-      if ((jsonObj.get("PlaySessionId") != null && !jsonObj.get("PlaySessionId").isJsonNull()) && !jsonObj.get("PlaySessionId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `PlaySessionId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("PlaySessionId").toString()));
-      }
-      // validate the optional field `ErrorCode`
-      if (jsonObj.get("ErrorCode") != null && !jsonObj.get("ErrorCode").isJsonNull()) {
-        PlaybackErrorCode.validateJsonElement(jsonObj.get("ErrorCode"));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!PlaybackInfoResponse.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'PlaybackInfoResponse' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<PlaybackInfoResponse> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(PlaybackInfoResponse.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<PlaybackInfoResponse>() {
-           @Override
-           public void write(JsonWriter out, PlaybackInfoResponse value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public PlaybackInfoResponse read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of PlaybackInfoResponse given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of PlaybackInfoResponse
-   * @throws IOException if the JSON string is invalid with respect to PlaybackInfoResponse
-   */
-  public static PlaybackInfoResponse fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, PlaybackInfoResponse.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of PlaybackInfoResponse to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `MediaSources` to the URL query string
+    if (getMediaSources() != null) {
+      for (int i = 0; i < getMediaSources().size(); i++) {
+        if (getMediaSources().get(i) != null) {
+          joiner.add(getMediaSources().get(i).toUrlQueryString(String.format("%sMediaSources%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `PlaySessionId` to the URL query string
+    if (getPlaySessionId() != null) {
+      joiner.add(String.format("%sPlaySessionId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlaySessionId()))));
+    }
+
+    // add `ErrorCode` to the URL query string
+    if (getErrorCode() != null) {
+      joiner.add(String.format("%sErrorCode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getErrorCode()))));
+    }
+
+    return joiner.toString();
   }
 }
 

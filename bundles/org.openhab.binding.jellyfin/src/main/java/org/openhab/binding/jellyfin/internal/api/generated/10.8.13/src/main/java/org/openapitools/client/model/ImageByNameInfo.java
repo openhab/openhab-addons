@@ -13,74 +13,59 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * ImageByNameInfo
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  ImageByNameInfo.JSON_PROPERTY_NAME,
+  ImageByNameInfo.JSON_PROPERTY_THEME,
+  ImageByNameInfo.JSON_PROPERTY_CONTEXT,
+  ImageByNameInfo.JSON_PROPERTY_FILE_LENGTH,
+  ImageByNameInfo.JSON_PROPERTY_FORMAT
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ImageByNameInfo {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_THEME = "Theme";
-  @SerializedName(SERIALIZED_NAME_THEME)
-  @javax.annotation.Nullable
-  private String theme;
+  public static final String JSON_PROPERTY_THEME = "Theme";
+  private JsonNullable<String> theme = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_CONTEXT = "Context";
-  @SerializedName(SERIALIZED_NAME_CONTEXT)
-  @javax.annotation.Nullable
-  private String context;
+  public static final String JSON_PROPERTY_CONTEXT = "Context";
+  private JsonNullable<String> context = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_FILE_LENGTH = "FileLength";
-  @SerializedName(SERIALIZED_NAME_FILE_LENGTH)
+  public static final String JSON_PROPERTY_FILE_LENGTH = "FileLength";
   @javax.annotation.Nullable
   private Long fileLength;
 
-  public static final String SERIALIZED_NAME_FORMAT = "Format";
-  @SerializedName(SERIALIZED_NAME_FORMAT)
-  @javax.annotation.Nullable
-  private String format;
+  public static final String JSON_PROPERTY_FORMAT = "Format";
+  private JsonNullable<String> format = JsonNullable.<String>undefined();
 
-  public ImageByNameInfo() {
+  public ImageByNameInfo() { 
   }
 
   public ImageByNameInfo name(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
     return this;
   }
 
@@ -89,17 +74,30 @@ public class ImageByNameInfo {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
   }
 
 
   public ImageByNameInfo theme(@javax.annotation.Nullable String theme) {
-    this.theme = theme;
+    this.theme = JsonNullable.<String>of(theme);
     return this;
   }
 
@@ -108,17 +106,30 @@ public class ImageByNameInfo {
    * @return theme
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getTheme() {
+        return theme.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_THEME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getTheme_JsonNullable() {
     return theme;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_THEME)
+  public void setTheme_JsonNullable(JsonNullable<String> theme) {
+    this.theme = theme;
   }
 
   public void setTheme(@javax.annotation.Nullable String theme) {
-    this.theme = theme;
+    this.theme = JsonNullable.<String>of(theme);
   }
 
 
   public ImageByNameInfo context(@javax.annotation.Nullable String context) {
-    this.context = context;
+    this.context = JsonNullable.<String>of(context);
     return this;
   }
 
@@ -127,12 +138,25 @@ public class ImageByNameInfo {
    * @return context
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getContext() {
+        return context.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CONTEXT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getContext_JsonNullable() {
     return context;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CONTEXT)
+  public void setContext_JsonNullable(JsonNullable<String> context) {
+    this.context = context;
   }
 
   public void setContext(@javax.annotation.Nullable String context) {
-    this.context = context;
+    this.context = JsonNullable.<String>of(context);
   }
 
 
@@ -146,17 +170,22 @@ public class ImageByNameInfo {
    * @return fileLength
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_FILE_LENGTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getFileLength() {
     return fileLength;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_FILE_LENGTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFileLength(@javax.annotation.Nullable Long fileLength) {
     this.fileLength = fileLength;
   }
 
 
   public ImageByNameInfo format(@javax.annotation.Nullable String format) {
-    this.format = format;
+    this.format = JsonNullable.<String>of(format);
     return this;
   }
 
@@ -165,16 +194,31 @@ public class ImageByNameInfo {
    * @return format
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getFormat() {
-    return format;
+        return format.orElse(null);
   }
 
-  public void setFormat(@javax.annotation.Nullable String format) {
+  @JsonProperty(JSON_PROPERTY_FORMAT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getFormat_JsonNullable() {
+    return format;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_FORMAT)
+  public void setFormat_JsonNullable(JsonNullable<String> format) {
     this.format = format;
   }
 
+  public void setFormat(@javax.annotation.Nullable String format) {
+    this.format = JsonNullable.<String>of(format);
+  }
 
 
+  /**
+   * Return true if this ImageByNameInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -184,11 +228,11 @@ public class ImageByNameInfo {
       return false;
     }
     ImageByNameInfo imageByNameInfo = (ImageByNameInfo) o;
-    return Objects.equals(this.name, imageByNameInfo.name) &&
-        Objects.equals(this.theme, imageByNameInfo.theme) &&
-        Objects.equals(this.context, imageByNameInfo.context) &&
+    return equalsNullable(this.name, imageByNameInfo.name) &&
+        equalsNullable(this.theme, imageByNameInfo.theme) &&
+        equalsNullable(this.context, imageByNameInfo.context) &&
         Objects.equals(this.fileLength, imageByNameInfo.fileLength) &&
-        Objects.equals(this.format, imageByNameInfo.format);
+        equalsNullable(this.format, imageByNameInfo.format);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -197,7 +241,7 @@ public class ImageByNameInfo {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, theme, context, fileLength, format);
+    return Objects.hash(hashCodeNullable(name), hashCodeNullable(theme), hashCodeNullable(context), fileLength, hashCodeNullable(format));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -231,105 +275,64 @@ public class ImageByNameInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("Theme");
-    openapiFields.add("Context");
-    openapiFields.add("FileLength");
-    openapiFields.add("Format");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to ImageByNameInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!ImageByNameInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in ImageByNameInfo is not found in the empty JSON string", ImageByNameInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!ImageByNameInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `ImageByNameInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("Theme") != null && !jsonObj.get("Theme").isJsonNull()) && !jsonObj.get("Theme").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Theme` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Theme").toString()));
-      }
-      if ((jsonObj.get("Context") != null && !jsonObj.get("Context").isJsonNull()) && !jsonObj.get("Context").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Context` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Context").toString()));
-      }
-      if ((jsonObj.get("Format") != null && !jsonObj.get("Format").isJsonNull()) && !jsonObj.get("Format").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Format` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Format").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!ImageByNameInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'ImageByNameInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<ImageByNameInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(ImageByNameInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<ImageByNameInfo>() {
-           @Override
-           public void write(JsonWriter out, ImageByNameInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public ImageByNameInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of ImageByNameInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of ImageByNameInfo
-   * @throws IOException if the JSON string is invalid with respect to ImageByNameInfo
-   */
-  public static ImageByNameInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, ImageByNameInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of ImageByNameInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `Theme` to the URL query string
+    if (getTheme() != null) {
+      joiner.add(String.format("%sTheme%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTheme()))));
+    }
+
+    // add `Context` to the URL query string
+    if (getContext() != null) {
+      joiner.add(String.format("%sContext%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContext()))));
+    }
+
+    // add `FileLength` to the URL query string
+    if (getFileLength() != null) {
+      joiner.add(String.format("%sFileLength%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFileLength()))));
+    }
+
+    // add `Format` to the URL query string
+    if (getFormat() != null) {
+      joiner.add(String.format("%sFormat%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFormat()))));
+    }
+
+    return joiner.toString();
   }
 }
 

@@ -13,108 +13,94 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.client.model.ProcessPriorityClass;
 import org.openapitools.client.model.TrickplayScanBehavior;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class TrickplayOptions.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  TrickplayOptions.JSON_PROPERTY_ENABLE_HW_ACCELERATION,
+  TrickplayOptions.JSON_PROPERTY_ENABLE_HW_ENCODING,
+  TrickplayOptions.JSON_PROPERTY_ENABLE_KEY_FRAME_ONLY_EXTRACTION,
+  TrickplayOptions.JSON_PROPERTY_SCAN_BEHAVIOR,
+  TrickplayOptions.JSON_PROPERTY_PROCESS_PRIORITY,
+  TrickplayOptions.JSON_PROPERTY_INTERVAL,
+  TrickplayOptions.JSON_PROPERTY_WIDTH_RESOLUTIONS,
+  TrickplayOptions.JSON_PROPERTY_TILE_WIDTH,
+  TrickplayOptions.JSON_PROPERTY_TILE_HEIGHT,
+  TrickplayOptions.JSON_PROPERTY_QSCALE,
+  TrickplayOptions.JSON_PROPERTY_JPEG_QUALITY,
+  TrickplayOptions.JSON_PROPERTY_PROCESS_THREADS
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class TrickplayOptions {
-  public static final String SERIALIZED_NAME_ENABLE_HW_ACCELERATION = "EnableHwAcceleration";
-  @SerializedName(SERIALIZED_NAME_ENABLE_HW_ACCELERATION)
+  public static final String JSON_PROPERTY_ENABLE_HW_ACCELERATION = "EnableHwAcceleration";
   @javax.annotation.Nullable
   private Boolean enableHwAcceleration;
 
-  public static final String SERIALIZED_NAME_ENABLE_HW_ENCODING = "EnableHwEncoding";
-  @SerializedName(SERIALIZED_NAME_ENABLE_HW_ENCODING)
+  public static final String JSON_PROPERTY_ENABLE_HW_ENCODING = "EnableHwEncoding";
   @javax.annotation.Nullable
   private Boolean enableHwEncoding;
 
-  public static final String SERIALIZED_NAME_ENABLE_KEY_FRAME_ONLY_EXTRACTION = "EnableKeyFrameOnlyExtraction";
-  @SerializedName(SERIALIZED_NAME_ENABLE_KEY_FRAME_ONLY_EXTRACTION)
+  public static final String JSON_PROPERTY_ENABLE_KEY_FRAME_ONLY_EXTRACTION = "EnableKeyFrameOnlyExtraction";
   @javax.annotation.Nullable
   private Boolean enableKeyFrameOnlyExtraction;
 
-  public static final String SERIALIZED_NAME_SCAN_BEHAVIOR = "ScanBehavior";
-  @SerializedName(SERIALIZED_NAME_SCAN_BEHAVIOR)
+  public static final String JSON_PROPERTY_SCAN_BEHAVIOR = "ScanBehavior";
   @javax.annotation.Nullable
   private TrickplayScanBehavior scanBehavior;
 
-  public static final String SERIALIZED_NAME_PROCESS_PRIORITY = "ProcessPriority";
-  @SerializedName(SERIALIZED_NAME_PROCESS_PRIORITY)
+  public static final String JSON_PROPERTY_PROCESS_PRIORITY = "ProcessPriority";
   @javax.annotation.Nullable
   private ProcessPriorityClass processPriority;
 
-  public static final String SERIALIZED_NAME_INTERVAL = "Interval";
-  @SerializedName(SERIALIZED_NAME_INTERVAL)
+  public static final String JSON_PROPERTY_INTERVAL = "Interval";
   @javax.annotation.Nullable
   private Integer interval;
 
-  public static final String SERIALIZED_NAME_WIDTH_RESOLUTIONS = "WidthResolutions";
-  @SerializedName(SERIALIZED_NAME_WIDTH_RESOLUTIONS)
+  public static final String JSON_PROPERTY_WIDTH_RESOLUTIONS = "WidthResolutions";
   @javax.annotation.Nullable
   private List<Integer> widthResolutions = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_TILE_WIDTH = "TileWidth";
-  @SerializedName(SERIALIZED_NAME_TILE_WIDTH)
+  public static final String JSON_PROPERTY_TILE_WIDTH = "TileWidth";
   @javax.annotation.Nullable
   private Integer tileWidth;
 
-  public static final String SERIALIZED_NAME_TILE_HEIGHT = "TileHeight";
-  @SerializedName(SERIALIZED_NAME_TILE_HEIGHT)
+  public static final String JSON_PROPERTY_TILE_HEIGHT = "TileHeight";
   @javax.annotation.Nullable
   private Integer tileHeight;
 
-  public static final String SERIALIZED_NAME_QSCALE = "Qscale";
-  @SerializedName(SERIALIZED_NAME_QSCALE)
+  public static final String JSON_PROPERTY_QSCALE = "Qscale";
   @javax.annotation.Nullable
   private Integer qscale;
 
-  public static final String SERIALIZED_NAME_JPEG_QUALITY = "JpegQuality";
-  @SerializedName(SERIALIZED_NAME_JPEG_QUALITY)
+  public static final String JSON_PROPERTY_JPEG_QUALITY = "JpegQuality";
   @javax.annotation.Nullable
   private Integer jpegQuality;
 
-  public static final String SERIALIZED_NAME_PROCESS_THREADS = "ProcessThreads";
-  @SerializedName(SERIALIZED_NAME_PROCESS_THREADS)
+  public static final String JSON_PROPERTY_PROCESS_THREADS = "ProcessThreads";
   @javax.annotation.Nullable
   private Integer processThreads;
 
-  public TrickplayOptions() {
+  public TrickplayOptions() { 
   }
 
   public TrickplayOptions enableHwAcceleration(@javax.annotation.Nullable Boolean enableHwAcceleration) {
@@ -127,10 +113,15 @@ public class TrickplayOptions {
    * @return enableHwAcceleration
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_HW_ACCELERATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableHwAcceleration() {
     return enableHwAcceleration;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_HW_ACCELERATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableHwAcceleration(@javax.annotation.Nullable Boolean enableHwAcceleration) {
     this.enableHwAcceleration = enableHwAcceleration;
   }
@@ -146,10 +137,15 @@ public class TrickplayOptions {
    * @return enableHwEncoding
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_HW_ENCODING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableHwEncoding() {
     return enableHwEncoding;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_HW_ENCODING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableHwEncoding(@javax.annotation.Nullable Boolean enableHwEncoding) {
     this.enableHwEncoding = enableHwEncoding;
   }
@@ -165,10 +161,15 @@ public class TrickplayOptions {
    * @return enableKeyFrameOnlyExtraction
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_KEY_FRAME_ONLY_EXTRACTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableKeyFrameOnlyExtraction() {
     return enableKeyFrameOnlyExtraction;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_KEY_FRAME_ONLY_EXTRACTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableKeyFrameOnlyExtraction(@javax.annotation.Nullable Boolean enableKeyFrameOnlyExtraction) {
     this.enableKeyFrameOnlyExtraction = enableKeyFrameOnlyExtraction;
   }
@@ -184,10 +185,15 @@ public class TrickplayOptions {
    * @return scanBehavior
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SCAN_BEHAVIOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public TrickplayScanBehavior getScanBehavior() {
     return scanBehavior;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SCAN_BEHAVIOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setScanBehavior(@javax.annotation.Nullable TrickplayScanBehavior scanBehavior) {
     this.scanBehavior = scanBehavior;
   }
@@ -203,10 +209,15 @@ public class TrickplayOptions {
    * @return processPriority
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PROCESS_PRIORITY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProcessPriorityClass getProcessPriority() {
     return processPriority;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PROCESS_PRIORITY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProcessPriority(@javax.annotation.Nullable ProcessPriorityClass processPriority) {
     this.processPriority = processPriority;
   }
@@ -222,10 +233,15 @@ public class TrickplayOptions {
    * @return interval
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_INTERVAL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getInterval() {
     return interval;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_INTERVAL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setInterval(@javax.annotation.Nullable Integer interval) {
     this.interval = interval;
   }
@@ -249,10 +265,15 @@ public class TrickplayOptions {
    * @return widthResolutions
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_WIDTH_RESOLUTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Integer> getWidthResolutions() {
     return widthResolutions;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_WIDTH_RESOLUTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWidthResolutions(@javax.annotation.Nullable List<Integer> widthResolutions) {
     this.widthResolutions = widthResolutions;
   }
@@ -268,10 +289,15 @@ public class TrickplayOptions {
    * @return tileWidth
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TILE_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getTileWidth() {
     return tileWidth;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TILE_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTileWidth(@javax.annotation.Nullable Integer tileWidth) {
     this.tileWidth = tileWidth;
   }
@@ -287,10 +313,15 @@ public class TrickplayOptions {
    * @return tileHeight
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TILE_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getTileHeight() {
     return tileHeight;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_TILE_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTileHeight(@javax.annotation.Nullable Integer tileHeight) {
     this.tileHeight = tileHeight;
   }
@@ -306,10 +337,15 @@ public class TrickplayOptions {
    * @return qscale
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_QSCALE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getQscale() {
     return qscale;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_QSCALE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setQscale(@javax.annotation.Nullable Integer qscale) {
     this.qscale = qscale;
   }
@@ -325,10 +361,15 @@ public class TrickplayOptions {
    * @return jpegQuality
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_JPEG_QUALITY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getJpegQuality() {
     return jpegQuality;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_JPEG_QUALITY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setJpegQuality(@javax.annotation.Nullable Integer jpegQuality) {
     this.jpegQuality = jpegQuality;
   }
@@ -344,16 +385,23 @@ public class TrickplayOptions {
    * @return processThreads
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PROCESS_THREADS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getProcessThreads() {
     return processThreads;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PROCESS_THREADS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProcessThreads(@javax.annotation.Nullable Integer processThreads) {
     this.processThreads = processThreads;
   }
 
 
-
+  /**
+   * Return true if this TrickplayOptions object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -413,112 +461,103 @@ public class TrickplayOptions {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("EnableHwAcceleration");
-    openapiFields.add("EnableHwEncoding");
-    openapiFields.add("EnableKeyFrameOnlyExtraction");
-    openapiFields.add("ScanBehavior");
-    openapiFields.add("ProcessPriority");
-    openapiFields.add("Interval");
-    openapiFields.add("WidthResolutions");
-    openapiFields.add("TileWidth");
-    openapiFields.add("TileHeight");
-    openapiFields.add("Qscale");
-    openapiFields.add("JpegQuality");
-    openapiFields.add("ProcessThreads");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to TrickplayOptions
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!TrickplayOptions.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in TrickplayOptions is not found in the empty JSON string", TrickplayOptions.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!TrickplayOptions.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `TrickplayOptions` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // validate the optional field `ScanBehavior`
-      if (jsonObj.get("ScanBehavior") != null && !jsonObj.get("ScanBehavior").isJsonNull()) {
-        TrickplayScanBehavior.validateJsonElement(jsonObj.get("ScanBehavior"));
-      }
-      // validate the optional field `ProcessPriority`
-      if (jsonObj.get("ProcessPriority") != null && !jsonObj.get("ProcessPriority").isJsonNull()) {
-        ProcessPriorityClass.validateJsonElement(jsonObj.get("ProcessPriority"));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("WidthResolutions") != null && !jsonObj.get("WidthResolutions").isJsonNull() && !jsonObj.get("WidthResolutions").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `WidthResolutions` to be an array in the JSON string but got `%s`", jsonObj.get("WidthResolutions").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!TrickplayOptions.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'TrickplayOptions' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<TrickplayOptions> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(TrickplayOptions.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<TrickplayOptions>() {
-           @Override
-           public void write(JsonWriter out, TrickplayOptions value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public TrickplayOptions read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of TrickplayOptions given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of TrickplayOptions
-   * @throws IOException if the JSON string is invalid with respect to TrickplayOptions
-   */
-  public static TrickplayOptions fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, TrickplayOptions.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of TrickplayOptions to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `EnableHwAcceleration` to the URL query string
+    if (getEnableHwAcceleration() != null) {
+      joiner.add(String.format("%sEnableHwAcceleration%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableHwAcceleration()))));
+    }
+
+    // add `EnableHwEncoding` to the URL query string
+    if (getEnableHwEncoding() != null) {
+      joiner.add(String.format("%sEnableHwEncoding%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableHwEncoding()))));
+    }
+
+    // add `EnableKeyFrameOnlyExtraction` to the URL query string
+    if (getEnableKeyFrameOnlyExtraction() != null) {
+      joiner.add(String.format("%sEnableKeyFrameOnlyExtraction%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableKeyFrameOnlyExtraction()))));
+    }
+
+    // add `ScanBehavior` to the URL query string
+    if (getScanBehavior() != null) {
+      joiner.add(String.format("%sScanBehavior%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getScanBehavior()))));
+    }
+
+    // add `ProcessPriority` to the URL query string
+    if (getProcessPriority() != null) {
+      joiner.add(String.format("%sProcessPriority%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProcessPriority()))));
+    }
+
+    // add `Interval` to the URL query string
+    if (getInterval() != null) {
+      joiner.add(String.format("%sInterval%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getInterval()))));
+    }
+
+    // add `WidthResolutions` to the URL query string
+    if (getWidthResolutions() != null) {
+      for (int i = 0; i < getWidthResolutions().size(); i++) {
+        joiner.add(String.format("%sWidthResolutions%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getWidthResolutions().get(i)))));
+      }
+    }
+
+    // add `TileWidth` to the URL query string
+    if (getTileWidth() != null) {
+      joiner.add(String.format("%sTileWidth%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTileWidth()))));
+    }
+
+    // add `TileHeight` to the URL query string
+    if (getTileHeight() != null) {
+      joiner.add(String.format("%sTileHeight%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTileHeight()))));
+    }
+
+    // add `Qscale` to the URL query string
+    if (getQscale() != null) {
+      joiner.add(String.format("%sQscale%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getQscale()))));
+    }
+
+    // add `JpegQuality` to the URL query string
+    if (getJpegQuality() != null) {
+      joiner.add(String.format("%sJpegQuality%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getJpegQuality()))));
+    }
+
+    // add `ProcessThreads` to the URL query string
+    if (getProcessThreads() != null) {
+      joiner.add(String.format("%sProcessThreads%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProcessThreads()))));
+    }
+
+    return joiner.toString();
   }
 }
 

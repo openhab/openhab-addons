@@ -13,13 +13,17 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,276 +33,257 @@ import org.openapitools.client.model.NameValuePair;
 import org.openapitools.client.model.PathSubstitution;
 import org.openapitools.client.model.RepositoryInfo;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Represents the server configuration.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  ServerConfiguration.JSON_PROPERTY_LOG_FILE_RETENTION_DAYS,
+  ServerConfiguration.JSON_PROPERTY_IS_STARTUP_WIZARD_COMPLETED,
+  ServerConfiguration.JSON_PROPERTY_CACHE_PATH,
+  ServerConfiguration.JSON_PROPERTY_PREVIOUS_VERSION,
+  ServerConfiguration.JSON_PROPERTY_PREVIOUS_VERSION_STR,
+  ServerConfiguration.JSON_PROPERTY_ENABLE_METRICS,
+  ServerConfiguration.JSON_PROPERTY_ENABLE_NORMALIZED_ITEM_BY_NAME_IDS,
+  ServerConfiguration.JSON_PROPERTY_IS_PORT_AUTHORIZED,
+  ServerConfiguration.JSON_PROPERTY_QUICK_CONNECT_AVAILABLE,
+  ServerConfiguration.JSON_PROPERTY_ENABLE_CASE_SENSITIVE_ITEM_IDS,
+  ServerConfiguration.JSON_PROPERTY_DISABLE_LIVE_TV_CHANNEL_USER_DATA_NAME,
+  ServerConfiguration.JSON_PROPERTY_METADATA_PATH,
+  ServerConfiguration.JSON_PROPERTY_METADATA_NETWORK_PATH,
+  ServerConfiguration.JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE,
+  ServerConfiguration.JSON_PROPERTY_METADATA_COUNTRY_CODE,
+  ServerConfiguration.JSON_PROPERTY_SORT_REPLACE_CHARACTERS,
+  ServerConfiguration.JSON_PROPERTY_SORT_REMOVE_CHARACTERS,
+  ServerConfiguration.JSON_PROPERTY_SORT_REMOVE_WORDS,
+  ServerConfiguration.JSON_PROPERTY_MIN_RESUME_PCT,
+  ServerConfiguration.JSON_PROPERTY_MAX_RESUME_PCT,
+  ServerConfiguration.JSON_PROPERTY_MIN_RESUME_DURATION_SECONDS,
+  ServerConfiguration.JSON_PROPERTY_MIN_AUDIOBOOK_RESUME,
+  ServerConfiguration.JSON_PROPERTY_MAX_AUDIOBOOK_RESUME,
+  ServerConfiguration.JSON_PROPERTY_LIBRARY_MONITOR_DELAY,
+  ServerConfiguration.JSON_PROPERTY_IMAGE_SAVING_CONVENTION,
+  ServerConfiguration.JSON_PROPERTY_METADATA_OPTIONS,
+  ServerConfiguration.JSON_PROPERTY_SKIP_DESERIALIZATION_FOR_BASIC_TYPES,
+  ServerConfiguration.JSON_PROPERTY_SERVER_NAME,
+  ServerConfiguration.JSON_PROPERTY_UI_CULTURE,
+  ServerConfiguration.JSON_PROPERTY_SAVE_METADATA_HIDDEN,
+  ServerConfiguration.JSON_PROPERTY_CONTENT_TYPES,
+  ServerConfiguration.JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT,
+  ServerConfiguration.JSON_PROPERTY_ENABLE_FOLDER_VIEW,
+  ServerConfiguration.JSON_PROPERTY_ENABLE_GROUPING_INTO_COLLECTIONS,
+  ServerConfiguration.JSON_PROPERTY_DISPLAY_SPECIALS_WITHIN_SEASONS,
+  ServerConfiguration.JSON_PROPERTY_CODECS_USED,
+  ServerConfiguration.JSON_PROPERTY_PLUGIN_REPOSITORIES,
+  ServerConfiguration.JSON_PROPERTY_ENABLE_EXTERNAL_CONTENT_IN_SUGGESTIONS,
+  ServerConfiguration.JSON_PROPERTY_IMAGE_EXTRACTION_TIMEOUT_MS,
+  ServerConfiguration.JSON_PROPERTY_PATH_SUBSTITUTIONS,
+  ServerConfiguration.JSON_PROPERTY_ENABLE_SLOW_RESPONSE_WARNING,
+  ServerConfiguration.JSON_PROPERTY_SLOW_RESPONSE_THRESHOLD_MS,
+  ServerConfiguration.JSON_PROPERTY_CORS_HOSTS,
+  ServerConfiguration.JSON_PROPERTY_ACTIVITY_LOG_RETENTION_DAYS,
+  ServerConfiguration.JSON_PROPERTY_LIBRARY_SCAN_FANOUT_CONCURRENCY,
+  ServerConfiguration.JSON_PROPERTY_LIBRARY_METADATA_REFRESH_CONCURRENCY,
+  ServerConfiguration.JSON_PROPERTY_REMOVE_OLD_PLUGINS,
+  ServerConfiguration.JSON_PROPERTY_ALLOW_CLIENT_LOG_UPLOAD
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ServerConfiguration {
-  public static final String SERIALIZED_NAME_LOG_FILE_RETENTION_DAYS = "LogFileRetentionDays";
-  @SerializedName(SERIALIZED_NAME_LOG_FILE_RETENTION_DAYS)
+  public static final String JSON_PROPERTY_LOG_FILE_RETENTION_DAYS = "LogFileRetentionDays";
   @javax.annotation.Nullable
   private Integer logFileRetentionDays;
 
-  public static final String SERIALIZED_NAME_IS_STARTUP_WIZARD_COMPLETED = "IsStartupWizardCompleted";
-  @SerializedName(SERIALIZED_NAME_IS_STARTUP_WIZARD_COMPLETED)
+  public static final String JSON_PROPERTY_IS_STARTUP_WIZARD_COMPLETED = "IsStartupWizardCompleted";
   @javax.annotation.Nullable
   private Boolean isStartupWizardCompleted;
 
-  public static final String SERIALIZED_NAME_CACHE_PATH = "CachePath";
-  @SerializedName(SERIALIZED_NAME_CACHE_PATH)
-  @javax.annotation.Nullable
-  private String cachePath;
+  public static final String JSON_PROPERTY_CACHE_PATH = "CachePath";
+  private JsonNullable<String> cachePath = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PREVIOUS_VERSION = "PreviousVersion";
-  @SerializedName(SERIALIZED_NAME_PREVIOUS_VERSION)
-  @javax.annotation.Nullable
-  private String previousVersion;
+  public static final String JSON_PROPERTY_PREVIOUS_VERSION = "PreviousVersion";
+  private JsonNullable<String> previousVersion = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PREVIOUS_VERSION_STR = "PreviousVersionStr";
-  @SerializedName(SERIALIZED_NAME_PREVIOUS_VERSION_STR)
-  @javax.annotation.Nullable
-  private String previousVersionStr;
+  public static final String JSON_PROPERTY_PREVIOUS_VERSION_STR = "PreviousVersionStr";
+  private JsonNullable<String> previousVersionStr = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ENABLE_METRICS = "EnableMetrics";
-  @SerializedName(SERIALIZED_NAME_ENABLE_METRICS)
+  public static final String JSON_PROPERTY_ENABLE_METRICS = "EnableMetrics";
   @javax.annotation.Nullable
   private Boolean enableMetrics;
 
-  public static final String SERIALIZED_NAME_ENABLE_NORMALIZED_ITEM_BY_NAME_IDS = "EnableNormalizedItemByNameIds";
-  @SerializedName(SERIALIZED_NAME_ENABLE_NORMALIZED_ITEM_BY_NAME_IDS)
+  public static final String JSON_PROPERTY_ENABLE_NORMALIZED_ITEM_BY_NAME_IDS = "EnableNormalizedItemByNameIds";
   @javax.annotation.Nullable
   private Boolean enableNormalizedItemByNameIds;
 
-  public static final String SERIALIZED_NAME_IS_PORT_AUTHORIZED = "IsPortAuthorized";
-  @SerializedName(SERIALIZED_NAME_IS_PORT_AUTHORIZED)
+  public static final String JSON_PROPERTY_IS_PORT_AUTHORIZED = "IsPortAuthorized";
   @javax.annotation.Nullable
   private Boolean isPortAuthorized;
 
-  public static final String SERIALIZED_NAME_QUICK_CONNECT_AVAILABLE = "QuickConnectAvailable";
-  @SerializedName(SERIALIZED_NAME_QUICK_CONNECT_AVAILABLE)
+  public static final String JSON_PROPERTY_QUICK_CONNECT_AVAILABLE = "QuickConnectAvailable";
   @javax.annotation.Nullable
   private Boolean quickConnectAvailable;
 
-  public static final String SERIALIZED_NAME_ENABLE_CASE_SENSITIVE_ITEM_IDS = "EnableCaseSensitiveItemIds";
-  @SerializedName(SERIALIZED_NAME_ENABLE_CASE_SENSITIVE_ITEM_IDS)
+  public static final String JSON_PROPERTY_ENABLE_CASE_SENSITIVE_ITEM_IDS = "EnableCaseSensitiveItemIds";
   @javax.annotation.Nullable
   private Boolean enableCaseSensitiveItemIds;
 
-  public static final String SERIALIZED_NAME_DISABLE_LIVE_TV_CHANNEL_USER_DATA_NAME = "DisableLiveTvChannelUserDataName";
-  @SerializedName(SERIALIZED_NAME_DISABLE_LIVE_TV_CHANNEL_USER_DATA_NAME)
+  public static final String JSON_PROPERTY_DISABLE_LIVE_TV_CHANNEL_USER_DATA_NAME = "DisableLiveTvChannelUserDataName";
   @javax.annotation.Nullable
   private Boolean disableLiveTvChannelUserDataName;
 
-  public static final String SERIALIZED_NAME_METADATA_PATH = "MetadataPath";
-  @SerializedName(SERIALIZED_NAME_METADATA_PATH)
+  public static final String JSON_PROPERTY_METADATA_PATH = "MetadataPath";
   @javax.annotation.Nullable
   private String metadataPath;
 
-  public static final String SERIALIZED_NAME_METADATA_NETWORK_PATH = "MetadataNetworkPath";
-  @SerializedName(SERIALIZED_NAME_METADATA_NETWORK_PATH)
+  public static final String JSON_PROPERTY_METADATA_NETWORK_PATH = "MetadataNetworkPath";
   @javax.annotation.Nullable
   private String metadataNetworkPath;
 
-  public static final String SERIALIZED_NAME_PREFERRED_METADATA_LANGUAGE = "PreferredMetadataLanguage";
-  @SerializedName(SERIALIZED_NAME_PREFERRED_METADATA_LANGUAGE)
+  public static final String JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE = "PreferredMetadataLanguage";
   @javax.annotation.Nullable
   private String preferredMetadataLanguage;
 
-  public static final String SERIALIZED_NAME_METADATA_COUNTRY_CODE = "MetadataCountryCode";
-  @SerializedName(SERIALIZED_NAME_METADATA_COUNTRY_CODE)
+  public static final String JSON_PROPERTY_METADATA_COUNTRY_CODE = "MetadataCountryCode";
   @javax.annotation.Nullable
   private String metadataCountryCode;
 
-  public static final String SERIALIZED_NAME_SORT_REPLACE_CHARACTERS = "SortReplaceCharacters";
-  @SerializedName(SERIALIZED_NAME_SORT_REPLACE_CHARACTERS)
+  public static final String JSON_PROPERTY_SORT_REPLACE_CHARACTERS = "SortReplaceCharacters";
   @javax.annotation.Nullable
   private List<String> sortReplaceCharacters = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_SORT_REMOVE_CHARACTERS = "SortRemoveCharacters";
-  @SerializedName(SERIALIZED_NAME_SORT_REMOVE_CHARACTERS)
+  public static final String JSON_PROPERTY_SORT_REMOVE_CHARACTERS = "SortRemoveCharacters";
   @javax.annotation.Nullable
   private List<String> sortRemoveCharacters = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_SORT_REMOVE_WORDS = "SortRemoveWords";
-  @SerializedName(SERIALIZED_NAME_SORT_REMOVE_WORDS)
+  public static final String JSON_PROPERTY_SORT_REMOVE_WORDS = "SortRemoveWords";
   @javax.annotation.Nullable
   private List<String> sortRemoveWords = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_MIN_RESUME_PCT = "MinResumePct";
-  @SerializedName(SERIALIZED_NAME_MIN_RESUME_PCT)
+  public static final String JSON_PROPERTY_MIN_RESUME_PCT = "MinResumePct";
   @javax.annotation.Nullable
   private Integer minResumePct;
 
-  public static final String SERIALIZED_NAME_MAX_RESUME_PCT = "MaxResumePct";
-  @SerializedName(SERIALIZED_NAME_MAX_RESUME_PCT)
+  public static final String JSON_PROPERTY_MAX_RESUME_PCT = "MaxResumePct";
   @javax.annotation.Nullable
   private Integer maxResumePct;
 
-  public static final String SERIALIZED_NAME_MIN_RESUME_DURATION_SECONDS = "MinResumeDurationSeconds";
-  @SerializedName(SERIALIZED_NAME_MIN_RESUME_DURATION_SECONDS)
+  public static final String JSON_PROPERTY_MIN_RESUME_DURATION_SECONDS = "MinResumeDurationSeconds";
   @javax.annotation.Nullable
   private Integer minResumeDurationSeconds;
 
-  public static final String SERIALIZED_NAME_MIN_AUDIOBOOK_RESUME = "MinAudiobookResume";
-  @SerializedName(SERIALIZED_NAME_MIN_AUDIOBOOK_RESUME)
+  public static final String JSON_PROPERTY_MIN_AUDIOBOOK_RESUME = "MinAudiobookResume";
   @javax.annotation.Nullable
   private Integer minAudiobookResume;
 
-  public static final String SERIALIZED_NAME_MAX_AUDIOBOOK_RESUME = "MaxAudiobookResume";
-  @SerializedName(SERIALIZED_NAME_MAX_AUDIOBOOK_RESUME)
+  public static final String JSON_PROPERTY_MAX_AUDIOBOOK_RESUME = "MaxAudiobookResume";
   @javax.annotation.Nullable
   private Integer maxAudiobookResume;
 
-  public static final String SERIALIZED_NAME_LIBRARY_MONITOR_DELAY = "LibraryMonitorDelay";
-  @SerializedName(SERIALIZED_NAME_LIBRARY_MONITOR_DELAY)
+  public static final String JSON_PROPERTY_LIBRARY_MONITOR_DELAY = "LibraryMonitorDelay";
   @javax.annotation.Nullable
   private Integer libraryMonitorDelay;
 
-  public static final String SERIALIZED_NAME_IMAGE_SAVING_CONVENTION = "ImageSavingConvention";
-  @SerializedName(SERIALIZED_NAME_IMAGE_SAVING_CONVENTION)
+  public static final String JSON_PROPERTY_IMAGE_SAVING_CONVENTION = "ImageSavingConvention";
   @javax.annotation.Nullable
   private ImageSavingConvention imageSavingConvention;
 
-  public static final String SERIALIZED_NAME_METADATA_OPTIONS = "MetadataOptions";
-  @SerializedName(SERIALIZED_NAME_METADATA_OPTIONS)
+  public static final String JSON_PROPERTY_METADATA_OPTIONS = "MetadataOptions";
   @javax.annotation.Nullable
   private List<MetadataOptions> metadataOptions = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_SKIP_DESERIALIZATION_FOR_BASIC_TYPES = "SkipDeserializationForBasicTypes";
-  @SerializedName(SERIALIZED_NAME_SKIP_DESERIALIZATION_FOR_BASIC_TYPES)
+  public static final String JSON_PROPERTY_SKIP_DESERIALIZATION_FOR_BASIC_TYPES = "SkipDeserializationForBasicTypes";
   @javax.annotation.Nullable
   private Boolean skipDeserializationForBasicTypes;
 
-  public static final String SERIALIZED_NAME_SERVER_NAME = "ServerName";
-  @SerializedName(SERIALIZED_NAME_SERVER_NAME)
+  public static final String JSON_PROPERTY_SERVER_NAME = "ServerName";
   @javax.annotation.Nullable
   private String serverName;
 
-  public static final String SERIALIZED_NAME_UI_CULTURE = "UICulture";
-  @SerializedName(SERIALIZED_NAME_UI_CULTURE)
+  public static final String JSON_PROPERTY_UI_CULTURE = "UICulture";
   @javax.annotation.Nullable
   private String uiCulture;
 
-  public static final String SERIALIZED_NAME_SAVE_METADATA_HIDDEN = "SaveMetadataHidden";
-  @SerializedName(SERIALIZED_NAME_SAVE_METADATA_HIDDEN)
+  public static final String JSON_PROPERTY_SAVE_METADATA_HIDDEN = "SaveMetadataHidden";
   @javax.annotation.Nullable
   private Boolean saveMetadataHidden;
 
-  public static final String SERIALIZED_NAME_CONTENT_TYPES = "ContentTypes";
-  @SerializedName(SERIALIZED_NAME_CONTENT_TYPES)
+  public static final String JSON_PROPERTY_CONTENT_TYPES = "ContentTypes";
   @javax.annotation.Nullable
   private List<NameValuePair> contentTypes = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_REMOTE_CLIENT_BITRATE_LIMIT = "RemoteClientBitrateLimit";
-  @SerializedName(SERIALIZED_NAME_REMOTE_CLIENT_BITRATE_LIMIT)
+  public static final String JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT = "RemoteClientBitrateLimit";
   @javax.annotation.Nullable
   private Integer remoteClientBitrateLimit;
 
-  public static final String SERIALIZED_NAME_ENABLE_FOLDER_VIEW = "EnableFolderView";
-  @SerializedName(SERIALIZED_NAME_ENABLE_FOLDER_VIEW)
+  public static final String JSON_PROPERTY_ENABLE_FOLDER_VIEW = "EnableFolderView";
   @javax.annotation.Nullable
   private Boolean enableFolderView;
 
-  public static final String SERIALIZED_NAME_ENABLE_GROUPING_INTO_COLLECTIONS = "EnableGroupingIntoCollections";
-  @SerializedName(SERIALIZED_NAME_ENABLE_GROUPING_INTO_COLLECTIONS)
+  public static final String JSON_PROPERTY_ENABLE_GROUPING_INTO_COLLECTIONS = "EnableGroupingIntoCollections";
   @javax.annotation.Nullable
   private Boolean enableGroupingIntoCollections;
 
-  public static final String SERIALIZED_NAME_DISPLAY_SPECIALS_WITHIN_SEASONS = "DisplaySpecialsWithinSeasons";
-  @SerializedName(SERIALIZED_NAME_DISPLAY_SPECIALS_WITHIN_SEASONS)
+  public static final String JSON_PROPERTY_DISPLAY_SPECIALS_WITHIN_SEASONS = "DisplaySpecialsWithinSeasons";
   @javax.annotation.Nullable
   private Boolean displaySpecialsWithinSeasons;
 
-  public static final String SERIALIZED_NAME_CODECS_USED = "CodecsUsed";
-  @SerializedName(SERIALIZED_NAME_CODECS_USED)
+  public static final String JSON_PROPERTY_CODECS_USED = "CodecsUsed";
   @javax.annotation.Nullable
   private List<String> codecsUsed = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_PLUGIN_REPOSITORIES = "PluginRepositories";
-  @SerializedName(SERIALIZED_NAME_PLUGIN_REPOSITORIES)
+  public static final String JSON_PROPERTY_PLUGIN_REPOSITORIES = "PluginRepositories";
   @javax.annotation.Nullable
   private List<RepositoryInfo> pluginRepositories = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_ENABLE_EXTERNAL_CONTENT_IN_SUGGESTIONS = "EnableExternalContentInSuggestions";
-  @SerializedName(SERIALIZED_NAME_ENABLE_EXTERNAL_CONTENT_IN_SUGGESTIONS)
+  public static final String JSON_PROPERTY_ENABLE_EXTERNAL_CONTENT_IN_SUGGESTIONS = "EnableExternalContentInSuggestions";
   @javax.annotation.Nullable
   private Boolean enableExternalContentInSuggestions;
 
-  public static final String SERIALIZED_NAME_IMAGE_EXTRACTION_TIMEOUT_MS = "ImageExtractionTimeoutMs";
-  @SerializedName(SERIALIZED_NAME_IMAGE_EXTRACTION_TIMEOUT_MS)
+  public static final String JSON_PROPERTY_IMAGE_EXTRACTION_TIMEOUT_MS = "ImageExtractionTimeoutMs";
   @javax.annotation.Nullable
   private Integer imageExtractionTimeoutMs;
 
-  public static final String SERIALIZED_NAME_PATH_SUBSTITUTIONS = "PathSubstitutions";
-  @SerializedName(SERIALIZED_NAME_PATH_SUBSTITUTIONS)
+  public static final String JSON_PROPERTY_PATH_SUBSTITUTIONS = "PathSubstitutions";
   @javax.annotation.Nullable
   private List<PathSubstitution> pathSubstitutions = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_ENABLE_SLOW_RESPONSE_WARNING = "EnableSlowResponseWarning";
-  @SerializedName(SERIALIZED_NAME_ENABLE_SLOW_RESPONSE_WARNING)
+  public static final String JSON_PROPERTY_ENABLE_SLOW_RESPONSE_WARNING = "EnableSlowResponseWarning";
   @javax.annotation.Nullable
   private Boolean enableSlowResponseWarning;
 
-  public static final String SERIALIZED_NAME_SLOW_RESPONSE_THRESHOLD_MS = "SlowResponseThresholdMs";
-  @SerializedName(SERIALIZED_NAME_SLOW_RESPONSE_THRESHOLD_MS)
+  public static final String JSON_PROPERTY_SLOW_RESPONSE_THRESHOLD_MS = "SlowResponseThresholdMs";
   @javax.annotation.Nullable
   private Long slowResponseThresholdMs;
 
-  public static final String SERIALIZED_NAME_CORS_HOSTS = "CorsHosts";
-  @SerializedName(SERIALIZED_NAME_CORS_HOSTS)
+  public static final String JSON_PROPERTY_CORS_HOSTS = "CorsHosts";
   @javax.annotation.Nullable
   private List<String> corsHosts = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_ACTIVITY_LOG_RETENTION_DAYS = "ActivityLogRetentionDays";
-  @SerializedName(SERIALIZED_NAME_ACTIVITY_LOG_RETENTION_DAYS)
-  @javax.annotation.Nullable
-  private Integer activityLogRetentionDays;
+  public static final String JSON_PROPERTY_ACTIVITY_LOG_RETENTION_DAYS = "ActivityLogRetentionDays";
+  private JsonNullable<Integer> activityLogRetentionDays = JsonNullable.<Integer>undefined();
 
-  public static final String SERIALIZED_NAME_LIBRARY_SCAN_FANOUT_CONCURRENCY = "LibraryScanFanoutConcurrency";
-  @SerializedName(SERIALIZED_NAME_LIBRARY_SCAN_FANOUT_CONCURRENCY)
+  public static final String JSON_PROPERTY_LIBRARY_SCAN_FANOUT_CONCURRENCY = "LibraryScanFanoutConcurrency";
   @javax.annotation.Nullable
   private Integer libraryScanFanoutConcurrency;
 
-  public static final String SERIALIZED_NAME_LIBRARY_METADATA_REFRESH_CONCURRENCY = "LibraryMetadataRefreshConcurrency";
-  @SerializedName(SERIALIZED_NAME_LIBRARY_METADATA_REFRESH_CONCURRENCY)
+  public static final String JSON_PROPERTY_LIBRARY_METADATA_REFRESH_CONCURRENCY = "LibraryMetadataRefreshConcurrency";
   @javax.annotation.Nullable
   private Integer libraryMetadataRefreshConcurrency;
 
-  public static final String SERIALIZED_NAME_REMOVE_OLD_PLUGINS = "RemoveOldPlugins";
-  @SerializedName(SERIALIZED_NAME_REMOVE_OLD_PLUGINS)
+  public static final String JSON_PROPERTY_REMOVE_OLD_PLUGINS = "RemoveOldPlugins";
   @javax.annotation.Nullable
   private Boolean removeOldPlugins;
 
-  public static final String SERIALIZED_NAME_ALLOW_CLIENT_LOG_UPLOAD = "AllowClientLogUpload";
-  @SerializedName(SERIALIZED_NAME_ALLOW_CLIENT_LOG_UPLOAD)
+  public static final String JSON_PROPERTY_ALLOW_CLIENT_LOG_UPLOAD = "AllowClientLogUpload";
   @javax.annotation.Nullable
   private Boolean allowClientLogUpload;
 
-  public ServerConfiguration() {
+  public ServerConfiguration() { 
   }
 
   public ServerConfiguration logFileRetentionDays(@javax.annotation.Nullable Integer logFileRetentionDays) {
@@ -311,10 +296,15 @@ public class ServerConfiguration {
    * @return logFileRetentionDays
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_LOG_FILE_RETENTION_DAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getLogFileRetentionDays() {
     return logFileRetentionDays;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_LOG_FILE_RETENTION_DAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLogFileRetentionDays(@javax.annotation.Nullable Integer logFileRetentionDays) {
     this.logFileRetentionDays = logFileRetentionDays;
   }
@@ -330,17 +320,22 @@ public class ServerConfiguration {
    * @return isStartupWizardCompleted
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_STARTUP_WIZARD_COMPLETED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsStartupWizardCompleted() {
     return isStartupWizardCompleted;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_STARTUP_WIZARD_COMPLETED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsStartupWizardCompleted(@javax.annotation.Nullable Boolean isStartupWizardCompleted) {
     this.isStartupWizardCompleted = isStartupWizardCompleted;
   }
 
 
   public ServerConfiguration cachePath(@javax.annotation.Nullable String cachePath) {
-    this.cachePath = cachePath;
+    this.cachePath = JsonNullable.<String>of(cachePath);
     return this;
   }
 
@@ -349,17 +344,30 @@ public class ServerConfiguration {
    * @return cachePath
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getCachePath() {
+        return cachePath.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CACHE_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getCachePath_JsonNullable() {
     return cachePath;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CACHE_PATH)
+  public void setCachePath_JsonNullable(JsonNullable<String> cachePath) {
+    this.cachePath = cachePath;
   }
 
   public void setCachePath(@javax.annotation.Nullable String cachePath) {
-    this.cachePath = cachePath;
+    this.cachePath = JsonNullable.<String>of(cachePath);
   }
 
 
   public ServerConfiguration previousVersion(@javax.annotation.Nullable String previousVersion) {
-    this.previousVersion = previousVersion;
+    this.previousVersion = JsonNullable.<String>of(previousVersion);
     return this;
   }
 
@@ -368,17 +376,30 @@ public class ServerConfiguration {
    * @return previousVersion
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPreviousVersion() {
+        return previousVersion.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PREVIOUS_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPreviousVersion_JsonNullable() {
     return previousVersion;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PREVIOUS_VERSION)
+  public void setPreviousVersion_JsonNullable(JsonNullable<String> previousVersion) {
+    this.previousVersion = previousVersion;
   }
 
   public void setPreviousVersion(@javax.annotation.Nullable String previousVersion) {
-    this.previousVersion = previousVersion;
+    this.previousVersion = JsonNullable.<String>of(previousVersion);
   }
 
 
   public ServerConfiguration previousVersionStr(@javax.annotation.Nullable String previousVersionStr) {
-    this.previousVersionStr = previousVersionStr;
+    this.previousVersionStr = JsonNullable.<String>of(previousVersionStr);
     return this;
   }
 
@@ -387,12 +408,25 @@ public class ServerConfiguration {
    * @return previousVersionStr
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPreviousVersionStr() {
+        return previousVersionStr.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PREVIOUS_VERSION_STR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPreviousVersionStr_JsonNullable() {
     return previousVersionStr;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PREVIOUS_VERSION_STR)
+  public void setPreviousVersionStr_JsonNullable(JsonNullable<String> previousVersionStr) {
+    this.previousVersionStr = previousVersionStr;
   }
 
   public void setPreviousVersionStr(@javax.annotation.Nullable String previousVersionStr) {
-    this.previousVersionStr = previousVersionStr;
+    this.previousVersionStr = JsonNullable.<String>of(previousVersionStr);
   }
 
 
@@ -406,10 +440,15 @@ public class ServerConfiguration {
    * @return enableMetrics
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_METRICS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableMetrics() {
     return enableMetrics;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_METRICS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableMetrics(@javax.annotation.Nullable Boolean enableMetrics) {
     this.enableMetrics = enableMetrics;
   }
@@ -425,10 +464,15 @@ public class ServerConfiguration {
    * @return enableNormalizedItemByNameIds
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_NORMALIZED_ITEM_BY_NAME_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableNormalizedItemByNameIds() {
     return enableNormalizedItemByNameIds;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_NORMALIZED_ITEM_BY_NAME_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableNormalizedItemByNameIds(@javax.annotation.Nullable Boolean enableNormalizedItemByNameIds) {
     this.enableNormalizedItemByNameIds = enableNormalizedItemByNameIds;
   }
@@ -444,10 +488,15 @@ public class ServerConfiguration {
    * @return isPortAuthorized
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_PORT_AUTHORIZED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsPortAuthorized() {
     return isPortAuthorized;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_PORT_AUTHORIZED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsPortAuthorized(@javax.annotation.Nullable Boolean isPortAuthorized) {
     this.isPortAuthorized = isPortAuthorized;
   }
@@ -463,10 +512,15 @@ public class ServerConfiguration {
    * @return quickConnectAvailable
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_QUICK_CONNECT_AVAILABLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getQuickConnectAvailable() {
     return quickConnectAvailable;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_QUICK_CONNECT_AVAILABLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setQuickConnectAvailable(@javax.annotation.Nullable Boolean quickConnectAvailable) {
     this.quickConnectAvailable = quickConnectAvailable;
   }
@@ -482,10 +536,15 @@ public class ServerConfiguration {
    * @return enableCaseSensitiveItemIds
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_CASE_SENSITIVE_ITEM_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableCaseSensitiveItemIds() {
     return enableCaseSensitiveItemIds;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_CASE_SENSITIVE_ITEM_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableCaseSensitiveItemIds(@javax.annotation.Nullable Boolean enableCaseSensitiveItemIds) {
     this.enableCaseSensitiveItemIds = enableCaseSensitiveItemIds;
   }
@@ -501,10 +560,15 @@ public class ServerConfiguration {
    * @return disableLiveTvChannelUserDataName
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DISABLE_LIVE_TV_CHANNEL_USER_DATA_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getDisableLiveTvChannelUserDataName() {
     return disableLiveTvChannelUserDataName;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DISABLE_LIVE_TV_CHANNEL_USER_DATA_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisableLiveTvChannelUserDataName(@javax.annotation.Nullable Boolean disableLiveTvChannelUserDataName) {
     this.disableLiveTvChannelUserDataName = disableLiveTvChannelUserDataName;
   }
@@ -520,10 +584,15 @@ public class ServerConfiguration {
    * @return metadataPath
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_METADATA_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMetadataPath() {
     return metadataPath;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_METADATA_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMetadataPath(@javax.annotation.Nullable String metadataPath) {
     this.metadataPath = metadataPath;
   }
@@ -539,10 +608,15 @@ public class ServerConfiguration {
    * @return metadataNetworkPath
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_METADATA_NETWORK_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMetadataNetworkPath() {
     return metadataNetworkPath;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_METADATA_NETWORK_PATH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMetadataNetworkPath(@javax.annotation.Nullable String metadataNetworkPath) {
     this.metadataNetworkPath = metadataNetworkPath;
   }
@@ -558,10 +632,15 @@ public class ServerConfiguration {
    * @return preferredMetadataLanguage
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPreferredMetadataLanguage() {
     return preferredMetadataLanguage;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPreferredMetadataLanguage(@javax.annotation.Nullable String preferredMetadataLanguage) {
     this.preferredMetadataLanguage = preferredMetadataLanguage;
   }
@@ -577,10 +656,15 @@ public class ServerConfiguration {
    * @return metadataCountryCode
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMetadataCountryCode() {
     return metadataCountryCode;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMetadataCountryCode(@javax.annotation.Nullable String metadataCountryCode) {
     this.metadataCountryCode = metadataCountryCode;
   }
@@ -604,10 +688,15 @@ public class ServerConfiguration {
    * @return sortReplaceCharacters
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SORT_REPLACE_CHARACTERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getSortReplaceCharacters() {
     return sortReplaceCharacters;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SORT_REPLACE_CHARACTERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSortReplaceCharacters(@javax.annotation.Nullable List<String> sortReplaceCharacters) {
     this.sortReplaceCharacters = sortReplaceCharacters;
   }
@@ -631,10 +720,15 @@ public class ServerConfiguration {
    * @return sortRemoveCharacters
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SORT_REMOVE_CHARACTERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getSortRemoveCharacters() {
     return sortRemoveCharacters;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SORT_REMOVE_CHARACTERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSortRemoveCharacters(@javax.annotation.Nullable List<String> sortRemoveCharacters) {
     this.sortRemoveCharacters = sortRemoveCharacters;
   }
@@ -658,10 +752,15 @@ public class ServerConfiguration {
    * @return sortRemoveWords
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SORT_REMOVE_WORDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getSortRemoveWords() {
     return sortRemoveWords;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SORT_REMOVE_WORDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSortRemoveWords(@javax.annotation.Nullable List<String> sortRemoveWords) {
     this.sortRemoveWords = sortRemoveWords;
   }
@@ -677,10 +776,15 @@ public class ServerConfiguration {
    * @return minResumePct
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MIN_RESUME_PCT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMinResumePct() {
     return minResumePct;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MIN_RESUME_PCT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMinResumePct(@javax.annotation.Nullable Integer minResumePct) {
     this.minResumePct = minResumePct;
   }
@@ -696,10 +800,15 @@ public class ServerConfiguration {
    * @return maxResumePct
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MAX_RESUME_PCT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMaxResumePct() {
     return maxResumePct;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MAX_RESUME_PCT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMaxResumePct(@javax.annotation.Nullable Integer maxResumePct) {
     this.maxResumePct = maxResumePct;
   }
@@ -715,10 +824,15 @@ public class ServerConfiguration {
    * @return minResumeDurationSeconds
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MIN_RESUME_DURATION_SECONDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMinResumeDurationSeconds() {
     return minResumeDurationSeconds;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MIN_RESUME_DURATION_SECONDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMinResumeDurationSeconds(@javax.annotation.Nullable Integer minResumeDurationSeconds) {
     this.minResumeDurationSeconds = minResumeDurationSeconds;
   }
@@ -734,10 +848,15 @@ public class ServerConfiguration {
    * @return minAudiobookResume
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MIN_AUDIOBOOK_RESUME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMinAudiobookResume() {
     return minAudiobookResume;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MIN_AUDIOBOOK_RESUME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMinAudiobookResume(@javax.annotation.Nullable Integer minAudiobookResume) {
     this.minAudiobookResume = minAudiobookResume;
   }
@@ -753,10 +872,15 @@ public class ServerConfiguration {
    * @return maxAudiobookResume
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MAX_AUDIOBOOK_RESUME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMaxAudiobookResume() {
     return maxAudiobookResume;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MAX_AUDIOBOOK_RESUME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMaxAudiobookResume(@javax.annotation.Nullable Integer maxAudiobookResume) {
     this.maxAudiobookResume = maxAudiobookResume;
   }
@@ -772,10 +896,15 @@ public class ServerConfiguration {
    * @return libraryMonitorDelay
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_LIBRARY_MONITOR_DELAY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getLibraryMonitorDelay() {
     return libraryMonitorDelay;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_LIBRARY_MONITOR_DELAY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLibraryMonitorDelay(@javax.annotation.Nullable Integer libraryMonitorDelay) {
     this.libraryMonitorDelay = libraryMonitorDelay;
   }
@@ -791,10 +920,15 @@ public class ServerConfiguration {
    * @return imageSavingConvention
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IMAGE_SAVING_CONVENTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ImageSavingConvention getImageSavingConvention() {
     return imageSavingConvention;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IMAGE_SAVING_CONVENTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setImageSavingConvention(@javax.annotation.Nullable ImageSavingConvention imageSavingConvention) {
     this.imageSavingConvention = imageSavingConvention;
   }
@@ -818,10 +952,15 @@ public class ServerConfiguration {
    * @return metadataOptions
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_METADATA_OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<MetadataOptions> getMetadataOptions() {
     return metadataOptions;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_METADATA_OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMetadataOptions(@javax.annotation.Nullable List<MetadataOptions> metadataOptions) {
     this.metadataOptions = metadataOptions;
   }
@@ -837,10 +976,15 @@ public class ServerConfiguration {
    * @return skipDeserializationForBasicTypes
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SKIP_DESERIALIZATION_FOR_BASIC_TYPES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSkipDeserializationForBasicTypes() {
     return skipDeserializationForBasicTypes;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SKIP_DESERIALIZATION_FOR_BASIC_TYPES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSkipDeserializationForBasicTypes(@javax.annotation.Nullable Boolean skipDeserializationForBasicTypes) {
     this.skipDeserializationForBasicTypes = skipDeserializationForBasicTypes;
   }
@@ -856,10 +1000,15 @@ public class ServerConfiguration {
    * @return serverName
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SERVER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getServerName() {
     return serverName;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SERVER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setServerName(@javax.annotation.Nullable String serverName) {
     this.serverName = serverName;
   }
@@ -875,10 +1024,15 @@ public class ServerConfiguration {
    * @return uiCulture
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_UI_CULTURE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUiCulture() {
     return uiCulture;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_UI_CULTURE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUiCulture(@javax.annotation.Nullable String uiCulture) {
     this.uiCulture = uiCulture;
   }
@@ -894,10 +1048,15 @@ public class ServerConfiguration {
    * @return saveMetadataHidden
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SAVE_METADATA_HIDDEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSaveMetadataHidden() {
     return saveMetadataHidden;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SAVE_METADATA_HIDDEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSaveMetadataHidden(@javax.annotation.Nullable Boolean saveMetadataHidden) {
     this.saveMetadataHidden = saveMetadataHidden;
   }
@@ -921,10 +1080,15 @@ public class ServerConfiguration {
    * @return contentTypes
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CONTENT_TYPES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<NameValuePair> getContentTypes() {
     return contentTypes;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CONTENT_TYPES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setContentTypes(@javax.annotation.Nullable List<NameValuePair> contentTypes) {
     this.contentTypes = contentTypes;
   }
@@ -940,10 +1104,15 @@ public class ServerConfiguration {
    * @return remoteClientBitrateLimit
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getRemoteClientBitrateLimit() {
     return remoteClientBitrateLimit;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRemoteClientBitrateLimit(@javax.annotation.Nullable Integer remoteClientBitrateLimit) {
     this.remoteClientBitrateLimit = remoteClientBitrateLimit;
   }
@@ -959,10 +1128,15 @@ public class ServerConfiguration {
    * @return enableFolderView
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_FOLDER_VIEW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableFolderView() {
     return enableFolderView;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_FOLDER_VIEW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableFolderView(@javax.annotation.Nullable Boolean enableFolderView) {
     this.enableFolderView = enableFolderView;
   }
@@ -978,10 +1152,15 @@ public class ServerConfiguration {
    * @return enableGroupingIntoCollections
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_GROUPING_INTO_COLLECTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableGroupingIntoCollections() {
     return enableGroupingIntoCollections;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_GROUPING_INTO_COLLECTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableGroupingIntoCollections(@javax.annotation.Nullable Boolean enableGroupingIntoCollections) {
     this.enableGroupingIntoCollections = enableGroupingIntoCollections;
   }
@@ -997,10 +1176,15 @@ public class ServerConfiguration {
    * @return displaySpecialsWithinSeasons
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DISPLAY_SPECIALS_WITHIN_SEASONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getDisplaySpecialsWithinSeasons() {
     return displaySpecialsWithinSeasons;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DISPLAY_SPECIALS_WITHIN_SEASONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisplaySpecialsWithinSeasons(@javax.annotation.Nullable Boolean displaySpecialsWithinSeasons) {
     this.displaySpecialsWithinSeasons = displaySpecialsWithinSeasons;
   }
@@ -1024,10 +1208,15 @@ public class ServerConfiguration {
    * @return codecsUsed
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CODECS_USED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getCodecsUsed() {
     return codecsUsed;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CODECS_USED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCodecsUsed(@javax.annotation.Nullable List<String> codecsUsed) {
     this.codecsUsed = codecsUsed;
   }
@@ -1051,10 +1240,15 @@ public class ServerConfiguration {
    * @return pluginRepositories
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLUGIN_REPOSITORIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<RepositoryInfo> getPluginRepositories() {
     return pluginRepositories;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PLUGIN_REPOSITORIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPluginRepositories(@javax.annotation.Nullable List<RepositoryInfo> pluginRepositories) {
     this.pluginRepositories = pluginRepositories;
   }
@@ -1070,10 +1264,15 @@ public class ServerConfiguration {
    * @return enableExternalContentInSuggestions
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_EXTERNAL_CONTENT_IN_SUGGESTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableExternalContentInSuggestions() {
     return enableExternalContentInSuggestions;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_EXTERNAL_CONTENT_IN_SUGGESTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableExternalContentInSuggestions(@javax.annotation.Nullable Boolean enableExternalContentInSuggestions) {
     this.enableExternalContentInSuggestions = enableExternalContentInSuggestions;
   }
@@ -1089,10 +1288,15 @@ public class ServerConfiguration {
    * @return imageExtractionTimeoutMs
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IMAGE_EXTRACTION_TIMEOUT_MS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getImageExtractionTimeoutMs() {
     return imageExtractionTimeoutMs;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IMAGE_EXTRACTION_TIMEOUT_MS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setImageExtractionTimeoutMs(@javax.annotation.Nullable Integer imageExtractionTimeoutMs) {
     this.imageExtractionTimeoutMs = imageExtractionTimeoutMs;
   }
@@ -1116,10 +1320,15 @@ public class ServerConfiguration {
    * @return pathSubstitutions
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PATH_SUBSTITUTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<PathSubstitution> getPathSubstitutions() {
     return pathSubstitutions;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PATH_SUBSTITUTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPathSubstitutions(@javax.annotation.Nullable List<PathSubstitution> pathSubstitutions) {
     this.pathSubstitutions = pathSubstitutions;
   }
@@ -1135,10 +1344,15 @@ public class ServerConfiguration {
    * @return enableSlowResponseWarning
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_SLOW_RESPONSE_WARNING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableSlowResponseWarning() {
     return enableSlowResponseWarning;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_SLOW_RESPONSE_WARNING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableSlowResponseWarning(@javax.annotation.Nullable Boolean enableSlowResponseWarning) {
     this.enableSlowResponseWarning = enableSlowResponseWarning;
   }
@@ -1154,10 +1368,15 @@ public class ServerConfiguration {
    * @return slowResponseThresholdMs
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SLOW_RESPONSE_THRESHOLD_MS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getSlowResponseThresholdMs() {
     return slowResponseThresholdMs;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SLOW_RESPONSE_THRESHOLD_MS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSlowResponseThresholdMs(@javax.annotation.Nullable Long slowResponseThresholdMs) {
     this.slowResponseThresholdMs = slowResponseThresholdMs;
   }
@@ -1181,17 +1400,22 @@ public class ServerConfiguration {
    * @return corsHosts
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_CORS_HOSTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getCorsHosts() {
     return corsHosts;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_CORS_HOSTS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCorsHosts(@javax.annotation.Nullable List<String> corsHosts) {
     this.corsHosts = corsHosts;
   }
 
 
   public ServerConfiguration activityLogRetentionDays(@javax.annotation.Nullable Integer activityLogRetentionDays) {
-    this.activityLogRetentionDays = activityLogRetentionDays;
+    this.activityLogRetentionDays = JsonNullable.<Integer>of(activityLogRetentionDays);
     return this;
   }
 
@@ -1200,12 +1424,25 @@ public class ServerConfiguration {
    * @return activityLogRetentionDays
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Integer getActivityLogRetentionDays() {
+        return activityLogRetentionDays.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ACTIVITY_LOG_RETENTION_DAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Integer> getActivityLogRetentionDays_JsonNullable() {
     return activityLogRetentionDays;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ACTIVITY_LOG_RETENTION_DAYS)
+  public void setActivityLogRetentionDays_JsonNullable(JsonNullable<Integer> activityLogRetentionDays) {
+    this.activityLogRetentionDays = activityLogRetentionDays;
   }
 
   public void setActivityLogRetentionDays(@javax.annotation.Nullable Integer activityLogRetentionDays) {
-    this.activityLogRetentionDays = activityLogRetentionDays;
+    this.activityLogRetentionDays = JsonNullable.<Integer>of(activityLogRetentionDays);
   }
 
 
@@ -1219,10 +1456,15 @@ public class ServerConfiguration {
    * @return libraryScanFanoutConcurrency
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_LIBRARY_SCAN_FANOUT_CONCURRENCY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getLibraryScanFanoutConcurrency() {
     return libraryScanFanoutConcurrency;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_LIBRARY_SCAN_FANOUT_CONCURRENCY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLibraryScanFanoutConcurrency(@javax.annotation.Nullable Integer libraryScanFanoutConcurrency) {
     this.libraryScanFanoutConcurrency = libraryScanFanoutConcurrency;
   }
@@ -1238,10 +1480,15 @@ public class ServerConfiguration {
    * @return libraryMetadataRefreshConcurrency
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_LIBRARY_METADATA_REFRESH_CONCURRENCY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getLibraryMetadataRefreshConcurrency() {
     return libraryMetadataRefreshConcurrency;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_LIBRARY_METADATA_REFRESH_CONCURRENCY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLibraryMetadataRefreshConcurrency(@javax.annotation.Nullable Integer libraryMetadataRefreshConcurrency) {
     this.libraryMetadataRefreshConcurrency = libraryMetadataRefreshConcurrency;
   }
@@ -1257,10 +1504,15 @@ public class ServerConfiguration {
    * @return removeOldPlugins
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REMOVE_OLD_PLUGINS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getRemoveOldPlugins() {
     return removeOldPlugins;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REMOVE_OLD_PLUGINS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRemoveOldPlugins(@javax.annotation.Nullable Boolean removeOldPlugins) {
     this.removeOldPlugins = removeOldPlugins;
   }
@@ -1276,16 +1528,23 @@ public class ServerConfiguration {
    * @return allowClientLogUpload
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ALLOW_CLIENT_LOG_UPLOAD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getAllowClientLogUpload() {
     return allowClientLogUpload;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ALLOW_CLIENT_LOG_UPLOAD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAllowClientLogUpload(@javax.annotation.Nullable Boolean allowClientLogUpload) {
     this.allowClientLogUpload = allowClientLogUpload;
   }
 
 
-
+  /**
+   * Return true if this ServerConfiguration object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -1297,9 +1556,9 @@ public class ServerConfiguration {
     ServerConfiguration serverConfiguration = (ServerConfiguration) o;
     return Objects.equals(this.logFileRetentionDays, serverConfiguration.logFileRetentionDays) &&
         Objects.equals(this.isStartupWizardCompleted, serverConfiguration.isStartupWizardCompleted) &&
-        Objects.equals(this.cachePath, serverConfiguration.cachePath) &&
-        Objects.equals(this.previousVersion, serverConfiguration.previousVersion) &&
-        Objects.equals(this.previousVersionStr, serverConfiguration.previousVersionStr) &&
+        equalsNullable(this.cachePath, serverConfiguration.cachePath) &&
+        equalsNullable(this.previousVersion, serverConfiguration.previousVersion) &&
+        equalsNullable(this.previousVersionStr, serverConfiguration.previousVersionStr) &&
         Objects.equals(this.enableMetrics, serverConfiguration.enableMetrics) &&
         Objects.equals(this.enableNormalizedItemByNameIds, serverConfiguration.enableNormalizedItemByNameIds) &&
         Objects.equals(this.isPortAuthorized, serverConfiguration.isPortAuthorized) &&
@@ -1338,7 +1597,7 @@ public class ServerConfiguration {
         Objects.equals(this.enableSlowResponseWarning, serverConfiguration.enableSlowResponseWarning) &&
         Objects.equals(this.slowResponseThresholdMs, serverConfiguration.slowResponseThresholdMs) &&
         Objects.equals(this.corsHosts, serverConfiguration.corsHosts) &&
-        Objects.equals(this.activityLogRetentionDays, serverConfiguration.activityLogRetentionDays) &&
+        equalsNullable(this.activityLogRetentionDays, serverConfiguration.activityLogRetentionDays) &&
         Objects.equals(this.libraryScanFanoutConcurrency, serverConfiguration.libraryScanFanoutConcurrency) &&
         Objects.equals(this.libraryMetadataRefreshConcurrency, serverConfiguration.libraryMetadataRefreshConcurrency) &&
         Objects.equals(this.removeOldPlugins, serverConfiguration.removeOldPlugins) &&
@@ -1351,7 +1610,7 @@ public class ServerConfiguration {
 
   @Override
   public int hashCode() {
-    return Objects.hash(logFileRetentionDays, isStartupWizardCompleted, cachePath, previousVersion, previousVersionStr, enableMetrics, enableNormalizedItemByNameIds, isPortAuthorized, quickConnectAvailable, enableCaseSensitiveItemIds, disableLiveTvChannelUserDataName, metadataPath, metadataNetworkPath, preferredMetadataLanguage, metadataCountryCode, sortReplaceCharacters, sortRemoveCharacters, sortRemoveWords, minResumePct, maxResumePct, minResumeDurationSeconds, minAudiobookResume, maxAudiobookResume, libraryMonitorDelay, imageSavingConvention, metadataOptions, skipDeserializationForBasicTypes, serverName, uiCulture, saveMetadataHidden, contentTypes, remoteClientBitrateLimit, enableFolderView, enableGroupingIntoCollections, displaySpecialsWithinSeasons, codecsUsed, pluginRepositories, enableExternalContentInSuggestions, imageExtractionTimeoutMs, pathSubstitutions, enableSlowResponseWarning, slowResponseThresholdMs, corsHosts, activityLogRetentionDays, libraryScanFanoutConcurrency, libraryMetadataRefreshConcurrency, removeOldPlugins, allowClientLogUpload);
+    return Objects.hash(logFileRetentionDays, isStartupWizardCompleted, hashCodeNullable(cachePath), hashCodeNullable(previousVersion), hashCodeNullable(previousVersionStr), enableMetrics, enableNormalizedItemByNameIds, isPortAuthorized, quickConnectAvailable, enableCaseSensitiveItemIds, disableLiveTvChannelUserDataName, metadataPath, metadataNetworkPath, preferredMetadataLanguage, metadataCountryCode, sortReplaceCharacters, sortRemoveCharacters, sortRemoveWords, minResumePct, maxResumePct, minResumeDurationSeconds, minAudiobookResume, maxAudiobookResume, libraryMonitorDelay, imageSavingConvention, metadataOptions, skipDeserializationForBasicTypes, serverName, uiCulture, saveMetadataHidden, contentTypes, remoteClientBitrateLimit, enableFolderView, enableGroupingIntoCollections, displaySpecialsWithinSeasons, codecsUsed, pluginRepositories, enableExternalContentInSuggestions, imageExtractionTimeoutMs, pathSubstitutions, enableSlowResponseWarning, slowResponseThresholdMs, corsHosts, hashCodeNullable(activityLogRetentionDays), libraryScanFanoutConcurrency, libraryMetadataRefreshConcurrency, removeOldPlugins, allowClientLogUpload);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -1428,243 +1687,319 @@ public class ServerConfiguration {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("LogFileRetentionDays");
-    openapiFields.add("IsStartupWizardCompleted");
-    openapiFields.add("CachePath");
-    openapiFields.add("PreviousVersion");
-    openapiFields.add("PreviousVersionStr");
-    openapiFields.add("EnableMetrics");
-    openapiFields.add("EnableNormalizedItemByNameIds");
-    openapiFields.add("IsPortAuthorized");
-    openapiFields.add("QuickConnectAvailable");
-    openapiFields.add("EnableCaseSensitiveItemIds");
-    openapiFields.add("DisableLiveTvChannelUserDataName");
-    openapiFields.add("MetadataPath");
-    openapiFields.add("MetadataNetworkPath");
-    openapiFields.add("PreferredMetadataLanguage");
-    openapiFields.add("MetadataCountryCode");
-    openapiFields.add("SortReplaceCharacters");
-    openapiFields.add("SortRemoveCharacters");
-    openapiFields.add("SortRemoveWords");
-    openapiFields.add("MinResumePct");
-    openapiFields.add("MaxResumePct");
-    openapiFields.add("MinResumeDurationSeconds");
-    openapiFields.add("MinAudiobookResume");
-    openapiFields.add("MaxAudiobookResume");
-    openapiFields.add("LibraryMonitorDelay");
-    openapiFields.add("ImageSavingConvention");
-    openapiFields.add("MetadataOptions");
-    openapiFields.add("SkipDeserializationForBasicTypes");
-    openapiFields.add("ServerName");
-    openapiFields.add("UICulture");
-    openapiFields.add("SaveMetadataHidden");
-    openapiFields.add("ContentTypes");
-    openapiFields.add("RemoteClientBitrateLimit");
-    openapiFields.add("EnableFolderView");
-    openapiFields.add("EnableGroupingIntoCollections");
-    openapiFields.add("DisplaySpecialsWithinSeasons");
-    openapiFields.add("CodecsUsed");
-    openapiFields.add("PluginRepositories");
-    openapiFields.add("EnableExternalContentInSuggestions");
-    openapiFields.add("ImageExtractionTimeoutMs");
-    openapiFields.add("PathSubstitutions");
-    openapiFields.add("EnableSlowResponseWarning");
-    openapiFields.add("SlowResponseThresholdMs");
-    openapiFields.add("CorsHosts");
-    openapiFields.add("ActivityLogRetentionDays");
-    openapiFields.add("LibraryScanFanoutConcurrency");
-    openapiFields.add("LibraryMetadataRefreshConcurrency");
-    openapiFields.add("RemoveOldPlugins");
-    openapiFields.add("AllowClientLogUpload");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to ServerConfiguration
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!ServerConfiguration.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in ServerConfiguration is not found in the empty JSON string", ServerConfiguration.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!ServerConfiguration.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `ServerConfiguration` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("CachePath") != null && !jsonObj.get("CachePath").isJsonNull()) && !jsonObj.get("CachePath").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `CachePath` to be a primitive type in the JSON string but got `%s`", jsonObj.get("CachePath").toString()));
-      }
-      if ((jsonObj.get("PreviousVersion") != null && !jsonObj.get("PreviousVersion").isJsonNull()) && !jsonObj.get("PreviousVersion").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `PreviousVersion` to be a primitive type in the JSON string but got `%s`", jsonObj.get("PreviousVersion").toString()));
-      }
-      if ((jsonObj.get("PreviousVersionStr") != null && !jsonObj.get("PreviousVersionStr").isJsonNull()) && !jsonObj.get("PreviousVersionStr").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `PreviousVersionStr` to be a primitive type in the JSON string but got `%s`", jsonObj.get("PreviousVersionStr").toString()));
-      }
-      if ((jsonObj.get("MetadataPath") != null && !jsonObj.get("MetadataPath").isJsonNull()) && !jsonObj.get("MetadataPath").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MetadataPath` to be a primitive type in the JSON string but got `%s`", jsonObj.get("MetadataPath").toString()));
-      }
-      if ((jsonObj.get("MetadataNetworkPath") != null && !jsonObj.get("MetadataNetworkPath").isJsonNull()) && !jsonObj.get("MetadataNetworkPath").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MetadataNetworkPath` to be a primitive type in the JSON string but got `%s`", jsonObj.get("MetadataNetworkPath").toString()));
-      }
-      if ((jsonObj.get("PreferredMetadataLanguage") != null && !jsonObj.get("PreferredMetadataLanguage").isJsonNull()) && !jsonObj.get("PreferredMetadataLanguage").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `PreferredMetadataLanguage` to be a primitive type in the JSON string but got `%s`", jsonObj.get("PreferredMetadataLanguage").toString()));
-      }
-      if ((jsonObj.get("MetadataCountryCode") != null && !jsonObj.get("MetadataCountryCode").isJsonNull()) && !jsonObj.get("MetadataCountryCode").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MetadataCountryCode` to be a primitive type in the JSON string but got `%s`", jsonObj.get("MetadataCountryCode").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("SortReplaceCharacters") != null && !jsonObj.get("SortReplaceCharacters").isJsonNull() && !jsonObj.get("SortReplaceCharacters").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SortReplaceCharacters` to be an array in the JSON string but got `%s`", jsonObj.get("SortReplaceCharacters").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("SortRemoveCharacters") != null && !jsonObj.get("SortRemoveCharacters").isJsonNull() && !jsonObj.get("SortRemoveCharacters").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SortRemoveCharacters` to be an array in the JSON string but got `%s`", jsonObj.get("SortRemoveCharacters").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("SortRemoveWords") != null && !jsonObj.get("SortRemoveWords").isJsonNull() && !jsonObj.get("SortRemoveWords").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SortRemoveWords` to be an array in the JSON string but got `%s`", jsonObj.get("SortRemoveWords").toString()));
-      }
-      // validate the optional field `ImageSavingConvention`
-      if (jsonObj.get("ImageSavingConvention") != null && !jsonObj.get("ImageSavingConvention").isJsonNull()) {
-        ImageSavingConvention.validateJsonElement(jsonObj.get("ImageSavingConvention"));
-      }
-      if (jsonObj.get("MetadataOptions") != null && !jsonObj.get("MetadataOptions").isJsonNull()) {
-        JsonArray jsonArraymetadataOptions = jsonObj.getAsJsonArray("MetadataOptions");
-        if (jsonArraymetadataOptions != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("MetadataOptions").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `MetadataOptions` to be an array in the JSON string but got `%s`", jsonObj.get("MetadataOptions").toString()));
-          }
-
-          // validate the optional field `MetadataOptions` (array)
-          for (int i = 0; i < jsonArraymetadataOptions.size(); i++) {
-            MetadataOptions.validateJsonElement(jsonArraymetadataOptions.get(i));
-          };
-        }
-      }
-      if ((jsonObj.get("ServerName") != null && !jsonObj.get("ServerName").isJsonNull()) && !jsonObj.get("ServerName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ServerName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ServerName").toString()));
-      }
-      if ((jsonObj.get("UICulture") != null && !jsonObj.get("UICulture").isJsonNull()) && !jsonObj.get("UICulture").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `UICulture` to be a primitive type in the JSON string but got `%s`", jsonObj.get("UICulture").toString()));
-      }
-      if (jsonObj.get("ContentTypes") != null && !jsonObj.get("ContentTypes").isJsonNull()) {
-        JsonArray jsonArraycontentTypes = jsonObj.getAsJsonArray("ContentTypes");
-        if (jsonArraycontentTypes != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("ContentTypes").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `ContentTypes` to be an array in the JSON string but got `%s`", jsonObj.get("ContentTypes").toString()));
-          }
-
-          // validate the optional field `ContentTypes` (array)
-          for (int i = 0; i < jsonArraycontentTypes.size(); i++) {
-            NameValuePair.validateJsonElement(jsonArraycontentTypes.get(i));
-          };
-        }
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("CodecsUsed") != null && !jsonObj.get("CodecsUsed").isJsonNull() && !jsonObj.get("CodecsUsed").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `CodecsUsed` to be an array in the JSON string but got `%s`", jsonObj.get("CodecsUsed").toString()));
-      }
-      if (jsonObj.get("PluginRepositories") != null && !jsonObj.get("PluginRepositories").isJsonNull()) {
-        JsonArray jsonArraypluginRepositories = jsonObj.getAsJsonArray("PluginRepositories");
-        if (jsonArraypluginRepositories != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("PluginRepositories").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `PluginRepositories` to be an array in the JSON string but got `%s`", jsonObj.get("PluginRepositories").toString()));
-          }
-
-          // validate the optional field `PluginRepositories` (array)
-          for (int i = 0; i < jsonArraypluginRepositories.size(); i++) {
-            RepositoryInfo.validateJsonElement(jsonArraypluginRepositories.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("PathSubstitutions") != null && !jsonObj.get("PathSubstitutions").isJsonNull()) {
-        JsonArray jsonArraypathSubstitutions = jsonObj.getAsJsonArray("PathSubstitutions");
-        if (jsonArraypathSubstitutions != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("PathSubstitutions").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `PathSubstitutions` to be an array in the JSON string but got `%s`", jsonObj.get("PathSubstitutions").toString()));
-          }
-
-          // validate the optional field `PathSubstitutions` (array)
-          for (int i = 0; i < jsonArraypathSubstitutions.size(); i++) {
-            PathSubstitution.validateJsonElement(jsonArraypathSubstitutions.get(i));
-          };
-        }
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("CorsHosts") != null && !jsonObj.get("CorsHosts").isJsonNull() && !jsonObj.get("CorsHosts").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `CorsHosts` to be an array in the JSON string but got `%s`", jsonObj.get("CorsHosts").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!ServerConfiguration.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'ServerConfiguration' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<ServerConfiguration> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(ServerConfiguration.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<ServerConfiguration>() {
-           @Override
-           public void write(JsonWriter out, ServerConfiguration value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public ServerConfiguration read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of ServerConfiguration given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of ServerConfiguration
-   * @throws IOException if the JSON string is invalid with respect to ServerConfiguration
-   */
-  public static ServerConfiguration fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, ServerConfiguration.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of ServerConfiguration to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `LogFileRetentionDays` to the URL query string
+    if (getLogFileRetentionDays() != null) {
+      joiner.add(String.format("%sLogFileRetentionDays%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLogFileRetentionDays()))));
+    }
+
+    // add `IsStartupWizardCompleted` to the URL query string
+    if (getIsStartupWizardCompleted() != null) {
+      joiner.add(String.format("%sIsStartupWizardCompleted%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsStartupWizardCompleted()))));
+    }
+
+    // add `CachePath` to the URL query string
+    if (getCachePath() != null) {
+      joiner.add(String.format("%sCachePath%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCachePath()))));
+    }
+
+    // add `PreviousVersion` to the URL query string
+    if (getPreviousVersion() != null) {
+      joiner.add(String.format("%sPreviousVersion%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPreviousVersion()))));
+    }
+
+    // add `PreviousVersionStr` to the URL query string
+    if (getPreviousVersionStr() != null) {
+      joiner.add(String.format("%sPreviousVersionStr%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPreviousVersionStr()))));
+    }
+
+    // add `EnableMetrics` to the URL query string
+    if (getEnableMetrics() != null) {
+      joiner.add(String.format("%sEnableMetrics%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableMetrics()))));
+    }
+
+    // add `EnableNormalizedItemByNameIds` to the URL query string
+    if (getEnableNormalizedItemByNameIds() != null) {
+      joiner.add(String.format("%sEnableNormalizedItemByNameIds%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableNormalizedItemByNameIds()))));
+    }
+
+    // add `IsPortAuthorized` to the URL query string
+    if (getIsPortAuthorized() != null) {
+      joiner.add(String.format("%sIsPortAuthorized%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsPortAuthorized()))));
+    }
+
+    // add `QuickConnectAvailable` to the URL query string
+    if (getQuickConnectAvailable() != null) {
+      joiner.add(String.format("%sQuickConnectAvailable%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getQuickConnectAvailable()))));
+    }
+
+    // add `EnableCaseSensitiveItemIds` to the URL query string
+    if (getEnableCaseSensitiveItemIds() != null) {
+      joiner.add(String.format("%sEnableCaseSensitiveItemIds%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableCaseSensitiveItemIds()))));
+    }
+
+    // add `DisableLiveTvChannelUserDataName` to the URL query string
+    if (getDisableLiveTvChannelUserDataName() != null) {
+      joiner.add(String.format("%sDisableLiveTvChannelUserDataName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDisableLiveTvChannelUserDataName()))));
+    }
+
+    // add `MetadataPath` to the URL query string
+    if (getMetadataPath() != null) {
+      joiner.add(String.format("%sMetadataPath%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMetadataPath()))));
+    }
+
+    // add `MetadataNetworkPath` to the URL query string
+    if (getMetadataNetworkPath() != null) {
+      joiner.add(String.format("%sMetadataNetworkPath%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMetadataNetworkPath()))));
+    }
+
+    // add `PreferredMetadataLanguage` to the URL query string
+    if (getPreferredMetadataLanguage() != null) {
+      joiner.add(String.format("%sPreferredMetadataLanguage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPreferredMetadataLanguage()))));
+    }
+
+    // add `MetadataCountryCode` to the URL query string
+    if (getMetadataCountryCode() != null) {
+      joiner.add(String.format("%sMetadataCountryCode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMetadataCountryCode()))));
+    }
+
+    // add `SortReplaceCharacters` to the URL query string
+    if (getSortReplaceCharacters() != null) {
+      for (int i = 0; i < getSortReplaceCharacters().size(); i++) {
+        joiner.add(String.format("%sSortReplaceCharacters%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getSortReplaceCharacters().get(i)))));
+      }
+    }
+
+    // add `SortRemoveCharacters` to the URL query string
+    if (getSortRemoveCharacters() != null) {
+      for (int i = 0; i < getSortRemoveCharacters().size(); i++) {
+        joiner.add(String.format("%sSortRemoveCharacters%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getSortRemoveCharacters().get(i)))));
+      }
+    }
+
+    // add `SortRemoveWords` to the URL query string
+    if (getSortRemoveWords() != null) {
+      for (int i = 0; i < getSortRemoveWords().size(); i++) {
+        joiner.add(String.format("%sSortRemoveWords%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getSortRemoveWords().get(i)))));
+      }
+    }
+
+    // add `MinResumePct` to the URL query string
+    if (getMinResumePct() != null) {
+      joiner.add(String.format("%sMinResumePct%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMinResumePct()))));
+    }
+
+    // add `MaxResumePct` to the URL query string
+    if (getMaxResumePct() != null) {
+      joiner.add(String.format("%sMaxResumePct%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxResumePct()))));
+    }
+
+    // add `MinResumeDurationSeconds` to the URL query string
+    if (getMinResumeDurationSeconds() != null) {
+      joiner.add(String.format("%sMinResumeDurationSeconds%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMinResumeDurationSeconds()))));
+    }
+
+    // add `MinAudiobookResume` to the URL query string
+    if (getMinAudiobookResume() != null) {
+      joiner.add(String.format("%sMinAudiobookResume%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMinAudiobookResume()))));
+    }
+
+    // add `MaxAudiobookResume` to the URL query string
+    if (getMaxAudiobookResume() != null) {
+      joiner.add(String.format("%sMaxAudiobookResume%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxAudiobookResume()))));
+    }
+
+    // add `LibraryMonitorDelay` to the URL query string
+    if (getLibraryMonitorDelay() != null) {
+      joiner.add(String.format("%sLibraryMonitorDelay%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLibraryMonitorDelay()))));
+    }
+
+    // add `ImageSavingConvention` to the URL query string
+    if (getImageSavingConvention() != null) {
+      joiner.add(String.format("%sImageSavingConvention%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getImageSavingConvention()))));
+    }
+
+    // add `MetadataOptions` to the URL query string
+    if (getMetadataOptions() != null) {
+      for (int i = 0; i < getMetadataOptions().size(); i++) {
+        if (getMetadataOptions().get(i) != null) {
+          joiner.add(getMetadataOptions().get(i).toUrlQueryString(String.format("%sMetadataOptions%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `SkipDeserializationForBasicTypes` to the URL query string
+    if (getSkipDeserializationForBasicTypes() != null) {
+      joiner.add(String.format("%sSkipDeserializationForBasicTypes%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSkipDeserializationForBasicTypes()))));
+    }
+
+    // add `ServerName` to the URL query string
+    if (getServerName() != null) {
+      joiner.add(String.format("%sServerName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getServerName()))));
+    }
+
+    // add `UICulture` to the URL query string
+    if (getUiCulture() != null) {
+      joiner.add(String.format("%sUICulture%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUiCulture()))));
+    }
+
+    // add `SaveMetadataHidden` to the URL query string
+    if (getSaveMetadataHidden() != null) {
+      joiner.add(String.format("%sSaveMetadataHidden%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSaveMetadataHidden()))));
+    }
+
+    // add `ContentTypes` to the URL query string
+    if (getContentTypes() != null) {
+      for (int i = 0; i < getContentTypes().size(); i++) {
+        if (getContentTypes().get(i) != null) {
+          joiner.add(getContentTypes().get(i).toUrlQueryString(String.format("%sContentTypes%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `RemoteClientBitrateLimit` to the URL query string
+    if (getRemoteClientBitrateLimit() != null) {
+      joiner.add(String.format("%sRemoteClientBitrateLimit%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRemoteClientBitrateLimit()))));
+    }
+
+    // add `EnableFolderView` to the URL query string
+    if (getEnableFolderView() != null) {
+      joiner.add(String.format("%sEnableFolderView%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableFolderView()))));
+    }
+
+    // add `EnableGroupingIntoCollections` to the URL query string
+    if (getEnableGroupingIntoCollections() != null) {
+      joiner.add(String.format("%sEnableGroupingIntoCollections%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableGroupingIntoCollections()))));
+    }
+
+    // add `DisplaySpecialsWithinSeasons` to the URL query string
+    if (getDisplaySpecialsWithinSeasons() != null) {
+      joiner.add(String.format("%sDisplaySpecialsWithinSeasons%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDisplaySpecialsWithinSeasons()))));
+    }
+
+    // add `CodecsUsed` to the URL query string
+    if (getCodecsUsed() != null) {
+      for (int i = 0; i < getCodecsUsed().size(); i++) {
+        joiner.add(String.format("%sCodecsUsed%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getCodecsUsed().get(i)))));
+      }
+    }
+
+    // add `PluginRepositories` to the URL query string
+    if (getPluginRepositories() != null) {
+      for (int i = 0; i < getPluginRepositories().size(); i++) {
+        if (getPluginRepositories().get(i) != null) {
+          joiner.add(getPluginRepositories().get(i).toUrlQueryString(String.format("%sPluginRepositories%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `EnableExternalContentInSuggestions` to the URL query string
+    if (getEnableExternalContentInSuggestions() != null) {
+      joiner.add(String.format("%sEnableExternalContentInSuggestions%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableExternalContentInSuggestions()))));
+    }
+
+    // add `ImageExtractionTimeoutMs` to the URL query string
+    if (getImageExtractionTimeoutMs() != null) {
+      joiner.add(String.format("%sImageExtractionTimeoutMs%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getImageExtractionTimeoutMs()))));
+    }
+
+    // add `PathSubstitutions` to the URL query string
+    if (getPathSubstitutions() != null) {
+      for (int i = 0; i < getPathSubstitutions().size(); i++) {
+        if (getPathSubstitutions().get(i) != null) {
+          joiner.add(getPathSubstitutions().get(i).toUrlQueryString(String.format("%sPathSubstitutions%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
+    }
+
+    // add `EnableSlowResponseWarning` to the URL query string
+    if (getEnableSlowResponseWarning() != null) {
+      joiner.add(String.format("%sEnableSlowResponseWarning%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableSlowResponseWarning()))));
+    }
+
+    // add `SlowResponseThresholdMs` to the URL query string
+    if (getSlowResponseThresholdMs() != null) {
+      joiner.add(String.format("%sSlowResponseThresholdMs%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSlowResponseThresholdMs()))));
+    }
+
+    // add `CorsHosts` to the URL query string
+    if (getCorsHosts() != null) {
+      for (int i = 0; i < getCorsHosts().size(); i++) {
+        joiner.add(String.format("%sCorsHosts%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getCorsHosts().get(i)))));
+      }
+    }
+
+    // add `ActivityLogRetentionDays` to the URL query string
+    if (getActivityLogRetentionDays() != null) {
+      joiner.add(String.format("%sActivityLogRetentionDays%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getActivityLogRetentionDays()))));
+    }
+
+    // add `LibraryScanFanoutConcurrency` to the URL query string
+    if (getLibraryScanFanoutConcurrency() != null) {
+      joiner.add(String.format("%sLibraryScanFanoutConcurrency%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLibraryScanFanoutConcurrency()))));
+    }
+
+    // add `LibraryMetadataRefreshConcurrency` to the URL query string
+    if (getLibraryMetadataRefreshConcurrency() != null) {
+      joiner.add(String.format("%sLibraryMetadataRefreshConcurrency%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLibraryMetadataRefreshConcurrency()))));
+    }
+
+    // add `RemoveOldPlugins` to the URL query string
+    if (getRemoveOldPlugins() != null) {
+      joiner.add(String.format("%sRemoveOldPlugins%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRemoveOldPlugins()))));
+    }
+
+    // add `AllowClientLogUpload` to the URL query string
+    if (getAllowClientLogUpload() != null) {
+      joiner.add(String.format("%sAllowClientLogUpload%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAllowClientLogUpload()))));
+    }
+
+    return joiner.toString();
   }
 }
 

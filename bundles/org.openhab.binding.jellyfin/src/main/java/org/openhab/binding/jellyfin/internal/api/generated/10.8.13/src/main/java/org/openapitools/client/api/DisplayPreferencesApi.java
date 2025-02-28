@@ -10,398 +10,307 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import org.openapitools.client.model.DisplayPreferencesDto;
 import java.util.UUID;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class DisplayPreferencesApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public DisplayPreferencesApi() {
-        this(Configuration.getDefaultApiClient());
+  public DisplayPreferencesApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public DisplayPreferencesApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
     }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
 
-    public DisplayPreferencesApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
+  /**
+   * Get Display Preferences.
+   * 
+   * @param displayPreferencesId Display preferences id. (required)
+   * @param userId User id. (required)
+   * @param client Client. (required)
+   * @return DisplayPreferencesDto
+   * @throws ApiException if fails to make API call
+   */
+  public DisplayPreferencesDto getDisplayPreferences(String displayPreferencesId, UUID userId, String client) throws ApiException {
+    ApiResponse<DisplayPreferencesDto> localVarResponse = getDisplayPreferencesWithHttpInfo(displayPreferencesId, userId, client);
+    return localVarResponse.getData();
+  }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
-    }
-
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
-
-    public int getHostIndex() {
-        return localHostIndex;
-    }
-
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
-    }
-
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for getDisplayPreferences
-     * @param displayPreferencesId Display preferences id. (required)
-     * @param userId User id. (required)
-     * @param client Client. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Display preferences retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getDisplayPreferencesCall(String displayPreferencesId, UUID userId, String client, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Get Display Preferences.
+   * 
+   * @param displayPreferencesId Display preferences id. (required)
+   * @param userId User id. (required)
+   * @param client Client. (required)
+   * @return ApiResponse&lt;DisplayPreferencesDto&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<DisplayPreferencesDto> getDisplayPreferencesWithHttpInfo(String displayPreferencesId, UUID userId, String client) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getDisplayPreferencesRequestBuilder(displayPreferencesId, userId, client);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getDisplayPreferences", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<DisplayPreferencesDto>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = null;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/DisplayPreferences/{displayPreferencesId}"
-            .replace("{" + "displayPreferencesId" + "}", localVarApiClient.escapeString(displayPreferencesId.toString()));
+        return new ApiResponse<DisplayPreferencesDto>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<DisplayPreferencesDto>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (client != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("client", client));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+  private HttpRequest.Builder getDisplayPreferencesRequestBuilder(String displayPreferencesId, UUID userId, String client) throws ApiException {
+    // verify the required parameter 'displayPreferencesId' is set
+    if (displayPreferencesId == null) {
+      throw new ApiException(400, "Missing the required parameter 'displayPreferencesId' when calling getDisplayPreferences");
+    }
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling getDisplayPreferences");
+    }
+    // verify the required parameter 'client' is set
+    if (client == null) {
+      throw new ApiException(400, "Missing the required parameter 'client' when calling getDisplayPreferences");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getDisplayPreferencesValidateBeforeCall(String displayPreferencesId, UUID userId, String client, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'displayPreferencesId' is set
-        if (displayPreferencesId == null) {
-            throw new ApiException("Missing the required parameter 'displayPreferencesId' when calling getDisplayPreferences(Async)");
-        }
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling getDisplayPreferences(Async)");
-        }
+    String localVarPath = "/DisplayPreferences/{displayPreferencesId}"
+        .replace("{displayPreferencesId}", ApiClient.urlEncode(displayPreferencesId.toString()));
 
-        // verify the required parameter 'client' is set
-        if (client == null) {
-            throw new ApiException("Missing the required parameter 'client' when calling getDisplayPreferences(Async)");
-        }
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "client";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("client", client));
 
-        return getDisplayPreferencesCall(displayPreferencesId, userId, client, _callback);
-
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Get Display Preferences.
-     * 
-     * @param displayPreferencesId Display preferences id. (required)
-     * @param userId User id. (required)
-     * @param client Client. (required)
-     * @return DisplayPreferencesDto
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Display preferences retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public DisplayPreferencesDto getDisplayPreferences(String displayPreferencesId, UUID userId, String client) throws ApiException {
-        ApiResponse<DisplayPreferencesDto> localVarResp = getDisplayPreferencesWithHttpInfo(displayPreferencesId, userId, client);
-        return localVarResp.getData();
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Update Display Preferences.
+   * 
+   * @param displayPreferencesId Display preferences id. (required)
+   * @param userId User Id. (required)
+   * @param client Client. (required)
+   * @param displayPreferencesDto New Display Preferences object. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void updateDisplayPreferences(String displayPreferencesId, UUID userId, String client, DisplayPreferencesDto displayPreferencesDto) throws ApiException {
+    updateDisplayPreferencesWithHttpInfo(displayPreferencesId, userId, client, displayPreferencesDto);
+  }
+
+  /**
+   * Update Display Preferences.
+   * 
+   * @param displayPreferencesId Display preferences id. (required)
+   * @param userId User Id. (required)
+   * @param client Client. (required)
+   * @param displayPreferencesDto New Display Preferences object. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> updateDisplayPreferencesWithHttpInfo(String displayPreferencesId, UUID userId, String client, DisplayPreferencesDto displayPreferencesDto) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = updateDisplayPreferencesRequestBuilder(displayPreferencesId, userId, client, displayPreferencesDto);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("updateDisplayPreferences", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder updateDisplayPreferencesRequestBuilder(String displayPreferencesId, UUID userId, String client, DisplayPreferencesDto displayPreferencesDto) throws ApiException {
+    // verify the required parameter 'displayPreferencesId' is set
+    if (displayPreferencesId == null) {
+      throw new ApiException(400, "Missing the required parameter 'displayPreferencesId' when calling updateDisplayPreferences");
+    }
+    // verify the required parameter 'userId' is set
+    if (userId == null) {
+      throw new ApiException(400, "Missing the required parameter 'userId' when calling updateDisplayPreferences");
+    }
+    // verify the required parameter 'client' is set
+    if (client == null) {
+      throw new ApiException(400, "Missing the required parameter 'client' when calling updateDisplayPreferences");
+    }
+    // verify the required parameter 'displayPreferencesDto' is set
+    if (displayPreferencesDto == null) {
+      throw new ApiException(400, "Missing the required parameter 'displayPreferencesDto' when calling updateDisplayPreferences");
     }
 
-    /**
-     * Get Display Preferences.
-     * 
-     * @param displayPreferencesId Display preferences id. (required)
-     * @param userId User id. (required)
-     * @param client Client. (required)
-     * @return ApiResponse&lt;DisplayPreferencesDto&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Display preferences retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<DisplayPreferencesDto> getDisplayPreferencesWithHttpInfo(String displayPreferencesId, UUID userId, String client) throws ApiException {
-        okhttp3.Call localVarCall = getDisplayPreferencesValidateBeforeCall(displayPreferencesId, userId, client, null);
-        Type localVarReturnType = new TypeToken<DisplayPreferencesDto>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/DisplayPreferences/{displayPreferencesId}"
+        .replace("{displayPreferencesId}", ApiClient.urlEncode(displayPreferencesId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "userId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+    localVarQueryParameterBaseName = "client";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("client", client));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Get Display Preferences. (asynchronously)
-     * 
-     * @param displayPreferencesId Display preferences id. (required)
-     * @param userId User id. (required)
-     * @param client Client. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Display preferences retrieved. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getDisplayPreferencesAsync(String displayPreferencesId, UUID userId, String client, final ApiCallback<DisplayPreferencesDto> _callback) throws ApiException {
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json");
 
-        okhttp3.Call localVarCall = getDisplayPreferencesValidateBeforeCall(displayPreferencesId, userId, client, _callback);
-        Type localVarReturnType = new TypeToken<DisplayPreferencesDto>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(displayPreferencesDto);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
     }
-    /**
-     * Build call for updateDisplayPreferences
-     * @param displayPreferencesId Display preferences id. (required)
-     * @param userId User Id. (required)
-     * @param client Client. (required)
-     * @param displayPreferencesDto New Display Preferences object. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Display preferences updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updateDisplayPreferencesCall(String displayPreferencesId, UUID userId, String client, DisplayPreferencesDto displayPreferencesDto, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = displayPreferencesDto;
-
-        // create path and map variables
-        String localVarPath = "/DisplayPreferences/{displayPreferencesId}"
-            .replace("{" + "displayPreferencesId" + "}", localVarApiClient.escapeString(displayPreferencesId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (userId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userId", userId));
-        }
-
-        if (client != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("client", client));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-            "application/json",
-            "text/json",
-            "application/*+json"
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call updateDisplayPreferencesValidateBeforeCall(String displayPreferencesId, UUID userId, String client, DisplayPreferencesDto displayPreferencesDto, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'displayPreferencesId' is set
-        if (displayPreferencesId == null) {
-            throw new ApiException("Missing the required parameter 'displayPreferencesId' when calling updateDisplayPreferences(Async)");
-        }
-
-        // verify the required parameter 'userId' is set
-        if (userId == null) {
-            throw new ApiException("Missing the required parameter 'userId' when calling updateDisplayPreferences(Async)");
-        }
-
-        // verify the required parameter 'client' is set
-        if (client == null) {
-            throw new ApiException("Missing the required parameter 'client' when calling updateDisplayPreferences(Async)");
-        }
-
-        // verify the required parameter 'displayPreferencesDto' is set
-        if (displayPreferencesDto == null) {
-            throw new ApiException("Missing the required parameter 'displayPreferencesDto' when calling updateDisplayPreferences(Async)");
-        }
-
-        return updateDisplayPreferencesCall(displayPreferencesId, userId, client, displayPreferencesDto, _callback);
-
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    /**
-     * Update Display Preferences.
-     * 
-     * @param displayPreferencesId Display preferences id. (required)
-     * @param userId User Id. (required)
-     * @param client Client. (required)
-     * @param displayPreferencesDto New Display Preferences object. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Display preferences updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void updateDisplayPreferences(String displayPreferencesId, UUID userId, String client, DisplayPreferencesDto displayPreferencesDto) throws ApiException {
-        updateDisplayPreferencesWithHttpInfo(displayPreferencesId, userId, client, displayPreferencesDto);
-    }
-
-    /**
-     * Update Display Preferences.
-     * 
-     * @param displayPreferencesId Display preferences id. (required)
-     * @param userId User Id. (required)
-     * @param client Client. (required)
-     * @param displayPreferencesDto New Display Preferences object. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Display preferences updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> updateDisplayPreferencesWithHttpInfo(String displayPreferencesId, UUID userId, String client, DisplayPreferencesDto displayPreferencesDto) throws ApiException {
-        okhttp3.Call localVarCall = updateDisplayPreferencesValidateBeforeCall(displayPreferencesId, userId, client, displayPreferencesDto, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Update Display Preferences. (asynchronously)
-     * 
-     * @param displayPreferencesId Display preferences id. (required)
-     * @param userId User Id. (required)
-     * @param client Client. (required)
-     * @param displayPreferencesDto New Display Preferences object. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Display preferences updated. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call updateDisplayPreferencesAsync(String displayPreferencesId, UUID userId, String client, DisplayPreferencesDto displayPreferencesDto, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = updateDisplayPreferencesValidateBeforeCall(displayPreferencesId, userId, client, displayPreferencesDto, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
 }

@@ -10,512 +10,377 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import org.openapitools.client.model.CollectionCreationResult;
 import java.util.UUID;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class CollectionApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public CollectionApi() {
-        this(Configuration.getDefaultApiClient());
+  public CollectionApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public CollectionApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
+    }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
+
+  /**
+   * Adds items to a collection.
+   * 
+   * @param collectionId The collection id. (required)
+   * @param ids Item ids, comma delimited. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void addToCollection(UUID collectionId, List<UUID> ids) throws ApiException {
+    addToCollectionWithHttpInfo(collectionId, ids);
+  }
+
+  /**
+   * Adds items to a collection.
+   * 
+   * @param collectionId The collection id. (required)
+   * @param ids Item ids, comma delimited. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> addToCollectionWithHttpInfo(UUID collectionId, List<UUID> ids) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = addToCollectionRequestBuilder(collectionId, ids);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("addToCollection", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder addToCollectionRequestBuilder(UUID collectionId, List<UUID> ids) throws ApiException {
+    // verify the required parameter 'collectionId' is set
+    if (collectionId == null) {
+      throw new ApiException(400, "Missing the required parameter 'collectionId' when calling addToCollection");
+    }
+    // verify the required parameter 'ids' is set
+    if (ids == null) {
+      throw new ApiException(400, "Missing the required parameter 'ids' when calling addToCollection");
     }
 
-    public CollectionApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Collections/{collectionId}/Items"
+        .replace("{collectionId}", ApiClient.urlEncode(collectionId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "ids";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "ids", ids));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    public int getHostIndex() {
-        return localHostIndex;
-    }
+  /**
+   * Creates a new collection.
+   * 
+   * @param name The name of the collection. (optional)
+   * @param ids Item Ids to add to the collection. (optional)
+   * @param parentId Optional. Create the collection within a specific folder. (optional)
+   * @param isLocked Whether or not to lock the new collection. (optional, default to false)
+   * @return CollectionCreationResult
+   * @throws ApiException if fails to make API call
+   */
+  public CollectionCreationResult createCollection(String name, List<String> ids, UUID parentId, Boolean isLocked) throws ApiException {
+    ApiResponse<CollectionCreationResult> localVarResponse = createCollectionWithHttpInfo(name, ids, parentId, isLocked);
+    return localVarResponse.getData();
+  }
 
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
-    }
-
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for addToCollection
-     * @param collectionId The collection id. (required)
-     * @param ids Item ids, comma delimited. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items added to collection. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call addToCollectionCall(UUID collectionId, List<UUID> ids, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Creates a new collection.
+   * 
+   * @param name The name of the collection. (optional)
+   * @param ids Item Ids to add to the collection. (optional)
+   * @param parentId Optional. Create the collection within a specific folder. (optional)
+   * @param isLocked Whether or not to lock the new collection. (optional, default to false)
+   * @return ApiResponse&lt;CollectionCreationResult&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<CollectionCreationResult> createCollectionWithHttpInfo(String name, List<String> ids, UUID parentId, Boolean isLocked) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = createCollectionRequestBuilder(name, ids, parentId, isLocked);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("createCollection", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<CollectionCreationResult>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = null;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/Collections/{collectionId}/Items"
-            .replace("{" + "collectionId" + "}", localVarApiClient.escapeString(collectionId.toString()));
+        return new ApiResponse<CollectionCreationResult>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<CollectionCreationResult>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+  private HttpRequest.Builder createCollectionRequestBuilder(String name, List<String> ids, UUID parentId, Boolean isLocked) throws ApiException {
 
-        if (ids != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "ids", ids));
-        }
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
+    String localVarPath = "/Collections";
 
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "name";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("name", name));
+    localVarQueryParameterBaseName = "ids";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "ids", ids));
+    localVarQueryParameterBaseName = "parentId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("parentId", parentId));
+    localVarQueryParameterBaseName = "isLocked";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("isLocked", isLocked));
 
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call addToCollectionValidateBeforeCall(UUID collectionId, List<UUID> ids, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'collectionId' is set
-        if (collectionId == null) {
-            throw new ApiException("Missing the required parameter 'collectionId' when calling addToCollection(Async)");
+    localVarRequestBuilder.header("Accept", "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Removes items from a collection.
+   * 
+   * @param collectionId The collection id. (required)
+   * @param ids Item ids, comma delimited. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void removeFromCollection(UUID collectionId, List<UUID> ids) throws ApiException {
+    removeFromCollectionWithHttpInfo(collectionId, ids);
+  }
+
+  /**
+   * Removes items from a collection.
+   * 
+   * @param collectionId The collection id. (required)
+   * @param ids Item ids, comma delimited. (required)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> removeFromCollectionWithHttpInfo(UUID collectionId, List<UUID> ids) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = removeFromCollectionRequestBuilder(collectionId, ids);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("removeFromCollection", localVarResponse);
         }
-
-        // verify the required parameter 'ids' is set
-        if (ids == null) {
-            throw new ApiException("Missing the required parameter 'ids' when calling addToCollection(Async)");
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
         }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        return addToCollectionCall(collectionId, ids, _callback);
-
+  private HttpRequest.Builder removeFromCollectionRequestBuilder(UUID collectionId, List<UUID> ids) throws ApiException {
+    // verify the required parameter 'collectionId' is set
+    if (collectionId == null) {
+      throw new ApiException(400, "Missing the required parameter 'collectionId' when calling removeFromCollection");
+    }
+    // verify the required parameter 'ids' is set
+    if (ids == null) {
+      throw new ApiException(400, "Missing the required parameter 'ids' when calling removeFromCollection");
     }
 
-    /**
-     * Adds items to a collection.
-     * 
-     * @param collectionId The collection id. (required)
-     * @param ids Item ids, comma delimited. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items added to collection. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void addToCollection(UUID collectionId, List<UUID> ids) throws ApiException {
-        addToCollectionWithHttpInfo(collectionId, ids);
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/Collections/{collectionId}/Items"
+        .replace("{collectionId}", ApiClient.urlEncode(collectionId.toString()));
+
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "ids";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "ids", ids));
+
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Adds items to a collection.
-     * 
-     * @param collectionId The collection id. (required)
-     * @param ids Item ids, comma delimited. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items added to collection. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> addToCollectionWithHttpInfo(UUID collectionId, List<UUID> ids) throws ApiException {
-        okhttp3.Call localVarCall = addToCollectionValidateBeforeCall(collectionId, ids, null);
-        return localVarApiClient.execute(localVarCall);
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Adds items to a collection. (asynchronously)
-     * 
-     * @param collectionId The collection id. (required)
-     * @param ids Item ids, comma delimited. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items added to collection. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call addToCollectionAsync(UUID collectionId, List<UUID> ids, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = addToCollectionValidateBeforeCall(collectionId, ids, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
-    /**
-     * Build call for createCollection
-     * @param name The name of the collection. (optional)
-     * @param ids Item Ids to add to the collection. (optional)
-     * @param parentId Optional. Create the collection within a specific folder. (optional)
-     * @param isLocked Whether or not to lock the new collection. (optional, default to false)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Collection created. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call createCollectionCall(String name, List<String> ids, UUID parentId, Boolean isLocked, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
+    return localVarRequestBuilder;
+  }
 
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Collections";
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (name != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("name", name));
-        }
-
-        if (ids != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "ids", ids));
-        }
-
-        if (parentId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("parentId", parentId));
-        }
-
-        if (isLocked != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isLocked", isLocked));
-        }
-
-        final String[] localVarAccepts = {
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call createCollectionValidateBeforeCall(String name, List<String> ids, UUID parentId, Boolean isLocked, final ApiCallback _callback) throws ApiException {
-        return createCollectionCall(name, ids, parentId, isLocked, _callback);
-
-    }
-
-    /**
-     * Creates a new collection.
-     * 
-     * @param name The name of the collection. (optional)
-     * @param ids Item Ids to add to the collection. (optional)
-     * @param parentId Optional. Create the collection within a specific folder. (optional)
-     * @param isLocked Whether or not to lock the new collection. (optional, default to false)
-     * @return CollectionCreationResult
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Collection created. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public CollectionCreationResult createCollection(String name, List<String> ids, UUID parentId, Boolean isLocked) throws ApiException {
-        ApiResponse<CollectionCreationResult> localVarResp = createCollectionWithHttpInfo(name, ids, parentId, isLocked);
-        return localVarResp.getData();
-    }
-
-    /**
-     * Creates a new collection.
-     * 
-     * @param name The name of the collection. (optional)
-     * @param ids Item Ids to add to the collection. (optional)
-     * @param parentId Optional. Create the collection within a specific folder. (optional)
-     * @param isLocked Whether or not to lock the new collection. (optional, default to false)
-     * @return ApiResponse&lt;CollectionCreationResult&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Collection created. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<CollectionCreationResult> createCollectionWithHttpInfo(String name, List<String> ids, UUID parentId, Boolean isLocked) throws ApiException {
-        okhttp3.Call localVarCall = createCollectionValidateBeforeCall(name, ids, parentId, isLocked, null);
-        Type localVarReturnType = new TypeToken<CollectionCreationResult>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
-    }
-
-    /**
-     * Creates a new collection. (asynchronously)
-     * 
-     * @param name The name of the collection. (optional)
-     * @param ids Item Ids to add to the collection. (optional)
-     * @param parentId Optional. Create the collection within a specific folder. (optional)
-     * @param isLocked Whether or not to lock the new collection. (optional, default to false)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Collection created. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call createCollectionAsync(String name, List<String> ids, UUID parentId, Boolean isLocked, final ApiCallback<CollectionCreationResult> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = createCollectionValidateBeforeCall(name, ids, parentId, isLocked, _callback);
-        Type localVarReturnType = new TypeToken<CollectionCreationResult>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for removeFromCollection
-     * @param collectionId The collection id. (required)
-     * @param ids Item ids, comma delimited. (required)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items removed from collection. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call removeFromCollectionCall(UUID collectionId, List<UUID> ids, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
-        }
-
-        Object localVarPostBody = null;
-
-        // create path and map variables
-        String localVarPath = "/Collections/{collectionId}/Items"
-            .replace("{" + "collectionId" + "}", localVarApiClient.escapeString(collectionId.toString()));
-
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (ids != null) {
-            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "ids", ids));
-        }
-
-        final String[] localVarAccepts = {
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call removeFromCollectionValidateBeforeCall(UUID collectionId, List<UUID> ids, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'collectionId' is set
-        if (collectionId == null) {
-            throw new ApiException("Missing the required parameter 'collectionId' when calling removeFromCollection(Async)");
-        }
-
-        // verify the required parameter 'ids' is set
-        if (ids == null) {
-            throw new ApiException("Missing the required parameter 'ids' when calling removeFromCollection(Async)");
-        }
-
-        return removeFromCollectionCall(collectionId, ids, _callback);
-
-    }
-
-    /**
-     * Removes items from a collection.
-     * 
-     * @param collectionId The collection id. (required)
-     * @param ids Item ids, comma delimited. (required)
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items removed from collection. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public void removeFromCollection(UUID collectionId, List<UUID> ids) throws ApiException {
-        removeFromCollectionWithHttpInfo(collectionId, ids);
-    }
-
-    /**
-     * Removes items from a collection.
-     * 
-     * @param collectionId The collection id. (required)
-     * @param ids Item ids, comma delimited. (required)
-     * @return ApiResponse&lt;Void&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items removed from collection. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<Void> removeFromCollectionWithHttpInfo(UUID collectionId, List<UUID> ids) throws ApiException {
-        okhttp3.Call localVarCall = removeFromCollectionValidateBeforeCall(collectionId, ids, null);
-        return localVarApiClient.execute(localVarCall);
-    }
-
-    /**
-     * Removes items from a collection. (asynchronously)
-     * 
-     * @param collectionId The collection id. (required)
-     * @param ids Item ids, comma delimited. (required)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 204 </td><td> Items removed from collection. </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call removeFromCollectionAsync(UUID collectionId, List<UUID> ids, final ApiCallback<Void> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = removeFromCollectionValidateBeforeCall(collectionId, ids, _callback);
-        localVarApiClient.executeAsync(localVarCall, _callback);
-        return localVarCall;
-    }
 }

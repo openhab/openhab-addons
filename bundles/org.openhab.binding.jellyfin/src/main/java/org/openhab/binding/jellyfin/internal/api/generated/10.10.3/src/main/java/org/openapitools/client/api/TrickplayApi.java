@@ -10,398 +10,301 @@
  * Do not edit the class manually.
  */
 
-
 package org.openapitools.client.api;
 
-import org.openapitools.client.ApiCallback;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.Pair;
-import org.openapitools.client.ProgressRequestBody;
-import org.openapitools.client.ProgressResponseBody;
-
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-
 
 import java.io.File;
 import org.openapitools.client.model.ProblemDetails;
 import java.util.UUID;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpRequest;
+import java.nio.channels.Channels;
+import java.nio.channels.Pipe;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class TrickplayApi {
-    private ApiClient localVarApiClient;
-    private int localHostIndex;
-    private String localCustomBaseUrl;
+  private final HttpClient memberVarHttpClient;
+  private final ObjectMapper memberVarObjectMapper;
+  private final String memberVarBaseUri;
+  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+  private final Duration memberVarReadTimeout;
+  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
-    public TrickplayApi() {
-        this(Configuration.getDefaultApiClient());
+  public TrickplayApi() {
+    this(Configuration.getDefaultApiClient());
+  }
+
+  public TrickplayApi(ApiClient apiClient) {
+    memberVarHttpClient = apiClient.getHttpClient();
+    memberVarObjectMapper = apiClient.getObjectMapper();
+    memberVarBaseUri = apiClient.getBaseUri();
+    memberVarInterceptor = apiClient.getRequestInterceptor();
+    memberVarReadTimeout = apiClient.getReadTimeout();
+    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+  }
+
+  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+    String body = response.body() == null ? null : new String(response.body().readAllBytes());
+    String message = formatExceptionMessage(operationId, response.statusCode(), body);
+    return new ApiException(response.statusCode(), message, response.headers(), body);
+  }
+
+  private String formatExceptionMessage(String operationId, int statusCode, String body) {
+    if (body == null || body.isEmpty()) {
+      body = "[no body]";
     }
+    return operationId + " call failed with: " + statusCode + " - " + body;
+  }
 
-    public TrickplayApi(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
+  /**
+   * Gets an image tiles playlist for trickplay.
+   * 
+   * @param itemId The item id. (required)
+   * @param width The width of a single tile. (required)
+   * @param mediaSourceId The media version id, if using an alternate version. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getTrickplayHlsPlaylist(UUID itemId, Integer width, UUID mediaSourceId) throws ApiException {
+    ApiResponse<File> localVarResponse = getTrickplayHlsPlaylistWithHttpInfo(itemId, width, mediaSourceId);
+    return localVarResponse.getData();
+  }
 
-    public ApiClient getApiClient() {
-        return localVarApiClient;
-    }
-
-    public void setApiClient(ApiClient apiClient) {
-        this.localVarApiClient = apiClient;
-    }
-
-    public int getHostIndex() {
-        return localHostIndex;
-    }
-
-    public void setHostIndex(int hostIndex) {
-        this.localHostIndex = hostIndex;
-    }
-
-    public String getCustomBaseUrl() {
-        return localCustomBaseUrl;
-    }
-
-    public void setCustomBaseUrl(String customBaseUrl) {
-        this.localCustomBaseUrl = customBaseUrl;
-    }
-
-    /**
-     * Build call for getTrickplayHlsPlaylist
-     * @param itemId The item id. (required)
-     * @param width The width of a single tile. (required)
-     * @param mediaSourceId The media version id, if using an alternate version. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Tiles playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getTrickplayHlsPlaylistCall(UUID itemId, Integer width, UUID mediaSourceId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Gets an image tiles playlist for trickplay.
+   * 
+   * @param itemId The item id. (required)
+   * @param width The width of a single tile. (required)
+   * @param mediaSourceId The media version id, if using an alternate version. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getTrickplayHlsPlaylistWithHttpInfo(UUID itemId, Integer width, UUID mediaSourceId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getTrickplayHlsPlaylistRequestBuilder(itemId, width, mediaSourceId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getTrickplayHlsPlaylist", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = null;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/Videos/{itemId}/Trickplay/{width}/tiles.m3u8"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "width" + "}", localVarApiClient.escapeString(width.toString()));
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (mediaSourceId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("mediaSourceId", mediaSourceId));
-        }
-
-        final String[] localVarAccepts = {
-            "application/x-mpegURL",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+  private HttpRequest.Builder getTrickplayHlsPlaylistRequestBuilder(UUID itemId, Integer width, UUID mediaSourceId) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getTrickplayHlsPlaylist");
+    }
+    // verify the required parameter 'width' is set
+    if (width == null) {
+      throw new ApiException(400, "Missing the required parameter 'width' when calling getTrickplayHlsPlaylist");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getTrickplayHlsPlaylistValidateBeforeCall(UUID itemId, Integer width, UUID mediaSourceId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getTrickplayHlsPlaylist(Async)");
-        }
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
-        // verify the required parameter 'width' is set
-        if (width == null) {
-            throw new ApiException("Missing the required parameter 'width' when calling getTrickplayHlsPlaylist(Async)");
-        }
+    String localVarPath = "/Videos/{itemId}/Trickplay/{width}/tiles.m3u8"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{width}", ApiClient.urlEncode(width.toString()));
 
-        return getTrickplayHlsPlaylistCall(itemId, width, mediaSourceId, _callback);
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "mediaSourceId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("mediaSourceId", mediaSourceId));
 
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Gets an image tiles playlist for trickplay.
-     * 
-     * @param itemId The item id. (required)
-     * @param width The width of a single tile. (required)
-     * @param mediaSourceId The media version id, if using an alternate version. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Tiles playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getTrickplayHlsPlaylist(UUID itemId, Integer width, UUID mediaSourceId) throws ApiException {
-        ApiResponse<File> localVarResp = getTrickplayHlsPlaylistWithHttpInfo(itemId, width, mediaSourceId);
-        return localVarResp.getData();
+    localVarRequestBuilder.header("Accept", "application/x-mpegURL, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Gets an image tiles playlist for trickplay.
-     * 
-     * @param itemId The item id. (required)
-     * @param width The width of a single tile. (required)
-     * @param mediaSourceId The media version id, if using an alternate version. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Tiles playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getTrickplayHlsPlaylistWithHttpInfo(UUID itemId, Integer width, UUID mediaSourceId) throws ApiException {
-        okhttp3.Call localVarCall = getTrickplayHlsPlaylistValidateBeforeCall(itemId, width, mediaSourceId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
 
-    /**
-     * Gets an image tiles playlist for trickplay. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param width The width of a single tile. (required)
-     * @param mediaSourceId The media version id, if using an alternate version. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Tiles playlist returned. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getTrickplayHlsPlaylistAsync(UUID itemId, Integer width, UUID mediaSourceId, final ApiCallback<File> _callback) throws ApiException {
+  /**
+   * Gets a trickplay tile image.
+   * 
+   * @param itemId The item id. (required)
+   * @param width The width of a single tile. (required)
+   * @param index The index of the desired tile. (required)
+   * @param mediaSourceId The media version id, if using an alternate version. (optional)
+   * @return File
+   * @throws ApiException if fails to make API call
+   */
+  public File getTrickplayTileImage(UUID itemId, Integer width, Integer index, UUID mediaSourceId) throws ApiException {
+    ApiResponse<File> localVarResponse = getTrickplayTileImageWithHttpInfo(itemId, width, index, mediaSourceId);
+    return localVarResponse.getData();
+  }
 
-        okhttp3.Call localVarCall = getTrickplayHlsPlaylistValidateBeforeCall(itemId, width, mediaSourceId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
-    }
-    /**
-     * Build call for getTrickplayTileImage
-     * @param itemId The item id. (required)
-     * @param width The width of a single tile. (required)
-     * @param index The index of the desired tile. (required)
-     * @param mediaSourceId The media version id, if using an alternate version. (optional)
-     * @param _callback Callback for upload/download progress
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Tile image not found at specified index. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getTrickplayTileImageCall(UUID itemId, Integer width, Integer index, UUID mediaSourceId, final ApiCallback _callback) throws ApiException {
-        String basePath = null;
-        // Operation Servers
-        String[] localBasePaths = new String[] {  };
-
-        // Determine Base Path to Use
-        if (localCustomBaseUrl != null){
-            basePath = localCustomBaseUrl;
-        } else if ( localBasePaths.length > 0 ) {
-            basePath = localBasePaths[localHostIndex];
-        } else {
-            basePath = null;
+  /**
+   * Gets a trickplay tile image.
+   * 
+   * @param itemId The item id. (required)
+   * @param width The width of a single tile. (required)
+   * @param index The index of the desired tile. (required)
+   * @param mediaSourceId The media version id, if using an alternate version. (optional)
+   * @return ApiResponse&lt;File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<File> getTrickplayTileImageWithHttpInfo(UUID itemId, Integer width, Integer index, UUID mediaSourceId) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getTrickplayTileImageRequestBuilder(itemId, width, index, mediaSourceId);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("getTrickplayTileImage", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<File>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
         }
 
-        Object localVarPostBody = null;
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        localVarResponse.body().close();
 
-        // create path and map variables
-        String localVarPath = "/Videos/{itemId}/Trickplay/{width}/{index}.jpg"
-            .replace("{" + "itemId" + "}", localVarApiClient.escapeString(itemId.toString()))
-            .replace("{" + "width" + "}", localVarApiClient.escapeString(width.toString()))
-            .replace("{" + "index" + "}", localVarApiClient.escapeString(index.toString()));
+        return new ApiResponse<File>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {})
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, String> localVarCookieParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        if (mediaSourceId != null) {
-            localVarQueryParams.addAll(localVarApiClient.parameterToPair("mediaSourceId", mediaSourceId));
-        }
-
-        final String[] localVarAccepts = {
-            "image/*",
-            "application/json",
-            "application/json; profile=CamelCase",
-            "application/json; profile=PascalCase"
-        };
-        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) {
-            localVarHeaderParams.put("Accept", localVarAccept);
-        }
-
-        final String[] localVarContentTypes = {
-        };
-        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
-        if (localVarContentType != null) {
-            localVarHeaderParams.put("Content-Type", localVarContentType);
-        }
-
-        String[] localVarAuthNames = new String[] { "CustomAuthentication" };
-        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+  private HttpRequest.Builder getTrickplayTileImageRequestBuilder(UUID itemId, Integer width, Integer index, UUID mediaSourceId) throws ApiException {
+    // verify the required parameter 'itemId' is set
+    if (itemId == null) {
+      throw new ApiException(400, "Missing the required parameter 'itemId' when calling getTrickplayTileImage");
+    }
+    // verify the required parameter 'width' is set
+    if (width == null) {
+      throw new ApiException(400, "Missing the required parameter 'width' when calling getTrickplayTileImage");
+    }
+    // verify the required parameter 'index' is set
+    if (index == null) {
+      throw new ApiException(400, "Missing the required parameter 'index' when calling getTrickplayTileImage");
     }
 
-    @SuppressWarnings("rawtypes")
-    private okhttp3.Call getTrickplayTileImageValidateBeforeCall(UUID itemId, Integer width, Integer index, UUID mediaSourceId, final ApiCallback _callback) throws ApiException {
-        // verify the required parameter 'itemId' is set
-        if (itemId == null) {
-            throw new ApiException("Missing the required parameter 'itemId' when calling getTrickplayTileImage(Async)");
-        }
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
-        // verify the required parameter 'width' is set
-        if (width == null) {
-            throw new ApiException("Missing the required parameter 'width' when calling getTrickplayTileImage(Async)");
-        }
+    String localVarPath = "/Videos/{itemId}/Trickplay/{width}/{index}.jpg"
+        .replace("{itemId}", ApiClient.urlEncode(itemId.toString()))
+        .replace("{width}", ApiClient.urlEncode(width.toString()))
+        .replace("{index}", ApiClient.urlEncode(index.toString()));
 
-        // verify the required parameter 'index' is set
-        if (index == null) {
-            throw new ApiException("Missing the required parameter 'index' when calling getTrickplayTileImage(Async)");
-        }
+    List<Pair> localVarQueryParams = new ArrayList<>();
+    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
+    String localVarQueryParameterBaseName;
+    localVarQueryParameterBaseName = "mediaSourceId";
+    localVarQueryParams.addAll(ApiClient.parameterToPairs("mediaSourceId", mediaSourceId));
 
-        return getTrickplayTileImageCall(itemId, width, index, mediaSourceId, _callback);
-
+    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
+      StringJoiner queryJoiner = new StringJoiner("&");
+      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
+      if (localVarQueryStringJoiner.length() != 0) {
+        queryJoiner.add(localVarQueryStringJoiner.toString());
+      }
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
+    } else {
+      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    /**
-     * Gets a trickplay tile image.
-     * 
-     * @param itemId The item id. (required)
-     * @param width The width of a single tile. (required)
-     * @param index The index of the desired tile. (required)
-     * @param mediaSourceId The media version id, if using an alternate version. (optional)
-     * @return File
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Tile image not found at specified index. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public File getTrickplayTileImage(UUID itemId, Integer width, Integer index, UUID mediaSourceId) throws ApiException {
-        ApiResponse<File> localVarResp = getTrickplayTileImageWithHttpInfo(itemId, width, index, mediaSourceId);
-        return localVarResp.getData();
-    }
+    localVarRequestBuilder.header("Accept", "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
 
-    /**
-     * Gets a trickplay tile image.
-     * 
-     * @param itemId The item id. (required)
-     * @param width The width of a single tile. (required)
-     * @param index The index of the desired tile. (required)
-     * @param mediaSourceId The media version id, if using an alternate version. (optional)
-     * @return ApiResponse&lt;File&gt;
-     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Tile image not found at specified index. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public ApiResponse<File> getTrickplayTileImageWithHttpInfo(UUID itemId, Integer width, Integer index, UUID mediaSourceId) throws ApiException {
-        okhttp3.Call localVarCall = getTrickplayTileImageValidateBeforeCall(itemId, width, index, mediaSourceId, null);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-
-    /**
-     * Gets a trickplay tile image. (asynchronously)
-     * 
-     * @param itemId The item id. (required)
-     * @param width The width of a single tile. (required)
-     * @param index The index of the desired tile. (required)
-     * @param mediaSourceId The media version id, if using an alternate version. (optional)
-     * @param _callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     * @http.response.details
-     <table border="1">
-       <caption>Response Details</caption>
-        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
-        <tr><td> 200 </td><td> Tile image not found at specified index. </td><td>  -  </td></tr>
-        <tr><td> 404 </td><td> Not Found </td><td>  -  </td></tr>
-        <tr><td> 401 </td><td> Unauthorized </td><td>  -  </td></tr>
-        <tr><td> 403 </td><td> Forbidden </td><td>  -  </td></tr>
-     </table>
-     */
-    public okhttp3.Call getTrickplayTileImageAsync(UUID itemId, Integer width, Integer index, UUID mediaSourceId, final ApiCallback<File> _callback) throws ApiException {
-
-        okhttp3.Call localVarCall = getTrickplayTileImageValidateBeforeCall(itemId, width, index, mediaSourceId, _callback);
-        Type localVarReturnType = new TypeToken<File>(){}.getType();
-        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
-        return localVarCall;
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
     }
+    return localVarRequestBuilder;
+  }
+
 }

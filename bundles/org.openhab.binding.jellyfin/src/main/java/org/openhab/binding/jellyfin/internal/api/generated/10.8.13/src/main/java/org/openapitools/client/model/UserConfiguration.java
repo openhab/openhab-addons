@@ -13,127 +13,114 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.client.model.SubtitlePlaybackMode;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class UserConfiguration.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  UserConfiguration.JSON_PROPERTY_AUDIO_LANGUAGE_PREFERENCE,
+  UserConfiguration.JSON_PROPERTY_PLAY_DEFAULT_AUDIO_TRACK,
+  UserConfiguration.JSON_PROPERTY_SUBTITLE_LANGUAGE_PREFERENCE,
+  UserConfiguration.JSON_PROPERTY_DISPLAY_MISSING_EPISODES,
+  UserConfiguration.JSON_PROPERTY_GROUPED_FOLDERS,
+  UserConfiguration.JSON_PROPERTY_SUBTITLE_MODE,
+  UserConfiguration.JSON_PROPERTY_DISPLAY_COLLECTIONS_VIEW,
+  UserConfiguration.JSON_PROPERTY_ENABLE_LOCAL_PASSWORD,
+  UserConfiguration.JSON_PROPERTY_ORDERED_VIEWS,
+  UserConfiguration.JSON_PROPERTY_LATEST_ITEMS_EXCLUDES,
+  UserConfiguration.JSON_PROPERTY_MY_MEDIA_EXCLUDES,
+  UserConfiguration.JSON_PROPERTY_HIDE_PLAYED_IN_LATEST,
+  UserConfiguration.JSON_PROPERTY_REMEMBER_AUDIO_SELECTIONS,
+  UserConfiguration.JSON_PROPERTY_REMEMBER_SUBTITLE_SELECTIONS,
+  UserConfiguration.JSON_PROPERTY_ENABLE_NEXT_EPISODE_AUTO_PLAY
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class UserConfiguration {
-  public static final String SERIALIZED_NAME_AUDIO_LANGUAGE_PREFERENCE = "AudioLanguagePreference";
-  @SerializedName(SERIALIZED_NAME_AUDIO_LANGUAGE_PREFERENCE)
-  @javax.annotation.Nullable
-  private String audioLanguagePreference;
+  public static final String JSON_PROPERTY_AUDIO_LANGUAGE_PREFERENCE = "AudioLanguagePreference";
+  private JsonNullable<String> audioLanguagePreference = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_PLAY_DEFAULT_AUDIO_TRACK = "PlayDefaultAudioTrack";
-  @SerializedName(SERIALIZED_NAME_PLAY_DEFAULT_AUDIO_TRACK)
+  public static final String JSON_PROPERTY_PLAY_DEFAULT_AUDIO_TRACK = "PlayDefaultAudioTrack";
   @javax.annotation.Nullable
   private Boolean playDefaultAudioTrack;
 
-  public static final String SERIALIZED_NAME_SUBTITLE_LANGUAGE_PREFERENCE = "SubtitleLanguagePreference";
-  @SerializedName(SERIALIZED_NAME_SUBTITLE_LANGUAGE_PREFERENCE)
-  @javax.annotation.Nullable
-  private String subtitleLanguagePreference;
+  public static final String JSON_PROPERTY_SUBTITLE_LANGUAGE_PREFERENCE = "SubtitleLanguagePreference";
+  private JsonNullable<String> subtitleLanguagePreference = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_DISPLAY_MISSING_EPISODES = "DisplayMissingEpisodes";
-  @SerializedName(SERIALIZED_NAME_DISPLAY_MISSING_EPISODES)
+  public static final String JSON_PROPERTY_DISPLAY_MISSING_EPISODES = "DisplayMissingEpisodes";
   @javax.annotation.Nullable
   private Boolean displayMissingEpisodes;
 
-  public static final String SERIALIZED_NAME_GROUPED_FOLDERS = "GroupedFolders";
-  @SerializedName(SERIALIZED_NAME_GROUPED_FOLDERS)
+  public static final String JSON_PROPERTY_GROUPED_FOLDERS = "GroupedFolders";
   @javax.annotation.Nullable
   private List<String> groupedFolders = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_SUBTITLE_MODE = "SubtitleMode";
-  @SerializedName(SERIALIZED_NAME_SUBTITLE_MODE)
+  public static final String JSON_PROPERTY_SUBTITLE_MODE = "SubtitleMode";
   @javax.annotation.Nullable
   private SubtitlePlaybackMode subtitleMode;
 
-  public static final String SERIALIZED_NAME_DISPLAY_COLLECTIONS_VIEW = "DisplayCollectionsView";
-  @SerializedName(SERIALIZED_NAME_DISPLAY_COLLECTIONS_VIEW)
+  public static final String JSON_PROPERTY_DISPLAY_COLLECTIONS_VIEW = "DisplayCollectionsView";
   @javax.annotation.Nullable
   private Boolean displayCollectionsView;
 
-  public static final String SERIALIZED_NAME_ENABLE_LOCAL_PASSWORD = "EnableLocalPassword";
-  @SerializedName(SERIALIZED_NAME_ENABLE_LOCAL_PASSWORD)
+  public static final String JSON_PROPERTY_ENABLE_LOCAL_PASSWORD = "EnableLocalPassword";
   @javax.annotation.Nullable
   private Boolean enableLocalPassword;
 
-  public static final String SERIALIZED_NAME_ORDERED_VIEWS = "OrderedViews";
-  @SerializedName(SERIALIZED_NAME_ORDERED_VIEWS)
+  public static final String JSON_PROPERTY_ORDERED_VIEWS = "OrderedViews";
   @javax.annotation.Nullable
   private List<String> orderedViews = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_LATEST_ITEMS_EXCLUDES = "LatestItemsExcludes";
-  @SerializedName(SERIALIZED_NAME_LATEST_ITEMS_EXCLUDES)
+  public static final String JSON_PROPERTY_LATEST_ITEMS_EXCLUDES = "LatestItemsExcludes";
   @javax.annotation.Nullable
   private List<String> latestItemsExcludes = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_MY_MEDIA_EXCLUDES = "MyMediaExcludes";
-  @SerializedName(SERIALIZED_NAME_MY_MEDIA_EXCLUDES)
+  public static final String JSON_PROPERTY_MY_MEDIA_EXCLUDES = "MyMediaExcludes";
   @javax.annotation.Nullable
   private List<String> myMediaExcludes = new ArrayList<>();
 
-  public static final String SERIALIZED_NAME_HIDE_PLAYED_IN_LATEST = "HidePlayedInLatest";
-  @SerializedName(SERIALIZED_NAME_HIDE_PLAYED_IN_LATEST)
+  public static final String JSON_PROPERTY_HIDE_PLAYED_IN_LATEST = "HidePlayedInLatest";
   @javax.annotation.Nullable
   private Boolean hidePlayedInLatest;
 
-  public static final String SERIALIZED_NAME_REMEMBER_AUDIO_SELECTIONS = "RememberAudioSelections";
-  @SerializedName(SERIALIZED_NAME_REMEMBER_AUDIO_SELECTIONS)
+  public static final String JSON_PROPERTY_REMEMBER_AUDIO_SELECTIONS = "RememberAudioSelections";
   @javax.annotation.Nullable
   private Boolean rememberAudioSelections;
 
-  public static final String SERIALIZED_NAME_REMEMBER_SUBTITLE_SELECTIONS = "RememberSubtitleSelections";
-  @SerializedName(SERIALIZED_NAME_REMEMBER_SUBTITLE_SELECTIONS)
+  public static final String JSON_PROPERTY_REMEMBER_SUBTITLE_SELECTIONS = "RememberSubtitleSelections";
   @javax.annotation.Nullable
   private Boolean rememberSubtitleSelections;
 
-  public static final String SERIALIZED_NAME_ENABLE_NEXT_EPISODE_AUTO_PLAY = "EnableNextEpisodeAutoPlay";
-  @SerializedName(SERIALIZED_NAME_ENABLE_NEXT_EPISODE_AUTO_PLAY)
+  public static final String JSON_PROPERTY_ENABLE_NEXT_EPISODE_AUTO_PLAY = "EnableNextEpisodeAutoPlay";
   @javax.annotation.Nullable
   private Boolean enableNextEpisodeAutoPlay;
 
-  public UserConfiguration() {
+  public UserConfiguration() { 
   }
 
   public UserConfiguration audioLanguagePreference(@javax.annotation.Nullable String audioLanguagePreference) {
-    this.audioLanguagePreference = audioLanguagePreference;
+    this.audioLanguagePreference = JsonNullable.<String>of(audioLanguagePreference);
     return this;
   }
 
@@ -142,12 +129,25 @@ public class UserConfiguration {
    * @return audioLanguagePreference
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getAudioLanguagePreference() {
+        return audioLanguagePreference.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_AUDIO_LANGUAGE_PREFERENCE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getAudioLanguagePreference_JsonNullable() {
     return audioLanguagePreference;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_AUDIO_LANGUAGE_PREFERENCE)
+  public void setAudioLanguagePreference_JsonNullable(JsonNullable<String> audioLanguagePreference) {
+    this.audioLanguagePreference = audioLanguagePreference;
   }
 
   public void setAudioLanguagePreference(@javax.annotation.Nullable String audioLanguagePreference) {
-    this.audioLanguagePreference = audioLanguagePreference;
+    this.audioLanguagePreference = JsonNullable.<String>of(audioLanguagePreference);
   }
 
 
@@ -161,17 +161,22 @@ public class UserConfiguration {
    * @return playDefaultAudioTrack
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_PLAY_DEFAULT_AUDIO_TRACK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getPlayDefaultAudioTrack() {
     return playDefaultAudioTrack;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_PLAY_DEFAULT_AUDIO_TRACK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlayDefaultAudioTrack(@javax.annotation.Nullable Boolean playDefaultAudioTrack) {
     this.playDefaultAudioTrack = playDefaultAudioTrack;
   }
 
 
   public UserConfiguration subtitleLanguagePreference(@javax.annotation.Nullable String subtitleLanguagePreference) {
-    this.subtitleLanguagePreference = subtitleLanguagePreference;
+    this.subtitleLanguagePreference = JsonNullable.<String>of(subtitleLanguagePreference);
     return this;
   }
 
@@ -180,12 +185,25 @@ public class UserConfiguration {
    * @return subtitleLanguagePreference
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getSubtitleLanguagePreference() {
+        return subtitleLanguagePreference.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_LANGUAGE_PREFERENCE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getSubtitleLanguagePreference_JsonNullable() {
     return subtitleLanguagePreference;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_LANGUAGE_PREFERENCE)
+  public void setSubtitleLanguagePreference_JsonNullable(JsonNullable<String> subtitleLanguagePreference) {
+    this.subtitleLanguagePreference = subtitleLanguagePreference;
   }
 
   public void setSubtitleLanguagePreference(@javax.annotation.Nullable String subtitleLanguagePreference) {
-    this.subtitleLanguagePreference = subtitleLanguagePreference;
+    this.subtitleLanguagePreference = JsonNullable.<String>of(subtitleLanguagePreference);
   }
 
 
@@ -199,10 +217,15 @@ public class UserConfiguration {
    * @return displayMissingEpisodes
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DISPLAY_MISSING_EPISODES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getDisplayMissingEpisodes() {
     return displayMissingEpisodes;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DISPLAY_MISSING_EPISODES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisplayMissingEpisodes(@javax.annotation.Nullable Boolean displayMissingEpisodes) {
     this.displayMissingEpisodes = displayMissingEpisodes;
   }
@@ -226,10 +249,15 @@ public class UserConfiguration {
    * @return groupedFolders
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_GROUPED_FOLDERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getGroupedFolders() {
     return groupedFolders;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_GROUPED_FOLDERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGroupedFolders(@javax.annotation.Nullable List<String> groupedFolders) {
     this.groupedFolders = groupedFolders;
   }
@@ -245,10 +273,15 @@ public class UserConfiguration {
    * @return subtitleMode
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public SubtitlePlaybackMode getSubtitleMode() {
     return subtitleMode;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_SUBTITLE_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubtitleMode(@javax.annotation.Nullable SubtitlePlaybackMode subtitleMode) {
     this.subtitleMode = subtitleMode;
   }
@@ -264,10 +297,15 @@ public class UserConfiguration {
    * @return displayCollectionsView
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_DISPLAY_COLLECTIONS_VIEW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getDisplayCollectionsView() {
     return displayCollectionsView;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_DISPLAY_COLLECTIONS_VIEW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisplayCollectionsView(@javax.annotation.Nullable Boolean displayCollectionsView) {
     this.displayCollectionsView = displayCollectionsView;
   }
@@ -283,10 +321,15 @@ public class UserConfiguration {
    * @return enableLocalPassword
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_LOCAL_PASSWORD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableLocalPassword() {
     return enableLocalPassword;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_LOCAL_PASSWORD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableLocalPassword(@javax.annotation.Nullable Boolean enableLocalPassword) {
     this.enableLocalPassword = enableLocalPassword;
   }
@@ -310,10 +353,15 @@ public class UserConfiguration {
    * @return orderedViews
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ORDERED_VIEWS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getOrderedViews() {
     return orderedViews;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ORDERED_VIEWS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOrderedViews(@javax.annotation.Nullable List<String> orderedViews) {
     this.orderedViews = orderedViews;
   }
@@ -337,10 +385,15 @@ public class UserConfiguration {
    * @return latestItemsExcludes
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_LATEST_ITEMS_EXCLUDES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getLatestItemsExcludes() {
     return latestItemsExcludes;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_LATEST_ITEMS_EXCLUDES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLatestItemsExcludes(@javax.annotation.Nullable List<String> latestItemsExcludes) {
     this.latestItemsExcludes = latestItemsExcludes;
   }
@@ -364,10 +417,15 @@ public class UserConfiguration {
    * @return myMediaExcludes
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_MY_MEDIA_EXCLUDES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getMyMediaExcludes() {
     return myMediaExcludes;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_MY_MEDIA_EXCLUDES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMyMediaExcludes(@javax.annotation.Nullable List<String> myMediaExcludes) {
     this.myMediaExcludes = myMediaExcludes;
   }
@@ -383,10 +441,15 @@ public class UserConfiguration {
    * @return hidePlayedInLatest
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_HIDE_PLAYED_IN_LATEST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getHidePlayedInLatest() {
     return hidePlayedInLatest;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_HIDE_PLAYED_IN_LATEST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setHidePlayedInLatest(@javax.annotation.Nullable Boolean hidePlayedInLatest) {
     this.hidePlayedInLatest = hidePlayedInLatest;
   }
@@ -402,10 +465,15 @@ public class UserConfiguration {
    * @return rememberAudioSelections
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REMEMBER_AUDIO_SELECTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getRememberAudioSelections() {
     return rememberAudioSelections;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REMEMBER_AUDIO_SELECTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRememberAudioSelections(@javax.annotation.Nullable Boolean rememberAudioSelections) {
     this.rememberAudioSelections = rememberAudioSelections;
   }
@@ -421,10 +489,15 @@ public class UserConfiguration {
    * @return rememberSubtitleSelections
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_REMEMBER_SUBTITLE_SELECTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getRememberSubtitleSelections() {
     return rememberSubtitleSelections;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_REMEMBER_SUBTITLE_SELECTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRememberSubtitleSelections(@javax.annotation.Nullable Boolean rememberSubtitleSelections) {
     this.rememberSubtitleSelections = rememberSubtitleSelections;
   }
@@ -440,16 +513,23 @@ public class UserConfiguration {
    * @return enableNextEpisodeAutoPlay
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ENABLE_NEXT_EPISODE_AUTO_PLAY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableNextEpisodeAutoPlay() {
     return enableNextEpisodeAutoPlay;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_NEXT_EPISODE_AUTO_PLAY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableNextEpisodeAutoPlay(@javax.annotation.Nullable Boolean enableNextEpisodeAutoPlay) {
     this.enableNextEpisodeAutoPlay = enableNextEpisodeAutoPlay;
   }
 
 
-
+  /**
+   * Return true if this UserConfiguration object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -459,9 +539,9 @@ public class UserConfiguration {
       return false;
     }
     UserConfiguration userConfiguration = (UserConfiguration) o;
-    return Objects.equals(this.audioLanguagePreference, userConfiguration.audioLanguagePreference) &&
+    return equalsNullable(this.audioLanguagePreference, userConfiguration.audioLanguagePreference) &&
         Objects.equals(this.playDefaultAudioTrack, userConfiguration.playDefaultAudioTrack) &&
-        Objects.equals(this.subtitleLanguagePreference, userConfiguration.subtitleLanguagePreference) &&
+        equalsNullable(this.subtitleLanguagePreference, userConfiguration.subtitleLanguagePreference) &&
         Objects.equals(this.displayMissingEpisodes, userConfiguration.displayMissingEpisodes) &&
         Objects.equals(this.groupedFolders, userConfiguration.groupedFolders) &&
         Objects.equals(this.subtitleMode, userConfiguration.subtitleMode) &&
@@ -482,7 +562,7 @@ public class UserConfiguration {
 
   @Override
   public int hashCode() {
-    return Objects.hash(audioLanguagePreference, playDefaultAudioTrack, subtitleLanguagePreference, displayMissingEpisodes, groupedFolders, subtitleMode, displayCollectionsView, enableLocalPassword, orderedViews, latestItemsExcludes, myMediaExcludes, hidePlayedInLatest, rememberAudioSelections, rememberSubtitleSelections, enableNextEpisodeAutoPlay);
+    return Objects.hash(hashCodeNullable(audioLanguagePreference), playDefaultAudioTrack, hashCodeNullable(subtitleLanguagePreference), displayMissingEpisodes, groupedFolders, subtitleMode, displayCollectionsView, enableLocalPassword, orderedViews, latestItemsExcludes, myMediaExcludes, hidePlayedInLatest, rememberAudioSelections, rememberSubtitleSelections, enableNextEpisodeAutoPlay);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -526,129 +606,130 @@ public class UserConfiguration {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("AudioLanguagePreference");
-    openapiFields.add("PlayDefaultAudioTrack");
-    openapiFields.add("SubtitleLanguagePreference");
-    openapiFields.add("DisplayMissingEpisodes");
-    openapiFields.add("GroupedFolders");
-    openapiFields.add("SubtitleMode");
-    openapiFields.add("DisplayCollectionsView");
-    openapiFields.add("EnableLocalPassword");
-    openapiFields.add("OrderedViews");
-    openapiFields.add("LatestItemsExcludes");
-    openapiFields.add("MyMediaExcludes");
-    openapiFields.add("HidePlayedInLatest");
-    openapiFields.add("RememberAudioSelections");
-    openapiFields.add("RememberSubtitleSelections");
-    openapiFields.add("EnableNextEpisodeAutoPlay");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to UserConfiguration
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!UserConfiguration.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in UserConfiguration is not found in the empty JSON string", UserConfiguration.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!UserConfiguration.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `UserConfiguration` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("AudioLanguagePreference") != null && !jsonObj.get("AudioLanguagePreference").isJsonNull()) && !jsonObj.get("AudioLanguagePreference").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `AudioLanguagePreference` to be a primitive type in the JSON string but got `%s`", jsonObj.get("AudioLanguagePreference").toString()));
-      }
-      if ((jsonObj.get("SubtitleLanguagePreference") != null && !jsonObj.get("SubtitleLanguagePreference").isJsonNull()) && !jsonObj.get("SubtitleLanguagePreference").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `SubtitleLanguagePreference` to be a primitive type in the JSON string but got `%s`", jsonObj.get("SubtitleLanguagePreference").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("GroupedFolders") != null && !jsonObj.get("GroupedFolders").isJsonNull() && !jsonObj.get("GroupedFolders").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `GroupedFolders` to be an array in the JSON string but got `%s`", jsonObj.get("GroupedFolders").toString()));
-      }
-      // validate the optional field `SubtitleMode`
-      if (jsonObj.get("SubtitleMode") != null && !jsonObj.get("SubtitleMode").isJsonNull()) {
-        SubtitlePlaybackMode.validateJsonElement(jsonObj.get("SubtitleMode"));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("OrderedViews") != null && !jsonObj.get("OrderedViews").isJsonNull() && !jsonObj.get("OrderedViews").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `OrderedViews` to be an array in the JSON string but got `%s`", jsonObj.get("OrderedViews").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("LatestItemsExcludes") != null && !jsonObj.get("LatestItemsExcludes").isJsonNull() && !jsonObj.get("LatestItemsExcludes").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `LatestItemsExcludes` to be an array in the JSON string but got `%s`", jsonObj.get("LatestItemsExcludes").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("MyMediaExcludes") != null && !jsonObj.get("MyMediaExcludes").isJsonNull() && !jsonObj.get("MyMediaExcludes").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `MyMediaExcludes` to be an array in the JSON string but got `%s`", jsonObj.get("MyMediaExcludes").toString()));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!UserConfiguration.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'UserConfiguration' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<UserConfiguration> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(UserConfiguration.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<UserConfiguration>() {
-           @Override
-           public void write(JsonWriter out, UserConfiguration value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public UserConfiguration read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of UserConfiguration given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of UserConfiguration
-   * @throws IOException if the JSON string is invalid with respect to UserConfiguration
-   */
-  public static UserConfiguration fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, UserConfiguration.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of UserConfiguration to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `AudioLanguagePreference` to the URL query string
+    if (getAudioLanguagePreference() != null) {
+      joiner.add(String.format("%sAudioLanguagePreference%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAudioLanguagePreference()))));
+    }
+
+    // add `PlayDefaultAudioTrack` to the URL query string
+    if (getPlayDefaultAudioTrack() != null) {
+      joiner.add(String.format("%sPlayDefaultAudioTrack%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlayDefaultAudioTrack()))));
+    }
+
+    // add `SubtitleLanguagePreference` to the URL query string
+    if (getSubtitleLanguagePreference() != null) {
+      joiner.add(String.format("%sSubtitleLanguagePreference%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSubtitleLanguagePreference()))));
+    }
+
+    // add `DisplayMissingEpisodes` to the URL query string
+    if (getDisplayMissingEpisodes() != null) {
+      joiner.add(String.format("%sDisplayMissingEpisodes%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDisplayMissingEpisodes()))));
+    }
+
+    // add `GroupedFolders` to the URL query string
+    if (getGroupedFolders() != null) {
+      for (int i = 0; i < getGroupedFolders().size(); i++) {
+        joiner.add(String.format("%sGroupedFolders%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getGroupedFolders().get(i)))));
+      }
+    }
+
+    // add `SubtitleMode` to the URL query string
+    if (getSubtitleMode() != null) {
+      joiner.add(String.format("%sSubtitleMode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSubtitleMode()))));
+    }
+
+    // add `DisplayCollectionsView` to the URL query string
+    if (getDisplayCollectionsView() != null) {
+      joiner.add(String.format("%sDisplayCollectionsView%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDisplayCollectionsView()))));
+    }
+
+    // add `EnableLocalPassword` to the URL query string
+    if (getEnableLocalPassword() != null) {
+      joiner.add(String.format("%sEnableLocalPassword%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableLocalPassword()))));
+    }
+
+    // add `OrderedViews` to the URL query string
+    if (getOrderedViews() != null) {
+      for (int i = 0; i < getOrderedViews().size(); i++) {
+        joiner.add(String.format("%sOrderedViews%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getOrderedViews().get(i)))));
+      }
+    }
+
+    // add `LatestItemsExcludes` to the URL query string
+    if (getLatestItemsExcludes() != null) {
+      for (int i = 0; i < getLatestItemsExcludes().size(); i++) {
+        joiner.add(String.format("%sLatestItemsExcludes%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getLatestItemsExcludes().get(i)))));
+      }
+    }
+
+    // add `MyMediaExcludes` to the URL query string
+    if (getMyMediaExcludes() != null) {
+      for (int i = 0; i < getMyMediaExcludes().size(); i++) {
+        joiner.add(String.format("%sMyMediaExcludes%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(getMyMediaExcludes().get(i)))));
+      }
+    }
+
+    // add `HidePlayedInLatest` to the URL query string
+    if (getHidePlayedInLatest() != null) {
+      joiner.add(String.format("%sHidePlayedInLatest%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHidePlayedInLatest()))));
+    }
+
+    // add `RememberAudioSelections` to the URL query string
+    if (getRememberAudioSelections() != null) {
+      joiner.add(String.format("%sRememberAudioSelections%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRememberAudioSelections()))));
+    }
+
+    // add `RememberSubtitleSelections` to the URL query string
+    if (getRememberSubtitleSelections() != null) {
+      joiner.add(String.format("%sRememberSubtitleSelections%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRememberSubtitleSelections()))));
+    }
+
+    // add `EnableNextEpisodeAutoPlay` to the URL query string
+    if (getEnableNextEpisodeAutoPlay() != null) {
+      joiner.add(String.format("%sEnableNextEpisodeAutoPlay%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableNextEpisodeAutoPlay()))));
+    }
+
+    return joiner.toString();
   }
 }
 

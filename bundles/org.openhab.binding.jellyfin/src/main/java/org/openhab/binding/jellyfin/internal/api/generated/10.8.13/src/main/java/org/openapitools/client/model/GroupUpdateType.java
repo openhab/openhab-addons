@@ -13,20 +13,21 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.annotations.SerializedName;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import java.io.IOException;
-import com.google.gson.TypeAdapter;
-import com.google.gson.JsonElement;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Enum GroupUpdateType.
  */
-@JsonAdapter(GroupUpdateType.Adapter.class)
 public enum GroupUpdateType {
   
   USER_JOINED("UserJoined"),
@@ -57,6 +58,7 @@ public enum GroupUpdateType {
     this.value = value;
   }
 
+  @JsonValue
   public String getValue() {
     return value;
   }
@@ -66,6 +68,7 @@ public enum GroupUpdateType {
     return String.valueOf(value);
   }
 
+  @JsonCreator
   public static GroupUpdateType fromValue(String value) {
     for (GroupUpdateType b : GroupUpdateType.values()) {
       if (b.value.equals(value)) {
@@ -75,22 +78,19 @@ public enum GroupUpdateType {
     throw new IllegalArgumentException("Unexpected value '" + value + "'");
   }
 
-  public static class Adapter extends TypeAdapter<GroupUpdateType> {
-    @Override
-    public void write(final JsonWriter jsonWriter, final GroupUpdateType enumeration) throws IOException {
-      jsonWriter.value(enumeration.getValue());
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @param prefix prefix of the query string
+   * @return URL query string
+   */
+  public String toUrlQueryString(String prefix) {
+    if (prefix == null) {
+      prefix = "";
     }
 
-    @Override
-    public GroupUpdateType read(final JsonReader jsonReader) throws IOException {
-      String value = jsonReader.nextString();
-      return GroupUpdateType.fromValue(value);
-    }
+    return String.format("%s=%s", prefix, this.toString());
   }
 
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-    String value = jsonElement.getAsString();
-    GroupUpdateType.fromValue(value);
-  }
 }
 

@@ -13,54 +13,40 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
-import java.util.Arrays;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import org.openapitools.client.JSON;
 
+import org.openapitools.client.ApiClient;
 /**
  * EndPointInfo
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:56.699980679+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  EndPointInfo.JSON_PROPERTY_IS_LOCAL,
+  EndPointInfo.JSON_PROPERTY_IS_IN_NETWORK
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class EndPointInfo {
-  public static final String SERIALIZED_NAME_IS_LOCAL = "IsLocal";
-  @SerializedName(SERIALIZED_NAME_IS_LOCAL)
+  public static final String JSON_PROPERTY_IS_LOCAL = "IsLocal";
   @javax.annotation.Nullable
   private Boolean isLocal;
 
-  public static final String SERIALIZED_NAME_IS_IN_NETWORK = "IsInNetwork";
-  @SerializedName(SERIALIZED_NAME_IS_IN_NETWORK)
+  public static final String JSON_PROPERTY_IS_IN_NETWORK = "IsInNetwork";
   @javax.annotation.Nullable
   private Boolean isInNetwork;
 
-  public EndPointInfo() {
+  public EndPointInfo() { 
   }
 
   public EndPointInfo isLocal(@javax.annotation.Nullable Boolean isLocal) {
@@ -73,10 +59,15 @@ public class EndPointInfo {
    * @return isLocal
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_LOCAL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsLocal() {
     return isLocal;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_LOCAL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsLocal(@javax.annotation.Nullable Boolean isLocal) {
     this.isLocal = isLocal;
   }
@@ -92,16 +83,23 @@ public class EndPointInfo {
    * @return isInNetwork
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_IS_IN_NETWORK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsInNetwork() {
     return isInNetwork;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_IS_IN_NETWORK)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsInNetwork(@javax.annotation.Nullable Boolean isInNetwork) {
     this.isInNetwork = isInNetwork;
   }
 
 
-
+  /**
+   * Return true if this EndPointInfo object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -141,90 +139,49 @@ public class EndPointInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("IsLocal");
-    openapiFields.add("IsInNetwork");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to EndPointInfo
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!EndPointInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in EndPointInfo is not found in the empty JSON string", EndPointInfo.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!EndPointInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `EndPointInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!EndPointInfo.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'EndPointInfo' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<EndPointInfo> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(EndPointInfo.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<EndPointInfo>() {
-           @Override
-           public void write(JsonWriter out, EndPointInfo value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public EndPointInfo read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of EndPointInfo given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of EndPointInfo
-   * @throws IOException if the JSON string is invalid with respect to EndPointInfo
-   */
-  public static EndPointInfo fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, EndPointInfo.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of EndPointInfo to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `IsLocal` to the URL query string
+    if (getIsLocal() != null) {
+      joiner.add(String.format("%sIsLocal%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsLocal()))));
+    }
+
+    // add `IsInNetwork` to the URL query string
+    if (getIsInNetwork() != null) {
+      joiner.add(String.format("%sIsInNetwork%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsInNetwork()))));
+    }
+
+    return joiner.toString();
   }
 }
 

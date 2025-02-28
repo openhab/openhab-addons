@@ -13,123 +13,102 @@
 
 package org.openapitools.client.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 import java.util.Objects;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.UUID;
 import org.openapitools.client.model.UserConfiguration;
 import org.openapitools.client.model.UserPolicy;
 import org.openapitools.jackson.nullable.JsonNullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.util.NoSuchElementException;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openapitools.client.JSON;
-
+import org.openapitools.client.ApiClient;
 /**
  * Class UserDto.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-12-27T20:32:44.334408221+01:00[Europe/Zurich]", comments = "Generator version: 7.10.0")
+@JsonPropertyOrder({
+  UserDto.JSON_PROPERTY_NAME,
+  UserDto.JSON_PROPERTY_SERVER_ID,
+  UserDto.JSON_PROPERTY_SERVER_NAME,
+  UserDto.JSON_PROPERTY_ID,
+  UserDto.JSON_PROPERTY_PRIMARY_IMAGE_TAG,
+  UserDto.JSON_PROPERTY_HAS_PASSWORD,
+  UserDto.JSON_PROPERTY_HAS_CONFIGURED_PASSWORD,
+  UserDto.JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD,
+  UserDto.JSON_PROPERTY_ENABLE_AUTO_LOGIN,
+  UserDto.JSON_PROPERTY_LAST_LOGIN_DATE,
+  UserDto.JSON_PROPERTY_LAST_ACTIVITY_DATE,
+  UserDto.JSON_PROPERTY_CONFIGURATION,
+  UserDto.JSON_PROPERTY_POLICY,
+  UserDto.JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class UserDto {
-  public static final String SERIALIZED_NAME_NAME = "Name";
-  @SerializedName(SERIALIZED_NAME_NAME)
-  @javax.annotation.Nullable
-  private String name;
+  public static final String JSON_PROPERTY_NAME = "Name";
+  private JsonNullable<String> name = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_SERVER_ID = "ServerId";
-  @SerializedName(SERIALIZED_NAME_SERVER_ID)
-  @javax.annotation.Nullable
-  private String serverId;
+  public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
+  private JsonNullable<String> serverId = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_SERVER_NAME = "ServerName";
-  @SerializedName(SERIALIZED_NAME_SERVER_NAME)
-  @javax.annotation.Nullable
-  private String serverName;
+  public static final String JSON_PROPERTY_SERVER_NAME = "ServerName";
+  private JsonNullable<String> serverName = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_ID = "Id";
-  @SerializedName(SERIALIZED_NAME_ID)
+  public static final String JSON_PROPERTY_ID = "Id";
   @javax.annotation.Nullable
   private UUID id;
 
-  public static final String SERIALIZED_NAME_PRIMARY_IMAGE_TAG = "PrimaryImageTag";
-  @SerializedName(SERIALIZED_NAME_PRIMARY_IMAGE_TAG)
-  @javax.annotation.Nullable
-  private String primaryImageTag;
+  public static final String JSON_PROPERTY_PRIMARY_IMAGE_TAG = "PrimaryImageTag";
+  private JsonNullable<String> primaryImageTag = JsonNullable.<String>undefined();
 
-  public static final String SERIALIZED_NAME_HAS_PASSWORD = "HasPassword";
-  @SerializedName(SERIALIZED_NAME_HAS_PASSWORD)
+  public static final String JSON_PROPERTY_HAS_PASSWORD = "HasPassword";
   @javax.annotation.Nullable
   private Boolean hasPassword;
 
-  public static final String SERIALIZED_NAME_HAS_CONFIGURED_PASSWORD = "HasConfiguredPassword";
-  @SerializedName(SERIALIZED_NAME_HAS_CONFIGURED_PASSWORD)
+  public static final String JSON_PROPERTY_HAS_CONFIGURED_PASSWORD = "HasConfiguredPassword";
   @javax.annotation.Nullable
   private Boolean hasConfiguredPassword;
 
-  public static final String SERIALIZED_NAME_HAS_CONFIGURED_EASY_PASSWORD = "HasConfiguredEasyPassword";
-  @SerializedName(SERIALIZED_NAME_HAS_CONFIGURED_EASY_PASSWORD)
+  public static final String JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD = "HasConfiguredEasyPassword";
   @javax.annotation.Nullable
   private Boolean hasConfiguredEasyPassword;
 
-  public static final String SERIALIZED_NAME_ENABLE_AUTO_LOGIN = "EnableAutoLogin";
-  @SerializedName(SERIALIZED_NAME_ENABLE_AUTO_LOGIN)
-  @javax.annotation.Nullable
-  private Boolean enableAutoLogin;
+  public static final String JSON_PROPERTY_ENABLE_AUTO_LOGIN = "EnableAutoLogin";
+  private JsonNullable<Boolean> enableAutoLogin = JsonNullable.<Boolean>undefined();
 
-  public static final String SERIALIZED_NAME_LAST_LOGIN_DATE = "LastLoginDate";
-  @SerializedName(SERIALIZED_NAME_LAST_LOGIN_DATE)
-  @javax.annotation.Nullable
-  private OffsetDateTime lastLoginDate;
+  public static final String JSON_PROPERTY_LAST_LOGIN_DATE = "LastLoginDate";
+  private JsonNullable<OffsetDateTime> lastLoginDate = JsonNullable.<OffsetDateTime>undefined();
 
-  public static final String SERIALIZED_NAME_LAST_ACTIVITY_DATE = "LastActivityDate";
-  @SerializedName(SERIALIZED_NAME_LAST_ACTIVITY_DATE)
-  @javax.annotation.Nullable
-  private OffsetDateTime lastActivityDate;
+  public static final String JSON_PROPERTY_LAST_ACTIVITY_DATE = "LastActivityDate";
+  private JsonNullable<OffsetDateTime> lastActivityDate = JsonNullable.<OffsetDateTime>undefined();
 
-  public static final String SERIALIZED_NAME_CONFIGURATION = "Configuration";
-  @SerializedName(SERIALIZED_NAME_CONFIGURATION)
-  @javax.annotation.Nullable
-  private UserConfiguration _configuration;
+  public static final String JSON_PROPERTY_CONFIGURATION = "Configuration";
+  private JsonNullable<UserConfiguration> _configuration = JsonNullable.<UserConfiguration>undefined();
 
-  public static final String SERIALIZED_NAME_POLICY = "Policy";
-  @SerializedName(SERIALIZED_NAME_POLICY)
-  @javax.annotation.Nullable
-  private UserPolicy policy;
+  public static final String JSON_PROPERTY_POLICY = "Policy";
+  private JsonNullable<UserPolicy> policy = JsonNullable.<UserPolicy>undefined();
 
-  public static final String SERIALIZED_NAME_PRIMARY_IMAGE_ASPECT_RATIO = "PrimaryImageAspectRatio";
-  @SerializedName(SERIALIZED_NAME_PRIMARY_IMAGE_ASPECT_RATIO)
-  @javax.annotation.Nullable
-  private Double primaryImageAspectRatio;
+  public static final String JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO = "PrimaryImageAspectRatio";
+  private JsonNullable<Double> primaryImageAspectRatio = JsonNullable.<Double>undefined();
 
-  public UserDto() {
+  public UserDto() { 
   }
 
   public UserDto name(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
     return this;
   }
 
@@ -138,17 +117,30 @@ public class UserDto {
    * @return name
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getName() {
+        return name.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getName_JsonNullable() {
     return name;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_NAME)
+  public void setName_JsonNullable(JsonNullable<String> name) {
+    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = name;
+    this.name = JsonNullable.<String>of(name);
   }
 
 
   public UserDto serverId(@javax.annotation.Nullable String serverId) {
-    this.serverId = serverId;
+    this.serverId = JsonNullable.<String>of(serverId);
     return this;
   }
 
@@ -157,17 +149,30 @@ public class UserDto {
    * @return serverId
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getServerId() {
+        return serverId.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SERVER_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getServerId_JsonNullable() {
     return serverId;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SERVER_ID)
+  public void setServerId_JsonNullable(JsonNullable<String> serverId) {
+    this.serverId = serverId;
   }
 
   public void setServerId(@javax.annotation.Nullable String serverId) {
-    this.serverId = serverId;
+    this.serverId = JsonNullable.<String>of(serverId);
   }
 
 
   public UserDto serverName(@javax.annotation.Nullable String serverName) {
-    this.serverName = serverName;
+    this.serverName = JsonNullable.<String>of(serverName);
     return this;
   }
 
@@ -176,12 +181,25 @@ public class UserDto {
    * @return serverName
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getServerName() {
+        return serverName.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_SERVER_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getServerName_JsonNullable() {
     return serverName;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_SERVER_NAME)
+  public void setServerName_JsonNullable(JsonNullable<String> serverName) {
+    this.serverName = serverName;
   }
 
   public void setServerName(@javax.annotation.Nullable String serverName) {
-    this.serverName = serverName;
+    this.serverName = JsonNullable.<String>of(serverName);
   }
 
 
@@ -195,17 +213,22 @@ public class UserDto {
    * @return id
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getId() {
     return id;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable UUID id) {
     this.id = id;
   }
 
 
   public UserDto primaryImageTag(@javax.annotation.Nullable String primaryImageTag) {
-    this.primaryImageTag = primaryImageTag;
+    this.primaryImageTag = JsonNullable.<String>of(primaryImageTag);
     return this;
   }
 
@@ -214,12 +237,25 @@ public class UserDto {
    * @return primaryImageTag
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public String getPrimaryImageTag() {
+        return primaryImageTag.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_TAG)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<String> getPrimaryImageTag_JsonNullable() {
     return primaryImageTag;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_TAG)
+  public void setPrimaryImageTag_JsonNullable(JsonNullable<String> primaryImageTag) {
+    this.primaryImageTag = primaryImageTag;
   }
 
   public void setPrimaryImageTag(@javax.annotation.Nullable String primaryImageTag) {
-    this.primaryImageTag = primaryImageTag;
+    this.primaryImageTag = JsonNullable.<String>of(primaryImageTag);
   }
 
 
@@ -233,10 +269,15 @@ public class UserDto {
    * @return hasPassword
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_HAS_PASSWORD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getHasPassword() {
     return hasPassword;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_HAS_PASSWORD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setHasPassword(@javax.annotation.Nullable Boolean hasPassword) {
     this.hasPassword = hasPassword;
   }
@@ -252,10 +293,15 @@ public class UserDto {
    * @return hasConfiguredPassword
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_HAS_CONFIGURED_PASSWORD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getHasConfiguredPassword() {
     return hasConfiguredPassword;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_HAS_CONFIGURED_PASSWORD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setHasConfiguredPassword(@javax.annotation.Nullable Boolean hasConfiguredPassword) {
     this.hasConfiguredPassword = hasConfiguredPassword;
   }
@@ -271,17 +317,22 @@ public class UserDto {
    * @return hasConfiguredEasyPassword
    */
   @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getHasConfiguredEasyPassword() {
     return hasConfiguredEasyPassword;
   }
 
+
+  @JsonProperty(JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setHasConfiguredEasyPassword(@javax.annotation.Nullable Boolean hasConfiguredEasyPassword) {
     this.hasConfiguredEasyPassword = hasConfiguredEasyPassword;
   }
 
 
   public UserDto enableAutoLogin(@javax.annotation.Nullable Boolean enableAutoLogin) {
-    this.enableAutoLogin = enableAutoLogin;
+    this.enableAutoLogin = JsonNullable.<Boolean>of(enableAutoLogin);
     return this;
   }
 
@@ -290,17 +341,30 @@ public class UserDto {
    * @return enableAutoLogin
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Boolean getEnableAutoLogin() {
+        return enableAutoLogin.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_ENABLE_AUTO_LOGIN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Boolean> getEnableAutoLogin_JsonNullable() {
     return enableAutoLogin;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_ENABLE_AUTO_LOGIN)
+  public void setEnableAutoLogin_JsonNullable(JsonNullable<Boolean> enableAutoLogin) {
+    this.enableAutoLogin = enableAutoLogin;
   }
 
   public void setEnableAutoLogin(@javax.annotation.Nullable Boolean enableAutoLogin) {
-    this.enableAutoLogin = enableAutoLogin;
+    this.enableAutoLogin = JsonNullable.<Boolean>of(enableAutoLogin);
   }
 
 
   public UserDto lastLoginDate(@javax.annotation.Nullable OffsetDateTime lastLoginDate) {
-    this.lastLoginDate = lastLoginDate;
+    this.lastLoginDate = JsonNullable.<OffsetDateTime>of(lastLoginDate);
     return this;
   }
 
@@ -309,17 +373,30 @@ public class UserDto {
    * @return lastLoginDate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public OffsetDateTime getLastLoginDate() {
+        return lastLoginDate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LAST_LOGIN_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<OffsetDateTime> getLastLoginDate_JsonNullable() {
     return lastLoginDate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LAST_LOGIN_DATE)
+  public void setLastLoginDate_JsonNullable(JsonNullable<OffsetDateTime> lastLoginDate) {
+    this.lastLoginDate = lastLoginDate;
   }
 
   public void setLastLoginDate(@javax.annotation.Nullable OffsetDateTime lastLoginDate) {
-    this.lastLoginDate = lastLoginDate;
+    this.lastLoginDate = JsonNullable.<OffsetDateTime>of(lastLoginDate);
   }
 
 
   public UserDto lastActivityDate(@javax.annotation.Nullable OffsetDateTime lastActivityDate) {
-    this.lastActivityDate = lastActivityDate;
+    this.lastActivityDate = JsonNullable.<OffsetDateTime>of(lastActivityDate);
     return this;
   }
 
@@ -328,17 +405,30 @@ public class UserDto {
    * @return lastActivityDate
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public OffsetDateTime getLastActivityDate() {
+        return lastActivityDate.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_LAST_ACTIVITY_DATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<OffsetDateTime> getLastActivityDate_JsonNullable() {
     return lastActivityDate;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_LAST_ACTIVITY_DATE)
+  public void setLastActivityDate_JsonNullable(JsonNullable<OffsetDateTime> lastActivityDate) {
+    this.lastActivityDate = lastActivityDate;
   }
 
   public void setLastActivityDate(@javax.annotation.Nullable OffsetDateTime lastActivityDate) {
-    this.lastActivityDate = lastActivityDate;
+    this.lastActivityDate = JsonNullable.<OffsetDateTime>of(lastActivityDate);
   }
 
 
   public UserDto _configuration(@javax.annotation.Nullable UserConfiguration _configuration) {
-    this._configuration = _configuration;
+    this._configuration = JsonNullable.<UserConfiguration>of(_configuration);
     return this;
   }
 
@@ -347,17 +437,30 @@ public class UserDto {
    * @return _configuration
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public UserConfiguration getConfiguration() {
+        return _configuration.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_CONFIGURATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<UserConfiguration> getConfiguration_JsonNullable() {
     return _configuration;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_CONFIGURATION)
+  public void setConfiguration_JsonNullable(JsonNullable<UserConfiguration> _configuration) {
+    this._configuration = _configuration;
   }
 
   public void setConfiguration(@javax.annotation.Nullable UserConfiguration _configuration) {
-    this._configuration = _configuration;
+    this._configuration = JsonNullable.<UserConfiguration>of(_configuration);
   }
 
 
   public UserDto policy(@javax.annotation.Nullable UserPolicy policy) {
-    this.policy = policy;
+    this.policy = JsonNullable.<UserPolicy>of(policy);
     return this;
   }
 
@@ -366,17 +469,30 @@ public class UserDto {
    * @return policy
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public UserPolicy getPolicy() {
+        return policy.orElse(null);
+  }
+
+  @JsonProperty(JSON_PROPERTY_POLICY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<UserPolicy> getPolicy_JsonNullable() {
     return policy;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_POLICY)
+  public void setPolicy_JsonNullable(JsonNullable<UserPolicy> policy) {
+    this.policy = policy;
   }
 
   public void setPolicy(@javax.annotation.Nullable UserPolicy policy) {
-    this.policy = policy;
+    this.policy = JsonNullable.<UserPolicy>of(policy);
   }
 
 
   public UserDto primaryImageAspectRatio(@javax.annotation.Nullable Double primaryImageAspectRatio) {
-    this.primaryImageAspectRatio = primaryImageAspectRatio;
+    this.primaryImageAspectRatio = JsonNullable.<Double>of(primaryImageAspectRatio);
     return this;
   }
 
@@ -385,16 +501,31 @@ public class UserDto {
    * @return primaryImageAspectRatio
    */
   @javax.annotation.Nullable
+  @JsonIgnore
   public Double getPrimaryImageAspectRatio() {
-    return primaryImageAspectRatio;
+        return primaryImageAspectRatio.orElse(null);
   }
 
-  public void setPrimaryImageAspectRatio(@javax.annotation.Nullable Double primaryImageAspectRatio) {
+  @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public JsonNullable<Double> getPrimaryImageAspectRatio_JsonNullable() {
+    return primaryImageAspectRatio;
+  }
+  
+  @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
+  public void setPrimaryImageAspectRatio_JsonNullable(JsonNullable<Double> primaryImageAspectRatio) {
     this.primaryImageAspectRatio = primaryImageAspectRatio;
   }
 
+  public void setPrimaryImageAspectRatio(@javax.annotation.Nullable Double primaryImageAspectRatio) {
+    this.primaryImageAspectRatio = JsonNullable.<Double>of(primaryImageAspectRatio);
+  }
 
 
+  /**
+   * Return true if this UserDto object is equal to o.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -404,20 +535,20 @@ public class UserDto {
       return false;
     }
     UserDto userDto = (UserDto) o;
-    return Objects.equals(this.name, userDto.name) &&
-        Objects.equals(this.serverId, userDto.serverId) &&
-        Objects.equals(this.serverName, userDto.serverName) &&
+    return equalsNullable(this.name, userDto.name) &&
+        equalsNullable(this.serverId, userDto.serverId) &&
+        equalsNullable(this.serverName, userDto.serverName) &&
         Objects.equals(this.id, userDto.id) &&
-        Objects.equals(this.primaryImageTag, userDto.primaryImageTag) &&
+        equalsNullable(this.primaryImageTag, userDto.primaryImageTag) &&
         Objects.equals(this.hasPassword, userDto.hasPassword) &&
         Objects.equals(this.hasConfiguredPassword, userDto.hasConfiguredPassword) &&
         Objects.equals(this.hasConfiguredEasyPassword, userDto.hasConfiguredEasyPassword) &&
-        Objects.equals(this.enableAutoLogin, userDto.enableAutoLogin) &&
-        Objects.equals(this.lastLoginDate, userDto.lastLoginDate) &&
-        Objects.equals(this.lastActivityDate, userDto.lastActivityDate) &&
-        Objects.equals(this._configuration, userDto._configuration) &&
-        Objects.equals(this.policy, userDto.policy) &&
-        Objects.equals(this.primaryImageAspectRatio, userDto.primaryImageAspectRatio);
+        equalsNullable(this.enableAutoLogin, userDto.enableAutoLogin) &&
+        equalsNullable(this.lastLoginDate, userDto.lastLoginDate) &&
+        equalsNullable(this.lastActivityDate, userDto.lastActivityDate) &&
+        equalsNullable(this._configuration, userDto._configuration) &&
+        equalsNullable(this.policy, userDto.policy) &&
+        equalsNullable(this.primaryImageAspectRatio, userDto.primaryImageAspectRatio);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -426,7 +557,7 @@ public class UserDto {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, serverId, serverName, id, primaryImageTag, hasPassword, hasConfiguredPassword, hasConfiguredEasyPassword, enableAutoLogin, lastLoginDate, lastActivityDate, _configuration, policy, primaryImageAspectRatio);
+    return Objects.hash(hashCodeNullable(name), hashCodeNullable(serverId), hashCodeNullable(serverName), id, hashCodeNullable(primaryImageTag), hasPassword, hasConfiguredPassword, hasConfiguredEasyPassword, hashCodeNullable(enableAutoLogin), hashCodeNullable(lastLoginDate), hashCodeNullable(lastActivityDate), hashCodeNullable(_configuration), hashCodeNullable(policy), hashCodeNullable(primaryImageAspectRatio));
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -469,125 +600,109 @@ public class UserDto {
     return o.toString().replace("\n", "\n    ");
   }
 
-
-  public static HashSet<String> openapiFields;
-  public static HashSet<String> openapiRequiredFields;
-
-  static {
-    // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("Name");
-    openapiFields.add("ServerId");
-    openapiFields.add("ServerName");
-    openapiFields.add("Id");
-    openapiFields.add("PrimaryImageTag");
-    openapiFields.add("HasPassword");
-    openapiFields.add("HasConfiguredPassword");
-    openapiFields.add("HasConfiguredEasyPassword");
-    openapiFields.add("EnableAutoLogin");
-    openapiFields.add("LastLoginDate");
-    openapiFields.add("LastActivityDate");
-    openapiFields.add("Configuration");
-    openapiFields.add("Policy");
-    openapiFields.add("PrimaryImageAspectRatio");
-
-    // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
+  /**
+   * Convert the instance into URL query string.
+   *
+   * @return URL query string
+   */
+  public String toUrlQueryString() {
+    return toUrlQueryString(null);
   }
 
   /**
-   * Validates the JSON Element and throws an exception if issues found
+   * Convert the instance into URL query string.
    *
-   * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to UserDto
+   * @param prefix prefix of the query string
+   * @return URL query string
    */
-  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!UserDto.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in UserDto is not found in the empty JSON string", UserDto.openapiRequiredFields.toString()));
-        }
-      }
-
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!UserDto.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `UserDto` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
-      }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("Name") != null && !jsonObj.get("Name").isJsonNull()) && !jsonObj.get("Name").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Name").toString()));
-      }
-      if ((jsonObj.get("ServerId") != null && !jsonObj.get("ServerId").isJsonNull()) && !jsonObj.get("ServerId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ServerId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ServerId").toString()));
-      }
-      if ((jsonObj.get("ServerName") != null && !jsonObj.get("ServerName").isJsonNull()) && !jsonObj.get("ServerName").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `ServerName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ServerName").toString()));
-      }
-      if ((jsonObj.get("Id") != null && !jsonObj.get("Id").isJsonNull()) && !jsonObj.get("Id").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `Id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("Id").toString()));
-      }
-      if ((jsonObj.get("PrimaryImageTag") != null && !jsonObj.get("PrimaryImageTag").isJsonNull()) && !jsonObj.get("PrimaryImageTag").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `PrimaryImageTag` to be a primitive type in the JSON string but got `%s`", jsonObj.get("PrimaryImageTag").toString()));
-      }
-      // validate the optional field `Configuration`
-      if (jsonObj.get("Configuration") != null && !jsonObj.get("Configuration").isJsonNull()) {
-        UserConfiguration.validateJsonElement(jsonObj.get("Configuration"));
-      }
-      // validate the optional field `Policy`
-      if (jsonObj.get("Policy") != null && !jsonObj.get("Policy").isJsonNull()) {
-        UserPolicy.validateJsonElement(jsonObj.get("Policy"));
-      }
-  }
-
-  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!UserDto.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'UserDto' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<UserDto> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(UserDto.class));
-
-       return (TypeAdapter<T>) new TypeAdapter<UserDto>() {
-           @Override
-           public void write(JsonWriter out, UserDto value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
-
-           @Override
-           public UserDto read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
-
-       }.nullSafe();
+  public String toUrlQueryString(String prefix) {
+    String suffix = "";
+    String containerSuffix = "";
+    String containerPrefix = "";
+    if (prefix == null) {
+      // style=form, explode=true, e.g. /pet?name=cat&type=manx
+      prefix = "";
+    } else {
+      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
+      prefix = prefix + "[";
+      suffix = "]";
+      containerSuffix = "]";
+      containerPrefix = "[";
     }
-  }
 
-  /**
-   * Create an instance of UserDto given an JSON string
-   *
-   * @param jsonString JSON string
-   * @return An instance of UserDto
-   * @throws IOException if the JSON string is invalid with respect to UserDto
-   */
-  public static UserDto fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, UserDto.class);
-  }
+    StringJoiner joiner = new StringJoiner("&");
 
-  /**
-   * Convert an instance of UserDto to an JSON string
-   *
-   * @return JSON string
-   */
-  public String toJson() {
-    return JSON.getGson().toJson(this);
+    // add `Name` to the URL query string
+    if (getName() != null) {
+      joiner.add(String.format("%sName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+    }
+
+    // add `ServerId` to the URL query string
+    if (getServerId() != null) {
+      joiner.add(String.format("%sServerId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getServerId()))));
+    }
+
+    // add `ServerName` to the URL query string
+    if (getServerName() != null) {
+      joiner.add(String.format("%sServerName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getServerName()))));
+    }
+
+    // add `Id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+    }
+
+    // add `PrimaryImageTag` to the URL query string
+    if (getPrimaryImageTag() != null) {
+      joiner.add(String.format("%sPrimaryImageTag%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageTag()))));
+    }
+
+    // add `HasPassword` to the URL query string
+    if (getHasPassword() != null) {
+      joiner.add(String.format("%sHasPassword%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHasPassword()))));
+    }
+
+    // add `HasConfiguredPassword` to the URL query string
+    if (getHasConfiguredPassword() != null) {
+      joiner.add(String.format("%sHasConfiguredPassword%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHasConfiguredPassword()))));
+    }
+
+    // add `HasConfiguredEasyPassword` to the URL query string
+    if (getHasConfiguredEasyPassword() != null) {
+      joiner.add(String.format("%sHasConfiguredEasyPassword%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHasConfiguredEasyPassword()))));
+    }
+
+    // add `EnableAutoLogin` to the URL query string
+    if (getEnableAutoLogin() != null) {
+      joiner.add(String.format("%sEnableAutoLogin%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEnableAutoLogin()))));
+    }
+
+    // add `LastLoginDate` to the URL query string
+    if (getLastLoginDate() != null) {
+      joiner.add(String.format("%sLastLoginDate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLastLoginDate()))));
+    }
+
+    // add `LastActivityDate` to the URL query string
+    if (getLastActivityDate() != null) {
+      joiner.add(String.format("%sLastActivityDate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLastActivityDate()))));
+    }
+
+    // add `Configuration` to the URL query string
+    if (getConfiguration() != null) {
+      joiner.add(getConfiguration().toUrlQueryString(prefix + "Configuration" + suffix));
+    }
+
+    // add `Policy` to the URL query string
+    if (getPolicy() != null) {
+      joiner.add(getPolicy().toUrlQueryString(prefix + "Policy" + suffix));
+    }
+
+    // add `PrimaryImageAspectRatio` to the URL query string
+    if (getPrimaryImageAspectRatio() != null) {
+      joiner.add(String.format("%sPrimaryImageAspectRatio%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageAspectRatio()))));
+    }
+
+    return joiner.toString();
   }
 }
 
