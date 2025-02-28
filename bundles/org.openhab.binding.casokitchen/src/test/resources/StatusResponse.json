@@ -1,0 +1,13 @@
+{
+	"temperature1": 9,
+	"targetTemperature1": 9,
+	"temperature2": 10,
+	"targetTemperature2": 10,
+	"power1": true,
+	"power2": true,
+	"light1": false,
+	"light2": false,
+	"logTimestampUtc": "2024-08-13T23:25:32.2382092Z",
+	"temperatureUnit": "C",
+	"hint": "Note: Device status and content of this message may differ due to synchronization intervals of distributed systems."
+}
