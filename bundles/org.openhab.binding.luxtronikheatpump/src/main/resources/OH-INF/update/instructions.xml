@@ -27,19 +27,53 @@
 			<remove-channel id="channel260"/>
 
 			<!-- add renamed channels -->
-			<add-channel id="temperatureVapourisation"/>
-			<add-channel id="temperatureLiquefaction"/>
-			<add-channel id="frequencyCompressorMin"/>
-			<add-channel id="frequencyCompressorMax"/>
-			<add-channel id="temperatureVBOTarget"/>
-			<add-channel id="temperatureVBO"/>
-			<add-channel id="controlSignalHeatingCirculationPump"/>
-			<add-channel id="temperatureHeatingCirculationPumpTarget"/>
-			<add-channel id="temperatureHeatingCirculationPump"/>
-			<add-channel id="temperatureHotGasMax"/>
-			<add-channel id="controlSignalHeatingCirculationPump"/>
-			<add-channel id="outputControlSignalCooling"/>
-			<add-channel id="timeCoolingRelease"/>
+			<add-channel id="temperatureVapourisation">
+				<type>Number:Temperature</type>
+			</add-channel>
+			<add-channel id="temperatureLiquefaction">
+				<type>Number:Temperature</type>
+			</add-channel>
+			<add-channel id="frequencyCompressorMin">
+				<type>Number:Frequency</type>
+			</add-channel>
+			<add-channel id="frequencyCompressorMax">
+				<type>Number:Frequency</type>
+			</add-channel>
+			<add-channel id="temperatureVBOTarget">
+				<type>Number:Temperature</type>
+			</add-channel>
+			<add-channel id="temperatureVBO">
+				<type>Number:Temperature</type>
+			</add-channel>
+			<add-channel id="controlSignalHeatingCirculationPump">
+				<type>Number:Dimensionless</type>
+			</add-channel>
+			<add-channel id="temperatureHeatingCirculationPumpTarget">
+				<type>Number:Temperature</type>
+			</add-channel>
+			<add-channel id="temperatureHeatingCirculationPump">
+				<type>Number:Temperature</type>
+			</add-channel>
+			<add-channel id="temperatureHotGasMax">
+				<type>Number:Temperature</type>
+			</add-channel>
+			<add-channel id="controlSignalHeatingCirculationPump">
+				<type>Number:Dimensionless</type>
+			</add-channel>
+			<add-channel id="outputControlSignalCooling">
+				<type>Switch</type>
+			</add-channel>
+			<add-channel id="timeCoolingRelease">
+				<type>Number:Time</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="3">
+			<add-channel id="powerConsumption">
+				<type>Number:Power</type>
+			</add-channel>
+			<add-channel id="inputUtilityLock2">
+				<type>Switch</type>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 
