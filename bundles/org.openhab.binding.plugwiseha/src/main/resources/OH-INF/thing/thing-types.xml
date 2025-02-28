@@ -126,7 +126,7 @@
 				<description>Switch the Plugwise Smart plug ON or OFF</description>
 			</channel>
 			<channel id="lock" typeId="lock"/>
-			<channel id="powerUsage" typeId="system:electric-power">
+			<channel id="powerUsage" typeId="system.electric-power">
 				<label>Power Usage</label>
 			</channel>
 		</channels>
