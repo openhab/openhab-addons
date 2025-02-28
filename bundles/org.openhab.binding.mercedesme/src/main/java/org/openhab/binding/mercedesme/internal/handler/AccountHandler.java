@@ -164,12 +164,12 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         });
         ws.interrupt();
         eventQueue.clear();
-        authService = Optional.empty();
     }
 
     @Override
     public void handleRemoval() {
         storage.remove(config.email);
+        authService = Optional.empty();
         super.handleRemoval();
     }
 
