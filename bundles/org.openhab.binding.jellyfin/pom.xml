@@ -11,41 +11,43 @@
   </parent>
 
   <properties>
-    <openapi-generator.version>7.10.0</openapi-generator.version>
+    <!--
+      <openapi-generator.version>7.10.0</openapi-generator.version>
+    -->
   </properties>
 
   <artifactId>org.openhab.binding.jellyfin</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: Jellyfin Binding</name>
 
-<!--
-***
-* 🐛 [\#18596 - [BUG] [JAVA] ClassCastException...](https://github.com/OpenAPITools/openapi-generator/issues/18596)
-*
-* ➡️ Integration into maven would depend on solving this issue first.
-***
   <build>
     <plugins>
-      <plugin>
+      <!--
+        ***
+        * [#18596 - [BUG] [JAVA] ClassCastException...](https://github.com/OpenAPITools/openapi-generator/issues/18596)
+        *
+        * ➡️ Integration into maven would depend on solving this issue first.
+        ***
+        <plugin>
         <groupId>org.openapitools</groupId>
         <artifactId>openapi-generator-maven-plugin</artifactId>
         <version>${openapi-generator.version}</version>
         <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/jellyfin-openapi-10.10.3.yaml</inputSpec>
-              <generatorName>java</generatorName>
-              <configOptions>
-                <sourceFolder>src/gen/java/main</sourceFolder>
-              </configOptions>
-            </configuration>
-          </execution>
+        <execution>
+        <goals>
+        <goal>generate</goal>
+        </goals>
+        <configuration>
+        <inputSpec>${project.basedir}/src/main/resources/jellyfin-openapi-10.10.3.yaml</inputSpec>
+        <generatorName>java</generatorName>
+        <configOptions>
+        <sourceFolder>src/gen/java/main</sourceFolder>
+        </configOptions>
+        </configuration>
+        </execution>
         </executions>
-      </plugin>
+        </plugin>
+      -->
     </plugins>
   </build>
--->
 </project>
