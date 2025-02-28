@@ -1422,7 +1422,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * For lights use the product archetype to split between light bulbs and strip lights. Rooms and Zones are
      * considered to be (groups of) light bulbs.
      */
-    // TODO use the semantic tag constants from OH core
     private void updateSemanticEquipmentTag() {
         // TODO SemanticTag semanticEquipmentTag = null;
         String semanticEquipmentTag = null;
@@ -1437,26 +1436,26 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
         // security equipment
         if (supportedChannelIdSet.contains(CHANNEL_2_SECURITY_CONTACT)) {
-            // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.ALARM_SYSTEM
-            semanticEquipmentTag = "Security";
+            // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.ALARM_DEVICE ** TBD **
+            semanticEquipmentTag = "AlarmDevice";
         } else
 
         // button equipment
         if (supportedChannelIdSet.contains(CHANNEL_2_BUTTON_LAST_EVENT)) {
             // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.WALL_SWITCH
-            semanticEquipmentTag = "Button";
+            semanticEquipmentTag = "WallSwitch";
         } else
 
         // rotary dial equipment
         if (supportedChannelIdSet.contains(CHANNEL_2_ROTARY_STEPS)) {
-            // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.TBD **
+            // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.WALL_DEVICE ** TBD **
             semanticEquipmentTag = "RotaryDial";
         } else
 
         // rooms and zones are a super-set of light bulb equipment
         if (thisResource.getType() != ResourceType.DEVICE) {
-            // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.LIGHTBULB
-            semanticEquipmentTag = "LightBulb";
+            // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.LIGHTING ** TBD **
+            semanticEquipmentTag = "Lighting";
         } else
 
         // everything else is individual light equipment
@@ -1465,7 +1464,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.LIGHT_STRIPE
                 semanticEquipmentTag = "LightStrip";
             } else {
-                // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.LIGHTBULB
+                // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.LIGHT_BULB ** TBD **
                 semanticEquipmentTag = "LightBulb";
             }
         }
