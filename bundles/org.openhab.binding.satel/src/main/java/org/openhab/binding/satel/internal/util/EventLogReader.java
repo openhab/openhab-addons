@@ -242,7 +242,7 @@ public class EventLogReader {
             case 32 -> deviceNameResolver.resolve(DeviceType.PARTITION, eventDesc.getPartition()) + DETAILS_SEPARATOR
                     + deviceNameResolver.resolve(DeviceType.ZONE, eventDesc.getSource());
             default -> {
-                logger.info("Unsupported device kind code {} at index {}", eventDesc.getKind(),
+                logger.warn("Unsupported device kind code {} at index {}", eventDesc.getKind(),
                         eventDesc.getCurrentIndex());
                 yield String.join(DETAILS_SEPARATOR, "kind=" + eventDesc.getKind(),
                         "partition=" + eventDesc.getPartition(), "source=" + eventDesc.getSource(),
