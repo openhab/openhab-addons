@@ -35,6 +35,8 @@ public class UniFiControllerThingConfig {
 
     private int refresh = 10;
 
+    private int timeoutSeconds = 5;
+
     private boolean unifios = false;
 
     public String getHost() {
@@ -82,6 +84,22 @@ public class UniFiControllerThingConfig {
         this.refresh = refresh;
     }
 
+    public int getTimeoutSeconds() {
+        return timeoutSeconds;
+    }
+
+    public void setTimeoutSeconds(int timeoutSeconds) {
+        this.timeoutSeconds = timeoutSeconds;
+    }
+
+    public boolean isUnifios() {
+        return unifios;
+    }
+
+    public void setUnifios(boolean unifios) {
+        this.unifios = unifios;
+    }
+
     public boolean isUniFiOS() {
         return unifios;
     }
@@ -98,6 +116,7 @@ public class UniFiControllerThingConfig {
     @Override
     public String toString() {
         return "UniFiControllerConfig{host = " + host + ", port = " + port + ", username = " + username
-                + ", password = *****, refresh = " + refresh + ", unifios = " + unifios + "}";
+                + ", password = *****, refresh = " + refresh + ", timeout = " + timeoutSeconds + ", unifios = "
+                + unifios + "}";
     }
 }
