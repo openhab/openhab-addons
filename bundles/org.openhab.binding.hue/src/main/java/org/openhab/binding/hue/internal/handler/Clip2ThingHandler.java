@@ -51,6 +51,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContentType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
@@ -108,6 +109,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
             THING_TYPE_ZONE);
 
     private static final Set<ResourceType> SUPPORTED_SCENE_TYPES = Set.of(ResourceType.SCENE, ResourceType.SMART_SCENE);
+
+    private static final Set<Archetype> STRIPLIGHT_ARCHETYPES = Set.of(Archetype.HUE_LIGHTSTRIP,
+            Archetype.HUE_LIGHTSTRIP_TV, Archetype.HUE_TUBE, Archetype.STRING_LIGHT, Archetype.CHRISTMAS_TREE);
 
     private static final Duration DYNAMICS_ACTIVE_WINDOW = Duration.ofSeconds(10);
 
@@ -1069,6 +1073,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateServiceContributors();
                 updateChannelList();
                 updateChannelItemLinksFromLegacy();
+                updateSemanticEquipmentTag();
                 if (!hasConnectivityIssue) {
                     updateStatus(ThingStatus.ONLINE);
                 }
@@ -1410,5 +1415,54 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateThing(editBuilder.withProperties(newProperties).build());
             }
         }
+    }
+
+    /**
+     * Update the thing's semantic equipment tag. The main determinant for the equipment type is the supported channels.
+     * For lights use the product archetype to split between light bulbs and strip lights. Rooms and Zones are
+     * considered to be (groups of) light bulbs.
+     */
+    // TODO use the semantic tag constants from OH core
+    private void updateSemanticEquipmentTag() {
+        String semanticEquipmentTag = null;
+
+        // sensor equipment
+        if (supportedChannelIdSet.contains(CHANNEL_2_LIGHT_LEVEL) //
+                || supportedChannelIdSet.contains(CHANNEL_2_MOTION)
+                || supportedChannelIdSet.contains(CHANNEL_2_TEMPERATURE)) {
+            semanticEquipmentTag = "Sensor";
+        } else
+
+        // security equipment
+        if (supportedChannelIdSet.contains(CHANNEL_2_SECURITY_CONTACT)) {
+            semanticEquipmentTag = "Security";
+        } else
+
+        // button equipment
+        if (supportedChannelIdSet.contains(CHANNEL_2_BUTTON_LAST_EVENT)) {
+            semanticEquipmentTag = "Button";
+        } else
+
+        // rotary dial equipment
+        if (supportedChannelIdSet.contains(CHANNEL_2_ROTARY_STEPS)) {
+            semanticEquipmentTag = "RotaryDial";
+        } else
+
+        // rooms and zones are a super-set of light bulb equipment
+        if (thisResource.getType() != ResourceType.DEVICE) {
+            semanticEquipmentTag = "LightBulb";
+        } else
+
+        // everything else is individual light equipment
+        if (thisResource.getProductData() instanceof ProductData productData) {
+            if (STRIPLIGHT_ARCHETYPES.contains(productData.getProductArchetype())) {
+                semanticEquipmentTag = "LightStrip";
+            } else {
+                semanticEquipmentTag = "LightBulb";
+            }
+        }
+
+        logger.debug("{} -> updateSemanticEquipmentTag({})", resourceId, semanticEquipmentTag);
+        updateThing(editThing().withSemanticEquipmentTag(semanticEquipmentTag).build());
     }
 }
