@@ -295,6 +295,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `exitButtonEnabled`         | Switch | RW         | This channel could be used to disable the exit button to provide additional security at night or when noone is home.                                                                                                                                                                                                               |
 | `motionDetectionLevel`      | Number | RW         | Controls camera's built-in motion detection sensitivity.                                                                                                                                                                                                                                                                           |
 | `magneticLockWarning`       | Switch | R          | This alarm will trigger if the door was opened while the lock is closed, signalling possible intrusion alarm.                                                                                                                                                                                                                      |
+| `reboot`                    | Switch | W          | Reboots camera when turned ON
 
 ## Moving PTZ Cameras
 

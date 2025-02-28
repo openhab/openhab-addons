@@ -158,4 +158,5 @@ public class IpCameraBindingConstants {
     public static final String CHANNEL_MOTION_DETECTION_LEVEL = "motionDetectionLevel";
     public static final String CHANNEL_EXIT_BUTTON_ENABLED = "exitButtonEnabled";
     public static final String CHANNEL_MAGNETIC_LOCK_WARNING = "magneticLockWarning";
+    public static final String CHANNEL_REBOOT = "reboot";
 }

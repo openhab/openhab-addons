@@ -322,6 +322,11 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                         ipCameraHandler.setChannelState(CHANNEL_ENABLE_RECORDINGS, OnOffType.ON);
                     }
                     break;
+                case "/api.cgi?cmd=Reboot":
+                    if (!content.contains("\"rspCode\" : 200")) {
+                        ipCameraHandler.logger.warn("Reboot failed:\n{}", content);
+                    }
+                    break;
                 default:
                     if (!cutDownURL.startsWith("/cgi-bin/api.cgi?cmd=Set")
                             || !cutDownURL.startsWith("/api.cgi?cmd=Set")) {// ignore responses from all Setxx commands
@@ -577,6 +582,12 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetAiCfg" + ipCameraHandler.reolinkAuth,
                             "[{\"cmd\":\"SetAiCfg\",\"action\":0,\"param\":{\"bSmartTrack\":0,\"channel\": "
                                     + ipCameraHandler.cameraConfig.getNvrChannel() + " }}]");
+                }
+                break;
+            case CHANNEL_REBOOT:
+                if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=Reboot" + ipCameraHandler.reolinkAuth,
+                            "[{\"cmd\":\"Reboot\"}]");
                 }
                 break;
         }
