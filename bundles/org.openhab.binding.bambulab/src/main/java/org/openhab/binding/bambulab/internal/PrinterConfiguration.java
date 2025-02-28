@@ -15,6 +15,7 @@ package org.openhab.binding.bambulab.internal;
 import static pl.grzeslowski.jbambuapi.PrinterClientConfig.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import pl.grzeslowski.jbambuapi.PrinterClientConfig;
 
 /**
  * The {@link PrinterConfiguration} class contains fields mapping thing configuration parameters.
@@ -27,6 +28,6 @@ public class PrinterConfiguration {
     public String scheme = SCHEME;
     public String hostname = "";
     public int port = DEFAULT_PORT;
-    public String username = "";
+    public String username = LOCAL_USERNAME;
     public String accessCode = "";
 }

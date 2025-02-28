@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pl.grzeslowski.jbambuapi.PrinterClient;
+import pl.grzeslowski.jbambuapi.PrinterClientConfig;
 import pl.grzeslowski.jbambuapi.PrinterState;
 import pl.grzeslowski.jbambuapi.PrinterWatcher;
 
@@ -75,13 +76,13 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.P
         var config = getConfigAs(PrinterConfiguration.class);
 
         if (config.serial.isEmpty()) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/handler.printer.init.noSerial");
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/printer.handler.init.noSerial");
             return;
         }
         logger = LoggerFactory.getLogger(PrinterHandler.class.getName() + "." + config.serial);
 
         if (config.hostname.isEmpty()) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/handler.printer.init.noHostname");
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/printer.handler.init.noHostname");
             return;
         }
 
@@ -92,19 +93,17 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.P
         try {
             uri = new URI(rawUri);
         } catch (URISyntaxException e) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                    "@token/handler.printer.init.invalidHostname[\"" + rawUri + "\"]");
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/printer.handler.init.invalidHostname[\"" + rawUri + "\"]");
             return;
         }
 
         if (config.accessCode.isEmpty()) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/handler.printer.init.noAccessCode");
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/printer.handler.init.noAccessCode");
             return;
         }
 
         if (config.username.isEmpty()) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/handler.printer.init.noUsername");
-            return;
+            config.username = PrinterClientConfig.LOCAL_USERNAME;
         }
 
         updateStatus(UNKNOWN);
@@ -166,6 +165,8 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.P
             return;
         }
         updatePrinterChannels(delta);
+        // if got new Printer state (and not failed) then make sure that thing status in ONLINE
+        updateStatus(ONLINE);
     }
 
     private void updatePrinterChannels(PrinterState state) {

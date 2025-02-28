@@ -147,9 +147,10 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="username" type="text" required="true">
+			<parameter name="username" type="text">
 				<label>Username</label>
 				<description>`bblp` for local mode or your Bambu Lab user (starts with `u_`).</description>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="accessCode" type="text" required="true">
