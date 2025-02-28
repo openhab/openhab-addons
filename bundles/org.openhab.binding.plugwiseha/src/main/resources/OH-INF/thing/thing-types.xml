@@ -65,7 +65,7 @@
 
 		<channels>
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
-			<channel id="temperature" typeId="system:indoor-temperature">
+			<channel id="temperature" typeId="system.indoor-temperature">
 				<label>Zone Temperature</label>
 				<description>Gets the temperature of this zone</description>
 			</channel>
