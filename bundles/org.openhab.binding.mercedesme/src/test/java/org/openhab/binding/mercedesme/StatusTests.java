@@ -32,8 +32,6 @@ import org.openhab.binding.mercedesme.internal.handler.ThingCallbackListener;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
@@ -41,7 +39,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.internal.BridgeImpl;
 
 /**
- * {@link StatusTests} sequencess for testing ThingStatus
+ * {@link StatusTests} sequences for testing ThingStatus
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -58,7 +56,7 @@ class StatusTests {
     }
 
     public static HttpClient getHttpClient(int tokenResponseCode) {
-        Utils.initialize(mock(TimeZoneProvider.class), mock(LocaleProvider.class));
+        Utils.initialize(Utils.timeZoneProvider, Utils.localeProvider);
         HttpClient httpClient = mock(HttpClient.class);
         try {
             Request clientRequest = mock(Request.class);

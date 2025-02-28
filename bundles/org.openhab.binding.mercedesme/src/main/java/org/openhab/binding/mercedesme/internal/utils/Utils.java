@@ -75,14 +75,13 @@ public class Utils {
 
     private static final int R = 6371; // Radius of the earth
     private static int port = 8090;
-    private static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
+    public static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
         @Override
         public ZoneId getTimeZone() {
             return ZoneId.systemDefault();
         }
     };
-    private static LocaleProvider localeProvider = new LocaleProvider() {
-
+    public static LocaleProvider localeProvider = new LocaleProvider() {
         @Override
         public Locale getLocale() {
             return Locale.getDefault();
