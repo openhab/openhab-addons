@@ -70,19 +70,21 @@ public class UniFiController {
     private final String username;
     private final String password;
     private final boolean unifios;
+    private final int timeoutSeconds;
     private final Gson gson;
     private final Gson poeGson;
 
     private String csrfToken;
 
     public UniFiController(final HttpClient httpClient, final String host, final int port, final String username,
-            final String password, final boolean unifios) {
+            final String password, final boolean unifios, int timeoutSeconds) {
         this.httpClient = httpClient;
         this.host = host;
         this.port = port;
         this.username = username;
         this.password = password;
         this.unifios = unifios;
+        this.timeoutSeconds = timeoutSeconds;
         this.csrfToken = "";
         final UniFiSiteInstanceCreator siteInstanceCreator = new UniFiSiteInstanceCreator(cache);
         final UniFiWlanInstanceCreator wlanInstanceCreator = new UniFiWlanInstanceCreator(cache);
@@ -271,7 +273,8 @@ public class UniFiController {
 
     private <T> UniFiControllerRequest<T> newRequest(final Class<T> responseType, final HttpMethod method,
             final Gson gson) {
-        return new UniFiControllerRequest<>(responseType, gson, httpClient, method, host, port, csrfToken, unifios);
+        return new UniFiControllerRequest<>(responseType, gson, httpClient, method, host, port, csrfToken, unifios,
+                timeoutSeconds);
     }
 
     private <T> @Nullable T executeRequest(final UniFiControllerRequest<T> request) throws UniFiException {
