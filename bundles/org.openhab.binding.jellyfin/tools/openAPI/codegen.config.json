@@ -1,0 +1,7 @@
+{
+  "enablePostProcessFile": true,
+  "library": "native",
+  "serializationLibrary": "jackson",
+  "openApiNullable": true,
+  "dateLibrary": "java8"
+}
