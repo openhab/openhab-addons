@@ -191,12 +191,7 @@ public class MBWebsocket {
      */
 
     @OnWebSocketMessage
-    public void onBinaryMessage(byte buf[], int offset, int length) {
-        logger.trace("WebSocket - Message offset # size # length {} # {} # {}", offset, buf.length, length);
-        int dataSize = buf.length - offset;
-        byte[] dataArray = new byte[dataSize];
-        System.arraycopy(buf, offset, dataArray, 0, dataSize);
-        // public void onBytes(InputStream is) {
+    public void onBytes(InputStream is) {
         try {
             byte[] array = is.readAllBytes();
             is.close();
