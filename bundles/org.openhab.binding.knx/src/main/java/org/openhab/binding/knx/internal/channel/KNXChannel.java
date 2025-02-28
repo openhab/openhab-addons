@@ -63,7 +63,7 @@ public abstract class KNXChannel {
 
     KNXChannel(List<String> gaKeys, List<Class<? extends Type>> acceptedTypes, Channel channel) {
         this.gaKeys = gaKeys;
-        this.preferredType = acceptedTypes.get(0);
+        this.preferredType = acceptedTypes.getFirst();
 
         // this is safe because we already checked the presence of the ChannelTypeUID before
         this.channelType = Objects.requireNonNull(channel.getChannelTypeUID()).getId();
