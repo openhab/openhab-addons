@@ -72,6 +72,8 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.semantics.SemanticTag;
+import org.openhab.core.semantics.model.DefaultSemanticTags;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -1423,54 +1425,48 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * considered to be (groups of) light bulbs.
      */
     private void updateSemanticEquipmentTag() {
-        // TODO SemanticTag semanticEquipmentTag = null;
-        String semanticEquipmentTag = null;
+        SemanticTag equipmentTag = null;
 
         // sensor equipment
         if (supportedChannelIdSet.contains(CHANNEL_2_LIGHT_LEVEL) //
                 || supportedChannelIdSet.contains(CHANNEL_2_MOTION)
                 || supportedChannelIdSet.contains(CHANNEL_2_TEMPERATURE)) {
-            // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.SENSOR
-            semanticEquipmentTag = "Sensor";
+            equipmentTag = DefaultSemanticTags.Equipment.SENSOR;
         } else
 
         // security equipment
         if (supportedChannelIdSet.contains(CHANNEL_2_SECURITY_CONTACT)) {
-            // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.ALARM_DEVICE ** TBD **
-            semanticEquipmentTag = "AlarmDevice";
+            equipmentTag = DefaultSemanticTags.Equipment.ALARM_SYSTEM; // TODO other tag
         } else
 
         // button equipment
         if (supportedChannelIdSet.contains(CHANNEL_2_BUTTON_LAST_EVENT)) {
-            // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.WALL_SWITCH
-            semanticEquipmentTag = "WallSwitch";
+            equipmentTag = DefaultSemanticTags.Equipment.WALL_SWITCH;
         } else
 
         // rotary dial equipment
         if (supportedChannelIdSet.contains(CHANNEL_2_ROTARY_STEPS)) {
-            // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.WALL_DEVICE ** TBD **
-            semanticEquipmentTag = "RotaryDial";
+            equipmentTag = DefaultSemanticTags.Equipment.WALL_SWITCH; // TODO other tag
         } else
 
         // rooms and zones are a super-set of light bulb equipment
         if (thisResource.getType() != ResourceType.DEVICE) {
-            // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.LIGHTING ** TBD **
-            semanticEquipmentTag = "Lighting";
+            equipmentTag = DefaultSemanticTags.Equipment.LIGHTBULB; // TODO snake case
         } else
 
         // everything else is individual light equipment
         if (thisResource.getProductData() instanceof ProductData productData) {
             if (STRIPLIGHT_ARCHETYPES.contains(productData.getProductArchetype())) {
-                // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.LIGHT_STRIPE
-                semanticEquipmentTag = "LightStrip";
+                equipmentTag = DefaultSemanticTags.Equipment.LIGHT_STRIPE; // TODO light strip ??
             } else {
-                // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.LIGHT_BULB ** TBD **
-                semanticEquipmentTag = "LightBulb";
+                equipmentTag = DefaultSemanticTags.Equipment.LIGHTBULB; // TODO snake case
             }
         }
 
-        logger.debug("{} -> updateSemanticEquipmentTag({})", resourceId, semanticEquipmentTag);
-        // TODO updateThing(editThing().withSemanticEquipmentTag(semanticEquipmentTag.getName()).build());
-        updateThing(editThing().withSemanticEquipmentTag(semanticEquipmentTag).build());
+        if (equipmentTag != null) {
+            String equipmentTagName = equipmentTag.getName();
+            logger.debug("{} -> updateSemanticEquipmentTag({})", resourceId, equipmentTagName);
+            updateThing(editThing().withSemanticEquipmentTag(equipmentTagName).build());
+        }
     }
 }
