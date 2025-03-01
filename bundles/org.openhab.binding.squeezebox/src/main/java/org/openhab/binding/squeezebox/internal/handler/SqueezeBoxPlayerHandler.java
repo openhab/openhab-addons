@@ -165,12 +165,13 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             if (bridgeStatus == ThingStatus.OFFLINE) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             } else if (!this.connected) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
+                updateStatus(ThingStatus.OFFLINE);
             } else if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                updateStatus(ThingStatus.ONLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge not found");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.bridge-not-found");
         }
     }
 

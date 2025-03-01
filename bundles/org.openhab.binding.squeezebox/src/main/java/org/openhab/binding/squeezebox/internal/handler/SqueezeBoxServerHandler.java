@@ -389,7 +389,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         this.password = config.password;
 
         if (host.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "host is not set");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.host-not-set");
             return;
         }
         // Create URL for jsonrpc interface
@@ -505,7 +506,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             if (endOfStream && !terminate) {
                 logger.info("end of stream received from socket during readLine");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "end of stream on socket read");
+                        "@text/offline.comm-error.end-of-stream");
                 scheduleReconnect();
             }
             if (requestFavoritesJob != null && !requestFavoritesJob.isDone()) {
