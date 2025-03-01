@@ -647,8 +647,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     });
                     break;
                 default:
-                    logger.trace("Unhandled mixer message type '{}'", Arrays.toString(messageParts));
-
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Unhandled mixer message type '{}'", Arrays.toString(messageParts));
+                    }
             }
         }
 
@@ -665,7 +666,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             } else if ("disconnect".equals(action) || "forget".equals(action)) {
                 connected = false;
             } else {
-                logger.trace("Unhandled client message type '{}'", Arrays.toString(messageParts));
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Unhandled client message type '{}'", Arrays.toString(messageParts));
+                }
                 return;
             }
 
@@ -875,7 +878,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 return;
             } else {
                 // Added so that actions (such as delete, index, jump, open) are not treated as "play"
-                logger.trace("Unhandled playlist message type '{}'", Arrays.toString(messageParts));
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Unhandled playlist message type '{}'", Arrays.toString(messageParts));
+                }
                 return;
             }
             final String value = mode;
