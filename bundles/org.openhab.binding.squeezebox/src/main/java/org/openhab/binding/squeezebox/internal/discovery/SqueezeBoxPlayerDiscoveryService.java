@@ -20,15 +20,20 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxPlayer;
 import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxPlayerEventListener;
 import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxPlayerHandler;
 import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxServerHandler;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,48 +47,65 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Added event to update favorites list
  *
  */
-public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryService
+@Component(scope = ServiceScope.PROTOTYPE, service = SqueezeBoxPlayerDiscoveryService.class)
+@NonNullByDefault
+public class SqueezeBoxPlayerDiscoveryService extends AbstractThingHandlerDiscoveryService<SqueezeBoxServerHandler>
         implements SqueezeBoxPlayerEventListener {
-    private final Logger logger = LoggerFactory.getLogger(SqueezeBoxPlayerDiscoveryParticipant.class);
+    private final Logger logger = LoggerFactory.getLogger(SqueezeBoxPlayerDiscoveryService.class);
 
     private static final int TIMEOUT = 60;
     private static final int TTL = 60;
 
-    private SqueezeBoxServerHandler squeezeBoxServerHandler;
-    private ScheduledFuture<?> requestPlayerJob;
+    private @Nullable ScheduledFuture<?> requestPlayerJob;
 
     /**
      * Discovers SqueezeBox Players attached to a SqueezeBox Server
-     *
-     * @param squeezeBoxServerHandler
      */
-    public SqueezeBoxPlayerDiscoveryParticipant(SqueezeBoxServerHandler squeezeBoxServerHandler) {
-        super(SqueezeBoxPlayerHandler.SUPPORTED_THING_TYPES_UIDS, TIMEOUT, true);
-        this.squeezeBoxServerHandler = squeezeBoxServerHandler;
+    public SqueezeBoxPlayerDiscoveryService() {
+        super(SqueezeBoxServerHandler.class, SqueezeBoxPlayerHandler.SUPPORTED_THING_TYPES_UIDS, TIMEOUT, true);
         setupRequestPlayerJob();
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
+        // Register the PlayerListener with the SqueezeBoxServerHandler
+        thingHandler.registerSqueezeBoxPlayerListener(this);
+    }
+
+    @Override
+    public void dispose() {
+        // Unregister the PlayerListener from the SqueezeBoxServerHandler
+        thingHandler.unregisterSqueezeBoxPlayerListener(this);
+
+        cancelRequestPlayerJob();
+
+        super.dispose();
     }
 
     @Override
     protected void startScan() {
         logger.debug("startScan invoked in SqueezeBoxPlayerDiscoveryParticipant");
-        this.squeezeBoxServerHandler.requestPlayers();
-        this.squeezeBoxServerHandler.requestFavorites();
+        thingHandler.requestPlayers();
+        thingHandler.requestFavorites();
     }
 
     /*
      * Allows request player job to be canceled when server handler is removed
      */
-    public void cancelRequestPlayerJob() {
+    private void cancelRequestPlayerJob() {
         logger.debug("canceling RequestPlayerJob");
+        ScheduledFuture<?> requestPlayerJob = this.requestPlayerJob;
         if (requestPlayerJob != null) {
             requestPlayerJob.cancel(true);
-            requestPlayerJob = null;
+            this.requestPlayerJob = null;
         }
     }
 
     @Override
     public void playerAdded(SqueezeBoxPlayer player) {
-        ThingUID bridgeUID = squeezeBoxServerHandler.getThing().getUID();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
 
         ThingUID thingUID = new ThingUID(SQUEEZEBOXPLAYER_THING_TYPE, bridgeUID, player.macAddress.replace(":", ""));
 
@@ -95,10 +117,22 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
             properties.put(representationPropertyName, player.macAddress);
 
             // Added other properties
-            properties.put("modelId", player.model);
-            properties.put("name", player.name);
-            properties.put("uid", player.uuid);
-            properties.put("ip", player.ipAddr);
+            String model = player.model;
+            if (model != null) {
+                properties.put(Thing.PROPERTY_MODEL_ID, model);
+            }
+            String name = player.name;
+            if (name != null) {
+                properties.put("name", name);
+            }
+            String uuid = player.uuid;
+            if (uuid != null) {
+                properties.put("uid", uuid);
+            }
+            String ipAddr = player.ipAddr;
+            if (ipAddr != null) {
+                properties.put("ip", ipAddr);
+            }
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withRepresentationProperty(representationPropertyName).withBridge(bridgeUID).withLabel(player.name)
@@ -109,7 +143,7 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
     }
 
     private boolean playerThingExists(ThingUID newThingUID) {
-        return squeezeBoxServerHandler.getThing().getThing(newThingUID) != null;
+        return thingHandler.getThing().getThing(newThingUID) != null;
     }
 
     /**
@@ -118,7 +152,7 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
     private void setupRequestPlayerJob() {
         logger.debug("Request player job scheduled to run every {} seconds", TTL);
         requestPlayerJob = scheduler.scheduleWithFixedDelay(() -> {
-            squeezeBoxServerHandler.requestPlayers();
+            thingHandler.requestPlayers();
         }, 10, TTL, TimeUnit.SECONDS);
     }
 
@@ -228,7 +262,7 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
     }
 
     @Override
-    public void buttonsChangeEvent(String mac, String likeCommand, String unlikeCommand) {
+    public void buttonsChangeEvent(String mac, @Nullable String likeCommand, @Nullable String unlikeCommand) {
     }
 
     @Override
