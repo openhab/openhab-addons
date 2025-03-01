@@ -487,7 +487,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 }
             } catch (IOException e) {
                 if (!terminate) {
-                    logger.warn("failed to read line from squeeze server socket: {}", e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     scheduleReconnect();
                 }
@@ -504,7 +503,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
             // check for end of stream from readLine
             if (endOfStream && !terminate) {
-                logger.info("end of stream received from socket during readLine");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.comm-error.end-of-stream");
                 scheduleReconnect();
