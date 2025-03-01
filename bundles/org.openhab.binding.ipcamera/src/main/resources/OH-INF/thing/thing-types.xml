@@ -3196,6 +3196,6 @@
 	<channel-type id="reboot" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Reboot</label>
-		<description>Reboot camera.</description>
+		<description>The camera is rebooted when switched ON</description>
 	</channel-type>
 </thing:thing-descriptions>
