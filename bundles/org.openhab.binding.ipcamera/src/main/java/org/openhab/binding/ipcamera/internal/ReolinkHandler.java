@@ -324,7 +324,8 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     break;
                 default:
                     // ignore responses from all Setxx commands
-                    if (!cutDownURL.startsWith("/cgi-bin/api.cgi?cmd=Set") && !cutDownURL.startsWith("/api.cgi?cmd=Set")) {
+                    if (!cutDownURL.startsWith("/cgi-bin/api.cgi?cmd=Set")
+                            && !cutDownURL.startsWith("/api.cgi?cmd=Set")) {
                         ipCameraHandler.logger.warn(
                                 "URL {} is not handled currently by the binding, please report this message",
                                 cutDownURL);
