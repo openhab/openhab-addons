@@ -23,12 +23,3 @@ public class SenseEnergyApiDeviceDetection {
     @SerializedName("num_detected")
     public int numDetected;
 }
-
-/* @formatter:off
-"device_detection": {
-     "in_progress":[],
-     "found":[],
-     "num_detected":15
- },
-@formatter:on
-*/

@@ -12,30 +12,7 @@
  */
 package org.openhab.binding.senseenergy.internal.handler;
 
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_DEVICES_UPDATED_TRIGGER;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_DEVICE_POWER;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_DEVICE_TRIGGER;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_FREQUENCY;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_GRID_POWER;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_GROUP_DISCOVERED_DEVICES;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_GROUP_GENERAL;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_GROUP_PROXY_DEVICES;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_GROUP_SELF_REPORTING_DEVICES;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_GROUP_TYPE_DEVICE_TEMPLATE;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_LEG_1_POWER;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_LEG_2_POWER;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_MAIN_POWER;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_POTENTIAL_1;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_POTENTIAL_2;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_SOLAR_POWER;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.PARAM_MONITOR_ID;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.PROPERTY_MONITOR_IP_ADDRESS;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.PROPERTY_MONITOR_MAC;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.PROPERTY_MONITOR_SERIAL;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.PROPERTY_MONITOR_SOLAR_CONFIGURED;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.PROPERTY_MONITOR_SSID;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.PROPERTY_MONITOR_VERSION;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.PROXY_DEVICE_THING_TYPE;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.*;
 
 import java.io.IOException;
 import java.net.SocketAddress;
@@ -259,7 +236,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
             statusDetail = apiException.isConfigurationIssue() ? ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR
                     : ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR;
         } else {
-            logger.warn("Unhandled Exception", e);
+            logger.debug("Unhandled Exception", e);
             statusDetail = ThingStatusDetail.OFFLINE.NONE;
         }
 

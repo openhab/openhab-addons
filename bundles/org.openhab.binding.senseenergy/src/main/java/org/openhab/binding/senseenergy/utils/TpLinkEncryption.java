@@ -17,7 +17,7 @@ import java.io.UnsupportedEncodingException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * {@link TpLinkEncryption }
+ * {@link TpLinkEncryption } provides encryption for TpLink messages
  *
  * @author Jeff James - Initial contribution
  */
@@ -25,6 +25,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class TpLinkEncryption {
     private static final int STARTKEY = 0xAB;
 
+    /**
+     * {@link encrypt} will encrypt string to an encrypted byte[]
+     * 
+     * @param unencrypted string
+     * @return encrypted byte[]
+     */
     public static byte[] encrypt(String unencrypted) {
         try {
             return encrypt(unencrypted.getBytes("UTF-8"), unencrypted.length());
@@ -32,6 +38,14 @@ public class TpLinkEncryption {
             return new byte[0];
         }
     }
+
+    /**
+     * {@link encrypt} will encrypt a byte[] with length l
+     * 
+     * @param unencrypted byte[]
+     * @param l length
+     * @return encrypted byte[]
+     */
 
     public static byte[] encrypt(byte[] unencrypted, int l) {
         int length = (l == 0) ? unencrypted.length : l;
@@ -46,6 +60,14 @@ public class TpLinkEncryption {
 
         return encrypted;
     }
+
+    /**
+     * {@link decrypt} will decypt an encrypted byte[] to an unencrypted byte[]
+     * 
+     * @param crypted byte[]
+     * @param l length
+     * @return unencrypted byte[]
+     */
 
     public static byte[] decrypt(byte[] crypted, int l) {
         int key = STARTKEY;

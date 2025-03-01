@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.senseenergy.internal.actions;
 
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.*;
+
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
@@ -69,16 +71,16 @@ public class SenseEnergyMonitorActions implements ThingActions {
     /*
      * Query water usage
      */
-    @RuleAction(label = "Query Energy Trend", description = "Queries energy trend over a period of time.")
-    public @ActionOutput(name = "consumption", type = "QuantityType<Energy>", description = "the total energy (KWh) used over the scale period.") //
-    @ActionOutput(name = "production", type = "QuantityType<Energy>", description = "the total energy (KWh) produced over the scale period.") //
-    @ActionOutput(name = "fromGrid", type = "QuantityType<Energy>", description = "the total energy (KWh) from the grid over the scale period.") //
-    @ActionOutput(name = "toGrid", type = "QuantityType<Energy>", description = "the total energy (KWh) to the grid over the scale period.") //
-    @ActionOutput(name = "netProduction", type = "QuantityType<Energy>", description = "the difference in energy (KWh) between what was produced and consumed during the scale period.") //
-    @ActionOutput(name = "solarPowered", type = "QuantityType<Dimensionless>", description = "the percent of solar energy production that was directly consumed (not sent to grid) during the scale period.") //
-    Map<String, Object> queryEnergyTrend( //
-            @ActionInput(name = "scale", label = "Scale", required = true, description = "Scale to be returned (DAY, WEEK, MONTH, YEAR)") @Nullable String scale, //
-            @ActionInput(name = "datetime", label = "Date/Time", required = true, description = "Restrict the query range to data samples since this datetime.") @Nullable Instant datetime) {
+    @RuleAction(label = "Query Energy Trend", description = "@text/actions.description.query-energy-trend")
+    public @ActionOutput(name = ACTION_OUTPUT_CONSUMPTION, type = "QuantityType<Energy>", description = "@text/actions.output.description.consumption") //
+    @ActionOutput(name = ACTION_OUTPUT_PRODUCTION, type = "QuantityType<Energy>", description = "@text/actions.output.description.production") //
+    @ActionOutput(name = ACTION_OUTPUT_FROM_GRID, type = "QuantityType<Energy>", description = "@text/actions.output.description.from-grid") //
+    @ActionOutput(name = ACTION_OUTPUT_TO_GRID, type = "QuantityType<Energy>", description = "@text/actions.output.description.to-grid") //
+    @ActionOutput(name = ACTION_OUTPUT_NET_PRODUCTION, type = "QuantityType<Energy>", description = "@text/actions.output.description.net-production") //
+    @ActionOutput(name = ACTION_OUTPUT_SOLAR_POWERED, type = "QuantityType<Dimensionless>", description = "@text/actions.output.description.solar-powered") //
+    Map<String, QuantityType<?>> queryEnergyTrend( //
+            @ActionInput(name = ACTION_INPUT_SCALE, label = "Scale", required = true, description = "@text/actions.input.description.scale") @Nullable String scale, //
+            @ActionInput(name = ACTION_INPUT_DATETIME, label = "Date/Time", required = true, description = "@text/actions.input.description.datetime") @Nullable Instant datetime) {
         logger.info("queryEnergyTrend called");
 
         SenseEnergyMonitorHandler localDeviceHandler = deviceHandler;
@@ -112,20 +114,23 @@ public class SenseEnergyMonitorActions implements ThingActions {
             return Collections.emptyMap();
         }
 
-        Map<String, Object> valuesMap = new HashMap<String, Object>();
+        Map<String, QuantityType<?>> valuesMap = new HashMap<>();
 
-        valuesMap.put("consumption", new QuantityType<Energy>(trends.consumption.totalPower, Units.KILOWATT_HOUR));
-        valuesMap.put("production", new QuantityType<Energy>(trends.production.totalPower, Units.KILOWATT_HOUR));
-        valuesMap.put("toGrid", new QuantityType<Energy>(trends.toGridEnergy, Units.KILOWATT_HOUR));
-        valuesMap.put("fromGrid", new QuantityType<Energy>(trends.fromGridEnergy, Units.KILOWATT_HOUR));
-        valuesMap.put("netProduction", new QuantityType<Energy>(trends.netProduction, Units.KILOWATT_HOUR));
-        valuesMap.put("solarPowered", new QuantityType<Dimensionless>(trends.solarPowered, Units.PERCENT));
+        valuesMap.put(ACTION_OUTPUT_CONSUMPTION,
+                new QuantityType<Energy>(trends.consumption.totalPower, Units.KILOWATT_HOUR));
+        valuesMap.put(ACTION_OUTPUT_PRODUCTION,
+                new QuantityType<Energy>(trends.production.totalPower, Units.KILOWATT_HOUR));
+        valuesMap.put(ACTION_OUTPUT_TO_GRID, new QuantityType<Energy>(trends.toGridEnergy, Units.KILOWATT_HOUR));
+        valuesMap.put(ACTION_OUTPUT_FROM_GRID, new QuantityType<Energy>(trends.fromGridEnergy, Units.KILOWATT_HOUR));
+        valuesMap.put(ACTION_OUTPUT_NET_PRODUCTION,
+                new QuantityType<Energy>(trends.netProduction, Units.KILOWATT_HOUR));
+        valuesMap.put(ACTION_OUTPUT_SOLAR_POWERED, new QuantityType<Dimensionless>(trends.solarPowered, Units.PERCENT));
 
         return valuesMap;
     }
 
     // Static method for Rules DSL backward compatibility
-    public static @Nullable Map<String, Object> queryEnergyTrend(ThingActions actions, @Nullable String scale,
+    public static @Nullable Map<String, QuantityType<?>> queryEnergyTrend(ThingActions actions, @Nullable String scale,
             @Nullable Instant datetime) {
         if (actions instanceof SenseEnergyMonitorActions localActions) {
             return localActions.queryEnergyTrend(scale, datetime);

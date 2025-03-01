@@ -17,11 +17,17 @@ import java.net.SocketAddress;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SenseEnergyDatagramListener}
+ * The {@link SenseEnergyDatagramListener} Interface for callback when a Sense Energy packet is received
  *
  * @author Jeff James - Initial contribution
  */
 @NonNullByDefault
 public interface SenseEnergyDatagramListener {
+
+    /**
+     * called when a datagram from the Sense Energy monitor is recevied
+     * 
+     * @param socketAddress the socket address for the Sense Energy monitor
+     */
     void requestReceived(SocketAddress socketAddress);
 }

@@ -175,11 +175,3 @@ public class SenseEnergyDatagram {
         localDatagramSocket.send(new DatagramPacket(encrypted, encrypted.length, socketAddress));
     }
 }
-
-/* @formatter:off
- * "echo" response on linux platforms that must filtered out
-{ ...
-  "type": "realtime_update"
-}
- * @formatter:on
- */

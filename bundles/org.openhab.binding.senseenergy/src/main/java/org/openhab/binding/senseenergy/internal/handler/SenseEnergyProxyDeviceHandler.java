@@ -12,12 +12,7 @@
  */
 package org.openhab.binding.senseenergy.internal.handler;
 
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_PROXY_DEVICE_DIMMER;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_PROXY_DEVICE_POWER;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_PROXY_DEVICE_STATE;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_PROXY_DEVICE_SWITCH;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CONFIG_PARAMETER_MAC;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CONFIG_PARAMETER_POWER_LEVELS;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.*;
 
 import java.util.Arrays;
 import java.util.HexFormat;

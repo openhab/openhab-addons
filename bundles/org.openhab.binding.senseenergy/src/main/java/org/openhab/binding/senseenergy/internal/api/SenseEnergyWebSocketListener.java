@@ -17,15 +17,31 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyWebSocketRealtimeUpdate;
 
 /**
- * The {@link SenseEnergyWebSocket }
+ * The {@link SenseEnergyWebSocket } interface for callbacks pertaining to the web socket
  *
  * @author Jeff James - Initial contribution
  */
 @NonNullByDefault
 public interface SenseEnergyWebSocketListener {
+    /**
+     * called when the web socket is closed
+     * 
+     * @param statusCode
+     * @param reason
+     */
     void onWebSocketClose(int statusCode, @Nullable String reason);
 
+    /**
+     * called when there is an error on the web socket
+     * 
+     * @param msg
+     */
     void onWebSocketError(String msg);
 
+    /**
+     * called with an updated energy usage report
+     * 
+     * @param update
+     */
     void onWebSocketRealtimeUpdate(SenseEnergyWebSocketRealtimeUpdate update);
 }

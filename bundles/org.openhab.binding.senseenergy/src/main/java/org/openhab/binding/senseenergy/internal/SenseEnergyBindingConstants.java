@@ -79,4 +79,13 @@ public class SenseEnergyBindingConstants {
     public static final String CONFIG_PARAMETER_MAC = "mac";
     public static final String CONFIG_PARAMETER_POWER_LEVELS = "powerLevels";
     public static final String CONFIG_PARAMETER_SENSE_NAME = "senseName";
+
+    public static final String ACTION_OUTPUT_CONSUMPTION = "consumption";
+    public static final String ACTION_OUTPUT_PRODUCTION = "production";
+    public static final String ACTION_OUTPUT_FROM_GRID = "fromGrid";
+    public static final String ACTION_OUTPUT_TO_GRID = "toGrid";
+    public static final String ACTION_OUTPUT_NET_PRODUCTION = "netProduction";
+    public static final String ACTION_OUTPUT_SOLAR_POWERED = "solarPowered";
+    public static final String ACTION_INPUT_SCALE = "scale";
+    public static final String ACTION_INPUT_DATETIME = "datetime";
 }
