@@ -12,7 +12,7 @@
 
 		<label>Proxy Device</label>
 		<description>
-			A proxy device to notifiy the sense monitor of real-time power draw. All channels are "one-way" in that
+			A proxy device to notify the sense monitor of real-time power draw. All channels are "one-way" in that
 			they only report their settings to Sense.
 		</description>
 

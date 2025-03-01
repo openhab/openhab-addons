@@ -14,6 +14,7 @@ package org.openhab.binding.senseenergy.internal.api;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAmount;
 import java.util.Arrays;
@@ -42,13 +43,13 @@ import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiGetTrends;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiMonitor;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiMonitorStatus;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiRefreshToken;
-import org.openhab.binding.senseenergy.utils.InstantSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -87,6 +88,9 @@ public class SenseEnergyApi {
 
     private HttpClient httpClient;
 
+    private JsonDeserializer<Instant> deseralizerInstant = (json, typeOfT, context) -> DateTimeFormatter.ISO_INSTANT
+            .parse(json.getAsString(), Instant::from);
+
     public enum TrendScale {
         DAY,
         WEEK,
@@ -100,7 +104,7 @@ public class SenseEnergyApi {
 
     public SenseEnergyApi(final HttpClient httpClient) {
         this.httpClient = httpClient;
-        this.gson = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantSerializer()).create();
+        this.gson = new GsonBuilder().registerTypeAdapter(Instant.class, deseralizerInstant).create();
     }
 
     public String getAccessToken() {

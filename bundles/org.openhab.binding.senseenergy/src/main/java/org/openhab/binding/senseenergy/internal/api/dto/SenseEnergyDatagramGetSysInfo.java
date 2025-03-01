@@ -35,32 +35,3 @@ public class SenseEnergyDatagramGetSysInfo {
     public int relayState;
     public int updating;
 }
-
-/* @formatter:off
-{
-    "system": {
-      "get_sysinfo": {
-          "err_code": 0,
-          "sw_ver": "1.2.5 Build 171206 Rel.085954",
-          "hw_ver": "1.0",
-          "type: "IOT.SMARTPLUGSWITCH",
-          "model": "HS110(US)",
-          "mac": "xxx",
-          "deviceId": "xxx",
-          "alias": "alias",
-          "relay_state": 1,
-          "updating": 0
-      }
-    },
-    "emeter": {
-      "get_realtime": {
-          "current": x,
-          "voltage": x,
-          "power": x,
-          "total": 0,
-          "err_code": 0
-      }
-    }
-}
- * @formatter:on
- */

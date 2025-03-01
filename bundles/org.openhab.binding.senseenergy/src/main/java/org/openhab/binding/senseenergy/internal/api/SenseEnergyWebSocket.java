@@ -120,7 +120,7 @@ public class SenseEnergyWebSocket implements WebSocketListener {
     @Override
     public void onWebSocketError(@Nullable Throwable cause) {
         String causeMessage = cause != null ? String.valueOf(cause.getMessage()) : "unknown";
-        logger.error("Sense Energy WebSocket error: {}", causeMessage, cause);
+        logger.warn("Sense Energy WebSocket error: {}", causeMessage, cause);
 
         if (!closing) {
             // let listener handle restart of socket
@@ -151,10 +151,10 @@ public class SenseEnergyWebSocket implements WebSocketListener {
                     listener.onWebSocketRealtimeUpdate(update);
                 }
             } else if ("error".equals(type)) {
-                logger.error("WebSocket error {}", jsonResponse.get("payload").toString());
+                logger.warn("WebSocket error {}", jsonResponse.get("payload").toString());
             }
         } catch (Exception e) {
-            logger.error("Error processing WebSocket message: {}", message, e);
+            logger.warn("Error processing WebSocket message: {}", message, e);
         }
     }
 }

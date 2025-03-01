@@ -1,14 +1,14 @@
 # SenseEnergy Binding
 
 This binding supports the Sense Energy monitor (sense.com) which can be used to provide accurate energy usage statistics in the home.
-In addition to providing real-time and historical energy production and usage data, Sense also uses machine learning to predict specific device usage in the home.
+In addition to providing real-time and historical energy production and usage data, Sense also uses machine learning to predict specific device usage.
 This binding interfaces with the Sense cloud and local monitor to provide openHAB real-time energy updates for the whole house and any known devices.
 Note, the binding currently assumes (and the configuration tested) that the monitor is installed in a solar enabled configuration.
-If you have a device in a different configuration I would welcome the feedback and would be able to add support to the binding.
+If you have a device in a different configuration, feedback would be welcome and support might be added to the binding.
 
 Sense also allows smart plugs and other devices to provide real-time usage allowing Sense to incorporate accurate usage statistics into your data.
 This binding also supports creation of virtual proxy devices in openHAB which can send to Sense any energy usage for openHAB aware devices. 
-Here are several examples of how a virtual proxy device can be used.
+Here are several examples of how a virtual proxy device can be used:
 
 - A pool pump known in openHAB can update its power when on to Sense
 - A switch or dimmer where the power is known can get send to Sense when on.
@@ -16,19 +16,18 @@ Here are several examples of how a virtual proxy device can be used.
 
 Using the openHAB follow profile with the channel(s) of the proxy device is an easy way to link these proxy devices to your openHAB setup. (see examples)
 
-This binding builds off the following works in understanding the Sense API.
+This binding builds off the following works in understanding the Sense API:
 
-https://github.com/scottbonline/sense
-https://github.com/cbpowell/SenseLink/
+- https://github.com/scottbonline/sense
+- https://github.com/cbpowell/SenseLink/
 
 ## Supported Things
 
-| Thing                        | id               | Type          | Description                  |
-|----------                    |---------         |--------       |------------------------------|
-| Sense Energy Cloud Connector | cloud-connector  | Bridge        | This represents the cloud account to interface with the Sense Energy API.  |
-| Sense Monitor Device         | monitor          | Bridge        | This interfaces to a specific Sense energy monitor associated with the account. |
-| Virtual Device Emulation     | proxy-device     | Device        | This is a proxy device used to provide real-time usage to Sense. |
-
+| Thing Id         | Label                        | Type   | Description                                                        |
+|------------------|------------------------------|--------|--------------------------------------------------------------------|
+| cloud-connector  | Sense Energy Cloud Connector | Bridge | This represents the cloud account to interface with the Sense Ener |
+| monitor          | Sense Monitor Device         | Bridge | This interfaces to a specific Sense energy monitor associated with |
+| proxy-device     | Virtual Device Emulation     | Device | This is a proxy device used to provide real-time usage to Sense.   |
 
 ## Discovery
 
@@ -40,23 +39,23 @@ Virtual proxy devices are created manually attached to the monitor bridge.
 
 ### Sense Energy Cloud Connector
 
-The cloud connector is configured with the email and password for your Sense Energy cloud account.
+The `cloud-connector` is configured with the email and password for your Sense Energy cloud account.
 At present, the binding does not support multi-factor authentication which should be disabled via the Sense app settings.
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| email           | text    | email for the Sense cloud account     | N/A     | yes      | no       |
-| password        | text    | Password for the Sense cloud account  | N/A     | yes      | no       |
+| Name     | Type | Description                          | Default | Required | Advanced |
+|----------|------|--------------------------------------|---------|----------|----------|
+| email    | text | email for the Sense cloud account    | N/A     | yes      | no       |
+| password | text | Password for the Sense cloud account | N/A     | yes      | no       |
 
 ### Sense Monitor Device
 
-The monitor will be auto-discovered after the could-connector bridge goes online.
+The monitor will be auto-discovered after the `cloud-connector` bridge goes online.
 The only configuration parameter is the id, however, this is not available via the Sense app or sense.com.
-If supporting textual configuration, you can monitor the openhab.log in order to see the id for your monitor device.
+When supporting textual configuration, you can monitor the openhab.log in order to see the id for your monitor device.
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| id              | integer | ID for the monitor device             | N/A     | yes      | no       |
+| Name | Type    | Description               | Default | Required | Advanced |
+|------|---------|---------------------------|---------|----------|----------|
+| id   | integer | ID for the monitor device | N/A     | yes      | no       |
 
 ### Virtual Proxy Device Emulation
 
@@ -64,23 +63,24 @@ Virtual proxy devices can be created in order to notify Sense of specific power 
 These emulate a TP-Link Kasa HS110 smart plug and will report to Sense the power usage based on on the configuration of the proxy device and the state.
 In order to use, you need to enable "TP-Link HS110/HS300 Smart Plug" in the Sense app.
 
-| Name            | Type             | Description                                                                        | Default | Required | Advanced |
-|-----------------|---------         |---------------------------------------                                             |---------|----------|----------|
-| powerLevels     | text             | Power levels for different states.                                                 | N/A     | no       | no       |
-| voltage         | decimal          | Voltage level for the proxy device.                                                | 120     | yes      | no       |
-| mac             | network-address  | A spoof'ed MAC address for this proxy device.                                      | random  | no       | yes      |
+| Name        | Type            | Description                                   | Default | Required | Advanced |
+|-------------|-----------------|-----------------------------------------------|---------|----------|----------|
+| powerLevels | text            | Power levels for different states.            | N/A     | no       | no       |
+| voltage     | decimal         | Voltage level for the proxy device.           | 120     | yes      | no       |
+| mac         | network-address | A spoof'ed MAC address for this proxy device. | random  | no       | yes      |
+
 
 #### Power Levels
 
 The power levels is a list representing different power levels or states of the device.
 Here are several examples of how this can be configured:
 
-| powerLevel parameter          | Description            | Example Device       |
-|------------------             |------------------------|--------------------- |
-| 10 W                          | The device is a simple ON/OFF switch or Dimmer with 0 W in the OFF or 0% state, and 10 W in the full ON or 100% state. For a dimmer, the power will be linearly interpolated over the full range [0 W, 10 W] depending on current dim level. | Light | 
-| 800 mW,10 W                   | The device is a simple ON/OFF switch or Dimmer with 800 mW in the OFF or 0% state, and 10 W in the full ON or 100% state. For a dimmer, the power will be linearly interpolated over the full range [800 mW, 10 W] depending on current dim level. | TV which standby power > 0 W |
-| 0 W,1 W,3 W,8 W, 15 W         | A device which has non-linear power usage at different dim levels. This configuration would use 0 W at 0%, 1 W at 25%, 3 W at 50%, 8 W at 75% and 15 W at the full 100%. Other levels are linearly interpolated within the bounding points of the sub-range. | Dimmable light with non-linear usage profile |
-| OFF=0 W,LOW=200 W,HIGH=400 W  | A device with several power states with different power levels in state represented by a String. | A fan with OFF, LOW, HIGH states |
+| powerLevel parameter         | Description                                                                                                                                                                                                                                                  | Example Device                               |
+|------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------|
+| 10 W                         | The device is a simple ON/OFF switch or Dimmer with 0 W in the OFF or 0% state, and 10 W in the full ON or 100% state. For a dimmer, the power will be linearly interpolated over the full range [0 W, 10 W] depending on current dim level.                 | Light                                        |
+| 800 mW,10 W                  | The device is a simple ON/OFF switch or Dimmer with 800 mW in the OFF or 0% state, and 10 W in the full ON or 100% state. For a dimmer, the power will be linearly interpolated over the full range [800 mW, 10 W] depending on current dim level.           | TV which standby power > 0 W                 |
+| 0 W,1 W,3 W,8 W, 15 W        | A device which has non-linear power usage at different dim levels. This configuration would use 0 W at 0%, 1 W at 25%, 3 W at 50%, 8 W at 75% and 15 W at the full 100%. Other levels are linearly interpolated within the bounding points of the sub-range. | Dimmable light with non-linear usage profile |
+| OFF=0 W,LOW=200 W,HIGH=400 W | A device with several power states with different power levels in state represented by a String.                                                                                                                                                             | A fan with OFF, LOW, HIGH states             |
 
 #### MAC
 
@@ -100,16 +100,16 @@ The monitor channels are organized into multiple groups.
 
 #### General Channel Group
 
-| Channel               | id                | Type                       | Read/Write | Description |
-|----------             |--------           |--------                    |--------    |--------------- |
-| Frequency             | frequency         | Number:Frequency           | R          | Electrical frequency detected by Sense. |
-| Grid Power            | grid-power        | Number:Power               | R          | Power consumed from the grid (negative if supplying power to grid). |
-| Potential 1           | potential-1       | Number:ElectricalPotential | R          | Potential measured on first 120V branch. |
-| Potential 2           | potential-2       | Number:ElectricalPotential | R          | Potential measured on second 120V branch. |
-| Main Power            | main-power        | Number:Power               | R          | Power detected by the main Sense clamp (only present in solar mode). |
-| Solar Power           | solar-power       | Number:Power               | R          | Power detected by the solar Sense clamp (only present in solar mode). |
-| Leg 1 Power           | leg-1-power       | Number:Power               | R          | Power detected by the first Sense clamp (only present when not in solar mode). |
-| Leg 2 Power           | leg-2-power       | Number:Power               | R          | Power detected by the second Sense clamp (only present when not in solar mode). |
+| Channel Id  | Label       | Type                       | Read/Write | Description                                                                     |
+|-------------|-------------|----------------------------|------------|---------------------------------------------------------------------------------|
+| frequency   | Frequency   | Number:Frequency           | R          | Electrical frequency detected by Sense.                                         |
+| grid-power  | Grid Power  | Number:Power               | R          | Power consumed from the grid (negative if supplying power to grid).             |
+| potential-1 | Potential 1 | Number:ElectricalPotential | R          | Potential measured on first 120V branch.                                        |
+| potential-2 | Potential 2 | Number:ElectricalPotential | R          | Potential measured on second 120V branch.                                       |
+| main-power  | Main Power  | Number:Power               | R          | Power detected by the main Sense clamp (only present in solar mode).            |
+| solar-power | Solar Power | Number:Power               | R          | Power detected by the solar Sense clamp (only present in solar mode).           |
+| leg-1-power | Leg 1 Power | Number:Power               | R          | Power detected by the first Sense clamp (only present when not in solar mode).  |
+| leg-2-power | Leg 2 Power | Number:Power               | R          | Power detected by the second Sense clamp (only present when not in solar mode). |
 
 #### Discovered Devices, Self-Reporting Devices and Proxy Devices Channel Groups
 
@@ -117,10 +117,10 @@ The monitor channels are organized into multiple groups.
 - Self-reporting devices are any devices which report their power usage to Sense (i.e. energy reporting smart plugs). 
 - Proxy devices are any virtual proxy devices set up in openHAB where this binding reports their power usage.
 
-| Channel                 | id                | Type                       | Read/Write | Advanced        | Description |
-|----------               |--------           |--------                    |--------    |---------------  |--------- |
-| *Label*: Power          | *id*-device-power | Number:Power               | R          | N               | Power consumed by the device. |
-| *Label*: On Off Trigger | *id*-trigger      | Trigger                    | N/A        | Y               | Trigger channel to notify when device has been turned ON or OFF. |
+| Channel                 | id                | Type         | Read/Write | Advanced | Description                                                      |
+|-------------------------|-------------------|--------------|------------|----------|------------------------------------------------------------------|
+| *Label*: Power          | *id*-device-power | Number:Power | R          | N        | Power consumed by the device.                                    |
+| *Label*: On Off Trigger | *id*-trigger      | Trigger      | N/A        | Y        | Trigger channel to notify when device has been turned ON or OFF. |
 
 ### Proxy Device
 
@@ -136,7 +136,7 @@ These can either attached to an openHAB item, or, can be used with the system:fo
 
 ## Full Example
 
-### Thing Configuration
+### `demo.things` Example
 
 ```java
 Bridge senseenergy:cloud-connector:cloud [ email="xxx", password="xxx" ] {
@@ -148,7 +148,7 @@ Bridge senseenergy:cloud-connector:cloud [ email="xxx", password="xxx" ] {
 }
 ```
 
-### Item Configuration
+### `demo.items` Example
 
 ```java
 // General channels
@@ -192,12 +192,12 @@ The binding also supports querying of trend totals over a periods of time.
 
 This function will query tthe Sense cloud for usage totals for a given period of time.
 
-##### Parameters:
+##### Parameters
 
 `scale` - the time scale for which the query should be over ("DAY", "WEEK", "MONTH", "YEAR").
 `datetime` - the datetime in the period. this can be null to select the current datetime.
 
-##### Returns:
+##### Returns
 
 The return is a Map<String, Object> object which contains the following values:
 
@@ -208,7 +208,7 @@ The return is a Map<String, Object> object which contains the following values:
 `netProduction` - a QuantityType<Energy> of the difference in energy (KWh) between what was produced and consumed during the scale period.
 `solarPowered` - a QuantityType<Dimensionless> of the percent of solar energy production that was directly consumed (not sent to grid) during the scale period.
 
-##### Example:
+##### Example
 
 ```java
 rule "Sense Energy Update Trends"
@@ -233,7 +233,7 @@ then
 end
 ```
 
-## Special notes
+## Special Notes
 
 For proxy device to work, openHAB must be on the same sub-net as the Sense monitor and be able to receive broadcast Datagram packets on port 9999.
 While the binding has not been tested in a Docker configuration, there are some potential issues with being able to receive on port 9999 (see https://github.com/cbpowell/SenseLink/).

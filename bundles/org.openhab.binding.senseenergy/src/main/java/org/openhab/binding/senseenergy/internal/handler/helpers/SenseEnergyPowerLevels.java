@@ -84,7 +84,6 @@ public class SenseEnergyPowerLevels {
         String valueLevels = powerValueLevels.stream() //
                 .filter(Objects::nonNull) //
                 .map(qt -> qt.toString()) //
-                // .filter(Objects::nonNull) //
                 .collect(Collectors.joining(","));
 
         String stateLevels = powerStateLevels.descendingMap().entrySet().stream() //

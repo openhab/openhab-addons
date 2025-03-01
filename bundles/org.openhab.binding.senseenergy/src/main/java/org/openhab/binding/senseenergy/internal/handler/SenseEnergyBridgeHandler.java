@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.senseenergy.internal.handler;
 
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.HEARTBEAT_MINUTES;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.MONITOR_THING_TYPE;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.*;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -80,6 +79,12 @@ public class SenseEnergyBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        if (config.email.isBlank() || config.password.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "@text/offline.configuration-error.user-credentials-missing");
+            return;
+        }
+
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(this::goOnline);
     }
@@ -134,7 +139,7 @@ public class SenseEnergyBridgeHandler extends BaseBridgeHandler {
             statusDetail = apiException.isConfigurationIssue() ? ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR
                     : ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR;
         } else {
-            logger.warn("Unhandled Exception", e);
+            logger.debug("Unhandled Exception", e);
             statusDetail = ThingStatusDetail.OFFLINE.NONE;
         }
 
