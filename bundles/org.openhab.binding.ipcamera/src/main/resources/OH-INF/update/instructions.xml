@@ -23,11 +23,6 @@
 				<type>ipcamera:autoTracking</type>
 			</add-channel>
 		</instruction-set>
-		<instruction-set targetVersion="3">
-			<add-channel id="reboot">
-				<type>ipcamera:reboot</type>
-			</add-channel>
-		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="ipcamera:dahua">

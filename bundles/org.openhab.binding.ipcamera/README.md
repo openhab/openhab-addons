@@ -295,7 +295,6 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `exitButtonEnabled`         | Switch | RW         | This channel could be used to disable the exit button to provide additional security at night or when noone is home.                                                                                                                                                                                                               |
 | `motionDetectionLevel`      | Number | RW         | Controls camera's built-in motion detection sensitivity.                                                                                                                                                                                                                                                                           |
 | `magneticLockWarning`       | Switch | R          | This alarm will trigger if the door was opened while the lock is closed, signalling possible intrusion alarm.                                                                                                                                                                                                                      |
-| `reboot`                    | Switch | W          | Reboots camera when turned ON
 
 ## Moving PTZ Cameras
 
@@ -701,6 +700,16 @@ when
     Item Doorbell_recordingGif changed to 0
 then
     sendPushoverMessage(pushoverBuilder("Sending GIF from backyard").withApiKey("dsfhghj6546fghfg").withUser("qwerty54657").withDevice("Phone1").withAttachment("/tmpfs/DoorCam/ipcamera.gif"))
+end
+```
+
+## How To Reboot Camera
+```
+rule "Reboot Camera At 12:00 AM"
+when
+    Time cron "0 0 0 ? *"
+then
+  getActions("ipcamera", "ipcamera:reolink:1a40bbe041").reboot()
 end
 ```
 

@@ -323,7 +323,7 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     }
                     break;
                 case "/api.cgi?cmd=Reboot":
-                    ipCameraHandler.setChannelState(CHANNEL_REBOOT, OnOffType.OFF);
+                    // This handles reboot action response.
                     if (!content.contains("\"rspCode\" : 200")) {
                         ipCameraHandler.logger.warn("Reboot failed:\n{}", content);
                     }
@@ -585,12 +585,6 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                                     + ipCameraHandler.cameraConfig.getNvrChannel() + " }}]");
                 }
                 break;
-            case CHANNEL_REBOOT:
-                if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=Reboot" + ipCameraHandler.reolinkAuth,
-                            "[{\"cmd\":\"Reboot\"}]");
-                }
-                break;
         }
     }
 
@@ -598,5 +592,9 @@ public class ReolinkHandler extends ChannelDuplexHandler {
     // added here. Binding steps through the list.
     public List<String> getLowPriorityRequests() {
         return List.of();
+    }
+
+    public void reboot() {
+        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=Reboot" + ipCameraHandler.reolinkAuth, "[{\"cmd\":\"Reboot\"}]");
     }
 }
