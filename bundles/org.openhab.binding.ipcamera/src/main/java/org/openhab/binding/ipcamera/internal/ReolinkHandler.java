@@ -323,6 +323,7 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     }
                     break;
                 case "/api.cgi?cmd=Reboot":
+                    ipCameraHandler.setChannelState(CHANNEL_REBOOT, OnOffType.OFF);
                     if (!content.contains("\"rspCode\" : 200")) {
                         ipCameraHandler.logger.warn("Reboot failed:\n{}", content);
                     }

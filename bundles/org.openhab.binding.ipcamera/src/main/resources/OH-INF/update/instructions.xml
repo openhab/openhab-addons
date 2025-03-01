@@ -17,13 +17,15 @@
 			<add-channel id="enablePush">
 				<type>ipcamera:enablePush</type>
 			</add-channel>
-			<add-channel id="reboot">
-				<type>ipcamera:reboot</type>
-			</add-channel>
 		</instruction-set>
 		<instruction-set targetVersion="2">
 			<add-channel id="autoTracking">
 				<type>ipcamera:autoTracking</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="3">
+			<add-channel id="reboot">
+				<type>ipcamera:reboot</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
