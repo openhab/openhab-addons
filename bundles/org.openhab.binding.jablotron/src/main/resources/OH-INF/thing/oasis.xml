@@ -22,9 +22,15 @@
 			<channel id="lastEventClass" typeId="lastEventClass"/>
 			<channel id="lastEventInvoker" typeId="lastEventInvoker"/>
 			<channel id="lastEventTime" typeId="lastEventTime"/>
+			<channel id="lastEventSection" typeId="lastEventSection"/>
 			<channel id="lastCheckTime" typeId="lastCheckTime"/>
 			<channel id="alarm" typeId="alarm"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description-ref uri="thing-type:jablotron:device"/>
 	</thing-type>
 
