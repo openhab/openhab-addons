@@ -323,8 +323,9 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     }
                     break;
                 default:
+                    // ignore responses from all Setxx commands
                     if (!cutDownURL.startsWith("/cgi-bin/api.cgi?cmd=Set")
-                            || !cutDownURL.startsWith("/api.cgi?cmd=Set")) {// ignore responses from all Setxx commands
+                            && !cutDownURL.startsWith("/api.cgi?cmd=Set")) {
                         ipCameraHandler.logger.warn(
                                 "URL {} is not handled currently by the binding, please report this message",
                                 cutDownURL);
@@ -515,6 +516,7 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                 } else {
                     ipCameraHandler.logger.warn("Unsupported command sent to enableLED channel");
                 }
+                break;
             case CHANNEL_ENABLE_MOTION_ALARM:
                 if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetMdAlarm" + ipCameraHandler.reolinkAuth);
