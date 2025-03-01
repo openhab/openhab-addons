@@ -165,12 +165,13 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             if (bridgeStatus == ThingStatus.OFFLINE) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             } else if (!this.connected) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
+                updateStatus(ThingStatus.OFFLINE);
             } else if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                updateStatus(ThingStatus.ONLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge not found");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.bridge-not-found");
         }
     }
 
@@ -485,18 +486,24 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         // Only get the image if this is my PlayerHandler instance
         if (isMe(mac)) {
             if (url != null && !url.isEmpty()) {
-                String sanitizedUrl = sanitizeUrl(url);
                 RawType image = IMAGE_CACHE.putIfAbsentAndGet(url, () -> {
-                    logger.debug("Trying to download the content of URL {}", sanitizedUrl);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Trying to download the content of URL {}", sanitizeUrl(url));
+                    }
                     try {
                         return HttpUtil.downloadImage(url);
                     } catch (IllegalArgumentException e) {
-                        logger.debug("IllegalArgumentException when downloading image from {}", sanitizedUrl, e);
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("IllegalArgumentException when downloading image from {}", sanitizeUrl(url),
+                                    e);
+                        }
                         return null;
                     }
                 });
                 if (image == null) {
-                    logger.debug("Failed to download the content of URL {}", sanitizedUrl);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Failed to download the content of URL {}", sanitizeUrl(url));
+                    }
                     return null;
                 } else {
                     return image;
