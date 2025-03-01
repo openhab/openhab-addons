@@ -61,7 +61,12 @@ public class HomeWizardEnergySocketHandler extends HomeWizardEnergySocketStateHa
      * @return brightness value
      */
     private int percentageToBrightness(String percentage) {
-        return (int) (Double.valueOf(percentage) * 255.0 / 100.0);
+        try {
+            return (int) (Double.valueOf(percentage.replaceAll("[^\\d.]", "")) * 255.0 / 100.0);
+        } catch (NumberFormatException ex) {
+            logger.warn("Recevied invalid brightness percentage from socket");
+            return 0;
+        }
     }
 
     /**
@@ -84,7 +89,7 @@ public class HomeWizardEnergySocketHandler extends HomeWizardEnergySocketStateHa
          * payload.
          */
 
-        switch (channelUID.getId()) {
+        switch (channelUID.getIdWithoutGroup()) {
             case HomeWizardBindingConstants.CHANNEL_RING_BRIGHTNESS: {
                 result = sendStateCommand(
                         String.format("{\"brightness\": %d}", percentageToBrightness(command.toFullString())));

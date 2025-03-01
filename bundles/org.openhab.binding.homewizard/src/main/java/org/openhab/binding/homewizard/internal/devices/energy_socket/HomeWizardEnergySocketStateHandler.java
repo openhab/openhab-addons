@@ -24,6 +24,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * The {@link HomeWizardEnergySocketStateHandler} extends the base class
  * to provide support for devices that also have a 'state' interface.
@@ -97,7 +99,7 @@ public abstract class HomeWizardEnergySocketStateHandler extends HomeWizardEnerg
         try (InputStream is = new ByteArrayInputStream(command.getBytes())) {
             String updatedState = HttpUtil.executeUrl("PUT", apiURL + "v1/state", is, "application/json", 30000);
             return gson.fromJson(updatedState, HomeWizardEnergySocketStatePayload.class);
-        } catch (IOException e) {
+        } catch (IOException | JsonSyntaxException e) {
             logger.warn("Failed to send command {} to {}", command, apiURL + "state");
             return null;
         }
