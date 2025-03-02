@@ -60,44 +60,44 @@ class PrinterActionsTest {
 
     static Stream<Arguments> shouldRunCommand() {
         var infoCommandStream = Arrays.stream(InfoCommand.values())//
-                .map(value -> Arguments.of("InfoCommand:" + value.name(), value));
-        var pushingCommandStream = stream(Arguments.of("PushingCommand:11:22", new PushingCommand(11, 22)));
+                .map(value -> Arguments.of("Info:" + value.name(), value));
+        var pushingCommandStream = stream(Arguments.of("Pushing:11:22", new PushingCommand(11, 22)));
         var printCommandStream = Arrays.stream(PrinterClient.Channel.PrintCommand.values())//
-                .map(value -> Arguments.of("PrintCommand:" + value.name(), value));
+                .map(value -> Arguments.of("Print:" + value.name(), value));
         var changeFilamentCommandStream = stream(
-                Arguments.of("ChangeFilamentCommand:11:22:33", new ChangeFilamentCommand(11, 22, 33)));
+                Arguments.of("ChangeFilament:11:22:33", new ChangeFilamentCommand(11, 22, 33)));
         var amsUserSettingCommandStream = stream(
-                Arguments.of("AmsUserSettingCommand:11:tRuE:FaLsE", new AmsUserSettingCommand(11, true, false)));
-        var amsFilamentSettingCommandStream = stream(Arguments.of("AmsFilamentSettingCommand:11:22:s3:s4:55:66:s7",
+                Arguments.of("AmsUserSetting:11:tRuE:FaLsE", new AmsUserSettingCommand(11, true, false)));
+        var amsFilamentSettingCommandStream = stream(Arguments.of("AmsFilamentSetting:11:22:s3:s4:55:66:s7",
                 new AmsFilamentSettingCommand(11, 22, "s3", "s4", 55, 66, "s7")));
         var amsControlCommandStream = Arrays.stream(AmsControlCommand.values())//
-                .map(value -> Arguments.of("AmsControlCommand:" + value.name(), value));
+                .map(value -> Arguments.of("AmsControl:" + value.name(), value));
         var printSpeedCommandStream = Arrays.stream(PrintSpeedCommand.values())//
-                .map(value -> Arguments.of("PrintSpeedCommand:" + value.name(), value));
+                .map(value -> Arguments.of("PrintSpeed:" + value.name(), value));
         var gCodeFileCommandStream = stream(
-                Arguments.of("GCodeFileCommand:s1", new PrinterClient.Channel.GCodeFileCommand("s1")));
-        var gCodeLineCommandStream = stream(Arguments.of("GCodeLineCommand:s1:l1:l2:l3",
+                Arguments.of("GCodeFile:s1", new PrinterClient.Channel.GCodeFileCommand("s1")));
+        var gCodeLineCommandStream = stream(Arguments.of("GCodeLine:s1:l1:l2:l3",
                 new PrinterClient.Channel.GCodeLineCommand(List.of("l1", "l2", "l3"), "s1")));
         var ledControlCommandStream = stream(//
-                Arguments.of("LedControlCommand:CHAMBER_LIGHT:ON",
+                Arguments.of("LedControl:CHAMBER_LIGHT:ON",
                         new LedControlCommand(CHAMBER_LIGHT, ON, null, null, null, null)), //
-                Arguments.of("LedControlCommand:WORK_LIGHT:OFF",
+                Arguments.of("LedControl:WORK_LIGHT:OFF",
                         new LedControlCommand(WORK_LIGHT, OFF, null, null, null, null)), //
-                Arguments.of("LedControlCommand:CHAMBER_LIGHT:FLASHING:11:22:33:44",
+                Arguments.of("LedControl:CHAMBER_LIGHT:FLASHING:11:22:33:44",
                         new LedControlCommand(CHAMBER_LIGHT, FLASHING, 11, 22, 33, 44))//
         );
         var systemCommandStream = Arrays.stream(SystemCommand.values())//
-                .map(value -> Arguments.of("SystemCommand:" + value.name(), value));
+                .map(value -> Arguments.of("System:" + value.name(), value));
         var ipCamRecordCommandStream = stream(//
-                Arguments.of("IpCamRecordCommand:tRue", new IpCamRecordCommand(true)), //
-                Arguments.of("IpCamRecordCommand:fAlSe", new IpCamRecordCommand(false))//
+                Arguments.of("IpCamRecord:tRue", new IpCamRecordCommand(true)), //
+                Arguments.of("IpCamRecord:fAlSe", new IpCamRecordCommand(false))//
         );
         var ipCamTimelapsCommandStream = stream(//
-                Arguments.of("IpCamTimelapsCommand:tRue", new PrinterClient.Channel.IpCamTimelapsCommand(true)), //
-                Arguments.of("IpCamTimelapsCommand:fAlSe", new PrinterClient.Channel.IpCamTimelapsCommand(false))//
+                Arguments.of("IpCamTimelaps:tRue", new PrinterClient.Channel.IpCamTimelapsCommand(true)), //
+                Arguments.of("IpCamTimelaps:fAlSe", new PrinterClient.Channel.IpCamTimelapsCommand(false))//
         );
         var xCamControlCommandStream = Arrays.stream(PrinterClient.Channel.XCamControlCommand.Module.values())//
-                .map(moduleValue -> Arguments.of("XCamControlCommand:%s:trUE:FAlse".formatted(moduleValue),
+                .map(moduleValue -> Arguments.of("XCamControl:%s:trUE:FAlse".formatted(moduleValue),
                         new PrinterClient.Channel.XCamControlCommand(moduleValue, true, false)));
 
         return concat(infoCommandStream, pushingCommandStream, printCommandStream, changeFilamentCommandStream,
