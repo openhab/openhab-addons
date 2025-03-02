@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.unifi.internal.handler;
 
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ENABLE;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_PURPOSE;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_SITE;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_TOTAL_CLIENTS;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;

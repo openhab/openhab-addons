@@ -20,8 +20,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.api.dto.UniFiNetwork;
 
 /**
- * The {@link UniFiWlanCache} is a specific implementation of {@link UniFiCache} for the purpose of caching
- * {@link UniFiWlan} instances.
+ * The {@link UniFiNetworkCache} is a specific implementation of {@link UniFiCache} for the purpose of caching
+ * {@link UniFiNetwork} instances.
  *
  * The cache uses the following prefixes: <code>id</code>, <code>name</code>
  *

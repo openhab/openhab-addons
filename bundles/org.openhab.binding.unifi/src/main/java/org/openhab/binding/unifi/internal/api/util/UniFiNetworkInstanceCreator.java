@@ -23,7 +23,7 @@ import com.google.gson.InstanceCreator;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link UniFiWlanInstanceCreator} creates instances of {@link UniFiWlan}s during the JSON unmarshalling of
+ * The {@link UniFiNetworkInstanceCreator} creates instances of {@link UniFiNetwork}s during the JSON unmarshalling of
  * controller responses.
  *
  * @author Thomas Lauterbach - Initial contribution
