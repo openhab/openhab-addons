@@ -21,7 +21,7 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="number-channel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Number Channel</label>
 		<state readOnly="true"/>
 	</channel-type>
