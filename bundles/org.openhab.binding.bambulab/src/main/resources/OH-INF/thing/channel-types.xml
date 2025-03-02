@@ -39,6 +39,7 @@
 	<channel-type id="on-off-command-channel">
 		<item-type>String</item-type>
 		<label>ON/OFF Channel</label>
+		<category>Lightbulb</category>
 		<state>
 			<options>
 				<option value="ON">ON</option>
