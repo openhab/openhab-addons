@@ -96,6 +96,42 @@ Use `us.mqtt.bambulab.com` as the hostname.
 
 ## Full Example
 
+### Thing Configuration
+
+```java
+Thing bambulab:printer:44bb12af13 "Bambu Lab Printer" @ "3D Printer" [
+serial="xyz",
+hostname="192.168.0.123",
+accessCode="12345678"] {
+Channels:
+Type temperature-channel : nozzleTemperature "Nozzle Temperature" [ ]
+Type temperature-channel : nozzleTargetTemperature "Nozzle Target Temperature" [ ]
+Type temperature-channel : bedTemperature "Bed Temperature" [ ]
+Type temperature-channel : bedTargetTemperature "Bed Target Temperature" [ ]
+Type temperature-channel : chamberTemperature "Chamber Temperature" [ ]
+Type string-channel : mcPrintStage "Print Stage" [ ]
+Type percent-channel : mcPercent "Print Progress" [ ]
+Type number-channel : mcRemainingTime "Remaining Print Time" [ ]
+Type wifi-channel : wifiSignal "WiFi Signal Strength" [ ]
+Type string-channel : bedType "Bed Type" [ ]
+Type string-channel : gcodeFile "G-code File" [ ]
+Type string-channel : gcodeState "G-code State" [ ]
+Type string-channel : reason "Pause/Stop Reason" [ ]
+Type string-channel : result "Print Result" [ ]
+Type percent-channel : gcodeFilePreparePercent "G-code Preparation Progress" [ ]
+Type number-channel : bigFan1Speed "Big Fan 1 Speed" [ ]
+Type number-channel : bigFan2Speed "Big Fan 2 Speed" [ ]
+Type number-channel : heatBreakFanSpeed "Heat Break Fan Speed" [ ]
+Type number-channel : layerNum "Current Layer Number" [ ]
+Type number-channel : speedLevel "Print Speed Level" [ ]
+Type boolean-channel : timeLaps "Timelapse Enabled" [ ]
+Type boolean-channel : useAms "AMS System in Use" [ ]
+Type boolean-channel : vibrationCalibration "Vibration Calibration" [ ]
+Type on-off-command-channel : ledChamber "Chamber LED" [ ]
+Type on-off-command-channel : ledWork "Work Area LED" [ ]
+}
+```
+
 ### Item Configuration
 
 ```java
