@@ -15,7 +15,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="wifi-channel">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>WiFi Signal Strength</label>
 		<description>Current WiFi signal strength.</description>
 		<category>time</category>
