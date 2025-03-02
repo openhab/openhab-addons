@@ -1,14 +1,5 @@
 package org.openhab.binding.bambulab.internal;
 
-import static java.lang.Boolean.parseBoolean;
-import static java.lang.Integer.parseInt;
-import static java.util.Arrays.copyOfRange;
-import static java.util.Objects.requireNonNull;
-import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.BINDING_ID;
-import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.LedMode.FLASHING;
-
-import java.util.Arrays;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.annotation.ActionInput;
@@ -16,7 +7,6 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
-
 import pl.grzeslowski.jbambuapi.PrinterClient.Channel.AmsControlCommand;
 import pl.grzeslowski.jbambuapi.PrinterClient.Channel.AmsFilamentSettingCommand;
 import pl.grzeslowski.jbambuapi.PrinterClient.Channel.AmsUserSettingCommand;
@@ -35,6 +25,15 @@ import pl.grzeslowski.jbambuapi.PrinterClient.Channel.PrintSpeedCommand;
 import pl.grzeslowski.jbambuapi.PrinterClient.Channel.PushingCommand;
 import pl.grzeslowski.jbambuapi.PrinterClient.Channel.SystemCommand;
 import pl.grzeslowski.jbambuapi.PrinterClient.Channel.XCamControlCommand;
+
+import java.util.Arrays;
+
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.Integer.parseInt;
+import static java.util.Arrays.copyOfRange;
+import static java.util.Objects.requireNonNull;
+import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.BINDING_ID;
+import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.LedMode.FLASHING;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
@@ -138,6 +137,9 @@ public class PrinterActions implements ThingActions {
     }
 
     private PushingCommand parsePushingCommand(String[] commandLine) {
+        if (commandLine.length == 0) {
+            return PushingCommand.defaultPushingCommand();
+        }
         requireLength(commandLine, 2);
         return new PushingCommand(parseInt(commandLine[0]), parseInt(commandLine[1]));
     }
