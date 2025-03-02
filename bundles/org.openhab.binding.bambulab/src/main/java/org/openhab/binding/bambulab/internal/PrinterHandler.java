@@ -12,6 +12,21 @@
  */
 package org.openhab.binding.bambulab.internal;
 
+import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel.*;
+import static org.openhab.core.library.unit.SIUnits.CELSIUS;
+import static org.openhab.core.library.unit.Units.DECIBEL_MILLIWATTS;
+import static org.openhab.core.thing.ThingStatus.*;
+import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.openhab.core.types.UnDefType.UNDEF;
+import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.*;
+import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.LedNode.*;
+import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.PushingCommand.defaultPushingCommand;
+import static pl.grzeslowski.jbambuapi.PrinterClientConfig.requiredFields;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.regex.Pattern;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
@@ -27,25 +42,11 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import pl.grzeslowski.jbambuapi.PrinterClient;
 import pl.grzeslowski.jbambuapi.PrinterClientConfig;
 import pl.grzeslowski.jbambuapi.PrinterWatcher;
 import pl.grzeslowski.jbambuapi.Report;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.regex.Pattern;
-
-import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel.*;
-import static org.openhab.core.library.unit.SIUnits.CELSIUS;
-import static org.openhab.core.library.unit.Units.DECIBEL_MILLIWATTS;
-import static org.openhab.core.thing.ThingStatus.*;
-import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
-import static org.openhab.core.types.UnDefType.UNDEF;
-import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.LedNode.*;
-import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.*;
-import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.PushingCommand.defaultPushingCommand;
-import static pl.grzeslowski.jbambuapi.PrinterClientConfig.requiredFields;
 
 /**
  * The {@link PrinterHandler} is responsible for handling commands, which are
@@ -66,7 +67,8 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (!LED_CHAMBER_LIGHT_CHANNEL.equals(channelUID.getId()) && LED_WORK_LIGHT_CHANNEL.equals(channelUID.getId())) {
+        if (!LED_CHAMBER_LIGHT_CHANNEL.equals(channelUID.getId())
+                && LED_WORK_LIGHT_CHANNEL.equals(channelUID.getId())) {
             return;
         }
         var ledNode = LED_CHAMBER_LIGHT_CHANNEL.equals(channelUID.getId()) ? CHAMBER_LIGHT : WORK_LIGHT;
@@ -96,7 +98,8 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
         try {
             uri = new URI(rawUri);
         } catch (URISyntaxException e) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/printer.handler.init.invalidHostname[\"" + rawUri + "\"]");
+            updateStatus(OFFLINE, CONFIGURATION_ERROR,
+                    "@token/printer.handler.init.invalidHostname[\"" + rawUri + "\"]");
             return;
         }
 
@@ -200,7 +203,7 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
         updateBooleanState(TIMELAPS_CHANNEL, print.timelapse());
         updateBooleanState(USE_AMS_CHANNEL, print.useAms());
         updateBooleanState(VIBRATION_CALIBRATION_CHANNEL, print.vibrationCali());
-        //other
+        // other
         if (print.wifiSignal() != null) {
             updateState(WIFI_SIGNAL_CHANNEL, parseWifiChannel(print.wifiSignal()));
         }

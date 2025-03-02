@@ -15,7 +15,6 @@ package org.openhab.binding.bambulab.internal;
 import static pl.grzeslowski.jbambuapi.PrinterClientConfig.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import pl.grzeslowski.jbambuapi.PrinterClientConfig;
 
 /**
  * The {@link PrinterConfiguration} class contains fields mapping thing configuration parameters.
