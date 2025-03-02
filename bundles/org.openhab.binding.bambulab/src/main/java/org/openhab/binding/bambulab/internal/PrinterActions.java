@@ -71,7 +71,7 @@ public class PrinterActions implements ThingActions {
         if (split.length <= 1) {
             throw new IllegalArgumentException("Command too short, class name not passed. Command: " + stringCommand);
         }
-        var commandName = split[0];
+        var commandName = split[0] + "Command";
         var tail = tail(split);
         if (commandName.equals(InfoCommand.class.getSimpleName())) {
             return parseInfoCommand(tail);

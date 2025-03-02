@@ -1,6 +1,7 @@
 # BambuLab Binding
 
-This addon supports connecting with BambuLab 3D printers in local mode. While cloud mode is theoretically possible, it is not supported by the addon developers.
+This addon supports connecting with BambuLab 3D printers in local mode. While cloud mode is theoretically possible, it
+is not supported by the addon developers.
 
 ## Cloud Mode
 
@@ -10,7 +11,9 @@ To use cloud mode, follow these steps:
 
 ### Find Username
 
-Log in to Maker World and visit [my-preferences](https://makerworld.com/api/v1/design-user-service/my/preference) to retrieve a JSON response containing your data. The relevant field is `uid`, which represents the unique ID of your account. Use this value as the `username` in the configuration (advanced field) with the prefix `u_`.
+Log in to Maker World and visit [my-preferences](https://makerworld.com/api/v1/design-user-service/my/preference) to
+retrieve a JSON response containing your data. The relevant field is `uid`, which represents the unique ID of your
+account. Use this value as the `username` in the configuration (advanced field) with the prefix `u_`.
 
 ### Access Token
 
@@ -55,88 +58,44 @@ Use `us.mqtt.bambulab.com` as the hostname.
 
 ## Thing Configuration
 
-| Parameter    | Type    | Required | Description |
-|-------------|--------|----------|-------------|
-| `serial`    | Text   | Yes      | Unique serial number of the printer. |
-| `scheme`    | Text   | No       | URI scheme. (Advanced) |
-| `hostname`  | Text   | Yes      | IP address of the printer or `us.mqtt.bambulab.com` for cloud mode. |
-| `port`      | Integer| No       | URI port. (Advanced) |
-| `username`  | Text   | No       | `bblp` for local mode or your Bambu Lab user (starting with `u_`). (Advanced) |
-| `accessCode`| Text   | Yes      | Access code for the printer. The method of obtaining this varies between local and cloud modes. |
+| Parameter    | Type    | Required | Description                                                                                     |
+|--------------|---------|----------|-------------------------------------------------------------------------------------------------|
+| `serial`     | Text    | Yes      | Unique serial number of the printer.                                                            |
+| `scheme`     | Text    | No       | URI scheme. (Advanced)                                                                          |
+| `hostname`   | Text    | Yes      | IP address of the printer or `us.mqtt.bambulab.com` for cloud mode.                             |
+| `port`       | Integer | No       | URI port. (Advanced)                                                                            |
+| `username`   | Text    | No       | `bblp` for local mode or your Bambu Lab user (starting with `u_`). (Advanced)                   |
+| `accessCode` | Text    | Yes      | Access code for the printer. The method of obtaining this varies between local and cloud modes. |
 
 ## Channels
 
-| Channel ID                  | Type                 | Description |
-|-----------------------------|----------------------|-------------|
-| `nozzleTemperature`         | Temperature Channel | Current temperature of the nozzle. |
-| `nozzleTargetTemperature`   | Temperature Channel | Target temperature of the nozzle. |
-| `bedTemperature`            | Temperature Channel | Current temperature of the heated bed. |
-| `bedTargetTemperature`      | Temperature Channel | Target temperature of the heated bed. |
-| `chamberTemperature`        | Temperature Channel | Current temperature inside the printer chamber. |
-| `mcPrintStage`              | String Channel      | Current stage of the print process. |
-| `mcPercent`                 | Percent Channel     | Percentage of the print completed. |
-| `mcRemainingTime`           | Number Channel      | Estimated time remaining for the print (in seconds). |
-| `wifiSignal`                | WiFi Channel        | Current WiFi signal strength. |
-| `bedType`                   | String Channel      | Type of the printer's heated bed. |
-| `gcodeFile`                 | String Channel      | Name of the currently loaded G-code file. |
-| `gcodeState`                | String Channel      | Current state of the G-code execution. |
-| `reason`                    | String Channel      | Reason for pausing or stopping the print. |
-| `result`                    | String Channel      | Final result or status of the print job. |
-| `gcodeFilePreparePercent`   | Percent Channel     | Percentage of G-code file preparation completed. |
-| `bigFan1Speed`              | Number Channel      | Speed of the first large cooling fan (RPM). |
-| `bigFan2Speed`              | Number Channel      | Speed of the second large cooling fan (RPM). |
-| `heatBreakFanSpeed`         | Number Channel      | Speed of the heat break cooling fan (RPM). |
-| `layerNum`                  | Number Channel      | Current layer being printed. |
-| `speedLevel`                | Number Channel      | Current speed setting of the print job. |
-| `timeLaps`                  | Boolean Channel     | Indicates whether timelapse recording is enabled. |
-| `useAms`                    | Boolean Channel     | Indicates whether the Automatic Material System (AMS) is active. |
-| `vibrationCalibration`      | Boolean Channel     | Indicates whether vibration calibration has been performed. |
-| `ledChamber`                | On/Off Command     | Controls the LED lighting inside the printer chamber. |
-| `ledWork`                   | On/Off Command     | Controls the LED lighting for the work area. |
-
-## Full Example
-
-### Thing Configuration
-
-```java
-Thing bambulab:printer:44bb12af13 "Bambu Lab Printer" @ "3D Printer" [
-serial="xyz",
-hostname="192.168.0.123",
-accessCode="12345678"] {
-Channels:
-Type temperature-channel : nozzleTemperature "Nozzle Temperature" [ ]
-Type temperature-channel : nozzleTargetTemperature "Nozzle Target Temperature" [ ]
-Type temperature-channel : bedTemperature "Bed Temperature" [ ]
-Type temperature-channel : bedTargetTemperature "Bed Target Temperature" [ ]
-Type temperature-channel : chamberTemperature "Chamber Temperature" [ ]
-Type string-channel : mcPrintStage "Print Stage" [ ]
-Type percent-channel : mcPercent "Print Progress" [ ]
-Type number-channel : mcRemainingTime "Remaining Print Time" [ ]
-Type wifi-channel : wifiSignal "WiFi Signal Strength" [ ]
-Type string-channel : bedType "Bed Type" [ ]
-Type string-channel : gcodeFile "G-code File" [ ]
-Type string-channel : gcodeState "G-code State" [ ]
-Type string-channel : reason "Pause/Stop Reason" [ ]
-Type string-channel : result "Print Result" [ ]
-Type percent-channel : gcodeFilePreparePercent "G-code Preparation Progress" [ ]
-Type number-channel : bigFan1Speed "Big Fan 1 Speed" [ ]
-Type number-channel : bigFan2Speed "Big Fan 2 Speed" [ ]
-Type number-channel : heatBreakFanSpeed "Heat Break Fan Speed" [ ]
-Type number-channel : layerNum "Current Layer Number" [ ]
-Type number-channel : speedLevel "Print Speed Level" [ ]
-Type boolean-channel : timeLaps "Timelapse Enabled" [ ]
-Type boolean-channel : useAms "AMS System in Use" [ ]
-Type boolean-channel : vibrationCalibration "Vibration Calibration" [ ]
-Type on-off-command-channel : ledChamber "Chamber LED" [ ]
-Type on-off-command-channel : ledWork "Work Area LED" [ ]
-}
-```
-
-### Item Configuration
-
-```java
-Number:Temperature Bed_Target_Temperature "Bed Target Temperature" (Bambu_Lab_Printer) ["Point"] { category="Temperature" }
-```
+| Channel ID                | Type                | Description                                                      |
+|---------------------------|---------------------|------------------------------------------------------------------|
+| `nozzleTemperature`       | Temperature Channel | Current temperature of the nozzle.                               |
+| `nozzleTargetTemperature` | Temperature Channel | Target temperature of the nozzle.                                |
+| `bedTemperature`          | Temperature Channel | Current temperature of the heated bed.                           |
+| `bedTargetTemperature`    | Temperature Channel | Target temperature of the heated bed.                            |
+| `chamberTemperature`      | Temperature Channel | Current temperature inside the printer chamber.                  |
+| `mcPrintStage`            | String Channel      | Current stage of the print process.                              |
+| `mcPercent`               | Percent Channel     | Percentage of the print completed.                               |
+| `mcRemainingTime`         | Number Channel      | Estimated time remaining for the print (in seconds).             |
+| `wifiSignal`              | WiFi Channel        | Current WiFi signal strength.                                    |
+| `bedType`                 | String Channel      | Type of the printer's heated bed.                                |
+| `gcodeFile`               | String Channel      | Name of the currently loaded G-code file.                        |
+| `gcodeState`              | String Channel      | Current state of the G-code execution.                           |
+| `reason`                  | String Channel      | Reason for pausing or stopping the print.                        |
+| `result`                  | String Channel      | Final result or status of the print job.                         |
+| `gcodeFilePreparePercent` | Percent Channel     | Percentage of G-code file preparation completed.                 |
+| `bigFan1Speed`            | Number Channel      | Speed of the first large cooling fan (RPM).                      |
+| `bigFan2Speed`            | Number Channel      | Speed of the second large cooling fan (RPM).                     |
+| `heatBreakFanSpeed`       | Number Channel      | Speed of the heat break cooling fan (RPM).                       |
+| `layerNum`                | Number Channel      | Current layer being printed.                                     |
+| `speedLevel`              | Number Channel      | Current speed setting of the print job.                          |
+| `timeLaps`                | Boolean Channel     | Indicates whether timelapse recording is enabled.                |
+| `useAms`                  | Boolean Channel     | Indicates whether the Automatic Material System (AMS) is active. |
+| `vibrationCalibration`    | Boolean Channel     | Indicates whether vibration calibration has been performed.      |
+| `ledChamber`              | On/Off Command      | Controls the LED lighting inside the printer chamber.            |
+| `ledWork`                 | On/Off Command      | Controls the LED lighting for the work area.                     |
 
 ## Actions
 
@@ -146,13 +105,43 @@ The printer thing supports actions:
 rule "test"
 when
         /* when */
-        then
-val actions = getActions("bambulab", "bambulab:printer:as8af03m38")
-    if (actions !== null) {
+then
+    val actions = getActions("bambulab", "bambulab:printer:as8af03m38")
+    if(actions !==null){
         // Refresh all channels
         actions.refreshChannels()
-        actions.sendCommand("PushingCommand:1:1")
+        actions.sendCommand("Pushing:1:1")
     }
 end
 ```
+
+### `sendCommand`
+
+The `sendCommand` method expects a string command in the format:
+
+```
+CommandType:Parameter1:Parameter2:...
+```
+
+#### Possible Commands:
+
+| Command Type         | Parameters                                                                                                                 | Description                                            |
+|----------------------|----------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------|
+| `Pushing`            | `version(int),pushTarget(int)` (optional)                                                                                  | Sends a push command.                                  |
+| `Print`              | `START` / `STOP` / `PAUSE`                                                                                                 | Controls the print job.                                |
+| `ChangeFilament`     | `target(int),currentTemperature(int)),targetTemperature(int)`                                                              | Changes filament using.                                |
+| `AmsUserSetting`     | `amsId(int),startupReadOption(boolean),trayReadOption(boolean)`                                                            | Sets AMS user settings.                                |
+| `AmsFilamentSetting` | `amsId(int),trayId(int),trayInfoIdx(string),trayColor(string),nozzleTempMin(int),nozzleTempMax(int),trayType(string)`      | Configures filament settings.                          |
+| `AmsControl`         | ` RESUME` / `RESET` / `PAUSE`                                                                                              | Sends an AMS control command.                          |
+| `PrintSpeed`         | `SILENT` / `STANDARD` / `SPORT` / `LUDICROUS`                                                                              | Adjusts print speed.                                   |
+| `GCodeFile`          | `filename(string)`                                                                                                         | Loads a G-code file.                                   |
+| `GCodeLine`          | `userId(string),lines(string...)`                                                                                          | Sends multiple G-code lines. Lines are comma separated |
+| `LedControl`         | `CHAMBER_LIGHT` / `WORK_LIGHT,ON` / `OFF` / `FLASHING,ledOnTime(int)?,ledOffTime(int)?,loopTimes(int)?,intervalTime(int)?` | Controls LED lighting.                                 |
+| `System`             | `GET_ACCESS_CODE`                                                                                                          | Executes a system command.                             |
+| `IpCamRecord`        | `enable(boolean)`                                                                                                          | Starts or stops IP camera recording.                   |
+| `Info`               | `GET_VERSION`                                                                                                              | Starts or stops IP camera recording.                   |
+| `IpCamTimelaps`      | `enable(boolean)`                                                                                                          | Enables or disables timelapse recording.               |
+| `XCamControl`        | `FIRST_LAYER_INSPECTOR` / `SPAGHETTI_DETECTOR,control(boolean),printHalt(boolean)`                                         | Controls XCam settings.                                |
+
+Let me know if you need any modifications! 🚀
 
