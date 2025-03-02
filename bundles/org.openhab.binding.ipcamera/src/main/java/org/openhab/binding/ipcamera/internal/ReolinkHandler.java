@@ -322,6 +322,12 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                         ipCameraHandler.setChannelState(CHANNEL_ENABLE_RECORDINGS, OnOffType.ON);
                     }
                     break;
+                case "/api.cgi?cmd=Reboot":
+                    // This handles reboot action response.
+                    if (!content.contains("\"rspCode\" : 200")) {
+                        ipCameraHandler.logger.warn("Reboot failed:\n{}", content);
+                    }
+                    break;
                 default:
                     // ignore responses from all Setxx commands
                     if (!cutDownURL.startsWith("/cgi-bin/api.cgi?cmd=Set")
@@ -588,5 +594,9 @@ public class ReolinkHandler extends ChannelDuplexHandler {
     // added here. Binding steps through the list.
     public List<String> getLowPriorityRequests() {
         return List.of();
+    }
+
+    public void reboot() {
+        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=Reboot" + ipCameraHandler.reolinkAuth, "[{\"cmd\":\"Reboot\"}]");
     }
 }

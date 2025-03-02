@@ -76,4 +76,17 @@ public class IpCameraActions implements ThingActions {
     public static void recordGIF(ThingActions actions, @Nullable String filename, int secondsToRecord) {
         ((IpCameraActions) actions).recordGIF(filename, secondsToRecord);
     }
+
+    @RuleAction(label = "reboot", description = "Reboot camera")
+    public void reboot() {
+        logger.debug("Rebooting camera.");
+        IpCameraHandler localHandler = handler;
+        if (localHandler != null) {
+            localHandler.reboot();
+        }
+    }
+
+    public static void reboot(@Nullable ThingActions actions) {
+        ((IpCameraActions) actions).reboot();
+    }
 }
