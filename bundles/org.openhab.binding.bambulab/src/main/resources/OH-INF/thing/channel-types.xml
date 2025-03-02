@@ -31,4 +31,9 @@
 		<label>Percent Channel</label>
 		<state readOnly="true" min="0" max="100" pattern="%.2f %%"/>
 	</channel-type>
+	<channel-type id="boolean-channel">
+		<item-type>Switch</item-type>
+		<label>Boolean Channel</label>
+		<state readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>

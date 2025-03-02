@@ -41,25 +41,20 @@ public class BambuLabBindingConstants {
         public static final String MC_PERCENT_CHANNEL = "mcPercent";
         public static final String MC_REMAINING_TIME_CHANNEL = "mcRemainingTime";
         public static final String WIFI_SIGNAL_CHANNEL = "wifiSignal";
-        public static final String COMMAND_CHANNEL = "command";
-        public static final String MESSAGE_CHANNEL = "message";
-        public static final String SEQUENCE_ID_CHANNEL = "sequenceId";
 
-        public static final String UPGRADE_STATE_CHANNEL = "upgradeState";
-        public static final String IPCAM_CHANNEL = "ipcam";
-        public static final String XCAM_CHANNEL = "xcam";
-        public static final String UPLOAD_CHANNEL = "upload";
-        public static final String NETWORK_CHANNEL = "net";
-        public static final String IPCAM_DEV_CHANNEL = "ipcamDev";
-        public static final String BUILDPLATE_MARKER_DETECTOR_CHANNEL = "buildplateMarkerDetector";
-        public static final String UPLOAD_STATUS_CHANNEL = "uploadStatus";
-        public static final String UPLOAD_PROGRESS_CHANNEL = "uploadProgress";
-        public static final String UPLOAD_MESSAGE_CHANNEL = "uploadMessage";
-        public static final String NETWORK_CONFIGURATION_CHANNEL = "netConf";
-        public static final String IPCAM_RECORD_CHANNEL = "ipcamRecord";
-        public static final String TIMELAPSE_CHANNEL = "timelapse";
-        public static final String RESOLUTION_CHANNEL = "resolution";
-        public static final String TUTK_SERVER_CHANNEL = "tutkServer";
-        public static final String MODE_BITS_CHANNEL = "modeBits";
+        public static final String BED_TYPE_CHANNEL = "bedType";
+        public static final String GCODE_fILE_CHANNEL = "gcodeFile";
+        public static final String GCODE_STATE_CHANNEL = "gcodeState";
+        public static final String REASON_CHANNEL = "reason";
+        public static final String RESULT_CHANNEL = "result";
+        public static final String GCODE_FILE_PREPARE_PERCENT_CHANNEL = "gcodeFilePreparePercent";
+        public static final String BIG_FAN_1_SPEED_CHANNEL = "bigFan1Speed";
+        public static final String BIG_FAN_2_SPEED_CHANNEL = "bigFan2Speed";
+        public static final String HEAT_BREAK_FAN_SPEED_CHANNEL = "heatBreakFanSpeed";
+        public static final String LAYER_NUM_CHANNEL = "layerNum";
+        public static final String SPEED_LEVEL_CHANNEL = "speedLevel";
+        public static final String TIMELAPS_CHANNEL = "timeLaps";
+        public static final String USE_AMS_CHANNEL = "useAms";
+        public static final String VIBRATION_CALIBRATION_CHANNEL     = "vibrationCalibration";
     }
 }

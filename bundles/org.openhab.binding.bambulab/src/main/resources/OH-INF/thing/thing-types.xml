@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="bambulab"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						  xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+						  xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="printer">
 		<label>Bambu Lab Printer</label>
@@ -45,82 +45,62 @@
 				<label>WiFi Signal Strength</label>
 				<description>Current WiFi signal strength.</description>
 			</channel>
-			<channel id="command" typeId="string-channel">
-				<label>Printer Command</label>
-				<description>Current command being executed by the printer.</description>
+			<channel id="bedType" typeId="string-channel">
+				<label>Bed Type</label>
+				<description>Type of the printer's heated bed.</description>
 			</channel>
-			<channel id="message" typeId="number-channel">
-				<label>Message Code</label>
-				<description>Message code from the printer.</description>
+			<channel id="gcodeFile" typeId="string-channel">
+				<label>G-code File</label>
+				<description>Name of the currently loaded G-code file.</description>
 			</channel>
-			<channel id="sequenceId" typeId="string-channel">
-				<label>Sequence ID</label>
-				<description>Unique sequence identifier for commands.</description>
+			<channel id="gcodeState" typeId="string-channel">
+				<label>G-code State</label>
+				<description>Current state of the G-code execution.</description>
 			</channel>
-			<!-- <channel id="upgradeState" typeId="string-channel"> -->
-			<!-- <label>Upgrade State</label> -->
-			<!-- <description>Current state of the printer firmware upgrade.</description> -->
-			<!-- </channel> -->
-			<!-- <channel id="ipcam" typeId="string-channel"> -->
-			<!-- <label>IP Camera</label> -->
-			<!-- <description>IP camera details of the printer.</description> -->
-			<!-- </channel> -->
-			<!-- <channel id="xcam" typeId="string-channel"> -->
-			<!-- <label>XCam</label> -->
-			<!-- <description>XCam details of the printer.</description> -->
-			<!-- </channel> -->
-			<!-- <channel id="upload" typeId="string-channel"> -->
-			<!-- <label>Upload</label> -->
-			<!-- <description>Upload status details.</description> -->
-			<!-- </channel> -->
-			<!-- <channel id="net" typeId="string-channel"> -->
-			<!-- <label>Network</label> -->
-			<!-- <description>Network configuration and info.</description> -->
-			<!-- </channel> -->
-			<!-- <channel id="ipcamDev" typeId="string-channel"> -->
-			<!-- <label>IP Camera Device</label> -->
-			<!-- <description>IP camera device associated with the printer.</description> -->
-			<!-- </channel> -->
-			<!-- <channel id="buildplateMarkerDetector" typeId="boolean"> -->
-			<!-- <label>Buildplate Marker Detector</label> -->
-			<!-- <description>Indicates if the buildplate marker detection is enabled.</description> -->
-			<!-- </channel> -->
-			<!-- <channel id="uploadStatus" typeId="string-channel"> -->
-			<!-- <label>Upload Status</label> -->
-			<!-- <description>Current file upload status.</description> -->
-			<!-- </channel> -->
-			<!-- <channel id="uploadProgress" typeId="number"> -->
-			<!-- <label>Upload Progress</label> -->
-			<!-- <description>File upload progress percentage.</description> -->
-			<!-- </channel> -->
-			<!-- <channel id="uploadMessage" typeId="string-channel"> -->
-			<!-- <label>Upload Message</label> -->
-			<!-- <description>Message related to the upload status.</description> -->
-			<!-- </channel> -->
-			<!-- <channel id="netConf" typeId="number"> -->
-			<!-- <label>Network Configuration</label> -->
-			<!-- <description>Configuration settings of the printer network.</description> -->
-			<!-- </channel> -->
-			<!-- <channel id="ipcamRecord" typeId="string-channel"> -->
-			<!-- <label>IP Camera Record</label> -->
-			<!-- <description>Current recording status of the IP camera.</description> -->
-			<!-- </channel> -->
-			<!-- <channel id="timelapse" typeId="string-channel"> -->
-			<!-- <label>Timelapse</label> -->
-			<!-- <description>Status of the timelapse recording.</description> -->
-			<!-- </channel> -->
-			<!-- <channel id="resolution" typeId="string-channel"> -->
-			<!-- <label>Camera Resolution</label> -->
-			<!-- <description>Resolution of the IP camera.</description> -->
-			<!-- </channel> -->
-			<!-- <channel id="tutkServer" typeId="string-channel"> -->
-			<!-- <label>Tutk Server</label> -->
-			<!-- <description>Tutk server details for IP camera.</description> -->
-			<!-- </channel> -->
-			<!-- <channel id="modeBits" typeId="number"> -->
-			<!-- <label>Mode Bits</label> -->
-			<!-- <description>Mode bits setting of the IP camera.</description> -->
-			<!-- </channel> -->
+			<channel id="reason" typeId="string-channel">
+				<label>Pause/Stop Reason</label>
+				<description>Reason for pausing or stopping the print.</description>
+			</channel>
+			<channel id="result" typeId="string-channel">
+				<label>Print Result</label>
+				<description>Final result or status of the print job.</description>
+			</channel>
+			<channel id="gcodeFilePreparePercent" typeId="percent-channel">
+				<label>G-code Preparation Progress</label>
+				<description>Percentage of G-code file preparation completed.</description>
+			</channel>
+			<channel id="bigFan1Speed" typeId="number-channel">
+				<label>Big Fan 1 Speed</label>
+				<description>Speed of the first large cooling fan (RPM).</description>
+			</channel>
+			<channel id="bigFan2Speed" typeId="number-channel">
+				<label>Big Fan 2 Speed</label>
+				<description>Speed of the second large cooling fan (RPM).</description>
+			</channel>
+			<channel id="heatBreakFanSpeed" typeId="number-channel">
+				<label>Heat Break Fan Speed</label>
+				<description>Speed of the heat break cooling fan (RPM).</description>
+			</channel>
+			<channel id="layerNum" typeId="number-channel">
+				<label>Current Layer Number</label>
+				<description>Current layer being printed.</description>
+			</channel>
+			<channel id="speedLevel" typeId="number-channel">
+				<label>Print Speed Level</label>
+				<description>Current speed setting of the print job.</description>
+			</channel>
+			<channel id="timeLaps" typeId="boolean-channel">
+				<label>Timelapse Enabled</label>
+				<description>Indicates whether timelapse recording is enabled.</description>
+			</channel>
+			<channel id="useAms" typeId="boolean-channel">
+				<label>AMS System in Use</label>
+				<description>Indicates whether the Automatic Material System (AMS) is active.</description>
+			</channel>
+			<channel id="vibrationCalibration" typeId="boolean-channel">
+				<label>Vibration Calibration</label>
+				<description>Indicates whether vibration calibration has been performed.</description>
+			</channel>
 		</channels>
 
 		<representation-property>serial</representation-property>
