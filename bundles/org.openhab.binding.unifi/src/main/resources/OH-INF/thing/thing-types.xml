@@ -40,7 +40,7 @@
 		</supported-bridge-type-refs>
 
 		<label>UniFi Network</label>
-		<description>A UniFi network</description>
+		<description>A UniFi Network</description>
 
 		<channels>
 			<channel id="enable" typeId="networkEnable"/>
