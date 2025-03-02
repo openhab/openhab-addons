@@ -10,10 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homewizard.internal;
+package org.openhab.binding.homewizard.internal.devices.kwh_meter;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doAnswer;
 
 import java.util.concurrent.ScheduledExecutorService;
@@ -22,20 +21,19 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
-import org.openhab.binding.homewizard.internal.handler.HomeWizardP1MeterHandler;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
 
 /**
- * The {@link HomeWizardP1MeterHandlerMock} is responsible for mocking {@link HomeWizardP1MeterHandler}
- * 
- * @author Leo Siepel - Initial contribution
+ * The {@link HomeWizardKwhMeterHandlerMock} is responsible for mocking {@link HomeWizardKwhMeterHandler}
+ *
+ * @author Gearrel Welvaart - Initial contribution
+ *
  */
 @NonNullByDefault
-public class HomeWizardP1MeterHandlerMock extends HomeWizardP1MeterHandler {
+public class HomeWizardKwhMeterHandlerMock extends HomeWizardKwhMeterHandler {
 
-    public HomeWizardP1MeterHandlerMock(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider);
+    public HomeWizardKwhMeterHandlerMock(Thing thing) {
+        super(thing);
 
         executorService = Mockito.mock(ScheduledExecutorService.class);
         doAnswer((InvocationOnMock invocation) -> {
