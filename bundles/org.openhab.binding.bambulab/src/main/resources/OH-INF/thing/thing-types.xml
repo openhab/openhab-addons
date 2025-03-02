@@ -106,16 +106,10 @@
 			<channel id="ledChamber" typeId="on-off-command-channel">
 				<label>Chamber LED</label>
 				<description>Controls the LED lighting inside the printer chamber.</description>
-				<properties>
-					<property name="commandOnly">true</property>
-				</properties>
 			</channel>
 			<channel id="ledWork" typeId="on-off-command-channel">
 				<label>Work Area LED</label>
 				<description>Controls the LED lighting for the work area.</description>
-				<properties>
-					<property name="commandOnly">true</property>
-				</properties>
 			</channel>
 		</channels>
 

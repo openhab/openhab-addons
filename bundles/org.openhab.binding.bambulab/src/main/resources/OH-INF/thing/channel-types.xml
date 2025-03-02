@@ -38,7 +38,19 @@
 	</channel-type>
 
 	<channel-type id="on-off-command-channel">
-		<item-type>Switch</item-type>
+		<item-type>String</item-type>
 		<label>ON/OFF Channel</label>
+		<state>
+			<options>
+				<option value="ON">ON</option>
+				<option value="OFF">OFF</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="ON">ON</option>
+				<option value="OFF">OFF</option>
+			</options>
+		</command>
 	</channel-type>
 </thing:thing-descriptions>

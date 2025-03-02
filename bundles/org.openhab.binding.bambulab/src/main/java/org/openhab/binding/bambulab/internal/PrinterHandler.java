@@ -69,11 +69,8 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
         if (!LED_CHAMBER_LIGHT_CHANNEL.equals(channelUID.getId()) && LED_WORK_LIGHT_CHANNEL.equals(channelUID.getId())) {
             return;
         }
-        if (!(command instanceof OnOffType)) {
-            return;
-        }
         var ledNode = LED_CHAMBER_LIGHT_CHANNEL.equals(channelUID.getId()) ? CHAMBER_LIGHT : WORK_LIGHT;
-        var bambuCommand = command == OnOffType.ON ? on(ledNode) : off(ledNode);
+        var bambuCommand = "ON".equals(command.toFullString()) ? on(ledNode) : off(ledNode);
         sendCommand(bambuCommand);
     }
 
