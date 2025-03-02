@@ -24,7 +24,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +42,8 @@ import static org.openhab.core.library.unit.Units.DECIBEL_MILLIWATTS;
 import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import static org.openhab.core.types.UnDefType.UNDEF;
+import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.LedNode.*;
+import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.*;
 import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.PushingCommand.defaultPushingCommand;
 import static pl.grzeslowski.jbambuapi.PrinterClientConfig.requiredFields;
 
@@ -65,10 +66,15 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            // there is no way of refreshing one channel
+        if (!LED_CHAMBER_LIGHT_CHANNEL.equals(channelUID.getId()) && LED_WORK_LIGHT_CHANNEL.equals(channelUID.getId())) {
             return;
         }
+        if (!(command instanceof OnOffType)) {
+            return;
+        }
+        var ledNode = LED_CHAMBER_LIGHT_CHANNEL.equals(channelUID.getId()) ? CHAMBER_LIGHT : WORK_LIGHT;
+        var bambuCommand = command == OnOffType.ON ? on(ledNode) : off(ledNode);
+        sendCommand(bambuCommand);
     }
 
     @Override

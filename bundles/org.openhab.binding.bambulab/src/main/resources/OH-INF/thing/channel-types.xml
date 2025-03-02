@@ -36,4 +36,9 @@
 		<label>Boolean Channel</label>
 		<state readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="on-off-command-channel">
+		<item-type>Switch</item-type>
+		<label>ON/OFF Channel</label>
+	</channel-type>
 </thing:thing-descriptions>

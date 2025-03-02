@@ -41,7 +41,6 @@ public class BambuLabBindingConstants {
         public static final String MC_PERCENT_CHANNEL = "mcPercent";
         public static final String MC_REMAINING_TIME_CHANNEL = "mcRemainingTime";
         public static final String WIFI_SIGNAL_CHANNEL = "wifiSignal";
-
         public static final String BED_TYPE_CHANNEL = "bedType";
         public static final String GCODE_fILE_CHANNEL = "gcodeFile";
         public static final String GCODE_STATE_CHANNEL = "gcodeState";
@@ -55,6 +54,9 @@ public class BambuLabBindingConstants {
         public static final String SPEED_LEVEL_CHANNEL = "speedLevel";
         public static final String TIMELAPS_CHANNEL = "timeLaps";
         public static final String USE_AMS_CHANNEL = "useAms";
-        public static final String VIBRATION_CALIBRATION_CHANNEL     = "vibrationCalibration";
+        public static final String VIBRATION_CALIBRATION_CHANNEL = "vibrationCalibration";
+        // command channels
+        public static final String LED_CHAMBER_LIGHT_CHANNEL = "ledChamber";
+        public static final String LED_WORK_LIGHT_CHANNEL = "ledWork";
     }
 }
