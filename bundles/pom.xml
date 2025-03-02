@@ -371,6 +371,7 @@
     <module>org.openhab.binding.senechome</module>
     <module>org.openhab.binding.seneye</module>
     <module>org.openhab.binding.sensebox</module>
+    <module>org.openhab.binding.senseenergy</module>
     <module>org.openhab.binding.sensibo</module>
     <module>org.openhab.binding.sensorcommunity</module>
     <module>org.openhab.binding.serial</module>
