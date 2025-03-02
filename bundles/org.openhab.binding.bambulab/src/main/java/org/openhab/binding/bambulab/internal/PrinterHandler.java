@@ -124,6 +124,7 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
         }
         scheduler.execute(() -> {
             try {
+                logger.debug("Trying to connect to the printer broker");
                 client.connect();
                 var printerWatcher = new PrinterWatcher();
                 client.subscribe(printerWatcher);
@@ -139,11 +140,7 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
     }
 
     void refreshChannels() {
-        var localClient = client;
-        if (localClient == null) {
-            return;
-        }
-        localClient.getChannel().sendCommand(defaultPushingCommand());
+        sendCommand(defaultPushingCommand());
     }
 
     @Override
@@ -165,6 +162,7 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
 
     @Override
     public void newState(@Nullable Report delta, @Nullable Report fullState) {
+        logger.trace("New Printer state from delta {}", delta);
         // only need to update channels from delta
         // do not need to use full state, because at some point in past channels was already updated with its values
         if (delta == null) {
@@ -283,6 +281,7 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
     }
 
     public void sendCommand(PrinterClient.Channel.Command command) {
+        logger.debug("Sending command {}", command);
         var localClient = client;
         if (localClient == null) {
             logger.warn("Client not connected. Cannot send command {}", command);
