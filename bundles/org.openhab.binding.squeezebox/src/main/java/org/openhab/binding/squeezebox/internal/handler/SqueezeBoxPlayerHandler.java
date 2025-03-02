@@ -356,7 +356,30 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     @Override
     public void playerAdded(SqueezeBoxPlayer player) {
-        // Player properties are saved in SqueezeBoxPlayerDiscoveryParticipant
+        if (!isMe(player.macAddress)) {
+            return;
+        }
+
+        Map<String, String> properties = editProperties();
+
+        String model = player.model;
+        if (model != null) {
+            properties.put(Thing.PROPERTY_MODEL_ID, model);
+        }
+        String name = player.name;
+        if (name != null) {
+            properties.put(PROPERTY_NAME, name);
+        }
+        String uuid = player.uuid;
+        if (uuid != null) {
+            properties.put(PROPERTY_UID, uuid);
+        }
+        String ipAddr = player.ipAddr;
+        if (ipAddr != null) {
+            properties.put(PROPERTY_IP, ipAddr);
+        }
+
+        updateProperties(properties);
     }
 
     @Override

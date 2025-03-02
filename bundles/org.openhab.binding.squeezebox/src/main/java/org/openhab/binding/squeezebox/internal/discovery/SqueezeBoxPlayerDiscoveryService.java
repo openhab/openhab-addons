@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.squeezebox.internal.discovery;
 
-import static org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants.SQUEEZEBOXPLAYER_THING_TYPE;
+import static org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -110,7 +110,7 @@ public class SqueezeBoxPlayerDiscoveryService extends AbstractThingHandlerDiscov
         ThingUID thingUID = new ThingUID(SQUEEZEBOXPLAYER_THING_TYPE, bridgeUID, player.macAddress.replace(":", ""));
 
         if (!playerThingExists(thingUID)) {
-            logger.debug("player added {} : {} ", player.macAddress, player.name);
+            logger.debug("Player added {}: {} ", player.macAddress, player.name);
 
             Map<String, Object> properties = new HashMap<>(1);
             String representationPropertyName = "mac";
@@ -123,15 +123,15 @@ public class SqueezeBoxPlayerDiscoveryService extends AbstractThingHandlerDiscov
             }
             String name = player.name;
             if (name != null) {
-                properties.put("name", name);
+                properties.put(PROPERTY_NAME, name);
             }
             String uuid = player.uuid;
             if (uuid != null) {
-                properties.put("uid", uuid);
+                properties.put(PROPERTY_UID, uuid);
             }
             String ipAddr = player.ipAddr;
             if (ipAddr != null) {
-                properties.put("ip", ipAddr);
+                properties.put(PROPERTY_IP, ipAddr);
             }
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
