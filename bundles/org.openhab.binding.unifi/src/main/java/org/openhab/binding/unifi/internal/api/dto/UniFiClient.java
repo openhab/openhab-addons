@@ -61,6 +61,8 @@ public abstract class UniFiClient implements HasId {
     @SerializedName("satisfaction")
     private Integer experience;
 
+    private String networkId;
+
     protected UniFiClient(final UniFiControllerCache cache) {
         this.cache = cache;
     }
@@ -120,6 +122,10 @@ public abstract class UniFiClient implements HasId {
 
     public Integer getExperience() {
         return experience;
+    }
+
+    public UniFiNetwork getNetwork() {
+        return cache.getNetwork(networkId);
     }
 
     @Override
