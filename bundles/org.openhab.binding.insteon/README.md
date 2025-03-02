@@ -577,6 +577,81 @@ Usage: openhab:insteon debug - Insteon debug commands
 
 </details>
 
+### Modem Commands
+
+```shell
+openhab> insteon modem
+Usage: openhab:insteon modem listAll - list configured Insteon modem bridges with related channels and status
+Usage: openhab:insteon modem listDatabase [--records] - list all-link database summary or records and pending changes for the Insteon modem
+Usage: openhab:insteon modem listFeatures - list features for the Insteon modem
+Usage: openhab:insteon modem listProductData - list product data for the Insteon modem
+Usage: openhab:insteon modem reloadDatabase - reload all-link database from the Insteon modem
+Usage: openhab:insteon modem backupDatabase - backup all-link database from the Insteon modem to a file
+Usage: openhab:insteon modem restoreDatabase <filename> --confirm - restore all-link database to the Insteon modem from a specific file
+Usage: openhab:insteon modem addDatabaseController <address> <group> [<devCat> <subCat> <firmware>] - add a controller record to all-link database for the Insteon modem
+Usage: openhab:insteon modem addDatabaseResponder <address> <group> - add a responder record to all-link database for the Insteon modem
+Usage: openhab:insteon modem deleteDatabaseRecord <address> <group> - delete a controller/responder record from all-link database for the Insteon modem
+Usage: openhab:insteon modem applyDatabaseChanges --confirm - apply all-link database pending changes for the Insteon modem
+Usage: openhab:insteon modem clearDatabaseChanges - clear all-link database pending changes for the Insteon modem
+Usage: openhab:insteon modem addDevice [<address>] - add an Insteon device to the modem, optionally providing its address
+Usage: openhab:insteon modem removeDevice <address> [--force] - remove an Insteon device from the modem
+Usage: openhab:insteon modem reset --confirm - reset the Insteon modem to factory defaults
+Usage: openhab:insteon modem switch <thingId> - switch Insteon modem bridge to use if more than one configured and enabled
+```
+
+### Device Commands
+
+```shell
+openhab> insteon device
+Usage: openhab:insteon device listAll - list configured Insteon/X10 devices with related channels and status
+Usage: openhab:insteon device listDatabase <thingId> - list all-link database records and pending changes for a configured Insteon device
+Usage: openhab:insteon device listFeatures <thingId> - list features for a configured Insteon/X10 device
+Usage: openhab:insteon device listProductData <thingId> - list product data for a configured Insteon/X10 device
+Usage: openhab:insteon device listMissingLinks --all|<thingId> - list missing links for a specific or all configured Insteon devices
+Usage: openhab:insteon device addMissingLinks --all|<thingId> - add missing links for a specific or all configured Insteon devices
+Usage: openhab:insteon device addDatabaseController <thingId> <address> <group> <data1> <data2> <data3> - add a controller record to all-link database for a configured Insteon device
+Usage: openhab:insteon device addDatabaseResponder <thingId> <address> <group> <data1> <data2> <data3> - add a responder record to all-link database for a configured Insteon device
+Usage: openhab:insteon device deleteDatabaseController <thingId> <address> <group> <data3> - delete a controller record from all-link database for a configured Insteon device
+Usage: openhab:insteon device deleteDatabaseResponder <thingId> <address> <group> <data3> - delete a responder record from all-link database for a configured Insteon device
+Usage: openhab:insteon device applyDatabaseChanges <thingId> --confirm - apply all-link database pending changes for a configured Insteon device
+Usage: openhab:insteon device clearDatabaseChanges <thingId> - clear all-link database pending changes for a configured Insteon device
+Usage: openhab:insteon device setButtonRadioGroup <thingId> <button1> <button2> [<button3> ... <button7>] - set a button radio group for a configured Insteon KeypadLinc device
+Usage: openhab:insteon device clearButtonRadioGroup <thingId> <button1> <button2> [<button3> ... <button7>] - clear a button radio group for a configured Insteon KeypadLinc device
+Usage: openhab:insteon device refresh --all|<thingId> - refresh data for a specific or all configured Insteon devices
+```
+
+### Scene Commands
+
+```shell
+openhab> insteon scene
+Usage: openhab:insteon scene listAll - list configured Insteon scenes with related channels and status
+Usage: openhab:insteon scene listDetails <thingId> - list details for a configured Insteon scene
+Usage: openhab:insteon scene addDevice --new|<scene> <device> <feature> <onLevel> [<rampRate>] - add an Insteon device feature to a new or configured Insteon scene
+Usage: openhab:insteon scene removeDevice <scene> <device> <feature> - remove an Insteon device feature from a configured Insteon scene
+```
+
+### Channel Commands
+
+```shell
+openhab> insteon channel
+Usage: openhab:insteon channel listAll - list available channel ids with configuration and link state
+```
+
+### Debug Commands
+
+```shell
+openhab> insteon debug
+Usage: openhab:insteon debug listMonitored - list monitored Insteon/X10 device(s)
+Usage: openhab:insteon debug startMonitoring --all|<address> - start logging message events for Insteon/X10 device(s) in separate file(s)
+Usage: openhab:insteon debug stopMonitoring --all|<address> - stop logging message events for Insteon/X10 device(s) in separate file(s)
+Usage: openhab:insteon debug sendBroadcastMessage <group> <cmd1> <cmd2> - send an Insteon broadcast message to a group
+Usage: openhab:insteon debug sendStandardMessage <address> <cmd1> <cmd2> - send an Insteon standard message to a device
+Usage: openhab:insteon debug sendExtendedMessage <address> <cmd1> <cmd2> [<data1> ... <data13>] - send an Insteon extended message with standard crc to a device
+Usage: openhab:insteon debug sendExtended2Message <address> <cmd1> <cmd2> [<data1> ... <data12>] - send an Insteon extended message with a two-byte crc to a device
+Usage: openhab:insteon debug sendX10Message <address> <cmd> - send an X10 message to a device
+Usage: openhab:insteon debug sendIMMessage <name> [<data1> <data2> ...] - send an IM message to the modem
+```
+
 ## Insteon Groups and Scenes
 
 How do Insteon devices tell other devices on the network that their state has changed? They send out a broadcast message, labeled with a specific _group_ number.
