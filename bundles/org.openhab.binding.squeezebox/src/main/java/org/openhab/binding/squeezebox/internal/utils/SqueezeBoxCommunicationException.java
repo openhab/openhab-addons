@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.squeezebox.internal.utils;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception thrown when unable to communicate with LMS server.
  *
  * @author Mark Hilbush - Initial contribution
  */
+@NonNullByDefault
 public class SqueezeBoxCommunicationException extends Exception {
     private static final long serialVersionUID = 1540489268747099161L;
 

@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.squeezebox.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /***
  * Enumeration of the play states of a player.
  *
  * @author Patrik Gfeller - Initial contribution
  *
  */
+@NonNullByDefault
 enum SqueezeBoxPlayerPlayState {
     STOP,
     PLAY,
