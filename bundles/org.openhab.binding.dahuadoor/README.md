@@ -1,11 +1,11 @@
 # DahuaDoor Binding
 
-A small binding for VTH2202F Villastation Dahua Door controller.
+A small binding for VTO2202F Villastation Dahua Door controller.
 
 
 ## Supported Things
 
-Currently only VTH2202F Villastation is supported.
+Currently only VTO2202F Villastation is supported.
 
 
 
