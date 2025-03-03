@@ -106,7 +106,7 @@ rule "test"
 when
         /* when */
 then
-    val actions = getActions("bambulab", "bambulab:printer:as8af03m38")
+val actions = getActions("bambulab", "bambulab:printer:as8af03m38")
     if(actions !==null){
         // Refresh all channels
         actions.refreshChannels()
@@ -114,6 +114,14 @@ then
     }
 end
 ```
+
+### `refreshChannels`
+
+Reports the complete status of the printer.
+This is unnecessary for the X1 series since it already transmits the full object each time. However, the P1 series only
+sends the values that have been updated compared to the previous report.
+As a rule of thumb, refrain from executing this command at intervals less than 5 minutes on the P1P, as it may cause lag
+due to its hardware limitations.
 
 ### `sendCommand`
 
@@ -125,23 +133,20 @@ CommandType:Parameter1:Parameter2:...
 
 #### Possible Commands:
 
-| Command Type         | Parameters                                                                                                                 | Description                                            |
-|----------------------|----------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------|
-| `Pushing`            | `version(int),pushTarget(int)` (optional)                                                                                  | Sends a push command.                                  |
-| `Print`              | `START` / `STOP` / `PAUSE`                                                                                                 | Controls the print job.                                |
-| `ChangeFilament`     | `target(int),currentTemperature(int)),targetTemperature(int)`                                                              | Changes filament using.                                |
-| `AmsUserSetting`     | `amsId(int),startupReadOption(boolean),trayReadOption(boolean)`                                                            | Sets AMS user settings.                                |
-| `AmsFilamentSetting` | `amsId(int),trayId(int),trayInfoIdx(string),trayColor(string),nozzleTempMin(int),nozzleTempMax(int),trayType(string)`      | Configures filament settings.                          |
-| `AmsControl`         | ` RESUME` / `RESET` / `PAUSE`                                                                                              | Sends an AMS control command.                          |
-| `PrintSpeed`         | `SILENT` / `STANDARD` / `SPORT` / `LUDICROUS`                                                                              | Adjusts print speed.                                   |
-| `GCodeFile`          | `filename(string)`                                                                                                         | Loads a G-code file.                                   |
-| `GCodeLine`          | `userId(string),lines(string...)`                                                                                          | Sends multiple G-code lines. Lines are comma separated |
-| `LedControl`         | `CHAMBER_LIGHT` / `WORK_LIGHT,ON` / `OFF` / `FLASHING,ledOnTime(int)?,ledOffTime(int)?,loopTimes(int)?,intervalTime(int)?` | Controls LED lighting.                                 |
-| `System`             | `GET_ACCESS_CODE`                                                                                                          | Executes a system command.                             |
-| `IpCamRecord`        | `enable(boolean)`                                                                                                          | Starts or stops IP camera recording.                   |
-| `Info`               | `GET_VERSION`                                                                                                              | Starts or stops IP camera recording.                   |
-| `IpCamTimelaps`      | `enable(boolean)`                                                                                                          | Enables or disables timelapse recording.               |
-| `XCamControl`        | `FIRST_LAYER_INSPECTOR` / `SPAGHETTI_DETECTOR,control(boolean),printHalt(boolean)`                                         | Controls XCam settings.                                |
-
-Let me know if you need any modifications! 🚀
-
+| Command Type         | Parameters                                                                                                                               | Description                                                   |
+|----------------------|------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
+| `Pushing`            | `version(int)`,`pushTarget(int)` (optional)                                                                                              | Sends a push command.                                         |
+| `Print`              | `START` / `STOP` / `PAUSE`                                                                                                               | Controls the print job.                                       |
+| `ChangeFilament`     | `target(int)`,`currentTemperature(int))`,`targetTemperature(int)`                                                                        | Changes filament using.                                       |
+| `AmsUserSetting`     | `amsId(int)`,`startupReadOption(boolean)`,`trayReadOption(boolean)`                                                                      | Sets AMS user settings.                                       |
+| `AmsFilamentSetting` | `amsId(int)`,`trayId(int)`,`trayInfoIdx(string)`,`trayColor(string)`,`nozzleTempMin(int)`,`nozzleTempMax(int)`,`trayType(string)`        | Configures filament settings.                                 |
+| `AmsControl`         | ` RESUME` / `RESET` / `PAUSE`                                                                                                            | Sends an AMS control command.                                 |
+| `PrintSpeed`         | `SILENT` / `STANDARD` / `SPORT` / `LUDICROUS`                                                                                            | Adjusts print speed.                                          |
+| `GCodeFile`          | `filename(string)`                                                                                                                       | Loads a G-code file.                                          |
+| `GCodeLine`          | `userId(string)\nlines(string...)`                                                                                                       | Sends multiple G-code lines. Lines are enter (`\n`) separated |
+| `LedControl`         | (`CHAMBER_LIGHT` / `WORK_LIGHT`),(`ON` / `OFF` / `FLASHING`),`ledOnTime(int)?`,`ledOffTime(int)?`,`loopTimes(int)?`,`intervalTime(int)?` | Controls LED lighting.                                        |
+| `System`             | `GET_ACCESS_CODE`                                                                                                                        | Executes a system command.                                    |
+| `IpCamRecord`        | `enable(boolean)`                                                                                                                        | Starts or stops IP camera recording.                          |
+| `Info`               | `GET_VERSION`                                                                                                                            | Sends a info command.                                         |
+| `IpCamTimelaps`      | `enable(boolean)`                                                                                                                        | Enables or disables timelapse recording.                      |
+| `XCamControl`        | (`FIRST_LAYER_INSPECTOR` / `SPAGHETTI_DETECTOR`),`control(boolean)`,`printHalt(boolean)`                                                 | Controls XCam settings.                                       |

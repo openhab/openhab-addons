@@ -13,6 +13,7 @@
 package org.openhab.binding.bambulab.internal;
 
 import static java.util.Objects.requireNonNull;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.LedMode.*;
 import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.LedNode.*;
@@ -21,9 +22,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.assertj.core.api.ThrowableAssert;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -60,6 +64,45 @@ class PrinterActionsTest {
         printerActions.setThingHandler(requireNonNull(printerHandler));
     }
 
+    @Test
+    @DisplayName("should correctly parse GCodeLineCommand")
+    void gcodeLines() {
+        // given
+        var command = """
+                GCodeLine:123
+                G28 ; Home all axes
+                G90 ; Set to absolute positioning
+                G1 X50 Y50 Z10 F1500 ; Move to position (50,50,10) at 1500 mm/min
+                G1 X100 Y100 Z20 F2000 ; Move to position (100,100,20) at 2000 mm/min
+                M104 S200 ; Set hotend temperature to 200°C""";
+
+        // when
+        printerActions.sendCommand(command);
+
+        // then
+        verify(requireNonNull(printerHandler)).sendCommand(new PrinterClient.Channel.GCodeLineCommand(
+                List.of("G28 ; Home all axes", "G90 ; Set to absolute positioning",
+                        "G1 X50 Y50 Z10 F1500 ; Move to position (50,50,10) at 1500 mm/min",
+                        "G1 X100 Y100 Z20 F2000 ; Move to position (100,100,20) at 2000 mm/min",
+                        "M104 S200 ; Set hotend temperature to 200°C"),
+                "123"));
+    }
+
+    @Test
+    @DisplayName("should throw exception if there are no lines for GCodeLineCommand")
+    void gcodeLineNoLines() {
+        // given
+        var command = "GCodeLine:123";
+
+        // when
+        ThrowableAssert.ThrowingCallable when = () -> printerActions.sendCommand(command);
+
+        // then
+        assertThatThrownBy(when)//
+                .isInstanceOf(IllegalArgumentException.class)//
+                .hasMessage("There are no lines for GCodeLineCommand!");
+    }
+
     @ParameterizedTest(name = "{index}: should {0}")
     @MethodSource
     void shouldRunCommand(String command, Command expectedCommand) {
@@ -88,8 +131,11 @@ class PrinterActionsTest {
                 .map(value -> Arguments.of("PrintSpeed:" + value.name(), value));
         var gCodeFileCommandStream = stream(
                 Arguments.of("GCodeFile:s1", new PrinterClient.Channel.GCodeFileCommand("s1")));
-        var gCodeLineCommandStream = stream(Arguments.of("GCodeLine:s1:l1:l2:l3",
-                new PrinterClient.Channel.GCodeLineCommand(List.of("l1", "l2", "l3"), "s1")));
+        var gCodeLineCommandStream = stream(Arguments.of("""
+                GCodeLine:s1
+                l1
+                l2
+                l3""", new PrinterClient.Channel.GCodeLineCommand(List.of("l1", "l2", "l3"), "s1")));
         var ledControlCommandStream = stream(//
                 Arguments.of("LedControl:CHAMBER_LIGHT:ON",
                         new LedControlCommand(CHAMBER_LIGHT, ON, null, null, null, null)), //

@@ -276,8 +276,14 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
             return UNDEF;
         }
 
-        var value = Integer.parseInt(matcher.group(1));
-        return new QuantityType<>(value, DECIBEL_MILLIWATTS);
+        var integer = matcher.group(1);
+        try {
+            var value = Integer.parseInt(integer);
+            return new QuantityType<>(value, DECIBEL_MILLIWATTS);
+        } catch (NumberFormatException e) {
+            logger.debug("Cannot parse integer {} from wifi {}", integer, wifi, e);
+            return UNDEF;
+        }
     }
 
     public void sendCommand(PrinterClient.Channel.Command command) {

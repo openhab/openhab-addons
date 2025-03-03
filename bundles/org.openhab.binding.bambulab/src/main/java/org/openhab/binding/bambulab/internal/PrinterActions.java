@@ -113,7 +113,9 @@ public class PrinterActions implements ThingActions {
             return parseGCodeFileCommand(tail);
         }
         if (commandName.equals(GCodeLineCommand.class.getSimpleName())) {
-            return parseGCodeLineCommand(tail);
+            var gcodeLineSplit = stringCommand.split(":", 2);
+            requireLength(gcodeLineSplit, 2);
+            return parseGCodeLineCommand(gcodeLineSplit[1]);
         }
         if (commandName.equals(LedControlCommand.class.getSimpleName())) {
             return parseLedControlCommand(tail);
@@ -140,7 +142,8 @@ public class PrinterActions implements ThingActions {
 
     private void requireLength(String[] commandLine, int length) {
         if (commandLine.length != length) {
-            throw new IllegalArgumentException("Command line length does not match!");
+            throw new IllegalArgumentException("Command line length does not match! Should be %s, but was %s!"
+                    .formatted(length, commandLine.length));
         }
     }
 
@@ -194,17 +197,19 @@ public class PrinterActions implements ThingActions {
         return new GCodeFileCommand(commandLine[0]);
     }
 
-    private GCodeLineCommand parseGCodeLineCommand(String[] commandLine) {
-        if (commandLine.length < 2) {
-            throw new IllegalArgumentException("Command line length does not match!");
+    private GCodeLineCommand parseGCodeLineCommand(String commandLine) {
+        var split = commandLine.split("\n");
+        if (split.length < 2) {
+            throw new IllegalArgumentException("There are no lines for GCodeLineCommand!");
         }
-        var lines = Arrays.stream(commandLine).skip(1).toList();
-        return new GCodeLineCommand(lines, commandLine[0]);
+        var lines = Arrays.stream(split).skip(1).toList();
+        return new GCodeLineCommand(lines, split[0]);
     }
 
     private LedControlCommand parseLedControlCommand(String[] commandLine) {
         if (commandLine.length < 2) {
-            throw new IllegalArgumentException("Command line length does not match!");
+            throw new IllegalArgumentException(
+                    "Command line length does not match! Should be %s, but was %s!".formatted(2, commandLine.length));
         }
         var ledNode = LedNode.valueOf(commandLine[0]);
         var ledMode = LedMode.valueOf(commandLine[1]);
