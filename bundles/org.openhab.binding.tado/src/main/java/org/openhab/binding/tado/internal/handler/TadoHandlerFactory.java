@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tado.internal.discovery.TadoDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -58,9 +59,9 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public TadoHandlerFactory(final @Reference TadoStateDescriptionProvider stateDescriptionProvider,
-            @Reference HttpClient httpClient, @Reference HttpService httpService) {
+            @Reference HttpClientFactory httpClientFactory, @Reference HttpService httpService) {
         this.stateDescriptionProvider = stateDescriptionProvider;
-        this.httpClient = httpClient;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
         this.httpService = httpService;
     }
 
