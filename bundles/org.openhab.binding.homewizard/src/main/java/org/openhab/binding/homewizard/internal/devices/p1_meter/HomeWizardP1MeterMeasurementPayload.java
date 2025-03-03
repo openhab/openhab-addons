@@ -160,8 +160,8 @@ public class HomeWizardP1MeterMeasurementPayload extends HomeWizardEnergyMeterMe
     @Override
     public String toString() {
         return super.toString() + "  " + String.format("""
-                Data [protocolVersion: %d meterModel: %s anyPowerFailCount: %f longPowerFailCount: %f"
-                totalGasM3: %f gasTimestamp: %.0f"
+                Data [protocolVersion: %d meterModel: %s anyPowerFailCount: %d longPowerFailCount: %d"
+                totalGasM3: %f gasTimestamp: %d"
 
                 """, protocolVersion, meterModel, anyPowerFailCount, longPowerFailCount, totalGasM3, gasTimestamp);
     }

@@ -34,8 +34,8 @@ public class HomeWizardWaterMeterMeasurementPayloadTest {
 
     @Test
     public void deserializeResponse() throws IOException {
-        HomeWizardWaterMeterDataPayload key = DATA_UTIL.fromJson("response-measurement-water-meter.json",
-                HomeWizardWaterMeterDataPayload.class);
+        HomeWizardWaterMeterMeasurementPayload key = DATA_UTIL.fromJson("response-measurement-water-meter.json",
+                HomeWizardWaterMeterMeasurementPayload.class);
         assertThat(key, is(notNullValue()));
 
         assertThat(key.getActiveLiter(), is(7.2));
@@ -44,8 +44,8 @@ public class HomeWizardWaterMeterMeasurementPayloadTest {
 
     @Test
     public void deserializeResponseEmpty() throws IOException {
-        HomeWizardWaterMeterDataPayload key = DATA_UTIL.fromJson("response-empty.json",
-                HomeWizardWaterMeterDataPayload.class);
+        HomeWizardWaterMeterMeasurementPayload key = DATA_UTIL.fromJson("response-empty.json",
+                HomeWizardWaterMeterMeasurementPayload.class);
         assertThat(key, is(notNullValue()));
 
         assertThat(key.getActiveLiter(), is(0.0));

@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 @NonNullByDefault
-public class HomeWizardWaterMeterDataPayload {
+public class HomeWizardWaterMeterMeasurementPayload {
 
     @SerializedName("active_liter_lpm")
     private double activeLiter;
