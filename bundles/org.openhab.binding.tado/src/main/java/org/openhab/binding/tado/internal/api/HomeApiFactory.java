@@ -16,9 +16,9 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.tado.internal.auth.Authorizer;
 import org.openhab.binding.tado.internal.auth.OAuthAuthorizerV2;
 import org.openhab.binding.tado.swagger.codegen.api.GsonBuilderFactory;
+import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
 import org.openhab.binding.tado.swagger.codegen.api.auth.OAuthAuthorizer;
 import org.openhab.binding.tado.swagger.codegen.api.client.HomeApi;
 
