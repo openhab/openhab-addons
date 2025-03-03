@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tado.internal.discovery.TadoDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
@@ -34,6 +35,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.http.HttpService;
 
 /**
  * The {@link TadoHandlerFactory} is responsible for creating things and thing
@@ -51,10 +53,15 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     private final TadoStateDescriptionProvider stateDescriptionProvider;
+    private final HttpClient httpClient;
+    private final HttpService httpService;
 
     @Activate
-    public TadoHandlerFactory(final @Reference TadoStateDescriptionProvider stateDescriptionProvider) {
+    public TadoHandlerFactory(final @Reference TadoStateDescriptionProvider stateDescriptionProvider,
+            @Reference HttpClient httpClient, @Reference HttpService httpService) {
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.httpClient = httpClient;
+        this.httpService = httpService;
     }
 
     @Override
@@ -67,7 +74,7 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_HOME)) {
-            TadoHomeHandler tadoHomeHandler = new TadoHomeHandler((Bridge) thing);
+            TadoHomeHandler tadoHomeHandler = new TadoHomeHandler((Bridge) thing, httpClient, httpService);
             registerTadoDiscoveryService(tadoHomeHandler);
             return tadoHomeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_ZONE)) {

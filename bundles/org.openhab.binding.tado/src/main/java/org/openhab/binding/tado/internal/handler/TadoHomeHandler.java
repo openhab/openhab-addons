@@ -13,16 +13,23 @@
 package org.openhab.binding.tado.internal.handler;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.servlet.ServletException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.internal.api.HomeApiFactory;
+import org.openhab.binding.tado.internal.auth.OAuthAuthorizerV2;
 import org.openhab.binding.tado.internal.config.TadoHomeConfig;
+import org.openhab.binding.tado.internal.servlet.TadoAuthenticationServlet;
 import org.openhab.binding.tado.swagger.codegen.api.ApiException;
 import org.openhab.binding.tado.swagger.codegen.api.client.HomeApi;
 import org.openhab.binding.tado.swagger.codegen.api.model.HomeInfo;
@@ -31,6 +38,7 @@ import org.openhab.binding.tado.swagger.codegen.api.model.HomeState;
 import org.openhab.binding.tado.swagger.codegen.api.model.PresenceState;
 import org.openhab.binding.tado.swagger.codegen.api.model.User;
 import org.openhab.binding.tado.swagger.codegen.api.model.UserHomes;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -41,6 +49,8 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.osgi.service.http.HttpService;
+import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +62,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TadoHomeHandler extends BaseBridgeHandler {
 
+    private static final String DEVICE_CODE = "deviceCode";
+
+    private static final ZonedDateTime AUTHENTICATION_SWITCHOVER_DATE = ZonedDateTime.parse("2025-03-15T00:00:00");
+
     private Logger logger = LoggerFactory.getLogger(TadoHomeHandler.class);
 
     private TadoHomeConfig configuration;
@@ -61,11 +75,18 @@ public class TadoHomeHandler extends BaseBridgeHandler {
     private final TadoBatteryChecker batteryChecker;
     private @Nullable ScheduledFuture<?> initializationFuture;
 
-    public TadoHomeHandler(Bridge bridge) {
+    private final HttpService httpService;
+    private final TadoAuthenticationServlet httpServlet;
+
+    public TadoHomeHandler(Bridge bridge, HttpClient httpClient, HttpService httpService) {
         super(bridge);
         batteryChecker = new TadoBatteryChecker(this);
         configuration = getConfigAs(TadoHomeConfig.class);
-        api = new HomeApiFactory().create(configuration.username, configuration.password);
+        api = ZonedDateTime.now().isAfter(AUTHENTICATION_SWITCHOVER_DATE)
+                ? new HomeApiFactory().create(scheduler, httpClient)
+                : new HomeApiFactory().create(configuration.username, configuration.password);
+        this.httpService = httpService;
+        this.httpServlet = new TadoAuthenticationServlet(this);
     }
 
     public TemperatureUnit getTemperatureUnit() {
@@ -76,6 +97,14 @@ public class TadoHomeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        try {
+            httpService.registerServlet(TadoAuthenticationServlet.PATH, httpServlet, null, null);
+        } catch (ServletException | NamespaceException e) {
+            logger.warn("initialize() failed to register servlet", e);
+        }
+        if (api.getOAuthAuthorizerV2() instanceof OAuthAuthorizerV2 v2) {
+            v2.setHandler(this).setDeviceCode((String) getConfig().get(DEVICE_CODE));
+        }
         configuration = getConfigAs(TadoHomeConfig.class);
         ScheduledFuture<?> initializationFuture = this.initializationFuture;
         if (initializationFuture == null || initializationFuture.isDone()) {
@@ -101,8 +130,11 @@ public class TadoHomeHandler extends BaseBridgeHandler {
                 // Get user info to verify successful authentication and connection to server
                 User user = api.showUser();
                 if (user == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Cannot connect to server. Username and/or password might be invalid");
+                    String info = "Cannot connect to server. " + (api.getOAuthAuthorizerV2() == null //
+                            ? "Username and/or password might be invalid"
+                            : String.format("Try authenticating via http://%s:8080%s",
+                                    InetAddress.getLocalHost().getHostAddress(), TadoAuthenticationServlet.PATH));
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, info);
                     return;
                 }
 
@@ -139,6 +171,11 @@ public class TadoHomeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        httpService.unregister(TadoAuthenticationServlet.PATH);
+        if (api.getOAuthAuthorizerV2() instanceof OAuthAuthorizerV2 v2) {
+            v2.setHandler(null);
+            v2.close();
+        }
         super.dispose();
         ScheduledFuture<?> initializationFuture = this.initializationFuture;
         if (initializationFuture != null && !initializationFuture.isCancelled()) {
@@ -194,5 +231,15 @@ public class TadoHomeHandler extends BaseBridgeHandler {
 
     public TadoBatteryChecker getBatteryChecker() {
         return this.batteryChecker;
+    }
+
+    public void setDeviceCode(@Nullable String deviceCode) {
+        Configuration configuration = editConfiguration();
+        if (deviceCode != null) {
+            configuration.put(DEVICE_CODE, deviceCode);
+        } else {
+            configuration.remove(DEVICE_CODE);
+        }
+        updateConfiguration(configuration);
     }
 }
