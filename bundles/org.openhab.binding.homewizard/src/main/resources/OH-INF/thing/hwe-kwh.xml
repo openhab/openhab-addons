@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="HWE-kwh">
+	<thing-type id="hwe-kwh">
 		<label>HomeWizard kWh Meter</label>
 		<description>This thing provides the measurement data that is available through the API of a HomeWizard
 			kWh Meter.</description>
