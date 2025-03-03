@@ -40,10 +40,10 @@ Please note: things discovered by the network binding will be provided with a ti
 ## Thing Configuration
 
 ```java
-network:pingdevice:one_device [ hostname="192.168.0.64" ]
-network:pingdevice:second_device [ hostname="192.168.0.65", macAddress="6f:70:65:6e:48:41", retry=1, timeout=5000, refreshInterval=60000, networkInterfaceNames="eth0","wlan0" ]
-network:servicedevice:important_server [ hostname="192.168.0.62", port=1234 ]
-network:speedtest:local "SpeedTest 50Mo" @ "Internet" [refreshInterval=20, uploadSize=1000000, url="https://bouygues.testdebit.info/", fileName="50M.iso"]
+Thing network:pingdevice:one_device [ hostname="192.168.0.64" ]
+Thing network:pingdevice:second_device [ hostname="192.168.0.65", macAddress="6f:70:65:6e:48:41", retry=1, timeout=5000, refreshInterval=60000, networkInterfaceNames="eth0","wlan0" ]
+Thing network:servicedevice:important_server [ hostname="192.168.0.62", port=1234 ]
+Thing network:speedtest:local "SpeedTest 50Mo" @ "Internet" [refreshInterval=20, uploadSize=1000000, url="https://bouygues.testdebit.info/", fileName="50M.iso"]
 ```
 
 Use the following options for a **network:pingdevice**:
