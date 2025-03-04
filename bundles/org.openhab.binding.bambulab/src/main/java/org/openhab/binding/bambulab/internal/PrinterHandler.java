@@ -25,6 +25,7 @@ import static pl.grzeslowski.jbambuapi.PrinterClientConfig.requiredFields;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -114,29 +115,35 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
 
         updateStatus(UNKNOWN);
 
+        PrinterClient localClient;
         try {
-            client = new PrinterClient(
+            localClient = client = new PrinterClient(
                     requiredFields(uri, config.username, config.serial, config.accessCode.toCharArray()));
         } catch (Exception e) {
             logger.debug("Cannot create MQTT client", e);
             updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
             return;
         }
-        scheduler.execute(() -> {
-            try {
-                logger.debug("Trying to connect to the printer broker");
-                client.connect();
-                var printerWatcher = new PrinterWatcher();
-                client.subscribe(printerWatcher);
-                printerWatcher.subscribe(this);
-                // send request to update all channels
-                refreshChannels();
-                updateStatus(ONLINE);
-            } catch (Exception e) {
-                logger.debug("Cannot connect to MQTT client", e);
-                updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-            }
-        });
+        try {
+            scheduler.execute(() -> {
+                try {
+                    logger.debug("Trying to connect to the printer broker");
+                    localClient.connect();
+                    var printerWatcher = new PrinterWatcher();
+                    localClient.subscribe(printerWatcher);
+                    printerWatcher.subscribe(this);
+                    // send request to update all channels
+                    refreshChannels();
+                    updateStatus(ONLINE);
+                } catch (Exception e) {
+                    logger.debug("Cannot connect to MQTT client", e);
+                    updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+                }
+            });
+        } catch (RejectedExecutionException ex) {
+            logger.debug("Task was rejected", ex);
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, ex.getLocalizedMessage());
+        }
     }
 
     void refreshChannels() {
