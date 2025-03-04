@@ -113,6 +113,13 @@ class TestHandler {
         assertEquals(ThingStatus.OFFLINE, tsi.getStatus());
         assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tsi.getStatusDetail());
         assertEquals("@text/casokitchen.winecooler-2z.status.device-id-missing", tsi.getDescription());
+
+        config.put("deviceId", "xyz");
+        thing.setConfiguration(config);
+        winecoolerHandler.initialize();
+        callback.waitForOnline();
+        tsi = thing.getStatusInfo();
+        assertEquals(ThingStatus.ONLINE, tsi.getStatus());
     }
 
     @Test
