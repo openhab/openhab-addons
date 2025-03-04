@@ -16,11 +16,13 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.tado.internal.auth.OAuthAuthorizerV2;
+import org.openhab.binding.tado.internal.auth.AuthorizerV2;
+import org.openhab.binding.tado.internal.handler.TadoHomeHandler;
 import org.openhab.binding.tado.swagger.codegen.api.GsonBuilderFactory;
 import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
 import org.openhab.binding.tado.swagger.codegen.api.auth.OAuthAuthorizer;
 import org.openhab.binding.tado.swagger.codegen.api.client.HomeApi;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
 
 import com.google.gson.Gson;
 
@@ -43,9 +45,10 @@ public class HomeApiFactory {
         return new HomeApi(gson, authorizer);
     }
 
-    public HomeApi create(ScheduledExecutorService scheduler, HttpClient httpClient) {
+    public HomeApi create(ScheduledExecutorService scheduler, HttpClient httpClient, OAuthFactory oAuthFactory,
+            TadoHomeHandler handler) {
         Gson gson = GsonBuilderFactory.defaultGsonBuilder().create();
-        Authorizer authorizer = new OAuthAuthorizerV2(scheduler, httpClient);
+        Authorizer authorizer = new AuthorizerV2(scheduler, httpClient, oAuthFactory, handler);
         return new HomeApi(gson, authorizer);
     }
 }

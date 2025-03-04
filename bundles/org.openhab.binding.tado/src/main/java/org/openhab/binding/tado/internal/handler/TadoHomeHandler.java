@@ -27,7 +27,8 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.internal.api.HomeApiFactory;
-import org.openhab.binding.tado.internal.auth.OAuthAuthorizerV2;
+import org.openhab.binding.tado.internal.auth.AuthorizerV2;
+import org.openhab.binding.tado.internal.auth.oauth.DeviceCodeResponse;
 import org.openhab.binding.tado.internal.config.TadoHomeConfig;
 import org.openhab.binding.tado.internal.servlet.TadoAuthenticationServlet;
 import org.openhab.binding.tado.swagger.codegen.api.ApiException;
@@ -38,6 +39,7 @@ import org.openhab.binding.tado.swagger.codegen.api.model.HomeState;
 import org.openhab.binding.tado.swagger.codegen.api.model.PresenceState;
 import org.openhab.binding.tado.swagger.codegen.api.model.User;
 import org.openhab.binding.tado.swagger.codegen.api.model.UserHomes;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
@@ -62,9 +64,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TadoHomeHandler extends BaseBridgeHandler {
 
-    private static final String DEVICE_CODE = "deviceCode";
-
     private static final ZonedDateTime AUTHENTICATION_SWITCHOVER_DATE = ZonedDateTime.parse("2025-03-15T00:00:00");
+    private static final String DCR_PERSISTED = "dcrPersist";
 
     private Logger logger = LoggerFactory.getLogger(TadoHomeHandler.class);
 
@@ -78,13 +79,14 @@ public class TadoHomeHandler extends BaseBridgeHandler {
     private final HttpService httpService;
     private final TadoAuthenticationServlet httpServlet;
 
-    public TadoHomeHandler(Bridge bridge, HttpClient httpClient, HttpService httpService) {
+    public TadoHomeHandler(Bridge bridge, HttpClient httpClient, HttpService httpService, OAuthFactory oAuthFactory) {
         super(bridge);
         batteryChecker = new TadoBatteryChecker(this);
         configuration = getConfigAs(TadoHomeConfig.class);
         api = ZonedDateTime.now().isAfter(AUTHENTICATION_SWITCHOVER_DATE)
-                ? new HomeApiFactory().create(scheduler, httpClient)
+                ? new HomeApiFactory().create(scheduler, httpClient, oAuthFactory, this)
                 : new HomeApiFactory().create(configuration.username, configuration.password);
+
         this.httpService = httpService;
         this.httpServlet = new TadoAuthenticationServlet(this);
     }
@@ -101,9 +103,6 @@ public class TadoHomeHandler extends BaseBridgeHandler {
             httpService.registerServlet(TadoAuthenticationServlet.PATH, httpServlet, null, null);
         } catch (ServletException | NamespaceException e) {
             logger.warn("initialize() failed to register servlet", e);
-        }
-        if (api.getOAuthAuthorizerV2() instanceof OAuthAuthorizerV2 v2) {
-            v2.setHandler(this).setDeviceCode((String) getConfig().get(DEVICE_CODE));
         }
         configuration = getConfigAs(TadoHomeConfig.class);
         ScheduledFuture<?> initializationFuture = this.initializationFuture;
@@ -130,7 +129,7 @@ public class TadoHomeHandler extends BaseBridgeHandler {
                 // Get user info to verify successful authentication and connection to server
                 User user = api.showUser();
                 if (user == null) {
-                    String info = "Cannot connect to server. " + (api.getOAuthAuthorizerV2() == null //
+                    String info = "Cannot connect to server. " + (api.getAuthorizerV2() == null //
                             ? "Username and/or password might be invalid"
                             : String.format("Try authenticating via http://%s:8080%s",
                                     InetAddress.getLocalHost().getHostAddress(), TadoAuthenticationServlet.PATH));
@@ -172,9 +171,11 @@ public class TadoHomeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         httpService.unregister(TadoAuthenticationServlet.PATH);
-        if (api.getOAuthAuthorizerV2() instanceof OAuthAuthorizerV2 v2) {
-            v2.setHandler(null);
-            v2.close();
+        if (api.getAuthorizerV2() instanceof AuthorizerV2 v2) {
+            try {
+                v2.close();
+            } catch (Exception e) {
+            }
         }
         super.dispose();
         ScheduledFuture<?> initializationFuture = this.initializationFuture;
@@ -233,13 +234,25 @@ public class TadoHomeHandler extends BaseBridgeHandler {
         return this.batteryChecker;
     }
 
-    public void setDeviceCode(@Nullable String deviceCode) {
-        Configuration configuration = editConfiguration();
-        if (deviceCode != null) {
-            configuration.put(DEVICE_CODE, deviceCode);
-        } else {
-            configuration.remove(DEVICE_CODE);
-        }
-        updateConfiguration(configuration);
+    /**
+     * Used to persist the oAuth device code result
+     * <p>
+     * The oAuth Device Code Grant Flow is not (yet) implemented in OH core, so we don't have access to its persistence
+     * store. So we (temporarily) use the thing configuration persistence for this purpose.
+     */
+    public void deviceCodeResponsePersist(@Nullable DeviceCodeResponse deviceCodeResponse) {
+        Configuration config = editConfiguration();
+        config.put(DCR_PERSISTED, deviceCodeResponse != null ? deviceCodeResponse.toString() : null);
+        updateConfiguration(config);
+    }
+
+    /**
+     * Used to restore the oAuth device code result from persistence.
+     * <p>
+     * The oAuth Device Code Grant Flow is not (yet) implemented in OH core, so we don't have access to its persistence
+     * store. So we (temporarily) use the thing configuration persistence for this purpose.
+     */
+    public @Nullable DeviceCodeResponse deviceCodeResponseRestore() {
+        return getConfig().get(DCR_PERSISTED) instanceof String string ? DeviceCodeResponse.fromString(string) : null;
     }
 }
