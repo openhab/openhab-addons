@@ -93,11 +93,11 @@ public class MBWebsocket {
             client.setStopTimeout(CONNECT_TIMEOUT_MS);
             ClientUpgradeRequest request = accountHandler.getClientUpgradeRequest();
             String websocketURL = accountHandler.getWSUri();
-            logger.trace("Websocket start {}", websocketURL);
             if (Constants.JUNIT_TOKEN.equals(request.getHeader("Authorization"))) {
                 // avoid unit test requesting real websocket - simply return
                 return;
             }
+            logger.trace("Websocket start {}", websocketURL);
             client.start();
             client.connect(this, new URI(websocketURL), request);
             while (keepAlive || Instant.now().isBefore(runTill)) {
@@ -177,7 +177,8 @@ public class MBWebsocket {
             }
         } else {
             if (!b) {
-                // after keep alive is finished add 5 minutes to cover e.g. door events after trip is finished
+                // after keep alive is finished add 5 minutes to cover e.g. door events after
+                // trip is finished
                 runTill = Instant.now().plusMillis(KEEP_ALIVE_ADDON);
                 logger.trace("Websocket - keep alive stop - run till {}", runTill.toString());
             }
@@ -199,8 +200,10 @@ public class MBWebsocket {
              * https://community.openhab.org/t/mercedes-me/136866/12
              * Release Websocket thread as early as possible to avoid execeptions
              *
-             * 1. Websocket thread responsible for reading stream in bytes and enqueue for AccountHandler.
-             * 2. AccountHamdler thread responsible for encoding proto message. In case of update enqueue proto message
+             * 1. Websocket thread responsible for reading stream in bytes and enqueue for
+             * AccountHandler.
+             * 2. AccountHamdler thread responsible for encoding proto message. In case of
+             * update enqueue proto message
              * at VehicleHandöer
              * 3. VehicleHandler responsible to update channels
              */
@@ -225,6 +228,7 @@ public class MBWebsocket {
 
     @OnWebSocketError
     public void onError(Throwable t) {
+        logger.debug("Error during web socket connection - {}", t.getMessage());
         accountHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 "@text/mercedesme.account.status.websocket-failure [\"" + t.getMessage() + "\"]");
     }
