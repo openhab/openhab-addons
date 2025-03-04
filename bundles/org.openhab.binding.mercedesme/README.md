@@ -34,15 +34,17 @@ There's no manual discovery!
 
 Bridge needs configuration in order to connect properly to your Mercedes Me account.
 
-| Name              | Type    | Description                                 | Default     | Required |
-|-------------------|---------|---------------------------------------------|-------------|----------|
-| email             | text    | Mercedes Me registered email Address        | N/A         | yes      |
-| refreshToken      | text    | Refresh Token from MB Token Requester app   | N/A         | yes      |
-| pin               | text    | Mercedes Me Smartphone App PIN              | N/A         | no       |
-| region            | text    | Your region                                 | EU          | yes      |
-| refreshInterval   | integer | API refresh interval                        | 15          | yes      |
+| Name              | Type    | Description                                 | Default                   | Required |
+|-------------------|---------|---------------------------------------------|---------------------------|----------|
+| email             | text    | Mercedes Me registered email Address        | N/A                       | yes      |
+| refreshToken      | text    | Refresh Token from MB Token Requester app   | takeover previous token   | yes      |
+| pin               | text    | Mercedes Me Smartphone App PIN              | N/A                       | no       |
+| region            | text    | Your region                                 | EU                        | yes      |
+| refreshInterval   | integer | API refresh interval                        | 15                        | yes      |
 
-Generate `refreshToken` with [MB Token Requester app]( https://github.com/ReneNulschDE/mbapi2020/wiki/How%E2%80%90to:-create-the-access-and-refresh-token ).
+`refreshToken` is needed to get access to your Mercedes Me account.
+Users already running this binding can stay on default value `takeover previous token`.
+New users need to generate `refreshToken` with [MB Token Requester app]( https://github.com/ReneNulschDE/mbapi2020/wiki/How%E2%80%90to:-create-the-access-and-refresh-token ).
 It simulates the Mercedes Me application *only for authorization process* on your computer, **not your openHAB system!**
 The generated *refresh token* has to be pasted into the bridge configuration.
 The generated *token* can be ignored!

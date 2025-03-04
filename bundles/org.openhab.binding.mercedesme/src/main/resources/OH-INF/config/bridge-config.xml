@@ -22,6 +22,7 @@
 		<parameter name="refreshToken" type="text" required="true">
 			<label>Refresh Token</label>
 			<description>Refresh Token from MB Token Requester app</description>
+			<default>"takeover previous token"</default>
 		</parameter>
 		<parameter name="pin" type="text" required="false">
 			<label>PIN</label>

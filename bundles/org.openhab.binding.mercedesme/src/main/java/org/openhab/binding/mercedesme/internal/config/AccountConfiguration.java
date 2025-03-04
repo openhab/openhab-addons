@@ -26,7 +26,7 @@ public class AccountConfiguration {
 
     public String email = NOT_SET;
     public String region = NOT_SET;
-    public String refreshToken = NOT_SET;
+    public String refreshToken = "takeover previous token";
     public String pin = NOT_SET;
     public int refreshInterval = 15;
 }
