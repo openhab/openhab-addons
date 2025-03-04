@@ -15,7 +15,6 @@ package org.openhab.binding.mercedesme.internal.handler;
 import static org.mockito.Mockito.mock;
 
 import java.util.Locale;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,7 +25,6 @@ import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.test.storage.VolatileStorageService;
@@ -54,18 +52,17 @@ public class AccountHandlerMock extends AccountHandler {
 
     public AccountHandlerMock() {
         super(mock(Bridge.class), mock(MercedesMeDiscoveryService.class), mock(HttpClient.class),
-                mock(LocaleProvider.class), mock(StorageService.class), mock(NetworkAddressService.class));
-        config = Optional.of(new AccountConfiguration());
+                mock(LocaleProvider.class), mock(StorageService.class));
+        config = new AccountConfiguration();
     }
 
-    public AccountHandlerMock(Bridge b, @Nullable String storedObject) {
-        super(b, mock(MercedesMeDiscoveryService.class), mock(HttpClient.class), localeProvider, storageService,
-                mock(NetworkAddressService.class));
+    public AccountHandlerMock(Bridge b, @Nullable String storedObject, HttpClient httpClient) {
+        super(b, mock(MercedesMeDiscoveryService.class), httpClient, localeProvider, storageService);
         if (storedObject != null) {
             Storage<String> storage = storageService.getStorage(Constants.BINDING_ID);
             storage.put("a@b.c", storedObject);
         }
-        config = Optional.of(new AccountConfiguration());
+        config = new AccountConfiguration();
     }
 
     @Override
@@ -93,5 +90,9 @@ public class AccountHandlerMock extends AccountHandler {
 
     public void connect() {
         super.ws.onConnect(mock(Session.class));
+    }
+
+    public void refreshToken() {
+        authService.get().getToken();
     }
 }
