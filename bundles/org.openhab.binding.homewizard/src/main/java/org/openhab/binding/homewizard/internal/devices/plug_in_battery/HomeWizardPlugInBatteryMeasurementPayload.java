@@ -53,7 +53,7 @@ public class HomeWizardPlugInBatteryMeasurementPayload extends HomeWizardEnergyM
     @Override
     public String toString() {
         return String.format("""
-                Battery Data [stateOfCharge: %d cycles: %d"]
+                Battery Data [stateOfCharge: %f cycles: %f"]
                  """, stateOfCharge, cycles);
     }
 }

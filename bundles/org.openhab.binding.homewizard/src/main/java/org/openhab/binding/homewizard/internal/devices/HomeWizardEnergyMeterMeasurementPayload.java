@@ -250,7 +250,8 @@ public class HomeWizardEnergyMeterMeasurementPayload {
                         voltage: %f voltageL1: %f voltageL2: %f voltageL3: %f
                         current: %f currentL1: %f currentL2: %f currentL3: %f frequency: %f
                         ]
-                """, energyImport, energyImportT1, energyExportT2, energyExport, energyExportT1, energyExportT2,
-                voltage, voltageL1, voltageL2, voltageL3, current, currentL1, currentL2, currentL3, frequency);
+                """, energyImport, energyImportT1, energyImportT2, energyExport, energyExportT1, energyExportT2, power,
+                powerL1, powerL2, powerL3, voltage, voltageL1, voltageL2, voltageL3, current, currentL1, currentL2,
+                currentL3, frequency);
     }
 }
