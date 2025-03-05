@@ -117,10 +117,9 @@ class TestHandler {
         config.put("deviceId", "xyz");
         thing.setConfiguration(config);
         winecoolerHandler.initialize();
+        callback.waitForOnline();
         tsi = thing.getStatusInfo();
-        assertEquals(ThingStatus.UNKNOWN, tsi.getStatus());
-        assertEquals(ThingStatusDetail.NONE, tsi.getStatusDetail());
-        assertEquals("@text/casokitchen.winecooler-2z.status.wait-for-response", tsi.getDescription());
+        assertEquals(ThingStatus.ONLINE, tsi.getStatus());
     }
 
     @Test
