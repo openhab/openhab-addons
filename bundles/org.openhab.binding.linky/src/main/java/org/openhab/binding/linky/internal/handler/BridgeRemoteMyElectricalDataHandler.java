@@ -151,7 +151,7 @@ public class BridgeRemoteMyElectricalDataHandler extends BridgeRemoteApiHandler 
     }
 
     @Override
-    public String getToken(LinkyRemoteHandler handler) throws LinkyException {
+    public String getToken(BaseRemoteHandler handler) throws LinkyException {
         LinkyConfiguration config = handler.getLinkyConfig();
         if (config == null) {
             return "";

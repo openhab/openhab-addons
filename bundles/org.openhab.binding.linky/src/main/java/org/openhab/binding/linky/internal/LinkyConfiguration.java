@@ -38,6 +38,7 @@ public class LinkyConfiguration extends Configuration {
     public String internalAuthId = "";
 
     public boolean seemsValid() {
-        return !prmId.isBlank();
+        // return !prmId.isBlank();
+        return true;
     }
 }

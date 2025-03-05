@@ -47,6 +47,7 @@ import org.openhab.binding.linky.internal.dto.UserInfo;
 import org.openhab.binding.linky.internal.handler.BridgeLinkyHandler;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteEnedisWebHandler;
 import org.openhab.binding.linky.internal.handler.LinkyRemoteHandler;
+import org.openhab.binding.linky.internal.handler.BaseRemoteHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +95,7 @@ public class EnedisHttpApi {
         return response.getHeaders().get(HttpHeader.LOCATION);
     }
 
-    public String getContent(LinkyRemoteHandler handler, String url) throws LinkyException {
+    public String getContent(BaseRemoteHandler handler, String url) throws LinkyException {
         return getContent(logger, linkyBridgeHandler, url, httpClient, linkyBridgeHandler.getToken(handler));
     }
 
@@ -152,7 +153,7 @@ public class EnedisHttpApi {
         }
     }
 
-    private <T> T getData(LinkyRemoteHandler handler, String url, Class<T> clazz) throws LinkyException {
+    private <T> T getData(BaseRemoteHandler handler, String url, Class<T> clazz) throws LinkyException {
         if (!linkyBridgeHandler.isConnected()) {
             linkyBridgeHandler.initialize();
         }
@@ -283,7 +284,7 @@ public class EnedisHttpApi {
         return getMeasures(handler, linkyBridgeHandler.getMaxPowerUrl(), mps, prmId, from, to);
     }
 
-    public ResponseTempo getTempoData(LinkyRemoteHandler handler, LocalDate from, LocalDate to) throws LinkyException {
+    public ResponseTempo getTempoData(BaseRemoteHandler handler, LocalDate from, LocalDate to) throws LinkyException {
         String dtStart = from.format(linkyBridgeHandler.getApiDateFormatYearsFirst());
         String dtEnd = to.format(linkyBridgeHandler.getApiDateFormatYearsFirst());
 

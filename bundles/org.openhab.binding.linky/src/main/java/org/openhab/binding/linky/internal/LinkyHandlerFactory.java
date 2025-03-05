@@ -23,12 +23,16 @@ import java.time.format.DateTimeFormatterBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.linky.internal.handler.TariffBaseHandler;
 import org.openhab.binding.linky.internal.handler.BridgeLocalD2LHandler;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteEnedisHandler;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteEnedisWebHandler;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteMyElectricalDataHandler;
+import org.openhab.binding.linky.internal.handler.TariffHpHcHandler;
 import org.openhab.binding.linky.internal.handler.LinkyLocalHandler;
 import org.openhab.binding.linky.internal.handler.LinkyRemoteHandler;
+import org.openhab.binding.linky.internal.handler.TempoCalendarHandler;
+import org.openhab.binding.linky.internal.handler.TariffTempoHandler;
 import org.openhab.binding.linky.internal.utils.DoubleTypeAdapter;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.LocaleProvider;
@@ -154,6 +158,18 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
             return handler;
         } else if (THING_TYPE_LINKY_LOCAL.equals(thing.getThingTypeUID())) {
             LinkyLocalHandler handler = new LinkyLocalHandler(thing, localeProvider, timeZoneProvider);
+            return handler;
+        } else if (THING_TYPE_BASE.equals(thing.getThingTypeUID())) {
+            ThingHandler handler = new TariffBaseHandler(thing);
+            return handler;
+        } else if (THING_TYPE_HPHC.equals(thing.getThingTypeUID())) {
+            ThingHandler handler = new TariffHpHcHandler(thing);
+            return handler;
+        } else if (THING_TYPE_TEMPO.equals(thing.getThingTypeUID())) {
+            ThingHandler handler = new TariffTempoHandler(thing);
+            return handler;
+        } else if (THING_TYPE_TEMPO_CALENDAR.equals(thing.getThingTypeUID())) {
+            ThingHandler handler = new TempoCalendarHandler(thing);
             return handler;
         }
 

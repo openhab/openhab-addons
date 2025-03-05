@@ -9,7 +9,6 @@
 			<bridge-type-ref id="enedis"/>
 			<bridge-type-ref id="enedis-web"/>
 			<bridge-type-ref id="my-electrical-data"/>
-			<bridge-type-ref id="d2l-bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Linky</label>
@@ -21,7 +20,6 @@
 
 		<channel-groups>
 			<channel-group typeId="linky-remote-main" id="linky-remote-main"/>
-			<channel-group typeId="linky-remote-tempo" id="linky-remote-tempo"/>
 			<channel-group typeId="linky-remote-load-curve" id="linky-remote-load-curve"/>
 			<channel-group typeId="linky-remote-daily" id="linky-remote-daily"/>
 			<channel-group typeId="linky-remote-weekly" id="linky-remote-weekly"/>
