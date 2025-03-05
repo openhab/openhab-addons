@@ -184,6 +184,7 @@ public class GreeBindingConstants {
     public enum EncryptionTypes {
         UNKNOWN,
         ECB,
+        COMBINED,
         GCM;
 
         private static final Map<String, EncryptionTypes> MAP = Stream.of(EncryptionTypes.values())

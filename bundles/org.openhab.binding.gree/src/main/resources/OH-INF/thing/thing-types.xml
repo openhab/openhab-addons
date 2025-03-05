@@ -42,11 +42,13 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="encryptionType" type="text">
+				<advanced>true</advanced>
 				<options>
+					<option value="UNKNOWN">@text/thing-type.config.gree.airconditioner.encryptionType.state.option.UNKNOWN</option>
 					<option value="ECB">@text/thing-type.config.gree.airconditioner.encryptionType.state.option.ECB</option>
+					<option value="COMBINED">@text/thing-type.config.gree.airconditioner.encryptionType.state.option.COMBINED</option>
 					<option value="GCM">@text/thing-type.config.gree.airconditioner.encryptionType.state.option.GCM</option>
 				</options>
-				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 

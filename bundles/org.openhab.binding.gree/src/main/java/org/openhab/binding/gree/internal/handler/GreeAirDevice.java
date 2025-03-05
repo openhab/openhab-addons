@@ -75,10 +75,19 @@ public class GreeAirDevice {
     }
 
     public GreeAirDevice(InetAddress ipAddress, int port, GreeScanResponseDTO scanResponse) {
+        this(ipAddress, port, scanResponse, GreeCryptoUtil.getEncryptionType(scanResponse));
+    }
+
+    public GreeAirDevice(InetAddress ipAddress, int port, GreeScanResponseDTO scanResponse,
+            EncryptionTypes encryptionType) {
         this.ipAddress = ipAddress;
         this.port = port;
         this.scanResponseGson = Optional.of(scanResponse);
-        this.encType = GreeCryptoUtil.getEncryptionType(scanResponse);
+        if (encryptionType == EncryptionTypes.UNKNOWN) {
+            this.encType = GreeCryptoUtil.getEncryptionType(scanResponse);
+        } else {
+            this.encType = encryptionType;
+        }
     }
 
     public void getDeviceStatus(DatagramSocket clientSocket) throws GreeException {
@@ -176,9 +185,9 @@ public class GreeAirDevice {
             // save the outcome
             isBound = true;
         } catch (IOException | JsonSyntaxException e) {
-            if (encType != EncryptionTypes.GCM) {
-                logger.debug("Unable to bind to device - changing the encryption mode to GCM and trying again", e);
-                bindWithDevice(clientSocket, EncryptionTypes.GCM);
+            if (encType == EncryptionTypes.ECB) {
+                logger.debug("Unable to bind to device - changing the encryption mode to COMBINED and trying again", e);
+                bindWithDevice(clientSocket, EncryptionTypes.COMBINED);
             } else {
                 throw new GreeException("Unable to bind to device", e);
             }
@@ -467,11 +476,11 @@ public class GreeAirDevice {
         request.uid = 0;
         request.tcid = getId();
         request.pack = data[0];
-        if (encType == EncryptionTypes.GCM) {
+        if (encType != EncryptionTypes.ECB) {
             if (data.length > 1) {
                 request.tag = data[1];
             } else {
-                logger.warn("Missing string for tag property for GCM encryption data");
+                logger.warn("Missing string for tag property for {} encryption data", encType);
             }
         }
         byte[] sendData = GSON.toJson(request).getBytes(StandardCharsets.UTF_8);
@@ -527,15 +536,13 @@ public class GreeAirDevice {
     }
 
     public void setEncryptionType(EncryptionTypes value) {
-        if (value == EncryptionTypes.UNKNOWN) {
-            logger.debug("Trying to set encryption type to 'UNKNOWN' for device: {}, current value: {}", getName(),
-                    encType);
-            if (encType == EncryptionTypes.UNKNOWN) {
-                logger.debug("Falling back to 'ECB' for device: {}", getName());
-                encType = EncryptionTypes.ECB;
-            }
+        logger.debug("setEncriptionType called for device: {}, to change from: {}, to: {}", getName(), encType, value);
+        if (value == EncryptionTypes.UNKNOWN && encType == EncryptionTypes.UNKNOWN) {
+            logger.debug("Set default ECB type for device: {}", getName());
+            encType = EncryptionTypes.ECB;
+        } else if (value == EncryptionTypes.UNKNOWN) {
+            logger.debug("Trying to set the encription type to UNKNOWN, no change made for device: {}", getName());
         } else {
-            logger.debug("Change encryption type for device: {}, from : {}, to: {}", getName(), encType, value);
             encType = value;
         }
     }
