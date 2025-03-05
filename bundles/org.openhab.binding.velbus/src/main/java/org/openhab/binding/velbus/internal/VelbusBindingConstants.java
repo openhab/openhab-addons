@@ -221,6 +221,7 @@ public class VelbusBindingConstants {
     public static final byte COMMAND_BLIND_POS = 0x1C;
     public static final byte COMMAND_SET_DIMSCENE = (byte) 0x1D;
     public static final byte COMMAND_SET_COLOR = (byte) 0x1E;
+    public static final byte COMMAND_COUNTER_VALUE = (byte) 0xA4;
     public static final byte COMMAND_DIMVALUE_STATUS = (byte) 0xA5;
     public static final byte COMMAND_SUBTYPE_3 = (byte) 0xA6;
     public static final byte COMMAND_SUBTYPE_2 = (byte) 0xA7;
@@ -228,6 +229,7 @@ public class VelbusBindingConstants {
     public static final byte COMMAND_LIGHT_VALUE_REQUEST = (byte) 0xAA;
     public static final byte COMMAND_POWER_UP = (byte) 0xAB;
     public static final byte COMMAND_TEXT = (byte) 0xAC;
+    public static final byte COMMAND_RESET_COUNTER = (byte) 0xAD;
     public static final byte COMMAND_DAYLIGHT_SAVING_STATUS = (byte) 0xAF;
     public static final byte COMMAND_SUBTYPE = (byte) 0xB0;
     public static final byte COMMAND_SET_REALTIME_DATE = (byte) 0xB7;
