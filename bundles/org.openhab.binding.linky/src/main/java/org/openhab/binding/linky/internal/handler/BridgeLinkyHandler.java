@@ -164,7 +164,7 @@ public abstract class BridgeLinkyHandler extends BaseBridgeHandler {
         super.updateStatus(status, statusDetail, description);
     }
 
-    public abstract String getToken(LinkyRemoteHandler handler) throws LinkyException;
+    public abstract String getToken(BaseRemoteHandler handler) throws LinkyException;
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {

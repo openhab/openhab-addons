@@ -100,7 +100,7 @@ public class BridgeRemoteEnedisWebHandler extends BridgeLinkyHandler {
     }
 
     @Override
-    public String getToken(LinkyRemoteHandler handler) throws LinkyException {
+    public String getToken(BaseRemoteHandler handler) throws LinkyException {
         return "";
     }
 

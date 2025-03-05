@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.linky.internal;
 
+import java.util.Currency;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,9 +39,17 @@ public class LinkyBindingConstants {
     public static final ThingTypeUID THING_TYPE_LINKY = new ThingTypeUID(BINDING_ID, "linky");
     public static final ThingTypeUID THING_TYPE_LINKY_LOCAL = new ThingTypeUID(BINDING_ID, "linky-local");
 
+    // List of all Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_BASE = new ThingTypeUID(BINDING_ID, "base");
+    public static final ThingTypeUID THING_TYPE_HPHC = new ThingTypeUID(BINDING_ID, "hphc");
+    public static final ThingTypeUID THING_TYPE_TEMPO = new ThingTypeUID(BINDING_ID, "tempo");
+
+    public static final ThingTypeUID THING_TYPE_TEMPO_CALENDAR = new ThingTypeUID(BINDING_ID, "tempo-calendar");
+
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(THING_TYPE_API_ENEDIS_BRIDGE,
             THING_TYPE_API_WEB_ENEDIS_BRIDGE, THING_TYPE_API_MYELECTRICALDATA_BRIDGE, THING_TYPE_LINKY,
-            THING_TYPE_D2L_BRIDGE, THING_TYPE_LINKY_LOCAL);
+            THING_TYPE_D2L_BRIDGE, THING_TYPE_LINKY_LOCAL, THING_TYPE_BASE, THING_TYPE_HPHC, THING_TYPE_TEMPO,
+            THING_TYPE_TEMPO_CALENDAR);
 
     // Thing properties
     // List of all Channel groups id's
@@ -49,13 +58,13 @@ public class LinkyBindingConstants {
     public static final String USER_ID = "customerId";
     public static final String AV2_ID = "av2_interne_id";
 
-    public static final String LINKY_REMOTE_GROUP_DAILY = "linky-remote-daily";
-    public static final String LINKY_REMOTE_GROUP_WEEKLY = "linky-remote-weekly";
-    public static final String LINKY_REMOTE_GROUP_MONTHLY = "linky-remote-monthly";
-    public static final String LINKY_REMOTE_GROUP_YEARLY = "linky-remote-yearly";
-    public static final String LINKY_REMOTE_GROUP_MAIN = "linky-remote-main";
-    public static final String LINKY_REMOTE_GROUP_TEMPO = "linky-remote-tempo";
-    public static final String LINKY_REMOTE_GROUP_LOAD_CURVE = "linky-remote-load-curve";
+    public static final String LINKY_REMOTE_DAILY_GROUP = "linky-remote-daily";
+    public static final String LINKY_REMOTE_WEEKLY_GROUP = "linky-remote-weekly";
+    public static final String LINKY_REMOTE_MONTHLY_GROUP = "linky-remote-monthly";
+    public static final String LINKY_REMOTE_YEARLY_GROUP = "linky-remote-yearly";
+    public static final String LINKY_REMOTE_MAIN_GROUP = "linky-remote-main";
+    public static final String LINKY_TEMPO_CALENDAR_GROUP = "linky-tempo-calendar";
+    public static final String LINKY_REMOTE_LOAD_CURVE_GROUP = "linky-remote-load-curve";
 
     public static final String LINKY_LOCAL_MAIN_GROUP = "linky-local-main";
     public static final String LINKY_LOCAL_3PHASE_GROUP = "linky-local-3phase";
@@ -288,6 +297,35 @@ public class LinkyBindingConstants {
     // Authorization related Servlet and resources aliases.
     public static final String LINKY_ALIAS = "/connectlinky";
     public static final String LINKY_IMG_ALIAS = "/img";
+
+    // List of all Channel ids
+    public static final String CHANNEL_TARIFF_START = "tariff-start";
+    public static final String CHANNEL_FIXED_HT = "fixed-ht";
+    public static final String CHANNEL_FIXED_TTC = "fixed-ttc";
+    public static final String CHANNEL_VARIABLE_HT = "variable-ht";
+    public static final String CHANNEL_VARIABLE_TTC = "variable-ttc";
+
+    public static final String CHANNEL_HC_HT = "hc-ht";
+    public static final String CHANNEL_HC_TTC = "hc-ttc";
+    public static final String CHANNEL_HP_HT = "hp-ht";
+    public static final String CHANNEL_HP_TTC = "hp-ttc";
+
+    public static final String CHANNEL_RED_HC_HT = "red-hc-ht";
+    public static final String CHANNEL_RED_HC_TTC = "red-hc-ttc";
+    public static final String CHANNEL_RED_HP_HT = "red-hp-ht";
+    public static final String CHANNEL_RED_HP_TTC = "red-hp-ttc";
+
+    public static final String CHANNEL_WHITE_HC_HT = "white-hc-ht";
+    public static final String CHANNEL_WHITE_HC_TTC = "white-hc-ttc";
+    public static final String CHANNEL_WHITE_HP_HT = "white-hp-ht";
+    public static final String CHANNEL_WHITE_HP_TTC = "white-hp-ttc";
+
+    public static final String CHANNEL_BLUE_HC_HT = "blue-hc-ht";
+    public static final String CHANNEL_BLUE_HC_TTC = "blue-hc-ttc";
+    public static final String CHANNEL_BLUE_HP_HT = "blue-hp-ht";
+    public static final String CHANNEL_BLUE_HP_TTC = "blue-hp-ttc";
+
+    public static final Currency CURRENCY_EUR = Currency.getInstance("EUR");
 
     /**
      * Smartthings scopes needed by this binding to work.

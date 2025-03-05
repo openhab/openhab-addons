@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 
-	<channel-group-type id="linky-remote-tempo">
+	<channel-group-type id="linky-tempo-calendar">
 		<label>Tempo</label>
 		<channels>
 			<channel id="tempoInfoToday" typeId="tempoValue">

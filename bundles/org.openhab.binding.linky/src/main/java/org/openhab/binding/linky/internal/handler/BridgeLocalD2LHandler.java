@@ -282,7 +282,7 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
     }
 
     @Override
-    public String getToken(LinkyRemoteHandler handler) throws LinkyException {
+    public String getToken(BaseRemoteHandler handler) throws LinkyException {
         return "";
     }
 
