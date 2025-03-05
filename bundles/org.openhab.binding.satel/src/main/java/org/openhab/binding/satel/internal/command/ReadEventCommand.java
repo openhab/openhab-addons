@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.satel.internal.command;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,6 +29,8 @@ import org.slf4j.LoggerFactory;
 public class ReadEventCommand extends SatelCommandBase {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private final Clock clock;
 
     public static final byte COMMAND_CODE = (byte) 0x8c;
 
@@ -47,7 +50,7 @@ public class ReadEventCommand extends SatelCommandBase {
         USER_FUNCTIONS("user functions"),
         SYSTEM_EVENTS("system events");
 
-        private String description;
+        private final String description;
 
         EventClass(String description) {
             this.description = description;
@@ -64,7 +67,18 @@ public class ReadEventCommand extends SatelCommandBase {
      * @param eventIndex index of event record to retrieve, -1 for the most recent one
      */
     public ReadEventCommand(int eventIndex) {
+        this(eventIndex, Clock.systemDefaultZone());
+    }
+
+    /**
+     * Creates new command class instance to read a record under given index.
+     *
+     * @param eventIndex index of event record to retrieve, -1 for the most recent one
+     * @param clock clock for getting event timestamp
+     */
+    public ReadEventCommand(int eventIndex, Clock clock) {
         super(COMMAND_CODE, getIndexBytes(eventIndex));
+        this.clock = clock;
     }
 
     private static byte[] getIndexBytes(int index) {
@@ -97,7 +111,7 @@ public class ReadEventCommand extends SatelCommandBase {
      */
     public LocalDateTime getTimestamp() {
         final byte[] payload = getResponse().getPayload();
-        final int currentYear = LocalDateTime.now().getYear();
+        final int currentYear = LocalDateTime.now(clock).getYear();
         final int yearBase = currentYear / 4;
         final int yearMarker = (payload[0] >> 6) & 0x03;
         int year = 4 * yearBase + yearMarker;
@@ -121,7 +135,7 @@ public class ReadEventCommand extends SatelCommandBase {
     }
 
     /**
-     * Returns number of partion the event is about.
+     * Returns number of partition the event is about.
      *
      * @return partition number
      */
@@ -135,7 +149,7 @@ public class ReadEventCommand extends SatelCommandBase {
      * @return partition keypad number
      */
     public int getPartitionKeypad() {
-        return ((getResponse().getPayload()[4] >> 2) & 0x3f) + 1;
+        return ((getResponse().getPayload()[4] << 3) & 0x20) + ((getResponse().getPayload()[4] >> 3) & 0x1f) + 1;
     }
 
     /**
@@ -188,13 +202,13 @@ public class ReadEventCommand extends SatelCommandBase {
     }
 
     /**
-     * Return index of previous event in the log. Can be used to iterate over tha event log.
+     * Return index of previous event in the log. Can be used to iterate over the event log.
      *
      * @return index of previous event record in the log
      */
     public int getNextIndex() {
         final byte[] payload = getResponse().getPayload();
-        return (payload[8] << 16) + ((payload[9] & 0xff) << 8) + (payload[10] & 0xff);
+        return ((payload[8] & 0xff) << 16) + ((payload[9] & 0xff) << 8) + (payload[10] & 0xff);
     }
 
     /**
@@ -204,7 +218,7 @@ public class ReadEventCommand extends SatelCommandBase {
      */
     public int getCurrentIndex() {
         final byte[] payload = getResponse().getPayload();
-        return (payload[11] << 16) + ((payload[12] & 0xff) << 8) + (payload[13] & 0xff);
+        return ((payload[11] & 0xff) << 16) + ((payload[12] & 0xff) << 8) + (payload[13] & 0xff);
     }
 
     @Override

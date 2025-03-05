@@ -168,6 +168,7 @@
 			<channel id="outputCompressorHeating" typeId="outputCompressorHeating"/>
 			<channel id="controlSignalCirculatingPump" typeId="controlSignalCirculatingPump"/>
 			<channel id="fanSpeed" typeId="fanSpeed"/>
+			<channel id="inputUtilityLock2" typeId="inputUtilityLock2"/>
 			<channel id="temperatureSafetyLimitFloorHeating" typeId="temperatureSafetyLimitFloorHeating"/>
 			<channel id="powerTargetValue" typeId="powerTargetValue"/>
 			<channel id="powerActualValue" typeId="powerActualValue"/>
@@ -309,7 +310,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description>
