@@ -54,7 +54,7 @@ public class PowerPlugHandler extends SimplePlugHandler {
                 case CHANNEL_DISABLE_STATUS_LIGHT:
                     if (command instanceof OnOffType onOff) {
                         JSONObject attributes = new JSONObject();
-                        attributes.put(targetProperty, onOff.equals(OnOffType.ON));
+                        attributes.put(targetProperty, OnOffType.ON.equals(onOff));
                         super.sendAttributes(attributes);
                     }
                     break;

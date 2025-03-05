@@ -47,15 +47,11 @@ Devices connected to this bridge will be detected automatically unless you don't
 
 ### Bridge Configuration
 
-| Name            | Type    | Description                                                | Default | Required |
-|-----------------|---------|------------------------------------------------------------|---------|----------|
-| `ipAddress`     | text    | DIRIGERA IP Address                                        | N/A     | yes      |
-| `id`            | text    | Unique id of this gateway                                  | N/A     | no       |
-| `discovery`     | boolean | Configure if paired devices shall be detected by discovery | true    | no       |
-
-- `ipAddress` - use discovery to obtain this value automatically or enter it manually if known
-- `id` - will be detected automatically after successful pairing
-- `discovery` - will run continuously in the background and detect new, deleted or changed devices. Switch it off to deactivate discovery
+| Name            | Type    | Description                                                | Explanation                                                                          | Default | Required |
+|-----------------|---------|------------------------------------------------------------|--------------------------------------------------------------------------------------|---------|----------|
+| `ipAddress`     | text    | DIRIGERA IP Address                                        | Use discovery to obtain this value automatically or enter it manually if known       | N/A     | yes      |
+| `id`            | text    | Unique id of this gateway                                  | Detected automatically after successful pairing                                      | N/A     | no       |
+| `discovery`     | boolean | Configure if paired devices shall be detected by discovery | Run continuously in the background and detect new, deleted or changed devices        | true    | no       |
 
 ### Gateway Pairing
 

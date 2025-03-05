@@ -96,7 +96,6 @@ public class Websocket {
             pingPongMap.clear();
             WebSocketClient client = new WebSocketClient(httpClient);
             client.setMaxIdleTimeout(0);
-            // client.setStopTimeout(CONNECT_TIMEOUT_MS);
 
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             request.setHeader("Authorization", "Bearer " + gateway.getToken());
