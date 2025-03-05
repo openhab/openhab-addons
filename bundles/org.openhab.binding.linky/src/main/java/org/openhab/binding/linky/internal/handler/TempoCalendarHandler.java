@@ -88,7 +88,6 @@ public class TempoCalendarHandler extends BaseRemoteHandler {
                     ResponseTempo tempoData = getTempoData(today.minusDays(1095), today.plusDays(1));
                     return tempoData;
                 });
-
     }
 
     @Override
@@ -194,7 +193,6 @@ public class TempoCalendarHandler extends BaseRemoteHandler {
         logger.info("updateData() called");
         logger.info("updateTempoData() called");
         updateTempoTimeSeries();
-
     }
 
     private synchronized void updateTempoTimeSeries() {
@@ -300,5 +298,4 @@ public class TempoCalendarHandler extends BaseRemoteHandler {
             logger.debug("The Linky binding is read-only and can not handle command {}", command);
         }
     }
-
 }

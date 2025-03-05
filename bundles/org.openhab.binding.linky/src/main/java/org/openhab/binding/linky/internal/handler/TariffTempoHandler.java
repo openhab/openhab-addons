@@ -60,6 +60,5 @@ public class TariffTempoHandler extends TariffHandler<TariffTempo> {
         updateState(CHANNEL_BLUE_HP_TTC, new QuantityType<>(tariff.blueHpTTC, CurrencyUnits.BASE_ENERGY_PRICE));
         updateState(CHANNEL_BLUE_HC_HT, new QuantityType<>(tariff.blueHcHT, CurrencyUnits.BASE_ENERGY_PRICE));
         updateState(CHANNEL_BLUE_HC_TTC, new QuantityType<>(tariff.blueHcTTC, CurrencyUnits.BASE_ENERGY_PRICE));
-
     }
 }

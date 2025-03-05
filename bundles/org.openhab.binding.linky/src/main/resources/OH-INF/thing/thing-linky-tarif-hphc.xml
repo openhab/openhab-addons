@@ -36,13 +36,13 @@
 				<description>High hours energy price in €/kWh including taxes.</description>
 			</channel>
 		</channels>
-		  <config-description>
-            <parameter name="puissance" type="integer" min="3" max="36">
-                <default>6</default>
-                <label>Power Output</label>
-                <description>PDL power output (in kVA)</description>
-            </parameter>
-        </config-description>
-    </thing-type>
+		<config-description>
+			<parameter name="puissance" type="integer" min="3" max="36">
+				<default>6</default>
+				<label>Power Output</label>
+				<description>PDL power output (in kVA)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-    </thing:thing-descriptions>
+</thing:thing-descriptions>

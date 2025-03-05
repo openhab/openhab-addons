@@ -46,11 +46,9 @@ public class BaseRemoteHandler extends BaseThingHandler {
 
     @Override
     public synchronized void handleCommand(ChannelUID channelUID, Command command) {
-
     }
 
     public @Nullable LinkyConfiguration getLinkyConfig() {
         return config;
     }
-
 }
