@@ -93,7 +93,7 @@ public class SpeakerHandler extends BaseHandler {
                     case CHANNEL_MUTE:
                         if (command instanceof OnOffType onOff) {
                             JSONObject attributes = new JSONObject();
-                            attributes.put(targetProperty, onOff.equals(OnOffType.ON));
+                            attributes.put(targetProperty, OnOffType.ON.equals(onOff));
                             super.sendAttributes(attributes);
                         }
                         break;
@@ -104,7 +104,7 @@ public class SpeakerHandler extends BaseHandler {
                     case CHANNEL_SHUFFLE:
                         if (command instanceof OnOffType onOff) {
                             JSONObject mode = new JSONObject();
-                            mode.put("shuffle", onOff.equals(OnOffType.ON));
+                            mode.put("shuffle", OnOffType.ON.equals(onOff));
                             JSONObject attributes = new JSONObject();
                             attributes.put("playbackModes", mode);
                             super.sendAttributes(attributes);
@@ -113,7 +113,7 @@ public class SpeakerHandler extends BaseHandler {
                     case CHANNEL_CROSSFADE:
                         if (command instanceof OnOffType onOff) {
                             JSONObject mode = new JSONObject();
-                            mode.put("crossfade", onOff.equals(OnOffType.ON));
+                            mode.put("crossfade", OnOffType.ON.equals(onOff));
                             JSONObject attributes = new JSONObject();
                             attributes.put("playbackModes", mode);
                             super.sendAttributes(attributes);

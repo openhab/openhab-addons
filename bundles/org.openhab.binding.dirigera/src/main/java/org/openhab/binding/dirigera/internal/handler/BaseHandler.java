@@ -233,7 +233,7 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
                             requestedPowerState = onOff;
                             if (!currentPowerState.equals(onOff)) {
                                 JSONObject attributes = new JSONObject();
-                                attributes.put(targetProperty, onOff.equals(OnOffType.ON));
+                                attributes.put(targetProperty, OnOffType.ON.equals(onOff));
                                 sendAttributes(attributes);
                             } else {
                                 requestedPowerState = UnDefType.UNDEF;
