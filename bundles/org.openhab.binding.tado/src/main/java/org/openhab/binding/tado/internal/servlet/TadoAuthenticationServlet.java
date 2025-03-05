@@ -90,7 +90,7 @@ public class TadoAuthenticationServlet extends HttpServlet {
             if (authorizerV2 == null) {
                 getStatusPage(request, response, authorizerV2);
             } else {
-                String userUri = authorizerV2.beginAuthenticationAndGetUserUri();
+                String userUri = authorizerV2.getRfc8628AuthenticationUserUri();
                 if (userUri != null) {
                     response.sendRedirect(userUri);
                 } else {

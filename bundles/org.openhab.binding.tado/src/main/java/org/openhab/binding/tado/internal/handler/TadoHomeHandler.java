@@ -28,7 +28,6 @@ import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.internal.api.HomeApiFactory;
 import org.openhab.binding.tado.internal.auth.AuthorizerV2;
-import org.openhab.binding.tado.internal.auth.oauth.DeviceCodeResponse;
 import org.openhab.binding.tado.internal.config.TadoHomeConfig;
 import org.openhab.binding.tado.internal.servlet.TadoAuthenticationServlet;
 import org.openhab.binding.tado.swagger.codegen.api.ApiException;
@@ -40,7 +39,6 @@ import org.openhab.binding.tado.swagger.codegen.api.model.PresenceState;
 import org.openhab.binding.tado.swagger.codegen.api.model.User;
 import org.openhab.binding.tado.swagger.codegen.api.model.UserHomes;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -65,7 +63,6 @@ import org.slf4j.LoggerFactory;
 public class TadoHomeHandler extends BaseBridgeHandler {
 
     private static final ZonedDateTime AUTHENTICATION_SWITCHOVER_DATE = ZonedDateTime.parse("2025-03-15T00:00:00");
-    private static final String DCR_PERSISTED = "dcrPersist";
 
     private Logger logger = LoggerFactory.getLogger(TadoHomeHandler.class);
 
@@ -232,27 +229,5 @@ public class TadoHomeHandler extends BaseBridgeHandler {
 
     public TadoBatteryChecker getBatteryChecker() {
         return this.batteryChecker;
-    }
-
-    /**
-     * Used to persist the oAuth device code result
-     * <p>
-     * The oAuth Device Code Grant Flow is not (yet) implemented in OH core, so we don't have access to its persistence
-     * store. So we (temporarily) use the thing configuration persistence for this purpose.
-     */
-    public void deviceCodeResponsePersist(@Nullable DeviceCodeResponse deviceCodeResponse) {
-        Configuration config = editConfiguration();
-        config.put(DCR_PERSISTED, deviceCodeResponse != null ? deviceCodeResponse.toString() : null);
-        updateConfiguration(config);
-    }
-
-    /**
-     * Used to restore the oAuth device code result from persistence.
-     * <p>
-     * The oAuth Device Code Grant Flow is not (yet) implemented in OH core, so we don't have access to its persistence
-     * store. So we (temporarily) use the thing configuration persistence for this purpose.
-     */
-    public @Nullable DeviceCodeResponse deviceCodeResponseRestore() {
-        return getConfig().get(DCR_PERSISTED) instanceof String string ? DeviceCodeResponse.fromString(string) : null;
     }
 }

@@ -19,11 +19,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.tado.internal.auth.oauth.DeviceCodeGrantFlowService;
 import org.openhab.binding.tado.internal.handler.TadoHomeHandler;
 import org.openhab.binding.tado.swagger.codegen.api.ApiException;
 import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
@@ -43,12 +43,11 @@ public class AuthorizerV2 implements Authorizer, AutoCloseable {
     private static final String SCOPE = "offline_access";
 
     private final Logger logger = LoggerFactory.getLogger(AuthorizerV2.class);
-    private final DeviceCodeGrantFlowService oAuthService;
+    private final OAuthClientService oAuthService;
 
     public AuthorizerV2(ScheduledExecutorService scheduler, HttpClient httpClient, OAuthFactory oAuthFactory,
             TadoHomeHandler handler) {
-        String handle = handler.getThing().getUID().toString();
-        oAuthService = new DeviceCodeGrantFlowService(scheduler, httpClient, oAuthFactory, handler, handle, TOKEN_URL,
+        oAuthService = oAuthFactory.createOAuthRfc8628ClientService(handler.getThing().getUID().toString(), TOKEN_URL,
                 DEVICE_URL, CLIENT_ID, SCOPE);
     }
 
@@ -67,8 +66,13 @@ public class AuthorizerV2 implements Authorizer, AutoCloseable {
         }
     }
 
-    public @Nullable String beginAuthenticationAndGetUserUri() {
-        return oAuthService.beginAuthenticationAndGetUserUri();
+    public @Nullable String getRfc8628AuthenticationUserUri() {
+        try {
+            return oAuthService.getRfc8628AuthenticationUserUri();
+        } catch (OAuthException | IOException | OAuthResponseException e) {
+            logger.warn("addAuthorization()  error:{}", e.getMessage(), e);
+            return null;
+        }
     }
 
     @Override
