@@ -276,88 +276,88 @@
 		<parameter name="counter1Unit" type="text">
 			<label>Counter 1 Unit</label>
 			<description>The unit for Counter 1.</description>
-			<default>kwh</default>
+			<default>kWh</default>
 			<options>
-				<option value="kwh">kWh</option>
-				<option value="m3">m³</option>
-				<option value="l">liters</option>
+				<option value="kWh">kWh</option>
+				<option value="liters">liters</option>
+				<option value="m³">m³</option>
 			</options>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="counter2Unit" type="text">
 			<label>Counter 2 Unit</label>
 			<description>The unit for Counter 2.</description>
-			<default>kwh</default>
+			<default>kWh</default>
 			<options>
-				<option value="kwh">kWh</option>
-				<option value="m3">m³</option>
-				<option value="l">liters</option>
+				<option value="kWh">kWh</option>
+				<option value="liters">liters</option>
+				<option value="m³">m³</option>
 			</options>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="counter3Unit" type="text">
 			<label>Counter 3 Unit</label>
 			<description>The unit for Counter 3.</description>
-			<default>kwh</default>
+			<default>kWh</default>
 			<options>
-				<option value="kwh">kWh</option>
-				<option value="m3">m³</option>
-				<option value="l">liters</option>
+				<option value="kWh">kWh</option>
+				<option value="liters">liters</option>
+				<option value="m³">m³</option>
 			</options>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="counter4Unit" type="text">
 			<label>Counter 4 Unit</label>
 			<description>The unit for Counter 4.</description>
-			<default>kwh</default>
+			<default>kWh</default>
 			<options>
-				<option value="kwh">kWh</option>
-				<option value="m3">m³</option>
-				<option value="l">liters</option>
+				<option value="kWh">kWh</option>
+				<option value="liters">liters</option>
+				<option value="m³">m³</option>
 			</options>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="counter5Unit" type="text">
 			<label>Counter 5 Unit</label>
 			<description>The unit for Counter 5.</description>
-			<default>kwh</default>
+			<default>kWh</default>
 			<options>
-				<option value="kwh">kWh</option>
-				<option value="m3">m³</option>
-				<option value="l">liters</option>
+				<option value="kWh">kWh</option>
+				<option value="liters">liters</option>
+				<option value="m³">m³</option>
 			</options>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="counter6Unit" type="text">
 			<label>Counter 6 Unit</label>
 			<description>The unit for Counter 6.</description>
-			<default>kwh</default>
+			<default>kWh</default>
 			<options>
-				<option value="kwh">kWh</option>
-				<option value="m3">m³</option>
-				<option value="l">liters</option>
+				<option value="kWh">kWh</option>
+				<option value="liters">liters</option>
+				<option value="m³">m³</option>
 			</options>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="counter7Unit" type="text">
 			<label>Counter 7 Unit</label>
 			<description>The unit for Counter 7.</description>
-			<default>kwh</default>
+			<default>kWh</default>
 			<options>
-				<option value="kwh">kWh</option>
-				<option value="m3">m³</option>
-				<option value="l">liters</option>
+				<option value="kWh">kWh</option>
+				<option value="liters">liters</option>
+				<option value="m³">m³</option>
 			</options>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="counter8Unit" type="text">
 			<label>Counter 8 Unit</label>
 			<description>The unit for Counter 8.</description>
-			<default>kwh</default>
+			<default>kWh</default>
 			<options>
-				<option value="kwh">kWh</option>
-				<option value="m3">m³</option>
-				<option value="l">liters</option>
+				<option value="kWh">kWh</option>
+				<option value="liters">liters</option>
+				<option value="m³">m³</option>
 			</options>
 			<advanced>true</advanced>
 		</parameter>
