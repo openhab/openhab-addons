@@ -44,10 +44,10 @@ import org.openhab.binding.linky.internal.dto.ResponseMeter;
 import org.openhab.binding.linky.internal.dto.ResponseTempo;
 import org.openhab.binding.linky.internal.dto.UsagePoint;
 import org.openhab.binding.linky.internal.dto.UserInfo;
+import org.openhab.binding.linky.internal.handler.BaseRemoteHandler;
 import org.openhab.binding.linky.internal.handler.BridgeLinkyHandler;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteEnedisWebHandler;
 import org.openhab.binding.linky.internal.handler.LinkyRemoteHandler;
-import org.openhab.binding.linky.internal.handler.BaseRemoteHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
