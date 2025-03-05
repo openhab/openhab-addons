@@ -131,12 +131,10 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
                         SocketChannel client = socket.accept();
                         logger.info("Accept: {} {}", client.getLocalAddress(), client.getRemoteAddress());
 
-                        if (client != null) {
-                            client.configureBlocking(false);
-                            client.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
-                            client.setOption(StandardSocketOptions.TCP_NODELAY, false);
-                            client.register(selectionKey.selector(), SelectionKey.OP_READ, ByteBuffer.allocate(20000));
-                        }
+                        client.configureBlocking(false);
+                        client.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
+                        client.setOption(StandardSocketOptions.TCP_NODELAY, false);
+                        client.register(selectionKey.selector(), SelectionKey.OP_READ, ByteBuffer.allocate(20000));
                     }
 
                     /*

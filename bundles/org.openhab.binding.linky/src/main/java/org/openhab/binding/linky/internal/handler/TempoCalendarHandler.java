@@ -70,17 +70,10 @@ public class TempoCalendarHandler extends BaseRemoteHandler {
     private @Nullable ScheduledFuture<?> refreshJob;
     private LinkyConfiguration config;
     private @Nullable EnedisHttpApi enedisApi;
-    private double divider = 1.00;
 
     public String userId = "";
 
     private @Nullable ScheduledFuture<?> pollingJob = null;
-
-    private enum Target {
-        FIRST,
-        LAST,
-        ALL
-    }
 
     public TempoCalendarHandler(Thing thing) {
         super(thing);
@@ -112,7 +105,6 @@ public class TempoCalendarHandler extends BaseRemoteHandler {
             return;
         }
         enedisApi = bridgeHandler.getEnedisApi();
-        divider = bridgeHandler.getDivider();
 
         updateStatus(ThingStatus.UNKNOWN);
 

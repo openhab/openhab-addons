@@ -83,7 +83,6 @@ public class LinkyLocalHandler extends BaseThingHandler {
 
     private String appKey = "";
     private String ivKey = "";
-    private String prmId = "";
     private long idd2l = -1;
 
     private double cosphi = Double.NaN;
@@ -113,7 +112,6 @@ public class LinkyLocalHandler extends BaseThingHandler {
         appKey = (String) thingConfig.get("appKey");
         ivKey = (String) thingConfig.get("ivKey");
         idd2l = Long.parseLong((String) thingConfig.get("id"));
-        prmId = (String) thingConfig.get("prmId");
         saveConfiguration(thingConfig);
 
         // reread config to update timezone field
