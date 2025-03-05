@@ -13,13 +13,10 @@
 package org.openhab.binding.tado.internal.auth;
 
 import java.io.IOException;
-import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.tado.internal.handler.TadoHomeHandler;
 import org.openhab.binding.tado.swagger.codegen.api.ApiException;
 import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -45,10 +42,8 @@ public class AuthorizerV2 implements Authorizer, AutoCloseable {
     private final Logger logger = LoggerFactory.getLogger(AuthorizerV2.class);
     private final OAuthClientService oAuthService;
 
-    public AuthorizerV2(ScheduledExecutorService scheduler, HttpClient httpClient, OAuthFactory oAuthFactory,
-            TadoHomeHandler handler) {
-        oAuthService = oAuthFactory.createOAuthRfc8628ClientService(handler.getThing().getUID().toString(), TOKEN_URL,
-                DEVICE_URL, CLIENT_ID, SCOPE);
+    public AuthorizerV2(OAuthFactory oAuthFactory, String handle) {
+        oAuthService = oAuthFactory.createOAuthRfc8628ClientService(handle, TOKEN_URL, DEVICE_URL, CLIENT_ID, SCOPE);
     }
 
     @Override

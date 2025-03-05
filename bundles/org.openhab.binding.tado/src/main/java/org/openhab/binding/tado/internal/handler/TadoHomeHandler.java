@@ -80,8 +80,9 @@ public class TadoHomeHandler extends BaseBridgeHandler {
         super(bridge);
         batteryChecker = new TadoBatteryChecker(this);
         configuration = getConfigAs(TadoHomeConfig.class);
-        api = ZonedDateTime.now().isAfter(AUTHENTICATION_SWITCHOVER_DATE)
-                ? new HomeApiFactory().create(scheduler, httpClient, oAuthFactory, this)
+        // TODO remove the "!" below
+        api = !ZonedDateTime.now().isAfter(AUTHENTICATION_SWITCHOVER_DATE)
+                ? new HomeApiFactory().create(oAuthFactory, thing.getUID().toString())
                 : new HomeApiFactory().create(configuration.username, configuration.password);
 
         this.httpService = httpService;
