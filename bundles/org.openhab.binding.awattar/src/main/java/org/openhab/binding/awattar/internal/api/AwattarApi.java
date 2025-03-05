@@ -57,6 +57,7 @@ public class AwattarApi {
 
     private double vatFactor;
     private double basePrice;
+    private double serviceFee;
 
     private AwattarTimeProvider timeProvider;
 
@@ -87,6 +88,7 @@ public class AwattarApi {
 
         vatFactor = 1 + (config.vatPercent / 100);
         basePrice = config.basePrice;
+        serviceFee = config.serviceFee;
 
         if (config.country.equals("DE")) {
             this.url = URL_DE;
@@ -141,6 +143,12 @@ public class AwattarApi {
                     double netMarket = d.marketprice / 10.0;
                     double grossMarket = netMarket * vatFactor;
                     double netTotal = netMarket + basePrice;
+
+                    // add service fee for the aWATTar service (Ausgleichskomponente)
+                    if (serviceFee > 0) {
+                        netTotal += Math.abs(netTotal) * (serviceFee / 100);
+                    }
+
                     double grossTotal = netTotal * vatFactor;
 
                     result.add(new AwattarPrice(netMarket, grossMarket, netTotal, grossTotal,

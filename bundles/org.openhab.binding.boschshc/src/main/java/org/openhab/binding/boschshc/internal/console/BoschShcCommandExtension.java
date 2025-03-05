@@ -81,12 +81,12 @@ public class BoschShcCommandExtension extends AbstractConsoleCommandExtension im
      * <code>src/main/java/org/openhab/binding/boschshc/internal/services</code>.
      */
     List<String> getAllBoschShcServices() {
-        return List.of("airqualitylevel", "batterylevel", "binaryswitch", "bypass", "cameranotification", "childlock",
-                "childprotection", "communicationquality", "hsbcoloractuator", "humiditylevel", "illuminance",
-                "impulseswitch", "intrusion", "keypad", "latestmotion", "multilevelswitch", "powermeter", "powerswitch",
-                "privacymode", "roomclimatecontrol", "shuttercontact", "shuttercontrol", "silentmode",
-                "smokedetectorcheck", "temperaturelevel", "userstate", "valvetappet", "waterleakagesensor",
-                "waterleakagesensorcheck", "waterleakagesensortilt");
+        return List.of("airqualitylevel", "alarm", "batterylevel", "binaryswitch", "bypass", "cameranotification",
+                "childlock", "childprotection", "communicationquality", "hsbcoloractuator", "humiditylevel",
+                "illuminance", "impulseswitch", "intrusion", "keypad", "latestmotion", "multilevelswitch", "powermeter",
+                "powerswitch", "privacymode", "roomclimatecontrol", "shuttercontact", "shuttercontrol", "silentmode",
+                "smokedetectorcheck", "temperaturelevel", "userstate", "valvetappet", "vibrationsensor",
+                "waterleakagesensor", "waterleakagesensorcheck", "waterleakagesensortilt");
     }
 
     @Override

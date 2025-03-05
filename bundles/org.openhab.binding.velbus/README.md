@@ -97,6 +97,7 @@ xidel -e \
 | vmbin         | 1-channel input module                                                                     |
 | vmbkp         | Keypad interface module                                                                    |
 | vmbmeteo      | Weather station with thermometer, anemometer, rain sensor and light sensor                 |
+| vmbpir-20     | Mini motion and twilight sensor for recessed or surface mounting                           |
 | vmbpirc       | Motion and twilight sensor for ceiling mounting                                            |
 | vmbpirm       | Mini motion and twilight sensor for recessed or surface mounting                           |
 | vmbpiro       | Outdoor motion, twilight and temperature sensor, Theben                                    |
@@ -527,7 +528,7 @@ Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
 | `clockAlarm`              | `clockAlarm1Enabled`, `clockAlarm2Enabled`                                                                                                                                                                         | OnOff                           |                               |
 | `clockAlarm`              | `clockAlarm1WakeupHour`, `clockAlarm1WakeupMinute`, `clockAlarm1BedtimeHour`, `clockAlarm1BedtimeMinute`, `clockAlarm2WakeupHour`, `clockAlarm2WakeupMinute`, `clockAlarm2BedtimeHour`, `clockAlarm2BedtimeMinute` | Number                          |                               |
 
-### Modules `vmbpirc`, `vmbpirm`
+### Modules `vmbpirc`, `vmbpirm`, `vmbpir-20`
 | Supported channels groups | Supported channels                                                                                                                                                                                                 | Supported command types         | Remarks                       |
 |---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |---------------------------------|-------------------------------|
 | `input`                   | `CH1` ... `CH7`                                                                                                                                                                                                    | Pressed, Released, Long_Pressed | Trigger                       |
@@ -548,11 +549,11 @@ Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
 | `clockAlarm`              | `clockAlarm1WakeupHour`, `clockAlarm1WakeupMinute`, `clockAlarm1BedtimeHour`, `clockAlarm1BedtimeMinute`, `clockAlarm2WakeupHour`, `clockAlarm2WakeupMinute`, `clockAlarm2BedtimeHour`, `clockAlarm2BedtimeMinute` | Number                                                                  |                                                                                              |
 
 ### Module `vmb4ledpwm-20`
-| Supported channels groups | Supported channels     | Supported command types         | Remarks           |
-|---------------------------|------------------------|---------------------------------|-------------------|
-| `brightness`              | `CH1` ... `CH4`        | Percent                         |                   |
-| `fade-mode`               | `CH1` ... `CH4`        | Direct, Fade_Rate, Fade_Time    |                   |
-| `scene`                   | `CH1` ... `CH4`        | Number                          | Min = 1, Max = 15 |
+| Supported channels groups | Supported channels     | Supported command types         | Remarks                                                                                            |
+|---------------------------|------------------------|---------------------------------|----------------------------------------------------------------------------------------------------|
+| `brightness`              | `CH1` ... `CH4`        | OnOff, Percent                  | Sending an ON command will switch the dimmer to the value stored when last turning the dimmer off. |
+| `fade-mode`               | `CH1` ... `CH4`        | Direct, Fade_Rate, Fade_Time    |                                                                                                    |
+| `scene`                   | `CH1` ... `CH4`        | Number                          | Min = 1, Max = 15                                                                                  |
 
 ### Module `vmb8dc-20`
 | Supported channels groups | Supported channels     | Supported command types         | Remarks           |

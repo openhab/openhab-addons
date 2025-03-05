@@ -1,0 +1,17 @@
+// SenseEnergyMonitorInfo
+
+"monitor_info": {
+    "emac":"f2:ed:5e:b1:96:8e",
+    "wifi_strength":86,
+    "ip_address":"192.168.1.36",
+    "connection_state":"ONLINE",
+    "version":"1.49.29-4a5ddd65-release",
+    "ssid":"jameswireless_EXT",
+    "mac":"24:cd:8d:3d:dd:79",
+    "ethernet":false,
+    "test_result":"Good as of 04/01/2024",
+    "serial":"N327004101",
+    "ndt_enabled":false,
+    "online":true,
+    "signal":null
+}

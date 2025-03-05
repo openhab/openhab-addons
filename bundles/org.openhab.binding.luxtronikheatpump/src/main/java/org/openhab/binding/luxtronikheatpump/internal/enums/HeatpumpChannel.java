@@ -950,7 +950,7 @@ public enum HeatpumpChannel {
      * EVU 2
      * (original: EVU 2)
      */
-    // CHANNEL_HZIO_EVU2(185, "HZIO_EVU2", NumberItem.class, null, false, null),
+    CHANNEL_HZIO_EVU2(185, "inputUtilityLock2", SwitchItem.class, null, false, HeatpumpVisibility.IN_EVU),
 
     /**
      * Safety tempearture limiter floor heating
@@ -1234,6 +1234,14 @@ public enum HeatpumpChannel {
 
     CHANNEL_259(259, "outputControlSignalCooling", SwitchItem.class, null, false, null),
     CHANNEL_260(260, "timeCoolingRelease", NumberItem.class, Units.SECOND, false, null),
+    CHANNEL_261(261, "channel261", NumberItem.class, null, false, null),
+    CHANNEL_262(262, "channel262", NumberItem.class, null, false, null),
+    CHANNEL_263(263, "channel263", NumberItem.class, null, false, null),
+    CHANNEL_264(264, "channel264", NumberItem.class, null, false, null),
+    CHANNEL_265(265, "channel265", NumberItem.class, null, false, null),
+    CHANNEL_266(266, "channel266", NumberItem.class, null, false, null),
+    CHANNEL_267(267, "channel267", NumberItem.class, null, false, null),
+    CHANNEL_268(268, "powerConsumption", NumberItem.class, Units.WATT, false, null),
 
     // Changeable Parameters
     // https://www.loxwiki.eu/display/LOX/Java+Webinterface?preview=/13306044/13307658/3003.txt

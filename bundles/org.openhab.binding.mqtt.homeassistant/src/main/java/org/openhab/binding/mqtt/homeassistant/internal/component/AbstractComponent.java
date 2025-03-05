@@ -43,6 +43,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChanne
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Availability;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AvailabilityMode;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Device;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
@@ -55,6 +56,7 @@ import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
 import org.openhab.core.thing.type.ChannelGroupTypeBuilder;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
+import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.CommandDescription;
 import org.openhab.core.types.StateDescription;
 
@@ -232,8 +234,14 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      */
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
-        return Stream.concat(channels.values().stream(), hiddenChannels.stream())
-                .map(v -> v.start(connection, scheduler, timeout)) //
+        // Hidden channels (used by a component to simulate other channels or non-channel behavior),
+        // triggers channels (which can be used by rules without ever being linked),
+        // and linked channels are started.
+        // Therefore, unlinked channels are not started.
+        return Stream.concat(channels.values().stream().filter(c -> {
+            return c.getChannel().getKind().equals(ChannelKind.TRIGGER)
+                    || componentConfiguration.getLinkageChecker().isChannelLinked(c.getChannel().getUID());
+        }), hiddenChannels.stream()).map(v -> v.start(connection, scheduler, timeout)) //
                 .reduce(CompletableFuture.completedFuture(null), (f, v) -> f.thenCompose(b -> v));
     }
 
@@ -408,5 +416,46 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
     private ChannelGroupTypeUID getChannelGroupTypeUID(String prefix) {
         return new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID, prefix + "_" + uniqueId);
+    }
+
+    public boolean mergeable(AbstractComponent<?> other) {
+        return false;
+    }
+
+    protected Configuration mergeChannelConfiguration(ComponentChannel channel, AbstractComponent<C> other) {
+        Configuration currentConfiguration = channel.getChannel().getConfiguration();
+        Configuration newConfiguration = new Configuration();
+        newConfiguration.put("component", currentConfiguration.get("component"));
+        newConfiguration.put("nodeid", currentConfiguration.get("nodeid"));
+        Object objectIdObject = currentConfiguration.get("objectid");
+        if (objectIdObject instanceof String objectIdString) {
+            if (!objectIdString.equals(other.getHaID().objectID)) {
+                newConfiguration.put("objectid", List.of(objectIdString, other.getHaID().objectID));
+            }
+        } else if (objectIdObject instanceof List<?> objectIdList) {
+            newConfiguration.put("objectid", Stream.concat(objectIdList.stream(), Stream.of(other.getHaID().objectID))
+                    .sorted().distinct().toList());
+        }
+        Object configObject = currentConfiguration.get("config");
+        if (configObject instanceof String configString) {
+            if (!configString.equals(other.getChannelConfigurationJson())) {
+                newConfiguration.put("config", List.of(configString, other.getChannelConfigurationJson()));
+            }
+        } else if (configObject instanceof List<?> configList) {
+            newConfiguration.put("config",
+                    Stream.concat(configList.stream(), Stream.of(other.getChannelConfigurationJson())).sorted()
+                            .distinct().toList());
+        }
+        return newConfiguration;
+    }
+
+    /**
+     * Take another component of the same type, and merge it so that only one (set of)
+     * channel(s) exist on the Thing.
+     *
+     * @return if the component was stopped, and thus needs restarted
+     */
+    public boolean merge(AbstractComponent<?> other) {
+        return false;
     }
 }

@@ -305,6 +305,7 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                         ipCameraHandler.setChannelState(CHANNEL_WHITE_LED, OnOffType.ON);
                     }
                     break;
+                case "/api.cgi?cmd=AudioAlarmPlay":
                 case "/cgi-bin/api.cgi?cmd=Snap":
                     break;
                 case "/api.cgi?cmd=GetAiCfg":
@@ -322,7 +323,9 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     }
                     break;
                 default:
-                    if (!cutDownURL.startsWith("/cgi-bin/api.cgi?cmd=Set")) {// ignore responses from all Setxx commands
+                    // ignore responses from all Setxx commands
+                    if (!cutDownURL.startsWith("/cgi-bin/api.cgi?cmd=Set")
+                            && !cutDownURL.startsWith("/api.cgi?cmd=Set")) {
                         ipCameraHandler.logger.warn(
                                 "URL {} is not handled currently by the binding, please report this message",
                                 cutDownURL);
@@ -513,6 +516,7 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                 } else {
                     ipCameraHandler.logger.warn("Unsupported command sent to enableLED channel");
                 }
+                break;
             case CHANNEL_ENABLE_MOTION_ALARM:
                 if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetMdAlarm" + ipCameraHandler.reolinkAuth);
@@ -553,14 +557,17 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                                     + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"mode\": 0}}}]");
                 } else if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetWhiteLed" + ipCameraHandler.reolinkAuth,
-                            "[{\"cmd\": \"SetWhiteLed\",\"param\": {\"WhiteLed\": {\"state\": 1,\"channel\": "
-                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"mode\": 2}}}]");
+                            "[{\"cmd\": \"SetWhiteLed\",\"param\": {\"WhiteLed\": {\"LightingSchedule\": "
+                                    + "{\"EndHour\": 23,\"EndMin\": 59,\"StartHour\": 0,\"StartMin\": 0},"
+                                    + "\"state\": 1,\"channel\": " + ipCameraHandler.cameraConfig.getNvrChannel()
+                                    + ",\"mode\": 3}}}]");
                 } else if (command instanceof PercentType percentCommand) {
                     int value = percentCommand.toBigDecimal().intValue();
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetWhiteLed" + ipCameraHandler.reolinkAuth,
-                            "[{\"cmd\": \"SetWhiteLed\",\"param\": {\"WhiteLed\": {\"state\": 1,\"channel\": "
-                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"mode\": 2,\"bright\": " + value
-                                    + "}}}]");
+                            "[{\"cmd\": \"SetWhiteLed\",\"param\": {\"WhiteLed\": {\"LightingSchedule\": "
+                                    + "{\"EndHour\": 23,\"EndMin\": 59,\"StartHour\": 0,\"StartMin\": 0},"
+                                    + "\"state\": 1,\"channel\": " + ipCameraHandler.cameraConfig.getNvrChannel()
+                                    + ",\"mode\": 3,\"bright\": " + value + "}}}]");
                 }
                 break;
             case CHANNEL_AUTO_TRACKING:
