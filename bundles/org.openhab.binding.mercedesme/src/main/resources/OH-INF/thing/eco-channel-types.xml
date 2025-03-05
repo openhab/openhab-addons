@@ -22,7 +22,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="bonus">
-		<item-type unitHint="km">Number:Length</item-type>
+		<item-type unitHint="km,mi">Number:Length</item-type>
 		<label>Bonus Range</label>
 		<description>Additional range vs. very sportive driver</description>
 		<state pattern="%d %unit%" readOnly="true"/>

@@ -29,8 +29,11 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.UnitProvider;
-import org.openhab.core.io.net.http.HttpClientFactory;import rg.openhab.core.storage.StorageService;
-import org.openhab.core.thing.Bridge;import import rg.op enhabcore.thing.ThingTypeUID;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.storage.StorageService;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
@@ -77,7 +80,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
 
         Utils.initialize(tzp, lp);
         Mapper.initialize(up);
-        httpClientFactory = hcf;
+        httpClient = hcf.getCommonHttpClient();
         discoveryService = new MercedesMeDiscoveryService();
     }
 

@@ -4,22 +4,22 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="pressure-front-right">
-		<item-type unitHint="bar">Number:Pressure</item-type>
+		<item-type unitHint="bar,psi">Number:Pressure</item-type>
 		<label>Tire Pressure Front Right</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pressure-rear-right">
-		<item-type unitHint="bar">Number:Pressure</item-type>
+		<item-type unitHint="bar,psi">Number:Pressure</item-type>
 		<label>Tire Pressure Rear Right</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pressure-front-left">
-		<item-type unitHint="bar">Number:Pressure</item-type>
+		<item-type unitHint="bar,psi">Number:Pressure</item-type>
 		<label>Tire Pressure Front Left</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pressure-rear-left">
-		<item-type unitHint="bar">Number:Pressure</item-type>
+		<item-type unitHint="bar,psi">Number:Pressure</item-type>
 		<label>Tire Pressure Rear Left</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
