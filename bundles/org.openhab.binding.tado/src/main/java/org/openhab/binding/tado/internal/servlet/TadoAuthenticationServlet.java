@@ -13,6 +13,7 @@
 package org.openhab.binding.tado.internal.servlet;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,7 +23,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.tado.internal.auth.AuthorizerV2;
+import org.openhab.binding.tado.internal.auth.OAuthorizerV2;
 import org.openhab.binding.tado.internal.handler.TadoHomeHandler;
 import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -79,7 +80,7 @@ public class TadoAuthenticationServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        AuthorizerV2 authorizerV2 = tadoHomeHandler.getApi().getAuthorizerV2();
+        OAuthorizerV2 authorizerV2 = tadoHomeHandler.getApi().getAuthorizerV2();
 
         if (request.getQueryString() == null) {
             getStatusPage(request, response, authorizerV2);
@@ -109,7 +110,7 @@ public class TadoAuthenticationServlet extends HttpServlet {
      * </ul>
      */
     private void getStatusPage(HttpServletRequest request, HttpServletResponse response,
-            @Nullable AuthorizerV2 authorizerV2) throws IOException {
+            @Nullable OAuthorizerV2 authorizerV2) throws IOException {
         String dynamicHtml = null;
 
         if (authorizerV2 == null) {
@@ -118,7 +119,7 @@ public class TadoAuthenticationServlet extends HttpServlet {
 
         if (dynamicHtml == null) {
             try {
-                AccessTokenResponse accessToken = authorizerV2.getAccessTokenResponse();
+                AccessTokenResponse accessToken = Objects.requireNonNull(authorizerV2).getAccessTokenResponse();
                 if (accessToken != null) {
                     dynamicHtml = HTML_AUTH_IS_AUTHENTICATED;
                 }

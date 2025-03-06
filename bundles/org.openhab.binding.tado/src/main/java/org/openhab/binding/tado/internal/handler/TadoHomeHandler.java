@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +28,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.internal.api.HomeApiFactory;
-import org.openhab.binding.tado.internal.auth.AuthorizerV2;
+import org.openhab.binding.tado.internal.auth.OAuthorizerV2;
 import org.openhab.binding.tado.internal.config.TadoHomeConfig;
 import org.openhab.binding.tado.internal.servlet.TadoAuthenticationServlet;
 import org.openhab.binding.tado.swagger.codegen.api.ApiException;
@@ -62,7 +63,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TadoHomeHandler extends BaseBridgeHandler {
 
-    private static final ZonedDateTime AUTHENTICATION_SWITCHOVER_DATE = ZonedDateTime.parse("2025-03-15T00:00:00");
+    private static final ZonedDateTime AUTH_V2_FROM_DATE = ZonedDateTime.parse("2025-03-15T00:00:00Z");
 
     private Logger logger = LoggerFactory.getLogger(TadoHomeHandler.class);
 
@@ -80,10 +81,20 @@ public class TadoHomeHandler extends BaseBridgeHandler {
         super(bridge);
         batteryChecker = new TadoBatteryChecker(this);
         configuration = getConfigAs(TadoHomeConfig.class);
-        // TODO remove the "!" below
-        api = !ZonedDateTime.now().isAfter(AUTHENTICATION_SWITCHOVER_DATE)
+
+        String userName = configuration.username;
+        String password = configuration.password;
+        boolean v1CredentialsOk = userName != null && !userName.isBlank() && password != null && !password.isBlank();
+
+        Boolean useRfc8628 = configuration.useRfc8628;
+        boolean v2AuthenticationRequired = false;
+        v2AuthenticationRequired |= Boolean.TRUE.equals(useRfc8628);
+        v2AuthenticationRequired |= !v1CredentialsOk;
+        v2AuthenticationRequired |= ZonedDateTime.now().isAfter(AUTH_V2_FROM_DATE);
+
+        api = v2AuthenticationRequired //
                 ? new HomeApiFactory().create(oAuthFactory, thing.getUID().toString())
-                : new HomeApiFactory().create(configuration.username, configuration.password);
+                : new HomeApiFactory().create(Objects.requireNonNull(userName), Objects.requireNonNull(password));
 
         this.httpService = httpService;
         this.httpServlet = new TadoAuthenticationServlet(this);
@@ -169,7 +180,7 @@ public class TadoHomeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         httpService.unregister(TadoAuthenticationServlet.PATH);
-        if (api.getAuthorizerV2() instanceof AuthorizerV2 v2) {
+        if (api.getAuthorizerV2() instanceof OAuthorizerV2 v2) {
             try {
                 v2.close();
             } catch (Exception e) {

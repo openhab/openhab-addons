@@ -26,7 +26,7 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.openhab.binding.tado.internal.auth.AuthorizerV2;
+import org.openhab.binding.tado.internal.auth.OAuthorizerV2;
 import org.openhab.binding.tado.swagger.codegen.api.ApiException;
 import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
 import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneCapabilities;
@@ -617,7 +617,7 @@ public class HomeApi {
         }
     }
 
-    public @Nullable AuthorizerV2 getAuthorizerV2() {
-        return authorizer instanceof AuthorizerV2 v2 ? v2 : null;
+    public @Nullable OAuthorizerV2 getAuthorizerV2() {
+        return authorizer instanceof OAuthorizerV2 v2 ? v2 : null;
     }
 }

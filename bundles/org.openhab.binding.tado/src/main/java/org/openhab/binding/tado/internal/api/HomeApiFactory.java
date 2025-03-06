@@ -13,7 +13,7 @@
 package org.openhab.binding.tado.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.tado.internal.auth.AuthorizerV2;
+import org.openhab.binding.tado.internal.auth.OAuthorizerV2;
 import org.openhab.binding.tado.swagger.codegen.api.GsonBuilderFactory;
 import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
 import org.openhab.binding.tado.swagger.codegen.api.auth.OAuthAuthorizer;
@@ -43,7 +43,7 @@ public class HomeApiFactory {
 
     public HomeApi create(OAuthFactory oAuthFactory, String handle) {
         Gson gson = GsonBuilderFactory.defaultGsonBuilder().create();
-        Authorizer authorizer = new AuthorizerV2(oAuthFactory, handle);
+        Authorizer authorizer = new OAuthorizerV2(oAuthFactory, handle);
         return new HomeApi(gson, authorizer);
     }
 }

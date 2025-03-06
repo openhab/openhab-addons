@@ -30,19 +30,23 @@ import org.slf4j.LoggerFactory;
 /**
  * This is a new {@link Authorizer} that is mandated by Tado after March 15 2025.
  *
+ * @see <a href="https://support.tado.com/en/articles/8565472-how-do-i-authenticate-to-access-the-rest-api">Tado Support
+ *      Article</a>
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc8628">RFC-8628</a>
+ *
  * @author Andrew Fiddian-Green - Initial contribution
  */
-public class AuthorizerV2 implements Authorizer, AutoCloseable {
+public class OAuthorizerV2 implements Authorizer, AutoCloseable {
 
     private static final String DEVICE_URL = "https://login.tado.com/oauth2/device_authorize";
     private static final String TOKEN_URL = "https://login.tado.com/oauth2/token";
     private static final String CLIENT_ID = "1bb50063-6b0c-4d11-bd99-387f4a91cc46";
     private static final String SCOPE = "offline_access";
 
-    private final Logger logger = LoggerFactory.getLogger(AuthorizerV2.class);
+    private final Logger logger = LoggerFactory.getLogger(OAuthorizerV2.class);
     private final OAuthClientService oAuthService;
 
-    public AuthorizerV2(OAuthFactory oAuthFactory, String handle) {
+    public OAuthorizerV2(OAuthFactory oAuthFactory, String handle) {
         oAuthService = oAuthFactory.createOAuthRfc8628ClientService(handle, TOKEN_URL, DEVICE_URL, CLIENT_ID, SCOPE);
     }
 
@@ -63,7 +67,7 @@ public class AuthorizerV2 implements Authorizer, AutoCloseable {
 
     public @Nullable String getRfc8628AuthenticationUserUri() {
         try {
-            return oAuthService.getRfc8628AuthenticationUserUri();
+            return oAuthService.getUserAuthenticationUri();
         } catch (OAuthException | IOException | OAuthResponseException e) {
             logger.warn("addAuthorization()  error:{}", e.getMessage(), e);
             return null;
