@@ -67,6 +67,10 @@ public class VelbusVMB8INHandler extends VelbusSensorWithAlarmClockHandler {
     private final ChannelUID counter8Channel = new ChannelUID(thing.getUID(), "counter", "counter8");
     private final ChannelUID counter8ChannelCurrent = new ChannelUID(thing.getUID(), "counter", "counter8Current");
 
+    private static final String COUNTER_UNIT_KWH = "kWh";
+    private static final String COUNTER_UNIT_M3 = "m³";
+    private static final String COUNTER_UNIT_LITERS = "liters";
+
     public @NonNullByDefault({}) VelbusVMB8INConfig vmb8inConfig;
 
     private @Nullable ScheduledFuture<?> refreshJob;
@@ -98,6 +102,7 @@ public class VelbusVMB8INHandler extends VelbusSensorWithAlarmClockHandler {
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }
+        this.refreshJob = null;
         super.dispose();
     }
 
@@ -170,112 +175,112 @@ public class VelbusVMB8INHandler extends VelbusSensorWithAlarmClockHandler {
 
                 switch (counterChannel) {
                     case 0x00:
-                        if ("kWh".equals(vmb8inConfig.counter1Unit)) {
+                        if (COUNTER_UNIT_KWH.equals(vmb8inConfig.counter1Unit)) {
                             updateState(counter1Channel,
                                     new QuantityType<Energy>(counterValue / 1000, Units.KILOWATT_HOUR));
                             updateState(counter1ChannelCurrent, new QuantityType<Power>(currentValue, Units.WATT));
-                        } else if ("m³".equals(vmb8inConfig.counter1Unit)) {
+                        } else if (COUNTER_UNIT_M3.equals(vmb8inConfig.counter1Unit)) {
                             updateState(counter1Channel, new QuantityType<Volume>(counterValue, Units.LITRE));
                             updateState(counter1ChannelCurrent, new QuantityType<Volume>(currentValue, Units.LITRE));
-                        } else if ("liters".equals(vmb8inConfig.counter1Unit)) {
+                        } else if (COUNTER_UNIT_LITERS.equals(vmb8inConfig.counter1Unit)) {
                             updateState(counter1Channel, new QuantityType<Volume>(counterValue / 1000, Units.LITRE));
                             updateState(counter1ChannelCurrent,
                                     new QuantityType<Volume>(currentValue / 1000, Units.LITRE));
                         }
                         break;
                     case 0x01:
-                        if ("kWh".equals(vmb8inConfig.counter2Unit)) {
+                        if (COUNTER_UNIT_KWH.equals(vmb8inConfig.counter2Unit)) {
                             updateState(counter2Channel,
                                     new QuantityType<Energy>(counterValue / 1000, Units.KILOWATT_HOUR));
                             updateState(counter2ChannelCurrent, new QuantityType<Power>(currentValue, Units.WATT));
-                        } else if ("m³".equals(vmb8inConfig.counter2Unit)) {
+                        } else if (COUNTER_UNIT_M3.equals(vmb8inConfig.counter2Unit)) {
                             updateState(counter2Channel, new QuantityType<Volume>(counterValue, Units.LITRE));
                             updateState(counter2ChannelCurrent, new QuantityType<Volume>(currentValue, Units.LITRE));
-                        } else if ("liters".equals(vmb8inConfig.counter2Unit)) {
+                        } else if (COUNTER_UNIT_LITERS.equals(vmb8inConfig.counter2Unit)) {
                             updateState(counter2Channel, new QuantityType<Volume>(counterValue / 1000, Units.LITRE));
                             updateState(counter2ChannelCurrent,
                                     new QuantityType<Volume>(currentValue / 1000, Units.LITRE));
                         }
                         break;
                     case 0x02:
-                        if ("kWh".equals(vmb8inConfig.counter3Unit)) {
+                        if (COUNTER_UNIT_KWH.equals(vmb8inConfig.counter3Unit)) {
                             updateState(counter3Channel,
                                     new QuantityType<Energy>(counterValue / 1000, Units.KILOWATT_HOUR));
                             updateState(counter3ChannelCurrent, new QuantityType<Power>(currentValue, Units.WATT));
-                        } else if ("m³".equals(vmb8inConfig.counter3Unit)) {
+                        } else if (COUNTER_UNIT_M3.equals(vmb8inConfig.counter3Unit)) {
                             updateState(counter3Channel, new QuantityType<Volume>(counterValue, Units.LITRE));
                             updateState(counter3ChannelCurrent, new QuantityType<Volume>(currentValue, Units.LITRE));
-                        } else if ("liters".equals(vmb8inConfig.counter3Unit)) {
+                        } else if (COUNTER_UNIT_LITERS.equals(vmb8inConfig.counter3Unit)) {
                             updateState(counter3Channel, new QuantityType<Volume>(counterValue / 1000, Units.LITRE));
                             updateState(counter3ChannelCurrent,
                                     new QuantityType<Volume>(currentValue / 1000, Units.LITRE));
                         }
                         break;
                     case 0x03:
-                        if ("kWh".equals(vmb8inConfig.counter4Unit)) {
+                        if (COUNTER_UNIT_KWH.equals(vmb8inConfig.counter4Unit)) {
                             updateState(counter4Channel,
                                     new QuantityType<Energy>(counterValue / 1000, Units.KILOWATT_HOUR));
                             updateState(counter4ChannelCurrent, new QuantityType<Power>(currentValue, Units.WATT));
-                        } else if ("m³".equals(vmb8inConfig.counter4Unit)) {
+                        } else if (COUNTER_UNIT_M3.equals(vmb8inConfig.counter4Unit)) {
                             updateState(counter4Channel, new QuantityType<Volume>(counterValue, Units.LITRE));
                             updateState(counter4ChannelCurrent, new QuantityType<Volume>(currentValue, Units.LITRE));
-                        } else if ("liters".equals(vmb8inConfig.counter4Unit)) {
+                        } else if (COUNTER_UNIT_LITERS.equals(vmb8inConfig.counter4Unit)) {
                             updateState(counter4Channel, new QuantityType<Volume>(counterValue / 1000, Units.LITRE));
                             updateState(counter4ChannelCurrent,
                                     new QuantityType<Volume>(currentValue / 1000, Units.LITRE));
                         }
                         break;
                     case 0x04:
-                        if ("kWh".equals(vmb8inConfig.counter5Unit)) {
+                        if (COUNTER_UNIT_KWH.equals(vmb8inConfig.counter5Unit)) {
                             updateState(counter5Channel,
                                     new QuantityType<Energy>(counterValue / 1000, Units.KILOWATT_HOUR));
                             updateState(counter5ChannelCurrent, new QuantityType<Power>(currentValue, Units.WATT));
-                        } else if ("m³".equals(vmb8inConfig.counter5Unit)) {
+                        } else if (COUNTER_UNIT_M3.equals(vmb8inConfig.counter5Unit)) {
                             updateState(counter5Channel, new QuantityType<Volume>(counterValue, Units.LITRE));
                             updateState(counter5ChannelCurrent, new QuantityType<Volume>(currentValue, Units.LITRE));
-                        } else if ("liters".equals(vmb8inConfig.counter5Unit)) {
+                        } else if (COUNTER_UNIT_LITERS.equals(vmb8inConfig.counter5Unit)) {
                             updateState(counter5Channel, new QuantityType<Volume>(counterValue / 1000, Units.LITRE));
                             updateState(counter5ChannelCurrent,
                                     new QuantityType<Volume>(currentValue / 1000, Units.LITRE));
                         }
                         break;
                     case 0x05:
-                        if ("kWh".equals(vmb8inConfig.counter6Unit)) {
+                        if (COUNTER_UNIT_KWH.equals(vmb8inConfig.counter6Unit)) {
                             updateState(counter6Channel,
                                     new QuantityType<Energy>(counterValue / 1000, Units.KILOWATT_HOUR));
                             updateState(counter6ChannelCurrent, new QuantityType<Power>(currentValue, Units.WATT));
-                        } else if ("m³".equals(vmb8inConfig.counter6Unit)) {
+                        } else if (COUNTER_UNIT_M3.equals(vmb8inConfig.counter6Unit)) {
                             updateState(counter6Channel, new QuantityType<Volume>(counterValue, Units.LITRE));
                             updateState(counter6ChannelCurrent, new QuantityType<Volume>(currentValue, Units.LITRE));
-                        } else if ("liters".equals(vmb8inConfig.counter6Unit)) {
+                        } else if (COUNTER_UNIT_LITERS.equals(vmb8inConfig.counter6Unit)) {
                             updateState(counter6Channel, new QuantityType<Volume>(counterValue / 1000, Units.LITRE));
                             updateState(counter6ChannelCurrent,
                                     new QuantityType<Volume>(currentValue / 1000, Units.LITRE));
                         }
                         break;
                     case 0x06:
-                        if ("kWh".equals(vmb8inConfig.counter7Unit)) {
+                        if (COUNTER_UNIT_KWH.equals(vmb8inConfig.counter7Unit)) {
                             updateState(counter7Channel,
                                     new QuantityType<Energy>(counterValue / 1000, Units.KILOWATT_HOUR));
                             updateState(counter7ChannelCurrent, new QuantityType<Power>(currentValue, Units.WATT));
-                        } else if ("m³".equals(vmb8inConfig.counter7Unit)) {
+                        } else if (COUNTER_UNIT_M3.equals(vmb8inConfig.counter7Unit)) {
                             updateState(counter7Channel, new QuantityType<Volume>(counterValue, Units.LITRE));
                             updateState(counter7ChannelCurrent, new QuantityType<Volume>(currentValue, Units.LITRE));
-                        } else if ("liters".equals(vmb8inConfig.counter7Unit)) {
+                        } else if (COUNTER_UNIT_LITERS.equals(vmb8inConfig.counter7Unit)) {
                             updateState(counter7Channel, new QuantityType<Volume>(counterValue / 1000, Units.LITRE));
                             updateState(counter7ChannelCurrent,
                                     new QuantityType<Volume>(currentValue / 1000, Units.LITRE));
                         }
                         break;
                     case 0x07:
-                        if ("kWh".equals(vmb8inConfig.counter8Unit)) {
+                        if (COUNTER_UNIT_KWH.equals(vmb8inConfig.counter8Unit)) {
                             updateState(counter8Channel,
                                     new QuantityType<Energy>(counterValue / 1000, Units.KILOWATT_HOUR));
                             updateState(counter8ChannelCurrent, new QuantityType<Power>(currentValue, Units.WATT));
-                        } else if ("m³".equals(vmb8inConfig.counter8Unit)) {
+                        } else if (COUNTER_UNIT_M3.equals(vmb8inConfig.counter8Unit)) {
                             updateState(counter8Channel, new QuantityType<Volume>(counterValue, Units.LITRE));
                             updateState(counter8ChannelCurrent, new QuantityType<Volume>(currentValue, Units.LITRE));
-                        } else if ("liters".equals(vmb8inConfig.counter8Unit)) {
+                        } else if (COUNTER_UNIT_LITERS.equals(vmb8inConfig.counter8Unit)) {
                             updateState(counter8Channel, new QuantityType<Volume>(counterValue / 1000, Units.LITRE));
                             updateState(counter8ChannelCurrent,
                                     new QuantityType<Volume>(currentValue / 1000, Units.LITRE));
