@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Örjan Backsell - Initial contribution
  *
  */
+
 @NonNullByDefault
 public class FerroampHandler extends BaseThingHandler implements MqttMessageSubscriber {
     private final static Logger logger = LoggerFactory.getLogger(FerroampHandler.class);
@@ -94,12 +95,17 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
         channelConfigEso = FerroampChannelConfiguration.getChannelConfigurationEso();
         channelConfigEsm = FerroampChannelConfiguration.getChannelConfigurationEsm();
 
-        FerroampConfiguration ferroampConfig = getConfigAs(FerroampConfiguration.class);
-        final MqttBrokerConnection ferroampConnection = new MqttBrokerConnection(ferroampConfig.hostName,
-                FerroampBindingConstants.BROKER_PORT, false, false, ferroampConfig.userName);
-        scheduler.scheduleWithFixedDelay(this::pollTask, 60, refreshInterval, TimeUnit.SECONDS);
-        this.setFerroampConnection(ferroampConnection);
-        updateStatus(ThingStatus.UNKNOWN);
+        ferroampConfig = getConfigAs(FerroampConfiguration.class);
+        if (!ferroampConfig.hostName.isEmpty() || !ferroampConfig.password.isEmpty()
+                || !ferroampConfig.userName.isEmpty()) {
+            final MqttBrokerConnection ferroampConnection = new MqttBrokerConnection(ferroampConfig.hostName,
+                    FerroampBindingConstants.BROKER_PORT, false, false, ferroampConfig.userName);
+            scheduler.scheduleWithFixedDelay(this::pollTask, 60, refreshInterval, TimeUnit.SECONDS);
+            this.setFerroampConnection(ferroampConnection);
+            updateStatus(ThingStatus.UNKNOWN);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+        }
     }
 
     private void pollTask() {
@@ -111,7 +117,6 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
         }
 
         MqttBrokerConnection ferroampConnection = FerroampHandler.ferroampConnection;
-
         if (ferroampConnection == null || ferroampConnection.connectionState().toString().equals("DISCONNECTED")) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             logger.debug("Problem connection to MqttBroker");
@@ -128,7 +133,6 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
     }
 
     private void startMqttConnection(FerroampConfiguration ferroampConfig) throws InterruptedException {
-
         MqttBrokerConnection localSubscribeConnection = FerroampHandler.getFerroampConnection();
 
         Objects.requireNonNull(localSubscribeConnection,

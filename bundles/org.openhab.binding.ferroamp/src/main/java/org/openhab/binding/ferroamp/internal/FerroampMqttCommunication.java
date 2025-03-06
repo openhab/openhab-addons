@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,9 +35,9 @@ import com.google.gson.JsonObject;
  * @author Örjan Backsell - Initial contribution
  *
  */
+
 @NonNullByDefault
 public class FerroampMqttCommunication implements MqttMessageSubscriber {
-
     static String[] ehubChannelsUpdateValues = new String[0];
     static String[] ssoS1ChannelsUpdateValues = new String[0];
     static String[] ssoS2ChannelsUpdateValues = new String[0];
@@ -60,12 +60,9 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
 
     // Handles request topic
     static void sendPublishedTopic(String payload, FerroampConfiguration ferroampConfig) {
-
         MqttBrokerConnection localConfigurationConnection = FerroampHandler.getFerroampConnection();
-
         Objects.requireNonNull(localConfigurationConnection,
                 "MqttBrokerConnection localConfigurationConnection cannot be null");
-
         localConfigurationConnection.start();
         localConfigurationConnection.setCredentials(ferroampConfig.userName, ferroampConfig.password);
         localConfigurationConnection.publish(FerroampBindingConstants.REQUEST_TOPIC, payload.getBytes(), 1, false);
@@ -73,12 +70,9 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
 
     // Handles respective topic type
     void getSubscribedTopic(String topic, FerroampConfiguration ferroampConfig) {
-
         MqttBrokerConnection localSubscribeConnection = FerroampHandler.getFerroampConnection();
-
         Objects.requireNonNull(localSubscribeConnection,
                 "MqttBrokerConnection localSubscribeConnection cannot be null");
-
         if ("ehubTopic".equals(topic)) {
             localSubscribeConnection.subscribe(FerroampBindingConstants.EHUB_TOPIC, this);
         }
@@ -113,12 +107,9 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
     // Prepare actual Json-topic Ehub-message and update values for channels
     void processIncomingJsonMessageEhub(String topic, String messageJsonEhub) {
         String[] ehubChannelPostsValue = new String[86]; // Array for EHUB (Energy Hub) Posts
-
         JsonObject jsonElementsObject = new Gson().fromJson(new Gson().fromJson(messageJsonEhub, JsonObject.class),
                 JsonObject.class);
-
         Objects.requireNonNull(jsonElementsObject, "JsonObject jsonElementsObject cannot be null");
-
         String jsonElementsStringTemp = "";
         Gson gson = new Gson();
 
@@ -170,7 +161,6 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         jsonElementsStringTemp = jsonElementsObject.get(EhubJsonElements.getJsonElementsEhub().get(5)).toString();
         GetGeneralLx ilq = gson.fromJson(jsonElementsStringTemp, GetGeneralLx.class);
         if (ilq != null) {
-
             ehubChannelPostsValue[13] = ilq.getL1();
             ehubChannelPostsValue[14] = ilq.getL2();
             ehubChannelPostsValue[15] = ilq.getL3();
@@ -420,7 +410,6 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         String[] ssoS2ChannelPostsValue = new String[9]; // Array for SSOS2 ( Solar String Optimizer ) Posts
         String[] ssoS3ChannelPostsValue = new String[9]; // Array for SSOS3 ( Solar String Optimizer ) Posts
         String[] ssoS4ChannelPostsValue = new String[9]; // Array for SSOS4 ( Solar String Optimizer ) Posts
-
         String jsonElementsStringTempS1 = "";
         String jsonElementsStringTempS2 = "";
         String jsonElementsStringTempS3 = "";
@@ -429,11 +418,8 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
 
         JsonObject jsonElementsObjectSsoS1 = new Gson().fromJson(new Gson().fromJson(messageJsonSso, JsonObject.class),
                 JsonObject.class);
-
         Objects.requireNonNull(jsonElementsObjectSsoS1, "JsonObject jsonElementsObjectSsoS1 cannot be null");
-
         jsonElementsStringTempS1 = jsonElementsObjectSsoS1.get(SsoJsonElements.getJsonElementsSso().get(0)).toString();
-
         GetGeneralValues idS1 = gson.fromJson(jsonElementsStringTempS1, GetGeneralValues.class);
         GetGeneralValues idSso = gson.fromJson(jsonElementsStringTempS1, GetGeneralValues.class);
 
@@ -541,9 +527,7 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
 
         JsonObject jsonElementsObjectSsoS2 = new Gson().fromJson(new Gson().fromJson(messageJsonSso, JsonObject.class),
                 JsonObject.class);
-
         Objects.requireNonNull(jsonElementsObjectSsoS2, "JsonObject jsonElementsObjectSsoS2 cannot be null");
-
         jsonElementsStringTempS2 = jsonElementsObjectSsoS2.get(SsoJsonElements.getJsonElementsSso().get(0)).toString();
         GetGeneralValues idS2 = gson.fromJson(jsonElementsStringTempS2, GetGeneralValues.class);
 
@@ -626,9 +610,7 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
 
         JsonObject jsonElementsObjectSsoS3 = new Gson().fromJson(new Gson().fromJson(messageJsonSso, JsonObject.class),
                 JsonObject.class);
-
         Objects.requireNonNull(jsonElementsObjectSsoS3, "JsonObject jsonElementsObjectSsoS3 cannot be null");
-
         jsonElementsStringTempS3 = jsonElementsObjectSsoS3.get(SsoJsonElements.getJsonElementsSso().get(0)).toString();
         GetGeneralValues idS3 = gson.fromJson(jsonElementsStringTempS3, GetGeneralValues.class);
 
@@ -711,9 +693,7 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
 
         JsonObject jsonElementsObjectSsoS4 = new Gson().fromJson(new Gson().fromJson(messageJsonSso, JsonObject.class),
                 JsonObject.class);
-
         Objects.requireNonNull(jsonElementsObjectSsoS4, "JsonObject jsonElementsObjectSsoS4 cannot be null");
-
         jsonElementsStringTempS4 = jsonElementsObjectSsoS4.get(SsoJsonElements.getJsonElementsSso().get(0)).toString();
         GetGeneralValues idS4 = gson.fromJson(jsonElementsStringTempS4, GetGeneralValues.class);
 
@@ -800,9 +780,7 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         String[] esoChannelPostsValue = new String[11]; // Array for ESO, Energy Storage Optimizer ) Posts
         JsonObject jsonElementsObjectEso = new Gson().fromJson(new Gson().fromJson(messageJsonEso, JsonObject.class),
                 JsonObject.class);
-
         Objects.requireNonNull(jsonElementsObjectEso, "JsonObject jsonElementsObjectEso cannot be null");
-
         String jsonElementsStringTempEso = "";
         Gson gson = new Gson();
 
@@ -894,7 +872,6 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
             if (tsEso != null) {
                 esoChannelPostsValue[10] = tsEso.getVal();
             }
-
             esoChannelsUpdateValues = esoChannelPostsValue;
         } else {
             return;
@@ -906,9 +883,7 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         String[] esmChannelPostsValue = new String[7]; // Array for ESM, Energy Storage Module ) Posts
         JsonObject jsonElementsObjectEsm = new Gson().fromJson(new Gson().fromJson(messageJsonEsm, JsonObject.class),
                 JsonObject.class);
-
         Objects.requireNonNull(jsonElementsObjectEsm, "JsonObject jsonElementsObjectEsm cannot be null");
-
         String jsonElementsStringTempEsm = "";
         Gson gson = new Gson();
 
@@ -968,7 +943,6 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
             if (tsEsm != null) {
                 esmChannelPostsValue[6] = tsEsm.getVal();
             }
-
             esmChannelsUpdateValues = esmChannelPostsValue;
         } else {
             return;
