@@ -1059,6 +1059,17 @@ public class IpCameraHandler extends BaseThingHandler {
         setChannelState(CHANNEL_RECORDING_GIF, DecimalType.valueOf(new String("" + seconds)));
     }
 
+    public void reboot() {
+        switch (thing.getThingTypeUID().getId()) {
+            case REOLINK_THING:
+                ReolinkHandler reolinkHandler = new ReolinkHandler(getHandle());
+                reolinkHandler.reboot();
+                break;
+            default:
+                logger.warn("Reboot is not yet supported for ipcamera type {}", thing.getThingTypeUID().getId());
+        }
+    }
+
     private void getReolinkToken() {
         sendHttpPOST("/api.cgi?cmd=Login",
                 "[{\"cmd\":\"Login\", \"param\":{ \"User\":{ \"Version\": \"0\", \"userName\":\""
