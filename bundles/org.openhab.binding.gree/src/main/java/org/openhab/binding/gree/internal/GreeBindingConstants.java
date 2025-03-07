@@ -43,6 +43,7 @@ public class GreeBindingConstants {
     public static final String PROPERTY_IP = "ipAddress";
     public static final String PROPERTY_BROADCAST = "broadcastAddress";
 
+    public static final String PROPERTY_REFRESH_INTERVAL = "refreshInterval";
     public static final String PROPERTY_ENCRYPTION_TYPE = "encryptionType";
 
     // List of all Channel ids
@@ -163,7 +164,6 @@ public class GreeBindingConstants {
     public static final int DATAGRAM_SOCKET_TIMEOUT = 5000; // regular read timeout
     public static final int DISCOVERY_TIMEOUT_MS = 7000; // do not change!!
     public static final int MAX_SCAN_CYCLES = 3;
-    public static final int REFRESH_INTERVAL_SEC = 5;
     public static final int MAX_API_RETRIES = 3;
 
     public static final int DIGITS_TEMP = 1;
@@ -184,6 +184,7 @@ public class GreeBindingConstants {
     public enum EncryptionTypes {
         UNKNOWN,
         ECB,
+        COMBINED,
         GCM;
 
         private static final Map<String, EncryptionTypes> MAP = Stream.of(EncryptionTypes.values())
