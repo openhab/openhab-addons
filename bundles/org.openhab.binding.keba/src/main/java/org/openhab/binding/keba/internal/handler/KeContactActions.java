@@ -66,7 +66,6 @@ public class KeContactActions implements ThingActions {
 
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
     public void setDisplay(
-
             @ActionInput(name = "text", label = "@text/actionInputTextLabel", description = "@text/actionInputTextDesc") @Nullable String text) {
         if (handler == null) {
             logger.warn("KeContact Action service ThingHandler is null!");
