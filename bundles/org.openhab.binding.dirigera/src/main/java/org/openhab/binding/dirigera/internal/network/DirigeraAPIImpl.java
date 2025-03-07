@@ -278,7 +278,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
                         logger.debug("DIRIGERA API delete {} performed", url);
                         break;
                     } else {
-                        logger.debug("DIRIGERA API send {} failed with status {}", url, response.getStatus());
+                        logger.info("DIRIGERA API send {} failed with status {}", url, response.getStatus());
                     }
                 } catch (InterruptedException | TimeoutException | ExecutionException e) {
                     logger.warn("DIRIGERA API call to {} failed {}", url, e.getMessage());
