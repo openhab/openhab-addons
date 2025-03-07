@@ -49,7 +49,7 @@ All devices support the following channels:
 | maxpilotcurrentdutycyle | Number:Dimensionless     | yes       | duty cycle of the control pilot signal                                  |
 
 ## Rule Actions
-Certain Keba models support setting the text on the built in display.
+Certain Keba models support setting the text on the built-in display.
 The text cannot be set via a rule action `setDisplay`. It comes in two variants:
 
 ```java
