@@ -50,7 +50,7 @@ All devices support the following channels:
 
 ## Rule Actions
 Certain Keba models support setting the text on the built-in display.
-The text cannot be set via a rule action `setDisplay`. It comes in two variants:
+The text can be set via a rule action `setDisplay`. It comes in two variants:
 
 ```java
 
