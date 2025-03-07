@@ -119,8 +119,9 @@ public class VelbusNewDimmerHandler extends VelbusSensorWithAlarmClockHandler {
         final ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
-            this.refreshJob = null;
         }
+        this.refreshJob = null;
+        super.dispose();
     }
 
     private void startAutomaticRefresh(int refreshInterval) {

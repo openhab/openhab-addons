@@ -150,6 +150,7 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
         if (timeUpdateJob != null) {
             timeUpdateJob.cancel(true);
         }
+        this.timeUpdateJob = null;
         disconnect();
     }
 
