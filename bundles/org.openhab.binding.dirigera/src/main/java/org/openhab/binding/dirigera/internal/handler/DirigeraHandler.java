@@ -675,7 +675,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     }
 
     private void doUpdateLinks() {
-        Instant startTime = Instant.now();
         // first clear start update cycle, softlinks are cleared before
         synchronized (deviceTree) {
             deviceTree.forEach((id, handler) -> {
