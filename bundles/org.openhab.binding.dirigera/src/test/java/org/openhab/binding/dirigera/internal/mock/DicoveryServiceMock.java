@@ -18,24 +18,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
+import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DiscoveryMangerMock} basic DeviceHandler for all devices
+ * The {@link DicoveryServiceMock} basic DeviceHandler for all devices
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class DiscoveryMangerMock extends DirigeraDiscoveryManager {
-    private final Logger logger = LoggerFactory.getLogger(DiscoveryMangerMock.class);
+public class DicoveryServiceMock extends DirigeraDiscoveryService {
     public Map<String, DiscoveryResult> discoveries = new HashMap<>();
     public Map<String, DiscoveryResult> deletes = new HashMap<>();
 
     @Override
-    public void thingDiscovered(final DiscoveryResult discoveryResult) {
+    public void deviceDiscovered(final DiscoveryResult discoveryResult) {
         synchronized (this) {
             // logger.warn("Discovery thingDiscovered {}", discoveryResult);
             String id = discoveryResult.getThingUID().getId();
@@ -45,7 +42,7 @@ public class DiscoveryMangerMock extends DirigeraDiscoveryManager {
     }
 
     @Override
-    public void thingRemoved(final DiscoveryResult discoveryResult) {
+    public void deviceRemoved(final DiscoveryResult discoveryResult) {
         // logger.warn("Discovery thingRemoved {}", discoveryResult);
         String id = discoveryResult.getThingUID().getId();
         DiscoveryResult remover = discoveries.remove(id);

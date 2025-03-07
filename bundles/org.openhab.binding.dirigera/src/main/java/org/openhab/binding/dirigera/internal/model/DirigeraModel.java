@@ -193,7 +193,7 @@ public class DirigeraModel implements Model {
     private void addedDeviceScene(String id) {
         DiscoveryResult result = identifiy(id);
         if (result != null) {
-            gateway.discovery().thingDiscovered(result);
+            gateway.discovery().deviceDiscovered(result);
             resultMap.put(id, result);
         }
     }
@@ -201,7 +201,7 @@ public class DirigeraModel implements Model {
     private void removedDeviceScene(String id) {
         DiscoveryResult deliveredResult = resultMap.remove(id);
         if (deliveredResult != null) {
-            gateway.discovery().thingRemoved(deliveredResult);
+            gateway.discovery().deviceRemoved(deliveredResult);
         }
         // inform gateway to remove device and update handler accordingly
         gateway.deleteDevice(id);

@@ -17,7 +17,7 @@ import java.time.Instant;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
-import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
+import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryService;
 import org.openhab.binding.dirigera.internal.exception.ApiException;
 import org.openhab.binding.dirigera.internal.exception.ModelException;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
@@ -182,7 +182,7 @@ public interface Gateway {
      *
      * @return DirigeraDiscoveryManager
      */
-    DirigeraDiscoveryManager discovery();
+    DirigeraDiscoveryService discovery();
 
     /**
      * Comfort access towards DirigeraDiscoveryManager.

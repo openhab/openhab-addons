@@ -7,5 +7,15 @@
 	<name>DIRIGERA Binding</name>
 	<description>IKEA Smarthome binding for DIRIGERA Gateway</description>
 	<connection>local</connection>
-
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_ihsp._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
+		</discovery-method>
+	</discovery-methods>
 </addon:addon>

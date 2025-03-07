@@ -26,8 +26,8 @@ import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
 import org.openhab.binding.dirigera.internal.handler.sensor.WaterSensorHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
+import org.openhab.binding.dirigera.internal.mock.DicoveryServiceMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
-import org.openhab.binding.dirigera.internal.mock.DiscoveryMangerMock;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -117,7 +117,7 @@ class TestModel {
         Gateway gateway = (Gateway) hubBridge.getHandler();
         assertNotNull(gateway);
 
-        DiscoveryMangerMock discovery = (DiscoveryMangerMock) gateway.discovery();
+        DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
         assertEquals(25, discovery.discoveries.size(), "Initial discoveries");
     }
 
@@ -128,7 +128,7 @@ class TestModel {
         Gateway gateway = (Gateway) hubBridge.getHandler();
         assertNotNull(gateway);
 
-        DiscoveryMangerMock discovery = (DiscoveryMangerMock) gateway.discovery();
+        DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
         assertTrue(discovery.discoveries.isEmpty(), "Discovery disabled");
     }
 
@@ -140,7 +140,7 @@ class TestModel {
         Gateway gateway = (Gateway) hubBridge.getHandler();
         assertNotNull(gateway);
 
-        DiscoveryMangerMock discovery = (DiscoveryMangerMock) gateway.discovery();
+        DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
         assertEquals(24, discovery.discoveries.size(), "Initial discoveries");
         assertFalse(discovery.discoveries.containsKey(knownDevice));
     }
@@ -152,7 +152,7 @@ class TestModel {
         Gateway gateway = (Gateway) hubBridge.getHandler();
         assertNotNull(gateway);
 
-        DiscoveryMangerMock discovery = (DiscoveryMangerMock) gateway.discovery();
+        DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
         assertEquals(1, discovery.discoveries.size(), "Initial discoveries");
 
         ThingHandler factoryHandler = DirigeraBridgeProvider.createHandler(THING_TYPE_WATER_SENSOR, hubBridge,
@@ -195,7 +195,7 @@ class TestModel {
         Gateway gateway = (Gateway) hubBridge.getHandler();
         assertNotNull(gateway);
 
-        DiscoveryMangerMock discovery = (DiscoveryMangerMock) gateway.discovery();
+        DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
         assertEquals(25, discovery.discoveries.size(), "Initial discoveries");
 
         // Prepare update message
@@ -219,7 +219,7 @@ class TestModel {
         Gateway gateway = (Gateway) hubBridge.getHandler();
         assertNotNull(gateway);
 
-        DiscoveryMangerMock discovery = (DiscoveryMangerMock) gateway.discovery();
+        DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
         assertEquals(26, discovery.discoveries.size(), "Initial discoveries");
 
         // Prepare update message
@@ -244,7 +244,7 @@ class TestModel {
         Gateway gateway = (Gateway) hubBridge.getHandler();
         assertNotNull(gateway);
 
-        DiscoveryMangerMock discovery = (DiscoveryMangerMock) gateway.discovery();
+        DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
         assertEquals(24, discovery.discoveries.size(), "Initial discoveries");
 
         // Prepare update message
@@ -268,7 +268,7 @@ class TestModel {
         Gateway gateway = (Gateway) hubBridge.getHandler();
         assertNotNull(gateway);
 
-        DiscoveryMangerMock discovery = (DiscoveryMangerMock) gateway.discovery();
+        DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
         assertEquals(25, discovery.discoveries.size(), "Initial discoveries");
 
         // Prepare update message
