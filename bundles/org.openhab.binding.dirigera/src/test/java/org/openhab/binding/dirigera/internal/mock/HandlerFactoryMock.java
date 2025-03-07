@@ -32,7 +32,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 public class HandlerFactoryMock extends DirigeraHandlerFactory {
     public HandlerFactoryMock(StorageService storageService) {
         super(storageService, new DicoveryServiceMock(), mock(LocationProvider.class),
-                DirigeraHandlerFactory.TIMEZONE_PROVIDER, mock(DirigeraCommandProvider.class));
+                mock(DirigeraCommandProvider.class));
     }
 
     @Override
