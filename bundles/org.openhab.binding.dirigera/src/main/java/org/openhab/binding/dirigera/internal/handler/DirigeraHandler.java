@@ -49,7 +49,7 @@ import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
 import org.openhab.binding.dirigera.internal.actions.DebugActions;
 import org.openhab.binding.dirigera.internal.config.DirigeraConfiguration;
-import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
+import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryService;
 import org.openhab.binding.dirigera.internal.exception.ApiException;
 import org.openhab.binding.dirigera.internal.exception.ModelException;
 import org.openhab.binding.dirigera.internal.interfaces.DebugHandler;
@@ -101,7 +101,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     protected Class<?> apiProvider = DirigeraAPIImpl.class;
 
     private final Map<String, BaseHandler> deviceTree = new HashMap<>();
-    private final DirigeraDiscoveryManager discoveryManager;
+    private final DirigeraDiscoveryService discoveryService;
     private final DirigeraCommandProvider commandProvider;
     private final BundleContext bundleContext;
     private final Websocket websocket;
@@ -132,10 +132,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     public static long detectionTimeSeonds = 5;
 
     public DirigeraHandler(Bridge bridge, HttpClient insecureClient, Storage<String> bindingStorage,
-            DirigeraDiscoveryManager discoveryManager, LocationProvider locationProvider,
+            DirigeraDiscoveryService discoveryManager, LocationProvider locationProvider,
             DirigeraCommandProvider commandProvider, BundleContext bundleContext) {
         super(bridge);
-        this.discoveryManager = discoveryManager;
+        this.discoveryService = discoveryManager;
         this.httpClient = insecureClient;
         this.storage = bindingStorage;
         this.commandProvider = commandProvider;
@@ -633,8 +633,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     }
 
     @Override
-    public DirigeraDiscoveryManager discovery() {
-        return discoveryManager;
+    public DirigeraDiscoveryService discovery() {
+        return discoveryService;
     }
 
     @Override
