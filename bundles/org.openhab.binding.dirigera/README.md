@@ -36,8 +36,12 @@ Refer to below sections which devices are supported and are covered by `things` 
 
 ## Discovery
 
-The discovery will try to identify your DIRIGERA Gateway. 
-This may take some time because your whole network is scanned in order to find it.
+The discovery will automatically detect your DIRIGERA Gateway via mDNS.
+If it cannot be found check your router for IP address.
+Manual scan isn't supported.
+
+After successful creation of DIRIGERA Gateway and pairing process connected devices are automatically added to your INBOX.
+You can switch off the automatic detection in [Bridge configuration](#bridge-configuration).   
 
 **Before adding the bridge** read [Pairing section](#gateway-pairing).   
 
