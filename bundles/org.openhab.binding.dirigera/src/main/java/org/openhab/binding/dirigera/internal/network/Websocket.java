@@ -150,10 +150,10 @@ public class Websocket {
                 session.getRemote().sendPing(ByteBuffer.wrap(pingId.getBytes()));
                 increase(PINGS);
             } catch (IOException e) {
-                logger.info("DIRIGERA WS ping failed with exception {}", e.getMessage());
+                logger.warn("DIRIGERA WS ping failed with exception {}", e.getMessage());
             }
         }, () -> {
-            logger.info("DIRIGERA WS ping found no session - restart websocket");
+            logger.debug("DIRIGERA WS ping found no session - restart websocket");
         });
     }
 
@@ -191,10 +191,10 @@ public class Websocket {
                 try {
                     session.getRemote().sendPong(buffer);
                 } catch (IOException e) {
-                    logger.info("DIRIGERA WS onPing answer exception {}", e.getMessage());
+                    logger.warn("DIRIGERA WS onPing answer exception {}", e.getMessage());
                 }
             }, () -> {
-                logger.trace("DIRIGERA WS onPing answer cannot be initiated");
+                logger.debug("DIRIGERA WS onPing answer cannot be initiated");
             });
         }
     }

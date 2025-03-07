@@ -70,7 +70,7 @@ public class BaseShortcutController extends BaseHandler {
                         storage.put(patternKey, createdUUID);
                         sceneMapping.put(patternKey, createdUUID);
                     } else {
-                        logger.info("DIRIGERA BASE_SHORTCUT_CONTROLLER scene create failed for {}", patternKey);
+                        logger.warn("DIRIGERA BASE_SHORTCUT_CONTROLLER scene create failed for {}", patternKey);
                     }
                 }
             }
