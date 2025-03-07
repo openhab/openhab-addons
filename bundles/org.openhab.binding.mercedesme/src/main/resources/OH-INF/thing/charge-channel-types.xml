@@ -101,9 +101,9 @@
 		<state pattern="%1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
 	<channel-type id="max-soc">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Charge SoC Maximum</label>
-		<state pattern="%d %%"/>
+		<state pattern="%d %unit%"/>
 		<command>
 			<options>
 				<option value="50 %">50 %</option>

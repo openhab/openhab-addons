@@ -4,25 +4,25 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="accel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Acceleration Score</label>
 		<description>Score for smooth acceleration</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="coasting">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Coasting Score</label>
 		<description>Score for driving without braking</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="constant">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Constant Score</label>
 		<description>Score for driving with constant speed</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="bonus">
-		<item-type>Number:Length</item-type>
+		<item-type unitHint="km,mi">Number:Length</item-type>
 		<label>Bonus Range</label>
 		<description>Additional range vs. very sportive driver</description>
 		<state pattern="%d %unit%" readOnly="true"/>
