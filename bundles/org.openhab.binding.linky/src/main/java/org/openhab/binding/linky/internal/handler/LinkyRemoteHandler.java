@@ -402,7 +402,9 @@ public class LinkyRemoteHandler extends BaseRemoteHandler {
         logger.info("updateData() called");
         logger.info("Cache state {} {} {}", dailyConsumption.isPresent(), dailyConsumptionMaxPower.isPresent(),
                 loadCurveConsumption.isPresent());
-        if (dailyConsumption.isPresent() || dailyConsumptionMaxPower.isPresent() || loadCurveConsumption.isPresent()) {
+
+        if (!dailyConsumption.isPresent() || !dailyConsumptionMaxPower.isPresent()
+                || !loadCurveConsumption.isPresent()) {
             logger.info("invalidate metaData cache to force refresh");
             metaData.invalidate();
         }
