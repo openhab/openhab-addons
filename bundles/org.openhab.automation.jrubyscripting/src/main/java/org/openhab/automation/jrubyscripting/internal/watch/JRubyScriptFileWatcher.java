@@ -39,7 +39,8 @@ import org.slf4j.LoggerFactory;
  * @author Cody Cutrer - Initial contribution
  * @author Jan N. Klug - Refactored to new WatchService
  */
-@Component(immediate = true, service = { ScriptFileWatcher.class, ScriptDependencyTracker.Listener.class })
+@Component(immediate = true, service = { ScriptFileWatcher.class, JRubyScriptFileWatcher.class,
+        ScriptDependencyTracker.Listener.class })
 @NonNullByDefault
 public class JRubyScriptFileWatcher extends AbstractScriptFileWatcher {
     private final Logger logger = LoggerFactory.getLogger(JRubyScriptFileWatcher.class);
@@ -68,5 +69,11 @@ public class JRubyScriptFileWatcher extends AbstractScriptFileWatcher {
         }
 
         return super.getScriptType(scriptFilePath).filter(type -> scriptEngineFactory.getScriptTypes().contains(type));
+    }
+
+    // Overriding to make it public, so it can be used in {@link JRubyConsoleCommandExtension}
+    @Override
+    public Path getWatchPath() {
+        return super.getWatchPath();
     }
 }

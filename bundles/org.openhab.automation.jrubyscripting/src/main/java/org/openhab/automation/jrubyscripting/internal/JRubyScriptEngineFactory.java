@@ -49,8 +49,9 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  * @author Jimmy Tanagra - Add require injection
  */
 @NonNullByDefault
-@Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.automation.jrubyscripting", property = Constants.SERVICE_PID
-        + "=org.openhab.automation.jrubyscripting")
+@Component(service = { ScriptEngineFactory.class, JRubyScriptEngineFactory.class }, //
+        configurationPid = "org.openhab.automation.jrubyscripting", //
+        property = Constants.SERVICE_PID + "=org.openhab.automation.jrubyscripting")
 @ConfigurableService(category = "automation", label = "JRuby Scripting", description_uri = "automation:jrubyscripting")
 public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
     private final JRubyScriptEngineConfiguration configuration = new JRubyScriptEngineConfiguration();
@@ -190,8 +191,8 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
         return false;
     }
 
-    public String getGemHome() {
-        return configuration.getSpecificGemHome();
+    public JRubyScriptEngineConfiguration getConfiguration() {
+        return configuration;
     }
 
     public boolean isFileInGemHome(String file) {
@@ -200,5 +201,9 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
             return false;
         }
         return file.startsWith(gemHome + File.separator);
+    }
+
+    public void updateGems(ScriptEngine engine) {
+        configuration.configureGems(engine, true);
     }
 }

@@ -13,11 +13,14 @@
 package org.openhab.automation.jrubyscripting.internal;
 
 import java.io.File;
+import java.io.StringWriter;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.script.ScriptContext;
@@ -89,7 +92,7 @@ public class JRubyScriptEngineConfiguration {
 
     /**
      * Update configuration
-     * 
+     *
      * @param config Configuration parameters to apply to ScriptEngine
      * @param factory ScriptEngineFactory to configure
      */
@@ -102,12 +105,23 @@ public class JRubyScriptEngineConfiguration {
 
         ScriptEngine engine = factory.getScriptEngine();
         configureRubyEnvironment(engine);
-        configureGems(engine);
+        // The output of the gem install process is usually written to stdout and
+        // it's messy without CR. So we capture the output and log it.
+        ScriptContext context = engine.getContext();
+        StringWriter writer = new StringWriter();
+        StringWriter errorWriter = new StringWriter();
+        context.setWriter(writer);
+        context.setErrorWriter(errorWriter);
+        configureGems(engine, false);
+        logger.debug("{}", writer);
+        if (errorWriter.toString().length() > 0) {
+            logger.warn("{}", errorWriter);
+        }
     }
 
     /**
      * Apply configuration key/value to known configuration parameters
-     * 
+     *
      * @param key Configuration key
      * @param value Configuration value
      */
@@ -130,8 +144,17 @@ public class JRubyScriptEngineConfiguration {
     }
 
     /**
+     * Returns the current configuration.
+     */
+    public Map<String, String> getConfigurations() {
+        return configurationParameters.entrySet().stream()
+                .map(entry -> Map.entry(entry.getKey(), entry.getValue().getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    /**
      * Gets the concrete gem home to install gems into for this version of JRuby.
-     * 
+     *
      * {RUBY_ENGINE} and {RUBY_VERSION} are replaced with their current actual values.
      */
     public String getSpecificGemHome() {
@@ -148,12 +171,12 @@ public class JRubyScriptEngineConfiguration {
 
     /**
      * Get the base for all possible gem homes.
-     * 
+     *
      * If the configured gem home contains {RUBY_ENGINE} or {RUBY_VERSION},
      * the path is cut off at that point. This means a single configuration
      * value will include the gem homes for all parallel-installed ruby
      * versions.
-     * 
+     *
      */
     public String getGemHomeBase() {
         String gemHome = get(GEM_HOME_CONFIG_KEY);
@@ -184,10 +207,10 @@ public class JRubyScriptEngineConfiguration {
 
     /**
      * Install a gems in ScriptEngine
-     * 
+     *
      * @param engine Engine to install gems
      */
-    private synchronized void configureGems(ScriptEngine engine) {
+    synchronized void configureGems(ScriptEngine engine, boolean force) {
         String gems = get(GEMS_CONFIG_KEY);
         if (gems.isEmpty()) {
             return;
@@ -203,15 +226,7 @@ public class JRubyScriptEngineConfiguration {
             return;
         }
 
-        boolean checkUpdate = "true".equals(get(CHECK_UPDATE_CONFIG_KEY));
-
-        String[] gemsArray = gems.split(",");
-        // Set update_native_env_enabled to false so that bundler doesn't leak
-        // into other script engines
-        String gemCommand = "require 'jruby'\nJRuby.runtime.instance_config.update_native_env_enabled = false\nrequire 'bundler/inline'\nrequire 'openssl'\n\ngemfile("
-                + checkUpdate + ") do\n" + "  source 'https://rubygems.org/'\n";
-        int validGems = 0;
-        for (String gem : gemsArray) {
+        String gemLines = Arrays.stream(gems.split(",")).reduce("", (result, gem) -> {
             gem = gem.trim();
             String[] versions = {};
             if (gem.contains("=")) {
@@ -221,23 +236,37 @@ public class JRubyScriptEngineConfiguration {
             }
 
             if (gem.isEmpty()) {
-                continue;
+                return result;
             }
 
-            gemCommand += "  gem '" + gem + "'";
+            gem = "'" + gem + "'";
             for (String version : versions) {
                 version = version.trim();
                 if (!version.isEmpty()) {
-                    gemCommand += ", '" + version + "'";
+                    gem += ", '" + version + "'";
                 }
             }
-            gemCommand += ", require: false\n";
-            validGems += 1;
-        }
-        if (validGems == 0) {
+
+            return result + "  gem " + gem + ", require: false\n";
+        }).stripTrailing();
+
+        if (gemLines.isEmpty()) {
             return;
         }
-        gemCommand += "end\n";
+
+        boolean checkUpdate = force || "true".equals(get(CHECK_UPDATE_CONFIG_KEY));
+        // Set update_native_env_enabled to false so that bundler doesn't leak into other script engines
+        String gemCommand = """
+                require 'jruby'
+                JRuby.runtime.instance_config.update_native_env_enabled = false
+                require 'bundler/inline'
+                require 'openssl'
+
+                gemfile(%b) do
+                  source 'https://rubygems.org/'
+                %s
+                end
+                """.formatted(checkUpdate, gemLines);
 
         try {
             logger.debug("Installing Gems");
@@ -250,7 +279,7 @@ public class JRubyScriptEngineConfiguration {
 
     /**
      * Execute ruby require statement in the ScriptEngine
-     * 
+     *
      * @param engine Engine to insert the require statements
      */
     public void injectRequire(ScriptEngine engine) {
@@ -273,7 +302,7 @@ public class JRubyScriptEngineConfiguration {
 
     /**
      * Configure the optional elements of the Ruby Environment
-     * 
+     *
      * @param scriptEngine Engine in which to configure environment
      */
     public void configureRubyEnvironment(ScriptEngine scriptEngine) {
@@ -305,7 +334,7 @@ public class JRubyScriptEngineConfiguration {
     /**
      * Split up and insert ENV['RUBYLIB'] into Ruby's $LOAD_PATH
      * This needs to be called after ENV['RUBYLIB'] has been set by configureRubyEnvironment
-     * 
+     *
      * @param engine Engine in which to configure environment
      */
     private void configureRubyLib(ScriptEngine engine) {
@@ -336,7 +365,7 @@ public class JRubyScriptEngineConfiguration {
 
     /**
      * Configure system properties
-     * 
+     *
      * @param optionalConfigurationElements Optional system properties to configure
      */
     private void configureSystemProperties() {
