@@ -125,7 +125,7 @@ public class LinkyBindingConstants {
     public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_COUNTRY = "usage-point-address-country";
     public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_INSEE_CODE = "usage-point-address-insee-code";
     public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_POSTAL_CODE = "usage-point-address-postal-code";
-    public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_STREET = "\"usage-point-address-street";
+    public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_STREET = "usage-point-address-street";
 
     public static final String CHANNEL_CONTACT_MAIL = "contact-mail";
     public static final String CHANNEL_CONTACT_PHONE = "contact-phone";
