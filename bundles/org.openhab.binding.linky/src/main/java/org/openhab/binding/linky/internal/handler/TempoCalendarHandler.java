@@ -58,9 +58,9 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("null")
 public class TempoCalendarHandler extends BaseRemoteHandler {
 
-    private static final Random randomNumbers = new Random();
+    private static final Random RANDOM_NUMBERS = new Random();
     private static final int REFRESH_HOUR_OF_DAY = 1;
-    private static final int REFRESH_MINUTE_OF_DAY = randomNumbers.nextInt(60);
+    private static final int REFRESH_MINUTE_OF_DAY = RANDOM_NUMBERS.nextInt(60);
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
 
     private final Logger logger = LoggerFactory.getLogger(TempoCalendarHandler.class);

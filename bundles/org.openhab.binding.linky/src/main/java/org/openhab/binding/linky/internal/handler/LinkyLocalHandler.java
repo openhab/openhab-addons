@@ -66,7 +66,8 @@ import com.google.gson.reflect.TypeToken;
  * The {@link LinkyLocalHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Laurent Arnal - Add support for direct linky connection using D2L dongle
+ * @author Laurent Arnal - Initial contribution
+ *
  */
 
 @NonNullByDefault
@@ -147,7 +148,6 @@ public class LinkyLocalHandler extends BaseThingHandler {
                 logger.debug("The Linky local binding is read-only and can not handle command {} {}",
                         channelUID.getId(), command);
             }
-
         }
     }
 
@@ -314,7 +314,6 @@ public class LinkyLocalHandler extends BaseThingHandler {
                             }
                         }
                     }
-
                 }
             } catch (Exception ex) {
                 logger.debug("err", ex);
@@ -377,7 +376,6 @@ public class LinkyLocalHandler extends BaseThingHandler {
     // @formatter:on
 
     private void handleStgePayload(String value) {
-
         String binStr = String.format("%32s", new BigInteger(value, 16).toString(2)).replace(' ', '0');
 
         String relais = binStr.substring(31, 32);
@@ -444,9 +442,9 @@ public class LinkyLocalHandler extends BaseThingHandler {
     }
 
     private OpenClosedType getOpenClosed(String val) {
-        if (val.equals("0")) {
+        if ("0".equals(val)) {
             return OpenClosedType.CLOSED;
-        } else if (val.equals("1")) {
+        } else if ("1".equals(val)) {
             return OpenClosedType.OPEN;
         }
 
@@ -473,7 +471,7 @@ public class LinkyLocalHandler extends BaseThingHandler {
         String[] parts = value.split(" ");
         int idx = 1;
         for (String part : parts) {
-            if (part.equals("NONUTILE")) {
+            if ("NONUTILE".equals(part)) {
                 continue;
             }
 
@@ -505,18 +503,18 @@ public class LinkyLocalHandler extends BaseThingHandler {
             }
 
             String relaisSt = "";
-            if (relais.equals("00")) {
+            if ("00".equals(relais)) {
                 relaisSt = "Fermé";
-            } else if (relais.equals("01")) {
+            } else if ("01".equals(relais)) {
                 relaisSt = "Ouvert";
             }
 
-            if (channelName.equals("PJOURF_PLUS_1")) {
+            if ("PJOURF_PLUS_1".equals(channelName)) {
                 // PJourF
                 updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP,
                         LinkyBindingConstants.CHANNEL_PJOURF_IDX + idx + "-plus1",
                         new StringType(h + ":" + m + "<>" + tarif + "<>" + relaisSt));
-            } else if (channelName.equals("PPOINTE")) {
+            } else if ("PPOINTE".equals(channelName)) {
                 // PJourF
                 updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP,
                         LinkyBindingConstants.CHANNEL_PPOINTE_IDX + idx,
@@ -537,7 +535,6 @@ public class LinkyLocalHandler extends BaseThingHandler {
         if (timestamp.startsWith("H") || timestamp.startsWith(" ")) {
             DateTimeFormatter df = DateTimeFormatter.ofPattern("yyMMdd[HH][mm][ss]");
             res = LocalDateTime.parse(timestamp.substring(1), df);
-
         } else {
             DateTimeFormatter df = new DateTimeFormatterBuilder().appendPattern("MMM ppd yyyy")
                     .toFormatter(Locale.ENGLISH);
