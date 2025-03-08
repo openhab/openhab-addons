@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.squeezebox.internal.utils.HttpUtils;
 import org.openhab.binding.squeezebox.internal.utils.SqueezeBoxCommunicationException;
@@ -40,6 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @Component
+@NonNullByDefault
 public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxServerDiscoveryParticipant.class);
 
@@ -54,7 +57,7 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
     }
 
     @Override
-    public DiscoveryResult createResult(RemoteDevice device) {
+    public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         ThingUID uid = getThingUID(device);
         if (uid != null) {
             Map<String, Object> properties = new HashMap<>(3);
@@ -98,7 +101,7 @@ public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryPartic
     }
 
     @Override
-    public ThingUID getThingUID(RemoteDevice device) {
+    public @Nullable ThingUID getThingUID(RemoteDevice device) {
         if (device.getDetails().getFriendlyName() != null) {
             if (device.getDetails().getModelDetails().getModelName().contains(MODEL_NAME)) {
                 logger.debug("Discovered a {} thing with UDN '{}'", device.getDetails().getFriendlyName(),

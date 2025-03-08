@@ -14,6 +14,8 @@ package org.openhab.binding.squeezebox.internal.handler;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
 
 /**
@@ -23,6 +25,7 @@ import org.openhab.binding.squeezebox.internal.model.Favorite;
  * @author Mark Hilbush - Added durationEvent
  * @author Mark Hilbush - Added event to update favorites list
  */
+@NonNullByDefault
 public interface SqueezeBoxPlayerEventListener {
 
     void playerAdded(SqueezeBoxPlayer player);
@@ -91,7 +94,7 @@ public interface SqueezeBoxPlayerEventListener {
 
     void sourceChangeEvent(String mac, String source);
 
-    void buttonsChangeEvent(String mac, String likeCommand, String unlikeCommand);
+    void buttonsChangeEvent(String mac, @Nullable String likeCommand, @Nullable String unlikeCommand);
 
     void connectedStateChangeEvent(String mac, boolean connected);
 }
