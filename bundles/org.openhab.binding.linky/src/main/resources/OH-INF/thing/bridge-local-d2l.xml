@@ -12,7 +12,7 @@
 		<config-description>
 			<parameter name="listenningPort" type="text" required="false">
 				<label>TCP Port</label>
-				<description>The tcp port we receive frame from d2l</description>
+				<description>The tcp port we receive data from d2l</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
