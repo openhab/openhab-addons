@@ -73,7 +73,7 @@ public class LinkyBindingConstants {
 
     // List of all Channel id's
     public static final String CHANNEL_CONSUMPTION = "consumption";
-    public static final String CHANNEL_MAX_POWER = "maxPower";
+    public static final String CHANNEL_MAX_POWER = "max-power";
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_TIMESTAMP_CHANNEL = "power";
 
@@ -102,39 +102,39 @@ public class LinkyBindingConstants {
     public static final String CHANNEL_YEAR_MINUS_1 = "lastYear";
     public static final String CHANNEL_YEAR_MINUS_2 = "year-2";
 
-    public static final String CHANNEL_TEMPO_TODAY_INFO = "tempoInfoToday";
-    public static final String CHANNEL_TEMPO_TOMORROW_INFO = "tempoInfoTomorrow";
-    public static final String CHANNEL_TEMPO_TEMPO_INFO_TIME_SERIES = "tempoInfoTimeSeries";
+    public static final String CHANNEL_TEMPO_TODAY_INFO = "tempo-info-today";
+    public static final String CHANNEL_TEMPO_TOMORROW_INFO = "tempo-info-tomorrow";
+    public static final String CHANNEL_TEMPO_TEMPO_INFO_TIME_SERIES = "tempo-info-timeseries";
 
     public static final String CHANNEL_IDENTITY = "identity";
 
-    public static final String CHANNEL_CONTRACT_SUBSCRIBED_POWER = "contractSubscribedPower";
-    public static final String CHANNEL_CONTRACT_LAST_ACTIVATION_DATE = "contractLastActivationDate";
-    public static final String CHANNEL_CONTRACT_DISTRIBUTION_TARIFF = "contractDistributionTariff";
-    public static final String CHANNEL_CONTRACT_OFF_PEAK_HOURS = "contractOffpeakHours";
-    public static final String CHANNEL_CONTRACT_CONTRACT_STATUS = "contractStatus";
-    public static final String CHANNEL_CONTRACT_CONTRACT_TYPE = "contractType";
-    public static final String CHANNEL_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE = "contractLastDistributionTariffChangeDate";
-    public static final String CHANNEL_CONTRACT_SEGMENT = "contractSegment";
+    public static final String CHANNEL_CONTRACT_SUBSCRIBED_POWER = "contract-subscribed-power";
+    public static final String CHANNEL_CONTRACT_LAST_ACTIVATION_DATE = "contract-last-activationdate";
+    public static final String CHANNEL_CONTRACT_DISTRIBUTION_TARIFF = "contract-distribution-tariff";
+    public static final String CHANNEL_CONTRACT_OFF_PEAK_HOURS = "contract-offpeak-hours";
+    public static final String CHANNEL_CONTRACT_CONTRACT_STATUS = "contract-status";
+    public static final String CHANNEL_CONTRACT_CONTRACT_TYPE = "contract-type";
+    public static final String CHANNEL_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE = "contract-lastdistribution-tariff-changedate";
+    public static final String CHANNEL_CONTRACT_SEGMENT = "contract-segment";
 
-    public static final String CHANNEL_USAGEPOINT_ID = "usagePointId";
-    public static final String CHANNEL_USAGEPOINT_STATUS = "usagePointStatus";
-    public static final String CHANNEL_USAGEPOINT_METER_TYPE = "usagePointMeterType";
+    public static final String CHANNEL_USAGEPOINT_ID = "usage-point-id";
+    public static final String CHANNEL_USAGEPOINT_STATUS = "usage-point-status";
+    public static final String CHANNEL_USAGEPOINT_METER_TYPE = "usage-point-meter-type";
 
-    public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_CITY = "usagePointAddressCity";
-    public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_COUNTRY = "usagePointAddressCountry";
-    public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_INSEE_CODE = "usagePointAddressInseeCode";
-    public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_POSTAL_CODE = "usagePointAddressPostalCode";
-    public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_STREET = "usagePointAddressStreet";
+    public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_CITY = "usage-point-address-city";
+    public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_COUNTRY = "usage-point-address-country";
+    public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_INSEE_CODE = "usage-point-address-insee-code";
+    public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_POSTAL_CODE = "usage-point-address-postal-code";
+    public static final String CHANNEL_USAGEPOINT_METER_ADDRESS_STREET = "\"usage-point-address-street";
 
-    public static final String CHANNEL_CONTACT_MAIL = "contactMail";
-    public static final String CHANNEL_CONTACT_PHONE = "contactPhone";
+    public static final String CHANNEL_CONTACT_MAIL = "contact-mail";
+    public static final String CHANNEL_CONTACT_PHONE = "contact-phone";
 
     public static final String CHANNEL_NONE = "";
 
-    public static final String CHANNEL_ID_D2L = "id_d2l";
-    public static final String CHANNEL_TYPE_TRAME = "type_trame";
-    public static final String CHANNEL_DATE_FIRMWARE = "date_firmware";
+    public static final String CHANNEL_ID_D2L = "id-d2l";
+    public static final String CHANNEL_TYPE_TRAME = "type-trame";
+    public static final String CHANNEL_DATE_FIRMWARE = "date-firmware";
 
     // List of Linky standard mode channel ids
     public static final String CHANNEL_ADSC = "adsc";
@@ -195,71 +195,71 @@ public class LinkyBindingConstants {
     public static final String CHANNEL_SMAXSN2 = "smaxsn2";
     public static final String CHANNEL_SMAXSN3 = "smaxsn3";
 
-    public static final String CHANNEL_SMAXSN_DATE = "smaxsnDate";
-    public static final String CHANNEL_SMAXSN1_DATE = "smaxsn1Date";
-    public static final String CHANNEL_SMAXSN2_DATE = "smaxsn2Date";
-    public static final String CHANNEL_SMAXSN3_DATE = "smaxsn3Date";
+    public static final String CHANNEL_SMAXSN_DATE = "smaxsn-date";
+    public static final String CHANNEL_SMAXSN1_DATE = "smaxsn1-date";
+    public static final String CHANNEL_SMAXSN2_DATE = "smaxsn2-date";
+    public static final String CHANNEL_SMAXSN3_DATE = "smaxsn3-date";
 
-    public static final String CHANNEL_SMAXSN_MINUS_1 = "smaxsnMinus1";
-    public static final String CHANNEL_SMAXSN1_MINUS_1 = "smaxsn1Minus1";
-    public static final String CHANNEL_SMAXSN2_MINUS_1 = "smaxsn2Minus1";
-    public static final String CHANNEL_SMAXSN3_MINUS_1 = "smaxsn3Minus1";
+    public static final String CHANNEL_SMAXSN_MINUS_1 = "smaxsn-minus1";
+    public static final String CHANNEL_SMAXSN1_MINUS_1 = "smaxsn1-minus1";
+    public static final String CHANNEL_SMAXSN2_MINUS_1 = "smaxsn2-minus1";
+    public static final String CHANNEL_SMAXSN3_MINUS_1 = "smaxsn3-minus1";
 
-    public static final String CHANNEL_SMAXSN_MINUS_1_DATE = "smaxsnMinus1Date";
-    public static final String CHANNEL_SMAXSN1_MINUS_1_DATE = "smaxsn1Minus1Date";
-    public static final String CHANNEL_SMAXSN2_MINUS_1_DATE = "smaxsn2Minus1Date";
-    public static final String CHANNEL_SMAXSN3_MINUS_1_DATE = "smaxsn3Minus1Date";
+    public static final String CHANNEL_SMAXSN_MINUS_1_DATE = "smaxsn-minus1Date";
+    public static final String CHANNEL_SMAXSN1_MINUS_1_DATE = "smaxsn1-minus1Date";
+    public static final String CHANNEL_SMAXSN2_MINUS_1_DATE = "smaxsn2-minus1Date";
+    public static final String CHANNEL_SMAXSN3_MINUS_1_DATE = "smaxsn3-minus1Date";
 
     public static final String CHANNEL_SINSTI = "sinsti";
 
     public static final String CHANNEL_SMAXIN = "smaxin";
-    public static final String CHANNEL_SMAXIN_DATE = "smaxinDate";
+    public static final String CHANNEL_SMAXIN_DATE = "smaxin-date";
 
-    public static final String CHANNEL_SMAXIN_MINUS_1 = "smaxinMinus1";
-    public static final String CHANNEL_SMAXIN_MINUS_1_DATE = "smaxinMinus1Date";
+    public static final String CHANNEL_SMAXIN_MINUS_1 = "smaxin-minus1";
+    public static final String CHANNEL_SMAXIN_MINUS_1_DATE = "smaxin-minus1-date";
 
     public static final String CHANNEL_CCASN = "ccasn";
-    public static final String CHANNEL_CCASN_DATE = "ccasnDate";
+    public static final String CHANNEL_CCASN_DATE = "ccasn-date";
 
-    public static final String CHANNEL_CCASN_MINUS_1 = "ccasnMinus1";
-    public static final String CHANNEL_CCASN_MINUS_1_DATE = "ccasnMinus1Date";
+    public static final String CHANNEL_CCASN_MINUS_1 = "ccasn-minus1";
+    public static final String CHANNEL_CCASN_MINUS_1_DATE = "ccasn-minus1-date";
 
     public static final String CHANNEL_CCAIN = "ccain";
-    public static final String CHANNEL_CCAIN_DATE = "ccainDate";
+    public static final String CHANNEL_CCAIN_DATE = "ccain-date";
 
-    public static final String CHANNEL_CCAIN_MINUS_1 = "ccainMinus1";
-    public static final String CHANNEL_CCAIN_MINUS_1_DATE = "ccainMinus1Date";
+    public static final String CHANNEL_CCAIN_MINUS_1 = "ccain-minus1";
+    public static final String CHANNEL_CCAIN_MINUS_1_DATE = "ccain-minus1-date";
 
     public static final String CHANNEL_UMOY1 = "umoy1";
-    public static final String CHANNEL_UMOY1_DATE = "umoy1Date";
+    public static final String CHANNEL_UMOY1_DATE = "umoy1-date";
 
     public static final String CHANNEL_UMOY2 = "umoy2";
-    public static final String CHANNEL_UMOY2_DATE = "umoy2Date";
+    public static final String CHANNEL_UMOY2_DATE = "umoy2-date";
 
     public static final String CHANNEL_UMOY3 = "umoy3";
-    public static final String CHANNEL_UMOY3_DATE = "umoy3Date";
+    public static final String CHANNEL_UMOY3_DATE = "umoy3-date";
 
     public static final String CHANNEL_STGE = "stge";
 
     public static final String CHANNEL_RELAIS = "relais";
 
     public static final String CHANNEL_DPM1 = "dpm1";
-    public static final String CHANNEL_DPM1_DATE = "dpm1Date";
+    public static final String CHANNEL_DPM1_DATE = "dpm1-date";
 
     public static final String CHANNEL_FPM1 = "fpm1";
-    public static final String CHANNEL_FPM1_DATE = "fpm1Date";
+    public static final String CHANNEL_FPM1_DATE = "fpm1-date";
 
     public static final String CHANNEL_DPM2 = "dpm2";
-    public static final String CHANNEL_DPM2_DATE = "dpm2Date";
+    public static final String CHANNEL_DPM2_DATE = "dpm2-date";
 
     public static final String CHANNEL_FPM2 = "fpm2";
-    public static final String CHANNEL_FPM2_DATE = "fpm2Date";
+    public static final String CHANNEL_FPM2_DATE = "fpm2-date";
 
     public static final String CHANNEL_DPM3 = "dpm3";
-    public static final String CHANNEL_DPM3_DATE = "dpm3Date";
+    public static final String CHANNEL_DPM3_DATE = "dpm3-date";
 
     public static final String CHANNEL_FPM3 = "fpm3";
-    public static final String CHANNEL_FPM3_DATE = "fpm3Date";
+    public static final String CHANNEL_FPM3_DATE = "fpm3-date";
 
     public static final String CHANNEL_MSG1 = "msg1";
     public static final String CHANNEL_MSG2 = "msg2";
@@ -268,31 +268,31 @@ public class LinkyBindingConstants {
 
     public static final String CHANNEL_NTARF = "ntarf";
     public static final String CHANNEL_NJOURF = "njourf";
-    public static final String CHANNEL_NJOURF_PLUS_1 = "njourfPlus1";
-    public static final String CHANNEL_PJOURF_PLUS_1 = "pjourfPlus1";
+    public static final String CHANNEL_NJOURF_PLUS_1 = "njourf-plus1";
+    public static final String CHANNEL_PJOURF_PLUS_1 = "pjourf-plus1";
     public static final String CHANNEL_PPOINTE = "ppointe";
 
     public static final String CHANNEL_PJOURF_IDX = "pjourf";
     public static final String CHANNEL_PPOINTE_IDX = "ppointe";
 
-    public static final String CHANNEL_CONTACT_SEC = "contactSec";
+    public static final String CHANNEL_CONTACT_SEC = "contact-sec";
     public static final String CHANNEL_CACHE = "cache";
-    public static final String CHANNEL_CUT_OFF = "cutOff";
-    public static final String CHANNEL_OVER_VOLTAGE = "overVoltage";
-    public static final String CHANNEL_EXCEEDING_POWER = "exceedingPower";
+    public static final String CHANNEL_CUT_OFF = "cut-off";
+    public static final String CHANNEL_OVER_VOLTAGE = "over-voltage";
+    public static final String CHANNEL_EXCEEDING_POWER = "exceeding-power";
     public static final String CHANNEL_FUNCTION = "function";
     public static final String CHANNEL_DIRECTION = "direction";
-    public static final String CHANNEL_SUPPLIER_RATE = "supplierRate";
-    public static final String CHANNEL_DISTRIBUTOR_RATE = "distributorRate";
+    public static final String CHANNEL_SUPPLIER_RATE = "supplier-rate";
+    public static final String CHANNEL_DISTRIBUTOR_RATE = "distributor-rate";
     public static final String CHANNEL_CLOCK = "clock";
     public static final String CHANNEL_PLC = "plc";
-    public static final String CHANNEL_COM_OUTPUT = "outputCom";
-    public static final String CHANNEL_PLC_STATE = "plcState";
-    public static final String CHANNEL_PLC_SYNCHRO = "plcSynchro";
-    public static final String CHANNEL_TEMPO_TODAY = "tempoToday";
-    public static final String CHANNEL_TEMPO_TOMORROW = "tempoTomorrow";
-    public static final String CHANNEL_MOVING_TIPS_ADVICE = "movingTips";
-    public static final String CHANNEL_MOVING_TIPS = "adviceMovingTips";
+    public static final String CHANNEL_COM_OUTPUT = "outputcom";
+    public static final String CHANNEL_PLC_STATE = "plc-state";
+    public static final String CHANNEL_PLC_SYNCHRO = "plc-synchro";
+    public static final String CHANNEL_TEMPO_TODAY = "tempo-today";
+    public static final String CHANNEL_TEMPO_TOMORROW = "tempo-tomorrow";
+    public static final String CHANNEL_MOVING_TIPS_ADVICE = "moving-tips";
+    public static final String CHANNEL_MOVING_TIPS = "advice-moving-tips";
 
     // Authorization related Servlet and resources aliases.
     public static final String LINKY_ALIAS = "/connectlinky";

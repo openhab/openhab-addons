@@ -4,8 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-
-	<channel-type id="tempoValue">
+	<channel-type id="tempo-value-type">
 		<item-type>Number</item-type>
 		<label>Tempo Color Information</label>
 		<description>This status describes the tempo color of a day.</description>
@@ -18,7 +17,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="info" advanced="false">
+	<channel-type id="info-type" advanced="false">
 		<item-type>String</item-type>
 		<label>Information</label>
 		<description>an information</description>
@@ -26,21 +25,21 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="infoDate">
+	<channel-type id="info-date-type">
 		<item-type>DateTime</item-type>
 		<label>Information Date</label>
 		<description>an information of type date</description>
 		<state readOnly="true" pattern="%1$tF"/>
 	</channel-type>
 
-	<channel-type id="numericType">
+	<channel-type id="numeric-type">
 		<item-type>Number</item-type>
 		<label>Numeric Type Consumption</label>
 		<category>energy</category>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
-	<channel-type id="consumption">
+	<channel-type id="consumption-type">
 		<item-type>Number:Energy</item-type>
 		<label>Total Consumption</label>
 		<description>Consumption at given time interval</description>
@@ -48,30 +47,28 @@
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
-	<channel-type id="power">
+	<channel-type id="power-type">
 		<item-type unitHint="kVA">Number:Power</item-type>
 		<label>Yesterday Peak Power</label>
 		<description>Maximum power usage yesterday</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="timestamp">
+	<channel-type id="timestamp-type">
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<category>time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="stringType">
+	<channel-type id="string-type">
 		<item-type>String</item-type>
 		<label>Teleinfo String Type</label>
 		<category>Energy</category>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
-
-
-	<channel-type id="cutoffType">
+	<channel-type id="cutoff-type">
 		<item-type>Number</item-type>
 		<label>Type of cutoff</label>
 		<description>This status describes the current cutoff type.</description>
@@ -88,7 +85,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="tempoType">
+	<channel-type id="tempo-type">
 		<item-type>Number</item-type>
 		<label>Tempo Color Information</label>
 		<description>This status describes the tempo color of a day.</description>
@@ -102,7 +99,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="pmType">
+	<channel-type id="pm-type">
 		<item-type>Number</item-type>
 		<label>Type of pm</label>
 		<description>This status describes pm.</description>
@@ -116,7 +113,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="overVoltageStateType">
+	<channel-type id="over-voltage-state-type">
 		<item-type>Number</item-type>
 		<label>State of over voltage Type</label>
 		<description>This type describes over voltage state.</description>
@@ -128,7 +125,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="exceedingPowerStateType">
+	<channel-type id="exceeding-power-state-type">
 		<item-type>Number</item-type>
 		<label>State of exceeding power Type</label>
 		<description>This type describes exceeding power condition state.</description>
@@ -140,7 +137,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="functionType">
+	<channel-type id="function-type">
 		<item-type>Number</item-type>
 		<label>State of functionnality : consummer / producer</label>
 		<description>This type describes functionnality type : Consummer / Producer.</description>
@@ -152,7 +149,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="directionType">
+	<channel-type id="direction-type">
 		<item-type>Number</item-type>
 		<label>State active energy</label>
 		<description>State active energy.</description>
@@ -164,8 +161,7 @@
 		</state>
 	</channel-type>
 
-
-	<channel-type id="clockStateType">
+	<channel-type id="clock-state-type">
 		<item-type>Number</item-type>
 		<label>Clock state</label>
 		<description>State of the clock energy.</description>
@@ -177,8 +173,7 @@
 		</state>
 	</channel-type>
 
-
-	<channel-type id="plcType">
+	<channel-type id="plc-type">
 		<item-type>Number</item-type>
 		<label>PLC Mode</label>
 		<description>Mode of the PLC</description>
@@ -190,7 +185,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="ouputComStateType">
+	<channel-type id="ouputcom-state-type">
 		<item-type>Number</item-type>
 		<label>Output com state</label>
 		<description>State of the communication output</description>
@@ -204,7 +199,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="plcStateType">
+	<channel-type id="plc-state-type">
 		<item-type>Number</item-type>
 		<label>PLC State</label>
 		<description>State of the PLC</description>
@@ -217,7 +212,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="synchroPlcStateType">
+	<channel-type id="synchro-plc-stat-type">
 		<item-type>Number</item-type>
 		<label>PLC Synchro state</label>
 		<description>State of the PLC Synchro</description>
@@ -229,8 +224,7 @@
 		</state>
 	</channel-type>
 
-
-	<channel-type id="movingTipsType">
+	<channel-type id="moving-tips-type">
 		<item-type>Number</item-type>
 		<label>Moving tips</label>
 		<description>Moving tips</description>
@@ -245,80 +239,70 @@
 		</state>
 	</channel-type>
 
-
-
-	<channel-type id="energyType">
+	<channel-type id="energy-type">
 		<item-type>Number:Energy</item-type>
 		<label>Teleinfo Energy Type</label>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="currentType">
+	<channel-type id="current-type">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Teleinfo Current Type</label>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="potentialType">
+	<channel-type id="potential-type">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Teleinfo Potential Type</label>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="powerType">
-		<item-type>Number:Power</item-type>
-		<label>Teleinfo Power Type</label>
-		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="powerFactorType">
+	<channel-type id="power-factor-type">
 		<item-type>Number:Power</item-type>
 		<label>Teleinfo PowerFactor Type</label>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="switchType">
+	<channel-type id="switch-type">
 		<item-type>Switch</item-type>
 		<label>Teleinfo Switch Type</label>
 		<category>Energy</category>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="contactType">
+	<channel-type id="contact-type">
 		<item-type>Contact</item-type>
 		<label>Teleinfo Contact Type</label>
 		<category>Energy</category>
 		<state readOnly="true"/>
 	</channel-type>
 
-
-	<channel-type id="dateTimeType">
+	<channel-type id="datetime-type">
 		<item-type>DateTime</item-type>
 		<label>Teleinfo DateTime Type</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
-	<channel-type id="price-ht" advanced="true">
+	<channel-type id="price-ht-type" advanced="true">
 		<item-type>Number:Currency</item-type>
 		<label>Price HT</label>
 		<category>Price</category>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
-	<channel-type id="price-ttc">
+	<channel-type id="price-ttc-type">
 		<item-type>Number:Currency</item-type>
 		<label>Price TTC</label>
 		<category>Price</category>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
-	<channel-type id="timestamp" advanced="true">
+	<channel-type id="timestamp-type" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Tariff Start</label>
 		<description>Beginning date for this tariff</description>
@@ -326,14 +310,14 @@
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
 
-	<channel-type id="energy-price-ht" advanced="true">
+	<channel-type id="energy-price-ht-type" advanced="true">
 		<item-type>Number:EnergyPrice</item-type>
 		<label>Variable Price HT</label>
 		<category>Price</category>
 		<state readOnly="true" pattern="%.4f %unit%"></state>
 	</channel-type>
 
-	<channel-type id="energy-price-ttc">
+	<channel-type id="energy-price-ttc-type">
 		<item-type>Number:EnergyPrice</item-type>
 		<label>Variable Price TTC</label>
 		<category>Price</category>

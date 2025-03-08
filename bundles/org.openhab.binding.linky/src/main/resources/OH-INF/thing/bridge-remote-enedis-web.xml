@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="enedis-web">
-		<label>EnedisWebBridge</label>
+		<label>Enedis Web Bridge</label>
 		<description>
 			Provides your energy consumption data.
 			In order to receive the data, you must activate your account at

@@ -8,13 +8,13 @@
 	<channel-group-type id="linky-tempo-calendar">
 		<label>Tempo</label>
 		<channels>
-			<channel id="tempoInfoToday" typeId="tempoValue">
+			<channel id="tempo-info-today" typeId="tempo-value-type">
 				<label>Tempo Today Color</label>
 			</channel>
-			<channel id="tempoInfoTomorrow" typeId="tempoValue">
+			<channel id="tempo-info-tomorrow" typeId="tempo-value-type">
 				<label>Tempo Today Color</label>
 			</channel>
-			<channel id="tempoInfoTimeSeries" typeId="tempoValue">
+			<channel id="tempo-info-timeseries" typeId="tempo-value-type">
 				<label>Tempo Day Information</label>
 			</channel>
 		</channels>

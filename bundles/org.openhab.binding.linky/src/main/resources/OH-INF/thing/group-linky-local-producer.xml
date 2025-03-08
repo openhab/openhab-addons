@@ -4,91 +4,78 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-
-
-
-
-
 	<channel-group-type id="linky-local-producer">
 		<label>Producer</label>
 		<channels>
-
-			<channel id="eait" typeId="energyType">
-				<label>EAIT</label>
+			<channel id="eait" typeId="energy-type">
+				<label>Eait</label>
 				<description>Total active energy injected</description>
 			</channel>
 
-
-			<channel id="erq1" typeId="energyType">
-				<label>ERQ1</label>
+			<channel id="erq1" typeId="energy-type">
+				<label>Erq 1</label>
 				<description>Total reactive energy Q1</description>
 			</channel>
 
-			<channel id="erq2" typeId="energyType">
-				<label>ERQ2</label>
+			<channel id="erq2" typeId="energy-type">
+				<label>Erq 2</label>
 				<description>Total reactive energy Q2</description>
 			</channel>
 
-			<channel id="erq3" typeId="energyType">
-				<label>ERQ3</label>
+			<channel id="erq3" typeId="energy-type">
+				<label>Erq 3</label>
 				<description>Total reactive energy Q3</description>
 			</channel>
 
-			<channel id="erq4" typeId="energyType">
-				<label>ERQ4</label>
+			<channel id="erq4" typeId="energy-type">
+				<label>Erq 4</label>
 				<description>Total reactive energy Q4</description>
 			</channel>
 
-			<channel id="sinsti" typeId="powerType">
-				<label>SINSTI</label>
+			<channel id="sinsti" typeId="power-type">
+				<label>SInsti</label>
 				<description>Instantaneous injected apparent power</description>
 			</channel>
 
-
-			<channel id="smaxin" typeId="powerType">
-				<label>SMAXIN</label>
+			<channel id="smaxin" typeId="power-type">
+				<label>Smaxin</label>
 				<description>Maximum injected apparent power of the day</description>
 			</channel>
 
-			<channel id="smaxinDate" typeId="dateTimeType">
-				<label>SMAXIN TIMESTAMP</label>
+			<channel id="smaxin-date" typeId="datetime-type">
+				<label>Smaxin Timestamp</label>
 				<description>Timestamp of SMAXIN value</description>
 			</channel>
 
-			<channel id="smaxinMinus1" typeId="powerType">
-				<label>SMAXIN-1</label>
+			<channel id="smaxin-minus1" typeId="power-type">
+				<label>Smaxin -1</label>
 				<description>Maximum injected apparent power of the previous day</description>
 			</channel>
 
-			<channel id="smaxinMinus1Date" typeId="dateTimeType">
-				<label>SMAXIN-1 TIMESTAMP</label>
+			<channel id="smaxin-minus1-date" typeId="datetime-type">
+				<label>Smaxin -1 Timestamp</label>
 				<description>Timestamp of SMAXIN-1 value</description>
 			</channel>
 
-
-			<channel id="ccain" typeId="powerType">
-				<label>CCAIN</label>
+			<channel id="ccain" typeId="power-type">
+				<label>Ccain</label>
 				<description>Injected active charge point N</description>
 			</channel>
 
-			<channel id="ccainDate" typeId="dateTimeType">
-				<label>CCAIN TIMESTAMP</label>
+			<channel id="ccain-date" typeId="datetime-type">
+				<label>Ccain Timestamp</label>
 				<description>Timestamp of CCAIN value</description>
 			</channel>
 
-
-			<channel id="ccainMinus1" typeId="powerType">
-				<label>CCAIN-1</label>
+			<channel id="ccain-minus1" typeId="power-type">
+				<label>Ccain -1</label>
 				<description>Injected active charge point N-1</description>
 			</channel>
 
-			<channel id="ccainMinus1Date" typeId="dateTimeType">
-				<label>CCAIN-1 TIMESTAMP</label>
+			<channel id="ccain-minus1-date" typeId="datetime-type">
+				<label>Ccain -1 Timestamp</label>
 				<description>Timestamp of CCAIN-1 value</description>
 			</channel>
-
-
-
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>
