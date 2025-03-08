@@ -9,20 +9,20 @@
 		<description>Default Tariff Subscription</description>
 
 		<channels>
-			<channel id="tariff-start" typeId="timestamp"/>
-			<channel id="fixed-ht" typeId="price-ht">
+			<channel id="tariff-start" typeId="timestamp-type"/>
+			<channel id="fixed-ht" typeId="price-ht-type">
 				<label>Fixed Price HT</label>
 				<description>Yearly fixed price excluding taxes.</description>
 			</channel>
-			<channel id="fixed-ttc" typeId="price-ttc">
+			<channel id="fixed-ttc" typeId="price-ttc-type">
 				<label>Fixed Price TTC</label>
 				<description>Yearly fixed price including taxes.</description>
 			</channel>
-			<channel id="variable-ht" typeId="energy-price-ht">
+			<channel id="variable-ht" typeId="energy-price-ht-type">
 				<label>Variable Price HT</label>
 				<description>Energy price in €/kWh excluding taxes.</description>
 			</channel>
-			<channel id="variable-ttc" typeId="energy-price-ttc">
+			<channel id="variable-ttc" typeId="energy-price-ttc-type">
 				<label>Variable Price TTC</label>
 				<description>Energy price in €/kWh including taxes.</description>
 			</channel>
