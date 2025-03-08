@@ -21,8 +21,11 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tado.internal.discovery.TadoDiscoveryService;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -34,6 +37,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.http.HttpService;
 
 /**
  * The {@link TadoHandlerFactory} is responsible for creating things and thing
@@ -51,10 +55,18 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     private final TadoStateDescriptionProvider stateDescriptionProvider;
+    private final HttpClient httpClient;
+    private final HttpService httpService;
+    private final OAuthFactory oAuthFactory;
 
     @Activate
-    public TadoHandlerFactory(final @Reference TadoStateDescriptionProvider stateDescriptionProvider) {
+    public TadoHandlerFactory(@Reference TadoStateDescriptionProvider stateDescriptionProvider,
+            @Reference HttpClientFactory httpClientFactory, @Reference HttpService httpService,
+            @Reference OAuthFactory oAuthFactory) {
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpService = httpService;
+        this.oAuthFactory = oAuthFactory;
     }
 
     @Override
@@ -67,7 +79,8 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_HOME)) {
-            TadoHomeHandler tadoHomeHandler = new TadoHomeHandler((Bridge) thing);
+            TadoHomeHandler tadoHomeHandler = new TadoHomeHandler((Bridge) thing, httpClient, httpService,
+                    oAuthFactory);
             registerTadoDiscoveryService(tadoHomeHandler);
             return tadoHomeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_ZONE)) {
