@@ -27,17 +27,17 @@
 				<description>RMS Current on phase 3</description>
 			</channel>
 
-			<channel id="sinst1" typeId="power-type">
+			<channel id="sinsts1" typeId="power-type">
 				<label>Sinst 1</label>
 				<description>Instantaneous withdrawn apparent power</description>
 			</channel>
 
-			<channel id="sinst2" typeId="power-type">
+			<channel id="sinsts2" typeId="power-type">
 				<label>Sinst 2</label>
 				<description>Instantaneous withdrawn apparent power</description>
 			</channel>
 
-			<channel id="sinst3" typeId="power-type">
+			<channel id="sinsts3" typeId="power-type">
 				<label>Sinst 3</label>
 				<description>Instantaneous withdrawn apparent power</description>
 			</channel>
