@@ -10,15 +10,15 @@
 			<channel id="yesterday" typeId="consumption-type">
 				<label>Yesterday Consumption</label>
 			</channel>
-			
+
 			<channel id="day-2" typeId="consumption-type">
 				<label>Day -2 Consumption</label>
 			</channel>
-			
+
 			<channel id="day-3" typeId="consumption-type">
 				<label>Day -3 Consumption</label>
 			</channel>
-			
+
 			<channel id="consumption" typeId="consumption-type">
 				<label>Consumption</label>
 			</channel>
@@ -32,7 +32,7 @@
 				<label>Peak Value Yesterday</label>
 				<description>Maximum power usage value for Yesterday</description>
 			</channel>
-			
+
 			<channel id="timestamp" typeId="timestamp-type">
 				<label>Peak Timestamp Yesterday</label>
 				<description>Maximum power usage timestamp for Yesterday</description>
@@ -42,7 +42,7 @@
 				<label>Peak Value Day-2</label>
 				<description>Maximum power usage value for Day-2</description>
 			</channel>
-			
+
 			<channel id="timestamp-2" typeId="timestamp-type">
 				<label>Peak Timestamp Day-2</label>
 				<description>Maximum power usage timestamp for Day-2</description>
@@ -52,12 +52,12 @@
 				<label>Peak Value Day-3</label>
 				<description>Maximum power usage value for Day-3</description>
 			</channel>
-			
+
 			<channel id="timestamp-3" typeId="timestamp-type">
 				<label>Peak Timestamp Day-3</label>
 				<description>Maximum power usage timestamp for Day-3</description>
 			</channel>
-			
+
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

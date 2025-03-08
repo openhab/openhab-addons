@@ -14,43 +14,43 @@
 			<channel id="contract-subscribed-power" typeId="info-type">
 				<label>Subscribed Power</label>
 			</channel>
-			
+
 			<channel id="contract-last-activationdate" typeId="info-date-type">
 				<label>Last Activation Date</label>
 			</channel>
-			
+
 			<channel id="contract-distribution-tariff" typeId="info-type">
 				<label>Distribution Tariff</label>
 			</channel>
-			
+
 			<channel id="contract-offpeak-hours" typeId="info-type">
 				<label>Offpeak Hours</label>
 			</channel>
-			
+
 			<channel id="contract-status" typeId="info-type">
 				<label>Contract Status</label>
 			</channel>
-			
+
 			<channel id="contract-type" typeId="info-type">
 				<label>Contract Type</label>
 			</channel>
-			
+
 			<channel id="contract-lastdistribution-tariff-changedate" typeId="info-date-type">
 				<label>Last Distribution Tariff ChangeDate</label>
 			</channel>
-			
+
 			<channel id="contract-segment" typeId="info-type">
 				<label>Contract Segment</label>
 			</channel>
-			
+
 			<channel id="usage-point-id" typeId="info-type">
 				<label>UsagePoint Id</label>
 			</channel>
-			
+
 			<channel id="usage-point-status" typeId="info-type">
 				<label>UsagePoint Status</label>
 			</channel>
-			
+
 			<channel id="usage-point-meter-type" typeId="info-type">
 				<label>UsagePoint Meter Type</label>
 			</channel>
@@ -58,19 +58,19 @@
 			<channel id="usage-point-address-city" typeId="info-type">
 				<label>City</label>
 			</channel>
-			
+
 			<channel id="usage-point-address-country" typeId="info-type">
 				<label>Country</label>
 			</channel>
-			
+
 			<channel id="usage-point-address-insee-code" typeId="info-type">
 				<label>Insee Code</label>
 			</channel>
-			
+
 			<channel id="usage-point-address-postal-code" typeId="info-type">
 				<label>Postal Code</label>
 			</channel>
-			
+
 			<channel id="usage-point-address-street" typeId="info-type">
 				<label>Street</label>
 			</channel>

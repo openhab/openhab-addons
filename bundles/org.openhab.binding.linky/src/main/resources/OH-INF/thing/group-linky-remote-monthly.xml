@@ -10,19 +10,19 @@
 			<channel id="thisMonth" typeId="consumption-type">
 				<label>This Month Consumption</label>
 			</channel>
-			
+
 			<channel id="lastMonth" typeId="consumption-type">
 				<label>Last Month Consumption</label>
 			</channel>
-			
+
 			<channel id="month-2" typeId="consumption-type">
 				<label>Last Month Consumption</label>
 			</channel>
-			
+
 			<channel id="consumption" typeId="consumption-type">
 				<label>Consumption</label>
 			</channel>
-			
+
 			<channel id="max-power" typeId="power-type">
 				<label>Peak Value</label>
 				<description>Maximum power usage value</description>
