@@ -212,7 +212,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="synchro-plc-stat-type">
+	<channel-type id="synchro-plc-state-type">
 		<item-type>Number</item-type>
 		<label>PLC Synchro state</label>
 		<description>State of the PLC Synchro</description>
