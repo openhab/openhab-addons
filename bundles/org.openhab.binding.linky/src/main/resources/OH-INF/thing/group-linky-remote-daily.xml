@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linky"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="linky-remote-daily">
+		<label>Daily Consumption</label>
+		<channels>
+			<channel id="yesterday" typeId="consumption-type">
+				<label>Yesterday Consumption</label>
+			</channel>
+
+			<channel id="day-2" typeId="consumption-type">
+				<label>Day -2 Consumption</label>
+			</channel>
+
+			<channel id="day-3" typeId="consumption-type">
+				<label>Day -3 Consumption</label>
+			</channel>
+
+			<channel id="consumption" typeId="consumption-type">
+				<label>Consumption</label>
+			</channel>
+
+			<channel id="max-power" typeId="power-type">
+				<label>Peak Value</label>
+				<description>Maximum power usage value</description>
+			</channel>
+
+			<channel id="power" typeId="power-type">
+				<label>Peak Value Yesterday</label>
+				<description>Maximum power usage value for Yesterday</description>
+			</channel>
+
+			<channel id="timestamp" typeId="timestamp-type">
+				<label>Peak Timestamp Yesterday</label>
+				<description>Maximum power usage timestamp for Yesterday</description>
+			</channel>
+
+			<channel id="power-2" typeId="power-type">
+				<label>Peak Value Day-2</label>
+				<description>Maximum power usage value for Day-2</description>
+			</channel>
+
+			<channel id="timestamp-2" typeId="timestamp-type">
+				<label>Peak Timestamp Day-2</label>
+				<description>Maximum power usage timestamp for Day-2</description>
+			</channel>
+
+			<channel id="power-3" typeId="power-type">
+				<label>Peak Value Day-3</label>
+				<description>Maximum power usage value for Day-3</description>
+			</channel>
+
+			<channel id="timestamp-3" typeId="timestamp-type">
+				<label>Peak Timestamp Day-3</label>
+				<description>Maximum power usage timestamp for Day-3</description>
+			</channel>
+
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>
