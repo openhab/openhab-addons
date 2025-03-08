@@ -7,7 +7,8 @@
 	<bridge-type id="d2l">
 		<label>D2L Bridge</label>
 		<description>
-		     D2L bridge will enable to get data directly from Linky using a ERL wifi dongle inside your linky (https://eesmart.fr/modulesd2l/erl-wifi-compteur-linky/).
+			D2L bridge will enable to get data directly from Linky using a ERL wifi dongle inside your linky
+			(https://eesmart.fr/modulesd2l/erl-wifi-compteur-linky/).
 		</description>
 
 		<config-description>
