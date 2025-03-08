@@ -3,19 +3,15 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
     <version>5.0.0-SNAPSHOT</version>
   </parent>
-
   <groupId>org.openhab.addons.bundles</groupId>
   <artifactId>org.openhab.addons.reactor.bundles</artifactId>
   <packaging>pom</packaging>
-
   <name>openHAB Add-ons :: Bundles</name>
-
   <modules>
     <!-- automation -->
     <module>org.openhab.automation.groovyscripting</module>
@@ -71,6 +67,7 @@
     <module>org.openhab.binding.automower</module>
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.awattar</module>
+    <module>org.openhab.binding.bambulab</module>
     <module>org.openhab.binding.benqprojector</module>
     <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.bluetooth</module>
@@ -497,12 +494,10 @@
     <module>org.openhab.voice.watsonstt</module>
     <module>org.openhab.voice.whisperstt</module>
   </modules>
-
   <properties>
     <m2e.jdt.annotationpath>target/dependency</m2e.jdt.annotationpath>
     <dep.noembedding/>
   </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.lastnpe.eea</groupId>
@@ -558,7 +553,6 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-
   <build>
     <pluginManagement>
       <plugins>
@@ -628,7 +622,6 @@
         </plugin>
       </plugins>
     </pluginManagement>
-
     <plugins>
       <plugin>
         <groupId>biz.aQute.bnd</groupId>
@@ -694,7 +687,6 @@
       </plugin>
     </plugins>
   </build>
-
   <profiles>
     <!-- suppress embedding of dependencies -->
     <profile>
@@ -720,5 +712,4 @@
       </build>
     </profile>
   </profiles>
-
 </project>
