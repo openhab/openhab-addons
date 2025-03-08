@@ -79,19 +79,19 @@ public class AbstractBaseParser {
     }
 
     /**
-     * Extract an optional acc32 value
+     * Extract an optional acc32/uint32 value
      *
      * @param raw the register array to extract from
      * @param index the address of the field
      * @return the parsed value or empty if the field is not implemented
      */
     protected Optional<Long> extractOptionalAcc32(ModbusRegisterArray raw, int index) {
-        return ModbusBitUtilities.extractStateFromRegisters(raw, index, ValueType.INT32).map(DecimalType::longValue)
+        return ModbusBitUtilities.extractStateFromRegisters(raw, index, ValueType.UINT32).map(DecimalType::longValue)
                 .filter(value -> value != 0);
     }
 
     /**
-     * Extract a mandatory acc32 value
+     * Extract a mandatory acc32/uint32 value
      *
      * @param raw the register array to extract from
      * @param index the address of the field
