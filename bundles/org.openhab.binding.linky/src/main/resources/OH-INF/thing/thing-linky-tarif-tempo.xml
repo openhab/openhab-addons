@@ -9,72 +9,69 @@
 		<description>Temmpo usage Tariff Subscription</description>
 
 		<channels>
-			<channel id="tariff-start" typeId="timestamp"/>
+			<channel id="tariff-start" typeId="timestamp-type"/>
 
-			<channel id="fixed-ht" typeId="price-ht">
+			<channel id="fixed-ht" typeId="price-ht-type">
 				<label>Fixed Price HT</label>
 				<description>Yearly fixed price excluding taxes.</description>
 			</channel>
-			<channel id="fixed-ttc" typeId="price-ttc">
+			<channel id="fixed-ttc" typeId="price-ttc-type">
 				<label>Fixed Price TTC</label>
 				<description>Yearly fixed price including taxes.</description>
 			</channel>
 
-			<channel id="blue-hc-ht" typeId="energy-price-ht">
+			<channel id="blue-hc-ht" typeId="energy-price-ht-type">
 				<label>Blue day Low Hours Price HT</label>
 				<description>Blue day Low hours energy price in €/kWh excluding taxes.</description>
 			</channel>
-			<channel id="blue-hc-ttc" typeId="energy-price-ttc">
+			<channel id="blue-hc-ttc" typeId="energy-price-ttc-type">
 				<label>Blue day Low Hours Price TTC</label>
 				<description>Blue day Low hours energy price in €/kWh including taxes.</description>
 			</channel>
-			<channel id="blue-hp-ht" typeId="energy-price-ht">
+			<channel id="blue-hp-ht" typeId="energy-price-ht-type">
 				<label>Blue day High Hours Price HT</label>
 				<description>Blue day High hours energy price in €/kWh excluding taxes.</description>
 			</channel>
-			<channel id="blue-hp-ttc" typeId="energy-price-ttc">
+			<channel id="blue-hp-ttc" typeId="energy-price-ttc-type">
 				<label>Blue day High Hours Price TTC</label>
 				<description>Blue day High hours energy price in €/kWh including taxes.</description>
 			</channel>
 
-			<channel id="white-hc-ht" typeId="energy-price-ht">
+			<channel id="white-hc-ht" typeId="energy-price-ht-type">
 				<label>White day Low Hours Price HT</label>
 				<description>White day Low hours energy price in €/kWh excluding taxes.</description>
 			</channel>
-			<channel id="white-hc-ttc" typeId="energy-price-ttc">
+			<channel id="white-hc-ttc" typeId="energy-price-ttc-type">
 				<label>White day Low Hours Price TTC</label>
 				<description>White day Low hours energy price in €/kWh including taxes.</description>
 			</channel>
-			<channel id="white-hp-ht" typeId="energy-price-ht">
+			<channel id="white-hp-ht" typeId="energy-price-ht-type">
 				<label>White day High Hours Price HT</label>
 				<description>White day High hours energy price in €/kWh excluding taxes.</description>
 			</channel>
-			<channel id="white-hp-ttc" typeId="energy-price-ttc">
+			<channel id="white-hp-ttc" typeId="energy-price-ttc-type">
 				<label>White day High Hours Price TTC</label>
 				<description>White day High hours energy price in €/kWh including taxes.</description>
 			</channel>
 
-			<channel id="red-hc-ht" typeId="energy-price-ht">
+			<channel id="red-hc-ht" typeId="energy-price-ht-type">
 				<label>Red day Low Hours Price HT</label>
 				<description>Red day Low hours energy price in €/kWh excluding taxes.</description>
 			</channel>
 
-			<channel id="red-hc-ttc" typeId="energy-price-ttc">
+			<channel id="red-hc-ttc" typeId="energy-price-ttc-type">
 				<label>Red day Low Hours Price TTC</label>
 				<description>Red day Low hours energy price in €/kWh including taxes.</description>
 			</channel>
-			<channel id="red-hp-ht" typeId="energy-price-ht">
+			<channel id="red-hp-ht" typeId="energy-price-ht-type">
 				<label>Red day High Hours Price HT</label>
 				<description>Red day High hours energy price in €/kWh excluding taxes.</description>
 			</channel>
-			<channel id="red-hp-ttc" typeId="energy-price-ttc">
+			<channel id="red-hp-ttc" typeId="energy-price-ttc-type">
 				<label>Red day High Hours Price TTC</label>
 				<description>Red day High hours energy price in €/kWh including taxes.</description>
 			</channel>
-
-
 		</channels>
-
 
 		<config-description>
 			<parameter name="puissance" type="integer" min="3" max="36">
