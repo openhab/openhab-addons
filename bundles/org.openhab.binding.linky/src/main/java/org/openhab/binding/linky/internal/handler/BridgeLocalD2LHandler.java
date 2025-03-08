@@ -83,7 +83,6 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
     }
 
     private void pollingCode() {
-
         updateStatus(ThingStatus.ONLINE);
         Selector selector = null;
         ServerSocketChannel socket = null;
@@ -172,7 +171,6 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
                         } catch (SocketException ex) {
                             logger.debug("Error during reading socket, retry ", ex);
                         }
-
                     } else if (selectionKey.isWritable()) {
                         logger.debug("Writable");
 
@@ -189,7 +187,6 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
                 }
                 // once read, each key is removed from the operation.
                 keyIterator.remove();
-
             }
         } catch (Exception ex) {
             logger.debug("errors occured in data reception loop", ex);

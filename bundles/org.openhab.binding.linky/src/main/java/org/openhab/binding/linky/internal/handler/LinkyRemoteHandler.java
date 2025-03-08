@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -89,9 +89,9 @@ public class LinkyRemoteHandler extends BaseRemoteHandler {
     private final TimeZoneProvider timeZoneProvider;
     private ZoneId zoneId = ZoneId.systemDefault();
 
-    private static final Random randomNumbers = new Random();
+    private static final Random RANDOM_NUMBERS = new Random();
     private static final int REFRESH_HOUR_OF_DAY = 1;
-    private static final int REFRESH_MINUTE_OF_DAY = randomNumbers.nextInt(60);
+    private static final int REFRESH_MINUTE_OF_DAY = RANDOM_NUMBERS.nextInt(60);
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
 
     private final Logger logger = LoggerFactory.getLogger(LinkyRemoteHandler.class);
@@ -897,7 +897,6 @@ public class LinkyRemoteHandler extends BaseRemoteHandler {
     }
 
     private boolean isDataLastDayAvailable(@Nullable MeterReading meterReading) {
-
         IntervalReading[] iv = meterReading.baseValue;
 
         logData(iv, "Last day", DateTimeFormatter.ISO_LOCAL_DATE, Target.LAST);

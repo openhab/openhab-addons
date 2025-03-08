@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -85,11 +85,7 @@ public class ExpiringDayCache<V> {
      */
     public boolean isPresent() {
         V cachedValue = value;
-        if (cachedValue == null || isExpired()) {
-            return false;
-        } else {
-            return true;
-        }
+        return (cachedValue != null && !isExpired());
     }
 
     public void invalidate() {

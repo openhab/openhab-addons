@@ -70,7 +70,6 @@ public class TariffTempo extends Tariff {
                 this.redHpHT = Double.parseDouble(values[15]);
                 this.redHpTTC = Double.parseDouble(values[16]);
             }
-
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Incorrect data in '%s'".formatted(line), e);
         }
