@@ -28,7 +28,7 @@ public class VehicleState {
     public int locked;
 
     @SerializedName("sentry_mode")
-    public int sentryMode;
+    public boolean sentryMode;
 
     @SerializedName("valet_mode")
     public int valetMode;
