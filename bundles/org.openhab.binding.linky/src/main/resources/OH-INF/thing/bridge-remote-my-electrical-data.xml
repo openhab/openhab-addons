@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="my-electrical-data">
-		<label>MyElectricalDataBridge</label>
+		<label>MyElectricalData Bridge</label>
 		<description>
 			Provides your energy consumption data.
 			In order to receive the data, you must activate your account at

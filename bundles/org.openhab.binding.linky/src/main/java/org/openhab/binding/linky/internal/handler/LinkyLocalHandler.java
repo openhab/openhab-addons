@@ -514,7 +514,7 @@ public class LinkyLocalHandler extends BaseThingHandler {
             if (channelName.equals("PJOURF_PLUS_1")) {
                 // PJourF
                 updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP,
-                        LinkyBindingConstants.CHANNEL_PJOURF_IDX + idx + "plus1",
+                        LinkyBindingConstants.CHANNEL_PJOURF_IDX + idx + "-plus1",
                         new StringType(h + ":" + m + "<>" + tarif + "<>" + relaisSt));
             } else if (channelName.equals("PPOINTE")) {
                 // PJourF

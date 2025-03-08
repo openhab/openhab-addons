@@ -7,69 +7,80 @@
 	<channel-group-type id="linky-remote-main">
 		<label>Main</label>
 		<channels>
-			<channel id="identity" typeId="info">
+			<channel id="identity" typeId="info-type">
 				<label>Identity</label>
 			</channel>
 
-			<channel id="contractSubscribedPower" typeId="info">
+			<channel id="contract-subscribed-power" typeId="info-type">
 				<label>Subscribed Power</label>
 			</channel>
-			<channel id="contractLastActivationDate" typeId="infoDate">
+			
+			<channel id="contract-last-activationdate" typeId="info-date-type">
 				<label>Last Activation Date</label>
 			</channel>
-			<channel id="contractDistributionTariff" typeId="info">
+			
+			<channel id="contract-distribution-tariff" typeId="info-type">
 				<label>Distribution Tariff</label>
 			</channel>
-			<channel id="contractOffpeakHours" typeId="info">
+			
+			<channel id="contract-offpeak-hours" typeId="info-type">
 				<label>Offpeak Hours</label>
 			</channel>
-			<channel id="contractStatus" typeId="info">
+			
+			<channel id="contract-status" typeId="info-type">
 				<label>Contract Status</label>
 			</channel>
-			<channel id="contractType" typeId="info">
+			
+			<channel id="contract-type" typeId="info-type">
 				<label>Contract Type</label>
 			</channel>
-			<channel id="contractLastDistributionTariffChangeDate" typeId="infoDate">
+			
+			<channel id="contract-lastdistribution-tariff-changedate" typeId="info-date-type">
 				<label>Last Distribution Tariff ChangeDate</label>
 			</channel>
-			<channel id="contractSegment" typeId="info">
+			
+			<channel id="contract-segment" typeId="info-type">
 				<label>Contract Segment</label>
 			</channel>
-
-			<channel id="usagePointId" typeId="info">
+			
+			<channel id="usage-point-id" typeId="info-type">
 				<label>UsagePoint Id</label>
 			</channel>
-			<channel id="usagePointStatus" typeId="info">
-				<label>UsagePoin Status</label>
+			
+			<channel id="usage-point-status" typeId="info-type">
+				<label>UsagePoint Status</label>
 			</channel>
-			<channel id="usagePointMeterType" typeId="info">
+			
+			<channel id="usage-point-meter-type" typeId="info-type">
 				<label>UsagePoint Meter Type</label>
 			</channel>
 
-			<channel id="usagePointAddressCity" typeId="info">
+			<channel id="usage-point-address-city" typeId="info-type">
 				<label>City</label>
 			</channel>
-			<channel id="usagePointAddressCountry" typeId="info">
+			
+			<channel id="usage-point-address-country" typeId="info-type">
 				<label>Country</label>
 			</channel>
-			<channel id="usagePointAddressInseeCode" typeId="info">
+			
+			<channel id="usage-point-address-insee-code" typeId="info-type">
 				<label>Insee Code</label>
 			</channel>
-			<channel id="usagePointAddressPostalCode" typeId="info">
+			
+			<channel id="usage-point-address-postal-code" typeId="info-type">
 				<label>Postal Code</label>
 			</channel>
-			<channel id="usagePointAddressStreet" typeId="info">
+			
+			<channel id="usage-point-address-street" typeId="info-type">
 				<label>Street</label>
 			</channel>
 
-			<channel id="contactMail" typeId="info">
+			<channel id="contact-mail" typeId="info-type">
 				<label>Mail</label>
 			</channel>
-			<channel id="contactPhone" typeId="info">
+			<channel id="contact-phone" typeId="info-type">
 				<label>Phone</label>
 			</channel>
 		</channels>
 	</channel-group-type>
-
-
 </thing:thing-descriptions>

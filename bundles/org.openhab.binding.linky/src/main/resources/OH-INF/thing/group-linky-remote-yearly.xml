@@ -4,27 +4,25 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-
 	<channel-group-type id="linky-remote-yearly">
 		<label>Yearly Consumption</label>
 		<channels>
-			<channel id="thisYear" typeId="consumption">
+			<channel id="thisYear" typeId="consumption-type">
 				<label>This Year Consumption</label>
 			</channel>
-			<channel id="lastYear" typeId="consumption">
+			<channel id="lastYear" typeId="consumption-type">
 				<label>Last Year Consumption</label>
 			</channel>
-			<channel id="year-2" typeId="consumption">
+			<channel id="year-2" typeId="consumption-type">
 				<label>Last Year Consumption</label>
 			</channel>
-			<channel id="consumption" typeId="consumption">
+			<channel id="consumption" typeId="consumption-type">
 				<label>Consumption</label>
 			</channel>
-			<channel id="maxPower" typeId="power">
+			<channel id="max-power" typeId="power-type">
 				<label>Peak Value</label>
 				<description>Maximum power usage value</description>
 			</channel>
 		</channels>
 	</channel-group-type>
-
 </thing:thing-descriptions>
