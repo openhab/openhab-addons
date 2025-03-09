@@ -82,13 +82,13 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
         var config = getConfigAs(PrinterConfiguration.class);
 
         if (config.serial.isBlank()) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/printer.handler.init.noSerial");
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/printer.handler.init.noSerial");
             return;
         }
         logger = LoggerFactory.getLogger(PrinterHandler.class.getName() + "." + config.serial);
 
         if (config.hostname.isBlank()) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/printer.handler.init.noHostname");
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/printer.handler.init.noHostname");
             return;
         }
 
@@ -100,12 +100,12 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
             uri = new URI(rawUri);
         } catch (URISyntaxException e) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                    "@token/printer.handler.init.invalidHostname[\"" + rawUri + "\"]");
+                    "@text/printer.handler.init.invalidHostname[\"" + rawUri + "\"]");
             return;
         }
 
         if (config.accessCode.isBlank()) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/printer.handler.init.noAccessCode");
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/printer.handler.init.noAccessCode");
             return;
         }
 
