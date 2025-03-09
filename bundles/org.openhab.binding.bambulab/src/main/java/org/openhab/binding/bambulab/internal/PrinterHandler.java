@@ -100,7 +100,7 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
             uri = new URI(rawUri);
         } catch (URISyntaxException e) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                    "@text/printer.handler.init.invalidHostname[\"" + rawUri + "\"]");
+                    "@text/printer.handler.init.invalidHostname[\"%s\"]".formatted(rawUri));
             return;
         }
 
