@@ -28,7 +28,7 @@
 	<channel-type id="percent-channel">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Percent Channel</label>
-		<state readOnly="true" min="0" max="100" pattern="%.2f %%"/>
+		<state readOnly="true" min="0" max="100" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="boolean-channel">
 		<item-type>Switch</item-type>
