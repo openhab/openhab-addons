@@ -81,7 +81,7 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
     public void initialize() {
         var config = getConfigAs(PrinterConfiguration.class);
 
-        if (config.serial.isEmpty()) {
+        if (config.serial.isBlank()) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/printer.handler.init.noSerial");
             return;
         }
