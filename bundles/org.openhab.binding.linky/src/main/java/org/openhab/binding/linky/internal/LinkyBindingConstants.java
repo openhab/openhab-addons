@@ -36,6 +36,7 @@ public class LinkyBindingConstants {
     public static final ThingTypeUID THING_TYPE_API_MYELECTRICALDATA_BRIDGE = new ThingTypeUID(BINDING_ID,
             "my-electrical-data");
     public static final ThingTypeUID THING_TYPE_D2L_BRIDGE = new ThingTypeUID(BINDING_ID, "d2l");
+    public static final ThingTypeUID THING_TYPE_SERIAL_BRIDGE = new ThingTypeUID(BINDING_ID, "serial");
     public static final ThingTypeUID THING_TYPE_LINKY = new ThingTypeUID(BINDING_ID, "linky");
     public static final ThingTypeUID THING_TYPE_LINKY_LOCAL = new ThingTypeUID(BINDING_ID, "linky-local");
 
@@ -186,9 +187,9 @@ public class LinkyBindingConstants {
     public static final String CHANNEL_SREACTIVE = "sreactive";
 
     public static final String CHANNEL_SINSTS = "sinsts";
-    public static final String CHANNEL_SINST1 = "sinst1";
-    public static final String CHANNEL_SINST2 = "sinst2";
-    public static final String CHANNEL_SINST3 = "sinst3";
+    public static final String CHANNEL_SINSTS1 = "sinst1";
+    public static final String CHANNEL_SINSTS2 = "sinst2";
+    public static final String CHANNEL_SINSTS3 = "sinst3";
 
     public static final String CHANNEL_SMAXSN = "smaxsn";
     public static final String CHANNEL_SMAXSN1 = "smaxsn1";

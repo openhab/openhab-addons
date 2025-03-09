@@ -24,6 +24,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linky.internal.handler.BridgeLocalD2LHandler;
+import org.openhab.binding.linky.internal.handler.BridgeLocalSerialHandler;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteEnedisHandler;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteEnedisWebHandler;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteMyElectricalDataHandler;
@@ -150,8 +151,10 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
                     this.httpClientFactory, this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
         } else if (THING_TYPE_D2L_BRIDGE.equals(thing.getThingTypeUID())) {
-            BridgeLocalD2LHandler handler = new BridgeLocalD2LHandler((Bridge) thing, this.httpClientFactory,
-                    this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
+            BridgeLocalD2LHandler handler = new BridgeLocalD2LHandler((Bridge) thing);
+            return handler;
+        } else if (THING_TYPE_SERIAL_BRIDGE.equals(thing.getThingTypeUID())) {
+            BridgeLocalSerialHandler handler = new BridgeLocalSerialHandler((Bridge) thing);
             return handler;
         } else if (THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
             ThingLinkyRemoteHandler handler = new ThingLinkyRemoteHandler(thing, localeProvider, timeZoneProvider);

@@ -21,7 +21,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -30,22 +29,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linky.internal.LinkyException;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 /**
  * {@link BridgeLocalD2LHandler} is the base handler to access enedis data.
@@ -53,14 +43,12 @@ import com.google.gson.Gson;
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
-public class BridgeLocalD2LHandler extends BridgeRemoteBaseHandler {
+public class BridgeLocalD2LHandler extends BridgeLocalBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(BridgeLocalD2LHandler.class);
     private @Nullable ScheduledFuture<?> pollingJob = null;
 
-    public BridgeLocalD2LHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
-            final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
-            final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
-        super(bridge, httpClientFactory, oAuthFactory, httpService, thingRegistry, componentContext, gson);
+    public BridgeLocalD2LHandler(Bridge bridge) {
+        super(bridge);
     }
 
     @Override
@@ -226,81 +214,4 @@ public class BridgeLocalD2LHandler extends BridgeRemoteBaseHandler {
         return res;
     }
 
-    public String getAccountUrl() {
-        return "";
-    }
-
-    @Override
-    public double getDivider() {
-        return 0.0;
-    }
-
-    @Override
-    public String getBaseUrl() {
-        return "";
-    }
-
-    @Override
-    public String getContactUrl() {
-        return "";
-    }
-
-    @Override
-    public String getContractUrl() {
-        return "";
-    }
-
-    @Override
-    public String getIdentityUrl() {
-        return "";
-    }
-
-    @Override
-    public String getAddressUrl() {
-        return "";
-    }
-
-    @Override
-    public String getDailyConsumptionUrl() {
-        return "";
-    }
-
-    @Override
-    public String getMaxPowerUrl() {
-        return "";
-    }
-
-    @Override
-    public String getLoadCurveUrl() {
-        return "";
-    }
-
-    @Override
-    public String getTempoUrl() {
-        return "";
-    }
-
-    @Override
-    public String getToken(ThingBaseRemoteHandler handler) throws LinkyException {
-        return "";
-    }
-
-    @Override
-    public DateTimeFormatter getApiDateFormat() {
-        return DateTimeFormatter.BASIC_ISO_DATE;
-    }
-
-    @Override
-    public DateTimeFormatter getApiDateFormatYearsFirst() {
-        return DateTimeFormatter.BASIC_ISO_DATE;
-    }
-
-    @Override
-    public boolean supportNewApiFormat() {
-        return false;
-    }
-
-    @Override
-    public void connectionInit() {
-    }
 }
