@@ -20,12 +20,62 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.unit.Units;
 
 /**
- * The {@link LinkyChannelRegistry} enum defines all Teleinfo labels and their format.
+ * The {@link LinkyChannel} enum defines all Teleinfo labels and their format.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
 @NonNullByDefault
-public enum LinkyChannelRegistry {
+public enum LinkyChannel {
+
+    // Historical labels
+
+    ADCO(ValueType.STRING, LINKY_LOCAL_MAIN_GROUP, CHANNEL_ADCO, Units.ONE),
+    OPTARIF(ValueType.STRING, LINKY_LOCAL_MAIN_GROUP, NOT_A_CHANNEL, Units.ONE),
+    BASE(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_BASE_BASE, Units.WATT_HOUR),
+
+    HCHC(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_HC_HCHC, Units.WATT_HOUR),
+    HCHP(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_HC_HCHP, Units.WATT_HOUR),
+
+    EJPHN(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_EJP_EJPHN, Units.WATT_HOUR),
+    EJPHPM(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_EJP_EJPHPM, Units.WATT_HOUR),
+
+    PTEC(ValueType.STRING, LINKY_LOCAL_MAIN_GROUP, CHANNEL_PTEC, Units.ONE),
+    MOTDETAT(ValueType.STRING, LINKY_LOCAL_MAIN_GROUP, CHANNEL_MOTDETAT, Units.AMPERE),
+
+    ISOUSC(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_ISOUSC, Units.AMPERE),
+
+    IINST(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_CBEMM_IINST, Units.AMPERE),
+    IINST1(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_CBETM_IINST1, Units.AMPERE),
+    IINST2(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_CBETM_IINST2, Units.AMPERE),
+    IINST3(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_CBETM_IINST3, Units.AMPERE),
+
+    ADIR1(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_CBETM_SHORT_ADIR1, Units.AMPERE),
+    ADIR2(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_CBETM_SHORT_ADIR2, Units.AMPERE),
+    ADIR3(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_CBETM_SHORT_ADIR3, Units.AMPERE),
+
+    ADPS(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_CBEMM_ADPS, Units.AMPERE),
+
+    IMAX(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_CBEMM_IMAX, Units.AMPERE),
+    IMAX1(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_CBETM_LONG_IMAX1, Units.AMPERE),
+    IMAX2(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_CBETM_LONG_IMAX2, Units.AMPERE),
+    IMAX3(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_CBETM_LONG_IMAX3, Units.AMPERE),
+
+    PMAX(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_CBETM_LONG_PMAX, Units.WATT),
+
+    HHPHC(ValueType.STRING, LINKY_LOCAL_MAIN_GROUP, CHANNEL_HHPHC, Units.ONE),
+
+    PPOT(ValueType.STRING, LINKY_LOCAL_MAIN_GROUP, CHANNEL_CBETM_LONG_PPOT, Units.ONE),
+    PAPP(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_PAPP, Units.VOLT_AMPERE),
+
+    BBRHCJB(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_TEMPO_BBRHCJB, Units.WATT_HOUR),
+    BBRHPJB(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_TEMPO_BBRHPJB, Units.WATT_HOUR),
+    BBRHCJW(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_TEMPO_BBRHCJW, Units.WATT_HOUR),
+    BBRHPJW(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_TEMPO_BBRHPJW, Units.WATT_HOUR),
+    BBRHCJR(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_TEMPO_BBRHCJR, Units.WATT_HOUR),
+    BBRHPJR(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_TEMPO_BBRHPJR, Units.WATT_HOUR),
+
+    PEJP(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_EJP_PEJP, Units.MINUTE),
+    DEMAIN(ValueType.STRING, LINKY_LOCAL_MAIN_GROUP, CHANNEL_TEMPO_DEMAIN, Units.ONE),
 
     // Standard TIC mode labels
     _ID_D2L(ValueType.STRING, LINKY_LOCAL_MAIN_GROUP, CHANNEL_ID_D2L, Units.ONE),
@@ -146,20 +196,20 @@ public enum LinkyChannelRegistry {
     private final Unit<?> unit;
     private final int factor;
 
-    LinkyChannelRegistry(ValueType type, String groupName, String channelName, Unit<?> unit) {
+    LinkyChannel(ValueType type, String groupName, String channelName, Unit<?> unit) {
         this(type, groupName, channelName, CHANNEL_NONE, unit, 1);
     }
 
-    LinkyChannelRegistry(ValueType type, String groupName, String channelName, String timestampChannelName,
+    LinkyChannel(ValueType type, String groupName, String channelName, String timestampChannelName,
             Unit<?> unit) {
         this(type, groupName, channelName, timestampChannelName, unit, 1);
     }
 
-    LinkyChannelRegistry(ValueType type, String groupName, String channelName, Unit<?> unit, int factor) {
+    LinkyChannel(ValueType type, String groupName, String channelName, Unit<?> unit, int factor) {
         this(type, groupName, channelName, CHANNEL_NONE, unit, factor);
     }
 
-    LinkyChannelRegistry(ValueType type, String groupName, String channelName, String timestampChannelName,
+    LinkyChannel(ValueType type, String groupName, String channelName, String timestampChannelName,
             Unit<?> unit, int factor) {
         this.type = type;
         this.groupName = groupName;
@@ -193,7 +243,7 @@ public enum LinkyChannelRegistry {
         return factor;
     }
 
-    public static LinkyChannelRegistry getEnum(String label) {
+    public static LinkyChannel getEnum(String label) {
         String modifiedLabel = label.replace("-", "_MINUS_");
         modifiedLabel = modifiedLabel.replace("+", "_PLUS_");
         return valueOf(modifiedLabel);
