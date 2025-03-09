@@ -38,6 +38,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
@@ -170,6 +171,8 @@ public class BridgeLocalD2LHandler extends BridgeRemoteBaseHandler {
                             // client.write(sendAck);
                         } catch (SocketException ex) {
                             logger.debug("Error during reading socket, retry ", ex);
+                        } catch (Exception ex) {
+                            logger.debug("Error during reading, retry ", ex);
                         }
                     } else if (selectionKey.isWritable()) {
                         logger.debug("Writable");
@@ -190,6 +193,7 @@ public class BridgeLocalD2LHandler extends BridgeRemoteBaseHandler {
             }
         } catch (Exception ex) {
             logger.debug("errors occured in data reception loop", ex);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, ex.getMessage());
         } finally {
             try {
                 if (socket != null) {
