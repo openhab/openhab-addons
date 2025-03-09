@@ -37,6 +37,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * {@link BridgeLocalD2LHandler} is the base handler to access enedis data.
  *
@@ -47,8 +49,8 @@ public class BridgeLocalD2LHandler extends BridgeLocalBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(BridgeLocalD2LHandler.class);
     private @Nullable ScheduledFuture<?> pollingJob = null;
 
-    public BridgeLocalD2LHandler(Bridge bridge) {
-        super(bridge);
+    public BridgeLocalD2LHandler(Bridge bridge, Gson gson) {
+        super(bridge, gson);
     }
 
     @Override

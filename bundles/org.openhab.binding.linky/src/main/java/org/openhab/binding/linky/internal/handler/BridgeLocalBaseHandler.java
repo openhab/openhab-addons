@@ -21,6 +21,8 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 
+import com.google.gson.Gson;
+
 /**
  * {@link BridgeLocalBaseHandler} is the base handler to access enedis data.
  *
@@ -30,8 +32,11 @@ import org.openhab.core.types.Command;
 public class BridgeLocalBaseHandler extends BaseBridgeHandler {
     private List<String> registeredPrmId = new ArrayList<>();
 
-    public BridgeLocalBaseHandler(Bridge bridge) {
+    protected final Gson gson;
+
+    public BridgeLocalBaseHandler(Bridge bridge, Gson gson) {
         super(bridge);
+        this.gson = gson;
     }
 
     @Override
@@ -46,6 +51,10 @@ public class BridgeLocalBaseHandler extends BaseBridgeHandler {
         if (!registeredPrmId.contains(prmId)) {
             registeredPrmId.add(prmId);
         }
+    }
+
+    public Gson getGson() {
+        return gson;
     }
 
 }
