@@ -14,8 +14,6 @@ package org.openhab.binding.linky.internal.handler;
 
 import static org.openhab.binding.linky.internal.LinkyBindingConstants.*;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,7 +22,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -46,7 +43,6 @@ import org.openhab.binding.linky.internal.dto.MetaData;
 import org.openhab.binding.linky.internal.dto.MeterReading;
 import org.openhab.binding.linky.internal.dto.PrmDetail;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
-import org.openhab.binding.linky.internal.dto.ResponseTempo;
 import org.openhab.binding.linky.internal.dto.UsagePoint;
 import org.openhab.binding.linky.internal.dto.UserInfo;
 import org.openhab.core.config.core.Configuration;
@@ -100,7 +96,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     private final ExpiringDayCache<MeterReading> dailyConsumption;
     private final ExpiringDayCache<MeterReading> dailyConsumptionMaxPower;
     private final ExpiringDayCache<MeterReading> loadCurveConsumption;
-    private final ExpiringDayCache<ResponseTempo> tempoInformation;
 
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable EnedisHttpApi enedisApi;
@@ -153,15 +148,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                         logData(meterReading.baseValue, "Day (peak)", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
                     }
                     return meterReading;
-                });
-
-        // Read Tempo Information
-        this.tempoInformation = new ExpiringDayCache<>("tempoInformation", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
-                () -> {
-                    LocalDate today = LocalDate.now();
-
-                    ResponseTempo tempoData = getTempoData(today.minusDays(1095), today.plusDays(1));
-                    return tempoData;
                 });
 
         // Comsuption Load Curve
@@ -415,58 +401,8 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         updateEnergyData();
         logger.info("updatePowerData() called");
         updatePowerData();
-        logger.info("updateTempoData() called");
-        updateTempoTimeSeries();
         logger.info("updateLoadCurveData() called");
         updateLoadCurveData();
-    }
-
-    private synchronized void updateTempoTimeSeries() {
-        tempoInformation.getValue().ifPresentOrElse(values -> {
-            TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
-
-            values.forEach((k, v) -> {
-                try {
-                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                    Date date = df.parse(k);
-                    long epoch = date.getTime();
-                    Instant timestamp = Instant.ofEpochMilli(epoch);
-
-                    timeSeries.add(timestamp, new DecimalType(getTempoIdx(v)));
-                } catch (ParseException ex) {
-                }
-            });
-
-            int size = values.size();
-            Object[] tempoValues = values.values().toArray();
-
-            updateTempoChannel(LINKY_TEMPO_CALENDAR_GROUP, CHANNEL_TEMPO_TODAY_INFO,
-                    getTempoIdx((String) tempoValues[size - 2]));
-            updateTempoChannel(LINKY_TEMPO_CALENDAR_GROUP, CHANNEL_TEMPO_TOMORROW_INFO,
-                    getTempoIdx((String) tempoValues[size - 1]));
-
-            sendTimeSeries(LINKY_TEMPO_CALENDAR_GROUP, CHANNEL_TEMPO_TEMPO_INFO_TIME_SERIES, timeSeries);
-            updateState(LINKY_TEMPO_CALENDAR_GROUP, CHANNEL_TEMPO_TEMPO_INFO_TIME_SERIES,
-                    new DecimalType(getTempoIdx((String) tempoValues[size - 2])));
-        }, () -> {
-            updateTempoChannel(LINKY_TEMPO_CALENDAR_GROUP, CHANNEL_TEMPO_TODAY_INFO, -1);
-            updateTempoChannel(LINKY_TEMPO_CALENDAR_GROUP, CHANNEL_TEMPO_TOMORROW_INFO, -1);
-        });
-    }
-
-    private int getTempoIdx(String color) {
-        int val = 0;
-        if ("BLUE".equals(color)) {
-            val = 0;
-        }
-        if ("WHITE".equals(color)) {
-            val = 1;
-        }
-        if ("RED".equals(color)) {
-            val = 2;
-        }
-
-        return val;
     }
 
     private synchronized void updatePowerData() {
@@ -634,11 +570,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 : new QuantityType<>(power, MetricPrefix.KILO(Units.VOLT_AMPERE)));
     }
 
-    private void updateTempoChannel(String groupId, String channelId, int tempoValue) {
-        logger.debug("Update channel ({}) {} with {}", config.prmId, channelId, tempoValue);
-        updateState(groupId + "#" + channelId, new DecimalType(tempoValue));
-    }
-
     protected void updateState(String groupId, String channelID, State state) {
         super.updateState(groupId + "#" + channelID, state);
     }
@@ -758,22 +689,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             }
         }
 
-        return null;
-    }
-
-    private @Nullable ResponseTempo getTempoData(LocalDate from, LocalDate to) {
-        logger.debug("getTempoData from");
-
-        EnedisHttpApi api = this.enedisApi;
-        if (api != null) {
-            try {
-                ResponseTempo result = api.getTempoData(this, from, to);
-                return result;
-            } catch (LinkyException e) {
-                logger.debug("Exception when getting tempo data: {}", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-            }
-        }
         return null;
     }
 
