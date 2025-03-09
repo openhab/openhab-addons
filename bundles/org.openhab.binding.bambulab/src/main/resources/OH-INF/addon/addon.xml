@@ -6,5 +6,5 @@
 	<type>binding</type>
 	<name>BambuLab Binding</name>
 	<description>This is the binding for BambuLab.</description>
-
+	<connection>local</connection>
 </addon:addon>
