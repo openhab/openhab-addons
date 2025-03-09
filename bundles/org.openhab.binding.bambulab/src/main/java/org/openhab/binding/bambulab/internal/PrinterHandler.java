@@ -181,6 +181,9 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
     private void updatePrinterChannels(Report state) {
         // Print
         var print = state.print();
+        if (print == null) {
+            return;
+        }
         // tempers
         updateCelsiusState(NOZZLE_TEMPERATURE_CHANNEL, print.nozzleTemper());
         updateCelsiusState(NOZZLE_TARGET_TEMPERATURE_CHANNEL, print.nozzleTargetTemper());
