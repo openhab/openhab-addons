@@ -1,7 +1,7 @@
 # BambuLab Binding
 
-This addon supports connecting with BambuLab 3D printers in local mode. While cloud mode is theoretically possible, it
-is not supported by the addon developers.
+This addon supports connecting with BambuLab 3D printers in local mode.
+While cloud mode is theoretically possible, it is not supported by the addon developers.
 
 ## Cloud Mode
 
