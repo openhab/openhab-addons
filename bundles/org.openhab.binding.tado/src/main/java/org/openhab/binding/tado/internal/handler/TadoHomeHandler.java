@@ -15,6 +15,7 @@ package org.openhab.binding.tado.internal.handler;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -38,6 +39,8 @@ import org.openhab.binding.tado.swagger.codegen.api.model.HomeState;
 import org.openhab.binding.tado.swagger.codegen.api.model.PresenceState;
 import org.openhab.binding.tado.swagger.codegen.api.model.User;
 import org.openhab.binding.tado.swagger.codegen.api.model.UserHomes;
+import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.library.types.OnOffType;
@@ -61,7 +64,7 @@ import org.slf4j.LoggerFactory;
  * @author Dennis Frommknecht - Initial contribution
  */
 @NonNullByDefault
-public class TadoHomeHandler extends BaseBridgeHandler {
+public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRefreshListener {
 
     private static final ZonedDateTime AUTH_V2_FROM_DATE = ZonedDateTime.parse("2025-03-15T00:00:00Z");
 
@@ -107,13 +110,12 @@ public class TadoHomeHandler extends BaseBridgeHandler {
         String password = configuration.password;
         boolean v1CredentialsOk = userName != null && !userName.isBlank() && password != null && !password.isBlank();
 
-        Boolean useRfc8628 = configuration.useRfc8628;
-        boolean v2AuthenticationRequired = false;
-        v2AuthenticationRequired |= Boolean.TRUE.equals(useRfc8628);
-        v2AuthenticationRequired |= !v1CredentialsOk;
-        v2AuthenticationRequired |= ZonedDateTime.now().isAfter(AUTH_V2_FROM_DATE);
+        boolean suggestRfc8628 = false;
+        suggestRfc8628 |= Boolean.TRUE.equals(configuration.useRfc8628);
+        suggestRfc8628 |= !v1CredentialsOk;
+        suggestRfc8628 |= ZonedDateTime.now().isAfter(AUTH_V2_FROM_DATE);
 
-        if (v2AuthenticationRequired) {
+        if (suggestRfc8628) {
             String ipAddress;
             try {
                 ipAddress = InetAddress.getLocalHost().getHostAddress();
@@ -128,6 +130,7 @@ public class TadoHomeHandler extends BaseBridgeHandler {
                 oAuthClientService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), TOKEN_URL,
                         DEVICE_URL, CLIENT_ID, null, SCOPE, false);
             }
+            oAuthClientService.addAccessTokenRefreshListener(this);
             api = new HomeApiFactory().create(oAuthClientService);
         } else {
             offlineMessage = "Username and/or password might be invalid";
@@ -148,7 +151,7 @@ public class TadoHomeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void initializeBridgeStatusAndPropertiesIfOffline() {
+    private synchronized void initializeBridgeStatusAndPropertiesIfOffline() {
         if (getThing().getStatus() == ThingStatus.ONLINE) {
             for (Thing thing : getThing().getThings()) {
                 ThingHandler handler = thing.getHandler();
@@ -256,5 +259,12 @@ public class TadoHomeHandler extends BaseBridgeHandler {
 
     public TadoBatteryChecker getBatteryChecker() {
         return this.batteryChecker;
+    }
+
+    @Override
+    public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
+        if (!tokenResponse.isExpired(Instant.now(), 0)) {
+            initializeBridgeStatusAndPropertiesIfOffline();
+        }
     }
 }
