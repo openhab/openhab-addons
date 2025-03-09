@@ -13,18 +13,10 @@
 package org.openhab.binding.linky.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
-import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
-
-import com.google.gson.Gson;
 
 /**
  * {@link BridgeLocalBaseHandler} is the base handler to access enedis data.
@@ -34,9 +26,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class BridgeLocalBaseHandler extends BaseBridgeHandler {
 
-    public BridgeLocalBaseHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
-            final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
-            final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
+    public BridgeLocalBaseHandler(Bridge bridge) {
         super(bridge);
     }
 

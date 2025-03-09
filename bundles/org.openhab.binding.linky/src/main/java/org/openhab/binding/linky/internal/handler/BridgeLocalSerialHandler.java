@@ -16,20 +16,12 @@ import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.types.Command;
-import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 /**
  * The {@link TeleinfoSerialControllerHandler} class defines a handler for serial controller.
@@ -38,7 +30,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler
-// implements TeleinfoReceiveThreadListener
+// implements LinkySerialReceiveThreadListener
 {
 
     private final Logger logger = LoggerFactory.getLogger(BridgeLocalSerialHandler.class);
@@ -52,11 +44,8 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler
     private @Nullable ScheduledFuture<?> keepAliveThread;
     private long invalidFrameCounter = 0;
 
-    public BridgeLocalSerialHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
-            final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
-            final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson,
-            SerialPortManager serialPortManager) {
-        super(bridge, httpClientFactory, oAuthFactory, httpService, thingRegistry, componentContext, gson);
+    public BridgeLocalSerialHandler(Bridge bridge) {
+        super(bridge);
         this.serialPortManager = serialPortManager;
     }
 
