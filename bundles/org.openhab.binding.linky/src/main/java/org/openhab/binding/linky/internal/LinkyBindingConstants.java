@@ -137,6 +137,9 @@ public class LinkyBindingConstants {
     public static final String CHANNEL_TYPE_TRAME = "type-trame";
     public static final String CHANNEL_DATE_FIRMWARE = "date-firmware";
 
+    // List of Linky historical mode channel ids
+    public static final String CHANNEL_ADCO = "adco";
+
     // List of Linky standard mode channel ids
     public static final String CHANNEL_ADSC = "adsc";
     public static final String CHANNEL_VTIC = "vtic";
@@ -295,6 +298,54 @@ public class LinkyBindingConstants {
     public static final String CHANNEL_MOVING_TIPS_ADVICE = "moving-tips";
     public static final String CHANNEL_MOVING_TIPS = "advice-moving-tips";
 
+    // List of EJP frames channel ids
+    public static final String CHANNEL_EJP_PEJP = "pejp";
+    public static final String CHANNEL_EJP_EJPHPM = "ejphpm";
+    public static final String CHANNEL_EJP_EJPHN = "ejphn";
+
+    // List of BASE frames channel ids
+    public static final String CHANNEL_BASE_BASE = "base";
+
+    // List of HC frames channel ids
+    public static final String CHANNEL_HC_HCHC = "hchc";
+    public static final String CHANNEL_HC_HCHP = "hchp";
+    public static final String CHANNEL_HHPHC = "hhphc";
+
+    // List of TEMPO frames channel ids
+    public static final String CHANNEL_TEMPO_BBRHPJR = "bbrhpjr";
+    public static final String CHANNEL_TEMPO_BBRHCJR = "bbrhcjr";
+    public static final String CHANNEL_TEMPO_BBRHPJW = "bbrhpjw";
+    public static final String CHANNEL_TEMPO_BBRHCJW = "bbrhcjw";
+    public static final String CHANNEL_TEMPO_BBRHPJB = "bbrhpjb";
+    public static final String CHANNEL_TEMPO_BBRHCJB = "bbrhcjb";
+    public static final String CHANNEL_TEMPO_DEMAIN = "demain";
+    public static final String CHANNEL_TEMPO_PROGRAMME_CIRCUIT_1 = "programmeCircuit1";
+    public static final String CHANNEL_TEMPO_PROGRAMME_CIRCUIT_2 = "programmeCircuit2";
+
+    // List of CBEMM Channel ids
+    public static final String CHANNEL_ISOUSC = "isousc";
+    public static final String CHANNEL_PTEC = "ptec";
+    public static final String CHANNEL_CBEMM_IMAX = "imax";
+    public static final String CHANNEL_CBEMM_ADPS = "adps";
+    public static final String CHANNEL_CBEMM_IINST = "iinst";
+    public static final String CHANNEL_MOTDETAT = "motdetat";
+
+    // List of CBEMM EVOLUTION ICC Channel ids
+    public static final String CHANNEL_PAPP = "papp";
+
+    // List of CBETM Channel ids
+    public static final String CHANNEL_CBETM_IINST1 = "iinst1";
+    public static final String CHANNEL_CBETM_IINST2 = "iinst2";
+    public static final String CHANNEL_CBETM_IINST3 = "iinst3";
+    public static final String CHANNEL_CBETM_LONG_IMAX1 = "imax1";
+    public static final String CHANNEL_CBETM_LONG_IMAX2 = "imax2";
+    public static final String CHANNEL_CBETM_LONG_IMAX3 = "imax3";
+    public static final String CHANNEL_CBETM_LONG_PMAX = "pmax";
+    public static final String CHANNEL_CBETM_LONG_PPOT = "ppot";
+    public static final String CHANNEL_CBETM_SHORT_ADIR1 = "adir1";
+    public static final String CHANNEL_CBETM_SHORT_ADIR2 = "adir2";
+    public static final String CHANNEL_CBETM_SHORT_ADIR3 = "adir3";
+
     // Authorization related Servlet and resources aliases.
     public static final String LINKY_ALIAS = "/connectlinky";
     public static final String LINKY_IMG_ALIAS = "/img";
@@ -327,6 +378,69 @@ public class LinkyBindingConstants {
     public static final String CHANNEL_BLUE_HP_TTC = "blue-hp-ttc";
 
     public static final Currency CURRENCY_EUR = Currency.getInstance("EUR");
+
+    public static final String NOT_A_CHANNEL = "";
+
+    // List of all Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_SERIAL_CONTROLLER = new ThingTypeUID(BINDING_ID, "serialcontroller");
+    public static final String THING_SERIAL_CONTROLLER_CHANNEL_INVALID_FRAME_COUNTER = "invalidFrameCounter";
+
+    public static final String THING_ELECTRICITY_METER_PROPERTY_ADCO = "adco";
+
+    public static final ThingTypeUID THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
+            "cbemm_hc_electricitymeter");
+
+    public static final ThingTypeUID THING_BASE_CBEMM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
+            "cbemm_base_electricitymeter");
+
+    public static final ThingTypeUID THING_EJP_CBEMM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
+            "cbemm_ejp_electricitymeter");
+
+    public static final ThingTypeUID THING_TEMPO_CBEMM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
+            "cbemm_tempo_electricitymeter");
+
+    public static final ThingTypeUID THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
+            "cbemm_evolution_icc_hc_electricitymeter");
+
+    public static final ThingTypeUID THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
+            "cbemm_evolution_icc_base_electricitymeter");
+
+    public static final ThingTypeUID THING_EJP_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
+            "cbemm_evolution_icc_ejp_electricitymeter");
+
+    public static final ThingTypeUID THING_TEMPO_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
+            "cbemm_evolution_icc_tempo_electricitymeter");
+
+    public static final ThingTypeUID THING_HC_CBETM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
+            "cbetm_hc_electricitymeter");
+
+    public static final ThingTypeUID THING_BASE_CBETM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
+            "cbetm_base_electricitymeter");
+
+    public static final ThingTypeUID THING_EJP_CBETM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
+            "cbetm_ejp_electricitymeter");
+
+    public static final ThingTypeUID THING_TEMPO_CBETM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
+            "cbetm_tempo_electricitymeter");
+
+    public static final ThingTypeUID THING_LSMT_PROD_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
+            "lsmt_prod_electricitymeter");
+
+    public static final ThingTypeUID THING_LSMM_PROD_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
+            "lsmm_prod_electricitymeter");
+
+    public static final ThingTypeUID THING_LSMT_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
+            "lsmt_electricitymeter");
+
+    public static final ThingTypeUID THING_LSMM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
+            "lsmm_electricitymeter");
+
+    public static final String ERROR_OFFLINE_SERIAL_NOT_FOUND = "@text/teleinfo.thingstate.serial_notfound";
+    public static final String ERROR_OFFLINE_SERIAL_INUSE = "@text/teleinfo.thingstate.serial_inuse";
+    public static final String ERROR_OFFLINE_SERIAL_UNSUPPORTED = "@text/teleinfo.thingstate.serial_unsupported";
+    public static final String ERROR_OFFLINE_SERIAL_LISTENERS = "@text/teleinfo.thingstate.serial_listeners";
+    public static final String ERROR_OFFLINE_CONTROLLER_OFFLINE = "@text/teleinfo.thingstate.controller_offline";
+    public static final String ERROR_UNKNOWN_RETRY_IN_PROGRESS = "@text/teleinfo.thingstate.controller_unknown_retry_inprogress";
 
     /**
      * Smartthings scopes needed by this binding to work.

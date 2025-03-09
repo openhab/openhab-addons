@@ -13,22 +13,33 @@
 package org.openhab.binding.linky.internal.handler;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.linky.internal.InvalidFrameException;
+import org.openhab.binding.linky.internal.LinkyChannel;
+import org.openhab.binding.linky.internal.LinkyFrame;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -38,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * {@link BridgeLocalD2LHandler} is the base handler to access enedis data.
@@ -200,20 +212,111 @@ public class BridgeLocalD2LHandler extends BridgeLocalBaseHandler {
         logger.debug("end pooling socket");
     }
 
-    public boolean handleRead(ByteBuffer byteBuffer) {
-        boolean res = false;
-
+    public @Nullable ThingLinkyLocalHandler getHandlerForIdd2l(long idd2l) {
         List<Thing> lThing = getThing().getThings();
+
         for (Thing th : lThing) {
             ThingLinkyLocalHandler handler = (ThingLinkyLocalHandler) th.getHandler();
+
             if (handler != null) {
-                if (handler.handleRead(byteBuffer)) {
-                    res = true;
+                long thingIdd2l = handler.getIdd2l();
+
+                if (idd2l != thingIdd2l) {
+                    return handler;
                 }
             }
         }
 
-        return res;
+        return null;
     }
 
+    public boolean handleRead(ByteBuffer byteBuffer) {
+        boolean res = false;
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        // int version = byteBuffer.get(0);
+        int length = byteBuffer.getShort(2);
+        long idd2l = byteBuffer.getLong(4);
+
+        if (byteBuffer.position() < length) {
+            // We have incomplete data, wait next read on buffer
+            return false;
+        }
+
+        // Look if we have a thing that is declared for this idd2l
+        ThingLinkyLocalHandler handler = getHandlerForIdd2l(idd2l);
+        if (handler != null) {
+            // if so, get appKey and ivKey and decode the buffer
+            String appKey = handler.getAppKey();
+            String ivKey = handler.getIvKey();
+
+            try {
+                Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+
+                byte[] bytesKey = new BigInteger("7F" + appKey, 16).toByteArray();
+                SecretKeySpec key = new SecretKeySpec(bytesKey, 1, bytesKey.length - 1, "AES");
+
+                byte[] bytesIv = new BigInteger(ivKey, 16).toByteArray();
+                IvParameterSpec iv = new IvParameterSpec(bytesIv);
+
+                // cipher.init(Cipher.DECRYPT_MODE, key, iv);
+                cipher.init(Cipher.DECRYPT_MODE, key, iv);
+
+                byte[] bufferToDecode = new byte[length];
+                byteBuffer.get(16, bufferToDecode, 0, length - 16);
+                byte[] plainText = cipher.doFinal(bufferToDecode);
+
+                ByteBuffer byteBufferDecode = ByteBuffer.wrap(plainText);
+                byteBufferDecode.order(ByteOrder.LITTLE_ENDIAN);
+                // int crc16 = byteBufferDecode.getShort(16);
+                int payloadLength = byteBufferDecode.getShort(18);
+                int payloadType = byteBufferDecode.get(20) & 0x7f;
+                // int requestType = byteBufferDecode.get(20) & 0x80;
+                // int nextQuery = byteBufferDecode.get(21) & 0x7f;
+                // int isErrorOrSuccess = byteBufferDecode.get(21) & 0x80;
+
+                String st1 = new String(plainText, 22, payloadLength);
+                logger.info("frame with payload: {}", payloadType);
+
+                if (payloadType == 0x03) {
+                    // PUSH_JSON request
+                    Type type = new TypeToken<Map<String, String>>() {
+                    }.getType();
+
+                    Map<String, String> r1 = gson.fromJson(st1, type);
+                    if (r1 != null) {
+                        LinkyFrame frame = new LinkyFrame();
+                        for (String channelName : r1.keySet()) {
+
+                            try {
+                                LinkyChannel channel = LinkyChannel.getEnum(channelName);
+                                String val = r1.get(channelName);
+                                if (val != null) {
+                                    frame.put(channel, val);
+                                }
+                            } catch (IllegalArgumentException e) {
+                                final String error = String.format("The label '%s' is unknown", channelName);
+                                throw new InvalidFrameException(error);
+                            }
+                        }
+
+                        handler.handleFrame(frame);
+                        res = true;
+                    }
+                } else if (payloadType == 0x01) {
+                    // UPDATE_REQUEST request
+                    logger.info("Update request !");
+                } else if (payloadType == 0x05) {
+                    // GET_HORLOGE request
+                    logger.info("Get Horloge request !");
+                } else {
+                    logger.info("Unknown request !");
+                }
+            } catch (Exception ex) {
+                logger.debug("ex: {}", ex.toString(), ex);
+            }
+
+        }
+
+        return res;
+    }
 }

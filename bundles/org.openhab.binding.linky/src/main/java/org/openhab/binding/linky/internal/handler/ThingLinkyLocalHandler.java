@@ -14,10 +14,7 @@ package org.openhab.binding.linky.internal.handler;
 
 import static org.openhab.binding.linky.internal.LinkyBindingConstants.CHANNEL_NONE;
 
-import java.lang.reflect.Type;
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,17 +23,14 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Locale;
-import java.util.Map;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
+import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linky.internal.LinkyBindingConstants;
-import org.openhab.binding.linky.internal.LinkyChannelRegistry;
+import org.openhab.binding.linky.internal.LinkyChannel;
 import org.openhab.binding.linky.internal.LinkyConfiguration;
+import org.openhab.binding.linky.internal.LinkyFrame;
 import org.openhab.binding.linky.internal.ValueType;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
@@ -58,9 +52,6 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * The {@link ThingLinkyLocalHandler} is responsible for handling commands, which are
@@ -156,100 +147,30 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
         super.updateStatus(status, statusDetail, description);
     }
 
-    public boolean handleRead(ByteBuffer byteBuffer) {
-        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        // int version = byteBuffer.get(0);
-        int length = byteBuffer.getShort(2);
-        long idd2l = byteBuffer.getLong(4);
-
-        if (idd2l != this.idd2l) {
-            return false;
-        }
-
-        if (byteBuffer.position() < length) {
-            // We have incomplete data, wait next read on buffer
-            return false;
-        }
-
-        try {
-            Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
-
-            byte[] bytesKey = new BigInteger("7F" + appKey, 16).toByteArray();
-            SecretKeySpec key = new SecretKeySpec(bytesKey, 1, bytesKey.length - 1, "AES");
-
-            byte[] bytesIv = new BigInteger(ivKey, 16).toByteArray();
-            IvParameterSpec iv = new IvParameterSpec(bytesIv);
-
-            // cipher.init(Cipher.DECRYPT_MODE, key, iv);
-            cipher.init(Cipher.DECRYPT_MODE, key, iv);
-
-            byte[] bufferToDecode = new byte[length];
-            byteBuffer.get(16, bufferToDecode, 0, length - 16);
-            byte[] plainText = cipher.doFinal(bufferToDecode);
-
-            ByteBuffer byteBufferDecode = ByteBuffer.wrap(plainText);
-            byteBufferDecode.order(ByteOrder.LITTLE_ENDIAN);
-            // int crc16 = byteBufferDecode.getShort(16);
-            int payloadLength = byteBufferDecode.getShort(18);
-            int payloadType = byteBufferDecode.get(20) & 0x7f;
-            // int requestType = byteBufferDecode.get(20) & 0x80;
-            // int nextQuery = byteBufferDecode.get(21) & 0x7f;
-            // int isErrorOrSuccess = byteBufferDecode.get(21) & 0x80;
-
-            String st1 = new String(plainText, 22, payloadLength);
-
-            Bridge bridge = getBridge();
-            if (bridge == null) {
-                return false;
-            }
-
-            BridgeLocalBaseHandler bridgeHandler = (BridgeLocalBaseHandler) bridge.getHandler();
-            if (bridgeHandler == null) {
-                return false;
-            }
-            Gson gson = bridgeHandler.getGson();
-
-            logger.info("frame with payload: {}", payloadType);
-
-            if (payloadType == 0x03) {
-                // PUSH_JSON request
-                Type type = new TypeToken<Map<String, String>>() {
-                }.getType();
-
-                Map<String, String> r1 = gson.fromJson(st1, type);
-                if (r1 != null) {
-                    handlePayload(r1);
-                }
-            } else if (payloadType == 0x01) {
-                // UPDATE_REQUEST request
-                logger.info("Update request !");
-            } else if (payloadType == 0x05) {
-                // GET_HORLOGE request
-                logger.info("Get Horloge request !");
-            } else {
-                logger.info("Unknown request !");
-            }
-        } catch (Exception ex) {
-            logger.debug("ex: {}", ex.toString(), ex);
-        }
-
-        return true;
+    public long getIdd2l() {
+        return this.idd2l;
     }
 
-    protected void handlePayload(Map<String, String> payLoad) {
+    public String getAppKey() {
+        return this.appKey;
+    }
+
+    public String getIvKey() {
+        return this.ivKey;
+    }
+
+    protected void handleFrame(LinkyFrame frame) {
         double urms = 0.0;
         double sinst = 0.0;
 
-        for (String key : payLoad.keySet()) {
-            String value = payLoad.get(key);
-
+        for (Entry<LinkyChannel, String> entry : frame.getChannelToValues().entrySet()) {
             try {
-                LinkyChannelRegistry channel = LinkyChannelRegistry.getEnum(key);
-
+                LinkyChannel channel = entry.getKey();
                 if (channel.getChannelName().equals(CHANNEL_NONE)) {
                     continue;
                 }
 
+                String value = entry.getValue();
                 if (value != null) {
                     String timestamp = null;
                     int pos1 = value.indexOf('|');
@@ -283,21 +204,19 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
                         }
                     }
 
-                    key = key.replace("+1", "_PLUS_1");
-
-                    if (key.equals(LinkyChannelRegistry.STGE.name())) {
+                    if (channel == LinkyChannel.STGE) {
                         handleStgePayload(value);
-                    } else if (key.equals(LinkyChannelRegistry.RELAIS.name())) {
+                    } else if (channel == LinkyChannel.RELAIS) {
                         handleRelaisPayload(value);
-                    } else if (key.equals(LinkyChannelRegistry.PJOURF_PLUS_1.name())) {
-                        handlePayload(LinkyChannelRegistry.PJOURF_PLUS_1.name(), value);
-                    } else if (key.equals(LinkyChannelRegistry.PPOINTE.name())) {
-                        handlePayload(LinkyChannelRegistry.PPOINTE.name(), value);
+                    } else if (channel == LinkyChannel.PJOURF_PLUS_1) {
+                        handlePayload(LinkyChannel.PJOURF_PLUS_1.name(), value);
+                    } else if (channel == LinkyChannel.PPOINTE) {
+                        handlePayload(LinkyChannel.PPOINTE.name(), value);
                     }
 
-                    if (key.equals(LinkyChannelRegistry.URMS1.name())) {
+                    if (channel == LinkyChannel.URMS1) {
                         urms = Double.valueOf(value);
-                    } else if (key.equals(LinkyChannelRegistry.SINSTS.name())) {
+                    } else if (channel == LinkyChannel.SINSTS) {
                         sinst = Double.valueOf(value);
                     }
 
@@ -331,9 +250,9 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
     private void updateCalcVars(double urms, double sinst) {
         double irms1c = sinst / urms;
 
-        LinkyChannelRegistry channelIrms1f = LinkyChannelRegistry.IRMS1F;
-        LinkyChannelRegistry channelSactive = LinkyChannelRegistry.SACTIVE;
-        LinkyChannelRegistry channelSreactive = LinkyChannelRegistry.SREACTIVE;
+        LinkyChannel channelIrms1f = LinkyChannel.IRMS1F;
+        LinkyChannel channelSactive = LinkyChannel.SACTIVE;
+        LinkyChannel channelSreactive = LinkyChannel.SREACTIVE;
 
         updateState(channelIrms1f.getGroupName(), channelIrms1f.getChannelName(),
                 QuantityType.valueOf(channelIrms1f.getFactor() * irms1c, channelIrms1f.getUnit()));
