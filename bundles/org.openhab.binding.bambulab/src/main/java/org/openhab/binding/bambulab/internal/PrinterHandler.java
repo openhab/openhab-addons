@@ -87,7 +87,7 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
         }
         logger = LoggerFactory.getLogger(PrinterHandler.class.getName() + "." + config.serial);
 
-        if (config.hostname.isEmpty()) {
+        if (config.hostname.isBlank()) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/printer.handler.init.noHostname");
             return;
         }
@@ -104,12 +104,12 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
             return;
         }
 
-        if (config.accessCode.isEmpty()) {
+        if (config.accessCode.isBlank()) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/printer.handler.init.noAccessCode");
             return;
         }
 
-        if (config.username.isEmpty()) {
+        if (config.username.isBlank()) {
             config.username = PrinterClientConfig.LOCAL_USERNAME;
         }
 
@@ -152,15 +152,13 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
 
     @Override
     public void dispose() {
-        {
-            var localClient = client;
-            client = null;
-            if (localClient != null) {
-                try {
-                    localClient.close();
-                } catch (Exception e) {
-                    logger.warn("Could not correctly dispose PrinterClient", e);
-                }
+        var localClient = client;
+        client = null;
+        if (localClient != null) {
+            try {
+                localClient.close();
+            } catch (Exception e) {
+                logger.warn("Could not correctly dispose PrinterClient", e);
             }
         }
         logger = LoggerFactory.getLogger(PrinterHandler.class);
