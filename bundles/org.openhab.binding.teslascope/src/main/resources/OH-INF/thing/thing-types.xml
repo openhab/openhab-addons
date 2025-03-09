@@ -22,6 +22,7 @@
 			<channel id="charge-energy-added" typeId="charge-energy-added"/>
 			<channel id="charge-limit-soc-standard" typeId="charge-limit-soc-standard"/>
 			<channel id="charge-port" typeId="charge-port"/>
+			<channel id="charge-port-latch" typeId="charge-port-latch"/>
 			<channel id="charge-rate" typeId="charge-rate"/>
 			<channel id="charger-power" typeId="charger-power"/>
 			<channel id="charger-voltage" typeId="charger-voltage"/>
@@ -82,6 +83,10 @@
 			<channel id="valet-mode" typeId="valet-mode"/>
 			<channel id="wiper-blade-heater" typeId="wiper-blade-heater"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="apiKey" type="text" required="true">
@@ -193,6 +198,11 @@
 		<item-type>Switch</item-type>
 		<label>Charge Port</label>
 		<description>Open the Charge Port (ON) or indicates the state of the Charge Port (ON/OFF if Open/Closed)</description>
+	</channel-type>
+	<channel-type id="charge-port-latch">
+		<item-type>Switch</item-type>
+		<label>Charge Port Latch</label>
+		<description>Indicate the Charge Port Latch status, (ON/OFF if latched/unlatched)</description>
 	</channel-type>
 	<channel-type id="charge-rate" advanced="true">
 		<item-type>Number:Speed</item-type>

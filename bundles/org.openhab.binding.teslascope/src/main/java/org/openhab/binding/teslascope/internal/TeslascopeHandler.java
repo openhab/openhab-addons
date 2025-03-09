@@ -206,6 +206,8 @@ public class TeslascopeHandler extends BaseThingHandler {
                     new DecimalType(detailedInformation.chargeState.chargeLimitSoc / 100));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_PORT,
                     OnOffType.from(1 == detailedInformation.chargeState.chargePortDoorOpen));
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_PORT_LATCH,
+                    OnOffType.from("Engaged".equals(detailedInformation.chargeState.chargePortLatch)));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_RATE,
                     new QuantityType<>(detailedInformation.chargeState.chargeRate, ImperialUnits.MILES_PER_HOUR));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGER_POWER,
