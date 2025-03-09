@@ -72,6 +72,9 @@ public class ChargeState {
     @SerializedName("scheduled_charging_start_time")
     public String scheduledChargingStartTime = " ";
 
+    @SerializedName("detailed_charge_state")
+    public String detailedChargeState = "";
+
     private ChargeState() {
     }
 }

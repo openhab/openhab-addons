@@ -198,8 +198,8 @@ public class TeslascopeHandler extends BaseThingHandler {
             updateState(TeslascopeBindingConstants.CHANNEL_ESTIMATED_BATTERY_RANGE,
                     new QuantityType<>(detailedInformation.chargeState.estBatteryRange, ImperialUnits.MILE));
             // charge_enable_request isn't the right flag to determine if car is charging or not
-            updateState(TeslascopeBindingConstants.CHANNEL_CHARGE,
-                    OnOffType.from("Enable".equals(detailedInformation.chargeState.chargingState)));
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGE, OnOffType
+                    .from("DetailedChargeStateCharging".equals(detailedInformation.chargeState.chargingState)));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_ENERGY_ADDED,
                     new QuantityType<>(detailedInformation.chargeState.chargeEnergyAdded, Units.KILOWATT_HOUR));
             updateState(CHANNEL_CHARGE_LIMIT_SOC_STANDARD,
@@ -216,8 +216,8 @@ public class TeslascopeHandler extends BaseThingHandler {
                     new QuantityType<>(detailedInformation.chargeState.chargerVoltage, Units.VOLT));
             updateState(TeslascopeBindingConstants.CHANNEL_TIME_TO_FULL_CHARGE,
                     new QuantityType<>(detailedInformation.chargeState.timeToFullCharge, Units.HOUR));
-            updateState(TeslascopeBindingConstants.CHANNEL_CHARGING_STATE,
-                    new StringType(detailedInformation.chargeState.chargingState));
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGING_STATE, new StringType(
+                    detailedInformation.chargeState.detailedChargeState.replace("DetailedChargeState", "")));
             updateState(TeslascopeBindingConstants.CHANNEL_SCHEDULED_CHARGING_PENDING,
                     OnOffType.from(1 == detailedInformation.chargeState.scheduledChargingPending));
             updateState(TeslascopeBindingConstants.CHANNEL_SCHEDULED_CHARGING_START,
