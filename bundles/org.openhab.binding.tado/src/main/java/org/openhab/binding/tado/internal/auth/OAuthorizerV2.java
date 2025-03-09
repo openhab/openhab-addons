@@ -17,12 +17,10 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.tado.swagger.codegen.api.ApiException;
 import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,47 +34,32 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
-public class OAuthorizerV2 implements Authorizer, AutoCloseable {
-
-    private static final String DEVICE_URL = "https://login.tado.com/oauth2/device_authorize";
-    private static final String TOKEN_URL = "https://login.tado.com/oauth2/token";
-    private static final String CLIENT_ID = "1bb50063-6b0c-4d11-bd99-387f4a91cc46";
-    private static final String SCOPE = "offline_access";
+public class OAuthorizerV2 implements Authorizer {
 
     private final Logger logger = LoggerFactory.getLogger(OAuthorizerV2.class);
+
     private final OAuthClientService oAuthService;
 
-    public OAuthorizerV2(OAuthFactory oAuthFactory, String handle) {
-        oAuthService = oAuthFactory.createOAuthRfc8628ClientService(handle, TOKEN_URL, DEVICE_URL, CLIENT_ID, SCOPE);
+    public OAuthorizerV2(OAuthClientService oAuthService) {
+        this.oAuthService = oAuthService;
     }
 
     @Override
-    public void addAuthorization(Request request) throws ApiException, IOException {
+    public void addAuthorization(Request request) {
         try {
             AccessTokenResponse token = oAuthService.getAccessTokenResponse();
             if (token != null) {
-                logger.trace("addAuthorization():  accessToken:{}", token);
                 request.header(HttpHeader.AUTHORIZATION,
                         String.format("%s %s", token.getTokenType(), token.getAccessToken()));
+                return;
             }
-            throw new ApiException("addAuthorization(): access token is null");
         } catch (OAuthException | IOException | OAuthResponseException e) {
-            throw new ApiException("addAuthorization(): Exception", e);
+            logger.debug("addAuthorization() => getAccessTokenResponse() error: {}", e.getMessage(), e);
         }
     }
 
-    public @Nullable String getRfc8628AuthenticationUserUri() {
-        try {
-            return oAuthService.getUserAuthenticationUri();
-        } catch (OAuthException | IOException | OAuthResponseException e) {
-            logger.warn("addAuthorization()  error:{}", e.getMessage(), e);
-            return null;
-        }
-    }
-
-    @Override
-    public void close() throws Exception {
-        oAuthService.close();
+    public @Nullable String getUserAuthenticationUri() throws OAuthException, IOException, OAuthResponseException {
+        return oAuthService.getUserAuthenticationUri();
     }
 
     public @Nullable AccessTokenResponse getAccessTokenResponse()

@@ -18,7 +18,7 @@ import org.openhab.binding.tado.swagger.codegen.api.GsonBuilderFactory;
 import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
 import org.openhab.binding.tado.swagger.codegen.api.auth.OAuthAuthorizer;
 import org.openhab.binding.tado.swagger.codegen.api.client.HomeApi;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
 
 import com.google.gson.Gson;
 
@@ -41,9 +41,9 @@ public class HomeApiFactory {
         return new HomeApi(gson, authorizer);
     }
 
-    public HomeApi create(OAuthFactory oAuthFactory, String handle) {
+    public HomeApi create(OAuthClientService oAuthClientService) {
         Gson gson = GsonBuilderFactory.defaultGsonBuilder().create();
-        Authorizer authorizer = new OAuthorizerV2(oAuthFactory, handle);
+        Authorizer authorizer = new OAuthorizerV2(oAuthClientService);
         return new HomeApi(gson, authorizer);
     }
 }
