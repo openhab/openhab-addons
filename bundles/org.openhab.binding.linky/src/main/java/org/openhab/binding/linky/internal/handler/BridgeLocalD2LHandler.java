@@ -25,7 +25,6 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -42,7 +41,6 @@ import org.openhab.binding.linky.internal.LinkyChannel;
 import org.openhab.binding.linky.internal.LinkyFrame;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
@@ -210,24 +208,6 @@ public class BridgeLocalD2LHandler extends BridgeLocalBaseHandler {
         }
 
         logger.debug("end pooling socket");
-    }
-
-    public @Nullable ThingLinkyLocalHandler getHandlerForIdd2l(long idd2l) {
-        List<Thing> lThing = getThing().getThings();
-
-        for (Thing th : lThing) {
-            ThingLinkyLocalHandler handler = (ThingLinkyLocalHandler) th.getHandler();
-
-            if (handler != null) {
-                long thingIdd2l = handler.getIdd2l();
-
-                if (idd2l != thingIdd2l) {
-                    return handler;
-                }
-            }
-        }
-
-        return null;
     }
 
     public boolean handleRead(ByteBuffer byteBuffer) {

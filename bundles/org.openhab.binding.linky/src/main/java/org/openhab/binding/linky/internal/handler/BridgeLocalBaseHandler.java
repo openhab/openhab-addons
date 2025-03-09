@@ -16,8 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 
@@ -55,6 +57,42 @@ public class BridgeLocalBaseHandler extends BaseBridgeHandler {
 
     public Gson getGson() {
         return gson;
+    }
+
+    public @Nullable ThingLinkyLocalHandler getHandlerForIdd2l(long idd2l) {
+        List<Thing> lThing = getThing().getThings();
+
+        for (Thing th : lThing) {
+            ThingLinkyLocalHandler handler = (ThingLinkyLocalHandler) th.getHandler();
+
+            if (handler != null) {
+                long thingIdd2l = handler.getIdd2l();
+
+                if (idd2l == thingIdd2l) {
+                    return handler;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public @Nullable ThingLinkyLocalHandler getHandlerForPrmId(String prmId) {
+        List<Thing> lThing = getThing().getThings();
+
+        for (Thing th : lThing) {
+            ThingLinkyLocalHandler handler = (ThingLinkyLocalHandler) th.getHandler();
+
+            if (handler != null) {
+                String thingPrmId = handler.getPrmId();
+
+                if (prmId.equals(thingPrmId)) {
+                    return handler;
+                }
+            }
+        }
+
+        return null;
     }
 
 }

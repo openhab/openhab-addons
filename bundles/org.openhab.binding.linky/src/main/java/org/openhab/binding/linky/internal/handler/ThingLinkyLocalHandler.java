@@ -76,6 +76,7 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
     private String appKey = "";
     private String ivKey = "";
     private long idd2l = -1;
+    private String prmId = "";
 
     private double cosphi = Double.NaN;
 
@@ -88,7 +89,8 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
 
     @Override
     public synchronized void initialize() {
-        logger.debug("Initializing Linky handler for {}", config.prmId);
+        prmId = config.prmId;
+        logger.debug("Initializing Linky handler for {}", prmId);
 
         // update the timezone if not set to default to openhab default timezone
         Configuration thingConfig = getConfig();
@@ -149,6 +151,10 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
 
     public long getIdd2l() {
         return this.idd2l;
+    }
+
+    public String getPrmId() {
+        return this.prmId;
     }
 
     public String getAppKey() {
