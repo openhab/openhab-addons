@@ -49,13 +49,13 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * {@link BridgeLinkyHandler} is the base handler to access enedis data.
+ * {@link BridgeRemoteBaseHandler} is the base handler to access enedis data.
  *
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
-public abstract class BridgeLinkyHandler extends BaseBridgeHandler {
-    private final Logger logger = LoggerFactory.getLogger(BridgeLinkyHandler.class);
+public abstract class BridgeRemoteBaseHandler extends BaseBridgeHandler {
+    private final Logger logger = LoggerFactory.getLogger(BridgeRemoteBaseHandler.class);
 
     protected final HttpService httpService;
     protected final BundleContext bundleContext;
@@ -73,7 +73,7 @@ public abstract class BridgeLinkyHandler extends BaseBridgeHandler {
 
     private List<String> registeredPrmId = new ArrayList<>();
 
-    public BridgeLinkyHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
+    public BridgeRemoteBaseHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
             final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
         super(bridge);
@@ -164,7 +164,7 @@ public abstract class BridgeLinkyHandler extends BaseBridgeHandler {
         super.updateStatus(status, statusDetail, description);
     }
 
-    public abstract String getToken(BaseRemoteHandler handler) throws LinkyException;
+    public abstract String getToken(ThingBaseRemoteHandler handler) throws LinkyException;
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {

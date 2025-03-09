@@ -121,7 +121,7 @@ public class BridgeRemoteEnedisHandler extends BridgeRemoteApiHandler {
     }
 
     @Override
-    public String getToken(BaseRemoteHandler handler) throws LinkyException {
+    public String getToken(ThingBaseRemoteHandler handler) throws LinkyException {
         AccessTokenResponse accesToken = getAccessTokenResponse();
         if (accesToken == null) {
             accesToken = getAccessTokenByClientCredentials();

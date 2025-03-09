@@ -52,7 +52,7 @@ import com.google.gson.Gson;
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
-public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
+public class BridgeLocalD2LHandler extends BridgeRemoteBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(BridgeLocalD2LHandler.class);
     private @Nullable ScheduledFuture<?> pollingJob = null;
 
@@ -211,7 +211,7 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
 
         List<Thing> lThing = getThing().getThings();
         for (Thing th : lThing) {
-            LinkyLocalHandler handler = (LinkyLocalHandler) th.getHandler();
+            ThingLinkyLocalHandler handler = (ThingLinkyLocalHandler) th.getHandler();
             if (handler != null) {
                 if (handler.handleRead(byteBuffer)) {
                     res = true;
@@ -277,7 +277,7 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
     }
 
     @Override
-    public String getToken(BaseRemoteHandler handler) throws LinkyException {
+    public String getToken(ThingBaseRemoteHandler handler) throws LinkyException {
         return "";
     }
 

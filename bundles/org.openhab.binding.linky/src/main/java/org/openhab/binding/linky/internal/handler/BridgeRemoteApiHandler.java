@@ -47,7 +47,7 @@ import com.google.gson.Gson;
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
-public abstract class BridgeRemoteApiHandler extends BridgeLinkyHandler {
+public abstract class BridgeRemoteApiHandler extends BridgeRemoteBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(BridgeRemoteApiHandler.class);
 
     private final OAuthFactory oAuthFactory;
