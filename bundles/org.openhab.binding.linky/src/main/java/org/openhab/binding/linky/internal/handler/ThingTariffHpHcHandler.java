@@ -24,17 +24,17 @@ import org.openhab.core.library.unit.CurrencyUnits;
 import org.openhab.core.thing.Thing;
 
 /**
- * The {@link TariffHpHcHandler} is responsible for handling commands, which are
+ * The {@link ThingTariffHpHcHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class TariffHpHcHandler extends TariffHandler<TariffHpHc> {
+public class ThingTariffHpHcHandler extends ThingTariffHandler<TariffHpHc> {
     private static final String EMPTY_LINE = ";;;;;;;;";
     private static final String DATASET_ID = "f7303b3a-93c7-4242-813d-84919034c416";
 
-    public TariffHpHcHandler(Thing thing) {
+    public ThingTariffHpHcHandler(Thing thing) {
         super(thing, DATASET_ID);
     }
 

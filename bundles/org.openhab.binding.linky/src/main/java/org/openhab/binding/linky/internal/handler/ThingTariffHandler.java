@@ -48,18 +48,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link TariffHandler} is the base class for Tariff Things. It takes care of
+ * The {@link ThingTariffHandler} is the base class for Tariff Things. It takes care of
  * update logic and update scheduling once a day.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public abstract class TariffHandler<T extends Tariff> extends BaseThingHandler {
+public abstract class ThingTariffHandler<T extends Tariff> extends BaseThingHandler {
     private static final String URL = "https://www.data.gouv.fr/fr/datasets/r/%s";
     private static final int REFRESH_FIRST_HOUR_OF_DAY = 0;
     private static final int REFRESH_FIRST_MINUTE_OF_DAY = 1;
 
-    private final Logger logger = LoggerFactory.getLogger(TariffHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ThingTariffHandler.class);
     private final List<T> tariffs = new ArrayList<>();
     private final String url;
 
@@ -67,7 +67,7 @@ public abstract class TariffHandler<T extends Tariff> extends BaseThingHandler {
     private @Nullable String fileCache = null;
     private int puissance = 6;
 
-    public TariffHandler(Thing thing, String dataset) {
+    public ThingTariffHandler(Thing thing, String dataset) {
         super(thing);
         this.url = URL.formatted(dataset);
     }

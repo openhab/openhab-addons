@@ -47,7 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link TempoCalendarHandler} is responsible for handling commands, which are
+ * The {@link ThingTempoCalendarHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Gaël L'hopital - Initial contribution
@@ -56,14 +56,14 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 @SuppressWarnings("null")
-public class TempoCalendarHandler extends BaseRemoteHandler {
+public class ThingTempoCalendarHandler extends ThingBaseRemoteHandler {
 
     private static final Random RANDOM_NUMBERS = new Random();
     private static final int REFRESH_HOUR_OF_DAY = 1;
     private static final int REFRESH_MINUTE_OF_DAY = RANDOM_NUMBERS.nextInt(60);
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
 
-    private final Logger logger = LoggerFactory.getLogger(TempoCalendarHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ThingTempoCalendarHandler.class);
 
     private final ExpiringDayCache<ResponseTempo> tempoInformation;
 
@@ -75,7 +75,7 @@ public class TempoCalendarHandler extends BaseRemoteHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob = null;
 
-    public TempoCalendarHandler(Thing thing) {
+    public ThingTempoCalendarHandler(Thing thing) {
         super(thing);
 
         config = getConfigAs(LinkyConfiguration.class);
@@ -99,7 +99,7 @@ public class TempoCalendarHandler extends BaseRemoteHandler {
             return;
         }
 
-        BridgeLinkyHandler bridgeHandler = (BridgeLinkyHandler) bridge.getHandler();
+        BridgeRemoteBaseHandler bridgeHandler = (BridgeRemoteBaseHandler) bridge.getHandler();
         if (bridgeHandler == null) {
             return;
         }
@@ -127,7 +127,7 @@ public class TempoCalendarHandler extends BaseRemoteHandler {
             throw new LinkyException("Unable to get bridge in supportNewApiFormat()");
         }
 
-        BridgeLinkyHandler bridgeHandler = (BridgeLinkyHandler) bridge.getHandler();
+        BridgeRemoteBaseHandler bridgeHandler = (BridgeRemoteBaseHandler) bridge.getHandler();
         if (bridgeHandler == null) {
             throw new LinkyException("Unable to get bridgeHandler in supportNewApiFormat()");
         }
@@ -147,7 +147,7 @@ public class TempoCalendarHandler extends BaseRemoteHandler {
                     return;
                 }
 
-                BridgeLinkyHandler bridgeHandler = (BridgeLinkyHandler) lcBridge.getHandler();
+                BridgeRemoteBaseHandler bridgeHandler = (BridgeRemoteBaseHandler) lcBridge.getHandler();
                 if (bridgeHandler == null) {
                     return;
                 }

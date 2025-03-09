@@ -63,7 +63,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * The {@link LinkyLocalHandler} is responsible for handling commands, which are
+ * The {@link ThingLinkyLocalHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Laurent Arnal - Initial contribution
@@ -72,11 +72,11 @@ import com.google.gson.reflect.TypeToken;
 
 @NonNullByDefault
 @SuppressWarnings("null")
-public class LinkyLocalHandler extends BaseThingHandler {
+public class ThingLinkyLocalHandler extends BaseThingHandler {
     private final TimeZoneProvider timeZoneProvider;
     private ZoneId zoneId = ZoneId.systemDefault();
 
-    private final Logger logger = LoggerFactory.getLogger(LinkyLocalHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ThingLinkyLocalHandler.class);
 
     private LinkyConfiguration config;
 
@@ -88,7 +88,7 @@ public class LinkyLocalHandler extends BaseThingHandler {
 
     private double cosphi = Double.NaN;
 
-    public LinkyLocalHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider) {
+    public ThingLinkyLocalHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider) {
         super(thing);
 
         config = getConfigAs(LinkyConfiguration.class);
@@ -123,7 +123,7 @@ public class LinkyLocalHandler extends BaseThingHandler {
             return;
         }
 
-        BridgeLinkyHandler bridgeHandler = (BridgeLinkyHandler) bridge.getHandler();
+        BridgeRemoteBaseHandler bridgeHandler = (BridgeRemoteBaseHandler) bridge.getHandler();
         if (bridgeHandler == null) {
             return;
         }
@@ -203,7 +203,7 @@ public class LinkyLocalHandler extends BaseThingHandler {
                 return false;
             }
 
-            BridgeLinkyHandler bridgeHandler = (BridgeLinkyHandler) bridge.getHandler();
+            BridgeRemoteBaseHandler bridgeHandler = (BridgeRemoteBaseHandler) bridge.getHandler();
             if (bridgeHandler == null) {
                 return false;
             }

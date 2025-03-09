@@ -58,7 +58,7 @@ import com.google.gson.JsonSyntaxException;
  *
  */
 @NonNullByDefault
-public class BridgeRemoteEnedisWebHandler extends BridgeLinkyHandler {
+public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(BridgeRemoteEnedisWebHandler.class);
 
     public static final String ENEDIS_DOMAIN = ".enedis.fr";
@@ -100,7 +100,7 @@ public class BridgeRemoteEnedisWebHandler extends BridgeLinkyHandler {
     }
 
     @Override
-    public String getToken(BaseRemoteHandler handler) throws LinkyException {
+    public String getToken(ThingBaseRemoteHandler handler) throws LinkyException {
         return "";
     }
 

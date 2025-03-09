@@ -134,7 +134,7 @@ public class BridgeRemoteMyElectricalDataHandler extends BridgeRemoteApiHandler 
                 }
 
                 config.put("token", token);
-                LinkyRemoteHandler handler = (LinkyRemoteHandler) thing.getHandler();
+                ThingLinkyRemoteHandler handler = (ThingLinkyRemoteHandler) thing.getHandler();
                 if (handler != null) {
                     handler.saveConfiguration(config);
                 }
@@ -151,7 +151,7 @@ public class BridgeRemoteMyElectricalDataHandler extends BridgeRemoteApiHandler 
     }
 
     @Override
-    public String getToken(BaseRemoteHandler handler) throws LinkyException {
+    public String getToken(ThingBaseRemoteHandler handler) throws LinkyException {
         LinkyConfiguration config = handler.getLinkyConfig();
         if (config == null) {
             return "";

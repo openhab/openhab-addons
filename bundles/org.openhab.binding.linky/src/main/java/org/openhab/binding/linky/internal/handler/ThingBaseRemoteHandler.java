@@ -21,7 +21,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 
 /**
- * The {@link BaseRemoteHandler} is responsible for handling commands, which are
+ * The {@link ThingBaseRemoteHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Gaël L'hopital - Initial contribution
@@ -30,11 +30,11 @@ import org.openhab.core.types.Command;
 
 @NonNullByDefault
 @SuppressWarnings("null")
-public class BaseRemoteHandler extends BaseThingHandler {
+public class ThingBaseRemoteHandler extends BaseThingHandler {
 
     protected LinkyConfiguration config;
 
-    public BaseRemoteHandler(Thing thing) {
+    public ThingBaseRemoteHandler(Thing thing) {
         super(thing);
 
         config = getConfigAs(LinkyConfiguration.class);
