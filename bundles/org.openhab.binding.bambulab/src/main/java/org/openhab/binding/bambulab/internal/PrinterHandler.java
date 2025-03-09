@@ -69,7 +69,7 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (!LED_CHAMBER_LIGHT_CHANNEL.equals(channelUID.getId())
-                && LED_WORK_LIGHT_CHANNEL.equals(channelUID.getId())) {
+                && !LED_WORK_LIGHT_CHANNEL.equals(channelUID.getId())) {
             return;
         }
         var ledNode = LED_CHAMBER_LIGHT_CHANNEL.equals(channelUID.getId()) ? CHAMBER_LIGHT : WORK_LIGHT;
