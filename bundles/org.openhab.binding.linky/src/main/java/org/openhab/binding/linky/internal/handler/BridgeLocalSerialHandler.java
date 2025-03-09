@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linky.internal.InvalidFrameException;
+import org.openhab.binding.linky.internal.LinkyChannel;
 import org.openhab.binding.linky.internal.LinkyFrame;
 import org.openhab.binding.linky.internal.LinkySerialConfiguration;
 import org.openhab.binding.linky.internal.LinkySerialInputStream;
@@ -137,9 +138,12 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
         updateStatus(ThingStatus.ONLINE);
         logger.info("frame received!!");
 
-        ThingLinkyLocalHandler handler = null;
-        if (handler != null) {
-            handler.handleFrame(frame);
+        String prmId = frame.get(LinkyChannel.PRM);
+        if (prmId != null) {
+            ThingLinkyLocalHandler handler = getHandlerForPrmId(prmId);
+            if (handler != null) {
+                handler.handleFrame(frame);
+            }
         }
     }
 
