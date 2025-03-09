@@ -11,9 +11,9 @@ To use cloud mode, follow these steps:
 
 ### Find Username
 
-Log in to Maker World and visit [my-preferences](https://makerworld.com/api/v1/design-user-service/my/preference) to
-retrieve a JSON response containing your data. The relevant field is `uid`, which represents the unique ID of your
-account. Use this value as the `username` in the configuration (advanced field) with the prefix `u_`.
+Log in to Maker World and visit [my-preferences](https://makerworld.com/api/v1/design-user-service/my/preference) to retrieve a JSON response containing your data. 
+The relevant field is `uid`, which represents the unique ID of your account. 
+Use this value as the `username` in the configuration (advanced field) with the prefix `u_`.
 
 ### Access Token
 
@@ -118,10 +118,9 @@ end
 ### `refreshChannels`
 
 Reports the complete status of the printer.
-This is unnecessary for the X1 series since it already transmits the full object each time. However, the P1 series only
-sends the values that have been updated compared to the previous report.
-As a rule of thumb, refrain from executing this command at intervals less than 5 minutes on the P1P, as it may cause lag
-due to its hardware limitations.
+This is unnecessary for the X1 series since it already transmits the full object each time. 
+However, the P1 series only sends the values that have been updated compared to the previous report.
+As a rule of thumb, refrain from executing this command at intervals less than 5 minutes on the P1P, as it may cause lag due to its hardware limitations.
 
 ### `sendCommand`
 
