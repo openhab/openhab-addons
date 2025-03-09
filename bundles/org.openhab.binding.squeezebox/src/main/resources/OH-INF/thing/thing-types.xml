@@ -94,10 +94,6 @@
 
 		<properties>
 			<property name="vendor">Logitech</property>
-			<property name="modelId"></property>
-			<property name="name"></property>
-			<property name="uid"></property>
-			<property name="ip"></property>
 			<property name="thingTypeVersion">1</property>
 		</properties>
 
