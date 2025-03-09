@@ -15,7 +15,6 @@ package org.openhab.binding.tado.internal.handler;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -104,6 +103,8 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
 
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
+
         configuration = getConfigAs(TadoHomeConfig.class);
 
         String userName = configuration.username;
@@ -132,11 +133,12 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
             }
             oAuthClientService.addAccessTokenRefreshListener(this);
             api = new HomeApiFactory().create(oAuthClientService);
+            logger.trace("initialize() api v2 created");
         } else {
             offlineMessage = "Username and/or password might be invalid";
             api = new HomeApiFactory().create(Objects.requireNonNull(userName), Objects.requireNonNull(password));
+            logger.trace("initialize() api v1 created");
         }
-        logger.trace("initialize() api created {}", api);
 
         try {
             httpService.registerServlet(TadoAuthenticationServlet.PATH, httpServlet, null, null);
@@ -262,9 +264,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
     }
 
     @Override
-    public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
-        if (!tokenResponse.isExpired(Instant.now(), 0)) {
-            initializeBridgeStatusAndPropertiesIfOffline();
-        }
+    public void onAccessTokenResponse(@Nullable AccessTokenResponse tokenResponse) {
+        initializeBridgeStatusAndPropertiesIfOffline();
     }
 }
