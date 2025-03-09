@@ -151,10 +151,10 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
                     this.httpClientFactory, this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
         } else if (THING_TYPE_D2L_BRIDGE.equals(thing.getThingTypeUID())) {
-            BridgeLocalD2LHandler handler = new BridgeLocalD2LHandler((Bridge) thing);
+            BridgeLocalD2LHandler handler = new BridgeLocalD2LHandler((Bridge) thing, gson);
             return handler;
         } else if (THING_TYPE_SERIAL_BRIDGE.equals(thing.getThingTypeUID())) {
-            BridgeLocalSerialHandler handler = new BridgeLocalSerialHandler((Bridge) thing);
+            BridgeLocalSerialHandler handler = new BridgeLocalSerialHandler((Bridge) thing, gson);
             return handler;
         } else if (THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
             ThingLinkyRemoteHandler handler = new ThingLinkyRemoteHandler(thing, localeProvider, timeZoneProvider);

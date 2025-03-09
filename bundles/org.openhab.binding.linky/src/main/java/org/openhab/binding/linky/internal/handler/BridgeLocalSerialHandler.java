@@ -25,6 +25,8 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link TeleinfoSerialControllerHandler} class defines a handler for serial controller.
  *
@@ -46,8 +48,8 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler
     private @Nullable ScheduledFuture<?> keepAliveThread;
     private long invalidFrameCounter = 0;
 
-    public BridgeLocalSerialHandler(Bridge bridge) {
-        super(bridge);
+    public BridgeLocalSerialHandler(Bridge bridge, Gson gson) {
+        super(bridge, gson);
         this.serialPortManager = serialPortManager;
     }
 
