@@ -123,7 +123,7 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
             return;
         }
 
-        BridgeRemoteBaseHandler bridgeHandler = (BridgeRemoteBaseHandler) bridge.getHandler();
+        BridgeLocalBaseHandler bridgeHandler = (BridgeLocalBaseHandler) bridge.getHandler();
         if (bridgeHandler == null) {
             return;
         }

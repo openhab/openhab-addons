@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.linky.internal.handler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -25,6 +28,7 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class BridgeLocalBaseHandler extends BaseBridgeHandler {
+    private List<String> registeredPrmId = new ArrayList<>();
 
     public BridgeLocalBaseHandler(Bridge bridge) {
         super(bridge);
@@ -36,6 +40,12 @@ public class BridgeLocalBaseHandler extends BaseBridgeHandler {
 
     @Override
     public synchronized void initialize() {
+    }
+
+    public void registerNewPrmId(String prmId) {
+        if (!registeredPrmId.contains(prmId)) {
+            registeredPrmId.add(prmId);
+        }
     }
 
 }

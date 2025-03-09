@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linky.internal.handler;
 
+import static org.openhab.binding.linky.internal.LinkyBindingConstants.*;
+
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
