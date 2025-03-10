@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.linky.internal;
+package org.openhab.binding.linky.internal.constants;
 
 import java.util.Currency;
 import java.util.Set;

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.linky.internal;
+package org.openhab.binding.linky.internal.helpers;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,6 +34,7 @@ import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteApiHandler;
+import org.openhab.binding.linky.internal.types.LinkyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

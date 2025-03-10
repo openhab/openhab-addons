@@ -23,5 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public enum ValueType {
     INTEGER,
-    STRING
+    STRING,
+    DATE
 }

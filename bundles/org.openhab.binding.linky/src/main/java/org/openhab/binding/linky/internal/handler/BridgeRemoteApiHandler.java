@@ -20,9 +20,9 @@ import javax.servlet.http.HttpServlet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linky.internal.LinkyAuthServlet;
-import org.openhab.binding.linky.internal.LinkyBindingConstants;
-import org.openhab.binding.linky.internal.LinkyException;
+import org.openhab.binding.linky.internal.constants.LinkyBindingConstants;
+import org.openhab.binding.linky.internal.helpers.LinkyAuthServlet;
+import org.openhab.binding.linky.internal.types.LinkyException;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;

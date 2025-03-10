@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.linky.internal.handler;
 
-import static org.openhab.binding.linky.internal.LinkyBindingConstants.*;
+import static org.openhab.binding.linky.internal.constants.LinkyBindingConstants.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,11 +27,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linky.internal.LinkyConfiguration;
-import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.binding.linky.internal.api.ExpiringDayCache;
+import org.openhab.binding.linky.internal.config.LinkyConfiguration;
 import org.openhab.binding.linky.internal.dto.ResponseTempo;
+import org.openhab.binding.linky.internal.types.LinkyException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;

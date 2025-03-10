@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.linky.internal.handler;
 
-import static org.openhab.binding.linky.internal.LinkyBindingConstants.*;
+import static org.openhab.binding.linky.internal.constants.LinkyBindingConstants.*;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
@@ -20,11 +20,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linky.internal.InvalidFrameException;
-import org.openhab.binding.linky.internal.LinkyChannel;
-import org.openhab.binding.linky.internal.LinkyFrame;
-import org.openhab.binding.linky.internal.LinkySerialConfiguration;
-import org.openhab.binding.linky.internal.LinkySerialInputStream;
+import org.openhab.binding.linky.internal.config.LinkySerialConfiguration;
+import org.openhab.binding.linky.internal.helpers.LinkyFrame;
+import org.openhab.binding.linky.internal.helpers.LinkySerialInputStream;
+import org.openhab.binding.linky.internal.types.InvalidFrameException;
+import org.openhab.binding.linky.internal.types.LinkyChannel;
 import org.openhab.binding.linky.internal.types.TeleinfoTicMode;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;

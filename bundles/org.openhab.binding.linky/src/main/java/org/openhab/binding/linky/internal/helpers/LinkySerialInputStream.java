@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.linky.internal;
+package org.openhab.binding.linky.internal.helpers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,6 +20,8 @@ import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.linky.internal.types.InvalidFrameException;
+import org.openhab.binding.linky.internal.types.LinkyChannel;
 import org.openhab.binding.linky.internal.types.TeleinfoTicMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

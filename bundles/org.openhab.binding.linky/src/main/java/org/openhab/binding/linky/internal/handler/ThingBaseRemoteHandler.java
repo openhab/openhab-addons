@@ -14,7 +14,7 @@ package org.openhab.binding.linky.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linky.internal.LinkyConfiguration;
+import org.openhab.binding.linky.internal.config.LinkyConfiguration;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;

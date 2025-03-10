@@ -12,18 +12,18 @@
  */
 package org.openhab.binding.linky.internal.discovery;
 
-import static org.openhab.binding.linky.internal.LinkyBindingConstants.*;
+import static org.openhab.binding.linky.internal.constants.LinkyBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.linky.internal.InvalidFrameException;
-import org.openhab.binding.linky.internal.LinkyChannel;
-import org.openhab.binding.linky.internal.LinkyFrame;
-import org.openhab.binding.linky.internal.LinkyListener;
 import org.openhab.binding.linky.internal.handler.BridgeLocalBaseHandler;
+import org.openhab.binding.linky.internal.helpers.LinkyFrame;
+import org.openhab.binding.linky.internal.helpers.LinkyListener;
+import org.openhab.binding.linky.internal.types.InvalidFrameException;
+import org.openhab.binding.linky.internal.types.LinkyChannel;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;

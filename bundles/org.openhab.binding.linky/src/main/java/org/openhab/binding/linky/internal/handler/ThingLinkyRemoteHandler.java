@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.linky.internal.handler;
 
-import static org.openhab.binding.linky.internal.LinkyBindingConstants.*;
+import static org.openhab.binding.linky.internal.constants.LinkyBindingConstants.*;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -31,10 +31,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linky.internal.LinkyConfiguration;
-import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.binding.linky.internal.api.ExpiringDayCache;
+import org.openhab.binding.linky.internal.config.LinkyConfiguration;
 import org.openhab.binding.linky.internal.dto.Contact;
 import org.openhab.binding.linky.internal.dto.Contract;
 import org.openhab.binding.linky.internal.dto.Identity;
@@ -45,6 +44,7 @@ import org.openhab.binding.linky.internal.dto.PrmDetail;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
 import org.openhab.binding.linky.internal.dto.UsagePoint;
 import org.openhab.binding.linky.internal.dto.UserInfo;
+import org.openhab.binding.linky.internal.types.LinkyException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;

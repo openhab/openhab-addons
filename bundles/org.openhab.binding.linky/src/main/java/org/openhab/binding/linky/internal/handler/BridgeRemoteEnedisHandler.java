@@ -15,8 +15,8 @@ package org.openhab.binding.linky.internal.handler;
 import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.linky.internal.LinkyConfiguration;
-import org.openhab.binding.linky.internal.LinkyException;
+import org.openhab.binding.linky.internal.config.LinkyConfiguration;
+import org.openhab.binding.linky.internal.types.LinkyException;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;

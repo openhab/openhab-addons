@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linky.internal.LinkyBindingConstants;
+import org.openhab.binding.linky.internal.constants.LinkyBindingConstants;
 import org.openhab.binding.linky.internal.handler.ThingLinkyRemoteHandler;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.ConsoleCommandCompleter;

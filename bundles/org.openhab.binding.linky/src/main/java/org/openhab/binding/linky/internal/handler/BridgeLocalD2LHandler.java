@@ -36,9 +36,9 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linky.internal.InvalidFrameException;
-import org.openhab.binding.linky.internal.LinkyChannel;
-import org.openhab.binding.linky.internal.LinkyFrame;
+import org.openhab.binding.linky.internal.helpers.LinkyFrame;
+import org.openhab.binding.linky.internal.types.InvalidFrameException;
+import org.openhab.binding.linky.internal.types.LinkyChannel;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
