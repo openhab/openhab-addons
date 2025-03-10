@@ -3,40 +3,40 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="temperature-channel">
+	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="string-channel">
+	<channel-type id="string">
 		<item-type>String</item-type>
 		<label>String Channel</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="wifi-channel">
+	<channel-type id="wifi">
 		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>WiFi Signal Strength</label>
 		<description>Current WiFi signal strength.</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
-	<channel-type id="number-channel">
+	<channel-type id="number">
 		<item-type>Number</item-type>
 		<label>Number Channel</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="percent-channel">
+	<channel-type id="percent">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Percent Channel</label>
 		<state readOnly="true" min="0" max="100" pattern="%.2f %unit%"/>
 	</channel-type>
-	<channel-type id="boolean-channel">
+	<channel-type id="boolean">
 		<item-type>Switch</item-type>
 		<label>Boolean Channel</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="on-off-command-channel">
+	<channel-type id="on-off-command">
 		<item-type>String</item-type>
 		<label>ON/OFF Channel</label>
 		<category>Lightbulb</category>

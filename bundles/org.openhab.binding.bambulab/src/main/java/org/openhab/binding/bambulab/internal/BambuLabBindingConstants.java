@@ -32,31 +32,31 @@ public class BambuLabBindingConstants {
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     public interface Channel {
         // PrintDetails
-        public static final String NOZZLE_TEMPERATURE_CHANNEL = "nozzleTemperature";
-        public static final String NOZZLE_TARGET_TEMPERATURE_CHANNEL = "nozzleTargetTemperature";
-        public static final String BED_TEMPERATURE_CHANNEL = "bedTemperature";
-        public static final String BED_TARGET_TEMPERATURE_CHANNEL = "bedTargetTemperature";
-        public static final String CHAMBER_TEMPERATURE_CHANNEL = "chamberTemperature";
-        public static final String MC_PRINT_STAGE_CHANNEL = "mcPrintStage";
-        public static final String MC_PERCENT_CHANNEL = "mcPercent";
-        public static final String MC_REMAINING_TIME_CHANNEL = "mcRemainingTime";
-        public static final String WIFI_SIGNAL_CHANNEL = "wifiSignal";
-        public static final String BED_TYPE_CHANNEL = "bedType";
-        public static final String GCODE_fILE_CHANNEL = "gcodeFile";
-        public static final String GCODE_STATE_CHANNEL = "gcodeState";
-        public static final String REASON_CHANNEL = "reason";
-        public static final String RESULT_CHANNEL = "result";
-        public static final String GCODE_FILE_PREPARE_PERCENT_CHANNEL = "gcodeFilePreparePercent";
-        public static final String BIG_FAN_1_SPEED_CHANNEL = "bigFan1Speed";
-        public static final String BIG_FAN_2_SPEED_CHANNEL = "bigFan2Speed";
-        public static final String HEAT_BREAK_FAN_SPEED_CHANNEL = "heatBreakFanSpeed";
-        public static final String LAYER_NUM_CHANNEL = "layerNum";
-        public static final String SPEED_LEVEL_CHANNEL = "speedLevel";
-        public static final String TIMELAPS_CHANNEL = "timeLaps";
-        public static final String USE_AMS_CHANNEL = "useAms";
-        public static final String VIBRATION_CALIBRATION_CHANNEL = "vibrationCalibration";
+        public static final String CHANNEL_NOZZLE_TEMPERATURE = "nozzle-temperature";
+        public static final String CHANNEL_NOZZLE_TARGET_TEMPERATURE = "nozzle-target-temperature";
+        public static final String CHANNEL_BED_TEMPERATURE = "bed-temperature";
+        public static final String CHANNEL_BED_TARGET_TEMPERATURE = "bed-target-temperature";
+        public static final String CHANNEL_CHAMBER_TEMPERATURE = "chamber-temperature";
+        public static final String CHANNEL_MC_PRINT_STAGE = "mc-print-stage";
+        public static final String CHANNEL_MC_PERCENT = "mc-percent";
+        public static final String CHANNEL_MC_REMAINING_TIME = "mc-remaining-time";
+        public static final String CHANNEL_WIFI_SIGNAL = "wifi-signal";
+        public static final String CHANNEL_BED_TYPE = "bed-type";
+        public static final String CHANNEL_GCODE_FILE = "gcode-file";
+        public static final String CHANNEL_GCODE_STATE = "gcode-state";
+        public static final String CHANNEL_REASON = "reason";
+        public static final String CHANNEL_RESULT = "result";
+        public static final String CHANNEL_GCODE_FILE_PREPARE_PERCENT = "gcode-file-prepare-percent";
+        public static final String CHANNEL_BIG_FAN_1_SPEED = "big-fan1-speed";
+        public static final String CHANNEL_BIG_FAN_2_SPEED = "big-fan2-speed";
+        public static final String CHANNEL_HEAT_BREAK_FAN_SPEED = "heat-break-fan-speed";
+        public static final String CHANNEL_LAYER_NUM = "layer-num";
+        public static final String CHANNEL_SPEED_LEVEL = "speed-level";
+        public static final String CHANNEL_TIME_LAPS = "time-laps";
+        public static final String CHANNEL_USE_AMS = "use-ams";
+        public static final String CHANNEL_VIBRATION_CALIBRATION = "vibration-calibration";
         // command channels
-        public static final String LED_CHAMBER_LIGHT_CHANNEL = "ledChamber";
-        public static final String LED_WORK_LIGHT_CHANNEL = "ledWork";
+        public static final String CHANNEL_LED_CHAMBER_LIGHT = "led-chamber";
+        public static final String CHANNEL_LED_WORK_LIGHT = "led-work";
     }
 }

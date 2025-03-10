@@ -68,11 +68,11 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (!LED_CHAMBER_LIGHT_CHANNEL.equals(channelUID.getId())
-                && !LED_WORK_LIGHT_CHANNEL.equals(channelUID.getId())) {
+        if (!CHANNEL_LED_CHAMBER_LIGHT.equals(channelUID.getId())
+                && !CHANNEL_LED_WORK_LIGHT.equals(channelUID.getId())) {
             return;
         }
-        var ledNode = LED_CHAMBER_LIGHT_CHANNEL.equals(channelUID.getId()) ? CHAMBER_LIGHT : WORK_LIGHT;
+        var ledNode = CHANNEL_LED_CHAMBER_LIGHT.equals(channelUID.getId()) ? CHAMBER_LIGHT : WORK_LIGHT;
         var bambuCommand = "ON".equals(command.toFullString()) ? on(ledNode) : off(ledNode);
         sendCommand(bambuCommand);
     }
@@ -185,35 +185,35 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
             return;
         }
         // tempers
-        updateCelsiusState(NOZZLE_TEMPERATURE_CHANNEL, print.nozzleTemper());
-        updateCelsiusState(NOZZLE_TARGET_TEMPERATURE_CHANNEL, print.nozzleTargetTemper());
-        updateCelsiusState(BED_TEMPERATURE_CHANNEL, print.bedTemper());
-        updateCelsiusState(BED_TARGET_TEMPERATURE_CHANNEL, print.bedTargetTemper());
-        updateCelsiusState(CHAMBER_TEMPERATURE_CHANNEL, print.chamberTemper());
+        updateCelsiusState(CHANNEL_NOZZLE_TEMPERATURE, print.nozzleTemper());
+        updateCelsiusState(CHANNEL_NOZZLE_TARGET_TEMPERATURE, print.nozzleTargetTemper());
+        updateCelsiusState(CHANNEL_BED_TEMPERATURE, print.bedTemper());
+        updateCelsiusState(CHANNEL_BED_TARGET_TEMPERATURE, print.bedTargetTemper());
+        updateCelsiusState(CHANNEL_CHAMBER_TEMPERATURE, print.chamberTemper());
         // string
-        updateStringState(MC_PRINT_STAGE_CHANNEL, print.mcPrintStage());
-        updateStringState(BED_TYPE_CHANNEL, print.bedType());
-        updateStringState(GCODE_fILE_CHANNEL, print.gcodeFile());
-        updateStringState(GCODE_STATE_CHANNEL, print.gcodeState());
-        updateStringState(REASON_CHANNEL, print.reason());
-        updateStringState(RESULT_CHANNEL, print.result());
+        updateStringState(CHANNEL_MC_PRINT_STAGE, print.mcPrintStage());
+        updateStringState(CHANNEL_BED_TYPE, print.bedType());
+        updateStringState(CHANNEL_GCODE_FILE, print.gcodeFile());
+        updateStringState(CHANNEL_GCODE_STATE, print.gcodeState());
+        updateStringState(CHANNEL_REASON, print.reason());
+        updateStringState(CHANNEL_RESULT, print.result());
         // percent
-        updatePercentState(MC_PERCENT_CHANNEL, print.mcPercent());
-        updatePercentState(GCODE_FILE_PREPARE_PERCENT_CHANNEL, print.gcodeFilePreparePercent());
+        updatePercentState(CHANNEL_MC_PERCENT, print.mcPercent());
+        updatePercentState(CHANNEL_GCODE_FILE_PREPARE_PERCENT, print.gcodeFilePreparePercent());
         // decimal
-        updateDecimalState(MC_REMAINING_TIME_CHANNEL, print.mcRemainingTime());
-        updateDecimalState(BIG_FAN_1_SPEED_CHANNEL, print.bigFan1Speed());
-        updateDecimalState(BIG_FAN_2_SPEED_CHANNEL, print.bigFan2Speed());
-        updateDecimalState(HEAT_BREAK_FAN_SPEED_CHANNEL, print.heatbreakFanSpeed());
-        updateDecimalState(LAYER_NUM_CHANNEL, print.layerNum());
-        updateDecimalState(SPEED_LEVEL_CHANNEL, print.spdLvl());
+        updateDecimalState(CHANNEL_MC_REMAINING_TIME, print.mcRemainingTime());
+        updateDecimalState(CHANNEL_BIG_FAN_1_SPEED, print.bigFan1Speed());
+        updateDecimalState(CHANNEL_BIG_FAN_2_SPEED, print.bigFan2Speed());
+        updateDecimalState(CHANNEL_HEAT_BREAK_FAN_SPEED, print.heatbreakFanSpeed());
+        updateDecimalState(CHANNEL_LAYER_NUM, print.layerNum());
+        updateDecimalState(CHANNEL_SPEED_LEVEL, print.spdLvl());
         // boolean
-        updateBooleanState(TIMELAPS_CHANNEL, print.timelapse());
-        updateBooleanState(USE_AMS_CHANNEL, print.useAms());
-        updateBooleanState(VIBRATION_CALIBRATION_CHANNEL, print.vibrationCali());
+        updateBooleanState(CHANNEL_TIME_LAPS, print.timelapse());
+        updateBooleanState(CHANNEL_USE_AMS, print.useAms());
+        updateBooleanState(CHANNEL_VIBRATION_CALIBRATION, print.vibrationCali());
         // other
         if (print.wifiSignal() != null) {
-            updateState(WIFI_SIGNAL_CHANNEL, parseWifiChannel(print.wifiSignal()));
+            updateState(CHANNEL_WIFI_SIGNAL, parseWifiChannel(print.wifiSignal()));
         }
     }
 

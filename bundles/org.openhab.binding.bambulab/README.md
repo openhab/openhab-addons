@@ -71,31 +71,52 @@ Use `us.mqtt.bambulab.com` as the hostname.
 
 | Channel ID                | Type                | Description                                                      |
 |---------------------------|---------------------|------------------------------------------------------------------|
-| `nozzleTemperature`       | Temperature Channel | Current temperature of the nozzle.                               |
-| `nozzleTargetTemperature` | Temperature Channel | Target temperature of the nozzle.                                |
-| `bedTemperature`          | Temperature Channel | Current temperature of the heated bed.                           |
-| `bedTargetTemperature`    | Temperature Channel | Target temperature of the heated bed.                            |
-| `chamberTemperature`      | Temperature Channel | Current temperature inside the printer chamber.                  |
-| `mcPrintStage`            | String Channel      | Current stage of the print process.                              |
-| `mcPercent`               | Percent Channel     | Percentage of the print completed.                               |
-| `mcRemainingTime`         | Number Channel      | Estimated time remaining for the print (in seconds).             |
-| `wifiSignal`              | WiFi Channel        | Current WiFi signal strength.                                    |
-| `bedType`                 | String Channel      | Type of the printer's heated bed.                                |
-| `gcodeFile`               | String Channel      | Name of the currently loaded G-code file.                        |
-| `gcodeState`              | String Channel      | Current state of the G-code execution.                           |
+| `nozzle-temperature`       | Temperature Channel | Current temperature of the nozzle.                               |
+| `nozzle-target-temperature` | Temperature Channel | Target temperature of the nozzle.                                |
+| `bed-temperature`          | Temperature Channel | Current temperature of the heated bed.                           |
+| `bed-target-temperature`    | Temperature Channel | Target temperature of the heated bed.                            |
+| `chamber-temperature`      | Temperature Channel | Current temperature inside the printer chamber.                  |
+| `mc-print-stage`            | String Channel      | Current stage of the print process.                              |
+| `mc-percent`               | Percent Channel     | Percentage of the print completed.                               |
+| `mc-remaining-time`         | Number Channel      | Estimated time remaining for the print (in seconds).             |
+| `wifi-signal`              | WiFi Channel        | Current WiFi signal strength.                                    |
+| `bed-type`                 | String Channel      | Type of the printer's heated bed.                                |
+| `gcode-file`               | String Channel      | Name of the currently loaded G-code file.                        |
+| `gcode-state`              | String Channel      | Current state of the G-code execution.                           |
 | `reason`                  | String Channel      | Reason for pausing or stopping the print.                        |
 | `result`                  | String Channel      | Final result or status of the print job.                         |
-| `gcodeFilePreparePercent` | Percent Channel     | Percentage of G-code file preparation completed.                 |
-| `bigFan1Speed`            | Number Channel      | Speed of the first large cooling fan (RPM).                      |
-| `bigFan2Speed`            | Number Channel      | Speed of the second large cooling fan (RPM).                     |
-| `heatBreakFanSpeed`       | Number Channel      | Speed of the heat break cooling fan (RPM).                       |
-| `layerNum`                | Number Channel      | Current layer being printed.                                     |
-| `speedLevel`              | Number Channel      | Current speed setting of the print job.                          |
-| `timeLaps`                | Boolean Channel     | Indicates whether timelapse recording is enabled.                |
-| `useAms`                  | Boolean Channel     | Indicates whether the Automatic Material System (AMS) is active. |
-| `vibrationCalibration`    | Boolean Channel     | Indicates whether vibration calibration has been performed.      |
-| `ledChamber`              | On/Off Command      | Controls the LED lighting inside the printer chamber.            |
-| `ledWork`                 | On/Off Command      | Controls the LED lighting for the work area.                     |
+| `gcode-file-prepare-percent` | Percent Channel     | Percentage of G-code file preparation completed.                 |
+| `big-fan1-speed`            | Number Channel      | Speed of the first large cooling fan (RPM).                      |
+| `big-fan2-speed`            | Number Channel      | Speed of the second large cooling fan (RPM).                     |
+| `heat-break-fan-speed`       | Number Channel      | Speed of the heat break cooling fan (RPM).                       |
+| `layer-num`                | Number Channel      | Current layer being printed.                                     |
+| `speed-level`              | Number Channel      | Current speed setting of the print job.                          |
+| `time-laps`                | Boolean Channel     | Indicates whether time-lapse recording is enabled.                |
+| `use-ams`                  | Boolean Channel     | Indicates whether the Automatic Material System (AMS) is active. |
+| `vibration-calibration`    | Boolean Channel     | Indicates whether vibration calibration has been performed.      |
+| `led-chamber`              | On/Off Command      | Controls the LED lighting inside the printer chamber.            |
+| `led-work`                 | On/Off Command      | Controls the LED lighting for the work area.                     |
+
+## Full Example
+
+### Thing Configuration
+
+```
+Thing bambulab:printer:myprinter "My BambuLab Printer" @ "3D Printing Area" [
+    serial="ABC123456789",
+    hostname="192.168.1.100",
+    accessCode="your_access_code_here"
+]
+```
+
+### Item Configuration
+
+```
+Number:Temperature NozzleTemperature "Nozzle Temperature [%.1f °C]" { channel="bambulab:printer:myprinter:nozzle-temperature" }
+Number:Temperature BedTemperature "Bed Temperature [%.1f °C]" { channel="bambulab:printer:myprinter:bed-temperature" }
+String PrintStage "Print Stage [%s]" { channel="bambulab:printer:myprinter:mc-print-stage" }
+Switch LedChamber "Chamber LED" { channel="bambulab:printer:myprinter:led-chamber" }
+```
 
 ## Actions
 
