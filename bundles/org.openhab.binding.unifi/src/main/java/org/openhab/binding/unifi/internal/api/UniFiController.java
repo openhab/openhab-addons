@@ -14,6 +14,7 @@ package org.openhab.binding.unifi.internal.api;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -213,9 +214,9 @@ public class UniFiController {
 
     public void enableNetwork(final UniFiNetwork network, final boolean enable) throws UniFiException {
         final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.PUT, gson);
-        req.setAPIPath(String.format("/api/s/%s/rest/networkconf/%s", network.getSite().getName(), network.getId()));
-        req.setBodyParameter("_id", network.getId());
-        req.setBodyParameter("enabled", enable ? "true" : "false");
+        req.setAPIPath(String.format("/api/s/%s/group/networkconf", network.getSite().getName()));
+        req.setBodyParameter("data", Map.of("enabled", enable));
+        req.setBodyParameter("id", new String[] { network.getId() });
         executeRequest(req);
         refresh();
     }
