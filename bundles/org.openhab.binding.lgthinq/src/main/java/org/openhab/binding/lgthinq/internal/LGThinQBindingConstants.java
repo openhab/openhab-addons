@@ -101,7 +101,7 @@ public class LGThinQBindingConstants extends LGServicesConstants {
      * ============ Fridge's Channels & Constant Definition =============
      */
     public static final String CHANNEL_FR_ACTIVE_SAVING = "fr-active-saving";
-    public static final String CHANNEL_FR_DOOR_OPEN = "fr-some-door-open";
+    public static final String CHANNEL_FR_DOOR_OPEN = "fr-door-open";
     public static final String CHANNEL_FR_EXPRESS_COOL_MODE = "fr-express-cool-mode";
     public static final String CHANNEL_FR_EXPRESS_FREEZE_MODE = "fr-express-mode";
     public static final String CHANNEL_FR_FREEZER_TEMP_ID = "fr-freezer-temperature";

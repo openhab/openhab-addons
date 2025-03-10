@@ -143,7 +143,7 @@
 		<description>AC Operation Mode</description>
 	</channel-type>
 
-	<channel-type id="washerdryer-remote-start">
+	<channel-type id="washerdryer-rs">
 		<item-type>Switch</item-type>
 		<label>Remote Start</label>
 		<description>Remote start</description>
@@ -333,7 +333,7 @@
 	</channel-type>
 
 	<!-- Fridge -->
-	<channel-type id="fr-some-door-open">
+	<channel-type id="fr-door-open">
 		<item-type>Contact</item-type>
 		<label>Door Open</label>
 		<description>Door status (at least one if combined fridge/freezer)</description>

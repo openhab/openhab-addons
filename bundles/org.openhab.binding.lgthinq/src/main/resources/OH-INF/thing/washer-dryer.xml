@@ -14,7 +14,7 @@
 		<description>LG ThinQ Washing Machine</description>
 		<channel-groups>
 			<channel-group id="dashboard" typeId="wm-dashboard"/>
-			<channel-group id="remote-start-grp" typeId="wm-remote-start-grp"/>
+			<channel-group id="rs-grp" typeId="wm-rs-grp"/>
 		</channel-groups>
 		<config-description>
 			<parameter-group name="Settings">
@@ -49,7 +49,7 @@
 		<description>LGThinQ Washer Tower</description>
 		<channel-groups>
 			<channel-group id="dashboard" typeId="wm-dashboard"/>
-			<channel-group id="remote-start-grp" typeId="wm-remote-start-grp"/>
+			<channel-group id="rs-grp" typeId="wm-rs-grp"/>
 		</channel-groups>
 		<config-description>
 			<parameter-group name="Settings">
@@ -75,7 +75,7 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	<channel-group-type id="wm-remote-start-grp">
+	<channel-group-type id="wm-rs-grp">
 		<label>Remote Start Options</label>
 		<description>Remote Start Actions and Options.</description>
 		<channels>
@@ -102,7 +102,7 @@
 			<channel id="spin" typeId="washer-spin"/>
 			<channel id="delay-time" typeId="washerdryer-delay-time"/>
 			<channel id="stand-by" typeId="washerdryer-stand-by"/>
-			<channel id="remote-start-flag" typeId="washerdryer-remote-start"/>
+			<channel id="rs-flag" typeId="washerdryer-rs"/>
 		</channels>
 	</channel-group-type>
 

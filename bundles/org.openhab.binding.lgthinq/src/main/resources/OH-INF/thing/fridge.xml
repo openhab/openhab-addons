@@ -23,7 +23,7 @@
 		<label>Dashboard</label>
 		<description>This is the Displayed Information.</description>
 		<channels>
-			<channel id="fr-some-door-open" typeId="fr-some-door-open"/>
+			<channel id="fr-door-open" typeId="fr-door-open"/>
 			<channel id="fr-freezer-temperature" typeId="fr-freezer-temperature"/>
 			<channel id="fr-fridge-temperature" typeId="fr-fridge-temperature"/>
 			<channel id="fr-temp-unit" typeId="fr-temp-unit"/>

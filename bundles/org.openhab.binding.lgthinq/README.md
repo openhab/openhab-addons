@@ -124,7 +124,7 @@ LG ThinQ Washer Machine supports the following channels
 | delay-time        | Delay Time        | String     | Delay time programmed to start the cycle                                                                   | 
 | remain-time       | Remaining Time    | String     | Remaining time to finish the course                                                                        | 
 | stand-by          | Stand By Mode     | Switch     | If the Washer is in stand-by-mode                                                                          |
-| remote-start-flag | Remote Start      | Switch     | If the Washer is in remote start mode waiting to be remotely started                                       |
+| rs-flag | Remote Start      | Switch     | If the Washer is in remote start mode waiting to be remotely started                                       |
 
 #### Remote Start Option
 
@@ -156,7 +156,7 @@ LG ThinQ Dryer Machine supports the following channels
 | delay-time        | Delay Time        | String  | Delay time programmed to start the cycle                               | 
 | remain-time       | Remaining Time    | String  | Remaining time to finish the course                                    | 
 | stand-by          | Stand By Mode     | Switch  | If the Washer is in stand-by-mode                                      |
-| remote-start-flag | Remote Start      | Switch  | If the Washer is in remote start mode waiting to be remotely started   |
+| rs-flag | Remote Start      | Switch  | If the Washer is in remote start mode waiting to be remotely started   |
 
 #### Remote Start Option
 
@@ -179,7 +179,7 @@ LG ThinQ Refrigerator supports the following channels
 
 | channel #            | channel                       | type               | description                                                                    |
 |----------------------|-------------------------------|--------------------|--------------------------------------------------------------------------------|
-| some-door-open       | Door Open                     | Contact            | Advice if the door is opened                                                   |
+| door-open       | Door Open                     | Contact            | Advice if the door is opened                                                   |
 | freezer-temperature  | Freezer Set Point Temperature | Number:Temperature | Temperature level chosen. This channel supports commands to change temperature |
 | fridge-temperature   | Fridge Set Point Temperature  | Number:Temperature | Temperature level chosen. This channel supports commands to change temperature |
 | temp-unit            | Temp. Unit                    | String             | Temperature Unit (°C/F). Supports command to change the unit                   |
