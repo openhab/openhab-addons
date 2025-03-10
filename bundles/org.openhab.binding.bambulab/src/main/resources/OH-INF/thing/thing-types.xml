@@ -9,23 +9,23 @@
 		<description>Represents a Bambu Lab 3D printer connected via MQTT</description>
 
 		<channels>
-			<channel id="nozzle-temperature" typeId="temperature">
+			<channel id="nozzle-temperature" typeId="temperature-measurement">
 				<label>Nozzle Temperature</label>
 				<description>Current temperature of the nozzle.</description>
 			</channel>
-			<channel id="nozzle-target-temperature" typeId="temperature">
+			<channel id="nozzle-target-temperature" typeId="temperature-setpoint">
 				<label>Nozzle Target Temperature</label>
 				<description>Target temperature of the nozzle.</description>
 			</channel>
-			<channel id="bed-temperature" typeId="temperature">
+			<channel id="bed-temperature" typeId="temperature-measurement">
 				<label>Bed Temperature</label>
 				<description>Current temperature of the heated bed.</description>
 			</channel>
-			<channel id="bed-target-temperature" typeId="temperature">
+			<channel id="bed-target-temperature" typeId="temperature-setpoint">
 				<label>Bed Target Temperature</label>
 				<description>Target temperature of the heated bed.</description>
 			</channel>
-			<channel id="chamber-temperature" typeId="temperature">
+			<channel id="chamber-temperature" typeId="temperature-measurement">
 				<label>Chamber Temperature</label>
 				<description>Current temperature inside the printer chamber.</description>
 			</channel>
