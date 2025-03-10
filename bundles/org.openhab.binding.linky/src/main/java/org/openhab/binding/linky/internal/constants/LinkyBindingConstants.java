@@ -190,9 +190,9 @@ public class LinkyBindingConstants {
     public static final String CHANNEL_SREACTIVE = "sreactive";
 
     public static final String CHANNEL_SINSTS = "sinsts";
-    public static final String CHANNEL_SINSTS1 = "sinst1";
-    public static final String CHANNEL_SINSTS2 = "sinst2";
-    public static final String CHANNEL_SINSTS3 = "sinst3";
+    public static final String CHANNEL_SINSTS1 = "sinsts1";
+    public static final String CHANNEL_SINSTS2 = "sinsts2";
+    public static final String CHANNEL_SINSTS3 = "sinsts3";
 
     public static final String CHANNEL_SMAXSN = "smaxsn";
     public static final String CHANNEL_SMAXSN1 = "smaxsn1";

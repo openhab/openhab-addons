@@ -73,10 +73,19 @@ public class LinkyFrame implements Serializable {
         // default constructor
     }
 
+    public boolean isProducerMode() {
+        if (channelToValues.containsKey(LinkyChannel.EAIT)) {
+            return true;
+        }
+
+        return false;
+    }
+
     public Phase getPhase() throws InvalidFrameException {
-        if (channelToValues.containsKey(LinkyChannel.IINST)) {
+        if (channelToValues.containsKey(LinkyChannel.IINST) || channelToValues.containsKey(LinkyChannel.SINSTS)) {
             return Phase.ONE_PHASED;
-        } else if (channelToValues.containsKey(LinkyChannel.IINST1)) {
+        } else if (channelToValues.containsKey(LinkyChannel.IINST1)
+                || channelToValues.containsKey(LinkyChannel.SINSTS1)) {
             return Phase.THREE_PHASED;
         }
         throw new InvalidFrameException();
@@ -94,7 +103,14 @@ public class LinkyFrame implements Serializable {
     }
 
     public Pricing getPricing() throws InvalidFrameException {
-        String optarif = channelToValues.get(LinkyChannel.OPTARIF);
+        String optarif = null;
+
+        if (getTicMode() == LinkyTicMode.HISTORICAL) {
+            optarif = channelToValues.get(LinkyChannel.OPTARIF);
+        } else if (getTicMode() == LinkyTicMode.STANDARD) {
+            optarif = channelToValues.get(LinkyChannel.NGTF);
+        }
+
         if (optarif == null) {
             throw new InvalidFrameException();
         }
@@ -105,6 +121,8 @@ public class LinkyFrame implements Serializable {
                 return Pricing.EJP;
             case "HC..":
                 return Pricing.HC;
+            case "TEMPO":
+                return Pricing.TEMPO;
             default:
                 if (optarif.matches("BBR.")) {
                     return Pricing.TEMPO;

@@ -376,3 +376,17 @@ Number:Energy ConsoAnneeEnCours "Conso cette année [%.0f %unit%]" <energy> { ch
 Number:Energy ConsoAnneeDerniere "Conso année dernière [%.0f %unit%]" <energy> { channel="linky:linky:local:yearly#lastYear" }
 ```
 
+
+## Tested hardware
+
+The Linky binding has been successfully validated with below hardware configuration:
+
+| Serial interface | Power Energy Meter model    | Mode(s)                   | TIC mode |
+|------------------|-----------------------------|---------------------------|----------|
+| GCE Electronics USB Teleinfo module [(more details)](https://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html) | Actaris A14C5 | Single-phase HCHP & Base | Historical |
+| Cartelectronic USB Teleinfo modem [(more details)](https://www.cartelectronic.fr/teleinfo-compteur-enedis/17-teleinfo-1-compteur-usb-rail-din-3760313520028.html) | Sagem S10C4 | Single-phase HCHP | Historical |
+| GCE Electronics USB Teleinfo module [(more details)](https://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html) | Linky | Single-phase HCHP | Standard |
+| Cartelectronic USB Teleinfo modem [(more details)](https://www.cartelectronic.fr/teleinfo-compteur-enedis/17-teleinfo-1-compteur-usb-rail-din-3760313520028.html) | Linky | Three-phase TEMPO | Standard |
+
+The method for changing the TIC mode of a Linky telemeter is explained [here](https://forum.gce-electronics.com/t/comment-passer-un-cpt-linky-en-mode-standard/8206/7).
+
