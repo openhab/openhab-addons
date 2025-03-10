@@ -359,15 +359,15 @@
 	<channel-type id="fr-freezer-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Freezer Temp.</label>
-		<description>Freezer setpoint temperature</description>
+		<description>Freezer target temperature</description>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="fr-fridge-temperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Fridge Setpoint Temperature</label>
-		<description>Fridge setpoint temperature.</description>
+		<label>Fridge Temp.</label>
+		<description>Fridge target temperature</description>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>

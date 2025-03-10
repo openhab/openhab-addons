@@ -10,7 +10,7 @@
 
 		<config-description>
 			<parameter name="language" type="text" required="true">
-				<label>User Language (LG registry)</label>
+				<label>User Language</label>
 				<description>The User Language registered in LG Account</description>
 				<options>
 					<option value="en-US">American English</option>

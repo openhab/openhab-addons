@@ -206,7 +206,7 @@ demo.thing
 
 ```java
 Bridge lgthinq:bridge:MyLGThinqBridge [ username="user@registered.com", password="cleartext-password", language="en", country="US", poolingIntervalSec=600] {
-   Thing air-conditioner-401 myAC [ model_url_info="ac_model_url", device_id="device_id", platform_type="thinq2", modelId="model_id", device_alias="MyAC" ]
+   Thing air-conditioner-401 myAC [ model-url-info="ac_model_url", device-id="device-id", platform-type="thinq2", modelId="model_id", device-alias="MyAC" ]
 }
 ```
 Until now, there is no way to easily obtain the values of model_url_info, device_id, platform_type and modelId. So, if you really need 
