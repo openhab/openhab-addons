@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * The {@link LinkyDiscoveryService} class is the service to discover a skeleton for controller handlers.
  *
  * @author Nicolas SIBERIL - Initial contribution
+ * @author Laurent Arnal - Refactor to integrate into Linky Binding
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = LinkyDiscoveryService.class)
 @NonNullByDefault
@@ -74,19 +75,19 @@ public class LinkyDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
     @Override
     protected void startBackgroundDiscovery() {
-        logger.debug("Start Teleinfo device background discovery");
+        logger.debug("Start Linky device background discovery");
         thingHandler.addListener(this);
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        logger.debug("Stop Teleinfo device background discovery");
+        logger.debug("Stop Linky device background discovery");
         thingHandler.removeListener(this);
     }
 
     @Override
     protected void startScan() {
-        logger.debug("Teleinfo discovery: Start {}", thingHandler.getThing().getUID());
+        logger.debug("Linky discovery: Start {}", thingHandler.getThing().getUID());
 
         // Start the search for new devices
         thingHandler.addListener(this);
@@ -94,14 +95,14 @@ public class LinkyDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
     @Override
     public synchronized void abortScan() {
-        logger.debug("Teleinfo discovery: Abort {}", thingHandler.getThing().getUID());
+        logger.debug("Linky discovery: Abort {}", thingHandler.getThing().getUID());
         thingHandler.removeListener(this);
         super.abortScan();
     }
 
     @Override
     protected synchronized void stopScan() {
-        logger.debug("Teleinfo discovery: Stop {}", thingHandler.getThing().getUID());
+        logger.debug("Linky discovery: Stop {}", thingHandler.getThing().getUID());
         // thingHandler.removeListener(this);
         super.stopScan();
     }
@@ -130,8 +131,8 @@ public class LinkyDiscoveryService extends AbstractThingHandlerDiscoveryService<
             final Map<String, Object> properties = getThingProperties(adco);
             final String representationProperty = THING_ELECTRICITY_METER_PROPERTY_ADCO;
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    // .withLabel("Teleinfo ADCO/ADSC " + adco).withThingType(getThingTypeUID(frameSample))
-                    .withLabel("Teleinfo ADCO/ADSC " + adco).withThingType(THING_TYPE_LINKY_LOCAL)
+                    // .withLabel("Linky ADCO/ADSC " + adco).withThingType(getThingTypeUID(frameSample))
+                    .withLabel("Linky ADCO/ADSC " + adco).withThingType(THING_TYPE_LINKY_LOCAL)
                     .withBridge(thingHandler.getThing().getUID()).withRepresentationProperty(representationProperty)
                     .build();
 
@@ -139,17 +140,17 @@ public class LinkyDiscoveryService extends AbstractThingHandlerDiscoveryService<
         }
     }
 
-    private ThingTypeUID getThingTypeUID(final LinkyFrame teleinfoFrame) {
+    private ThingTypeUID getThingTypeUID(final LinkyFrame frame) {
         ThingTypeUID thingTypeUID;
         try {
-            thingTypeUID = teleinfoFrame.getType().getThingTypeUid();
+            thingTypeUID = frame.getType().getThingTypeUid();
         } catch (InvalidFrameException e) {
             throw new IllegalStateException("Frame type can not be evaluated");
         }
         if (thingTypeUID != null) {
             return thingTypeUID;
         } else {
-            throw new IllegalStateException("Teleinfo frame type not supported: " + teleinfoFrame.getClass());
+            throw new IllegalStateException("Linky frame type not supported: " + frame.getClass());
         }
     }
 

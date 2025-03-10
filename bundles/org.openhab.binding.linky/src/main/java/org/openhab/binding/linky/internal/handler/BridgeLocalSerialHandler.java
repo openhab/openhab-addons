@@ -25,7 +25,7 @@ import org.openhab.binding.linky.internal.helpers.LinkyFrame;
 import org.openhab.binding.linky.internal.helpers.LinkySerialInputStream;
 import org.openhab.binding.linky.internal.types.InvalidFrameException;
 import org.openhab.binding.linky.internal.types.LinkyChannel;
-import org.openhab.binding.linky.internal.types.TeleinfoTicMode;
+import org.openhab.binding.linky.internal.types.LinkyTicMode;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortIdentifier;
@@ -43,9 +43,10 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * The {@link TeleinfoSerialControllerHandler} class defines a handler for serial controller.
+ * The {@link BridgeLocalSerialHandler} class defines a handler for serial controller.
  *
  * @author Nicolas SIBERIL - Initial contribution
+ * @author Laurent Arnal - Refactor to integrate into Linky Binding
  */
 @NonNullByDefault
 public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
@@ -67,7 +68,6 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
     public void initialize() {
         invalidFrameCounter = 0;
 
-        logger.debug("Check Teleinfo receiveThread status...");
         logger.debug("isInitialized() = {}", isInitialized());
 
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
@@ -76,7 +76,7 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
 
     public void pollingCode() {
         LinkySerialConfiguration config = getConfigAs(LinkySerialConfiguration.class);
-        TeleinfoTicMode ticMode = TeleinfoTicMode.valueOf(config.ticMode);
+        LinkyTicMode ticMode = LinkyTicMode.valueOf(config.ticMode);
         boolean autoRepair = config.autoRepairInvalidADPSgroupLine;
         boolean verifyChecksum = config.verifyChecksum;
         boolean interrupted = false;
@@ -86,11 +86,11 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
         if (serialPort != null) {
             logger.debug("Start to wait for data ...{}", config.serialport);
 
-            try (LinkySerialInputStream teleinfoStream = new LinkySerialInputStream(serialPort.getInputStream(),
+            try (LinkySerialInputStream linkyStream = new LinkySerialInputStream(serialPort.getInputStream(),
                     autoRepair, ticMode, verifyChecksum)) {
                 while (!interrupted) {
                     try {
-                        LinkyFrame nextFrame = teleinfoStream.readNextFrame();
+                        LinkyFrame nextFrame = linkyStream.readNextFrame();
                         if (nextFrame != null) {
                             fireOnFrameReceivedEvent(nextFrame);
                             onFrameReceived(nextFrame);
@@ -154,7 +154,7 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
         LinkySerialConfiguration config = getConfigAs(LinkySerialConfiguration.class);
 
         if (config.serialport.trim().isEmpty()) {
-            logger.warn("Teleinfo port is not set.");
+            logger.warn("Linky gateway port is not set.");
             return null;
         }
 
@@ -171,9 +171,9 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
             logger.debug("Opening portIdentifier");
             currentOwner = portIdentifier.getCurrentOwner();
             logger.debug("portIdentifier.getCurrentOwner() = {}", currentOwner);
-            SerialPort commPort = portIdentifier.open("org.openhab.binding.teleinfo", 5000);
+            SerialPort commPort = portIdentifier.open("org.openhab.binding.linky", 5000);
 
-            TeleinfoTicMode ticMode = TeleinfoTicMode.valueOf(config.ticMode);
+            LinkyTicMode ticMode = LinkyTicMode.valueOf(config.ticMode);
             commPort.setSerialPortParams(ticMode.getBitrate(), SerialPort.DATABITS_7, SerialPort.STOPBITS_1,
                     SerialPort.PARITY_EVEN);
             try {

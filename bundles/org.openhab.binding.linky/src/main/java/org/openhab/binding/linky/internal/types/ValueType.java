@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Defines all the type of values
  *
  * @author Olivier MARCEAU - Initial contribution
- *
+ * @author Laurent Arnal - Refactor to integrate into Linky Binding
  */
 @NonNullByDefault
 public enum ValueType {

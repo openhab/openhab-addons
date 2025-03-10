@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * The {@link Tariff} is the base class holding common information for Tariffs
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Arnal - Refactor to integrate into Linky Binding
  */
 @NonNullByDefault
 public class Tariff {

@@ -22,14 +22,15 @@ import org.openhab.binding.linky.internal.types.Evolution;
 import org.openhab.binding.linky.internal.types.FrameType;
 import org.openhab.binding.linky.internal.types.InvalidFrameException;
 import org.openhab.binding.linky.internal.types.LinkyChannel;
+import org.openhab.binding.linky.internal.types.LinkyTicMode;
 import org.openhab.binding.linky.internal.types.Phase;
 import org.openhab.binding.linky.internal.types.Pricing;
-import org.openhab.binding.linky.internal.types.TeleinfoTicMode;
 
 /**
- * The {@link LinkyFrame} class defines common attributes for any Teleinfo frames.
+ * The {@link LinkyFrame} class defines common attributes for any Linky frames.
  *
  * @author Nicolas SIBERIL - Initial contribution
+ * @author Laurent Arnal - Refactor to integrate into Linky Binding
  */
 @NonNullByDefault
 public class LinkyFrame implements Serializable {
@@ -74,7 +75,7 @@ public class LinkyFrame implements Serializable {
     }
 
     public FrameType getType() throws InvalidFrameException {
-        TeleinfoTicMode ticMode = getTicMode();
+        LinkyTicMode ticMode = getTicMode();
         switch (ticMode) {
             case HISTORICAL:
                 return getHistoricalType();
@@ -184,11 +185,11 @@ public class LinkyFrame implements Serializable {
         }
     }
 
-    public TeleinfoTicMode getTicMode() throws InvalidFrameException {
+    public LinkyTicMode getTicMode() throws InvalidFrameException {
         if (channelToValues.containsKey(LinkyChannel.ADCO)) {
-            return TeleinfoTicMode.HISTORICAL;
+            return LinkyTicMode.HISTORICAL;
         } else if (channelToValues.containsKey(LinkyChannel.ADSC)) {
-            return TeleinfoTicMode.STANDARD;
+            return LinkyTicMode.STANDARD;
         }
         throw new InvalidFrameException();
     }

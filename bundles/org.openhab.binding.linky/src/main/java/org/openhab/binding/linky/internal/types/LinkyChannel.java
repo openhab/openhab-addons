@@ -20,15 +20,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.unit.Units;
 
 /**
- * The {@link LinkyChannel} enum defines all Teleinfo labels and their format.
+ * The {@link LinkyChannel} enum defines all Linky channels and their format.
  *
  * @author Nicolas SIBERIL - Initial contribution
+ * @author Laurent Arnal - Refactor to integrate into Linky Binding
  */
 @NonNullByDefault
 public enum LinkyChannel {
-
     // Historical labels
-
     ADCO(ValueType.STRING, LINKY_LOCAL_MAIN_GROUP, CHANNEL_ADCO, Units.ONE),
     OPTARIF(ValueType.STRING, LINKY_LOCAL_MAIN_GROUP, NOT_A_CHANNEL, Units.ONE),
     BASE(ValueType.INTEGER, LINKY_LOCAL_MAIN_GROUP, CHANNEL_BASE_BASE, Units.WATT_HOUR),

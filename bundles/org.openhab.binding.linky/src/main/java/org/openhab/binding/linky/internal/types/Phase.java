@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Define all the phase values
  *
  * @author Olivier MARCEAU - Initial contribution
- *
+ * @author Laurent Arnal - Refactor to integrate into Linky Binding
  */
 @NonNullByDefault
 public enum Phase {

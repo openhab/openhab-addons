@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link TariffHpHc} holds HP-HC price informations
  *
- * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
 public class TariffTempo extends Tariff {

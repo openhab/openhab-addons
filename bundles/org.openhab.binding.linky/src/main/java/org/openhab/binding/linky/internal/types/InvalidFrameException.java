@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link InvalidFrameException} class defines an exception for invalid frames.
  *
  * @author Nicolas SIBERIL - Initial contribution
+ * @author Laurent Arnal - Refactor to integrate into Linky Binding
  */
 @NonNullByDefault
 public class InvalidFrameException extends Exception {

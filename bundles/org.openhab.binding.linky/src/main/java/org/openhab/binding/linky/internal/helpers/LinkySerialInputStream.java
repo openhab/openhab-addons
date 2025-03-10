@@ -22,17 +22,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linky.internal.types.InvalidFrameException;
 import org.openhab.binding.linky.internal.types.LinkyChannel;
-import org.openhab.binding.linky.internal.types.TeleinfoTicMode;
+import org.openhab.binding.linky.internal.types.LinkyTicMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * InputStream for Teleinfo {@link Frame} in serial port format.
+ * InputStream for Linky {@link Frame} in serial port format.
  */
 /**
- * The {@link TeleinfoInputStream} class is an {@link InputStream} to decode/read Teleinfo frames.
+ * The {@link LinkySerialInputStream} class is an {@link InputStream} to decode/read Linky frames.
  *
  * @author Nicolas SIBERIL - Initial contribution
+ * @author Laurent Arnal - Refactor to integrate into Linky Binding
  */
 @NonNullByDefault
 public class LinkySerialInputStream extends InputStream {
@@ -42,34 +43,33 @@ public class LinkySerialInputStream extends InputStream {
     private BufferedReader bufferedReader;
     private @Nullable String groupLine;
     private boolean autoRepairInvalidADPSgroupLine;
-    private final TeleinfoTicMode ticMode;
+    private final LinkyTicMode ticMode;
     private final boolean verifyChecksum;
 
-    public LinkySerialInputStream(final InputStream teleinfoInputStream, TeleinfoTicMode ticMode) {
-        this(teleinfoInputStream, false, ticMode, true);
+    public LinkySerialInputStream(final InputStream linkyInputStream, LinkyTicMode ticMode) {
+        this(linkyInputStream, false, ticMode, true);
     }
 
-    public LinkySerialInputStream(final InputStream teleinfoInputStream, boolean autoRepairInvalidADPSgroupLine,
-            TeleinfoTicMode ticMode) {
-        this(teleinfoInputStream, autoRepairInvalidADPSgroupLine, ticMode, true);
+    public LinkySerialInputStream(final InputStream linkyInputStream, boolean autoRepairInvalidADPSgroupLine,
+            LinkyTicMode ticMode) {
+        this(linkyInputStream, autoRepairInvalidADPSgroupLine, ticMode, true);
     }
 
-    public LinkySerialInputStream(final InputStream teleinfoInputStream, TeleinfoTicMode ticMode,
-            boolean verifyChecksum) {
-        this(teleinfoInputStream, false, ticMode, verifyChecksum);
+    public LinkySerialInputStream(final InputStream linkyInputStream, LinkyTicMode ticMode, boolean verifyChecksum) {
+        this(linkyInputStream, false, ticMode, verifyChecksum);
     }
 
-    public LinkySerialInputStream(final @Nullable InputStream teleinfoInputStream,
-            boolean autoRepairInvalidADPSgroupLine, TeleinfoTicMode ticMode, boolean verifyChecksum) {
-        if (teleinfoInputStream == null) {
-            throw new IllegalArgumentException("Teleinfo inputStream is null");
+    public LinkySerialInputStream(final @Nullable InputStream linkyInputStream, boolean autoRepairInvalidADPSgroupLine,
+            LinkyTicMode ticMode, boolean verifyChecksum) {
+        if (linkyInputStream == null) {
+            throw new IllegalArgumentException("Linky inputStream is null");
         }
 
         this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
         this.ticMode = ticMode;
         this.verifyChecksum = verifyChecksum;
         // this.verifyChecksum = false;
-        this.bufferedReader = new BufferedReader(new InputStreamReader(teleinfoInputStream, StandardCharsets.US_ASCII));
+        this.bufferedReader = new BufferedReader(new InputStreamReader(linkyInputStream, StandardCharsets.US_ASCII));
 
         groupLine = null;
     }
@@ -108,8 +108,8 @@ public class LinkySerialInputStream extends InputStream {
             String groupLineRef = groupLine;
             if (groupLineRef != null) {
                 String[] groupLineTokens = groupLineRef.split(ticMode.getSeparator());
-                if (ticMode == TeleinfoTicMode.HISTORICAL && groupLineTokens.length != 2 && groupLineTokens.length != 3
-                        || ticMode == TeleinfoTicMode.STANDARD && groupLineTokens.length != 3
+                if (ticMode == LinkyTicMode.HISTORICAL && groupLineTokens.length != 2 && groupLineTokens.length != 3
+                        || ticMode == LinkyTicMode.STANDARD && groupLineTokens.length != 3
                                 && groupLineTokens.length != 4) {
                     final String error = String.format("The groupLine '%1$s' is incomplete", groupLineRef);
                     throw new InvalidFrameException(error);
@@ -187,7 +187,7 @@ public class LinkySerialInputStream extends InputStream {
     }
 
     public static boolean isHeaderFrame(final @Nullable String line) {
-        // A new teleinfo trame begin with '3' and '2' bytes (END OF TEXT et START OF TEXT)
+        // A new linky frame begin with '3' and '2' bytes (END OF TEXT et START OF TEXT)
         return (line != null && line.length() > 1 && line.codePointAt(0) == 3 && line.codePointAt(1) == 2);
     }
 }
