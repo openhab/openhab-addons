@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linky"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="linky-local-historical-ejp">
+		<label>Historical EJP</label>
+		<channels>
+			<channel id="ejphn" typeId="consumption-type">
+				<label>EJPHN</label>
+				<description>Index option EJP Heures normales</description>
+			</channel>
+
+			<channel id="ejphpm" typeId="consumption-type">
+				<label>EJPHPM</label>
+				<description>Index option EJP Heures de pointes</description>
+			</channel>
+
+			<channel id="pejp" typeId="time-type">
+				<label>PEJP</label>
+				<description>Préavis Début EJP (30 min)</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

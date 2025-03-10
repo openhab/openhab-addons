@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linky"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="linky-local-historical-tempo">
+		<label>Historical Tempo</label>
+		<channels>
+			<channel id="bbrhcjb" typeId="consumption-type">
+				<label>BBRHCJB</label>
+				<description>Index option Tempo : Heures Creuses Jours Bleus</description>
+			</channel>
+
+			<channel id="bbrhpjb" typeId="consumption-type">
+				<label>BBRHPJB</label>
+				<description>Index option Tempo : Heures Pleines Jours Bleus</description>
+			</channel>
+
+			<channel id="bbrhcjw" typeId="consumption-type">
+				<label>BBRHCJW</label>
+				<description>Index option Tempo : Heures Creuses Jours Blancs</description>
+			</channel>
+
+			<channel id="bbrhpjw" typeId="consumption-type">
+				<label>BBRHPJW</label>
+				<description>Index option Tempo : Heures Pleines Jours Blancs</description>
+			</channel>
+
+			<channel id="bbrhcjr" typeId="consumption-type">
+				<label>BBRHCJR</label>
+				<description>Index option Tempo : Heures Creuses Jours Rouges</description>
+			</channel>
+
+			<channel id="bbrhpjr" typeId="consumption-type">
+				<label>BBRHPJR</label>
+				<description>Index option Tempo : Heures Pleines Jours Rouges</description>
+			</channel>
+
+			<channel id="demain" typeId="couleurDemainType">
+				<label>DEMAIN</label>
+				<description>Couleur du lendemain</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

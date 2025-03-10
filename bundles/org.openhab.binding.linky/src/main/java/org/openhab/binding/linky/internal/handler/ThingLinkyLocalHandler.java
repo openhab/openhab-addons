@@ -141,49 +141,59 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
 
     public void udpateGroupVisibility(LinkyFrame frame) {
         try {
+            ThingBuilder updateThing = editThing();
+
             String id = getThing().getUID().getId();
             Phase phase = frame.getPhase();
             LinkyTicMode ticMode = frame.getTicMode();
             boolean isProducerMode = frame.isProducerMode();
 
             if (phase == Phase.ONE_PHASED) {
-                udpateGroupVisibility(LINKY_LOCAL_3PHASE_GROUP);
+                updateThing = udpateGroupVisibility(updateThing, LINKY_LOCAL_HISTORICAL_3PHASE_GROUP);
+                updateThing = udpateGroupVisibility(updateThing, LINKY_LOCAL_STANDARD_3PHASE_GROUP);
             }
 
             if (!isProducerMode) {
-                udpateGroupVisibility(LINKY_LOCAL_PRODUCER_GROUP);
+                updateThing = udpateGroupVisibility(updateThing, LINKY_LOCAL_STANDARD_PRODUCER_GROUP);
             }
 
             if (ticMode == LinkyTicMode.HISTORICAL) {
+                updateThing = udpateGroupVisibility(updateThing, LINKY_LOCAL_STANDARD_BASE_GROUP);
+                updateThing = udpateGroupVisibility(updateThing, LINKY_LOCAL_STANDARD_PRODUCER_GROUP);
+                updateThing = udpateGroupVisibility(updateThing, LINKY_LOCAL_STANDARD_3PHASE_GROUP);
 
             } else if (ticMode == LinkyTicMode.STANDARD) {
-
+                updateThing = udpateGroupVisibility(updateThing, LINKY_LOCAL_HISTORICAL_BASE_GROUP);
+                updateThing = udpateGroupVisibility(updateThing, LINKY_LOCAL_HISTORICAL_3PHASE_GROUP);
+                updateThing = udpateGroupVisibility(updateThing, LINKY_LOCAL_HISTORICAL_EJP_GROUP);
+                updateThing = udpateGroupVisibility(updateThing, LINKY_LOCAL_HISTORICAL_HPHC_GROUP);
+                updateThing = udpateGroupVisibility(updateThing, LINKY_LOCAL_HISTORICAL_TEMPO_GROUP);
             }
 
+            updateThing(updateThing.build());
             frameCount++;
         } catch (InvalidFrameException ex) {
         }
     }
 
-    public void udpateGroupVisibility(String groupName) {
-        ThingBuilder updateThing = editThing();
-
+    public ThingBuilder udpateGroupVisibility(ThingBuilder updateThing, String groupName) {
+        ThingBuilder resThingBuilder = updateThing;
         for (LinkyChannel channel : LinkyChannel.values()) {
             if (channel.getGroupName().equals(groupName)) {
 
                 Channel ch = this.getThing().getChannel(channel.getGroupName() + "#" + channel.getChannelName());
                 if (ch != null) {
-                    updateThing = updateThing.withoutChannel(ch.getUID());
+                    resThingBuilder = resThingBuilder.withoutChannel(ch.getUID());
                 }
 
                 ch = this.getThing().getChannel(channel.getGroupName() + "#" + channel.getChannelName() + "-date");
                 if (ch != null) {
-                    updateThing = updateThing.withoutChannel(ch.getUID());
+                    resThingBuilder = resThingBuilder.withoutChannel(ch.getUID());
                 }
             }
         }
 
-        updateThing(updateThing.build());
+        return resThingBuilder;
     }
 
     @Override

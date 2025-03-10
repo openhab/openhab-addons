@@ -134,5 +134,4 @@ public class LinkyDiscoveryService extends AbstractThingHandlerDiscoveryService<
             thingDiscovered(discoveryResult);
         }
     }
-
 }

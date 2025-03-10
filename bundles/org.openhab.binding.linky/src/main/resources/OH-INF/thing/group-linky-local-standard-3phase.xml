@@ -4,19 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-group-type id="linky-local-3phase">
-		<label>3Phase</label>
+	<channel-group-type id="linky-local-standard-3phase">
+		<label>Standard 3 Phase</label>
 		<channels>
-			<channel id="urms2" typeId="potential-type">
-				<label>Urms 2</label>
-				<description>RMS Voltage on phase 2</description>
-			</channel>
-
-			<channel id="urms3" typeId="potential-type">
-				<label>Urms 3</label>
-				<description>RMS Voltage on phase 3</description>
-			</channel>
-
 			<channel id="irms2" typeId="current-type">
 				<label>Irms 2</label>
 				<description>RMS Current on phase 2</description>
@@ -25,6 +15,16 @@
 			<channel id="irms3" typeId="current-type">
 				<label>Irms 3</label>
 				<description>RMS Current on phase 3</description>
+			</channel>
+
+			<channel id="urms2" typeId="potential-type">
+				<label>Urms 2</label>
+				<description>RMS Voltage on phase 2</description>
+			</channel>
+
+			<channel id="urms3" typeId="potential-type">
+				<label>Urms 3</label>
+				<description>RMS Voltage on phase 3</description>
 			</channel>
 
 			<channel id="sinsts1" typeId="power-type">

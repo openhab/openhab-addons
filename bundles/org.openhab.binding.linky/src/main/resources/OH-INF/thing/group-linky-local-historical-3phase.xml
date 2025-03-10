@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linky"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="linky-local-historical-3phase">
+		<label>Historical 3 Phase</label>
+		<channels>
+			<channel id="iinst1" typeId="current-type">
+				<label>IINST1</label>
+				<description>Intensité Instantanée Phase 1</description>
+			</channel>
+
+			<channel id="iinst2" typeId="current-type">
+				<label>IINST2</label>
+				<description>Intensité Instantanée Phase 2</description>
+			</channel>
+
+			<channel id="iinst3" typeId="current-type">
+				<label>IINST3</label>
+				<description>Intensité Instantanée Phase 3</description>
+			</channel>
+
+			<channel id="imax1" typeId="current-type">
+				<label>IMAX1</label>
+				<description>Intensité maximale appelée Phase 1</description>
+			</channel>
+
+			<channel id="imax2" typeId="current-type">
+				<label>IMAX2</label>
+				<description>Intensité maximale appelée Phase 2</description>
+			</channel>
+
+			<channel id="imax3" typeId="current-type">
+				<label>IMAX3</label>
+				<description>Intensité maximale appelée Phase 3</description>
+			</channel>
+
+			<channel id="ppot" typeId="info-type">
+				<label>PPOT</label>
+				<description>Présence des potentiels</description>
+			</channel>
+
+			<channel id="adir1" typeId="current-type">
+				<label>ADIR1</label>
+				<description>Avertissement de Dépassement d'intensité de réglage Phase 1</description>
+			</channel>
+
+			<channel id="adir2" typeId="current-type">
+				<label>ADIR2</label>
+				<description>Avertissement de Dépassement d'intensité de réglage Phase 2</description>
+			</channel>
+
+			<channel id="adir3" typeId="current-type">
+				<label>ADIR3</label>
+				<description>Avertissement de Dépassement d'intensité de réglage Phase 3</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

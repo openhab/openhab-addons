@@ -67,9 +67,17 @@ public class LinkyBindingConstants {
     public static final String LINKY_TEMPO_CALENDAR_GROUP = "linky-tempo-calendar";
     public static final String LINKY_REMOTE_LOAD_CURVE_GROUP = "linky-remote-load-curve";
 
-    public static final String LINKY_LOCAL_MAIN_GROUP = "linky-local-main";
-    public static final String LINKY_LOCAL_3PHASE_GROUP = "linky-local-3phase";
-    public static final String LINKY_LOCAL_PRODUCER_GROUP = "linky-local-producer";
+    public static final String LINKY_LOCAL_STANDARD_3PHASE_GROUP = "linky-local-standard-3phase";
+    public static final String LINKY_LOCAL_STANDARD_BASE_GROUP = "linky-local-standard-base";
+    public static final String LINKY_LOCAL_STANDARD_PRODUCER_GROUP = "linky-local-standard-producer";
+
+    public static final String LINKY_LOCAL_HISTORICAL_3PHASE_GROUP = "linky-local-historical-3phase";
+    public static final String LINKY_LOCAL_HISTORICAL_BASE_GROUP = "linky-local-historical-base";
+    public static final String LINKY_LOCAL_HISTORICAL_EJP_GROUP = "linky-local-historical-ejp";
+    public static final String LINKY_LOCAL_HISTORICAL_HPHC_GROUP = "linky-local-historical-hphc";
+    public static final String LINKY_LOCAL_HISTORICAL_TEMPO_GROUP = "linky-local-historical-tempo";
+
+    public static final String LINKY_LOCAL_D2L_GROUP = "linky-local-d2l";
     public static final String LINKY_LOCAL_CALC_GROUP = "linky-local-calc";
 
     // List of all Channel id's
@@ -137,10 +145,65 @@ public class LinkyBindingConstants {
     public static final String CHANNEL_TYPE_TRAME = "type-trame";
     public static final String CHANNEL_DATE_FIRMWARE = "date-firmware";
 
-    // List of Linky historical mode channel ids
+    // ===============================================================
+    // List of Linky historical mode base channel ids
+    // ===============================================================
     public static final String CHANNEL_ADCO = "adco";
+    public static final String CHANNEL_OPTARIF = "optarif";
+    public static final String CHANNEL_ISOUSC = "isousc";
+    public static final String CHANNEL_BASE_BASE = "base";
+    public static final String CHANNEL_PTEC = "ptec";
+    public static final String CHANNEL_IMAX = "imax";
+    public static final String CHANNEL_ADPS = "adps";
+    public static final String CHANNEL_IINST = "iinst";
+    public static final String CHANNEL_PMAX = "pmax";
+    public static final String CHANNEL_PAPP = "papp";
+    public static final String CHANNEL_MOTDETAT = "motdetat";
 
-    // List of Linky standard mode channel ids
+    // ===============================================================
+    // List of Linky historical mode EJP channel ids
+    // ===============================================================
+    public static final String CHANNEL_EJP_PEJP = "pejp";
+    public static final String CHANNEL_EJP_EJPHPM = "ejphpm";
+    public static final String CHANNEL_EJP_EJPHN = "ejphn";
+
+    // ===============================================================
+    // List of Linky historical mode HPHC channel ids
+    // ===============================================================
+    public static final String CHANNEL_HC_HCHC = "hchc";
+    public static final String CHANNEL_HC_HCHP = "hchp";
+    public static final String CHANNEL_HHPHC = "hhphc";
+
+    // ===============================================================
+    // List of Linky historical mode Tempo channel ids
+    // ===============================================================
+    public static final String CHANNEL_TEMPO_BBRHPJR = "bbrhpjr";
+    public static final String CHANNEL_TEMPO_BBRHCJR = "bbrhcjr";
+    public static final String CHANNEL_TEMPO_BBRHPJW = "bbrhpjw";
+    public static final String CHANNEL_TEMPO_BBRHCJW = "bbrhcjw";
+    public static final String CHANNEL_TEMPO_BBRHPJB = "bbrhpjb";
+    public static final String CHANNEL_TEMPO_BBRHCJB = "bbrhcjb";
+    public static final String CHANNEL_TEMPO_DEMAIN = "demain";
+    public static final String CHANNEL_TEMPO_PROGRAMME_CIRCUIT_1 = "programmeCircuit1";
+    public static final String CHANNEL_TEMPO_PROGRAMME_CIRCUIT_2 = "programmeCircuit2";
+
+    // ===============================================================
+    // List of Linky historical mode 3Phase channel ids
+    // ===============================================================
+    public static final String CHANNEL_IINST1 = "iinst1";
+    public static final String CHANNEL_IINST2 = "iinst2";
+    public static final String CHANNEL_IINST3 = "iinst3";
+    public static final String CHANNEL_IMAX1 = "imax1";
+    public static final String CHANNEL_IMAX2 = "imax2";
+    public static final String CHANNEL_IMAX3 = "imax3";
+    public static final String CHANNEL_PPOT = "ppot";
+    public static final String CHANNEL_ADIR1 = "adir1";
+    public static final String CHANNEL_ADIR2 = "adir2";
+    public static final String CHANNEL_ADIR3 = "adir3";
+
+    // ===============================================================
+    // List of Linky standard Base mode channel ids
+    // ===============================================================
     public static final String CHANNEL_ADSC = "adsc";
     public static final String CHANNEL_VTIC = "vtic";
     public static final String CHANNEL_DATE = "date";
@@ -297,54 +360,6 @@ public class LinkyBindingConstants {
     public static final String CHANNEL_TEMPO_TOMORROW = "tempo-tomorrow";
     public static final String CHANNEL_MOVING_TIPS_ADVICE = "moving-tips";
     public static final String CHANNEL_MOVING_TIPS = "advice-moving-tips";
-
-    // List of EJP frames channel ids
-    public static final String CHANNEL_EJP_PEJP = "pejp";
-    public static final String CHANNEL_EJP_EJPHPM = "ejphpm";
-    public static final String CHANNEL_EJP_EJPHN = "ejphn";
-
-    // List of BASE frames channel ids
-    public static final String CHANNEL_BASE_BASE = "base";
-
-    // List of HC frames channel ids
-    public static final String CHANNEL_HC_HCHC = "hchc";
-    public static final String CHANNEL_HC_HCHP = "hchp";
-    public static final String CHANNEL_HHPHC = "hhphc";
-
-    // List of TEMPO frames channel ids
-    public static final String CHANNEL_TEMPO_BBRHPJR = "bbrhpjr";
-    public static final String CHANNEL_TEMPO_BBRHCJR = "bbrhcjr";
-    public static final String CHANNEL_TEMPO_BBRHPJW = "bbrhpjw";
-    public static final String CHANNEL_TEMPO_BBRHCJW = "bbrhcjw";
-    public static final String CHANNEL_TEMPO_BBRHPJB = "bbrhpjb";
-    public static final String CHANNEL_TEMPO_BBRHCJB = "bbrhcjb";
-    public static final String CHANNEL_TEMPO_DEMAIN = "demain";
-    public static final String CHANNEL_TEMPO_PROGRAMME_CIRCUIT_1 = "programmeCircuit1";
-    public static final String CHANNEL_TEMPO_PROGRAMME_CIRCUIT_2 = "programmeCircuit2";
-
-    // List of CBEMM Channel ids
-    public static final String CHANNEL_ISOUSC = "isousc";
-    public static final String CHANNEL_PTEC = "ptec";
-    public static final String CHANNEL_CBEMM_IMAX = "imax";
-    public static final String CHANNEL_CBEMM_ADPS = "adps";
-    public static final String CHANNEL_CBEMM_IINST = "iinst";
-    public static final String CHANNEL_MOTDETAT = "motdetat";
-
-    // List of CBEMM EVOLUTION ICC Channel ids
-    public static final String CHANNEL_PAPP = "papp";
-
-    // List of CBETM Channel ids
-    public static final String CHANNEL_CBETM_IINST1 = "iinst1";
-    public static final String CHANNEL_CBETM_IINST2 = "iinst2";
-    public static final String CHANNEL_CBETM_IINST3 = "iinst3";
-    public static final String CHANNEL_CBETM_LONG_IMAX1 = "imax1";
-    public static final String CHANNEL_CBETM_LONG_IMAX2 = "imax2";
-    public static final String CHANNEL_CBETM_LONG_IMAX3 = "imax3";
-    public static final String CHANNEL_CBETM_LONG_PMAX = "pmax";
-    public static final String CHANNEL_CBETM_LONG_PPOT = "ppot";
-    public static final String CHANNEL_CBETM_SHORT_ADIR1 = "adir1";
-    public static final String CHANNEL_CBETM_SHORT_ADIR2 = "adir2";
-    public static final String CHANNEL_CBETM_SHORT_ADIR3 = "adir3";
 
     // Authorization related Servlet and resources aliases.
     public static final String LINKY_ALIAS = "/connectlinky";

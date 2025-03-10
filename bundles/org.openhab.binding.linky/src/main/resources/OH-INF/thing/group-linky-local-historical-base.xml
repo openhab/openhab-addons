@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linky"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="linky-local-historical-base">
+		<label>Historical Base</label>
+		<channels>
+			<channel id="adco" typeId="string-type">
+				<label>Adco</label>
+				<description>Adresse Secondaire du Compteur</description>
+			</channel>
+
+			<channel id="optarif" typeId="string-type">
+				<label>OpTarif</label>
+				<description>Option tarifaire choisie</description>
+			</channel>
+
+			<channel id="isousc" typeId="power-type">
+				<label>ISousc</label>
+				<description>Intensité souscrite</description>
+			</channel>
+
+			<channel id="base" typeId="consumption-type">
+				<label>Base</label>
+				<description>Index option Base</description>
+			</channel>
+
+			<channel id="ptec" typeId="ptecType">
+				<label>PTEC</label>
+				<description>Période Tarifaire en cours</description>
+			</channel>
+
+			<channel id="iinst" typeId="current-type">
+				<label>IINST</label>
+				<description>Intensité Instantanée</description>
+			</channel>
+
+			<channel id="adps" typeId="current-type">
+				<label>ADPS</label>
+				<description>Avertissement de Dépassement De Puissance Souscrite</description>
+			</channel>
+
+			<channel id="imax" typeId="current-type">
+				<label>IMAX</label>
+				<description>Intensité maximale appelée</description>
+			</channel>
+
+			<channel id="pmax" typeId="power-type">
+				<label>PMAX</label>
+				<description>Puissance maximale triphasée atteinte</description>
+			</channel>
+
+			<channel id="papp" typeId="power-type">
+				<label>PAPP</label>
+				<description>Puissance apparente</description>
+			</channel>
+
+			<channel id="motdetat" typeId="info-type">
+				<label>MOTDETAT</label>
+				<description>Mot d'état du compteur</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>
