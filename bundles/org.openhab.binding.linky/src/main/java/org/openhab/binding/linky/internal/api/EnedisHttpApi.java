@@ -44,9 +44,9 @@ import org.openhab.binding.linky.internal.dto.ResponseMeter;
 import org.openhab.binding.linky.internal.dto.ResponseTempo;
 import org.openhab.binding.linky.internal.dto.UsagePoint;
 import org.openhab.binding.linky.internal.dto.UserInfo;
-import org.openhab.binding.linky.internal.handler.ThingBaseRemoteHandler;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteBaseHandler;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteEnedisWebHandler;
+import org.openhab.binding.linky.internal.handler.ThingBaseRemoteHandler;
 import org.openhab.binding.linky.internal.handler.ThingLinkyRemoteHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -207,7 +207,8 @@ public class EnedisHttpApi {
         throw new LinkyException(("PRM with id : %s does not exist").formatted(prmId));
     }
 
-    public PrmDetail getPrmDetails(ThingLinkyRemoteHandler handler, String internId, String prmId) throws LinkyException {
+    public PrmDetail getPrmDetails(ThingLinkyRemoteHandler handler, String internId, String prmId)
+            throws LinkyException {
         String prmInfoUrl = linkyBridgeHandler.getContractUrl();
         String url = prmInfoUrl.formatted(internId) + "/" + prmId
                 + "?embed=SITALI&embed=SITCOM&embed=SITCON&embed=SYNCON";
@@ -279,12 +280,13 @@ public class EnedisHttpApi {
         return getMeasures(handler, linkyBridgeHandler.getLoadCurveUrl(), mps, prmId, from, to);
     }
 
-    public MeterReading getPowerData(ThingLinkyRemoteHandler handler, String mps, String prmId, LocalDate from, LocalDate to)
-            throws LinkyException {
+    public MeterReading getPowerData(ThingLinkyRemoteHandler handler, String mps, String prmId, LocalDate from,
+            LocalDate to) throws LinkyException {
         return getMeasures(handler, linkyBridgeHandler.getMaxPowerUrl(), mps, prmId, from, to);
     }
 
-    public ResponseTempo getTempoData(ThingBaseRemoteHandler handler, LocalDate from, LocalDate to) throws LinkyException {
+    public ResponseTempo getTempoData(ThingBaseRemoteHandler handler, LocalDate from, LocalDate to)
+            throws LinkyException {
         String dtStart = from.format(linkyBridgeHandler.getApiDateFormatYearsFirst());
         String dtEnd = to.format(linkyBridgeHandler.getApiDateFormatYearsFirst());
 

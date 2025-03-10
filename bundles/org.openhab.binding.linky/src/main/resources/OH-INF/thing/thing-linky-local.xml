@@ -24,10 +24,10 @@
 		</channel-groups>
 
 		<config-description>
-            <parameter name="prmId" type="text" required="true">
-                <label>PrmId</label>
-                <description>Your Prm Id</description>
-            </parameter>
+			<parameter name="prmId" type="text" required="true">
+				<label>PrmId</label>
+				<description>Your Prm Id</description>
+			</parameter>
 			<parameter name="id" type="text" required="true">
 				<label>Id</label>
 				<description>Your D2L id</description>
