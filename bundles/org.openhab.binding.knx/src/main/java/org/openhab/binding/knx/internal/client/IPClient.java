@@ -27,21 +27,21 @@ import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tuwien.auto.calimero.IndividualAddress;
-import tuwien.auto.calimero.KNXException;
-import tuwien.auto.calimero.KNXIllegalArgumentException;
-import tuwien.auto.calimero.knxnetip.KNXnetIPConnection;
-import tuwien.auto.calimero.knxnetip.KNXnetIPRouting;
-import tuwien.auto.calimero.knxnetip.KNXnetIPTunnel;
-import tuwien.auto.calimero.knxnetip.KNXnetIPTunnel.TunnelingLayer;
-import tuwien.auto.calimero.knxnetip.SecureConnection;
-import tuwien.auto.calimero.knxnetip.TcpConnection;
-import tuwien.auto.calimero.knxnetip.TcpConnection.SecureSession;
-import tuwien.auto.calimero.link.KNXNetworkLink;
-import tuwien.auto.calimero.link.KNXNetworkLinkIP;
-import tuwien.auto.calimero.link.medium.KNXMediumSettings;
-import tuwien.auto.calimero.link.medium.TPSettings;
-import tuwien.auto.calimero.secure.Security;
+import io.calimero.IndividualAddress;
+import io.calimero.KNXException;
+import io.calimero.KNXIllegalArgumentException;
+import io.calimero.knxnetip.KNXnetIPConnection;
+import io.calimero.knxnetip.KNXnetIPRouting;
+import io.calimero.knxnetip.KNXnetIPTunnel;
+import io.calimero.knxnetip.KNXnetIPTunnel.TunnelingLayer;
+import io.calimero.knxnetip.SecureConnection;
+import io.calimero.knxnetip.StreamConnection.SecureSession;
+import io.calimero.knxnetip.TcpConnection;
+import io.calimero.link.KNXNetworkLink;
+import io.calimero.link.KNXNetworkLinkIP;
+import io.calimero.link.medium.KNXMediumSettings;
+import io.calimero.link.medium.TPSettings;
+import io.calimero.secure.Security;
 
 /**
  * IP specific {@link AbstractKNXClient} implementation.

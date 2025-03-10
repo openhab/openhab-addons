@@ -15,7 +15,7 @@ package org.openhab.binding.knx.internal.client;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.types.Type;
 
-import tuwien.auto.calimero.GroupAddress;
+import io.calimero.GroupAddress;
 
 /**
  * Describes the relevant parameters for writing to the KNX bus.
