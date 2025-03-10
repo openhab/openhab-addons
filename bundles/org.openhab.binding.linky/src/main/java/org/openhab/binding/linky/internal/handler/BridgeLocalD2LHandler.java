@@ -294,7 +294,6 @@ public class BridgeLocalD2LHandler extends BridgeLocalBaseHandler {
             } catch (Exception ex) {
                 logger.debug("ex: {}", ex.toString(), ex);
             }
-
         }
 
         return res;

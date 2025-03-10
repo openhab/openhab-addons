@@ -84,12 +84,10 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
         SerialPort serialPort = openSerialPortAndStartReceiving();
 
         if (serialPort != null) {
-
-            logger.debug("Start to wait for data ...", config.serialport);
+            logger.debug("Start to wait for data ...{}", config.serialport);
 
             try (LinkySerialInputStream teleinfoStream = new LinkySerialInputStream(serialPort.getInputStream(),
                     autoRepair, ticMode, verifyChecksum)) {
-
                 while (!interrupted) {
                     try {
                         LinkyFrame nextFrame = teleinfoStream.readNextFrame();
