@@ -137,9 +137,10 @@ public class LinkySerialInputStream extends InputStream {
                     if (computedChecksum != checksum) {
                         logger.trace("computedChecksum = {}", computedChecksum);
                         logger.trace("checksum = {}", checksum);
-                        final String error = String.format(
-                                "The groupLine '%s' is corrupted (integrity not checked). Actual checksum: '%s' / Expected checksum: '%s'",
-                                groupLineRef, checksum, computedChecksum);
+                        // final String error = String.format(
+                        // "The groupLine '%s' is corrupted (integrity not checked). Actual checksum: '%s' / Expected
+                        // checksum: '%s'",
+                        // groupLineRef, checksum, computedChecksum);
                         // throw new InvalidFrameException(error);
                     }
                 }
