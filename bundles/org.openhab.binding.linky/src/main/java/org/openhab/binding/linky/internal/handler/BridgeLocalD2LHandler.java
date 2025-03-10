@@ -72,7 +72,7 @@ public class BridgeLocalD2LHandler extends BridgeLocalBaseHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Disposing the D2LBridgeHandler handler");
+        logger.debug("Disposing the LocalD2L bridge handler");
         ScheduledFuture<?> job = this.pollingJob;
         if (job != null && !job.isCancelled()) {
             job.cancel(true);

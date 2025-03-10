@@ -53,7 +53,7 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BridgeLocalSerialHandler.class);
 
-    private static final int SERIAL_RECEIVE_TIMEOUT_MS = 10000;
+    private static final int SERIAL_RECEIVE_TIMEOUT_MS = 1000;
 
     private SerialPortManager serialPortManager;
     private @Nullable ScheduledFuture<?> pollingJob;
@@ -71,7 +71,7 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
         logger.debug("isInitialized() = {}", isInitialized());
 
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
-        pollingJob = scheduler.schedule(this::pollingCode, 1, TimeUnit.SECONDS);
+        pollingJob = scheduler.schedule(this::pollingCode, 3, TimeUnit.SECONDS);
     }
 
     public void pollingCode() {
@@ -79,16 +79,17 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
         LinkyTicMode ticMode = LinkyTicMode.valueOf(config.ticMode);
         boolean autoRepair = config.autoRepairInvalidADPSgroupLine;
         boolean verifyChecksum = config.verifyChecksum;
-        boolean interrupted = false;
 
         SerialPort serialPort = openSerialPortAndStartReceiving();
 
         if (serialPort != null) {
             logger.debug("Start to wait for data ...{}", config.serialport);
 
+            updateStatus(ThingStatus.ONLINE);
+
             try (LinkySerialInputStream linkyStream = new LinkySerialInputStream(serialPort.getInputStream(),
                     autoRepair, ticMode, verifyChecksum)) {
-                while (!interrupted) {
+                while (getThing().getStatus() == ThingStatus.ONLINE) {
                     try {
                         LinkyFrame nextFrame = linkyStream.readNextFrame();
                         if (nextFrame != null) {
@@ -117,6 +118,13 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
 
     @Override
     public void dispose() {
+        logger.debug("Disposing the LocalSerial bridge handler");
+        ScheduledFuture<?> job = this.pollingJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
+            pollingJob = null;
+        }
+
         super.dispose();
     }
 
@@ -145,10 +153,6 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
     public void onSerialPortInputStreamIOException(IOException e) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
     }
-
-    // public void continueOnReadNextFrameTimeoutException() {
-    // updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
-    // }
 
     private @Nullable SerialPort openSerialPortAndStartReceiving() {
         LinkySerialConfiguration config = getConfigAs(LinkySerialConfiguration.class);

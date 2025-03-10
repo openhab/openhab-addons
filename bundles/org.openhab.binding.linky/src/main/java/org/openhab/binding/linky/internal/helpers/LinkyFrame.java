@@ -19,7 +19,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linky.internal.types.Evolution;
-import org.openhab.binding.linky.internal.types.FrameType;
 import org.openhab.binding.linky.internal.types.InvalidFrameException;
 import org.openhab.binding.linky.internal.types.LinkyChannel;
 import org.openhab.binding.linky.internal.types.LinkyTicMode;
@@ -74,77 +73,6 @@ public class LinkyFrame implements Serializable {
         // default constructor
     }
 
-    public FrameType getType() throws InvalidFrameException {
-        LinkyTicMode ticMode = getTicMode();
-        switch (ticMode) {
-            case HISTORICAL:
-                return getHistoricalType();
-            case STANDARD:
-                return getStandardType();
-            default:
-                throw new InvalidFrameException();
-        }
-    }
-
-    public FrameType getHistoricalType() throws InvalidFrameException {
-        Phase phase = getPhase();
-        Pricing pricing = getPricing();
-        Evolution evolution = getEvolution();
-        switch (phase) {
-            case ONE_PHASED:
-                switch (evolution) {
-                    case ICC:
-                        switch (pricing) {
-                            case BASE:
-                                return FrameType.CBEMM_ICC_BASE;
-                            case EJP:
-                                return FrameType.CBEMM_ICC_EJP;
-                            case HC:
-                                return FrameType.CBEMM_ICC_HC;
-                            case TEMPO:
-                                return FrameType.CBEMM_ICC_TEMPO;
-                            default:
-                                return FrameType.UNKNOWN;
-                        }
-                    case NONE:
-                        switch (pricing) {
-                            case BASE:
-                                return FrameType.CBEMM_BASE;
-                            case EJP:
-                                return FrameType.CBEMM_EJP;
-                            case HC:
-                                return FrameType.CBEMM_HC;
-                            case TEMPO:
-                                return FrameType.CBEMM_TEMPO;
-                            default:
-                                return FrameType.UNKNOWN;
-                        }
-                    default:
-                        return FrameType.UNKNOWN;
-
-                }
-            case THREE_PHASED:
-                if (isShortFrame()) {
-                    return FrameType.CBETM_SHORT;
-                } else {
-                    switch (pricing) {
-                        case BASE:
-                            return FrameType.CBETM_LONG_BASE;
-                        case EJP:
-                            return FrameType.CBETM_LONG_EJP;
-                        case HC:
-                            return FrameType.CBETM_LONG_HC;
-                        case TEMPO:
-                            return FrameType.CBETM_LONG_TEMPO;
-                        default:
-                            return FrameType.UNKNOWN;
-                    }
-                }
-            default:
-                return FrameType.UNKNOWN;
-        }
-    }
-
     public Phase getPhase() throws InvalidFrameException {
         if (channelToValues.containsKey(LinkyChannel.IINST)) {
             return Phase.ONE_PHASED;
@@ -192,21 +120,6 @@ public class LinkyFrame implements Serializable {
             return LinkyTicMode.STANDARD;
         }
         throw new InvalidFrameException();
-    }
-
-    public FrameType getStandardType() throws InvalidFrameException {
-        boolean isProd = channelToValues.containsKey(LinkyChannel.EAIT);
-        boolean isThreePhase = channelToValues.containsKey(LinkyChannel.IRMS2);
-        if (isProd && isThreePhase) {
-            return FrameType.LSMT_PROD;
-        }
-        if (isProd) {
-            return FrameType.LSMM_PROD;
-        }
-        if (isThreePhase) {
-            return FrameType.LSMT;
-        }
-        return FrameType.LSMM;
     }
 
     public void clear() {
