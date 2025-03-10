@@ -114,7 +114,6 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
             serialPort.removeEventListener();
             serialPort.close();
         }
-
     }
 
     @Override
@@ -208,5 +207,4 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
 
         return null;
     }
-
 }

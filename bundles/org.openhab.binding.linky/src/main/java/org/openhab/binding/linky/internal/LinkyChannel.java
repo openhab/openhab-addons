@@ -200,8 +200,7 @@ public enum LinkyChannel {
         this(type, groupName, channelName, CHANNEL_NONE, unit, 1);
     }
 
-    LinkyChannel(ValueType type, String groupName, String channelName, String timestampChannelName,
-            Unit<?> unit) {
+    LinkyChannel(ValueType type, String groupName, String channelName, String timestampChannelName, Unit<?> unit) {
         this(type, groupName, channelName, timestampChannelName, unit, 1);
     }
 
@@ -209,8 +208,8 @@ public enum LinkyChannel {
         this(type, groupName, channelName, CHANNEL_NONE, unit, factor);
     }
 
-    LinkyChannel(ValueType type, String groupName, String channelName, String timestampChannelName,
-            Unit<?> unit, int factor) {
+    LinkyChannel(ValueType type, String groupName, String channelName, String timestampChannelName, Unit<?> unit,
+            int factor) {
         this.type = type;
         this.groupName = groupName;
         this.channelName = channelName;

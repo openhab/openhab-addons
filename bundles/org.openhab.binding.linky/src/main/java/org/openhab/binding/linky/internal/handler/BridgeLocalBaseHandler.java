@@ -94,5 +94,4 @@ public class BridgeLocalBaseHandler extends BaseBridgeHandler {
 
         return null;
     }
-
 }
