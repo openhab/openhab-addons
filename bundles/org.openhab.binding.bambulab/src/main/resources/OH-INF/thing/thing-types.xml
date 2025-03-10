@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bambulab"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="printer">
+		<label>Bambu Lab Printer</label>
+		<description>Represents a Bambu Lab 3D printer connected via MQTT</description>
+
+		<channels>
+			<channel id="nozzle-temperature" typeId="temperature-measurement">
+				<label>Nozzle Temperature</label>
+				<description>Current temperature of the nozzle.</description>
+			</channel>
+			<channel id="nozzle-target-temperature" typeId="temperature-setpoint">
+				<label>Nozzle Target Temperature</label>
+				<description>Target temperature of the nozzle.</description>
+			</channel>
+			<channel id="bed-temperature" typeId="temperature-measurement">
+				<label>Bed Temperature</label>
+				<description>Current temperature of the heated bed.</description>
+			</channel>
+			<channel id="bed-target-temperature" typeId="temperature-setpoint">
+				<label>Bed Target Temperature</label>
+				<description>Target temperature of the heated bed.</description>
+			</channel>
+			<channel id="chamber-temperature" typeId="temperature-measurement">
+				<label>Chamber Temperature</label>
+				<description>Current temperature inside the printer chamber.</description>
+			</channel>
+			<channel id="mc-print-stage" typeId="string">
+				<label>Print Stage</label>
+				<description>Current stage of the print process.</description>
+			</channel>
+			<channel id="mc-percent" typeId="percent">
+				<label>Print Progress</label>
+				<description>Percentage of the print completed.</description>
+			</channel>
+			<channel id="mc-remaining-time" typeId="number">
+				<label>Remaining Print Time</label>
+				<description>Estimated time remaining for the print in seconds.</description>
+			</channel>
+			<channel id="wifi-signal" typeId="wifi">
+				<label>WiFi Signal Strength</label>
+				<description>Current WiFi signal strength.</description>
+			</channel>
+			<channel id="bed-type" typeId="string">
+				<label>Bed Type</label>
+				<description>Type of the printer's heated bed.</description>
+			</channel>
+			<channel id="gcode-file" typeId="string">
+				<label>G-code File</label>
+				<description>Name of the currently loaded G-code file.</description>
+			</channel>
+			<channel id="gcode-state" typeId="string">
+				<label>G-code State</label>
+				<description>Current state of the G-code execution.</description>
+			</channel>
+			<channel id="reason" typeId="string">
+				<label>Pause/Stop Reason</label>
+				<description>Reason for pausing or stopping the print.</description>
+			</channel>
+			<channel id="result" typeId="string">
+				<label>Print Result</label>
+				<description>Final result or status of the print job.</description>
+			</channel>
+			<channel id="gcode-file-prepare-percent" typeId="percent">
+				<label>G-code Preparation Progress</label>
+				<description>Percentage of G-code file preparation completed.</description>
+			</channel>
+			<channel id="big-fan1-speed" typeId="number">
+				<label>Big Fan 1 Speed</label>
+				<description>Speed of the first large cooling fan (RPM).</description>
+			</channel>
+			<channel id="big-fan2-speed" typeId="number">
+				<label>Big Fan 2 Speed</label>
+				<description>Speed of the second large cooling fan (RPM).</description>
+			</channel>
+			<channel id="heat-break-fan-speed" typeId="number">
+				<label>Heat Break Fan Speed</label>
+				<description>Speed of the heat break cooling fan (RPM).</description>
+			</channel>
+			<channel id="layer-num" typeId="number">
+				<label>Current Layer Number</label>
+				<description>Current layer being printed.</description>
+			</channel>
+			<channel id="speed-level" typeId="number">
+				<label>Print Speed Level</label>
+				<description>Current speed setting of the print job.</description>
+			</channel>
+			<channel id="time-laps" typeId="boolean">
+				<label>time-lapse Enabled</label>
+				<description>Indicates whether time-lapse recording is enabled.</description>
+			</channel>
+			<channel id="use-ams" typeId="boolean">
+				<label>AMS System in Use</label>
+				<description>Indicates whether the Automatic Material System (AMS) is active.</description>
+			</channel>
+			<channel id="vibration-calibration" typeId="boolean">
+				<label>Vibration Calibration</label>
+				<description>Indicates whether vibration calibration has been performed.</description>
+			</channel>
+
+			<!-- command channels -->
+			<channel id="led-chamber" typeId="on-off-command">
+				<label>Chamber LED</label>
+				<description>Controls the LED lighting inside the printer chamber.</description>
+			</channel>
+			<channel id="led-work" typeId="on-off-command">
+				<label>Work Area LED</label>
+				<description>Controls the LED lighting for the work area.</description>
+			</channel>
+		</channels>
+
+		<representation-property>serial</representation-property>
+		<config-description>
+			<parameter name="serial" type="text" required="true">
+				<label>Serial Number</label>
+				<description>Unique serial number of the printer.</description>
+			</parameter>
+
+			<parameter name="scheme" type="text" required="false">
+				<label>Scheme</label>
+				<description>URI scheme.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname</label>
+				<description>IP address of the printer or `us.mqtt.bambulab.com` for cloud mode.</description>
+				<context>network-address</context>
+			</parameter>
+
+			<parameter name="port" type="integer" required="false">
+				<label>Port</label>
+				<description>URI port.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>`bblp` for local mode or your Bambu Lab user (starts with `u_`).</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="accessCode" type="text" required="true">
+				<label>Access Code</label>
+				<description>Access code of the printer. The method of obtaining it differs for local and cloud modes.
+				</description>
+				<context>password</context>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
