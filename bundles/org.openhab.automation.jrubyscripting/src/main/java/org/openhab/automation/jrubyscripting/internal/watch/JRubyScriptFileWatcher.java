@@ -19,14 +19,12 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.automation.jrubyscripting.internal.JRubyScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
-import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
 import org.openhab.core.automation.module.script.rulesupport.loader.AbstractScriptFileWatcher;
 import org.openhab.core.automation.module.script.rulesupport.loader.ScriptFileWatcher;
 import org.openhab.core.service.ReadyService;
 import org.openhab.core.service.StartLevelService;
 import org.openhab.core.service.WatchService;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -52,12 +50,11 @@ public class JRubyScriptFileWatcher extends AbstractScriptFileWatcher {
     @Activate
     public JRubyScriptFileWatcher(final @Reference ScriptEngineManager manager,
             final @Reference ReadyService readyService, final @Reference StartLevelService startLevelService,
-            final @Reference(target = "(" + Constants.SERVICE_PID
-                    + "=org.openhab.automation.jrubyscripting)") ScriptEngineFactory scriptEngineFactory,
+            final @Reference JRubyScriptEngineFactory scriptEngineFactory,
             final @Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService) {
         super(watchService, manager, readyService, startLevelService, FILE_DIRECTORY, true);
 
-        this.scriptEngineFactory = (JRubyScriptEngineFactory) scriptEngineFactory;
+        this.scriptEngineFactory = scriptEngineFactory;
     }
 
     @Override
