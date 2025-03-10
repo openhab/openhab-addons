@@ -64,7 +64,7 @@
 	<channel-type id="string-type">
 		<item-type>String</item-type>
 		<label>Teleinfo String Type</label>
-		<category>Energy</category>
+		<category>Text</category>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
@@ -302,13 +302,6 @@
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
-	<channel-type id="timestamp-type" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Tariff Start</label>
-		<description>Beginning date for this tariff</description>
-		<category>Time</category>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
-	</channel-type>
 
 	<channel-type id="energy-price-ht-type" advanced="true">
 		<item-type>Number:EnergyPrice</item-type>
@@ -323,5 +316,66 @@
 		<category>Price</category>
 		<state readOnly="true" pattern="%.4f %unit%"></state>
 	</channel-type>
+
+	<channel-type id="time-type">
+		<item-type>Number:Time</item-type>
+		<label>Time</label>
+		<category>Time</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ptecType">
+		<item-type>String</item-type>
+		<label>PTEC</label>
+		<description>Current pricing period</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="TH">TH</option>
+				<option value="HC">HC</option>
+				<option value="HP">HP</option>
+				<option value="HN">HN</option>
+				<option value="PM">PM</option>
+				<option value="HCJB">HCJB</option>
+				<option value="HCJW">HCJW</option>
+				<option value="HCJR">HCJR</option>
+				<option value="HPJB">HPJB</option>
+				<option value="HPJW">HPJW</option>
+				<option value="HPJR">HPJR</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="hhphcType">
+		<item-type>String</item-type>
+		<label>HHPHC</label>
+		<description>Pricing schedule group</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="A">A</option>
+				<option value="C">C</option>
+				<option value="D">D</option>
+				<option value="E">E</option>
+				<option value="Y">Y</option>
+			</options>
+		</state>
+	</channel-type>
+
+
+	<channel-type id="couleurDemainType">
+		<item-type>String</item-type>
+		<label>DEMAIN</label>
+		<description>Following day color</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="Bleu">Bleu</option>
+				<option value="Blanc">Blanc</option>
+				<option value="Rouge">Rouge</option>
+			</options>
+		</state>
+	</channel-type>
+
 
 </thing:thing-descriptions>

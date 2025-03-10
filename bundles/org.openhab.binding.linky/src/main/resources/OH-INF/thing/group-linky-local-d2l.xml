@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linky"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="linky-local-d2l">
+		<label>D2l</label>
+		<channels>
+			<channel id="id-d2l" typeId="string-type">
+				<label>Id D2l</label>
+				<description>Id of the D2L module</description>
+			</channel>
+
+			<channel id="type-trame" typeId="string-type">
+				<label>Type Trame</label>
+				<description>Type trame D2L module</description>
+			</channel>
+
+			<channel id="date-firmware" typeId="string-type">
+				<label>Date Firmware</label>
+				<description>Date of firmware D2L module</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

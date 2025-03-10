@@ -17,9 +17,18 @@
 		</description>
 
 		<channel-groups>
-			<channel-group typeId="linky-local-main" id="linky-local-main" />
-			<channel-group typeId="linky-local-3phase" id="linky-local-3phase"/>
-			<channel-group typeId="linky-local-producer" id="linky-local-producer"/>
+			<channel-group typeId="linky-local-d2l" id="linky-local-d2l"/>
+
+			<channel-group typeId="linky-local-standard-base" id="linky-local-standard-base"/>
+			<channel-group typeId="linky-local-standard-3phase" id="linky-local-standard-3phase"/>
+			<channel-group typeId="linky-local-standard-producer" id="linky-local-standard-producer"/>
+
+			<channel-group typeId="linky-local-historical-base" id="linky-local-historical-base"/>
+			<channel-group typeId="linky-local-historical-3phase" id="linky-local-historical-3phase"/>
+			<channel-group typeId="linky-local-historical-ejp" id="linky-local-historical-ejp"/>
+			<channel-group typeId="linky-local-historical-hphc" id="linky-local-historical-hphc"/>
+			<channel-group typeId="linky-local-historical-tempo" id="linky-local-historical-tempo"/>
+
 			<channel-group typeId="linky-local-calc" id="linky-local-calc"/>
 		</channel-groups>
 

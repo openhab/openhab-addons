@@ -4,24 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-group-type id="linky-local-main">
-		<label>Main</label>
+	<channel-group-type id="linky-local-standard-base">
+		<label>Standard Base</label>
 		<channels>
-			<channel id="id-d2l" typeId="string-type">
-				<label>Id D2l</label>
-				<description>Id of the D2L module</description>
-			</channel>
-
-			<channel id="type-trame" typeId="string-type">
-				<label>Type Trame</label>
-				<description>Type trame D2L module</description>
-			</channel>
-
-			<channel id="date-firmware" typeId="string-type">
-				<label>Date Firmware</label>
-				<description>Date of firmware D2L module</description>
-			</channel>
-
 			<channel id="adsc" typeId="string-type">
 				<label>Adsc</label>
 				<description>Adresse Secondaire du Compteur</description>
@@ -122,14 +107,14 @@
 				<description>Active energy withdrawn from distributor on index 04</description>
 			</channel>
 
-			<channel id="urms1" typeId="potential-type">
-				<label>Urms 1</label>
-				<description>RMS Voltage on phase 1</description>
-			</channel>
-
 			<channel id="irms1" typeId="current-type">
 				<label>Irms 1</label>
 				<description>RMS Current on phase 1</description>
+			</channel>
+
+			<channel id="urms1" typeId="potential-type">
+				<label>Urms 1</label>
+				<description>RMS Voltage on phase 1</description>
 			</channel>
 
 			<channel id="pref" typeId="power-type">
@@ -277,6 +262,10 @@
 				<description>PRM</description>
 			</channel>
 
+			<channel id="relais" typeId="switch-type">
+				<label>Relais</label>
+			</channel>
+
 			<channel id="ntarf" typeId="string-type">
 				<label>Ntarf</label>
 				<description>Index of current pricing</description>
@@ -300,10 +289,6 @@
 			<channel id="ppointe" typeId="string-type">
 				<label>ppointe</label>
 				<description>Profile of next rush day</description>
-			</channel>
-
-			<channel id="relais" typeId="switch-type">
-				<label>Relais</label>
 			</channel>
 		</channels>
 	</channel-group-type>

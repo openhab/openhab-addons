@@ -4,8 +4,8 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-group-type id="linky-local-producer">
-		<label>Producer</label>
+	<channel-group-type id="linky-local-standard-producer">
+		<label>Standard Producer</label>
 		<channels>
 			<channel id="eait" typeId="energy-type">
 				<label>Eait</label>
