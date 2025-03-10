@@ -27,6 +27,7 @@ import org.openhab.binding.tado.internal.auth.OAuthorizerV2;
 import org.openhab.binding.tado.internal.handler.TadoHomeHandler;
 import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.DeviceCodeResponse;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 
@@ -51,7 +52,7 @@ public class TadoAuthenticationServlet extends HttpServlet {
     private static final String PARAM_NAME = "oauth";
     private static final String PARAM_VALUE = "start";
 
-    private static final String ERROR_BAD_URL = "no user authentication uri";
+    private static final String ERROR_BAD_URL = "no verification uri";
 
     private static final String HTML_STATUS_PAGE_TEMPLATE = """
                 <html>
@@ -160,9 +161,10 @@ public class TadoAuthenticationServlet extends HttpServlet {
         String dynamicHtml = null;
 
         try {
-            String userAuthenticationUri = authorizerV2.getUserAuthenticationUri();
-            if (userAuthenticationUri != null && !userAuthenticationUri.isBlank()) {
-                response.sendRedirect(userAuthenticationUri);
+            DeviceCodeResponse deviceCodeResponse = authorizerV2.getDeviceCodeResponse();
+            String userVerificationUri = deviceCodeResponse.getVerificationUriComplete();
+            if (userVerificationUri != null && !userVerificationUri.isBlank()) {
+                response.sendRedirect(userVerificationUri);
             } else {
                 dynamicHtml = HTML_AUTH_ERROR_TEMPLATE.replace(REPLACE_TAG, ERROR_BAD_URL);
             }

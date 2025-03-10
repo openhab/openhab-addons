@@ -19,6 +19,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.DeviceCodeResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
@@ -58,8 +59,9 @@ public class OAuthorizerV2 implements Authorizer {
         }
     }
 
-    public @Nullable String getUserAuthenticationUri() throws OAuthException, IOException, OAuthResponseException {
-        return oAuthService.getUserAuthenticationUri();
+    public @Nullable DeviceCodeResponse getDeviceCodeResponse()
+            throws OAuthException, IOException, OAuthResponseException {
+        return oAuthService.getDeviceCodeResponse();
     }
 
     public @Nullable AccessTokenResponse getAccessTokenResponse()
