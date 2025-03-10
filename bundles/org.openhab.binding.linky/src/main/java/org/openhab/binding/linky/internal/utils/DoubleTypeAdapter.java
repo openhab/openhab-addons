@@ -14,6 +14,9 @@ package org.openhab.binding.linky.internal.utils;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -28,10 +31,12 @@ import com.google.gson.stream.JsonWriter;
  *
  * @author Laurent Arnal - Initial contribution
  */
+
+@NonNullByDefault
 public class DoubleTypeAdapter extends TypeAdapter<Double> {
 
     @Override
-    public Double read(JsonReader reader) throws IOException {
+    public @Nullable Double read(JsonReader reader) throws IOException {
         if (reader.peek() == JsonToken.NULL) {
             reader.nextNull();
             return Double.NaN;
@@ -46,7 +51,7 @@ public class DoubleTypeAdapter extends TypeAdapter<Double> {
     }
 
     @Override
-    public void write(JsonWriter writer, Double value) throws IOException {
+    public void write(JsonWriter writer, @Nullable Double value) throws IOException {
         if (value == null) {
             writer.nullValue();
             return;

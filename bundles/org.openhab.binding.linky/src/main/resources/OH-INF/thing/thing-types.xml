@@ -4,100 +4,42 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="linky">
-		<label>Linky</label>
-		<description>
-			Provides your energy consumption data.
-			In order to receive the data, you must activate your account at
-			https://espace-client-particuliers.enedis.fr/web/espace-particuliers/compteur-linky.
-		</description>
+	<channel-type id="tempo-value-type">
+		<item-type>Number</item-type>
+		<label>Tempo Color Information</label>
+		<description>This status describes the tempo color of a day.</description>
+		<state>
+			<options>
+				<option value="0">Blue</option>
+				<option value="1">White</option>
+				<option value="2">Red</option>
+			</options>
+		</state>
+	</channel-type>
 
-		<channel-groups>
-			<channel-group typeId="daily" id="daily"/>
-			<channel-group typeId="weekly" id="weekly"/>
-			<channel-group typeId="monthly" id="monthly"/>
-			<channel-group typeId="yearly" id="yearly"/>
-		</channel-groups>
+	<channel-type id="info-type" advanced="false">
+		<item-type>String</item-type>
+		<label>Information</label>
+		<description>an information</description>
+		<category>energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
 
-		<config-description>
-			<parameter name="username" type="text" required="true">
-				<label>Username</label>
-				<context>email</context>
-				<description>Your Enedis Username</description>
-			</parameter>
-			<parameter name="password" type="text" required="true">
-				<label>Password</label>
-				<context>password</context>
-				<description>Your Enedis Password</description>
-			</parameter>
-			<parameter name="internalAuthId" type="text" required="true">
-				<label>Auth ID</label>
-				<description>Authentication ID delivered after the captcha (see documentation).</description>
-			</parameter>
-			<parameter name="timezone" type="text" required="false">
-				<label>Timezone</label>
-				<description>The timezone associated with your Point of delivery.
-					Will default to openHAB default timezone.
-					You will
-					need to change this if your Linky is located in a different timezone that your openHAB location.
-					You can use an
-					offset, or a label like Europe/Paris</description>
-			</parameter>
+	<channel-type id="info-date-type">
+		<item-type>DateTime</item-type>
+		<label>Information Date</label>
+		<description>an information of type date</description>
+		<state readOnly="true" pattern="%1$tF"/>
+	</channel-type>
 
-		</config-description>
-	</thing-type>
+	<channel-type id="numeric-type">
+		<item-type>Number</item-type>
+		<label>Numeric Type Consumption</label>
+		<category>energy</category>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
 
-	<channel-group-type id="daily">
-		<label>Daily consumption</label>
-		<channels>
-			<channel id="yesterday" typeId="consumption">
-				<label>Yesterday Consumption</label>
-			</channel>
-			<channel id="power" typeId="power"/>
-			<channel id="timestamp" typeId="timestamp">
-				<label>Peak Timestamp</label>
-				<description>Maximum power usage timestamp</description>
-			</channel>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="weekly">
-		<label>Weekly consumption</label>
-		<channels>
-			<channel id="thisWeek" typeId="consumption">
-				<label>This Week Consumption</label>
-			</channel>
-			<channel id="lastWeek" typeId="consumption">
-				<label>Last Week Consumption</label>
-			</channel>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="monthly">
-		<label>Monthly consumption</label>
-		<channels>
-			<channel id="thisMonth" typeId="consumption">
-				<label>This Month Consumption</label>
-			</channel>
-			<channel id="lastMonth" typeId="consumption">
-				<label>Last Month Consumption</label>
-			</channel>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="yearly">
-		<label>Yearly consumption</label>
-		<channels>
-			<channel id="thisYear" typeId="consumption">
-				<label>This Year Consumption</label>
-			</channel>
-			<channel id="lastYear" typeId="consumption">
-				<label>Last Year Consumption</label>
-			</channel>
-		</channels>
-	</channel-group-type>
-
-	<channel-type id="consumption">
+	<channel-type id="consumption-type">
 		<item-type>Number:Energy</item-type>
 		<label>Total Consumption</label>
 		<description>Consumption at given time interval</description>
@@ -105,17 +47,281 @@
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
-	<channel-type id="power">
+	<channel-type id="power-type">
 		<item-type unitHint="kVA">Number:Power</item-type>
 		<label>Yesterday Peak Power</label>
 		<description>Maximum power usage yesterday</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="timestamp">
+	<channel-type id="timestamp-type">
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<category>time</category>
 		<state readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="string-type">
+		<item-type>String</item-type>
+		<label>Teleinfo String Type</label>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cutoff-type">
+		<item-type>Number</item-type>
+		<label>Type of cutoff</label>
+		<description>This status describes the current cutoff type.</description>
+		<state>
+			<options>
+				<option value="0">Not cutoff</option>
+				<option value="1">Cutoff over power</option>
+				<option value="2">Cutoff over voltage</option>
+				<option value="3">Cutoff for delest</option>
+				<option value="4">Cutoff from Eredis</option>
+				<option value="5">Cutoff over heating with over currency</option>
+				<option value="6">Cutoff over heating without over currency</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="tempo-type">
+		<item-type>Number</item-type>
+		<label>Tempo Color Information</label>
+		<description>This status describes the tempo color of a day.</description>
+		<state>
+			<options>
+				<option value="0">Unknow</option>
+				<option value="1">Blue</option>
+				<option value="2">White</option>
+				<option value="3">Red</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="pm-type">
+		<item-type>Number</item-type>
+		<label>Type of pm</label>
+		<description>This status describes pm.</description>
+		<state>
+			<options>
+				<option value="0">Pas de en cours</option>
+				<option value="1">PM1 en cours</option>
+				<option value="2">PM2 en cours</option>
+				<option value="3">PM3 en cours</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="over-voltage-state-type">
+		<item-type>Number</item-type>
+		<label>State of over voltage Type</label>
+		<description>This type describes over voltage state.</description>
+		<state>
+			<options>
+				<option value="0">No overvoltage</option>
+				<option value="1">Overvoltage</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="exceeding-power-state-type">
+		<item-type>Number</item-type>
+		<label>State of exceeding power Type</label>
+		<description>This type describes exceeding power condition state.</description>
+		<state>
+			<options>
+				<option value="0">No exceeding power</option>
+				<option value="1">Exceeding power</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="function-type">
+		<item-type>Number</item-type>
+		<label>State of functionnality : consummer / producer</label>
+		<description>This type describes functionnality type : Consummer / Producer.</description>
+		<state>
+			<options>
+				<option value="0">Consummer</option>
+				<option value="1">Producer</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="direction-type">
+		<item-type>Number</item-type>
+		<label>State active energy</label>
+		<description>State active energy.</description>
+		<state>
+			<options>
+				<option value="0">Active energy positive</option>
+				<option value="1">Active energy negative</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="clock-state-type">
+		<item-type>Number</item-type>
+		<label>Clock state</label>
+		<description>State of the clock energy.</description>
+		<state>
+			<options>
+				<option value="0">Clock ok</option>
+				<option value="1">Clock degrade</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="plc-type">
+		<item-type>Number</item-type>
+		<label>PLC Mode</label>
+		<description>Mode of the PLC</description>
+		<state>
+			<options>
+				<option value="0">Historic Mode</option>
+				<option value="1">Standard mode</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ouputcom-state-type">
+		<item-type>Number</item-type>
+		<label>Output com state</label>
+		<description>State of the communication output</description>
+		<state>
+			<options>
+				<option value="0">Desactivated</option>
+				<option value="1">Activated without security</option>
+				<option value="2">Unknow</option>
+				<option value="3">Activated with security</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="plc-state-type">
+		<item-type>Number</item-type>
+		<label>PLC State</label>
+		<description>State of the PLC</description>
+		<state>
+			<options>
+				<option value="0">New/Unlock</option>
+				<option value="1">New/Lock</option>
+				<option value="1">Registered</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="synchro-plc-state-type">
+		<item-type>Number</item-type>
+		<label>PLC Synchro state</label>
+		<description>State of the PLC Synchro</description>
+		<state>
+			<options>
+				<option value="0">PLC Sync</option>
+				<option value="1">PLC Not Sync</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="moving-tips-type">
+		<item-type>Number</item-type>
+		<label>Moving tips</label>
+		<description>Moving tips</description>
+		<state>
+			<options>
+				<option value="0">Not moving tips</option>
+				<option value="1">Moving tips 1</option>
+				<option value="2">Moving tips 2</option>
+				<option value="3">Moving tips 3</option>
+
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="energy-type">
+		<item-type>Number:Energy</item-type>
+		<label>Teleinfo Energy Type</label>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="current-type">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Teleinfo Current Type</label>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="potential-type">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Teleinfo Potential Type</label>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power-factor-type">
+		<item-type>Number:Power</item-type>
+		<label>Teleinfo PowerFactor Type</label>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="switch-type">
+		<item-type>Switch</item-type>
+		<label>Teleinfo Switch Type</label>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="contact-type">
+		<item-type>Contact</item-type>
+		<label>Teleinfo Contact Type</label>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="datetime-type">
+		<item-type>DateTime</item-type>
+		<label>Teleinfo DateTime Type</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
+	<channel-type id="price-ht-type" advanced="true">
+		<item-type>Number:Currency</item-type>
+		<label>Price HT</label>
+		<category>Price</category>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="price-ttc-type">
+		<item-type>Number:Currency</item-type>
+		<label>Price TTC</label>
+		<category>Price</category>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="timestamp-type" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Tariff Start</label>
+		<description>Beginning date for this tariff</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
+	</channel-type>
+
+	<channel-type id="energy-price-ht-type" advanced="true">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Variable Price HT</label>
+		<category>Price</category>
+		<state readOnly="true" pattern="%.4f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="energy-price-ttc-type">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Variable Price TTC</label>
+		<category>Price</category>
+		<state readOnly="true" pattern="%.4f %unit%"></state>
+	</channel-type>
+
 </thing:thing-descriptions>
