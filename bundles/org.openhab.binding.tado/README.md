@@ -11,10 +11,10 @@ You can then monitor and control all zone types (Heating, AC, Hot Water) as well
 
 The `home` thing serves as bridge to the tado° cloud services.
 The binding will automatically discover this thing and place it in the Inbox.
-It must be authenticated before it will actually go onlime.
+It must be authenticated before it will actually go online.
 There are two ways to authenticate it as follows:
 
-1. Online via the OAuth Device Code Grant Flow (RFC-8628) authentication process through the link provideed at `http://[openhab-ip-address]:8080/tado`.
+1. Online via the OAuth Device Code Grant Flow (RFC-8628) authentication process through the link provided at `http://[openhab-ip-address]:8080/tado`.
 1. Enter `username` and `password` credentials in the thing configuration parameters as shown in the table below.
 
 Note: after March 15th, 2025 online authentication is the tado° preferred method.
