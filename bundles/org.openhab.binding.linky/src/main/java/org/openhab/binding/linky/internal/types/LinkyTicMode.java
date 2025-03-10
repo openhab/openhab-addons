@@ -18,16 +18,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Define an enum for TIC mode of Linky telemeters
  *
  * @author Olivier MARCEAU - Initial contribution
+ * @author Laurent Arnal - Refactor to integrate into Linky Binding
  */
 @NonNullByDefault
-public enum TeleinfoTicMode {
+public enum LinkyTicMode {
     HISTORICAL(1200, "\\s"),
     STANDARD(9600, "\\t");
 
     private final int bitrate;
     private final String separator;
 
-    TeleinfoTicMode(int bitrate, String separator) {
+    LinkyTicMode(int bitrate, String separator) {
         this.bitrate = bitrate;
         this.separator = separator;
     }

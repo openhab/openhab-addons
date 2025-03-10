@@ -13,13 +13,14 @@
 package org.openhab.binding.linky.internal.helpers;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.linky.internal.types.TeleinfoTicMode;
+import org.openhab.binding.linky.internal.types.LinkyTicMode;
 
 /**
  * The {@link LinkyFrameUtil} class defines a utility class for
- * {@link org.openhab.binding.teleinfo.internal.data.FrameType#CBETM_LONG_BASE}.
+ * {@link org.openhab.binding.linky.internal.data.FrameType#CBETM_LONG_BASE}.
  *
  * @author Nicolas SIBERIL - Initial contribution
+ * @author Laurent Arnal - Refactor to integrate into Linky Binding
  */
 @NonNullByDefault
 public class LinkyFrameUtil {
@@ -36,12 +37,12 @@ public class LinkyFrameUtil {
      *            must not include in checksum computation.
      * @return the checksum of the given group line.
      */
-    public static char computeGroupLineChecksum(final String groupLine, TeleinfoTicMode ticMode) {
+    public static char computeGroupLineChecksum(final String groupLine, LinkyTicMode ticMode) {
         int sum = 0;
         for (int i = 0; i < groupLine.length(); i++) {
             sum += groupLine.codePointAt(i);
         }
-        if (ticMode == TeleinfoTicMode.STANDARD) {
+        if (ticMode == LinkyTicMode.STANDARD) {
             sum += 0x09;
         }
         sum = (sum & 0x3F) + 0x20;

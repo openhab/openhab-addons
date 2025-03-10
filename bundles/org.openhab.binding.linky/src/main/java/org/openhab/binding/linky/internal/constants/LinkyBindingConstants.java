@@ -381,11 +381,12 @@ public class LinkyBindingConstants {
 
     public static final String NOT_A_CHANNEL = "";
 
-    // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SERIAL_CONTROLLER = new ThingTypeUID(BINDING_ID, "serialcontroller");
     public static final String THING_SERIAL_CONTROLLER_CHANNEL_INVALID_FRAME_COUNTER = "invalidFrameCounter";
 
     public static final String THING_ELECTRICITY_METER_PROPERTY_ADCO = "adco";
+
+    // List of all Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_SERIAL_CONTROLLER = new ThingTypeUID(BINDING_ID, "serialcontroller");
 
     public static final ThingTypeUID THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
             "cbemm_hc_electricitymeter");
@@ -435,12 +436,12 @@ public class LinkyBindingConstants {
     public static final ThingTypeUID THING_LSMM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
             "lsmm_electricitymeter");
 
-    public static final String ERROR_OFFLINE_SERIAL_NOT_FOUND = "@text/teleinfo.thingstate.serial_notfound";
-    public static final String ERROR_OFFLINE_SERIAL_INUSE = "@text/teleinfo.thingstate.serial_inuse";
-    public static final String ERROR_OFFLINE_SERIAL_UNSUPPORTED = "@text/teleinfo.thingstate.serial_unsupported";
-    public static final String ERROR_OFFLINE_SERIAL_LISTENERS = "@text/teleinfo.thingstate.serial_listeners";
-    public static final String ERROR_OFFLINE_CONTROLLER_OFFLINE = "@text/teleinfo.thingstate.controller_offline";
-    public static final String ERROR_UNKNOWN_RETRY_IN_PROGRESS = "@text/teleinfo.thingstate.controller_unknown_retry_inprogress";
+    public static final String ERROR_OFFLINE_SERIAL_NOT_FOUND = "@text/linky.thingstate.serial_notfound";
+    public static final String ERROR_OFFLINE_SERIAL_INUSE = "@text/linky.thingstate.serial_inuse";
+    public static final String ERROR_OFFLINE_SERIAL_UNSUPPORTED = "@text/linky.thingstate.serial_unsupported";
+    public static final String ERROR_OFFLINE_SERIAL_LISTENERS = "@text/linky.thingstate.serial_listeners";
+    public static final String ERROR_OFFLINE_CONTROLLER_OFFLINE = "@text/linky.thingstate.controller_offline";
+    public static final String ERROR_UNKNOWN_RETRY_IN_PROGRESS = "@text/linky.thingstate.controller_unknown_retry_inprogress";
 
     /**
      * Smartthings scopes needed by this binding to work.

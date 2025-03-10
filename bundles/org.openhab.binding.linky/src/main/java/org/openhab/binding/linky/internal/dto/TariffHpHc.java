@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link TariffHpHc} holds HP-HC price informations
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Arnal - Refactor to integrate into Linky Binding
  */
 @NonNullByDefault
 public class TariffHpHc extends Tariff {

@@ -15,9 +15,10 @@ package org.openhab.binding.linky.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link TeleinfoSerialControllerConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link LinkySerialConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Nicolas SIBERIL - Initial contribution
+ * @author Laurent Arnal - Refactor to integrate into Linky Binding
  */
 @NonNullByDefault
 public class LinkySerialConfiguration {

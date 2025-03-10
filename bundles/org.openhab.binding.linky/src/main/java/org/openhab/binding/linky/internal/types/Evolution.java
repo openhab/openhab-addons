@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Define the evolution option values
  *
  * @author Olivier MARCEAU - Initial contribution
+ * @author Laurent Arnal - Refactor to integrate into Linky Binding
  *
  */
 @NonNullByDefault

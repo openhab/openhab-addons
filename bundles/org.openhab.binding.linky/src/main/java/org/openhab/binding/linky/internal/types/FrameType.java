@@ -22,7 +22,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * Define all the frame type values
  *
  * @author Olivier MARCEAU - Initial contribution
- *
+ * @author Laurent Arnal - Refactor to integrate into Linky Binding
  */
 @NonNullByDefault
 public enum FrameType {
