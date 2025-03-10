@@ -105,7 +105,12 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
 
         appKey = (String) thingConfig.get("appKey");
         ivKey = (String) thingConfig.get("ivKey");
-        idd2l = Long.parseLong((String) thingConfig.get("id"));
+        String idd2lSt = (String) thingConfig.get("id");
+        if (idd2lSt != null) {
+            idd2l = Long.parseLong(idd2lSt);
+        } else {
+            idd2l = -1;
+        }
         saveConfiguration(thingConfig);
 
         // reread config to update timezone field

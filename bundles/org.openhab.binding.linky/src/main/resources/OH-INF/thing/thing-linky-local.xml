@@ -17,7 +17,7 @@
 		</description>
 
 		<channel-groups>
-			<channel-group typeId="linky-local-main" id="linky-local-main"/>
+			<channel-group typeId="linky-local-main" id="linky-local-main" />
 			<channel-group typeId="linky-local-3phase" id="linky-local-3phase"/>
 			<channel-group typeId="linky-local-producer" id="linky-local-producer"/>
 			<channel-group typeId="linky-local-calc" id="linky-local-calc"/>
@@ -28,15 +28,15 @@
 				<label>PrmId</label>
 				<description>Your Prm Id</description>
 			</parameter>
-			<parameter name="id" type="text" required="true">
+			<parameter name="id" type="text" required="false">
 				<label>Id</label>
 				<description>Your D2L id</description>
 			</parameter>
-			<parameter name="appKey" type="text" required="true">
+			<parameter name="appKey" type="text" required="false">
 				<label>AppKey</label>
 				<description>Your applicative encryption key</description>
 			</parameter>
-			<parameter name="ivKey" type="text" required="true">
+			<parameter name="ivKey" type="text" required="false">
 				<label>IvKey</label>
 				<description>Your IV encryption key</description>
 			</parameter>

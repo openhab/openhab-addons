@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.linky.internal.handler.BridgeLocalBaseHandler;
 import org.openhab.binding.linky.internal.helpers.LinkyFrame;
 import org.openhab.binding.linky.internal.helpers.LinkyListener;
-import org.openhab.binding.linky.internal.types.InvalidFrameException;
 import org.openhab.binding.linky.internal.types.LinkyChannel;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -45,15 +44,7 @@ import org.slf4j.LoggerFactory;
 public class LinkyDiscoveryService extends AbstractThingHandlerDiscoveryService<BridgeLocalBaseHandler>
         implements LinkyListener {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID,
-            THING_BASE_CBEMM_ELECTRICITY_METER_TYPE_UID, THING_TEMPO_CBEMM_ELECTRICITY_METER_TYPE_UID,
-            THING_EJP_CBEMM_ELECTRICITY_METER_TYPE_UID, THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID,
-            THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID, THING_TEMPO_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID,
-            THING_EJP_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID, THING_HC_CBETM_ELECTRICITY_METER_TYPE_UID,
-            THING_BASE_CBETM_ELECTRICITY_METER_TYPE_UID, THING_TEMPO_CBETM_ELECTRICITY_METER_TYPE_UID,
-            THING_EJP_CBETM_ELECTRICITY_METER_TYPE_UID, THING_LSMT_PROD_ELECTRICITY_METER_TYPE_UID,
-            THING_LSMT_ELECTRICITY_METER_TYPE_UID, THING_LSMM_PROD_ELECTRICITY_METER_TYPE_UID,
-            THING_LSMM_ELECTRICITY_METER_TYPE_UID);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_LINKY_LOCAL);
 
     private static final int SCAN_DURATION_IN_S = 60;
 
@@ -113,51 +104,35 @@ public class LinkyDiscoveryService extends AbstractThingHandlerDiscoveryService<
         detectNewElectricityMeterFromReceivedFrame(frame);
     }
 
-    private void detectNewElectricityMeterFromReceivedFrame(final LinkyFrame frameSample) {
-        logger.debug("New eletricity meter detection from frame {}", frameSample);
-        if (frameSample.get(LinkyChannel.ADCO) == null && frameSample.get(LinkyChannel.ADSC) == null) {
+    private void detectNewElectricityMeterFromReceivedFrame(final LinkyFrame frame) {
+        logger.debug("New eletricity meter detection from frame {}", frame);
+        if (frame.get(LinkyChannel.ADCO) == null && frame.get(LinkyChannel.ADSC) == null) {
             throw new IllegalStateException("Missing ADCO or ADSC key");
         }
 
-        String adco = frameSample.get(LinkyChannel.ADCO) != null ? frameSample.get(LinkyChannel.ADCO)
-                : frameSample.get(LinkyChannel.ADSC);
-        if (adco != null) {
+        ThingTypeUID tpUid = THING_TYPE_LINKY_LOCAL;
 
-            ThingUID thingUID = new ThingUID(THING_TYPE_LINKY_LOCAL, adco, thingHandler.getThing().getUID().getId());
+        String adco = frame.get(LinkyChannel.ADCO) != null ? frame.get(LinkyChannel.ADCO)
+                : frame.get(LinkyChannel.ADSC);
+        String prmId = frame.get(LinkyChannel.PRM);
+        if (adco != null && prmId != null) {
+
+            ThingUID thingUID = new ThingUID(tpUid, adco, thingHandler.getThing().getUID().getId());
 
             // ThingUID thingUID = new ThingUID(getThingTypeUID(frameSample), adco,
             // thingHandler.getThing().getUID().getId());
 
-            final Map<String, Object> properties = getThingProperties(adco);
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(THING_ELECTRICITY_METER_PROPERTY_ADCO, adco);
+            properties.put(PRM_ID, prmId);
+
             final String representationProperty = THING_ELECTRICITY_METER_PROPERTY_ADCO;
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    // .withLabel("Linky ADCO/ADSC " + adco).withThingType(getThingTypeUID(frameSample))
-                    .withLabel("Linky ADCO/ADSC " + adco).withThingType(THING_TYPE_LINKY_LOCAL)
-                    .withBridge(thingHandler.getThing().getUID()).withRepresentationProperty(representationProperty)
-                    .build();
+                    .withLabel("Linky " + prmId).withThingType(tpUid).withBridge(thingHandler.getThing().getUID())
+                    .withRepresentationProperty(representationProperty).build();
 
             thingDiscovered(discoveryResult);
         }
     }
 
-    private ThingTypeUID getThingTypeUID(final LinkyFrame frame) {
-        ThingTypeUID thingTypeUID;
-        try {
-            thingTypeUID = frame.getType().getThingTypeUid();
-        } catch (InvalidFrameException e) {
-            throw new IllegalStateException("Frame type can not be evaluated");
-        }
-        if (thingTypeUID != null) {
-            return thingTypeUID;
-        } else {
-            throw new IllegalStateException("Linky frame type not supported: " + frame.getClass());
-        }
-    }
-
-    private Map<String, Object> getThingProperties(String adco) {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(THING_ELECTRICITY_METER_PROPERTY_ADCO, adco);
-
-        return properties;
-    }
 }
