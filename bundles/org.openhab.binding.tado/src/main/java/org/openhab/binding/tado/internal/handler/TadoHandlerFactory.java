@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.discovery.TadoDiscoveryService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -59,8 +58,7 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public TadoHandlerFactory(@Reference TadoStateDescriptionProvider stateDescriptionProvider,
-            @Reference HttpClientFactory httpClientFactory, @Reference HttpService httpService,
-            @Reference OAuthFactory oAuthFactory) {
+            @Reference HttpService httpService, @Reference OAuthFactory oAuthFactory) {
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
