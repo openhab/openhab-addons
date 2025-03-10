@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.linky.internal.handler;
 
-import static org.openhab.binding.linky.internal.constants.LinkyBindingConstants.CHANNEL_NONE;
+import static org.openhab.binding.linky.internal.constants.LinkyBindingConstants.*;
 
 import java.math.BigInteger;
 import java.time.Instant;
@@ -30,7 +30,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linky.internal.config.LinkyConfiguration;
 import org.openhab.binding.linky.internal.constants.LinkyBindingConstants;
 import org.openhab.binding.linky.internal.helpers.LinkyFrame;
+import org.openhab.binding.linky.internal.types.InvalidFrameException;
 import org.openhab.binding.linky.internal.types.LinkyChannel;
+import org.openhab.binding.linky.internal.types.LinkyTicMode;
+import org.openhab.binding.linky.internal.types.Phase;
 import org.openhab.binding.linky.internal.types.ValueType;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
@@ -42,11 +45,13 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -79,6 +84,8 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
     private String prmId = "";
 
     private double cosphi = Double.NaN;
+
+    private int frameCount = 0;
 
     public ThingLinkyLocalHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -132,6 +139,53 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
+    public void udpateGroupVisibility(LinkyFrame frame) {
+        try {
+            String id = getThing().getUID().getId();
+            Phase phase = frame.getPhase();
+            LinkyTicMode ticMode = frame.getTicMode();
+            boolean isProducerMode = frame.isProducerMode();
+
+            if (phase == Phase.ONE_PHASED) {
+                udpateGroupVisibility(LINKY_LOCAL_3PHASE_GROUP);
+            }
+
+            if (!isProducerMode) {
+                udpateGroupVisibility(LINKY_LOCAL_PRODUCER_GROUP);
+            }
+
+            if (ticMode == LinkyTicMode.HISTORICAL) {
+
+            } else if (ticMode == LinkyTicMode.STANDARD) {
+
+            }
+
+            frameCount++;
+        } catch (InvalidFrameException ex) {
+        }
+    }
+
+    public void udpateGroupVisibility(String groupName) {
+        ThingBuilder updateThing = editThing();
+
+        for (LinkyChannel channel : LinkyChannel.values()) {
+            if (channel.getGroupName().equals(groupName)) {
+
+                Channel ch = this.getThing().getChannel(channel.getGroupName() + "#" + channel.getChannelName());
+                if (ch != null) {
+                    updateThing = updateThing.withoutChannel(ch.getUID());
+                }
+
+                ch = this.getThing().getChannel(channel.getGroupName() + "#" + channel.getChannelName() + "-date");
+                if (ch != null) {
+                    updateThing = updateThing.withoutChannel(ch.getUID());
+                }
+            }
+        }
+
+        updateThing(updateThing.build());
+    }
+
     @Override
     public synchronized void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -173,6 +227,10 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
     protected void handleFrame(LinkyFrame frame) {
         double urms = 0.0;
         double sinst = 0.0;
+
+        if (frameCount == 0) {
+            udpateGroupVisibility(frame);
+        }
 
         for (Entry<LinkyChannel, String> entry : frame.getChannelToValues().entrySet()) {
             try {
