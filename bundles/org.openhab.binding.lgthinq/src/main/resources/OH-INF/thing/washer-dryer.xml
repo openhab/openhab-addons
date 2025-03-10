@@ -23,7 +23,7 @@
 				<advanced>true</advanced>
 			</parameter-group>
 			<parameter name="pollingPeriodPowerOffSeconds" type="integer" min="10" required="true" groupName="Settings">
-				<label>Polling when off</label>
+				<label>Polling When Off</label>
 				<description>Seconds to wait to the next polling when device is off. Useful to save up
 					i/o and cpu when your
 					device is
@@ -33,7 +33,7 @@
 				<default>10</default>
 			</parameter>
 			<parameter name="pollingPeriodPowerOnSeconds" type="integer" min="10" required="true" groupName="Settings">
-				<label>Polling when on</label>
+				<label>Polling When On</label>
 				<description>Seconds to wait to the next polling for device state (dashboard channels)
 				</description>
 				<default>10</default>
@@ -58,7 +58,7 @@
 				<advanced>true</advanced>
 			</parameter-group>
 			<parameter name="pollingPeriodPowerOffSeconds" type="integer" min="10" required="true" groupName="Settings">
-				<label>Polling when off</label>
+				<label>Polling When Off</label>
 				<description>Seconds to wait to the next polling when device is off. Useful to save up
 					i/o and cpu when your
 					device is
@@ -68,7 +68,7 @@
 				<default>10</default>
 			</parameter>
 			<parameter name="pollingPeriodPowerOnSeconds" type="integer" min="10" required="true" groupName="Settings">
-				<label>Polling when on</label>
+				<label>Polling When On</label>
 				<description>Seconds to wait to the next polling for device state (dashboard channels)
 				</description>
 				<default>10</default>
