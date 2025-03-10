@@ -13,14 +13,21 @@
 package org.openhab.binding.linky.internal.handler;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.linky.internal.LinkyFrame;
+import org.openhab.binding.linky.internal.LinkyListener;
+import org.openhab.binding.linky.internal.discovery.LinkyDiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 
 import com.google.gson.Gson;
@@ -33,7 +40,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class BridgeLocalBaseHandler extends BaseBridgeHandler {
     private List<String> registeredPrmId = new ArrayList<>();
-
+    private Set<LinkyListener> listeners = new CopyOnWriteArraySet<>();
     protected final Gson gson;
 
     public BridgeLocalBaseHandler(Bridge bridge, Gson gson) {
@@ -47,6 +54,23 @@ public class BridgeLocalBaseHandler extends BaseBridgeHandler {
 
     @Override
     public synchronized void initialize() {
+    }
+
+    public void addListener(final LinkyListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(final LinkyListener listener) {
+        listeners.remove(listener);
+    }
+
+    protected void fireOnFrameReceivedEvent(final LinkyFrame frame) {
+        listeners.forEach(l -> l.onFrameReceived(frame));
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(LinkyDiscoveryService.class);
     }
 
     public void registerNewPrmId(String prmId) {
