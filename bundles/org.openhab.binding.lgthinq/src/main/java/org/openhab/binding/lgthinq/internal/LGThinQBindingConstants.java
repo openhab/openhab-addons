@@ -64,10 +64,12 @@ public class LGThinQBindingConstants extends LGServicesConstants {
     public static final int MAX_GET_MONITOR_RETRIES = 3;
     public static final int DISCOVERY_SEARCH_TIMEOUT = 20;
     // === Biding property info
-    public static final String PROP_INFO_DEVICE_ALIAS = "device-alias";
-    public static final String PROP_INFO_DEVICE_ID = "device-id";
-    public static final String PROP_INFO_MODEL_URL_INFO = "model-url-info";
-    public static final String PROP_INFO_PLATFORM_TYPE = "platform-type";
+    public static final String PROP_INFO_DEVICE_ALIAS = "deviceAlias";
+    public static final String PROP_INFO_DEVICE_ID = "deviceId";
+    public static final String PROP_INFO_MODEL_URL_INFO = "modelUrlInfo";
+    public static final String PROP_INFO_PLATFORM_TYPE = "platformType";
+    public static final String PROP_INFO_MODEL_ID = "modelId";
+
     // === UserData Directory and File Format
     public static String THINQ_USER_DATA_FOLDER = OpenHAB.getUserDataFolder() + File.separator + "thinq";
     public static String THINQ_CONNECTION_DATA_FILE = THINQ_USER_DATA_FOLDER + File.separator + "thinqbridge-%s.json";

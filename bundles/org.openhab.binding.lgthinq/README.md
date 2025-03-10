@@ -11,10 +11,10 @@ See the table bellow:
 |---------------------|-----------------|----------|------------------------------|-------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | air-conditioner-401 | Air Conditioner | V1 & V2  | Filter and Energy Monitoring | All features in LG App, except Wind Direction   |                                                                                                                                                                  |
 | dishwasher-204      | Dish Washer     | V2       | None                         | None                                            | Provide only some channels to follow the cycle                                                                                                                   |
-| 222                 | Dryer Tower     | V1 & V2  | None                         | All features in LG App (including remote start) | LG has a WasherDryer Tower that is 2 in one device.<br/> When this device is discovered by this binding, it's recognized as 2 separated devices Washer and Dryer |
+| dryer-tower-222     | Dryer Tower     | V1 & V2  | None                         | All features in LG App (including remote start) | LG has a WasherDryer Tower that is 2 in one device.<br/> When this device is discovered by this binding, it's recognized as 2 separated devices Washer and Dryer |
 | washer-tower-221    | Washer Tower    | V1 & V2  | None                         | All features in LG App (including remote start) | LG has a WasherDryer Tower that is 2 in one device.<br/> When this device is discovered by this binding, it's recognized as 2 separated devices Washer and Dryer |
 | washer-201          | Washer Machine  | V1 & V2  | None                         | All features in LG App (including remote start) |                                                                                                                                                                  |
-| dryer-tower-222     | Dryer Machine   | V1 & V2  | None                         | All features in LG App (including remote start) |                                                                                                                                                                  |
+| dryer-202           | Dryer Machine   | V1 & V2  | None                         | All features in LG App (including remote start) |                                                                                                                                                                  |
 | fridge-101          | Refrigerator    | V1 & V2  | None                         | All features in LG App                          |                                                                                                                                                                  |
 | heatpump-401HP      | Heat Pump       | V1 & V2  | None                         | All features in LG App                          |                                                                                                                                                                  |
 
@@ -67,7 +67,7 @@ Most, but not all, LG ThinQ Air Conditioners support the following channels:
 | current-temperature | Temperature        | Number:Temperature | Read-Only channel that indicates the current temperature informed by the device                                                                           |
 | fan-speed           | Fan Speed          | Number             | This channel let you choose the current label value for the fan speed (Low, Medium, High, Auto, etc.). These values are pre-configured in discovery time. |
 | op-mode             | Operation Mode     | Number (Labeled)   | Defines device's operation mode (Fan, Cool, Dry, etc). These values are pre-configured at discovery time.                                                 |
-| power               | Power              | Switch             | Define the device's Current Power state.                                                                                                                  |
+| power               | Power              | Switch             | Define the device's Power state.                                                                                                                          |
 | cool-jet            | Cool Jet           | Switch             | Switch Cool Jet ON/OFF                                                                                                                                    |
 | auto-dry            | Auto Dry           | Switch             | Switch Auto Dry ON/OFF                                                                                                                                    |
 | energy-saving       | Energy Saving      | Switch             | Switch Energy Saving ON/OFF                                                                                                                               |
@@ -206,10 +206,10 @@ demo.thing
 
 ```java
 Bridge lgthinq:bridge:MyLGThinqBridge [ username="user@registered.com", password="cleartext-password", language="en", country="US", poolingIntervalSec=600] {
-   Thing air-conditioner-401 myAC [ model-url-info="ac_model_url", device-id="device-id", platform-type="thinq2", modelId="model_id", device-alias="MyAC" ]
+   Thing air-conditioner-401 myAC [ modelUrlInfo="<ac-model-url>", deviceId="<device-id>", platformType="<platform-type>", modelId="<model-id>", deviceAlias="<MyAC>" ]
 }
 ```
-Until now, there is no way to easily obtain the values of model_url_info, device_id, platform_type and modelId. So, if you really need 
+Until now, there is no way to easily obtain the values of ac-model-url, device-id, platform-type and model-id. So, if you really need 
 to configure the LGThinq thing textually, I suggest you to first add it with the UI discovery process through the LG Thinq Bridge, then after, copy
 these properties from the thing created and complete the textual configuration.
 

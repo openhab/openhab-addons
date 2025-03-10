@@ -15,6 +15,7 @@ package org.openhab.binding.lgthinq.internal.discovery;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.DISCOVERY_SEARCH_TIMEOUT;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_DEVICE_ALIAS;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_DEVICE_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_MODEL_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_MODEL_URL_INFO;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_PLATFORM_TYPE;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.SUPPORTED_THING_TYPES;
@@ -26,7 +27,6 @@ import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_HEAT_PUMP;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_WASHING_MACHINE;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_WASHING_TOWER;
-import static org.openhab.core.thing.Thing.PROPERTY_MODEL_ID;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -122,7 +122,7 @@ public class LGThinqDiscoveryService extends AbstractThingHandlerDiscoveryServic
         properties.put(PROP_INFO_DEVICE_ALIAS, device.getAlias());
         properties.put(PROP_INFO_MODEL_URL_INFO, device.getModelJsonUri());
         properties.put(PROP_INFO_PLATFORM_TYPE, device.getPlatformType());
-        properties.put(PROPERTY_MODEL_ID, modelId);
+        properties.put(PROP_INFO_MODEL_ID, modelId);
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
                 .withProperties(properties).withBridge(bridgeHandlerUID).withRepresentationProperty(PROP_INFO_DEVICE_ID)
