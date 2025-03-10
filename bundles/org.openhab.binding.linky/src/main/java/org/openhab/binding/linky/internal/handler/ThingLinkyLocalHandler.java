@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.linky.internal.handler;
 
-import static org.openhab.binding.linky.internal.LinkyBindingConstants.CHANNEL_NONE;
+import static org.openhab.binding.linky.internal.constants.LinkyBindingConstants.CHANNEL_NONE;
 
 import java.math.BigInteger;
 import java.time.Instant;
@@ -27,11 +27,11 @@ import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linky.internal.LinkyBindingConstants;
-import org.openhab.binding.linky.internal.LinkyChannel;
-import org.openhab.binding.linky.internal.LinkyConfiguration;
-import org.openhab.binding.linky.internal.LinkyFrame;
-import org.openhab.binding.linky.internal.ValueType;
+import org.openhab.binding.linky.internal.config.LinkyConfiguration;
+import org.openhab.binding.linky.internal.constants.LinkyBindingConstants;
+import org.openhab.binding.linky.internal.helpers.LinkyFrame;
+import org.openhab.binding.linky.internal.types.LinkyChannel;
+import org.openhab.binding.linky.internal.types.ValueType;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;

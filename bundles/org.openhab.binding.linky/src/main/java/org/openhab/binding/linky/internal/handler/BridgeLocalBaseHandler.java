@@ -20,9 +20,9 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linky.internal.LinkyFrame;
-import org.openhab.binding.linky.internal.LinkyListener;
 import org.openhab.binding.linky.internal.discovery.LinkyDiscoveryService;
+import org.openhab.binding.linky.internal.helpers.LinkyFrame;
+import org.openhab.binding.linky.internal.helpers.LinkyListener;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;

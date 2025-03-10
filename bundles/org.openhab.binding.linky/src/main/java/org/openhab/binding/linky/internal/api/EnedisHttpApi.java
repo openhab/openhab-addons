@@ -29,7 +29,6 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
-import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport;
 import org.openhab.binding.linky.internal.dto.Contact;
 import org.openhab.binding.linky.internal.dto.Contract;
@@ -48,6 +47,7 @@ import org.openhab.binding.linky.internal.handler.BridgeRemoteBaseHandler;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteEnedisWebHandler;
 import org.openhab.binding.linky.internal.handler.ThingBaseRemoteHandler;
 import org.openhab.binding.linky.internal.handler.ThingLinkyRemoteHandler;
+import org.openhab.binding.linky.internal.types.LinkyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
