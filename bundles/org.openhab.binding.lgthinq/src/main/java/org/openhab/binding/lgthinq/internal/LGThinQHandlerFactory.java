@@ -12,15 +12,7 @@
  */
 package org.openhab.binding.lgthinq.internal;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_AIR_CONDITIONER;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_BRIDGE;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_DISHWASHER;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_DRYER;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_DRYER_TOWER;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_FRIDGE;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_HEAT_PUMP;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_WASHING_MACHINE;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_WASHING_TOWER;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 
 import java.util.Objects;
 
