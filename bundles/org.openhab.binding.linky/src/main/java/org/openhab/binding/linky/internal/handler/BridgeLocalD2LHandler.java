@@ -279,6 +279,7 @@ public class BridgeLocalD2LHandler extends BridgeLocalBaseHandler {
                             }
                         }
 
+                        fireOnFrameReceivedEvent(frame);
                         handler.handleFrame(frame);
                         res = true;
                     }

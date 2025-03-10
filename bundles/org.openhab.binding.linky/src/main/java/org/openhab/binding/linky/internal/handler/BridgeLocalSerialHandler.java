@@ -92,6 +92,7 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
                     try {
                         LinkyFrame nextFrame = teleinfoStream.readNextFrame();
                         if (nextFrame != null) {
+                            fireOnFrameReceivedEvent(nextFrame);
                             onFrameReceived(nextFrame);
                         }
                     } catch (InvalidFrameException e) {
@@ -122,14 +123,6 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
-
-    /*
-     * @Override
-     *
-     * public Collection<Class<? extends ThingHandlerService>> getServices() {
-     * return Set.of(TeleinfoDiscoveryService.class);
-     * }
-     */
 
     public void onFrameReceived(LinkyFrame frame) {
         updateStatus(ThingStatus.ONLINE);
