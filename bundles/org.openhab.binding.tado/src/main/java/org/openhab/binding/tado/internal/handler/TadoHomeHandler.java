@@ -80,7 +80,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
     private final OAuthFactory oAuthFactory;
 
     private @NonNullByDefault({}) TadoHomeConfig configuration;
-    private @NonNullByDefault({}) String offlineMessage;
+    private @NonNullByDefault({}) String offlinePrompt;
     private @NonNullByDefault({}) HomeApi api;
 
     private @Nullable Long homeId;
@@ -104,8 +104,6 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
-
         configuration = getConfigAs(TadoHomeConfig.class);
 
         String userName = configuration.username;
@@ -118,28 +116,27 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
         suggestRfc8628 |= ZonedDateTime.now().isAfter(AUTH_V2_FROM_DATE);
 
         if (suggestRfc8628) {
-            String ipAddress;
+            StringBuilder url = new StringBuilder().append("http://");
             try {
-                ipAddress = InetAddress.getLocalHost().getHostAddress();
+                url.append(InetAddress.getLocalHost().getHostAddress());
             } catch (UnknownHostException e) {
-                ipAddress = "[ip-address]";
+                url.append("[ip-address]");
             }
-            offlineMessage = String.format("Try authenticating at http://%s:8080%s", ipAddress,
-                    TadoAuthenticationServlet.PATH);
+            url.append(":8080").append(TadoAuthenticationServlet.PATH);
+            offlinePrompt = String.format("@text/tado.home.status.oauth [\"%s\"]", url.toString());
 
-            OAuthClientService service = oAuthFactory.getOAuthClientService(thing.getUID().toString());
-            if (service == null) {
-                service = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), TOKEN_URL, DEVICE_URL,
-                        CLIENT_ID, null, SCOPE, false);
+            OAuthClientService oAuthService = oAuthFactory.getOAuthClientService(thing.getUID().toString());
+            if (oAuthService == null) {
+                oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), TOKEN_URL,
+                        DEVICE_URL, CLIENT_ID, null, SCOPE, false);
             }
-            service.addAccessTokenRefreshListener(this);
-            oAuthClientService = service;
+            oAuthService.addAccessTokenRefreshListener(this);
+            oAuthClientService = oAuthService;
 
-            api = new HomeApiFactory().create(service);
-
+            api = new HomeApiFactory().create(oAuthService);
             logger.trace("initialize() api v2 created");
         } else {
-            offlineMessage = "Username and/or password might be invalid";
+            offlinePrompt = "@text/tado.home.status.username";
             api = new HomeApiFactory().create(Objects.requireNonNull(userName), Objects.requireNonNull(password));
             logger.trace("initialize() api v1 created");
         }
@@ -174,20 +171,21 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
                 // Get user info to verify successful authentication and connection to server
                 User user = api.showUser();
                 if (user == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, offlineMessage);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, offlinePrompt);
                     return;
                 }
 
                 List<UserHomes> homes = user.getHomes();
                 if (homes == null || homes.isEmpty()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "User does not have access to any home");
+                            "@text/tado.home.status.nohome");
                     return;
                 }
 
                 Integer firstHomeId = homes.get(0).getId();
                 if (firstHomeId == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Missing Home Id");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/tado.home.status.nohomeid");
                     return;
                 }
 
@@ -201,7 +199,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
             updateProperty(TadoBindingConstants.PROPERTY_HOME_TEMPERATURE_UNIT, temperatureUnit.name());
         } catch (IOException | ApiException e) {
             logger.debug("Error accessing tado server: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, offlineMessage);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, offlinePrompt);
             return;
         }
 
