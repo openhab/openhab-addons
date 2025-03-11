@@ -16,6 +16,7 @@ import java.net.URI;
 import java.time.LocalTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.measure.Unit;
@@ -85,20 +86,33 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         updateChannels();
     }
 
+    private void initializeBatteryControl(String hostname, String username, String password) {
+        if (hostname != null && username != null && password != null) {
+            batteryControl = new FroniusBatteryControl(httpClient, URI.create("http://" + hostname + "/"), username,
+                    password);
+        } else {
+            batteryControl = null;
+        }
+    }
+
     @Override
     public void initialize() {
         config = getConfigAs(FroniusBaseDeviceConfiguration.class);
         FroniusBridgeConfiguration bridgeConfig = getBridge().getConfiguration().as(FroniusBridgeConfiguration.class);
-        if (bridgeConfig.username != null && bridgeConfig.password != null) {
-            batteryControl = new FroniusBatteryControl(httpClient, URI.create("http://" + bridgeConfig.hostname + "/"),
-                    bridgeConfig.username, bridgeConfig.password);
-        }
+        initializeBatteryControl(bridgeConfig.hostname, bridgeConfig.username, bridgeConfig.password);
         super.initialize();
     }
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return List.of(FroniusSymoInverterActions.class);
+    }
+
+    @Override
+    public void handleBridgeConfigurationUpdate(Map<String, Object> configurationParameters) {
+        super.handleBridgeConfigurationUpdate(configurationParameters);
+        FroniusBridgeConfiguration bridgeConfig = getBridge().getConfiguration().as(FroniusBridgeConfiguration.class);
+        initializeBatteryControl(bridgeConfig.hostname, bridgeConfig.username, bridgeConfig.password);
     }
 
     private @Nullable FroniusBatteryControl getBatteryControl() {

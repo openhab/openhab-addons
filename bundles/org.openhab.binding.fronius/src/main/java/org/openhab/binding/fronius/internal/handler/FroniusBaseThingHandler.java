@@ -14,6 +14,8 @@ package org.openhab.binding.fronius.internal.handler;
 
 import static org.openhab.binding.fronius.internal.FroniusBindingConstants.API_TIMEOUT;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
@@ -82,6 +84,14 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
+    }
+
+    /**
+     * Called by the bridge to handle a bridge configuration update.
+     *
+     * @param configurationParameters map of changed bridge configuration parameters
+     */
+    protected void handleBridgeConfigurationUpdate(Map<String, Object> configurationParameters) {
     }
 
     /**
