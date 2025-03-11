@@ -16,6 +16,10 @@ import static org.openhab.binding.sedif.internal.constants.SedifBindingConstants
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.sedif.internal.dto.ContractDetail;
+import org.openhab.binding.sedif.internal.dto.Contracts;
+import org.openhab.binding.sedif.internal.dto.RuntimeTypeAdapterFactory;
+import org.openhab.binding.sedif.internal.dto.Value;
 import org.openhab.binding.sedif.internal.handler.BridgeSedifWebHandler;
 import org.openhab.binding.sedif.internal.handler.ThingSedifHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -53,7 +57,7 @@ public class SedifHandlerFactory extends BaseThingHandlerFactory {
     private final ComponentContext componentContext;
     private final TimeZoneProvider timeZoneProvider;
 
-    private final Gson gson = new GsonBuilder().create();
+    private @Nullable Gson gson = null;
 
     private final LocaleProvider localeProvider;
 
@@ -69,6 +73,12 @@ public class SedifHandlerFactory extends BaseThingHandlerFactory {
         this.httpService = httpService;
         this.thingRegistry = thingRegistry;
         this.componentContext = componentContext;
+
+        RuntimeTypeAdapterFactory<Value> adapter = RuntimeTypeAdapterFactory.of(Value.class);
+        adapter.registerSubtype(Contracts.class, "contrats", "Contracts");
+        adapter.registerSubtype(ContractDetail.class, "compteInfo", "ContractDetail");
+
+        gson = new GsonBuilder().registerTypeAdapterFactory(adapter).create();
     }
 
     @Override
@@ -84,9 +94,11 @@ public class SedifHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_WEB_SEDIF_BRIDGE.equals(thing.getThingTypeUID())) {
-            BridgeSedifWebHandler handler = new BridgeSedifWebHandler((Bridge) thing, this.httpClientFactory,
-                    this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
-            return handler;
+            if (gson != null) {
+                BridgeSedifWebHandler handler = new BridgeSedifWebHandler((Bridge) thing, this.httpClientFactory,
+                        this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
+                return handler;
+            }
         } else if (THING_TYPE_SEDIF.equals(thing.getThingTypeUID())) {
             ThingSedifHandler handler = new ThingSedifHandler(thing, localeProvider, timeZoneProvider);
             return handler;
