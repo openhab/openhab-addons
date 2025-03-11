@@ -5,16 +5,17 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="temperature-measurement">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature</label>
+		<label>Current Temperature</label>
 		<category>Temperature</category>
 		<tags>
+			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature-setpoint">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature</label>
+		<label>Target Temperature</label>
 		<category>Temperature</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -29,8 +30,8 @@
 	</channel-type>
 	<channel-type id="wifi">
 		<item-type unitHint="dBm">Number:Power</item-type>
-		<label>WiFi Signal Strength</label>
-		<description>Current WiFi signal strength.</description>
+		<label>Wi-Fi Signal Strength</label>
+		<description>Current Wi-Fi signal strength.</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="number">
