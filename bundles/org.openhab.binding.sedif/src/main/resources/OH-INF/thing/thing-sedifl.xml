@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sedif"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="sedif">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="sedif"/>
+		</supported-bridge-type-refs>
+
+		<label>Sedif</label>
+		<description>
+			Provides your water consumption data.
+			In order to receive the data, you must activate your account at
+			...
+		</description>
+
+		<channel-groups>
+			<channel-group typeId="base" id="base"/>
+
+		</channel-groups>
+
+		<config-description>
+			<parameter name="meterId" type="text" required="true">
+				<label>PrmId</label>
+				<description>Your Prm Id</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
+</thing:thing-descriptions>
