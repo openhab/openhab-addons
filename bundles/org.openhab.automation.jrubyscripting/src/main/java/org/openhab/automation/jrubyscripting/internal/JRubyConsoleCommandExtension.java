@@ -17,12 +17,10 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.SortedSet;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -43,8 +41,6 @@ import org.openhab.automation.jrubyscripting.internal.watch.JRubyScriptFileWatch
 import org.openhab.core.automation.module.script.ScriptEngineManager;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.StringsCompleter;
-import org.openhab.core.scheduler.ScheduledCompletableFuture;
-import org.openhab.core.scheduler.Scheduler;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -64,37 +60,26 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     private final Logger logger = LoggerFactory.getLogger(JRubyConsoleCommandExtension.class);
 
     private static final String INFO = "info";
-    private static final String SHELL = "shell";
+    private static final String CONSOLE = "console";
     private static final String GEM = "gem";
     private static final String UPDATE = "update";
     private static final String PRUNE = "prune";
-    private static final String UNLOAD = "unload";
 
-    private static final List<String> SUB_COMMANDS = List.of(INFO, SHELL, GEM, UPDATE, PRUNE, UNLOAD);
-    private static final List<String> GEM_OPTIONS = List.of("bootstrap", "build", "bump", "cert", "check", "cleanup",
-            "contents", "dependency", "environment", "fetch", "gemspec", "generate_index", "help", "info", "install",
-            "list", "lock", "mirror", "open", "outdated", "owner", "pristine", "push", "rdoc", "release", "search",
-            "server", "signin", "signout", "sources", "specification", "stale", "tag", "uninstall", "unpack", "update",
-            "which", "yank");
+    private static final List<String> SUB_COMMANDS = List.of(INFO, CONSOLE, GEM, UPDATE, PRUNE);
 
-    private final Scheduler scheduler;
-    private final ScriptEngineManager manager;
+    private final ScriptEngineManager scriptEngineManager;
     private final JRubyScriptEngineFactory jRubyScriptEngineFactory;
     private final JRubyScriptFileWatcher scriptFileWatcher;
 
     private final SessionFactory sessionFactory;
 
     private final String scriptType;
-    private Optional<IdentifierAndEngine> scriptEngine = Optional.empty();
-    private @Nullable ScheduledCompletableFuture<?> engineUnloader = null;
-    private boolean scoped = true;
 
     @Activate
-    public JRubyConsoleCommandExtension(@Reference ScriptEngineManager manager, @Reference Scheduler scheduler,
+    public JRubyConsoleCommandExtension(@Reference ScriptEngineManager scriptEngineManager,
             @Reference JRubyScriptEngineFactory jRubyScriptEngineFactory,
             @Reference JRubyScriptFileWatcher scriptFileWatcher, @Reference SessionFactory sessionFactory) {
-        this.scheduler = scheduler;
-        this.manager = manager;
+        this.scriptEngineManager = scriptEngineManager;
         this.jRubyScriptEngineFactory = jRubyScriptEngineFactory;
         this.scriptFileWatcher = scriptFileWatcher;
         this.scriptType = jRubyScriptEngineFactory.getScriptTypes().getFirst();
@@ -105,7 +90,6 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     @Deactivate
     protected void deactivate() {
         sessionFactory.getRegistry().unregister(this);
-        unloadEngine();
     }
 
     @Override
@@ -145,8 +129,8 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
                 case INFO:
                     info(console);
                     break;
-                case SHELL:
-                    shell(console);
+                case CONSOLE:
+                    startConsole(console);
                     break;
                 case GEM:
                     gem(console, Arrays.stream(args).skip(1).toList());
@@ -165,9 +149,6 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
                         cleanupOtherGemHomes(console, false);
                     }
                     break;
-                case UNLOAD:
-                    unloadEngine();
-                    break;
                 case "--help":
                     printUsage(console);
                     break;
@@ -184,7 +165,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
 
     private void info(Console console) {
         final String PRINT_VERSION_NUMBERS = """
-                library_version = Module.const_defined?(:OpenHAB) && OpenHAB::DSL::VERSION
+                library_version = defined?(OpenHAB::DSL::VERSION) && OpenHAB::DSL::VERSION
 
                 puts "JRuby #{JRUBY_VERSION}"
                 puts "JRuby Scripting Library #{library_version || 'is not installed'}"
@@ -192,7 +173,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
                 puts "RUBYLIB: #{ENV['RUBYLIB']}"
                     """;
 
-        executeWithJRuby(console, engine -> engine.eval(PRINT_VERSION_NUMBERS));
+        executeWithFullJRuby(console, engine -> engine.eval(PRINT_VERSION_NUMBERS));
         console.println("Script path: " + scriptFileWatcher.getWatchPath());
         console.println("");
         console.println("JRuby Scripting Add-on Configuration:");
@@ -202,107 +183,20 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         });
     }
 
-    private void shell(Console console) {
-        // We're doing the REPL inside Ruby to preserve local variables between loops
-        final String RUBY_REPL = """
-                    # frozen_string_literal: true
-                    class Console
-                      # Create constants instead of java_import to avoid polluting the global namespace
-                      LineReader ||= org.jline.reader.LineReader
-                      Bracket ||= org.jline.reader.impl.DefaultParser::Bracket
+    private void startConsole(Console console) {
+        final String consoleScript = jRubyScriptEngineFactory.getConfiguration().getConsole();
 
-                      # use ||= to avoid warnings when the shell is re-entered
-                      ESC ||= "\\e[" # Double backslashes because it's inside a Java string
-                      BOLD ||= ESC + "1m"
-                      RESET ||= ESC + "0m"
-                      RED ||= ESC + "31m"
-                      GREEN ||= ESC + "32m"
-                      YELLOW ||= ESC + "33m"
-                      BLUE ||= ESC + "34m"
-                      # MAGENTA ||= ESC + "35m"
-                      CYAN ||= ESC + "36m"
-
-                      ERROR ||= RED
-                      STRING ||= BOLD + YELLOW
-                      NUMBER ||= BOLD + BLUE
-                      OBJECT ||= BOLD + GREEN
-                      SIMPLE_CLASS ||= BOLD + CYAN
-                      PROMPT ||= BOLD + "JRuby> " + RESET
-
-                      def initialize
-                        parser = org.jline.reader.impl.DefaultParser.new
-                                    .eof_on_unclosed_bracket(Bracket::CURLY, Bracket::ROUND, Bracket::SQUARE)
-                                    .eof_on_unclosed_quote(true)
-                                    .eof_on_escaped_new_line(true)
-
-                        completer =
-                          org.jline.reader.Completer.impl do |method_name, reader, line, candidates|
-                            sources = OpenHAB::DSL.items.map(&:name) +
-                                      OpenHAB::DSL.methods(false) +
-                                      TOPLEVEL_BINDING.local_variables +
-                                      Object.constants
-
-                            candidates.add_all(sources.map { |c| org.jline.reader.Candidate.new(c.to_s) })
-                          end
-
-                        @reader = org.jline.reader.LineReaderBuilder.builder
-                                     .terminal($console.session.terminal)
-                                     .app_name("jrubyscripting")
-                                     .parser(parser)
-                                     .completer(completer)
-                                     .variable(LineReader::SECONDARY_PROMPT_PATTERN, "%M%P > ")
-                                     .variable(LineReader::INDENTATION, 2)
-                                     .build
-                      end
-
-                      def read_line = @reader.read_line(PROMPT)
-
-                      def print_result(result)
-                        puts "=> " +
-                          case result
-                          when nil, true, false then SIMPLE_CLASS + result.inspect + RESET
-                          when String then '"' + STRING + result.dump[1..-2] + RESET + '"'
-                          when Numeric, Array, Hash then NUMBER + result.to_s + RESET
-                          else OBJECT + result.to_java.inspect + RESET
-                          end
-                      end
-
-                      def print_error(error)
-                        puts ERROR + "Error: #{error.message}" + RESET
-                      end
-                    end
-
-                    console = Console.new
-
-                    puts "Welcome to JRuby REPL. Press Ctrl+D to exit, Alt+Enter (or Esc,Enter) to insert a new line."
-
-                    loop do
-                      begin
-                        input = console.read_line
-                        next if input.strip.empty?
-                      rescue org.jline.reader.UserInterruptException # Ctrl+C is pressed
-                        next
-                      rescue org.jline.reader.EndOfFileException # Ctrl+D is pressed
-                        break
-                      end
-
-                      begin
-                        # Use TOPLEVEL_BINDING to isolate and keep the local variables between loops
-                        result = TOPLEVEL_BINDING.eval(input)
-                        console.print_result(result)
-                      rescue Exception => e
-                        console.print_error(e)
-                      end
-                    end
-                """;
-
-        ScriptEngine engine = getEngine(console);
-        engine.getContext().setAttribute("$console", console, ScriptContext.ENGINE_SCOPE);
-        try {
-            engine.eval(RUBY_REPL);
-        } catch (ScriptException e) {
-            console.println("Error: " + e.getMessage());
+        if (consoleScript.isBlank()) {
+            console.println(
+                    "No console script configured. Please set the 'console_script' property in the configuration.");
+            return;
         }
+
+        executeWithFullJRuby(console, engine -> {
+            engine.getContext().setAttribute("$console", console, ScriptContext.ENGINE_SCOPE);
+            engine.eval(String.format("require '%s'", consoleScript));
+            return null;
+        });
     }
 
     private void gem(Console console, List<String> args) {
@@ -312,7 +206,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
                 Gem::GemRunner.new.run args.to_a
                     """;
 
-        executeWithJRuby(console, engine -> {
+        executeWithPlainJRuby(console, engine -> {
             engine.getContext().setAttribute("args", args, ScriptContext.ENGINE_SCOPE);
             engine.eval(GEM);
             return null;
@@ -320,7 +214,8 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     }
 
     private void updateGems(Console console) {
-        executeWithJRuby(console, engine -> {
+        console.println("Updating configured gems: " + jRubyScriptEngineFactory.getConfiguration().getGems());
+        executeWithPlainJRuby(console, engine -> {
             jRubyScriptEngineFactory.updateGems(engine);
             return null;
         });
@@ -409,41 +304,45 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         }
     }
 
-    private synchronized ScriptEngine getEngine(Console console) {
-        ScriptEngine engine;
-
-        ScheduledCompletableFuture<?> unloader = this.engineUnloader;
-        if (unloader != null) {
-            unloader.cancel(false);
-        }
-        if (this.scriptEngine.isEmpty()) {
-            String loadingMessage = "Creating JRuby console script engine...";
+    private void printLoadingMessage(Console console, boolean show) {
+        String loadingMessage = "Loading JRuby script engine...";
+        if (show) {
             console.print(loadingMessage);
-            final String scriptIdentifier = "jruby-console-" + UUID.randomUUID().toString();
-            engine = manager.createScriptEngine(scriptType, scriptIdentifier).getScriptEngine();
-            console.print("\r" + " ".repeat(loadingMessage.length()) + "\r");
-            this.scriptEngine = Optional.of(new IdentifierAndEngine(scriptIdentifier, engine));
         } else {
-            engine = this.scriptEngine.get().engine();
+            // Clear the loading message
+            console.print("\r" + " ".repeat(loadingMessage.length()) + "\r");
         }
-        this.engineUnloader = scheduler.schedule(() -> unloadEngine(), Instant.now().plusSeconds(900));
-
-        return engine;
     }
 
-    private synchronized void unloadEngine() {
-        ScheduledCompletableFuture<?> unloader = this.engineUnloader;
-        if (unloader != null) {
-            unloader.cancel(false);
-            engineUnloader = null;
-        }
-        scriptEngine.ifPresent(se -> manager.removeEngine(se.scriptIdentifier()));
-        scriptEngine = Optional.empty();
-    }
+    /*
+     * Create a full openHAB-managed JRuby engine with openHAB scoped variables
+     * including any injected required gems.
+     * 
+     * This will run the script with the helper library if configured.
+     */
+    private @Nullable Object executeWithFullJRuby(Console console, EngineEvalFunction process) {
+        final String scriptIdentifier = "jruby-console-" + UUID.randomUUID().toString();
 
-    private @Nullable Object executeWithJRuby(Console console, EngineEvalFunction process) {
+        printLoadingMessage(console, true);
+        ScriptEngine engine = scriptEngineManager.createScriptEngine(scriptType, scriptIdentifier).getScriptEngine();
         try {
-            return process.apply(getEngine(console));
+            printLoadingMessage(console, false);
+            return process.apply(engine);
+        } catch (ScriptException e) {
+            console.println("Error: " + e.getMessage());
+            return null;
+        } finally {
+            scriptEngineManager.removeEngine(scriptIdentifier);
+        }
+    }
+
+    /*
+     * Create a plain JRuby script engine without loading the helper library.
+     */
+    private @Nullable Object executeWithPlainJRuby(Console console, EngineEvalFunction process) {
+        ScriptEngine engine = jRubyScriptEngineFactory.createScriptEngine(scriptType);
+        try {
+            return process.apply(engine);
         } catch (ScriptException e) {
             console.println("Error: " + e.getMessage());
             return null;
@@ -453,11 +352,10 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     private List<String> getUsages() {
         return Arrays.asList( //
                 buildCommandUsage(INFO, "displays information about JRuby Scripting add-on"), //
-                buildCommandUsage(SHELL, "starts an interactive JRuby shell"), //
+                buildCommandUsage(CONSOLE, "starts an interactive JRuby console"), //
                 buildCommandUsage(GEM, "manages JRuby Scripting add-on's RubyGems"), //
                 buildCommandUsage(UPDATE, "updates the configured gems"), //
-                buildCommandUsage(PRUNE + " [-f|--force]", "cleans up older versions in the .gem directory"), //
-                buildCommandUsage(UNLOAD, "unloads the console's script engine") //
+                buildCommandUsage(PRUNE + " [-f|--force]", "cleans up older versions in the .gem directory") //
         );
     }
 
@@ -490,8 +388,6 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
             strings.add(globalCommand);
         } else if (cursorArgumentIndex == 1) {
             strings.addAll(SUB_COMMANDS);
-        } else if (cursorArgumentIndex == 2 && args.length >= 2 && args[1].equals(GEM)) {
-            strings.addAll(GEM_OPTIONS);
         }
 
         if (!strings.isEmpty() && completer.complete(args, cursorArgumentIndex, cursorPosition, candidates)) {
@@ -505,9 +401,6 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     public interface EngineEvalFunction {
         @Nullable
         Object apply(ScriptEngine e) throws ScriptException;
-    }
-
-    public record IdentifierAndEngine(String scriptIdentifier, ScriptEngine engine) {
     }
 
     public class JRubyConsole implements Console {
