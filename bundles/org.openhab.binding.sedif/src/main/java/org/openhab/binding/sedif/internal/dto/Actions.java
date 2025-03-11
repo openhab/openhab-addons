@@ -13,11 +13,9 @@
 package org.openhab.binding.sedif.internal.dto;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link Actions} holds authentication information
@@ -26,13 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class Actions {
-
-    public class Action {
-        public @Nullable String id;
-        public @Nullable String descriptor;
-        public @Nullable String callingDescriptor;
-        public Hashtable<String, Object> params = new Hashtable<String, Object>();
-    }
 
     public List<Action> actions = new ArrayList<Action>();
 }

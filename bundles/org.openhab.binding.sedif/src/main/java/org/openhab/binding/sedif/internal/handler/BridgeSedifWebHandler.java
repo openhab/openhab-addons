@@ -13,6 +13,7 @@
 package org.openhab.binding.sedif.internal.handler;
 
 import java.net.HttpCookie;
+import java.net.URLDecoder;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Hashtable;
@@ -31,10 +32,12 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.sedif.internal.api.SedifHttpApi;
 import org.openhab.binding.sedif.internal.config.SedifConfiguration;
 import org.openhab.binding.sedif.internal.constants.SedifBindingConstants;
+import org.openhab.binding.sedif.internal.dto.Action;
 import org.openhab.binding.sedif.internal.dto.Actions;
-import org.openhab.binding.sedif.internal.dto.Actions.Action;
 import org.openhab.binding.sedif.internal.dto.AuraContext;
 import org.openhab.binding.sedif.internal.dto.AuraResponse;
+import org.openhab.binding.sedif.internal.dto.ContractDetail;
+import org.openhab.binding.sedif.internal.dto.Contracts;
 import org.openhab.binding.sedif.internal.dto.Event;
 import org.openhab.binding.sedif.internal.types.SedifException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -79,7 +82,18 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
     private static final String URL_SEDIF_AUTHENTICATE_POST = BASE_URL
             + "/s/sfsites/aura?r=1&other.LightningLoginForm.login=1";
 
+    private static final String URL_SEDIF_SITE = BASE_URL
+            + "/espace-particuliers/s/sfsites/aura?r=36&aura.ApexAction.execute=1";
+
     protected final Gson gson;
+    private @Nullable String fwuid = "";
+    private @Nullable String appId = "";
+    private @Nullable String sid = "";
+    private @Nullable String token = "";
+
+    private @Nullable String contractId = "";
+    private @Nullable String meterIdA = "";
+    private @Nullable String meterIdB = "";
 
     protected boolean connected = false;
 
@@ -157,198 +171,222 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         try {
             sedifApi.removeAllCookie();
 
-            logger.debug("Step 1: getting authentification");
-            String data = sedifApi.getContent(URL_SEDIF_AUTHENTICATE);
+            ContentResponse result;
+            String resultSt;
+            Fields fields;
+            Actions actions;
+            Action action;
+            String actionPayLoad;
 
-            logger.debug("Reception request SAML");
-            // Document htmlDocument = Jsoup.parse(data);
+            // =====================================================================
+            logger.debug("Step 1: getting salesforces context from login page");
 
-            Actions actions = new Actions();
-            Action action = actions.new Action();
-            action.id = "81;a";
-            action.descriptor = "apex://LightningLoginFormController/ACTION$login";
-            action.callingDescriptor = "markup://c:loginForm";
+            result = httpClient.GET(URL_SEDIF_AUTHENTICATE);
+            resultSt = result.getContentAsString();
 
-            action.params.put("username", "");
-            action.params.put("password", "");
-            action.params.put("startUrl", "");
-
-            actions.actions.add(action);
-
-            String actionPayLoad = gson.toJson(actions);
-
-            AuraContext context = new AuraContext();
-            context.mode = "PROD";
-            context.fwuid = "c1ItM3NYNWFUOE5oQkUwZk1sYW1vQWg5TGxiTHU3MEQ5RnBMM0VzVXc1cmcxMS4zMjc2OC4z";
-            context.app = "siteforce:loginApp2";
-            context.loaded.put("APPLICATION@markup://siteforce:loginApp2", "1155_2ewdZIvT00nk2lBbLpJljQ");
-            context.globals = context.new Globals();
-            context.uad = false;
-
-            String contextPayLoad = gson.toJson(context);
-
-            Fields fields = new Fields();
-            fields.put("message", actionPayLoad);
-            fields.put("aura.context", contextPayLoad);
-            // fields.put("aura.pageURI", "/s/login");
-            fields.put("aura.token", "");
-
-            ContentResponse result = httpClient.POST(URL_SEDIF_AUTHENTICATE_POST)
-                    .content(new FormContentProvider(fields)).send();
-
-            String t1 = result.getContentAsString();
-            logger.debug("aaaa");
-            AuraResponse resp = gson.fromJson(t1, AuraResponse.class);
-
-            Event event = resp.events.getFirst();
-            String urlRedir = (String) event.attributes.values.get("url");
-
-            String sid = "";
-            String[] parts = urlRedir.split("&");
-            for (String part : parts) {
-                if (part.indexOf("sid") >= 0) {
-                    sid = part;
+            int pos1 = resultSt.indexOf("resources.js");
+            AuraContext context = null;
+            if (pos1 >= 0) {
+                String sub1 = resultSt.substring(0, pos1 + 1);
+                int pos2 = sub1.lastIndexOf("<script");
+                if (pos2 < 0) {
+                    throw new SedifException("Unable to find app context in login process");
                 }
+                int pos3 = sub1.indexOf("%7B", pos2 + 1);
+                if (pos3 < 0) {
+                    throw new SedifException("Unable to find app context in login process");
+                }
+                int pos4 = sub1.lastIndexOf("%7D");
+                if (pos4 < 0) {
+                    throw new SedifException("Unable to find app context in login process");
+                }
+
+                String sub2 = sub1.substring(pos3, pos4 + 3);
+                sub2 = URLDecoder.decode(sub2, "UTF-8");
+                context = gson.fromJson(sub2, AuraContext.class);
             }
 
-            sid = sid.replace("sid=", "");
+            // =====================================================================
+            logger.debug("Step 2: Authenticate");
 
-            ContentResponse result4 = httpClient.GET(urlRedir);
-            String t4 = result4.getContentAsString();
-
-            ContentResponse result3 = httpClient
-                    .GET("https://connexion.leaudiledefrance.fr/espace-particuliers/s/contrat?tab=Detail");
-            String t3 = result3.getContentAsString();
-
-            String cookieKey = "__Host-ERIC_PROD683902336057978042";
-            List<HttpCookie> lCookie = httpClient.getCookieStore().getCookies();
-
-            String cookieVal = "";
-            for (HttpCookie cookie : lCookie) {
-                if (cookie.getName().indexOf("__Host-ERIC_") >= 0) {
-                    cookieVal = cookie.getValue();
-                }
+            if (context != null) {
+                fwuid = context.fwuid;
+                appId = context.loaded.get("APPLICATION@markup://siteforce:loginApp2");
             }
 
-            // "eyJub25jZSI6IklnVjNDbnJWWUJVckZIdlFnWkxYdGU3OVRrNjVDZlU1amhQTk9YOE1aYzBcdTAwM2QiLCJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6IntcInRcIjpcIjAwRGJLMDAwMDAwMDAwMVwiLFwidlwiOlwiMDJHYkswMDAwMDAwMDFkXCIsXCJhXCI6XCJjYWltYW5zaWduZXJcIn0iLCJjcml0IjpbImlhdCJdLCJpYXQiOjE3NDE2ODk2OTA0MTcsImV4cCI6MH0=..DjWiGxTRsTrwOeOcfb6D7dObzhGP1AAXvFeSu7FKegE="
+            String localAppId = this.appId;
+            if (fwuid == null || localAppId == null) {
+                throw new SedifException("Unable to find app context in login process");
+            } else {
+                fields = new Fields();
+                fields.put("message", getLoginPayload("", ""));
+                fields.put("aura.context",
+                        getAuraContext("siteforce:loginApp2", "APPLICATION@markup://siteforce:loginApp2", localAppId));
+                fields.put("aura.token", "");
 
-            Actions actions2 = new Actions();
-            Action action2 = actions2.new Action();
-            action2.id = "215;a";
-            action2.descriptor = "aura://ApexActionController/ACTION$execute";
-            action2.callingDescriptor = "UNKNOWN";
+                result = httpClient.POST(URL_SEDIF_AUTHENTICATE_POST).content(new FormContentProvider(fields)).send();
+                resultSt = result.getContentAsString();
 
-            action2.params.put("namespace", "");
-            action2.params.put("classname", "LTN015_ICL_ContratConsoHisto");
-            action2.params.put("method", "getData");
-            action2.params.put("cacheable", false);
-            action2.params.put("isContinuation", false);
+                AuraResponse resp = gson.fromJson(resultSt, AuraResponse.class);
+                Event event = resp.events.getFirst();
+                String urlRedir = (String) event.attributes.values.get("url");
 
-            Hashtable<String, Object> paramsSub = new Hashtable<String, Object>();
-            paramsSub.put("contractId", "sf4gNd4bhyssgoLosTvGqPCTbHQPIXcwmuAUeNkpVj3Q%2Fxy5Yv%2B4te%2BxqGLaz1nv");
-            paramsSub.put("TYPE_PAS", "JOURNEE");
-            paramsSub.put("DATE_DEBUT", "2025-02-24");
-            paramsSub.put("DATE_FIN", "2025-03-10");
-            paramsSub.put("NUMERO_COMPTEUR", "0S8Nx%2B7VCog7Gosbt49fEu%2Boxy5s5pMnS1C6T15rQijpsS9Q%2BhZPa3R0u9ZH6nty");
-            paramsSub.put("ID_PDS", "FDrF%2BQ7ifdzFSdqTAS%2BYNWhLTojTb7%2FEQuIqa%2B9nm5I%3D");
+                sid = "";
+                String[] parts = urlRedir.split("&");
+                for (String part : parts) {
+                    if (part.indexOf("sid") >= 0) {
+                        sid = part;
+                    }
+                }
+                if (sid != null) {
+                    sid = sid.replace("sid=", "");
+                } else {
+                    throw new SedifException("Unable to find sid in login process");
+                }
 
-            action2.params.put("params", paramsSub);
+                // =====================================================================
+                logger.debug("Step 3: Confirm login");
 
-            actions2.actions.add(action2);
+                result = httpClient.GET(urlRedir);
+                resultSt = result.getContentAsString();
 
-            String actionPayLoad2 = gson.toJson(actions2);
+                // =====================================================================
+                logger.debug("Step 4: Get contract info");
 
-            AuraContext context2 = new AuraContext();
-            context2.mode = "PROD";
-            context2.fwuid = "c1ItM3NYNWFUOE5oQkUwZk1sYW1vQWg5TGxiTHU3MEQ5RnBMM0VzVXc1cmcxMS4zMjc2OC4z";
-            context2.app = "siteforce:communityApp";
-            context2.loaded.put("APPLICATION@markup://siteforce:communityApp", "1233_vZx87dHGHIhS0MXRTe4D5w");
-            context2.loaded.put("COMPONENT@markup://forceCommunity:embeddedServiceSidebar",
-                    "1204_aG5sQosCeK7Nw4-6XGSxmw");
-            context2.loaded.put("COMPONENT@markup://instrumentation:o11ySecondaryLoader", "387_xvXc6AnLRgqK6TofLxISPw");
+                result = httpClient
+                        .GET("https://connexion.leaudiledefrance.fr/espace-particuliers/s/contrat?tab=Detail");
+                resultSt = result.getContentAsString();
 
-            context2.globals = context.new Globals();
-            context2.uad = false;
+                // =====================================================================
+                logger.debug("Step 5: Get cookie auth");
+                List<HttpCookie> lCookie = httpClient.getCookieStore().getCookies();
+                token = "";
+                for (HttpCookie cookie : lCookie) {
+                    if (cookie.getName().indexOf("__Host-ERIC_") >= 0) {
+                        token = cookie.getValue();
+                    }
+                }
 
-            String contextPayLoad2 = gson.toJson(context2);
+                if (token == null) {
+                    throw new SedifException("Unable to find token in login process");
+                }
 
-            Fields fields2 = new Fields();
-            fields2.put("message", actionPayLoad2);
-            fields2.put("aura.context", contextPayLoad2);
-            fields2.put("aura.pageURI",
-                    "/espace-particuliers/s/contrat?tab=Detail#sf4gNd4bhyssgoLosTvGqPCTbHQPIXcwmuAUeNkpVj3Q%2Fxy5Yv%2B4te%2BxqGLaz1nv");
-            fields2.put("aura.token", cookieVal);
+                // =====================================================================
+                Hashtable<String, Object> paramsSub = new Hashtable<String, Object>();
+                logger.debug("Step 6: Get contract");
+                fields = new Fields();
+                fields.put("message",
+                        getActionPayload("", "LTN009_ICL_ContratsGroupements", "getContratsGroupements", paramsSub));
+                fields.put("aura.context", getAuraContext("siteforce:communityApp",
+                        "APPLICATION@markup://siteforce:communityApp", "1233_vZx87dHGHIhS0MXRTe4D5w"));
+                fields.put("aura.token", token);
 
-            ContentResponse result2 = httpClient.POST(
-                    "https://connexion.leaudiledefrance.fr/espace-particuliers/s/sfsites/aura?r=36&aura.ApexAction.execute=1")
-                    .content(new FormContentProvider(fields2)).send();
-            String t2 = result2.getContentAsString();
-            logger.debug("aaaa");
+                result = httpClient.POST(URL_SEDIF_SITE).content(new FormContentProvider(fields)).send();
+                resultSt = result.getContentAsString();
+                actions = gson.fromJson(resultSt, Actions.class);
 
-            // https://connexion.leaudiledefrance.fr/espace-particuliers/s/sfsites/aura?r=36&aura.ApexAction.execute=1
+                Contracts contracts = (Contracts) actions.actions.get(0).returnValue.returnValue;
+                contractId = contracts.contrats.get(1).Id;
+                // =====================================================================
+                logger.debug("Step 7: Get contractDetails");
+                paramsSub.clear();
 
-            // aura.context:
-            // {"mode":"PROD","fwuid":"c1ItM3NYNWFUOE5oQkUwZk1sYW1vQWg5TGxiTHU3MEQ5RnBMM0VzVXc1cmcxMS4zMjc2OC4z","app":"siteforce:loginApp2","loaded":{"APPLICATION@markup://siteforce:loginApp2":"1155_2ewdZIvT00nk2lBbLpJljQ"},"dn":[],"globals":{},"uad":false}
+                if (contractId != null) {
+                    paramsSub.put("contratId", contractId);
+                }
 
-            /*
-             * Element el = htmlDocument.select("form").first();
-             * Element samlInput = el.select("input[name=SAMLRequest]").first();
-             *
-             * logger.debug("Step 2: send SSO SAMLRequest");
-             * ContentResponse result = httpClient.POST(el.attr("action"))
-             * .content(sedifApi.getFormContent("SAMLRequest", samlInput.attr("value"))).send();
-             * if (result.getStatus() != HttpStatus.FOUND_302) {
-             * throw new SedifException("Connection failed step 2");
-             * }
-             */
-            logger.debug("aaaa");
+                fields = new Fields();
+                fields.put("message",
+                        getActionPayload("", "LTN008_ICL_ContratDetails", "getContratDetails", paramsSub));
+                fields.put("aura.context", getAuraContext("siteforce:communityApp",
+                        "APPLICATION@markup://siteforce:communityApp", "1233_vZx87dHGHIhS0MXRTe4D5w"));
+                fields.put("aura.token", token);
+
+                result = httpClient.POST(URL_SEDIF_SITE).content(new FormContentProvider(fields)).send();
+                resultSt = result.getContentAsString();
+                actions = gson.fromJson(resultSt, Actions.class);
+
+                ContractDetail contractDetail = (ContractDetail) actions.actions.get(0).returnValue.returnValue;
+                meterIdB = contractDetail.compteInfo.get(0).ELEMB;
+                meterIdA = contractDetail.compteInfo.get(0).ELEMA;
+
+                // =====================================================================
+                logger.debug("Step 6: Get data");
+
+                paramsSub.clear();
+                paramsSub.put("TYPE_PAS", "JOURNEE");
+                paramsSub.put("DATE_DEBUT", "2025-02-24");
+                paramsSub.put("DATE_FIN", "2025-03-10");
+
+                if (contractId != null) {
+                    paramsSub.put("contractId", contractId);
+                }
+
+                if (meterIdB != null) {
+                    paramsSub.put("NUMERO_COMPTEUR", meterIdB);
+                }
+                if (meterIdA != null) {
+                    paramsSub.put("ID_PDS", meterIdA);
+                }
+
+                fields = new Fields();
+                fields.put("message", getActionPayload("", "LTN015_ICL_ContratConsoHisto", "getData", paramsSub));
+                fields.put("aura.context", getAuraContext("siteforce:communityApp",
+                        "APPLICATION@markup://siteforce:communityApp", "1233_vZx87dHGHIhS0MXRTe4D5w"));
+                fields.put("aura.token", token);
+
+                result = httpClient.POST(URL_SEDIF_SITE).content(new FormContentProvider(fields)).send();
+                resultSt = result.getContentAsString();
+                logger.debug("aaaa");
+            }
+
         } catch (Exception ex) {
             logger.debug("error durring connect : {}" + ex.getMessage());
         }
+    }
 
-        // has we reconnect, remove all previous cookie to start from fresh session
-        /*
-         *
-         *
-         * sedifApi.addCookie(SedifConfiguration.INTERNAL_AUTH_ID, lcConfig.internalAuthId);
-         *
-         *
-         *
-         * logger.debug("Reception request SAML");
-         * Document htmlDocument = Jsoup.parse(data);
-         * Element el = htmlDocument.select("form").first();
-         * Element samlInput = el.select("input[name=SAMLRequest]").first();
-         *
-         * logger.debug("Step 2: send SSO SAMLRequest");
-         * ContentResponse result = httpClient.POST(el.attr("action"))
-         * .content(sedifApi.getFormContent("SAMLRequest", samlInput.attr("value"))).send();
-         * if (result.getStatus() != HttpStatus.FOUND_302) {
-         * throw new SedifException("Connection failed step 2");
-         * }
-         *
-         * logger.debug("Get the location and the ReqID");
-         * Matcher m = REQ_PATTERN.matcher(sedifApi.getLocation(result));
-         * if (!m.find()) {
-         * throw new SedifException("Unable to locate ReqId in header");
-         * }
-         *
-         * String reqId = m.group(1);
-         * String authenticateUrl = URL_MON_COMPTE
-         * +
-         * "/auth/json/authenticate?realm=/sedis&forward=true&spEntityID=SP-ODW-PROD&goto=/auth/SSOPOST/metaAlias/sedis/providerIDP?ReqID%"
-         * + reqId + "%26index%3Dnull%26acsURL%3D" + BASE_URL
-         * +
-         * "/saml/SSO%26spEntityID%3DSP-ODW-PROD%26binding%3Durn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST&AMAuthCookie=";
-         *
-         * logger.debug("Step 3: auth1 - retrieve the template, thanks to cookie internalAuthId user is already set"
-         * );
-         * result = httpClient.POST(authenticateUrl).header("X-NoSession", "true").header("X-Password", "anonymous")
-         * .header("X-Requested-With", "XMLHttpRequest").header("X-Username", "anonymous").send();
-         * if (result.getStatus() != HttpStatus.OK_200) {
-         * throw new SedifException("Connection failed step 3 - auth1: %s", result.getContentAsString());
-         * }
-         */
+    public String getAuraContext(String mainApp, String app, String appId) {
+        AuraContext context = new AuraContext();
+        context.mode = "PROD";
+        context.fwuid = this.fwuid;
+        context.app = mainApp;
+        context.loaded.put(app, appId);
+        context.globals = context.new Globals();
+        context.uad = false;
+        return gson.toJson(context);
+    }
 
+    public String getLoginPayload(String userName, String password) {
+        Actions actions = new Actions();
+        Action action = new Action();
+        // action.id = "81;a";
+        action.descriptor = "apex://LightningLoginFormController/ACTION$login";
+        action.callingDescriptor = "markup://c:loginForm";
+
+        action.params.put("username", userName);
+        action.params.put("password", password);
+        action.params.put("startUrl", "");
+        actions.actions.add(action);
+
+        return gson.toJson(actions);
+    }
+
+    public String getActionPayload(String nameSpace, String className, String methodName,
+            Hashtable<String, Object> paramsSub) {
+        Actions actions = new Actions();
+        Action action = new Action();
+        action.descriptor = "aura://ApexActionController/ACTION$execute";
+        action.callingDescriptor = "UNKNOWN";
+
+        action.params.put("namespace", nameSpace);
+        action.params.put("classname", className);
+        action.params.put("method", methodName);
+        action.params.put("cacheable", false);
+        action.params.put("isContinuation", false);
+        action.params.put("params", paramsSub);
+        actions.actions.add(action);
+
+        return gson.toJson(actions);
     }
 
 }
