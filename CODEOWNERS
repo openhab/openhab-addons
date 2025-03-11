@@ -131,7 +131,7 @@
 /bundles/org.openhab.binding.freeboxos/ @clinique
 /bundles/org.openhab.binding.freecurrency/ @J-N-K
 /bundles/org.openhab.binding.frenchgovtenergydata/ @clinique
-/bundles/org.openhab.binding.fronius/ @trokohl
+/bundles/org.openhab.binding.fronius/ @trokohl @florian-h05
 /bundles/org.openhab.binding.fsinternetradio/ @paphko
 /bundles/org.openhab.binding.ftpupload/ @paulianttila
 /bundles/org.openhab.binding.gardena/ @gerrieg @andrewfg
