@@ -15,7 +15,6 @@ package org.openhab.binding.bambulab.internal;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel.*;
 import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.*;
-import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.LedMode.*;
 import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.LedNode.*;
 
 import java.util.stream.Stream;
