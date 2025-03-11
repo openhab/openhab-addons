@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sedif"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<channel-type id="info-type" advanced="false">
+		<item-type>String</item-type>
+		<label>Information</label>
+		<description>an information</description>
+		<category>energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="info-date-type">
+		<item-type>DateTime</item-type>
+		<label>Information Date</label>
+		<description>an information of type date</description>
+		<state readOnly="true" pattern="%1$tF"/>
+	</channel-type>
+
+	<channel-type id="numeric-type">
+		<item-type>Number</item-type>
+		<label>Numeric Type Consumption</label>
+		<category>energy</category>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+
+	<channel-type id="timestamp-type">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<category>time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="string-type">
+		<item-type>String</item-type>
+		<label>Teleinfo String Type</label>
+		<category>Text</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+
+</thing:thing-descriptions>
