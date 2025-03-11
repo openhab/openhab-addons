@@ -13,8 +13,6 @@
 package org.openhab.binding.tado.internal.handler;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -116,14 +114,8 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
         suggestRfc8628 |= ZonedDateTime.now().isAfter(AUTH_V2_FROM_DATE);
 
         if (suggestRfc8628) {
-            StringBuilder url = new StringBuilder().append("http://");
-            try {
-                url.append(InetAddress.getLocalHost().getHostAddress());
-            } catch (UnknownHostException e) {
-                url.append("[ip-address]");
-            }
-            url.append(":8080").append(TadoAuthenticationServlet.PATH);
-            offlinePrompt = String.format("@text/tado.home.status.oauth [\"%s\"]", url.toString());
+            String url = "http(s)://<YOUROPENHAB>:<YOURPORT>" + TadoAuthenticationServlet.PATH;
+            offlinePrompt = String.format("@text/tado.home.status.oauth [\"%s\"]", url);
 
             OAuthClientService oAuthService = oAuthFactory.getOAuthClientService(thing.getUID().toString());
             if (oAuthService == null) {
