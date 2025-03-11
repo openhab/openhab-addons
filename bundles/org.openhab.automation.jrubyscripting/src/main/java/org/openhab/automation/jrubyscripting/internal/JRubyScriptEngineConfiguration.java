@@ -63,6 +63,7 @@ public class JRubyScriptEngineConfiguration {
     private static final String REQUIRE_CONFIG_KEY = "require";
     private static final String CHECK_UPDATE_CONFIG_KEY = "check_update";
     private static final String DEPENDENCY_TRACKING_CONFIG_KEY = "dependency_tracking";
+    private static final String CONSOLE_CONFIG_KEY = "console";
 
     // Map of configuration parameters
     private final Map<String, OptionalConfigurationElement> configurationParameters = Map.ofEntries(
@@ -88,7 +89,9 @@ public class JRubyScriptEngineConfiguration {
 
             Map.entry(CHECK_UPDATE_CONFIG_KEY, new OptionalConfigurationElement("true")),
 
-            Map.entry(DEPENDENCY_TRACKING_CONFIG_KEY, new OptionalConfigurationElement("true")));
+            Map.entry(DEPENDENCY_TRACKING_CONFIG_KEY, new OptionalConfigurationElement("true")),
+
+            Map.entry(CONSOLE_CONFIG_KEY, new OptionalConfigurationElement("openhab/console/irb")));
 
     /**
      * Update configuration
@@ -153,6 +156,13 @@ public class JRubyScriptEngineConfiguration {
     }
 
     /**
+     * Returns the console script to be used for the console.
+     */
+    public String getConsole() {
+        return get(CONSOLE_CONFIG_KEY);
+    }
+
+    /**
      * Gets the concrete gem home to install gems into for this version of JRuby.
      *
      * {RUBY_ENGINE} and {RUBY_VERSION} are replaced with their current actual values.
@@ -206,12 +216,19 @@ public class JRubyScriptEngineConfiguration {
     }
 
     /**
+     * @return the configured gems
+     */
+    public String getGems() {
+        return get(GEMS_CONFIG_KEY);
+    }
+
+    /**
      * Install a gems in ScriptEngine
      *
      * @param engine Engine to install gems
      */
     synchronized void configureGems(ScriptEngine engine, boolean force) {
-        String gems = get(GEMS_CONFIG_KEY);
+        String gems = getGems();
         if (gems.isEmpty()) {
             return;
         }
