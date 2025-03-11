@@ -24,21 +24,10 @@ import org.openhab.core.config.core.Configuration;
  */
 @NonNullByDefault
 public class SedifConfiguration extends Configuration {
-    public static final String INTERNAL_AUTH_ID = "internalAuthId";
-
-    public String token = "";
-    public String timezone = "";
-    public String prmId = "";
-    public String clientId = "";
-    public String clientSecret = "";
-    public boolean isSandbox = false;
-
     public String username = "";
     public String password = "";
-    public String internalAuthId = "";
 
     public boolean seemsValid() {
-        // return !prmId.isBlank();
-        return true;
+        return !(username.isBlank() || password.isBlank());
     }
 }
