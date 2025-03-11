@@ -85,6 +85,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
 
     private @Nullable Long homeId;
     private @Nullable ScheduledFuture<?> initializationFuture;
+    private @Nullable OAuthClientService oAuthClientService;
 
     public TadoHomeHandler(Bridge bridge, HttpService httpService, OAuthFactory oAuthFactory) {
         super(bridge);
@@ -126,13 +127,16 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
             offlineMessage = String.format("Try authenticating at http://%s:8080%s", ipAddress,
                     TadoAuthenticationServlet.PATH);
 
-            OAuthClientService oAuthClientService = oAuthFactory.getOAuthClientService(thing.getUID().toString());
-            if (oAuthClientService == null) {
-                oAuthClientService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), TOKEN_URL,
-                        DEVICE_URL, CLIENT_ID, null, SCOPE, false);
+            OAuthClientService service = oAuthFactory.getOAuthClientService(thing.getUID().toString());
+            if (service == null) {
+                service = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), TOKEN_URL, DEVICE_URL,
+                        CLIENT_ID, null, SCOPE, false);
             }
-            oAuthClientService.addAccessTokenRefreshListener(this);
-            api = new HomeApiFactory().create(oAuthClientService);
+            service.addAccessTokenRefreshListener(this);
+            oAuthClientService = service;
+
+            api = new HomeApiFactory().create(service);
+
             logger.trace("initialize() api v2 created");
         } else {
             offlineMessage = "Username and/or password might be invalid";
@@ -207,6 +211,10 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
     @Override
     public void dispose() {
         super.dispose();
+        OAuthClientService service = oAuthClientService;
+        if (service != null) {
+            service.removeAccessTokenRefreshListener(this);
+        }
         ScheduledFuture<?> initializationFuture = this.initializationFuture;
         if (initializationFuture != null && !initializationFuture.isCancelled()) {
             initializationFuture.cancel(true);
@@ -264,7 +272,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
     }
 
     @Override
-    public void onAccessTokenResponse(@Nullable AccessTokenResponse tokenResponse) {
+    public void onAccessTokenResponse(AccessTokenResponse atr) {
         initializeBridgeStatusAndPropertiesIfOffline();
     }
 }

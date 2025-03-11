@@ -59,8 +59,7 @@ public class OAuthorizerV2 implements Authorizer {
         }
     }
 
-    public @Nullable DeviceCodeResponse getDeviceCodeResponse()
-            throws OAuthException, IOException, OAuthResponseException {
+    public @Nullable DeviceCodeResponse getDeviceCodeResponse() throws OAuthException {
         return oAuthService.getDeviceCodeResponse();
     }
 

@@ -168,7 +168,7 @@ public class TadoAuthenticationServlet extends HttpServlet {
             } else {
                 dynamicHtml = HTML_AUTH_ERROR_TEMPLATE.replace(REPLACE_TAG, ERROR_BAD_URL);
             }
-        } catch (OAuthException | IOException | OAuthResponseException e) {
+        } catch (OAuthException e) {
             dynamicHtml = HTML_AUTH_ERROR_TEMPLATE.replace(REPLACE_TAG,
                     e.getMessage() instanceof String message ? message : e.getClass().getName());
         }
