@@ -41,6 +41,14 @@
 		<category>Text</category>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
+	
+	<channel-type id="consumption-type">
+        <item-type>Number:Volume</item-type>
+        <label>Total Consumption</label>
+        <description>Consumption at given time interval</description>
+        <category>flow</category>
+        <state readOnly="true" pattern="%.3f %unit%"/>
+    </channel-type>
 
 
 </thing:thing-descriptions>

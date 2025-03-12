@@ -36,4 +36,8 @@ public class SedifBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(THING_TYPE_SEDIF,
             THING_TYPE_WEB_SEDIF_BRIDGE);
 
+    public static final String SEDIF_BASE_GROUP = "sedif-base";
+
+    public static final String CHANNEL_CONSUMPTION = "consumption";
+
 }
