@@ -15,7 +15,7 @@
 
 		<channel-groups>
 			<channel-group id="dashboard" typeId="fr-dashboard"/>
-			<channel-group id="extended-information" typeId="fr-extended-information"/>
+			<channel-group id="extended-information" typeId="fr-extra-info"/>
 		</channel-groups>
 	</thing-type>
 
@@ -29,7 +29,7 @@
 			<channel id="fr-temp-unit" typeId="fr-temp-unit"/>
 		</channels>
 	</channel-group-type>
-	<channel-group-type id="fr-extended-information">
+	<channel-group-type id="fr-extra-info">
 		<label>More Info</label>
 		<description>Show more information about the device.</description>
 		<channels>

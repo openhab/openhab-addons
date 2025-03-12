@@ -15,7 +15,7 @@
 
 		<channel-groups>
 			<channel-group id="dashboard" typeId="hp-dashboard"/>
-			<channel-group id="extended-information" typeId="hp-extra-information"/>
+			<channel-group id="extended-information" typeId="hp-extra-info"/>
 		</channel-groups>
 		<config-description>
 			<parameter-group name="Settings">
@@ -72,7 +72,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="hp-extra-information">
+	<channel-group-type id="hp-extra-info">
 		<label>More Info</label>
 		<description>Show more information about the device.</description>
 		<channels>

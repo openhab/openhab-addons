@@ -15,7 +15,7 @@
 
 		<channel-groups>
 			<channel-group id="dashboard" typeId="ac-dashboard"/>
-			<channel-group id="extended-information" typeId="ac-extended-information"/>
+			<channel-group id="extended-information" typeId="ac-extended-info"/>
 		</channel-groups>
 		<config-description>
 			<parameter-group name="Settings">
@@ -70,7 +70,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="ac-extended-information">
+	<channel-group-type id="ac-extended-info">
 		<label>More Info</label>
 		<description>Show more information about the device.</description>
 		<channels>
