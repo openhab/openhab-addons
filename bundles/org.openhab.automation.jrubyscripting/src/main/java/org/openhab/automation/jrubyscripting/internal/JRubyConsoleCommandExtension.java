@@ -121,7 +121,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     public Object execute(Session session, List<Object> argList) throws Exception {
         String[] args = argList.stream().map(Object::toString).toArray(String[]::new);
         PrintStream out = Process.Utils.current().out();
-        final Console console = new JRubyConsole(getScope(), out, session);
+        final Console console = new JRubyConsole(getScope(), out);
 
         if (args.length > 0) {
             String command = args[0];
@@ -130,7 +130,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
                     info(console);
                     break;
                 case CONSOLE:
-                    startConsole(console);
+                    startConsole(console, session, args.length > 1 ? args[1] : null);
                     break;
                 case GEM:
                     gem(console, Arrays.stream(args).skip(1).toList());
@@ -141,12 +141,12 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
                 case PRUNE:
                     if (args.length > 1) {
                         if ("-f".equals(args[1]) || "--force".equals(args[1])) {
-                            cleanupOtherGemHomes(console, true);
+                            cleanupOtherGemHomes(console, session, true);
                         } else {
                             console.println("Use -f or --force to skip confirmation.");
                         }
                     } else {
-                        cleanupOtherGemHomes(console, false);
+                        cleanupOtherGemHomes(console, session, false);
                     }
                     break;
                 case "--help":
@@ -183,17 +183,24 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         });
     }
 
-    private void startConsole(Console console) {
-        final String consoleScript = jRubyScriptEngineFactory.getConfiguration().getConsole();
+    private void startConsole(Console console, Session session, @Nullable String script) {
+        if (script == null) {
+            script = jRubyScriptEngineFactory.getConfiguration().getConsole();
+        }
 
-        if (consoleScript.isBlank()) {
+        if (script == null || script.isBlank()) {
             console.println(
-                    "No console script configured. Please set the 'console_script' property in the configuration.");
+                    "No console script configured. Please set the 'console' property in the add-on configuration, "
+                            + "or specify one as an argument to 'jrubyscripting console <scriptname>'.");
             return;
         }
 
+        final String consoleScript = script.contains("/") ? script : "openhab/console/" + script;
+
+        logger.debug("Starting JRuby console with script: {}", consoleScript);
+
         executeWithFullJRuby(console, engine -> {
-            engine.getContext().setAttribute("$console", console, ScriptContext.ENGINE_SCOPE);
+            engine.getContext().setAttribute("$terminal", session.getTerminal(), ScriptContext.ENGINE_SCOPE);
             engine.eval(String.format("require '%s'", consoleScript));
             return null;
         });
@@ -226,81 +233,76 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
      * This is to prevent the accumulation of old gem homes that are no longer needed.
      * The user is prompted to confirm the deletion when force is false.
      */
-    private void cleanupOtherGemHomes(Console console, boolean force) {
-        // Only our console contains the session required for readLine() to work
-        if (console instanceof JRubyConsole jrubyConsole) {
-            Path gemHomeBase = Path.of(jRubyScriptEngineFactory.getConfiguration().getGemHomeBase());
-            Path specificGemHome = Path.of(jRubyScriptEngineFactory.getConfiguration().getSpecificGemHome());
+    private void cleanupOtherGemHomes(Console console, Session session, boolean force) {
+        Path gemHomeBase = Path.of(jRubyScriptEngineFactory.getConfiguration().getGemHomeBase());
+        Path specificGemHome = Path.of(jRubyScriptEngineFactory.getConfiguration().getSpecificGemHome());
 
-            if (gemHomeBase.equals(specificGemHome)) {
-                console.println("Pruning is not necessary because the gem home directory is not versioned.");
+        if (gemHomeBase.equals(specificGemHome)) {
+            console.println("Pruning is not necessary because the gem home directory is not versioned.");
+            return;
+        }
+
+        // Cowardly refuse to prune the gem home if it is not in a standard path
+        // This is to prevent accidental deletion of the entire filesystem
+        // or other important directories
+        if (!gemHomeBase.endsWith(".gem")) {
+            console.println("The gem home directory is not located in a standard path. Please prune it manually.");
+            console.println("  " + gemHomeBase);
+            return;
+        }
+
+        try (Stream<Path> paths = Files.walk(gemHomeBase)) {
+            Iterator<File> filesToDelete = paths.filter(p -> !p.equals(gemHomeBase) && !p.startsWith(specificGemHome)) //
+                    .sorted(Comparator.reverseOrder()) //
+                    .map(Path::toFile).iterator();
+
+            if (!filesToDelete.hasNext()) {
+                console.println("No files or directories to delete from " + gemHomeBase);
                 return;
             }
 
-            // Cowardly refuse to prune the gem home if it is not in a standard path
-            // This is to prevent accidental deletion of the entire filesystem
-            // or other important directories
-            if (!gemHomeBase.endsWith(".gem")) {
-                console.println("The gem home directory is not located in a standard path. Please prune it manually.");
-                console.println("  " + gemHomeBase);
-                return;
-            }
+            if (!force) {
+                console.printf("Some files and directories exist in '%s' outside of your configured gem home '%s'.\n",
+                        gemHomeBase, specificGemHome);
+                console.println("They may have been left over from previous installations or updates.\n");
 
-            try (Stream<Path> paths = Files.walk(gemHomeBase)) {
-                Iterator<File> filesToDelete = paths
-                        .filter(p -> !p.equals(gemHomeBase) && !p.startsWith(specificGemHome)) //
-                        .sorted(Comparator.reverseOrder()) //
-                        .map(Path::toFile).iterator();
+                Files.list(gemHomeBase) //
+                        .filter(p -> !p.equals(specificGemHome)) //
+                        .sorted() //
+                        .map(Path::toFile) //
+                        .forEach(file -> console.println("  " + file + (file.isDirectory() ? "/" : "")));
 
-                if (!filesToDelete.hasNext()) {
-                    console.println("No files or directories to delete from " + gemHomeBase);
+                // Prevent readLine() from logging a warning
+                // see:
+                // https://github.com/apache/karaf/blob/ad427cd12543dc78e095bbaa4608d7ca3d5ea4d8/shell/core/src/main/java/org/apache/karaf/shell/impl/console/ConsoleSessionImpl.java#L549
+                // https://github.com/jline/jline3/blob/ee4886bf24f40288a4044f9b4b74917b58103e49/reader/src/main/java/org/jline/reader/LineReaderBuilder.java#L90
+                String previousSetting = System.setProperty("org.jline.reader.support.parsedline", "true");
+                try {
+                    session.readLine("\nPress Enter to delete them or Ctrl+C to cancel.", null);
+                    console.println("");
+                } catch (RuntimeException e) {
+                    // Ctrl+C was pressed
+                    // We can't use a more specific exception type without adding org.jline as bundle dependency
+                    console.println("Operation cancelled.");
                     return;
-                }
-
-                if (!force) {
-                    console.printf(
-                            "Some files and directories exist in '%s' outside of your configured gem home '%s'.\n",
-                            gemHomeBase, specificGemHome);
-                    console.println("They may have been left over from previous installations or updates.\n");
-
-                    Files.list(gemHomeBase) //
-                            .filter(p -> !p.equals(specificGemHome)) //
-                            .sorted() //
-                            .map(Path::toFile) //
-                            .forEach(file -> console.println("  " + file + (file.isDirectory() ? "/" : "")));
-
-                    // Prevent readLine() from logging a warning
-                    // see:
-                    // https://github.com/apache/karaf/blob/ad427cd12543dc78e095bbaa4608d7ca3d5ea4d8/shell/core/src/main/java/org/apache/karaf/shell/impl/console/ConsoleSessionImpl.java#L549
-                    // https://github.com/jline/jline3/blob/ee4886bf24f40288a4044f9b4b74917b58103e49/reader/src/main/java/org/jline/reader/LineReaderBuilder.java#L90
-                    String previousSetting = System.setProperty("org.jline.reader.support.parsedline", "true");
-                    try {
-                        jrubyConsole.getSession().readLine("\nPress Enter to delete them or Ctrl+C to cancel.", null);
-                        console.println("");
-                    } catch (RuntimeException e) {
-                        // Ctrl+C was pressed
-                        // We can't use a more specific exception type without adding org.jline as bundle dependency
-                        console.println("Operation cancelled.");
-                        return;
-                    } finally {
-                        if (previousSetting != null) {
-                            System.setProperty("org.jline.reader.support.parsedline", previousSetting);
-                        } else {
-                            System.clearProperty("org.jline.reader.support.parsedline");
-                        }
+                } finally {
+                    if (previousSetting != null) {
+                        System.setProperty("org.jline.reader.support.parsedline", previousSetting);
+                    } else {
+                        System.clearProperty("org.jline.reader.support.parsedline");
                     }
                 }
-
-                while (filesToDelete.hasNext()) {
-                    File file = filesToDelete.next();
-                    console.println("Deleting: " + file);
-                    file.delete();
-                    logger.info("Deleted: {}", file);
-                }
-            } catch (IOException e) {
-                console.println("Error: " + e.getMessage());
-                return;
             }
+
+            while (filesToDelete.hasNext()) {
+                File file = filesToDelete.next();
+                console.println("Deleting: " + file);
+                file.delete();
+                logger.info("Deleted: {}", file);
+            }
+        } catch (IOException e) {
+            console.println("Error: " + e.getMessage());
+            return;
         }
     }
 
@@ -352,7 +354,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     private List<String> getUsages() {
         return Arrays.asList( //
                 buildCommandUsage(INFO, "displays information about JRuby Scripting add-on"), //
-                buildCommandUsage(CONSOLE, "starts an interactive JRuby console"), //
+                buildCommandUsage(CONSOLE + " [<script>]", "starts an interactive JRuby console"), //
                 buildCommandUsage(GEM, "manages JRuby Scripting add-on's RubyGems"), //
                 buildCommandUsage(UPDATE, "updates the configured gems"), //
                 buildCommandUsage(PRUNE + " [-f|--force]", "cleans up older versions in the .gem directory") //
@@ -404,14 +406,12 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     }
 
     public class JRubyConsole implements Console {
-        private final Session session;
         private final String scope;
         private final PrintStream out;
 
-        public JRubyConsole(final String scope, PrintStream out, Session session) {
+        public JRubyConsole(final String scope, PrintStream out) {
             this.scope = scope;
             this.out = out;
-            this.session = session;
         }
 
         @Override
@@ -432,10 +432,6 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         @Override
         public void printUsage(final String s) {
             out.println(String.format("Usage: %s:%s", scope, s));
-        }
-
-        public Session getSession() {
-            return session;
         }
     }
 }
