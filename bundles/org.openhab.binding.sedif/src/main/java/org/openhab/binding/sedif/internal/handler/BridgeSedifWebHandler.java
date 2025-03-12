@@ -16,7 +16,6 @@ import java.net.HttpCookie;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.time.format.DateTimeFormatter;
-import java.util.Hashtable;
 import java.util.List;
 
 import javax.net.ssl.SSLContext;
@@ -25,17 +24,14 @@ import javax.net.ssl.TrustManager;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.FormContentProvider;
-import org.eclipse.jetty.util.Fields;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.sedif.internal.api.SedifHttpApi;
 import org.openhab.binding.sedif.internal.config.SedifConfiguration;
 import org.openhab.binding.sedif.internal.constants.SedifBindingConstants;
-import org.openhab.binding.sedif.internal.dto.Actions;
 import org.openhab.binding.sedif.internal.dto.AuraContext;
 import org.openhab.binding.sedif.internal.dto.AuraResponse;
 import org.openhab.binding.sedif.internal.dto.ContractDetail;
+import org.openhab.binding.sedif.internal.dto.ContractDetail.CompteInfo;
 import org.openhab.binding.sedif.internal.dto.Contracts;
 import org.openhab.binding.sedif.internal.dto.Event;
 import org.openhab.binding.sedif.internal.types.SedifException;
@@ -84,14 +80,12 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
     private static final String URL_SEDIF_AUTHENTICATE_POST = BASE_URL
             + "/s/sfsites/aura?r=1&other.LightningLoginForm.login=1";
 
+    private static final String URL_SEDIF_CONTRAT = BASE_URL + "/espace-particuliers/s/contrat?tab=Detail";
+
     private static final String URL_SEDIF_SITE = BASE_URL
             + "/espace-particuliers/s/sfsites/aura?r=36&aura.ApexAction.execute=1";
 
     protected final Gson gson;
-    private @Nullable String fwuid = "";
-    private @Nullable String appId = "";
-    private @Nullable String appName = "";
-    private @Nullable String appMarkup = "";
     private @Nullable String sid = "";
 
     private @Nullable AuraContext appCtx;
@@ -177,77 +171,61 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         try {
             sedifApi.removeAllCookie();
 
-            ContentResponse result;
             String resultSt;
-            Fields fields;
-            Actions actions;
-            AuraContext loginCtx;
 
             // =====================================================================
             logger.debug("Step 1: getting salesforces context from login page");
 
-            result = httpClient.GET(URL_SEDIF_AUTHENTICATE);
-            resultSt = result.getContentAsString();
-            loginCtx = sedifApi.extractAuraContext(resultSt);
+            resultSt = sedifApi.getContent(URL_SEDIF_AUTHENTICATE);
+            appCtx = sedifApi.extractAuraContext(resultSt);
+
+            if (appCtx == null) {
+                throw new SedifException("Unable to find app context in login process");
+            }
 
             // =====================================================================
             logger.debug("Step 2: Authenticate");
 
-            if (loginCtx != null) {
-                fwuid = loginCtx.fwuid;
-                appName = loginCtx.app;
-                appMarkup = "APPLICATION@markup://" + appName;
-                appId = loginCtx.loaded.get(appName);
-            } else {
-                throw new SedifException("Unable to find app context in login process");
-            }
+            AuraResponse resp = sedifApi.doAuth(lcConfig.username, lcConfig.password);
 
-            fields = new Fields();
-            fields.put("message", sedifApi.getLoginPayload(lcConfig.username, lcConfig.password));
-            fields.put("aura.context", sedifApi.getAuraContextPayload(loginCtx));
-            fields.put("aura.token", "");
-
-            result = httpClient.POST(URL_SEDIF_AUTHENTICATE_POST).content(new FormContentProvider(fields)).send();
-            resultSt = result.getContentAsString();
-
-            AuraResponse resp = gson.fromJson(resultSt, AuraResponse.class);
-            Event event = resp.events.getFirst();
-            String urlRedir = (String) event.attributes.values.get("url");
-
-            sid = "";
-            String[] parts = urlRedir.split("&");
-            for (String part : parts) {
-                if (part.indexOf("sid") >= 0) {
-                    sid = part;
+            String urlRedir = "";
+            if (resp != null) {
+                Event event = resp.events.getFirst();
+                Event.Attributes attr = event.attributes;
+                if (attr != null) {
+                    urlRedir = (String) attr.values.get("url");
                 }
-            }
-            if (sid != null) {
-                sid = sid.replace("sid=", "");
-            } else {
-                throw new SedifException("Unable to find sid in login process");
+
+                if (urlRedir.isBlank()) {
+                    throw new SedifException("Unable to find redir url in login process");
+                }
+
+                sid = "";
+                String[] parts = urlRedir.split("&");
+                for (String part : parts) {
+                    if (part.indexOf("sid") >= 0) {
+                        sid = part;
+                    }
+                }
+                if (sid != null) {
+                    sid = sid.replace("sid=", "");
+                } else {
+                    throw new SedifException("Unable to find sid in login process");
+                }
             }
 
             // =====================================================================
             logger.debug("Step 3: Confirm login");
 
-            result = httpClient.GET(urlRedir);
-            resultSt = result.getContentAsString();
+            resultSt = sedifApi.getContent(urlRedir);
 
             // =====================================================================
             logger.debug("Step 4: Get contract page");
 
-            result = httpClient.GET("https://connexion.leaudiledefrance.fr/espace-particuliers/s/contrat?tab=Detail");
-            resultSt = result.getContentAsString();
+            resultSt = sedifApi.getContent(URL_SEDIF_CONTRAT);
             appCtx = sedifApi.extractAuraContext(resultSt);
 
-            AuraContext lcAppCtx = appCtx;
-
-            if (lcAppCtx != null) {
-                fwuid = loginCtx.fwuid;
-                appName = lcAppCtx.app;
-                appMarkup = "APPLICATION@markup://" + appName;
-                appId = loginCtx.loaded.get(appName);
-            } else {
+            if (appCtx == null) {
                 throw new SedifException("Unable to find app context in login process");
             }
             // =====================================================================
@@ -266,45 +244,24 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
             }
 
             // =====================================================================
-            Hashtable<String, Object> paramsSub = new Hashtable<String, Object>();
             logger.debug("Step 6: Get contract");
-            fields = new Fields();
-            fields.put("message", sedifApi.getActionPayload("", "LTN009_ICL_ContratsGroupements",
-                    "getContratsGroupements", paramsSub));
-            fields.put("aura.context", sedifApi.getAuraContextPayload(lcAppCtx));
-            fields.put("aura.token", token);
-
-            result = httpClient.POST(URL_SEDIF_SITE).content(new FormContentProvider(fields)).send();
-            resultSt = result.getContentAsString();
-            actions = gson.fromJson(resultSt, Actions.class);
-
-            Contracts contracts = (Contracts) actions.actions.get(0).returnValue.returnValue;
-            contractId = contracts.contrats.get(1).Id;
-            // =====================================================================
-            logger.debug("Step 7: Get contractDetails");
-            paramsSub.clear();
-
-            if (contractId != null) {
-                paramsSub.put("contratId", contractId);
+            Contracts contracts = sedifApi.getContracts();
+            if (contracts != null && contracts.contrats != null) {
+                contractId = contracts.contrats.get(1).Id;
             }
 
-            fields = new Fields();
-            fields.put("message",
-                    sedifApi.getActionPayload("", "LTN008_ICL_ContratDetails", "getContratDetails", paramsSub));
-            fields.put("aura.context", sedifApi.getAuraContextPayload(lcAppCtx));
-            fields.put("aura.token", token);
-            result = httpClient.POST(URL_SEDIF_SITE).content(new FormContentProvider(fields)).send();
-            resultSt = result.getContentAsString();
-            actions = gson.fromJson(resultSt, Actions.class);
-
-            ContractDetail contractDetail = (ContractDetail) actions.actions.get(0).returnValue.returnValue;
-            meterIdB = contractDetail.compteInfo.get(0).ELEMB;
-            meterIdA = contractDetail.compteInfo.get(0).ELEMA;
+            // =====================================================================
+            ContractDetail contractDetail = sedifApi.getContractDetails();
+            if (contractDetail != null) {
+                List<CompteInfo> listCompteInfo = contractDetail.compteInfo;
+                if (listCompteInfo != null) {
+                    meterIdB = listCompteInfo.get(0).ELEMB;
+                    meterIdA = listCompteInfo.get(0).ELEMA;
+                }
+            }
 
             connected = true;
-        } catch (
-
-        Exception ex) {
+        } catch (Exception ex) {
             logger.debug("error durring connect : {}" + ex.getMessage());
         }
     }
@@ -315,6 +272,10 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
 
     public String getUrlSedifSite() {
         return URL_SEDIF_SITE;
+    }
+
+    public String getUrlSedifAuth() {
+        return URL_SEDIF_AUTHENTICATE_POST;
     }
 
     public DateTimeFormatter getApiDateFormat() {
