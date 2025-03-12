@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sedif.internal.dto.ContractDetail;
 import org.openhab.binding.sedif.internal.dto.Contracts;
+import org.openhab.binding.sedif.internal.dto.MeterReading;
 import org.openhab.binding.sedif.internal.dto.RuntimeTypeAdapterFactory;
 import org.openhab.binding.sedif.internal.dto.Value;
 import org.openhab.binding.sedif.internal.handler.BridgeSedifWebHandler;
@@ -77,6 +78,7 @@ public class SedifHandlerFactory extends BaseThingHandlerFactory {
         RuntimeTypeAdapterFactory<Value> adapter = RuntimeTypeAdapterFactory.of(Value.class);
         adapter.registerSubtype(Contracts.class, "contrats", "Contracts");
         adapter.registerSubtype(ContractDetail.class, "compteInfo", "ContractDetail");
+        adapter.registerSubtype(MeterReading.class, "data", "Datas");
 
         gson = new GsonBuilder().registerTypeAdapterFactory(adapter).create();
     }
