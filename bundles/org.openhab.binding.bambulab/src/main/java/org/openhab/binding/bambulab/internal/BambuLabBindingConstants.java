@@ -30,33 +30,56 @@ public class BambuLabBindingConstants {
     public static final ThingTypeUID PRINTER_THING_TYPE = new ThingTypeUID(BINDING_ID, "printer");
 
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-    public interface Channel {
-        // PrintDetails
-        public static final String CHANNEL_NOZZLE_TEMPERATURE = "nozzle-temperature";
-        public static final String CHANNEL_NOZZLE_TARGET_TEMPERATURE = "nozzle-target-temperature";
-        public static final String CHANNEL_BED_TEMPERATURE = "bed-temperature";
-        public static final String CHANNEL_BED_TARGET_TEMPERATURE = "bed-target-temperature";
-        public static final String CHANNEL_CHAMBER_TEMPERATURE = "chamber-temperature";
-        public static final String CHANNEL_MC_PRINT_STAGE = "mc-print-stage";
-        public static final String CHANNEL_MC_PERCENT = "mc-percent";
-        public static final String CHANNEL_MC_REMAINING_TIME = "mc-remaining-time";
-        public static final String CHANNEL_WIFI_SIGNAL = "wifi-signal";
-        public static final String CHANNEL_BED_TYPE = "bed-type";
-        public static final String CHANNEL_GCODE_FILE = "gcode-file";
-        public static final String CHANNEL_GCODE_STATE = "gcode-state";
-        public static final String CHANNEL_REASON = "reason";
-        public static final String CHANNEL_RESULT = "result";
-        public static final String CHANNEL_GCODE_FILE_PREPARE_PERCENT = "gcode-file-prepare-percent";
-        public static final String CHANNEL_BIG_FAN_1_SPEED = "big-fan1-speed";
-        public static final String CHANNEL_BIG_FAN_2_SPEED = "big-fan2-speed";
-        public static final String CHANNEL_HEAT_BREAK_FAN_SPEED = "heat-break-fan-speed";
-        public static final String CHANNEL_LAYER_NUM = "layer-num";
-        public static final String CHANNEL_SPEED_LEVEL = "speed-level";
-        public static final String CHANNEL_TIME_LAPS = "time-laps";
-        public static final String CHANNEL_USE_AMS = "use-ams";
-        public static final String CHANNEL_VIBRATION_CALIBRATION = "vibration-calibration";
-        // command channels
-        public static final String CHANNEL_LED_CHAMBER_LIGHT = "led-chamber";
-        public static final String CHANNEL_LED_WORK_LIGHT = "led-work";
+    public enum Channel {
+        CHANNEL_NOZZLE_TEMPERATURE("nozzle-temperature"),
+        CHANNEL_NOZZLE_TARGET_TEMPERATURE("nozzle-target-temperature"),
+        CHANNEL_BED_TEMPERATURE("bed-temperature"),
+        CHANNEL_BED_TARGET_TEMPERATURE("bed-target-temperature"),
+        CHANNEL_CHAMBER_TEMPERATURE("chamber-temperature"),
+        CHANNEL_MC_PRINT_STAGE("mc-print-stage"),
+        CHANNEL_MC_PERCENT("mc-percent"),
+        CHANNEL_MC_REMAINING_TIME("mc-remaining-time"),
+        CHANNEL_WIFI_SIGNAL("wifi-signal"),
+        CHANNEL_BED_TYPE("bed-type"),
+        CHANNEL_GCODE_FILE("gcode-file"),
+        CHANNEL_GCODE_STATE("gcode-state"),
+        CHANNEL_REASON("reason"),
+        CHANNEL_RESULT("result"),
+        CHANNEL_GCODE_FILE_PREPARE_PERCENT("gcode-file-prepare-percent"),
+        CHANNEL_BIG_FAN_1_SPEED("big-fan1-speed"),
+        CHANNEL_BIG_FAN_2_SPEED("big-fan2-speed"),
+        CHANNEL_HEAT_BREAK_FAN_SPEED("heat-break-fan-speed"),
+        CHANNEL_LAYER_NUM("layer-num"),
+        CHANNEL_SPEED_LEVEL("speed-level"),
+        CHANNEL_TIME_LAPS("time-laps"),
+        CHANNEL_USE_AMS("use-ams"),
+        CHANNEL_VIBRATION_CALIBRATION("vibration-calibration"),
+        CHANNEL_LED_CHAMBER_LIGHT("led-chamber", true),
+        CHANNEL_LED_WORK_LIGHT("led-work", true);
+
+        private final String name;
+        private final boolean supportCommand;
+
+        Channel(String name, boolean supportCommand) {
+            this.name = name;
+            this.supportCommand = supportCommand;
+        }
+
+        private Channel(String name) {
+            this(name, false);
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean isSupportCommand() {
+            return supportCommand;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
     }
 }
