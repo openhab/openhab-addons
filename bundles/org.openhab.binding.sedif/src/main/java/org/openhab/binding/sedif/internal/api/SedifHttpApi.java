@@ -31,8 +31,13 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.sedif.internal.dto.Action;
+import org.openhab.binding.sedif.internal.dto.Action.ReturnValue;
 import org.openhab.binding.sedif.internal.dto.Actions;
+import org.openhab.binding.sedif.internal.dto.AuraCommand;
 import org.openhab.binding.sedif.internal.dto.AuraContext;
+import org.openhab.binding.sedif.internal.dto.AuraResponse;
+import org.openhab.binding.sedif.internal.dto.ContractDetail;
+import org.openhab.binding.sedif.internal.dto.Contracts;
 import org.openhab.binding.sedif.internal.dto.MeterReading;
 import org.openhab.binding.sedif.internal.handler.BridgeSedifWebHandler;
 import org.openhab.binding.sedif.internal.handler.ThingSedifHandler;
@@ -71,23 +76,57 @@ public class SedifHttpApi {
     }
 
     public String getContent(String url) throws SedifException {
-        return getContent(logger, bridgeHandler, url, httpClient, "");
+        return getContent(logger, bridgeHandler, url, httpClient, null);
     }
 
-    public String getContent(BridgeSedifWebHandler handler, String url) throws SedifException {
-        return getContent(logger, handler, url, httpClient, "");
+    public String getContent(BridgeSedifWebHandler handler, String url, @Nullable AuraCommand cmd)
+            throws SedifException {
+        return getContent(logger, handler, url, httpClient, cmd);
     }
 
-    private static String getContent(Logger logger, BridgeSedifWebHandler bridgeHandler, String url,
-            HttpClient httpClient, String token) throws SedifException {
+    private String getContent(Logger logger, BridgeSedifWebHandler bridgeHandler, String url, HttpClient httpClient,
+            @Nullable AuraCommand cmd) throws SedifException {
         try {
             Request request = httpClient.newRequest(url);
 
             request = request.agent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0");
-            request = request.method(HttpMethod.GET);
-            if (!token.isEmpty()) {
-                request = request.header("Authorization", "" + token);
-                request = request.header("Accept", "application/json");
+
+            if (cmd == null) {
+                request = request.method(HttpMethod.GET);
+            } else {
+                Hashtable<String, Object> paramsSub = cmd.getParamsSub();
+                Fields fields = new Fields();
+
+                request = request.method(HttpMethod.POST);
+
+                String contractId = bridgeHandler.getContractId();
+                String meterIdB = bridgeHandler.getMeterIdB();
+                String meterIdA = bridgeHandler.getMeterIdA();
+                String token = bridgeHandler.getToken();
+                AuraContext appCtx = bridgeHandler.getAppCtx();
+
+                if (contractId != null && !"".equals(contractId)) {
+                    paramsSub.put("contratId", contractId);
+                    paramsSub.put("contractId", contractId);
+                }
+                if (appCtx != null) {
+                    fields.put("aura.context", getAuraContextPayload(appCtx));
+                }
+
+                if (meterIdB != null && !"".equals(meterIdB)) {
+                    paramsSub.put("NUMERO_COMPTEUR", meterIdB);
+                }
+
+                if (meterIdA != null && !"".equals(meterIdA)) {
+                    paramsSub.put("ID_PDS", meterIdA);
+                }
+
+                String msg = getActionPayload(cmd);
+                fields.put("message", msg);
+
+                fields.put("aura.token", token);
+
+                request = request.content(new FormContentProvider(fields));
             }
 
             ContentResponse result = request.send();
@@ -128,76 +167,69 @@ public class SedifHttpApi {
         }
     }
 
-    public FormContentProvider getFormContent(String fieldName, String fieldValue) {
-        Fields fields = new Fields();
-        fields.put(fieldName, fieldValue);
-        return new FormContentProvider(fields);
+    public @Nullable AuraResponse doAuth(String userName, String userPassword) throws SedifException {
+        // =====================================================================
+        logger.debug("Step 3: DoAuth");
+
+        AuraCommand cmd = AuraCommand.make("", "", "");
+        cmd.setUser(userName, userPassword);
+
+        AuraResponse response = getData(bridgeHandler, bridgeHandler.getUrlSedifAuth(), cmd, AuraResponse.class);
+        return response;
+    }
+
+    public @Nullable Contracts getContracts() throws SedifException {
+        // =====================================================================
+        logger.debug("Step 6: Get contractDetails");
+
+        AuraCommand cmd = AuraCommand.make("", "LTN009_ICL_ContratsGroupements", "getContratsGroupements");
+        Actions actions = getData(bridgeHandler, bridgeHandler.getUrlSedifSite(), cmd, Actions.class);
+        ReturnValue retValue = actions.actions.get(0).returnValue;
+        Contracts contracts = (Contracts) ((retValue == null) ? null : retValue.returnValue);
+        return contracts;
+    }
+
+    public @Nullable ContractDetail getContractDetails() throws SedifException {
+        // =====================================================================
+        logger.debug("Step 7: Get contractDetails");
+
+        AuraCommand cmd = AuraCommand.make("", "LTN008_ICL_ContratDetails", "getContratDetails");
+        Actions actions = getData(bridgeHandler, bridgeHandler.getUrlSedifSite(), cmd, Actions.class);
+        ReturnValue retValue = actions.actions.get(0).returnValue;
+        ContractDetail contractDetail = (ContractDetail) ((retValue == null) ? null : retValue.returnValue);
+        return contractDetail;
     }
 
     public @Nullable MeterReading getConsumptionData(ThingSedifHandler handler, LocalDate from, LocalDate to)
             throws SedifException {
+        logger.debug("Step 6: Get data");
 
-        try {
-            logger.debug("Step 6: Get data");
+        AuraCommand cmd = AuraCommand.make("", "LTN015_ICL_ContratConsoHisto", "getData");
+        Hashtable<String, Object> paramsSub = cmd.getParamsSub();
 
-            Hashtable<String, Object> paramsSub = new Hashtable<String, Object>();
-            Fields fields;
+        paramsSub.put("TYPE_PAS", "JOURNEE"); // SEMAINE MOIS
 
-            paramsSub.clear();
-            paramsSub.put("TYPE_PAS", "JOURNEE");
-            // SEMAINE MOIS
-            paramsSub.put("DATE_DEBUT", "2025-02-24");
-            paramsSub.put("DATE_FIN", "2025-03-12");
-
-            String contractId = bridgeHandler.getContractId();
-            String meterIdB = bridgeHandler.getMeterIdB();
-            String meterIdA = bridgeHandler.getMeterIdA();
-            String token = bridgeHandler.getToken();
-            AuraContext appCtx = bridgeHandler.getAppCtx();
-
-            if (contractId != null) {
-                paramsSub.put("contractId", contractId);
-            }
-
-            if (meterIdB != null) {
-                paramsSub.put("NUMERO_COMPTEUR", meterIdB);
-            }
-            if (meterIdA != null) {
-                paramsSub.put("ID_PDS", meterIdA);
-            }
-
-            fields = new Fields();
-            fields.put("message", getActionPayload("", "LTN015_ICL_ContratConsoHisto", "getData", paramsSub));
-            if (appCtx != null) {
-                fields.put("aura.context", getAuraContextPayload(appCtx));
-            }
-            fields.put("aura.token", token);
-
-            ContentResponse result = httpClient.POST(bridgeHandler.getUrlSedifSite())
-                    .content(new FormContentProvider(fields)).send();
-            String resultSt = result.getContentAsString();
-            Actions actions = gson.fromJson(resultSt, Actions.class);
-            logger.debug("aaaa");
-
-            return (MeterReading) actions.actions.get(0).returnValue.returnValue;
-
-            // return getMeasures(handler, bridgeHandler.getUrlSedifSite(), from, to);
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            throw new SedifException("error", e);
-        }
+        MeterReading meterReading = getMeasures(handler, bridgeHandler.getUrlSedifSite(), cmd, from, to);
+        return meterReading;
     }
 
-    private MeterReading getMeasures(ThingSedifHandler handler, String apiUrl, LocalDate from, LocalDate to)
-            throws SedifException {
+    private @Nullable MeterReading getMeasures(ThingSedifHandler handler, String apiUrl, AuraCommand cmd,
+            LocalDate from, LocalDate to) throws SedifException {
         String dtStart = from.format(bridgeHandler.getApiDateFormat());
         String dtEnd = to.format(bridgeHandler.getApiDateFormat());
 
-        String url = String.format(apiUrl, dtStart, dtEnd);
-        MeterReading meterResponse = getData(bridgeHandler, url, MeterReading.class);
+        Hashtable<String, Object> paramsSub = cmd.getParamsSub();
+        paramsSub.put("DATE_DEBUT", dtStart);
+        paramsSub.put("DATE_FIN", dtEnd);
+
+        Actions actions = getData(bridgeHandler, apiUrl, cmd, Actions.class);
+        ReturnValue retValue = actions.actions.get(0).returnValue;
+        MeterReading meterResponse = (MeterReading) ((retValue == null) ? null : retValue.returnValue);
         return meterResponse;
     }
 
-    private <T> T getData(BridgeSedifWebHandler handler, String url, Class<T> clazz) throws SedifException {
+    public <T> T getData(BridgeSedifWebHandler handler, String url, @Nullable AuraCommand cmd, Class<T> clazz)
+            throws SedifException {
         if (!bridgeHandler.isConnected()) {
             bridgeHandler.initialize();
         }
@@ -208,7 +240,7 @@ public class SedifHttpApi {
 
         while (numberRetry < 3) {
             try {
-                String data = getContent(handler, url);
+                String data = getContent(handler, url, cmd);
 
                 if (!data.isEmpty()) {
                     try {
@@ -251,34 +283,49 @@ public class SedifHttpApi {
         return gson.toJson(context);
     }
 
-    public String getLoginPayload(String userName, String password) {
+    public String getActionPayload(AuraCommand cmd) {
         Actions actions = new Actions();
         Action action = new Action();
-        // action.id = "81;a";
-        action.descriptor = "apex://LightningLoginFormController/ACTION$login";
-        action.callingDescriptor = "markup://c:loginForm";
 
-        action.params.put("username", userName);
-        action.params.put("password", password);
-        action.params.put("startUrl", "");
-        actions.actions.add(action);
+        AuraContext ctx = bridgeHandler.getAppCtx();
+        if (ctx != null) {
+            if (ctx.app != null && ctx.app.indexOf("login") >= 0) {
+                action.descriptor = "apex://LightningLoginFormController/ACTION$login";
+                action.callingDescriptor = "markup://c:loginForm";
+            } else {
+                action.descriptor = "aura://ApexActionController/ACTION$execute";
+                action.callingDescriptor = "UNKNOWN";
+            }
+        }
 
-        return gson.toJson(actions);
-    }
+        String nameSpace = cmd.getNameSpace();
+        String className = cmd.getClassName();
+        String method = cmd.getMethodName();
+        String userName = cmd.getUserName();
+        String userPassword = cmd.getUserPassword();
 
-    public String getActionPayload(String nameSpace, String className, String methodName,
-            Hashtable<String, Object> paramsSub) {
-        Actions actions = new Actions();
-        Action action = new Action();
-        action.descriptor = "aura://ApexActionController/ACTION$execute";
-        action.callingDescriptor = "UNKNOWN";
+        if (userName != null && !"".equals(userName)) {
+            action.params.put("username", userName);
+        }
+        if (userPassword != null && !"".equals(userPassword)) {
+            action.params.put("password", userPassword);
+        }
 
-        action.params.put("namespace", nameSpace);
-        action.params.put("classname", className);
-        action.params.put("method", methodName);
+        if (nameSpace != null && !"".equals(nameSpace)) {
+            action.params.put("namespace", nameSpace);
+        }
+
+        if (className != null && !"".equals(className)) {
+            action.params.put("classname", className);
+        }
+
+        if (method != null && !"".equals(method)) {
+            action.params.put("method", method);
+        }
+
         action.params.put("cacheable", false);
         action.params.put("isContinuation", false);
-        action.params.put("params", paramsSub);
+        action.params.put("params", cmd.getParamsSub());
         actions.actions.add(action);
 
         return gson.toJson(actions);
