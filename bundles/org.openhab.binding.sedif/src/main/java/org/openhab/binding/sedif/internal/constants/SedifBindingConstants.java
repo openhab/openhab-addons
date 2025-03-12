@@ -43,6 +43,7 @@ public class SedifBindingConstants {
     public static final String SEDIF_CONTRAT_METER_GROUP = "sedif-contrat-meter";
 
     public static final String CHANNEL_CONSUMPTION = "consumption";
+    public static final String CHANNEL_PRIX_MOYEN_EAU = "prix-moyen-eau";
 
     public static final String CHANNEL_AUTORITE_ORGANISATRICE = "autorite-organisatrice";
     public static final String CHANNEL_DATE_SORTIE_EPT = "date-sortie-ept";
