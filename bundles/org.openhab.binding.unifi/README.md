@@ -28,14 +28,15 @@ It requires a network accessible instance of the [Ubiquiti Networks Controller S
 
 The following table describes the Bridge configuration parameters:
 
-| Parameter                | Description                                                                 | Config   | Default |
-| ------------------------ | --------------------------------------------------------------------------- |--------- | ------- |
-| host                     | Hostname of IP address of the UniFi Controller                              | Required | -       |
-| port                     | Port of the UniFi Controller. For UniFi OS, the default port is usually 443 | Required | -       |
-| unifios                  | If the UniFi Controller is running on UniFi OS                              | Required | false   |
-| username                 | The username to access the UniFi Controller                                 | Required | -       |
-| password                 | The password to access the UniFi Controller                                 | Required | -       |
-| refresh                  | Refresh interval in seconds                                                 | Optional | 10      |
+| Parameter      | Description                                                                 | Config   | Default |
+|----------------|-----------------------------------------------------------------------------|--------- |---------|
+| host           | Hostname of IP address of the UniFi Controller                              | Required | -       |
+| port           | Port of the UniFi Controller. For UniFi OS, the default port is usually 443 | Required | -       |
+| unifios        | If the UniFi Controller is running on UniFi OS                              | Required | false   |
+| username       | The username to access the UniFi Controller                                 | Required | -       |
+| password       | The password to access the UniFi Controller                                 | Required | -       |
+| refresh        | Refresh interval in seconds                                                 | Optional | 10      |
+| timeoutSeconds | Request timeout in seconds. Increase if you experience TimeoutExceptions    | Optional | 5       |
 
 ## Thing Configuration
 
