@@ -169,7 +169,8 @@ This Channel Group is only available if the Dryer is configured to Remote Start
 
 ### Dryer/Washer Tower
 
-LG ThinQ Dryer/Washer is recognized as 2 different things: Dryer & Washer machines. Thus, for this device, follow the sessions for Dryer Machine and Washer Machine
+LG ThinQ Dryer/Washer is recognized as 2 different things: Dryer & Washer machines. 
+Thus, for this device, follow the paragraph's for Dryer Machine and Washer Machine
 
 ### Refrigerator
 
