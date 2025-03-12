@@ -17,7 +17,7 @@
 		</description>
 
 		<channel-groups>
-			<channel-group typeId="base" id="base"/>
+			<channel-group typeId="sedif-base" id="sedif-base"/>
 
 		</channel-groups>
 
