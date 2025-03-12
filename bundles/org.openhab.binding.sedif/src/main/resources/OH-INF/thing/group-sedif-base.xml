@@ -7,16 +7,9 @@
 	<channel-group-type id="sedif-base">
 		<label>Standard Base</label>
 		<channels>
-            <channel id="consumption" typeId="consumption-type">
-                <label>Consumption</label>
-            </channel>
-            
             <channel id="prix-moyen-eau" typeId="numeric-type">
                 <label>Prix Moyen Eau</label>
             </channel>
-            
-            
-            
-		</channels>
+  	</channels>
 	</channel-group-type>
 </thing:thing-descriptions>
