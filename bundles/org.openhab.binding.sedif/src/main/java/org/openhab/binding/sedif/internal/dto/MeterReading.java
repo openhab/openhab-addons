@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class MeterReading extends Value {
     public class Data {
-        public class CONSOMMATION {
+        public class Consommation {
             @SerializedName("CONSOMMATION")
             public float consommation;
 
@@ -30,7 +30,7 @@ public class MeterReading extends Value {
         }
 
         @SerializedName("CONSOMMATION")
-        public @Nullable List<CONSOMMATION> consommation = new ArrayList<CONSOMMATION>();
+        public @Nullable List<Consommation> consommation = new ArrayList<Consommation>();
 
         @SerializedName("CONSOMMATION_MAX")
         public float consommationMax;

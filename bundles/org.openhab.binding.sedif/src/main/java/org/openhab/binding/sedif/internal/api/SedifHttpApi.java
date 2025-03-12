@@ -145,8 +145,9 @@ public class SedifHttpApi {
 
             paramsSub.clear();
             paramsSub.put("TYPE_PAS", "JOURNEE");
+            // SEMAINE MOIS
             paramsSub.put("DATE_DEBUT", "2025-02-24");
-            paramsSub.put("DATE_FIN", "2025-03-10");
+            paramsSub.put("DATE_FIN", "2025-03-12");
 
             String contractId = bridgeHandler.getContractId();
             String meterIdB = bridgeHandler.getMeterIdB();
