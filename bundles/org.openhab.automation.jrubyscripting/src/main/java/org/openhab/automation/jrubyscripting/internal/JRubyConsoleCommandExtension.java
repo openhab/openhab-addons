@@ -25,7 +25,6 @@ import java.util.SortedSet;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
@@ -130,10 +129,10 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
                     info(console);
                     break;
                 case CONSOLE:
-                    startConsole(console, session, args.length > 1 ? args[1] : null);
+                    startConsole(console, session, Arrays.copyOfRange(args, 1, args.length));
                     break;
                 case GEM:
-                    gem(console, Arrays.stream(args).skip(1).toList());
+                    gem(console, Arrays.copyOfRange(args, 1, args.length));
                     break;
                 case UPDATE:
                     updateGems(console);
@@ -183,10 +182,8 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         });
     }
 
-    private void startConsole(Console console, Session session, @Nullable String script) {
-        if (script == null) {
-            script = jRubyScriptEngineFactory.getConfiguration().getConsole();
-        }
+    private void startConsole(Console console, Session session, String[] args) {
+        final String script = args.length > 0 ? args[0] : jRubyScriptEngineFactory.getConfiguration().getConsole();
 
         if (script == null || script.isBlank()) {
             console.println(
@@ -200,21 +197,22 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         logger.debug("Starting JRuby console with script: {}", consoleScript);
 
         executeWithFullJRuby(console, engine -> {
-            engine.getContext().setAttribute("$terminal", session.getTerminal(), ScriptContext.ENGINE_SCOPE);
+            engine.put("$terminal", session.getTerminal());
+            engine.put(ScriptEngine.ARGV, Arrays.copyOfRange(args, 1, args.length));
             engine.eval(String.format("require '%s'", consoleScript));
             return null;
         });
     }
 
-    private void gem(Console console, List<String> args) {
+    private void gem(Console console, String[] args) {
         final String GEM = """
                 ENV['PATH'] ||= '' # gem command requires PATH to be set
                 require "rubygems/gem_runner"
-                Gem::GemRunner.new.run args.to_a
+                Gem::GemRunner.new.run ARGV
                     """;
 
         executeWithPlainJRuby(console, engine -> {
-            engine.getContext().setAttribute("args", args, ScriptContext.ENGINE_SCOPE);
+            engine.put(ScriptEngine.ARGV, args);
             engine.eval(GEM);
             return null;
         });
@@ -354,8 +352,8 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     private List<String> getUsages() {
         return Arrays.asList( //
                 buildCommandUsage(INFO, "displays information about JRuby Scripting add-on"), //
-                buildCommandUsage(CONSOLE + " [<script>]", "starts an interactive JRuby console"), //
-                buildCommandUsage(GEM, "manages JRuby Scripting add-on's RubyGems"), //
+                buildCommandUsage(CONSOLE + " [script [arguments]]", "starts an interactive JRuby console"), //
+                buildCommandUsage(GEM + " [arguments]", "manages JRuby Scripting add-on's RubyGems"), //
                 buildCommandUsage(UPDATE, "updates the configured gems"), //
                 buildCommandUsage(PRUNE + " [-f|--force]", "cleans up older versions in the .gem directory") //
         );
