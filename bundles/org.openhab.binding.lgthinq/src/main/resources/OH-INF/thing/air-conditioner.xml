@@ -10,7 +10,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>LG ThinQ Air Conditioner</label>
+		<label>Air Conditioner</label>
 		<description>LG ThinQ Air Conditioner</description>
 
 		<channel-groups>
