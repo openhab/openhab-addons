@@ -36,7 +36,7 @@
 			<default>10</default>
 		</parameter>
 		<parameter name="timeoutSeconds" type="integer" required="false">
-			<label>Connection timeout</label>
+			<label>Connection Timeout</label>
 			<description>Connection timeout in seconds for API calls to the UniFi Controller.</description>
 			<default>5</default>
 			<advanced>true</advanced>
