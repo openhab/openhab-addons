@@ -223,6 +223,8 @@ public class ThingSedifHandler extends BaseThingHandler {
             updateState(SEDIF_BASE_GROUP, CHANNEL_CONSUMPTION, new QuantityType<>(
                     values.data.consommation.get(values.data.consommation.size() - 1).consommation, Units.LITRE));
 
+            updateState(SEDIF_BASE_GROUP, CHANNEL_PRIX_MOYEN_EAU, new DecimalType(values.prixMoyenEau));
+
             updateConsumptionTimeSeries(SEDIF_BASE_GROUP, CHANNEL_CONSUMPTION, values);
         }, () -> {
             updateState(SEDIF_BASE_GROUP, CHANNEL_CONSUMPTION, new QuantityType<>(0.00, Units.LITRE));
