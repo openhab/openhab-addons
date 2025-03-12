@@ -92,14 +92,6 @@ public class UniFiControllerThingConfig {
         this.timeoutSeconds = timeoutSeconds;
     }
 
-    public boolean isUnifios() {
-        return unifios;
-    }
-
-    public void setUnifios(boolean unifios) {
-        this.unifios = unifios;
-    }
-
     public boolean isUniFiOS() {
         return unifios;
     }
