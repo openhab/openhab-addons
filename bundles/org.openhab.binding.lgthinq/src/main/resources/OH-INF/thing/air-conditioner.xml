@@ -25,11 +25,8 @@
 			</parameter-group>
 			<parameter name="pollingPeriodPowerOffSeconds" type="integer" min="10" required="true" groupName="Settings">
 				<label>Polling When Off</label>
-				<description>Seconds to wait to the next polling when device is off. Useful to save up
-					i/o and cpu when your
-					device is
-					not working. If you use only this binding to control the
-					device, you can put higher values here.
+				<description>Seconds to wait to the next polling when device is off. Useful to save up i/o and cpu when your device
+					is not working. If you use only this binding to control the device, you can put higher values here.
 				</description>
 				<default>10</default>
 			</parameter>
