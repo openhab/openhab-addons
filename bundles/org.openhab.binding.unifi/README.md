@@ -11,6 +11,7 @@ This binding integrates with [Ubiquiti UniFi Networks](https://www.ubnt.com/prod
 - `wiredClient` - A wired client connected to the UniFi network
 - `poePort` - A PoE (Power over Ethernet) port on a UniFi switch
 - `accessPoint` - An access point managed by the UniFi controller software
+- `network` - A network managed by the UniFi controller software.
 
 ## Discovery
 
@@ -113,6 +114,14 @@ The following table describes the `accessPoint` configuration parameters:
 | ------------ | ------------------------------------------------|--------- | ------- |
 | mac          | The MAC address of the access point             | Required | -       |
 | site         | The site where the access point should be found | Optional | -       |
+
+### `network`
+
+The following table describes the `network` configuration parameters:
+
+| Parameter    | Description                                                  | Config   | Default |
+| ------------ | -------------------------------------------------------------|--------- | ------- |
+| nid          | The id of the network                                        | Required | -       |
 
 ## Channels
 
@@ -251,6 +260,17 @@ The `accessPoint` information that is retrieved is available as these channels:
 | lastSeen   | DateTime             | Date and Time the device was last seen                               | Read        |
 | experience | Number:Dimensionless | The average health indication of the connected clients               | Read        |
 | led        | Switch               | Switch the LED on or off                                             | Read, Write |
+
+### `network`
+
+The `network` information that is retrieved is available as these channels:
+
+| Channel ID      | Item Type | Description                                                                     | Permissions |
+|-----------------|-----------|---------------------------------------------------------------------------------|-------------|
+| enable          | Switch    | Enable status of the network                                                    | Read, Write |
+| totalClients    | Number    | Total number of clients connected                                               | Read        |
+| site            | String    | UniFi Site the client is associated with                                        | Read        |
+| purpose         | String    | Purpose of the network (e.g. Corporate, Guest, WAN, VPN, VLAN Only)             | Read        |
 
 ## Rule Actions
 
