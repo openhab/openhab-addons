@@ -14,6 +14,11 @@ package org.openhab.binding.sedif.internal.factory;
 
 import static org.openhab.binding.sedif.internal.constants.SedifBindingConstants.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sedif.internal.dto.ContractDetail;
@@ -39,9 +44,12 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 
 /**
  * The {@link SedifHandlerFactory} is responsible for creating things handlers.
@@ -51,12 +59,21 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 @Component(immediate = true, service = ThingHandlerFactory.class, configurationPid = "binding.sedif")
 public class SedifHandlerFactory extends BaseThingHandlerFactory {
+    private final Logger logger = LoggerFactory.getLogger(SedifHandlerFactory.class);
+
     private final HttpClientFactory httpClientFactory;
     private final OAuthFactory oAuthFactory;
     private final HttpService httpService;
     private final ThingRegistry thingRegistry;
     private final ComponentContext componentContext;
     private final TimeZoneProvider timeZoneProvider;
+
+    private static final DateTimeFormatter SEDIF_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
+    private static final DateTimeFormatter SEDIF_LOCALDATE_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
+    private static final DateTimeFormatter SEDIF_LOCALDATETIME_FORMATTER = DateTimeFormatter
+            .ofPattern("uuuu-MM-dd' 'HH:mm:ss");
+    // new DateTimeFormatterBuilder()
+    // .appendPattern("\"uuuu-MM-dd[' ']HH:mm:ss\"").toFormatter();
 
     private @Nullable Gson gson = null;
 
@@ -80,7 +97,17 @@ public class SedifHandlerFactory extends BaseThingHandlerFactory {
         adapter.registerSubtype(ContractDetail.class, "compteInfo", "ContractDetail");
         adapter.registerSubtype(MeterReading.class, "data", "Datas");
 
-        gson = new GsonBuilder().registerTypeAdapterFactory(adapter).create();
+        gson = new GsonBuilder().registerTypeAdapterFactory(adapter)
+                .registerTypeAdapter(ZonedDateTime.class,
+                        (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
+                                .parse(json.getAsJsonPrimitive().getAsString(), SEDIF_FORMATTER))
+                .registerTypeAdapter(LocalDate.class,
+                        (JsonDeserializer<LocalDate>) (json, type, jsonDeserializationContext) -> LocalDate
+                                .parse(json.getAsJsonPrimitive().getAsString(), SEDIF_LOCALDATE_FORMATTER))
+                .registerTypeAdapter(LocalDateTime.class,
+                        (JsonDeserializer<LocalDateTime>) (json, type, jsonDeserializationContext) -> LocalDateTime
+                                .parse(json.getAsJsonPrimitive().getAsString(), SEDIF_LOCALDATETIME_FORMATTER))
+                .create();
     }
 
     @Override

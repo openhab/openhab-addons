@@ -1,7 +1,6 @@
 package org.openhab.binding.sedif.internal.dto;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -14,7 +13,7 @@ public class MeterReading extends Value {
             public float consommation;
 
             @SerializedName("DATE_INDEX")
-            public String dateIndex;
+            public LocalDateTime dateIndex;
 
             @SerializedName("DEBIT_PERMANENT")
             public String debitPermanent;
@@ -30,7 +29,10 @@ public class MeterReading extends Value {
         }
 
         @SerializedName("CONSOMMATION")
-        public @Nullable List<Consommation> consommation = new ArrayList<Consommation>();
+        public @Nullable Consommation[] consommation;
+        public @Nullable Consommation[] weekConso;
+        public @Nullable Consommation[] monthConso;
+        public @Nullable Consommation[] yearConso;
 
         @SerializedName("CONSOMMATION_MAX")
         public float consommationMax;

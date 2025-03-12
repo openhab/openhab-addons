@@ -14,12 +14,16 @@ package org.openhab.binding.sedif.internal.handler;
 
 import static org.openhab.binding.sedif.internal.constants.SedifBindingConstants.*;
 
+import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.WeekFields;
+import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -75,7 +79,7 @@ public class ThingSedifHandler extends BaseThingHandler {
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
 
     private final ExpiringDayCache<ContractDetail> contractDetail;
-    private final ExpiringDayCache<MeterReading> dailyConsumption;
+    private final ExpiringDayCache<MeterReading> consumption;
 
     private @Nullable ScheduledFuture<?> pollingJob = null;
     protected SedifConfiguration config;
@@ -90,10 +94,11 @@ public class ThingSedifHandler extends BaseThingHandler {
                     return contractDetail;
                 });
 
-        this.dailyConsumption = new ExpiringDayCache<MeterReading>("dailyConsumption", REFRESH_HOUR_OF_DAY,
+        this.consumption = new ExpiringDayCache<MeterReading>("dailyConsumption", REFRESH_HOUR_OF_DAY,
                 REFRESH_MINUTE_OF_DAY, () -> {
                     LocalDate today = LocalDate.now();
                     MeterReading meterReading = getConsumptionData(today.minusDays(1095), today);
+                    meterReading = getMeterReadingAfterChecks(meterReading);
                     return meterReading;
                 });
 
@@ -219,13 +224,119 @@ public class ThingSedifHandler extends BaseThingHandler {
      * Request new daily/weekly data and updates channels
      */
     private synchronized void updateConsumptionData() {
-        dailyConsumption.getValue().ifPresentOrElse(values -> {
-            updateState(SEDIF_BASE_GROUP, CHANNEL_CONSUMPTION, new QuantityType<>(
-                    values.data.consommation.get(values.data.consommation.size() - 1).consommation, Units.LITRE));
+        consumption.getValue().ifPresentOrElse(values -> {
+
+            // ===========================
+            // Daily conso
+            // ===========================
+            double yesterdayConso = 0;
+            double dayConsoMinus2 = 0;
+            double dayConsoMinus3 = 0;
+
+            if (values.data.consommation.length - 1 >= 0) {
+                yesterdayConso = values.data.consommation[values.data.consommation.length - 1].consommation;
+            }
+            if (values.data.consommation.length - 2 >= 0) {
+                dayConsoMinus2 = values.data.consommation[values.data.consommation.length - 2].consommation;
+            }
+            if (values.data.consommation.length - 3 >= 0) {
+                dayConsoMinus3 = values.data.consommation[values.data.consommation.length - 3].consommation;
+            }
+            updateState(SEDIF_DAILY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
+                    new QuantityType<>(yesterdayConso, Units.LITRE));
+            updateState(SEDIF_DAILY_CONSUMPTION_GROUP, CHANNEL_DAILY_YESTERDAY_CONSUMPTION,
+                    new QuantityType<>(yesterdayConso, Units.LITRE));
+            updateState(SEDIF_DAILY_CONSUMPTION_GROUP, CHANNEL_DAILY_DAY_MINUS_2_CONSUMPTION,
+                    new QuantityType<>(dayConsoMinus2, Units.LITRE));
+            updateState(SEDIF_DAILY_CONSUMPTION_GROUP, CHANNEL_DAILY_DAY_MINUS_3_CONSUMPTION,
+                    new QuantityType<>(dayConsoMinus3, Units.LITRE));
+
+            // ===========================
+            // Week conso
+            // ===========================
+            double thisWeekConso = 0;
+            double lastWeekConso = 0;
+            double weekConsoMinus2 = 0;
+
+            if (values.data.weekConso.length - 1 >= 0) {
+                thisWeekConso = values.data.weekConso[values.data.weekConso.length - 1].consommation;
+            }
+            if (values.data.weekConso.length - 2 >= 0) {
+                lastWeekConso = values.data.weekConso[values.data.weekConso.length - 2].consommation;
+            }
+            if (values.data.weekConso.length - 3 >= 0) {
+                weekConsoMinus2 = values.data.weekConso[values.data.weekConso.length - 3].consommation;
+            }
+            updateState(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
+                    new QuantityType<>(thisWeekConso, Units.LITRE));
+            updateState(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_WEEKLY_THIS_WEEK_CONSUMPTION,
+                    new QuantityType<>(thisWeekConso, Units.LITRE));
+            updateState(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_WEEKLY_LAST_WEEK_CONSUMPTION,
+                    new QuantityType<>(lastWeekConso, Units.LITRE));
+            updateState(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_WEEKLY_WEEK_MINUS_2_CONSUMPTION,
+                    new QuantityType<>(weekConsoMinus2, Units.LITRE));
+
+            // ===========================
+            // Month conso
+            // ===========================
+            double thisMonthConso = 0;
+            double lastMonthConso = 0;
+            double monthConsoMinus2 = 0;
+
+            if (values.data.monthConso.length - 1 >= 0) {
+                thisMonthConso = values.data.monthConso[values.data.monthConso.length - 1].consommation;
+            }
+            if (values.data.monthConso.length - 2 >= 0) {
+                lastMonthConso = values.data.monthConso[values.data.monthConso.length - 2].consommation;
+            }
+            if (values.data.monthConso.length - 3 >= 0) {
+                monthConsoMinus2 = values.data.monthConso[values.data.monthConso.length - 3].consommation;
+            }
+
+            updateState(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
+                    new QuantityType<>(thisMonthConso, Units.LITRE));
+            updateState(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_MONTHLY_THIS_MONTH_CONSUMPTION,
+                    new QuantityType<>(thisMonthConso, Units.LITRE));
+            updateState(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_MONTHLY_LAST_MONTH_CONSUMPTION,
+                    new QuantityType<>(lastMonthConso, Units.LITRE));
+            updateState(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_MONTHLY_MONTH_MINUS_2_CONSUMPTION,
+                    new QuantityType<>(monthConsoMinus2, Units.LITRE));
+
+            // ===========================
+            // Year conso
+            // ===========================
+            double thisYearConso = 0;
+            double lastYearConso = 0;
+            double yearConsoMinus2 = 0;
+
+            if (values.data.yearConso.length - 1 >= 0) {
+                thisYearConso = values.data.yearConso[values.data.yearConso.length - 1].consommation;
+            }
+            if (values.data.yearConso.length - 2 >= 0) {
+                lastYearConso = values.data.yearConso[values.data.yearConso.length - 2].consommation;
+            }
+            if (values.data.yearConso.length - 3 >= 0) {
+                yearConsoMinus2 = values.data.yearConso[values.data.yearConso.length - 3].consommation;
+            }
+
+            updateState(SEDIF_YEARLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION,
+                    new QuantityType<>(thisYearConso, Units.LITRE));
+            updateState(SEDIF_YEARLY_CONSUMPTION_GROUP, CHANNEL_YEARLY_THIS_YEAR_CONSUMPTION,
+                    new QuantityType<>(thisYearConso, Units.LITRE));
+            updateState(SEDIF_YEARLY_CONSUMPTION_GROUP, CHANNEL_YEARLY_LAST_YEAR_CONSUMPTION,
+                    new QuantityType<>(lastYearConso, Units.LITRE));
+            updateState(SEDIF_YEARLY_CONSUMPTION_GROUP, CHANNEL_YEARLY_YEAR_MINUS_2_CONSUMPTION,
+                    new QuantityType<>(yearConsoMinus2, Units.LITRE));
 
             updateState(SEDIF_BASE_GROUP, CHANNEL_PRIX_MOYEN_EAU, new DecimalType(values.prixMoyenEau));
 
-            updateConsumptionTimeSeries(SEDIF_BASE_GROUP, CHANNEL_CONSUMPTION, values);
+            updateConsumptionTimeSeries(SEDIF_DAILY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION, values.data.consommation);
+            updateConsumptionTimeSeries(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION, values.data.weekConso);
+            updateConsumptionTimeSeries(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION, values.data.monthConso);
+            updateConsumptionTimeSeries(SEDIF_YEARLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION, values.data.yearConso);
+
+            logger.debug("end");
+
         }, () -> {
             updateState(SEDIF_BASE_GROUP, CHANNEL_CONSUMPTION, new QuantityType<>(0.00, Units.LITRE));
         });
@@ -323,16 +434,20 @@ public class ThingSedifHandler extends BaseThingHandler {
         super.sendTimeSeries(groupId + "#" + channelID, timeSeries);
     }
 
-    private synchronized void updateConsumptionTimeSeries(String groupId, String channelId, MeterReading meterReading) {
+    private synchronized void updateConsumptionTimeSeries(String groupId, String channelId, Consommation[] consoTab) {
         TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
 
-        for (int i = 0; i < meterReading.data.consommation.size(); i++) {
+        for (int i = 0; i < consoTab.length; i++) {
 
-            Consommation conso = meterReading.data.consommation.get(i);
-            String date = conso.dateIndex;
+            Consommation conso = consoTab[i];
+            LocalDateTime dt = conso.dateIndex;
             float consommation = conso.consommation;
 
-            LocalDateTime dt = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            if (dt == null) {
+                // dt can be null if we have no value in initial container day for this month !
+                continue;
+            }
+
             Instant timestamp = dt.toInstant(ZoneOffset.UTC);
 
             if (Double.isNaN(consommation)) {
@@ -342,6 +457,102 @@ public class ThingSedifHandler extends BaseThingHandler {
         }
 
         sendTimeSeries(groupId, channelId, timeSeries);
+    }
+
+    private @Nullable MeterReading getMeterReadingAfterChecks(@Nullable MeterReading meterReading) {
+        try {
+            checkData(meterReading);
+        } catch (SedifException e) {
+            logger.debug("Consumption data: {}", e.getMessage());
+            return null;
+        }
+
+        if (meterReading != null) {
+            if (meterReading.data.weekConso == null) {
+                LocalDate startDate = meterReading.data.consommation[0].dateIndex.toLocalDate();
+                LocalDate endDate = meterReading.data.consommation[meterReading.data.consommation.length - 1].dateIndex
+                        .toLocalDate();
+
+                startDate = startDate.atStartOfDay().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)).toLocalDate();
+                endDate = endDate.atStartOfDay().with(TemporalAdjusters.next(DayOfWeek.SUNDAY)).toLocalDate();
+
+                int startWeek = startDate.get(WeekFields.of(Locale.FRANCE).weekOfYear());
+                int endWeek = endDate.get(WeekFields.of(Locale.FRANCE).weekOfYear());
+
+                int yearsNum = endDate.getYear() - startDate.getYear() + 1;
+                int monthsNum = (endDate.getYear() - startDate.getYear()) * 12 + endDate.getMonthValue()
+                        - startDate.getMonthValue() + 1;
+
+                int weeksNum = (endDate.getYear() - startDate.getYear()) * 52 + endWeek - startWeek + 1;
+
+                meterReading.data.weekConso = new Consommation[weeksNum];
+                meterReading.data.monthConso = new Consommation[monthsNum];
+                meterReading.data.yearConso = new Consommation[yearsNum];
+
+                for (int idx = 0; idx < weeksNum; idx++) {
+                    meterReading.data.weekConso[idx] = meterReading.data.new Consommation();
+                }
+                for (int idx = 0; idx < monthsNum; idx++) {
+                    meterReading.data.monthConso[idx] = meterReading.data.new Consommation();
+                }
+                for (int idx = 0; idx < yearsNum; idx++) {
+                    meterReading.data.yearConso[idx] = meterReading.data.new Consommation();
+                }
+
+                int size = meterReading.data.consommation.length;
+
+                logger.debug("");
+
+                for (int idx = 0; idx < size; idx++) {
+                    Consommation cons = meterReading.data.consommation[idx];
+                    LocalDateTime dt = cons.dateIndex;
+                    double value = cons.consommation;
+
+                    int idxYear = dt.getYear() - startDate.getYear();
+                    int idxMonth = (dt.getYear() - startDate.getYear()) * 12 + dt.getMonthValue()
+                            - startDate.getMonthValue();
+
+                    int dtWeek = dt.get(WeekFields.of(Locale.FRANCE).weekOfYear());
+
+                    int idxWeek = (dt.getYear() - startDate.getYear()) * 52 + dtWeek - startWeek;
+                    int month = dt.getMonthValue();
+
+                    if (idxWeek < weeksNum) {
+                        meterReading.data.weekConso[idxWeek].consommation += value;
+                        if (meterReading.data.weekConso[idxWeek].dateIndex == null) {
+                            meterReading.data.weekConso[idxWeek].dateIndex = dt;
+                        }
+                    }
+                    if (idxMonth < monthsNum) {
+                        meterReading.data.monthConso[idxMonth].consommation += value;
+                        if (meterReading.data.monthConso[idxMonth].dateIndex == null) {
+                            meterReading.data.monthConso[idxMonth].dateIndex = LocalDateTime.of(dt.getYear(), month, 1,
+                                    0, 0);
+                        }
+                    }
+
+                    if (idxYear < yearsNum) {
+                        meterReading.data.yearConso[idxYear].consommation += value;
+                        if (meterReading.data.yearConso[idxYear].dateIndex == null) {
+                            meterReading.data.yearConso[idxYear].dateIndex = LocalDateTime.of(dt.getYear(), 1, 1, 0, 0);
+                        }
+                    }
+                }
+
+            }
+        }
+
+        return meterReading;
+    }
+
+    private void checkData(@Nullable MeterReading meterReading) throws SedifException {
+        if (meterReading != null) {
+            if (meterReading.data.consommation.length == 0) {
+                throw new SedifException("Invalid meterReading data: no day period");
+            }
+        } else {
+            throw new SedifException("Invalid meterReading == null");
+        }
     }
 
 }
