@@ -183,7 +183,11 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     }
 
     private void startConsole(Console console, Session session, String[] args) {
-        final String script = args.length > 0 ? args[0] : jRubyScriptEngineFactory.getConfiguration().getConsole();
+        String script = jRubyScriptEngineFactory.getConfiguration().getConsole();
+        if (args.length > 0 && !args[0].startsWith("-")) {
+            script = args[0];
+            args = Arrays.copyOfRange(args, 1, args.length);
+        }
 
         if (script == null || script.isBlank()) {
             console.println(
@@ -193,12 +197,13 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         }
 
         final String consoleScript = script.contains("/") ? script : "openhab/console/" + script;
+        final String[] argv = args;
 
         logger.debug("Starting JRuby console with script: {}", consoleScript);
 
         executeWithFullJRuby(console, engine -> {
             engine.put("$terminal", session.getTerminal());
-            engine.put(ScriptEngine.ARGV, Arrays.copyOfRange(args, 1, args.length));
+            engine.put(ScriptEngine.ARGV, argv);
             engine.eval(String.format("require '%s'", consoleScript));
             return null;
         });
@@ -352,7 +357,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     private List<String> getUsages() {
         return Arrays.asList( //
                 buildCommandUsage(INFO, "displays information about JRuby Scripting add-on"), //
-                buildCommandUsage(CONSOLE + " [script [arguments]]", "starts an interactive JRuby console"), //
+                buildCommandUsage(CONSOLE + " [script] [options]", "starts an interactive JRuby console"), //
                 buildCommandUsage(GEM + " [arguments]", "manages JRuby Scripting add-on's RubyGems"), //
                 buildCommandUsage(UPDATE, "updates the configured gems"), //
                 buildCommandUsage(PRUNE + " [-f|--force]", "cleans up older versions in the .gem directory") //
