@@ -30,8 +30,6 @@ import org.openhab.binding.sedif.internal.config.SedifConfiguration;
 import org.openhab.binding.sedif.internal.constants.SedifBindingConstants;
 import org.openhab.binding.sedif.internal.dto.AuraContext;
 import org.openhab.binding.sedif.internal.dto.AuraResponse;
-import org.openhab.binding.sedif.internal.dto.ContractDetail;
-import org.openhab.binding.sedif.internal.dto.ContractDetail.CompteInfo;
 import org.openhab.binding.sedif.internal.dto.Contracts;
 import org.openhab.binding.sedif.internal.dto.Event;
 import org.openhab.binding.sedif.internal.types.SedifException;
@@ -248,16 +246,6 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
             Contracts contracts = sedifApi.getContracts();
             if (contracts != null && contracts.contrats != null) {
                 contractId = contracts.contrats.get(1).Id;
-            }
-
-            // =====================================================================
-            ContractDetail contractDetail = sedifApi.getContractDetails();
-            if (contractDetail != null) {
-                List<CompteInfo> listCompteInfo = contractDetail.compteInfo;
-                if (listCompteInfo != null) {
-                    meterIdB = listCompteInfo.get(0).ELEMB;
-                    meterIdA = listCompteInfo.get(0).ELEMA;
-                }
             }
 
             connected = true;

@@ -29,6 +29,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sedif.internal.api.ExpiringDayCache;
 import org.openhab.binding.sedif.internal.api.SedifHttpApi;
 import org.openhab.binding.sedif.internal.config.SedifConfiguration;
+import org.openhab.binding.sedif.internal.dto.ContractDetail;
+import org.openhab.binding.sedif.internal.dto.ContractDetail.CompteInfo;
 import org.openhab.binding.sedif.internal.dto.MeterReading;
 import org.openhab.binding.sedif.internal.dto.MeterReading.Data.Consommation;
 import org.openhab.binding.sedif.internal.types.SedifException;
@@ -36,6 +38,7 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -71,6 +74,7 @@ public class ThingSedifHandler extends BaseThingHandler {
     private static final int REFRESH_MINUTE_OF_DAY = RANDOM_NUMBERS.nextInt(60);
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
 
+    private final ExpiringDayCache<ContractDetail> contractDetail;
     private final ExpiringDayCache<MeterReading> dailyConsumption;
 
     private @Nullable ScheduledFuture<?> pollingJob = null;
@@ -78,6 +82,13 @@ public class ThingSedifHandler extends BaseThingHandler {
 
     public ThingSedifHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider) {
         super(thing);
+
+        this.contractDetail = new ExpiringDayCache<ContractDetail>("contractDetail", REFRESH_HOUR_OF_DAY,
+                REFRESH_MINUTE_OF_DAY, () -> {
+                    LocalDate today = LocalDate.now();
+                    ContractDetail contractDetail = getContractDetail();
+                    return contractDetail;
+                });
 
         this.dailyConsumption = new ExpiringDayCache<MeterReading>("dailyConsumption", REFRESH_HOUR_OF_DAY,
                 REFRESH_MINUTE_OF_DAY, () -> {
@@ -123,8 +134,85 @@ public class ThingSedifHandler extends BaseThingHandler {
      * Request new data and updates channels
      */
     private synchronized void updateData() {
+
+        logger.info("updateContractDetail() called");
+        updateContractDetail();
+
         logger.info("updateEnergyData() called");
         updateConsumptionData();
+    }
+
+    /**
+     * Request new daily/weekly data and updates channels
+     */
+    private synchronized void updateContractDetail() {
+        contractDetail.getValue().ifPresentOrElse(values -> {
+
+            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_AUTORITE_ORGANISATRICE,
+                    new StringType(values.contrat.AutoriteOrganisatrice));
+            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_DATE_SORTIE_EPT, new StringType(values.contrat.DateSortieEPT));
+            // updateState(SEDIF_CONTRAT_GROUP, CHANNEL_EFACTURE, OnOffType.valueOf("" + values.contrat.eFacture));
+            // updateState(SEDIF_CONTRAT_GROUP, CHANNEL_ICL_ACTIVE, OnOffType.valueOf("" + values.contrat.iclActive));
+            // updateState(SEDIF_CONTRAT_GROUP, CHANNEL_PRELEVAUTO, OnOffType.valueOf("" + values.contrat.prelevAuto));
+            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_NAME, new StringType(values.contrat.Name));
+            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_STREET, new StringType(values.contrat.SITE_Rue));
+            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_CP, new StringType(values.contrat.SITE_CP));
+            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_TOWN, new StringType(values.contrat.SITE_Commune));
+            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_STATE, new StringType(values.contrat.Statut));
+            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_SOLDE, new DecimalType(values.solde));
+
+            CompteInfo comptInfo = values.compteInfo.get(0);
+            updateState(SEDIF_CONTRAT_METER_GROUP, CHANNEL_ELMA, new StringType(comptInfo.ELEMA));
+            updateState(SEDIF_CONTRAT_METER_GROUP, CHANNEL_ELMB, new StringType(comptInfo.ELEMB));
+            updateState(SEDIF_CONTRAT_METER_GROUP, CHANNEL_ID_PDS, new StringType(comptInfo.ID_PDS));
+            updateState(SEDIF_CONTRAT_METER_GROUP, CHANNEL_NUM_METER, new StringType(comptInfo.NUM_COMPTEUR));
+
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_BILLING_CITY,
+                    new StringType(values.contratClient.BillingCity));
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_BILLING_POSTAL_CODE,
+                    new StringType(values.contratClient.BillingPostalCode));
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_BILLING_STREET,
+                    new StringType(values.contratClient.BillingStreet));
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_FIRST_NAME,
+                    new StringType(values.contratClient.FirstName));
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_LAST_NAME,
+                    new StringType(values.contratClient.LastName));
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_NAME_SUP,
+                    new StringType(values.contratClient.Name));
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_EMAIL, new StringType(values.contratClient.Email));
+            // updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_GC,
+            // OnOffType.valueOf("" + values.contratClient.GC));
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_MOBILE_PHONE,
+                    new StringType(values.contratClient.MobilePhone));
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_SALUTATION,
+                    new StringType(values.contratClient.Salutation));
+            // updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT__VEROUILLAGE_FICHE,
+            // OnOffType.valueOf("" + values.contratClient.VerrouillageFiche));
+
+            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_BILLING_CITY,
+                    new StringType(values.payeurClient.BillingCity));
+            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_BILLING_POSTAL_CODE,
+                    new StringType(values.payeurClient.BillingPostalCode));
+            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_BILLING_STREET,
+                    new StringType(values.payeurClient.BillingStreet));
+            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_FIRST_NAME,
+                    new StringType(values.payeurClient.FirstName));
+            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_LAST_NAME,
+                    new StringType(values.payeurClient.LastName));
+            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_NAME_SUP, new StringType(values.payeurClient.Name));
+            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_EMAIL, new StringType(values.payeurClient.Email));
+            // updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_GC, OnOffType.valueOf("" +
+            // values.payeurClient.GC));
+            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_MOBILE_PHONE,
+                    new StringType(values.payeurClient.MobilePhone));
+            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_SALUTATION,
+                    new StringType(values.payeurClient.Salutation));
+            // updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_VEROUILLAGE_FICHE,
+            // OnOffType.valueOf("" + values.payeurClient.VerrouillageFiche));
+
+        }, () -> {
+            updateState(SEDIF_BASE_GROUP, CHANNEL_CONSUMPTION, new QuantityType<>(0.00, Units.LITRE));
+        });
     }
 
     /**
@@ -139,6 +227,21 @@ public class ThingSedifHandler extends BaseThingHandler {
         }, () -> {
             updateState(SEDIF_BASE_GROUP, CHANNEL_CONSUMPTION, new QuantityType<>(0.00, Units.LITRE));
         });
+    }
+
+    private @Nullable ContractDetail getContractDetail() {
+        SedifHttpApi api = this.sedifApi;
+        if (api != null) {
+            try {
+                ContractDetail contractDetail = api.getContractDetails();
+                return contractDetail;
+            } catch (Exception e) {
+                logger.debug("Exception when getting consumption data for : {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            }
+        }
+
+        return null;
     }
 
     private @Nullable MeterReading getConsumptionData(LocalDate from, LocalDate to) {
