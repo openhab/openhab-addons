@@ -10,7 +10,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>LGThinQ Heat Pump</label>
+		<label>Heat Pump</label>
 		<description>LG ThinQ Heat Pump</description>
 
 		<channel-groups>

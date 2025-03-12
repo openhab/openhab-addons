@@ -10,7 +10,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>LGThinQ Dryer</label>
+		<label>Dryer</label>
 		<description>LG ThinQ Dryer</description>
 		<channel-groups>
 			<channel-group id="dashboard" typeId="dr-dashboard"/>
