@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridge">
-		<label>LGThinQ GW Bridge</label>
-		<description>A connection to a LGThinQ Gateway</description>
+		<label>LG ThinQ Gateway</label>
+		<description>A connection to a LG ThinQ Gateway</description>
 
 		<config-description>
 			<parameter name="language" type="text" required="true">
@@ -69,6 +69,7 @@
 				<default>86400</default>
 			</parameter>
 			<parameter name="alternativeServer" type="text">
+				<advanced>true</advanced>
 				<label>Alt Gateway Server</label>
 				<description>Only used for proxy/test gateway server.</description>
 			</parameter>

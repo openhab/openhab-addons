@@ -23,7 +23,7 @@
 	<channel-type id="hp-air-water-switch">
 		<item-type>Number</item-type>
 		<label>Air/Water</label>
-		<description>Define the Temperature Selector based on Water/Air.</description>
+		<description>Define the temperature selector based on water or air.</description>
 		<state readOnly="true">
 			<options>
 				<option value="0.0">Air Temperature</option>
