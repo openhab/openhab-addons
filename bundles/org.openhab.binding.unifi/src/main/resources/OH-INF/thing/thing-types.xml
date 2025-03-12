@@ -522,6 +522,7 @@
 				<option value="guest">Guest</option>
 				<option value="remote-user-vpn">VPN</option>
 				<option value="wan">WAN</option>
+				<option value="vlan-only">VLAN Only</option>
 			</options>
 		</state>
 	</channel-type>
