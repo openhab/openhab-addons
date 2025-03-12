@@ -10,7 +10,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>LGThinQ Dish Washer</label>
+		<label>Dish Washer</label>
 		<description>LG ThinQ Dish Washer</description>
 		<channel-groups>
 			<channel-group id="dashboard" typeId="dw-dashboard"/>
