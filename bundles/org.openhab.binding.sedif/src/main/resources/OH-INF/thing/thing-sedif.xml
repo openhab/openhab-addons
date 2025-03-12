@@ -18,6 +18,10 @@
 
 		<channel-groups>
 			<channel-group typeId="sedif-base" id="sedif-base"/>
+			<channel-group typeId="sedif-contrat" id="sedif-contrat"/>
+			<channel-group typeId="sedif-contrat-client" id="sedif-contrat-client"/>
+			<channel-group typeId="sedif-contrat-payer" id="sedif-contrat-payer"/>
+			<channel-group typeId="sedif-contrat-meter" id="sedif-contrat-meter"/>
 
 		</channel-groups>
 
