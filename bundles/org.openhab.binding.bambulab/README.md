@@ -99,9 +99,9 @@ Use `us.mqtt.bambulab.com` as the hostname.
 
 ## Full Example
 
-### Thing Configuration
+### `bambulab.things` Example
 
-```
+```java
 Thing bambulab:printer:myprinter "My BambuLab Printer" @ "3D Printing Area" [
     serial="ABC123456789",
     hostname="192.168.1.100",
