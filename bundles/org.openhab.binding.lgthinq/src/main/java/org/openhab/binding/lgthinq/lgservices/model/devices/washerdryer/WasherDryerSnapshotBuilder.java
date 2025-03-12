@@ -94,9 +94,9 @@ public class WasherDryerSnapshotBuilder extends DefaultSnapshotBuilder<WasherDry
 
     private static void setAltCourseNodeName(CapabilityDefinition capDef, WasherDryerSnapshot snap,
             Map<String, Object> washerDryerMap) {
-        if (snap.getCourse().isEmpty() && capDef instanceof WasherDryerCapability) {
-            String altCourseNodeName = ((WasherDryerCapability) capDef).getDefaultCourseFieldName();
-            String altSmartCourseNodeName = ((WasherDryerCapability) capDef).getDefaultSmartCourseFeatName();
+        if (snap.getCourse().isEmpty() && capDef instanceof WasherDryerCapability capability) {
+            String altCourseNodeName = capability.getDefaultCourseFieldName();
+            String altSmartCourseNodeName = capability.getDefaultSmartCourseFeatName();
             snap.setCourse(Objects.requireNonNullElse((String) washerDryerMap.get(altCourseNodeName), ""));
             snap.setSmartCourse(Objects.requireNonNullElse((String) washerDryerMap.get(altSmartCourseNodeName), ""));
         }
