@@ -105,7 +105,7 @@ public class ThingSedifHandler extends BaseThingHandler {
         sedifApi = bridgeHandler.getSedifApi();
 
         if (!config.seemsValid()) {
-            pollingJob = scheduler.schedule(this::pollingCode, 2, TimeUnit.SECONDS);
+            pollingJob = scheduler.schedule(this::pollingCode, 5, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error-mandatory-settings");
