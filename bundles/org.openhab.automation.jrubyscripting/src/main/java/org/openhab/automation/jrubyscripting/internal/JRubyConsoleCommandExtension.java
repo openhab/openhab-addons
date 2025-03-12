@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -182,11 +183,36 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         });
     }
 
+    private Map<String, String> getConsoles() {
+        return (Map<String, String>) executeWithPlainJRuby(null, engine -> {
+            return engine.eval("require 'openhab/console/registry'; OpenHAB::Console::REGISTRY.transform_keys(&:to_s)");
+        });
+    }
+
     private void startConsole(Console console, Session session, String[] args) {
         String script = jRubyScriptEngineFactory.getConfiguration().getConsole();
-        if (args.length > 0 && !args[0].startsWith("-")) {
-            script = args[0];
-            args = Arrays.copyOfRange(args, 1, args.length);
+        if (args.length > 0) {
+            if ("--list".equals(args[0])) {
+                Map<String, String> consoles = (Map<String, String>) getConsoles();
+                if (consoles == null) {
+                    console.println("No console scripts available. Please install the JRuby helper library gem.");
+                } else {
+                    console.println("Available console scripts:");
+                    String defaultConsole = jRubyScriptEngineFactory.getConfiguration().getConsole();
+                    consoles.forEach((name, description) -> {
+                        if (defaultConsole.endsWith(name)) {
+                            description = description + " (default)";
+                        }
+                        console.println("  " + name + " - " + description);
+                    });
+                }
+                return;
+            }
+
+            if (!args[0].startsWith("-")) {
+                script = args[0];
+                args = Arrays.copyOfRange(args, 1, args.length);
+            }
         }
 
         if (script == null || script.isBlank()) {
@@ -344,12 +370,16 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     /*
      * Create a plain JRuby script engine without loading the helper library.
      */
-    private @Nullable Object executeWithPlainJRuby(Console console, EngineEvalFunction process) {
+    private @Nullable Object executeWithPlainJRuby(@Nullable Console console, EngineEvalFunction process) {
         ScriptEngine engine = jRubyScriptEngineFactory.createScriptEngine(scriptType);
         try {
             return process.apply(engine);
         } catch (ScriptException e) {
-            console.println("Error: " + e.getMessage());
+            if (console != null) {
+                console.println("Error: " + e.getMessage());
+            } else {
+                logger.error("Error: {}", e.getMessage());
+            }
             return null;
         }
     }
@@ -357,7 +387,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     private List<String> getUsages() {
         return Arrays.asList( //
                 buildCommandUsage(INFO, "displays information about JRuby Scripting add-on"), //
-                buildCommandUsage(CONSOLE + " [script] [options]", "starts an interactive JRuby console"), //
+                buildCommandUsage(CONSOLE + " [--list] | [script] [options]", "starts an interactive JRuby console"), //
                 buildCommandUsage(GEM + " [arguments]", "manages JRuby Scripting add-on's RubyGems"), //
                 buildCommandUsage(UPDATE, "updates the configured gems"), //
                 buildCommandUsage(PRUNE + " [-f|--force]", "cleans up older versions in the .gem directory") //
@@ -393,6 +423,13 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
             strings.add(globalCommand);
         } else if (cursorArgumentIndex == 1) {
             strings.addAll(SUB_COMMANDS);
+        } else if (cursorArgumentIndex == 2) {
+            if (CONSOLE.equals(args[1])) {
+                Map<String, String> consoles = (Map<String, String>) getConsoles();
+                if (consoles != null) {
+                    strings.addAll(consoles.keySet());
+                }
+            }
         }
 
         if (!strings.isEmpty() && completer.complete(args, cursorArgumentIndex, cursorPosition, candidates)) {
