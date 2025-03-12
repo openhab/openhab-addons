@@ -10,7 +10,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>LGThinQ Fridge</label>
+		<label>Fridge</label>
 		<description>LG ThinQ Fridge</description>
 
 		<channel-groups>
