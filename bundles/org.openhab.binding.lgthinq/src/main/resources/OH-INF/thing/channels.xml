@@ -70,6 +70,7 @@
 		<label>Auto Dry</label>
 		<category>Switch</category>
 	</channel-type>
+
 	<channel-type id="energy-saving">
 		<item-type>Switch</item-type>
 		<label>Energy Saving</label>
