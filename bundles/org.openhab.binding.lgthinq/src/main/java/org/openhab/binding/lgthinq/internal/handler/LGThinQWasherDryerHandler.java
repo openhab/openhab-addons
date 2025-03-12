@@ -388,8 +388,8 @@ public class LGThinQWasherDryerHandler
         simpleChannelUID = getSimpleChannelUID(params.channelUID);
         switch (simpleChannelUID) {
             case CHANNEL_WMD_REMOTE_START_START_STOP: {
-                if (command instanceof OnOffType) {
-                    if (OnOffType.ON.equals(command)) {
+                if (command instanceof OnOffType ooCmd) {
+                    if (ooCmd == OnOffType.ON) {
                         if (!lastShot.isStandBy()) {
                             lgThinqWMApiClientService.remoteStart(getBridgeId(), getCapabilities(), getDeviceId(),
                                     getRemoteStartData());
@@ -406,8 +406,8 @@ public class LGThinQWasherDryerHandler
                 break;
             }
             case CHANNEL_WMD_STAND_BY_ID: {
-                if (command instanceof OnOffType) {
-                    lgThinqWMApiClientService.wakeUp(getBridgeId(), getDeviceId(), OnOffType.ON.equals(command));
+                if (command instanceof OnOffType ooCmd) {
+                    lgThinqWMApiClientService.wakeUp(getBridgeId(), getDeviceId(), ooCmd == OnOffType.ON);
                 } else {
                     logger.warn("Received command different of OnOffType in StandBy Channel. Ignoring");
                 }

@@ -47,7 +47,8 @@
 			<parameter name="pollExtraInfoOnPowerOff" type="boolean" required="true" groupName="Settings">
 				<label>Extra Info</label>
 				<description>If enables, extra info will be fetched even when the device is powered off.
-					It's not so common, since extra info are normally changed only when the device is running.
+					It's not so common, since
+					extra info are normally changed only when the device is running.
 				</description>
 				<default>false</default>
 			</parameter>

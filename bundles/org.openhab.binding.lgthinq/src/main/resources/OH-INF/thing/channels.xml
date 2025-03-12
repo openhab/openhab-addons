@@ -199,7 +199,6 @@
 		<item-type>String</item-type>
 		<label>Remaining Time</label>
 		<description>Remaining Time</description>
-		<!-- TODO: change this to String. -->
 		<state readOnly="true"/>
 	</channel-type>
 

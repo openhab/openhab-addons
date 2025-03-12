@@ -69,10 +69,10 @@ public class LGThinQWMApiV2ClientServiceImpl
             data.remove("SmartCourse");
             for (Map.Entry<String, Object> value : data.entrySet()) {
                 Object v = value.getValue();
-                if (v instanceof Double) {
-                    nodeData.put(value.getKey(), (Double) v);
-                } else if (v instanceof Integer) {
-                    nodeData.put(value.getKey(), (Integer) v);
+                if (v instanceof Double d) {
+                    nodeData.put(value.getKey(), d);
+                } else if (v instanceof Integer i) {
+                    nodeData.put(value.getKey(), i);
                 } else {
                     nodeData.put(value.getKey(), value.getValue().toString());
                 }

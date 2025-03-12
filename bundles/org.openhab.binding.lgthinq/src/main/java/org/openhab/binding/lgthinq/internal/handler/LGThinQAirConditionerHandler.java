@@ -331,54 +331,52 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
         Command command = params.command;
         switch (getSimpleChannelUID(params.channelUID)) {
             case CHANNEL_AC_MOD_OP_ID: {
-                if (params.command instanceof DecimalType) {
-                    lgThinqACApiClientService.changeOperationMode(getBridgeId(), getDeviceId(),
-                            ((DecimalType) command).intValue());
+                if (params.command instanceof DecimalType dtCmd) {
+                    lgThinqACApiClientService.changeOperationMode(getBridgeId(), getDeviceId(), dtCmd.intValue());
                 } else {
                     logger.warn("Received command different of Numeric in Mod Operation. Ignoring");
                 }
                 break;
             }
             case CHANNEL_AC_FAN_SPEED_ID: {
-                if (command instanceof DecimalType) {
-                    lgThinqACApiClientService.changeFanSpeed(getBridgeId(), getDeviceId(),
-                            ((DecimalType) command).intValue());
+                if (command instanceof DecimalType dtCmd) {
+                    lgThinqACApiClientService.changeFanSpeed(getBridgeId(), getDeviceId(), dtCmd.intValue());
                 } else {
                     logger.warn("Received command different of Numeric in FanSpeed Channel. Ignoring");
                 }
                 break;
             }
             case CHANNEL_AC_STEP_UP_DOWN_ID: {
-                if (command instanceof DecimalType) {
+                if (command instanceof DecimalType dtCmd) {
                     lgThinqACApiClientService.changeStepUpDown(getBridgeId(), getDeviceId(), getLastShot(),
-                            ((DecimalType) command).intValue());
+                            dtCmd.intValue());
                 } else {
                     logger.warn("Received command different of Numeric in Step Up/Down Channel. Ignoring");
                 }
                 break;
             }
             case CHANNEL_AC_STEP_LEFT_RIGHT_ID: {
-                if (command instanceof DecimalType) {
+                if (command instanceof DecimalType dtCmd) {
                     lgThinqACApiClientService.changeStepLeftRight(getBridgeId(), getDeviceId(), getLastShot(),
-                            ((DecimalType) command).intValue());
+                            dtCmd.intValue());
                 } else {
                     logger.warn("Received command different of Numeric in Step Left/Right Channel. Ignoring");
                 }
                 break;
             }
             case CHANNEL_AC_POWER_ID: {
-                if (command instanceof OnOffType) {
+                if (command instanceof OnOffType ooCmd) {
                     lgThinqACApiClientService.turnDevicePower(getBridgeId(), getDeviceId(),
-                            command == OnOffType.ON ? DevicePowerState.DV_POWER_ON : DevicePowerState.DV_POWER_OFF);
+                            ooCmd == OnOffType.ON ? DevicePowerState.DV_POWER_ON : DevicePowerState.DV_POWER_OFF);
                 } else {
                     logger.warn("Received command different of OnOffType in Power Channel. Ignoring");
                 }
                 break;
             }
             case CHANNEL_AC_COOL_JET_ID: {
-                if (command instanceof OnOffType) {
+                if (command instanceof OnOffType ooCmd) {
                     lgThinqACApiClientService.turnCoolJetMode(getBridgeId(), getDeviceId(),
-                            command == OnOffType.ON ? getCapabilities().getCoolJetModeCommandOn()
+                            ooCmd == OnOffType.ON ? getCapabilities().getCoolJetModeCommandOn()
                                     : getCapabilities().getCoolJetModeCommandOff());
                 } else {
                     logger.warn("Received command different of OnOffType in CoolJet Mode Channel. Ignoring");
@@ -386,9 +384,9 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 break;
             }
             case CHANNEL_AC_AIR_CLEAN_ID: {
-                if (command instanceof OnOffType) {
+                if (command instanceof OnOffType ooCmd) {
                     lgThinqACApiClientService.turnAirCleanMode(getBridgeId(), getDeviceId(),
-                            command == OnOffType.ON ? getCapabilities().getAirCleanModeCommandOn()
+                            ooCmd == OnOffType.ON ? getCapabilities().getAirCleanModeCommandOn()
                                     : getCapabilities().getAirCleanModeCommandOff());
                 } else {
                     logger.warn("Received command different of OnOffType in AirClean Mode Channel. Ignoring");
@@ -396,9 +394,9 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 break;
             }
             case CHANNEL_AC_AUTO_DRY_ID: {
-                if (command instanceof OnOffType) {
+                if (command instanceof OnOffType ooCmd) {
                     lgThinqACApiClientService.turnAutoDryMode(getBridgeId(), getDeviceId(),
-                            command == OnOffType.ON ? getCapabilities().getAutoDryModeCommandOn()
+                            ooCmd == OnOffType.ON ? getCapabilities().getAutoDryModeCommandOn()
                                     : getCapabilities().getAutoDryModeCommandOff());
                 } else {
                     logger.warn("Received command different of OnOffType in AutoDry Mode Channel. Ignoring");
@@ -406,9 +404,9 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 break;
             }
             case CHANNEL_AC_ENERGY_SAVING_ID: {
-                if (command instanceof OnOffType) {
+                if (command instanceof OnOffType ooCmd) {
                     lgThinqACApiClientService.turnEnergySavingMode(getBridgeId(), getDeviceId(),
-                            command == OnOffType.ON ? getCapabilities().getEnergySavingModeCommandOn()
+                            ooCmd == OnOffType.ON ? getCapabilities().getEnergySavingModeCommandOn()
                                     : getCapabilities().getEnergySavingModeCommandOff());
                 } else {
                     logger.warn("Received command different of OnOffType in EvergySaving Mode Channel. Ignoring");
@@ -417,10 +415,10 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
             }
             case CHANNEL_AC_TARGET_TEMP_ID: {
                 double targetTemp;
-                if (command instanceof DecimalType) {
-                    targetTemp = ((DecimalType) command).doubleValue();
-                } else if (command instanceof QuantityType) {
-                    targetTemp = ((QuantityType<?>) command).doubleValue();
+                if (command instanceof DecimalType dtCmd) {
+                    targetTemp = dtCmd.doubleValue();
+                } else if (command instanceof QuantityType<?> qtCmd) {
+                    targetTemp = qtCmd.doubleValue();
                 } else {
                     logger.warn("Received command different of Numeric in TargetTemp Channel. Ignoring");
                     break;

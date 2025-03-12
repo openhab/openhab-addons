@@ -116,8 +116,8 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
         Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
                 token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
         ObjectNode payloadNode;
-        if (cmdPayload instanceof ObjectNode) {
-            payloadNode = ((ObjectNode) cmdPayload).deepCopy();
+        if (cmdPayload instanceof ObjectNode oNode) {
+            payloadNode = oNode.deepCopy();
         } else {
             payloadNode = objectMapper.convertValue(cmdPayload, new TypeReference<>() {
             });

@@ -344,10 +344,10 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
             case CHANNEL_FR_FREEZER_TEMP_ID:
             case CHANNEL_FR_FRIDGE_TEMP_ID: {
                 int targetTemp;
-                if (command instanceof DecimalType) {
-                    targetTemp = ((DecimalType) command).intValue();
-                } else if (command instanceof QuantityType) {
-                    targetTemp = ((QuantityType<?>) command).intValue();
+                if (command instanceof DecimalType dCmd) {
+                    targetTemp = dCmd.intValue();
+                } else if (command instanceof QuantityType<?> qCmd) {
+                    targetTemp = qCmd.intValue();
                 } else {
                     logger.warn("Received command different of Numeric in TargetTemp Channel. Ignoring");
                     break;
@@ -365,9 +365,9 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
                 break;
             }
             case CHANNEL_FR_ICE_PLUS: {
-                if (command instanceof OnOffType) {
+                if (command instanceof OnOffType ooCmd) {
                     lgThinqFridgeApiClientService.setIcePlus(getBridgeId(), getDeviceId(), getCapabilities(),
-                            OnOffType.ON.equals(command), cmdSnap);
+                            ooCmd == OnOffType.ON, cmdSnap);
                 } else {
                     logger.warn("Received command different of OnOff in IcePlus Channel. It's mostly like a bug");
                 }
@@ -375,8 +375,8 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
             }
             case CHANNEL_FR_EXPRESS_FREEZE_MODE: {
                 String targetExpressMode;
-                if (command instanceof StringType) {
-                    targetExpressMode = ((StringType) command).toString();
+                if (command instanceof StringType stCmd) {
+                    targetExpressMode = stCmd.toString();
                 } else {
                     logger.warn("Received command different of String in ExpressMode Channel. It's mostly like a bug");
                     break;
@@ -386,9 +386,9 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
                 break;
             }
             case CHANNEL_FR_EXPRESS_COOL_MODE: {
-                if (command instanceof OnOffType) {
+                if (command instanceof OnOffType ooCmd) {
                     lgThinqFridgeApiClientService.setExpressCoolMode(getBridgeId(), getDeviceId(),
-                            OnOffType.ON.equals(command));
+                            ooCmd == OnOffType.ON);
                 } else {
                     logger.warn(
                             "Received command different of OnOffType in ExpressCoolMode Channel. It's mostly like a bug");
@@ -396,9 +396,9 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
                 break;
             }
             case CHANNEL_FR_VACATION_MODE: {
-                if (command instanceof OnOffType) {
+                if (command instanceof OnOffType ooCmd) {
                     lgThinqFridgeApiClientService.setEcoFriendlyMode(getBridgeId(), getDeviceId(),
-                            OnOffType.ON.equals(command));
+                            ooCmd == OnOffType.ON);
                 } else {
                     logger.warn(
                             "Received command different of OnOffType in VacationMode Channel. It's most likely a bug");
