@@ -55,15 +55,15 @@ public class LGThinQHandlerFactory extends BaseThingHandlerFactory {
 
     private final LGThinQStateDescriptionProvider stateDescriptionProvider;
 
-    @Nullable
-    @Reference
-    protected ItemChannelLinkRegistry itemChannelLinkRegistry;
+    private final ItemChannelLinkRegistry itemChannelLinkRegistry;
 
     @Activate
     public LGThinQHandlerFactory(final @Reference LGThinQStateDescriptionProvider stateDescriptionProvider,
-            @Reference final HttpClientFactory httpClientFactory) {
+            @Reference final HttpClientFactory httpClientFactory,
+            @Reference ItemChannelLinkRegistry itemChannelLinkRegistry) {
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.httpClientFactory = httpClientFactory;
+        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
     }
 
     @Override
