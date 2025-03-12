@@ -34,6 +34,27 @@
 		<config-description-ref uri="thing-type:unifi:site"/>
 	</thing-type>
 
+	<thing-type id="network">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+
+		<label>UniFi Network</label>
+		<description>A UniFi Network</description>
+
+		<channels>
+			<channel id="enable" typeId="networkEnable"/>
+			<channel id="totalClients" typeId="totalClients"/>
+			<channel id="site" typeId="site">
+				<description>UniFi Site the network is associated with</description>
+			</channel>
+			<channel id="purpose" typeId="purpose"/>
+		</channels>
+		<representation-property>nid</representation-property>
+
+		<config-description-ref uri="thing-type:unifi:network"/>
+	</thing-type>
+
 	<thing-type id="wlan">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="controller"/>
@@ -489,6 +510,27 @@
 				<option value="11">Isolated</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="purpose">
+		<item-type>String</item-type>
+		<label>Purpose</label>
+		<description>Purpose of the network</description>
+		<state readOnly="true">
+			<options>
+				<option value="corporate">Corporate</option>
+				<option value="guest">Guest</option>
+				<option value="remote-user-vpn">VPN</option>
+				<option value="wan">WAN</option>
+				<option value="vlan-only">VLAN Only</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="networkEnable">
+		<item-type>Switch</item-type>
+		<label>Enable</label>
+		<description>Enable status of the network</description>
 	</channel-type>
 
 </thing:thing-descriptions>

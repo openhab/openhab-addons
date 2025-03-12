@@ -50,6 +50,13 @@
 		</parameter>
 	</config-description>
 
+	<config-description uri="thing-type:unifi:network">
+		<parameter name="nid" type="text" required="true">
+			<label>Network Id</label>
+			<description>The id or name of the network</description>
+		</parameter>
+	</config-description>
+
 	<config-description uri="thing-type:unifi:wlan">
 		<parameter name="wid" type="text" required="true">
 			<label>WLAN Id</label>
