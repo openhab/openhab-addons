@@ -84,7 +84,6 @@
 		<category>wind</category>
 	</channel-type>
 
-
 	<channel-type id="fan-step-left-right">
 		<item-type>Number</item-type>
 		<label>Fan HDir</label>
