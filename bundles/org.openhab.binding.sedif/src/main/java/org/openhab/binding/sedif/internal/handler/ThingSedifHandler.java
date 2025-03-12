@@ -14,8 +14,10 @@ package org.openhab.binding.sedif.internal.handler;
 
 import static org.openhab.binding.sedif.internal.constants.SedifBindingConstants.*;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Random;
@@ -28,9 +30,11 @@ import org.openhab.binding.sedif.internal.api.ExpiringDayCache;
 import org.openhab.binding.sedif.internal.api.SedifHttpApi;
 import org.openhab.binding.sedif.internal.config.SedifConfiguration;
 import org.openhab.binding.sedif.internal.dto.MeterReading;
+import org.openhab.binding.sedif.internal.dto.MeterReading.Data.Consommation;
 import org.openhab.binding.sedif.internal.types.SedifException;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
@@ -42,6 +46,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
+import org.openhab.core.types.TimeSeries.Policy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,6 +134,8 @@ public class ThingSedifHandler extends BaseThingHandler {
         dailyConsumption.getValue().ifPresentOrElse(values -> {
             updateState(SEDIF_BASE_GROUP, CHANNEL_CONSUMPTION, new QuantityType<>(
                     values.data.consommation.get(values.data.consommation.size() - 1).consommation, Units.LITRE));
+
+            updateConsumptionTimeSeries(SEDIF_BASE_GROUP, CHANNEL_CONSUMPTION, values);
         }, () -> {
             updateState(SEDIF_BASE_GROUP, CHANNEL_CONSUMPTION, new QuantityType<>(0.00, Units.LITRE));
         });
@@ -209,6 +216,27 @@ public class ThingSedifHandler extends BaseThingHandler {
 
     protected void sendTimeSeries(String groupId, String channelID, TimeSeries timeSeries) {
         super.sendTimeSeries(groupId + "#" + channelID, timeSeries);
+    }
+
+    private synchronized void updateConsumptionTimeSeries(String groupId, String channelId, MeterReading meterReading) {
+        TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
+
+        for (int i = 0; i < meterReading.data.consommation.size(); i++) {
+
+            Consommation conso = meterReading.data.consommation.get(i);
+            String date = conso.dateIndex;
+            float consommation = conso.consommation;
+
+            LocalDateTime dt = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            Instant timestamp = dt.toInstant(ZoneOffset.UTC);
+
+            if (Double.isNaN(consommation)) {
+                continue;
+            }
+            timeSeries.add(timestamp, new DecimalType(consommation));
+        }
+
+        sendTimeSeries(groupId, channelId, timeSeries);
     }
 
 }
