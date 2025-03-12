@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tado.internal.handler;
 
+import static org.openhab.binding.tado.internal.TadoBindingConstants.*;
+
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -23,7 +25,6 @@ import javax.servlet.ServletException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.internal.api.HomeApiFactory;
 import org.openhab.binding.tado.internal.config.TadoHomeConfig;
@@ -63,12 +64,18 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRefreshListener {
 
-    private static final ZonedDateTime AUTH_V2_FROM_DATE = ZonedDateTime.parse("2025-03-15T00:00:00Z");
+    // thing status description i18n text pointers
+    private static final String CONF_ERROR_NO_HOME = "@text/tado.home.status.nohome";
+    private static final String CONF_ERROR_NO_HOME_ID = "@text/tado.home.status.nohomeid";
+    private static final String CONF_PENDING_USER_CREDS = "@text/tado.home.status.username";
+    private static final String CONF_PENDING_OAUTH_CREDS = "@text/tado.home.status.oauth [\"http(s)://<YOUROPENHAB>:<YOURPORT>%s\"]";
 
-    private static final String DEVICE_URL = "https://login.tado.com/oauth2/device_authorize";
-    private static final String TOKEN_URL = "https://login.tado.com/oauth2/token";
-    private static final String CLIENT_ID = "1bb50063-6b0c-4d11-bd99-387f4a91cc46";
-    private static final String SCOPE = "offline_access";
+    // tado specific RFC-8628 oAuth authentication parameters
+    private static final ZonedDateTime OAUTH_MANDATORY_FROM_DATE = ZonedDateTime.parse("2025-03-15T00:00:00Z");
+    private static final String OAUTH_DEVICE_URL = "https://login.tado.com/oauth2/device_authorize";
+    private static final String OAUTH_TOKEN_URL = "https://login.tado.com/oauth2/token";
+    private static final String OAUTH_CLIENT_ID = "1bb50063-6b0c-4d11-bd99-387f4a91cc46";
+    private static final String OAUTH_SCOPE = "offline_access";
 
     private final Logger logger = LoggerFactory.getLogger(TadoHomeHandler.class);
 
@@ -78,7 +85,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
     private final OAuthFactory oAuthFactory;
 
     private @NonNullByDefault({}) TadoHomeConfig configuration;
-    private @NonNullByDefault({}) String offlinePrompt;
+    private @NonNullByDefault({}) String confPendingText;
     private @NonNullByDefault({}) HomeApi api;
 
     private @Nullable Long homeId;
@@ -95,8 +102,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
     }
 
     public TemperatureUnit getTemperatureUnit() {
-        String temperatureUnitStr = this.thing.getProperties()
-                .getOrDefault(TadoBindingConstants.PROPERTY_HOME_TEMPERATURE_UNIT, "CELSIUS");
+        String temperatureUnitStr = this.thing.getProperties().getOrDefault(PROPERTY_HOME_TEMPERATURE_UNIT, "CELSIUS");
         return TemperatureUnit.valueOf(temperatureUnitStr);
     }
 
@@ -106,30 +112,30 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
 
         String userName = configuration.username;
         String password = configuration.password;
-        boolean v1CredentialsOk = userName != null && !userName.isBlank() && password != null && !password.isBlank();
+        boolean v1CredentialsMissing = userName == null || userName.isBlank() || password == null || password.isBlank();
 
         boolean suggestRfc8628 = false;
         suggestRfc8628 |= Boolean.TRUE.equals(configuration.useRfc8628);
-        suggestRfc8628 |= !v1CredentialsOk;
-        suggestRfc8628 |= ZonedDateTime.now().isAfter(AUTH_V2_FROM_DATE);
+        suggestRfc8628 |= v1CredentialsMissing;
+        suggestRfc8628 |= ZonedDateTime.now().isAfter(OAUTH_MANDATORY_FROM_DATE);
 
         if (suggestRfc8628) {
-            String url = "http(s)://<YOUROPENHAB>:<YOURPORT>" + TadoAuthenticationServlet.PATH;
-            offlinePrompt = String.format("@text/tado.home.status.oauth [\"%s\"]", url);
-
-            OAuthClientService oAuthService = oAuthFactory.getOAuthClientService(thing.getUID().toString());
+            // note: we must use the (fixed) thing type id since the actual thing id could change
+            String oAuthHandle = THING_TYPE_HOME.toString();
+            OAuthClientService oAuthService = oAuthFactory.getOAuthClientService(oAuthHandle);
             if (oAuthService == null) {
-                oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), TOKEN_URL,
-                        DEVICE_URL, CLIENT_ID, null, SCOPE, false);
+                oAuthService = oAuthFactory.createOAuthClientService(oAuthHandle, OAUTH_TOKEN_URL, OAUTH_DEVICE_URL,
+                        OAUTH_CLIENT_ID, null, OAUTH_SCOPE, false);
             }
             oAuthService.addAccessTokenRefreshListener(this);
             oAuthClientService = oAuthService;
 
             api = new HomeApiFactory().create(oAuthService);
+            confPendingText = CONF_PENDING_OAUTH_CREDS.formatted(TadoAuthenticationServlet.PATH);
             logger.trace("initialize() api v2 created");
         } else {
-            offlinePrompt = "@text/tado.home.status.username";
             api = new HomeApiFactory().create(Objects.requireNonNull(userName), Objects.requireNonNull(password));
+            confPendingText = CONF_PENDING_USER_CREDS;
             logger.trace("initialize() api v1 created");
         }
 
@@ -163,21 +169,19 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
                 // Get user info to verify successful authentication and connection to server
                 User user = api.showUser();
                 if (user == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, offlinePrompt);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, confPendingText);
                     return;
                 }
 
                 List<UserHomes> homes = user.getHomes();
                 if (homes == null || homes.isEmpty()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/tado.home.status.nohome");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, CONF_ERROR_NO_HOME);
                     return;
                 }
 
                 Integer firstHomeId = homes.get(0).getId();
                 if (firstHomeId == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/tado.home.status.nohomeid");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, CONF_ERROR_NO_HOME_ID);
                     return;
                 }
 
@@ -188,10 +192,10 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
             HomeInfo homeInfo = api.showHome(homeId);
             TemperatureUnit temperatureUnit = org.openhab.binding.tado.swagger.codegen.api.model.TemperatureUnit.FAHRENHEIT == homeInfo
                     .getTemperatureUnit() ? TemperatureUnit.FAHRENHEIT : TemperatureUnit.CELSIUS;
-            updateProperty(TadoBindingConstants.PROPERTY_HOME_TEMPERATURE_UNIT, temperatureUnit.name());
+            updateProperty(PROPERTY_HOME_TEMPERATURE_UNIT, temperatureUnit.name());
         } catch (IOException | ApiException e) {
             logger.debug("Error accessing tado server: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, offlinePrompt);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, confPendingText);
             return;
         }
 
@@ -225,8 +229,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
 
     public void updateHomeState() {
         try {
-            updateState(TadoBindingConstants.CHANNEL_HOME_PRESENCE_MODE,
-                    OnOffType.from(getHomeState().getPresence() == PresenceState.HOME));
+            updateState(CHANNEL_HOME_PRESENCE_MODE, OnOffType.from(getHomeState().getPresence() == PresenceState.HOME));
         } catch (IOException | ApiException e) {
             logger.debug("Error accessing tado server: {}", e.getMessage(), e);
         }
@@ -242,7 +245,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
         }
 
         switch (id) {
-            case TadoBindingConstants.CHANNEL_HOME_PRESENCE_MODE:
+            case CHANNEL_HOME_PRESENCE_MODE:
                 HomePresence presence = new HomePresence();
                 presence.setHomePresence("ON".equals(command.toFullString().toUpperCase())
                         || "HOME".equals(command.toFullString().toUpperCase()) ? PresenceState.HOME

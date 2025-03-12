@@ -55,12 +55,12 @@ public class TadoAuthenticationServlet extends HttpServlet {
     private static final String ERROR_BAD_URL = "no verification uri";
 
     private static final String HTML_STATUS_PAGE_TEMPLATE = """
-                <html>
-                    <body>
-                        <h2 style="font-family: Arial">tado°</h2>
-                        <p style="font-family: Arial">Status: $REPLACE$</p>
-                    </body>
-                </html>
+            <html>
+                <body>
+                    <h2 style="font-family: Arial; text-align: center">tado°</h2>
+                    <p style="font-family: Arial; text-align: center">Status: $REPLACE$</p>
+                </body>
+            </html>
             """;
 
     private final TadoHomeHandler tadoHomeHandler;
