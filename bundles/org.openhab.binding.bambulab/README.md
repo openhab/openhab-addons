@@ -109,9 +109,9 @@ Thing bambulab:printer:myprinter "My BambuLab Printer" @ "3D Printing Area" [
 ]
 ```
 
-### Item Configuration
+### `bambulab.items` Exmaple
 
-```
+```java
 Number:Temperature NozzleTemperature "Nozzle Temperature [%.1f °C]" { channel="bambulab:printer:myprinter:nozzle-temperature" }
 Number:Temperature BedTemperature "Bed Temperature [%.1f °C]" { channel="bambulab:printer:myprinter:bed-temperature" }
 String PrintStage "Print Stage [%s]" { channel="bambulab:printer:myprinter:mc-print-stage" }
