@@ -98,7 +98,7 @@ public class LGThinQBindingConstants extends LGServicesConstants {
     public static final String CHANNEL_AC_TARGET_TEMP_ID = "target-temperature";
 
     /**
-     * ============ Fridge's Channels & Constant Definition =============
+     * ============ Refrigerator's Channels & Constant Definition =============
      */
     public static final String CHANNEL_FR_ACTIVE_SAVING = "fr-active-saving";
     public static final String CHANNEL_FR_DOOR_OPEN = "fr-door-open";

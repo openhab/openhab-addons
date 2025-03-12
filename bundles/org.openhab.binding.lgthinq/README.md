@@ -111,20 +111,20 @@ LG ThinQ Washer Machine supports the following channels
 
 #### Dashboard Channels
 
-| channel #         | channel           | type       | description                                                                                                |
-|-------------------|-------------------|------------|------------------------------------------------------------------------------------------------------------|
-| state             | Washer State      | String     | General State of the Washer                                                                                |
-| power             | Power             | Switch     | Define the device's Current Power state.                                                                   |
-| process-state     | Process State     | String     | States of the running cycle                                                                                |
-| course            | Course            | String     | Course set up to work                                                                                      |
-| temperature-level | Temperature Level | String     | Temperature level supported by the Washer (Cold, 20, 30, 40, 50, etc.)                                     |
-| door-lock         | Door Lock         | Switch     | Display if the Door is Locked.                                                                             | 
-| rinse             | Rinse             | String     | The Rinse set program                                                                                      |
-| spin              | Spin              | String     | The Spin set option                                                                                        |
-| delay-time        | Delay Time        | String     | Delay time programmed to start the cycle                                                                   | 
-| remain-time       | Remaining Time    | String     | Remaining time to finish the course                                                                        | 
-| stand-by          | Stand By Mode     | Switch     | If the Washer is in stand-by-mode                                                                          |
-| rs-flag | Remote Start      | Switch     | If the Washer is in remote start mode waiting to be remotely started                                       |
+| channel #          | channel           | type       | description                                                                                                |
+|--------------------|-------------------|------------|------------------------------------------------------------------------------------------------------------|
+| state              | Washer State      | String     | General State of the Washer                                                                                |
+| power              | Power             | Switch     | Define the device's Current Power state.                                                                   |
+| process-state      | Process State     | String     | States of the running cycle                                                                                |
+| course             | Course            | String     | Course set up to work                                                                                      |
+| temperature-level  | Temperature Level | String     | Temperature level supported by the Washer (Cold, 20, 30, 40, 50, etc.)                                     |
+| door-lock          | Door Lock         | Switch     | Display if the Door is Locked.                                                                             | 
+| rinse              | Rinse             | String     | The Rinse set program                                                                                      |
+| spin               | Spin              | String     | The Spin set option                                                                                        |
+| delay-time         | Delay Time        | String     | Delay time programmed to start the cycle                                                                   | 
+| remain-time        | Remaining Time    | String     | Remaining time to finish the course                                                                        | 
+| stand-by           | Stand By Mode     | Switch     | If the Washer is in stand-by-mode                                                                          |
+| rs-flag            | Remote Start      | Switch     | If the Washer is in remote start mode waiting to be remotely started                                       |
 
 #### Remote Start Option
 
@@ -144,19 +144,19 @@ LG ThinQ Dryer Machine supports the following channels
 
 #### Dashboard Channels
 
-| channel #         | channel           | type    | description                                                            |
-|-------------------|-------------------|---------|------------------------------------------------------------------------|
-| power             | Power             | Switch  | Define the device's Current Power state.                               |
-| state             | Dryer State       | String  | General State of the Washer                                            |
-| process-state     | Process State     | String  | States of the running cycle                                            |
-| course            | Course            | String  | Course set up to work                                                  |
-| temperature-level | Temperature Level | String  | Temperature level supported by the Washer (Cold, 20, 30, 40, 50, etc.) |
-| child-lock        | Child Lock        | Switch  | Display if the Door is Locked.                                         |
-| dry-level         | Dry Level Course  | String  | Dry level set to work in the course                                    |
-| delay-time        | Delay Time        | String  | Delay time programmed to start the cycle                               | 
-| remain-time       | Remaining Time    | String  | Remaining time to finish the course                                    | 
-| stand-by          | Stand By Mode     | Switch  | If the Washer is in stand-by-mode                                      |
-| rs-flag | Remote Start      | Switch  | If the Washer is in remote start mode waiting to be remotely started   |
+| channel #          | channel           | type    | description                                                            |
+|--------------------|-------------------|---------|------------------------------------------------------------------------|
+| power              | Power             | Switch  | Define the device's Current Power state.                               |
+| state              | Dryer State       | String  | General State of the Washer                                            |
+| process-state      | Process State     | String  | States of the running cycle                                            |
+| course             | Course            | String  | Course set up to work                                                  |
+| temperature-level  | Temperature Level | String  | Temperature level supported by the Washer (Cold, 20, 30, 40, 50, etc.) |
+| child-lock         | Child Lock        | Switch  | Display if the Door is Locked.                                         |
+| dry-level          | Dry Level Course  | String  | Dry level set to work in the course                                    |
+| delay-time         | Delay Time        | String  | Delay time programmed to start the cycle                               | 
+| remain-time        | Remaining Time    | String  | Remaining time to finish the course                                    | 
+| stand-by           | Stand By Mode     | Switch  | If the Washer is in stand-by-mode                                      |
+| rs-flag            | Remote Start      | Switch  | If the Washer is in remote start mode waiting to be remotely started   |
 
 #### Remote Start Option
 
@@ -180,7 +180,7 @@ LG ThinQ Refrigerator supports the following channels
 
 | channel #            | channel                       | type               | description                                                                    |
 |----------------------|-------------------------------|--------------------|--------------------------------------------------------------------------------|
-| door-open       | Door Open                     | Contact            | Advice if the door is opened                                                   |
+| door-open            | Door Open                     | Contact            | Advice if the door is opened                                                   |
 | freezer-temperature  | Freezer Set Point Temperature | Number:Temperature | Temperature level chosen. This channel supports commands to change temperature |
 | fridge-temperature   | Fridge Set Point Temperature  | Number:Temperature | Temperature level chosen. This channel supports commands to change temperature |
 | temp-unit            | Temp. Unit                    | String             | Temperature Unit (°C/F). Supports command to change the unit                   |

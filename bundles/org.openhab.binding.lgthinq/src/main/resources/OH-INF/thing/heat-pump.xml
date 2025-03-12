@@ -63,8 +63,8 @@
 		<description>This is the Displayed Information.</description>
 		<channels>
 			<channel id="target-temperature" typeId="target-temperature"/>
-			<channel id="min_temperature" typeId="min-temperature"/>
-			<channel id="max_temperature" typeId="max-temperature"/>
+			<channel id="min-temperature" typeId="min-temperature"/>
+			<channel id="max-temperature" typeId="max-temperature"/>
 			<channel id="current-temperature" typeId="current-temperature"/>
 			<channel id="op-mode" typeId="operation-mode"/>
 			<channel id="air-water-switch" typeId="hp-air-water-switch"/>
