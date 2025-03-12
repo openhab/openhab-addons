@@ -37,12 +37,35 @@ public class SedifBindingConstants {
             THING_TYPE_WEB_SEDIF_BRIDGE);
 
     public static final String SEDIF_BASE_GROUP = "sedif-base";
+
+    public static final String SEDIF_DAILY_CONSUMPTION_GROUP = "sedif-daily-consumption";
+    public static final String SEDIF_WEEKLY_CONSUMPTION_GROUP = "sedif-weekly-consumption";
+    public static final String SEDIF_MONTHLY_CONSUMPTION_GROUP = "sedif-monthly-consumption";
+    public static final String SEDIF_YEARLY_CONSUMPTION_GROUP = "sedif-yearly-consumption";
+
     public static final String SEDIF_CONTRAT_GROUP = "sedif-contrat";
     public static final String SEDIF_CONTRAT_CLIENT_GROUP = "sedif-contrat-client";
     public static final String SEDIF_CONTRAT_PAYER_GROUP = "sedif-contrat-payer";
     public static final String SEDIF_CONTRAT_METER_GROUP = "sedif-contrat-meter";
 
     public static final String CHANNEL_CONSUMPTION = "consumption";
+
+    public static final String CHANNEL_DAILY_YESTERDAY_CONSUMPTION = "yesterday";
+    public static final String CHANNEL_DAILY_DAY_MINUS_2_CONSUMPTION = "day-2";
+    public static final String CHANNEL_DAILY_DAY_MINUS_3_CONSUMPTION = "day-3";
+
+    public static final String CHANNEL_WEEKLY_THIS_WEEK_CONSUMPTION = "thisWeek";
+    public static final String CHANNEL_WEEKLY_LAST_WEEK_CONSUMPTION = "lastWeek";
+    public static final String CHANNEL_WEEKLY_WEEK_MINUS_2_CONSUMPTION = "week-2";
+
+    public static final String CHANNEL_MONTHLY_THIS_MONTH_CONSUMPTION = "thisMonth";
+    public static final String CHANNEL_MONTHLY_LAST_MONTH_CONSUMPTION = "lastMonth";
+    public static final String CHANNEL_MONTHLY_MONTH_MINUS_2_CONSUMPTION = "month-2";
+
+    public static final String CHANNEL_YEARLY_THIS_YEAR_CONSUMPTION = "thisYear";
+    public static final String CHANNEL_YEARLY_LAST_YEAR_CONSUMPTION = "lastYear";
+    public static final String CHANNEL_YEARLY_YEAR_MINUS_2_CONSUMPTION = "year-2";
+
     public static final String CHANNEL_PRIX_MOYEN_EAU = "prix-moyen-eau";
 
     public static final String CHANNEL_AUTORITE_ORGANISATRICE = "autorite-organisatrice";
