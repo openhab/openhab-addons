@@ -210,6 +210,7 @@ Bridge lgthinq:bridge:MyLGThinqBridge [ username="user@registered.com", password
    Thing air-conditioner-401 myAC [ modelUrlInfo="<ac-model-url>", deviceId="<device-id>", platformType="<platform-type>", modelId="<model-id>", deviceAlias="<MyAC>" ]
 }
 ```
+
 Until now, there is no way to easily obtain the values of ac-model-url, device-id, platform-type and model-id. So, if you really need 
 to configure the LGThinq thing textually, I suggest you to first add it with the UI discovery process through the LG Thinq Bridge, then after, copy
 these properties from the thing created and complete the textual configuration.
@@ -217,6 +218,7 @@ these properties from the thing created and complete the textual configuration.
 Here are some examples on how to map the channels to items.
 
 demo.items:
+
 ```java
 Switch               ACPower        "Power"                   <switch>  { channel="lgthinq:air-conditioner-401:myAC:dashboard#power" }
 Number               ACOpMode       "Operation Mode"          <text>    { channel="lgthinq:air-conditioner-401:myAC:dashboard#op-mode" }
@@ -234,6 +236,7 @@ Number               ACFanVDir      "Vertical Direction"      <text>    { channe
 demo.sitemap
 All the channels already have StateDescription for the selection Channels. So, unless you want to rename theirs into demo.items,
 you can simply define as Selection that the default description of the values will be displayed
+
 ```perl
 sitemap demo label="Air Conditioner"
 {

@@ -77,7 +77,8 @@ public class WasherDryerSnapshotBuilder extends DefaultSnapshotBuilder<WasherDry
                         Map<String, Object> washerDryerMap = Objects.requireNonNull(objectMapper
                                 .convertValue(snapMap.get(WMD_SNAPSHOT_WASHER_DRYER_NODE_V2), new TypeReference<>() {
                                 }), "washerDryer node must be present in the snapshot");
-                        snap = objectMapper.convertValue(washerDryerMap, snapClass);
+                        snap = Objects.requireNonNull(objectMapper.convertValue(washerDryerMap, snapClass),
+                                "Unexpected null returned from conversion");
                         setAltCourseNodeName(capDef, snap, washerDryerMap);
                         snap.setRawData(washerDryerMap);
                         return snap;

@@ -13,11 +13,11 @@
 package org.openhab.binding.lgthinq.internal.handler;
 
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.*;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.util.List;
@@ -114,11 +114,13 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
 
     @SuppressWarnings("unchecked")
     public Class<S> getSnapshotClass() {
-        return (Class<S>) (Objects.requireNonNull((ParameterizedType) getClass().getGenericSuperclass(),
-                "Unexpected null here")).getActualTypeArguments()[1];
+        ParameterizedType genSupClass = (ParameterizedType) getClass().getGenericSuperclass();
+        if (genSupClass == null) {
+            throw new IllegalStateException("Snapshot class has no parameterized type. It most likely a bug!");
+        }
+        return (Class<S>) genSupClass.getActualTypeArguments()[1];
     }
 
-    @SuppressWarnings("null")
     public LGThinQAbstractDeviceHandler(Thing thing, LGThinQStateDescriptionProvider stateDescriptionProvider,
             ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing);
@@ -129,7 +131,9 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
 
         Class<S> snapshotClass = getSnapshotClass();
         try {
-            this.lastShot = snapshotClass.getDeclaredConstructor().newInstance();
+            Constructor<S> constructor = snapshotClass.getDeclaredConstructor();
+            this.lastShot = Objects.requireNonNull(constructor.newInstance(),
+                    "Unexpected null returned from newInstance()");
         } catch (Exception e) {
             throw new IllegalArgumentException("Snapshot class can't be instantiated. It most likely a bug", e);
         }
@@ -195,22 +199,21 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         return Objects.requireNonNullElse(map.get(key), key);
     }
 
-    @SuppressWarnings("null")
     protected void startCommandExecutorQueueJob() {
+        Future<?> commandExecutorQueueJob = this.commandExecutorQueueJob;
         if (commandExecutorQueueJob == null || commandExecutorQueueJob.isDone()) {
-            commandExecutorQueueJob = getExecutorService().submit(getQueuedCommandExecutor());
+            this.commandExecutorQueueJob = getExecutorService().submit(getQueuedCommandExecutor());
         }
     }
 
-    @SuppressWarnings("null")
     protected void stopCommandExecutorQueueJob() {
+        Future<?> commandExecutorQueueJob = this.commandExecutorQueueJob;
         if (commandExecutorQueueJob != null) {
             commandExecutorQueueJob.cancel(true);
         }
-        commandExecutorQueueJob = null;
+        this.commandExecutorQueueJob = null;
     }
 
-    @SuppressWarnings("null")
     protected void handleStatusChanged(ThingStatus newStatus, ThingStatusDetail statusDetail) {
         if (lastThingStatus != ThingStatus.ONLINE && newStatus == ThingStatus.ONLINE) {
             // start the thing polling
@@ -219,8 +222,10 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 && BRIDGE_STATUS_DETAIL_ERROR.contains(statusDetail)) {
             // comunication error is not a specific Bridge error, then we must analise it to give
             // this thinq the change to recovery from communication errors
+            @Nullable
+            Bridge bridge = getBridge();
             if (statusDetail != ThingStatusDetail.COMMUNICATION_ERROR
-                    || (getBridge() != null && getBridge().getStatus() != ThingStatus.ONLINE)) {
+                    || (bridge != null && bridge.getStatus() != ThingStatus.ONLINE)) {
                 // in case of status offline, I only stop the polling if is not an COMMUNICATION_ERROR or if
                 // the bridge is out
                 stopThingStatePolling();
@@ -238,7 +243,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     }
 
     @Override
-    @SuppressWarnings("null")
+
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             updateThingStateFromLG();
@@ -250,9 +255,13 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             } catch (IllegalStateException ex) {
                 getLogger().warn(
                         "Device's command queue reached the size limit. Probably the device is busy ou stuck. Ignoring command.");
-                getLogger().debug("Status of the commandQueue: consumer: {}, size: {}",
-                        commandExecutorQueueJob == null || commandExecutorQueueJob.isDone() ? "OFF" : "ON",
-                        commandBlockQueue.size());
+                if (getLogger().isDebugEnabled()) {
+
+                    Future<?> commandExecutorQueueJob = this.commandExecutorQueueJob;
+                    getLogger().debug("Status of the commandQueue: consumer: {}, size: {}",
+                            commandExecutorQueueJob == null || commandExecutorQueueJob.isDone() ? "OFF" : "ON",
+                            commandBlockQueue.size());
+                }
                 if (logger.isTraceEnabled()) {
                     // logging the thread dump to analise possible stuck thread.
                     ThreadMXBean bean = ManagementFactory.getThreadMXBean();
@@ -585,30 +594,30 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         };
     }
 
-    @SuppressWarnings("null")
     protected void stopThingStatePolling() {
+        ScheduledFuture<?> thingStatePollingJob = this.thingStatePollingJob;
         if (!(thingStatePollingJob == null || thingStatePollingJob.isDone())) {
             getLogger().debug("Stopping LG thinq polling for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
             thingStatePollingJob.cancel(true);
         }
-        thingStatePollingJob = null;
+        this.thingStatePollingJob = null;
     }
 
-    @SuppressWarnings("null")
     private void stopExtraInfoCollectorPolling() {
+        ScheduledFuture<?> extraInfoCollectorPollingJob = this.extraInfoCollectorPollingJob;
         if (extraInfoCollectorPollingJob != null && !extraInfoCollectorPollingJob.isDone()) {
             getLogger().debug("Stopping Energy Collector for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
             extraInfoCollectorPollingJob.cancel(true);
         }
         resetExtraInfoChannels();
-        extraInfoCollectorPollingJob = null;
+        this.extraInfoCollectorPollingJob = null;
     }
 
-    @SuppressWarnings("null")
     protected void startThingStatePolling() {
+        ScheduledFuture<?> thingStatePollingJob = this.thingStatePollingJob;
         if (thingStatePollingJob == null || thingStatePollingJob.isDone()) {
             getLogger().debug("Starting LG thinq polling for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
-            thingStatePollingJob = pollingScheduler.scheduleWithFixedDelay(new UpdateThingStateFromLG(), 5,
+            this.thingStatePollingJob = pollingScheduler.scheduleWithFixedDelay(new UpdateThingStateFromLG(), 5,
                     currentPeriodSeconds, TimeUnit.SECONDS);
         }
     }
@@ -618,12 +627,12 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
      * Normally, the thing has a Switch Channel that enable/disable the energy collector. By default, the collector is
      * disabled.
      */
-    @SuppressWarnings("null")
     private void startExtraInfoCollectorPolling() {
+        ScheduledFuture<?> extraInfoCollectorPollingJob = this.extraInfoCollectorPollingJob;
         if (extraInfoCollectorPollingJob == null || extraInfoCollectorPollingJob.isDone()) {
             getLogger().debug("Starting Energy Collector for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
-            extraInfoCollectorPollingJob = pollingScheduler.scheduleWithFixedDelay(new UpdateExtraInfoCollector(), 10,
-                    pollingExtraInfoPeriodSeconds, TimeUnit.SECONDS);
+            this.extraInfoCollectorPollingJob = pollingScheduler.scheduleWithFixedDelay(new UpdateExtraInfoCollector(),
+                    10, pollingExtraInfoPeriodSeconds, TimeUnit.SECONDS);
         }
     }
 

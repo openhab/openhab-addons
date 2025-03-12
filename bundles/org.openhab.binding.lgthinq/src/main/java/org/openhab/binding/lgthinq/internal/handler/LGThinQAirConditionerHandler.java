@@ -49,6 +49,7 @@ import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_HP_
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -460,11 +461,12 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     }
 
     @Override
-    @SuppressWarnings("null")
+
     protected Map<String, Object> collectExtraInfoState() throws LGThinqException {
         ExtendedDeviceInfo info = lgThinqACApiClientService.getExtendedDeviceInfo(getBridgeId(), getDeviceId());
-        return mapper.convertValue(info, new TypeReference<>() {
+        Map<String, Object> result = mapper.convertValue(info, new TypeReference<>() {
         });
+        return result == null ? Collections.emptyMap() : result;
     }
 
     @Override

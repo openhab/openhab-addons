@@ -14,6 +14,7 @@ package org.openhab.binding.lgthinq.lgservices.errors;
 
 import java.io.Serial;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.model.ResultCodes;
 
 /**
@@ -21,7 +22,7 @@ import org.openhab.binding.lgthinq.lgservices.model.ResultCodes;
  *
  * @author Nemer Daud - Initial contribution
  */
-
+@NonNullByDefault
 public class LGThinqAccessException extends LGThinqApiException {
     @Serial
     private static final long serialVersionUID = 1L;

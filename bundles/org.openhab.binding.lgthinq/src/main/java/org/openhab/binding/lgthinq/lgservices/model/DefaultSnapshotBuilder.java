@@ -63,7 +63,7 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
      * @throws LGThinqApiException any error.
      */
     @Override
-    @SuppressWarnings("null")
+
     public S createFromBinary(String binaryData, List<MonitoringBinaryProtocol> prot, CapabilityDefinition capDef)
             throws LGThinqUnmarshallException, LGThinqApiException {
         try {
@@ -75,14 +75,19 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
             Map<String, PropertyDescriptor> aliasesMethod = new HashMap<>();
             for (PropertyDescriptor property : pds) {
                 // all attributes of class.
-                Method m = property.getReadMethod(); // getter
-                if (m.isAnnotationPresent(JsonProperty.class)) {
-                    String value = m.getAnnotation(JsonProperty.class).value();
+                Method m = property.getReadMethod();
+                if (m == null) {
+                    logger.warn("Property {} has no getter method. It's most likely a bug!", property.getName());
+                    continue;
+                }
+                JsonProperty jsonProAn = m.getAnnotation(JsonProperty.class);
+                if (jsonProAn != null) {
+                    String value = jsonProAn.value();
                     aliasesMethod.putIfAbsent(value, property);
                 }
-                if (m.isAnnotationPresent(JsonAlias.class)) {
-                    @SuppressWarnings("null")
-                    String[] values = m.getAnnotation(JsonAlias.class).value();
+                JsonAlias jsonAliasAn = m.getAnnotation(JsonAlias.class);
+                if (jsonAliasAn != null) {
+                    String[] values = jsonAliasAn.value();
                     for (String v : values) {
                         aliasesMethod.putIfAbsent(v, property);
                     }

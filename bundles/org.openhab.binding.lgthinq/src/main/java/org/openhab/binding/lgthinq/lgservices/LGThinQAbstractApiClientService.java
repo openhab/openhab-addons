@@ -117,7 +117,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
             clientId = bytesToHex(hash);
             return clientId;
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("SHA-256 algorithm not found", e);
+            throw new IllegalArgumentException("SHA-256 algorithm not found", e);
         }
     }
 
@@ -337,7 +337,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
     public S buildDefaultOfflineSnapshot() {
         try {
             // As I don't know the current device status, then I reset to default values.
-            @SuppressWarnings("null")
+
             S shot = snapshotClass.getDeclaredConstructor().newInstance();
             shot.setPowerStatus(DevicePowerState.DV_POWER_OFF);
             shot.setOnline(false);

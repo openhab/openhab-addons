@@ -273,8 +273,9 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
     }
 
     @Override
-    @SuppressWarnings("null")
+
     public void handleRemoval() {
+        ScheduledFuture<?> devicePollingJob = this.devicePollingJob;
         if (devicePollingJob != null) {
             devicePollingJob.cancel(true);
         }
@@ -284,11 +285,12 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
     }
 
     @Override
-    @SuppressWarnings("null")
+
     public void dispose() {
+        ScheduledFuture<?> devicePollingJob = this.devicePollingJob;
         if (devicePollingJob != null) {
             devicePollingJob.cancel(true);
-            devicePollingJob = null;
+            this.devicePollingJob = null;
         }
     }
 
@@ -325,9 +327,9 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
         super.handleConfigurationUpdate(configurationParameters);
     }
 
-    @SuppressWarnings("null")
     private void startLGThinqDevicePolling() {
         // stop current scheduler, if any
+        ScheduledFuture<?> devicePollingJob = this.devicePollingJob;
         if (devicePollingJob != null && !devicePollingJob.isDone()) {
             devicePollingJob.cancel(true);
         }
@@ -346,7 +348,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
         }
         // submit instantlly and schedule for the next polling interval.
         runDiscovery();
-        devicePollingJob = scheduler.scheduleWithFixedDelay(lgDevicePollingRunnable, 2, poolingInterval,
+        this.devicePollingJob = scheduler.scheduleWithFixedDelay(lgDevicePollingRunnable, 2, poolingInterval,
                 TimeUnit.SECONDS);
     }
 
