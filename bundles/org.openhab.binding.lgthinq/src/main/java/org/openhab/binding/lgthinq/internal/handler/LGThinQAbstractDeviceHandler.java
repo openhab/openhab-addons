@@ -250,7 +250,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 commandBlockQueue.add(params);
             } catch (IllegalStateException ex) {
                 getLogger().warn(
-                        "Device's command queue reached the size limit. Probably the device is busy ou stuck. Ignoring command.");
+                        "Device's command queue reached the size limit. Probably the device is busy or stuck. Ignoring command.");
                 if (getLogger().isDebugEnabled()) {
 
                     Future<?> commandExecutorQueueJob = this.commandExecutorQueueJob;
