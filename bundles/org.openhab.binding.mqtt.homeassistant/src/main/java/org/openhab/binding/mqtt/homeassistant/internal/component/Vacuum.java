@@ -13,7 +13,7 @@
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -132,7 +132,7 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
 
         final var supportedFeatures = channelConfiguration.supportedFeatures;
 
-        final Map<String, String> commands = new HashMap<>();
+        final Map<String, String> commands = new LinkedHashMap<>();
         addPayloadToList(supportedFeatures, FEATURE_CLEAN_SPOT, PAYLOAD_CLEAN_SPOT,
                 channelConfiguration.payloadCleanSpot, commands);
         addPayloadToList(supportedFeatures, FEATURE_LOCATE, PAYLOAD_LOCATE, channelConfiguration.payloadLocate,

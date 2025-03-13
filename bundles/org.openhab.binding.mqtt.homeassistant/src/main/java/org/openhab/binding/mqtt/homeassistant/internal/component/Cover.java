@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -115,7 +115,7 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
         // State can indicate additional information than just
         // the current position, so expose it as a separate channel
         if (stateTopic != null) {
-            Map<String, String> states = new HashMap<>();
+            Map<String, String> states = new LinkedHashMap<>();
             states.put(channelConfiguration.stateClosed, STATE_CLOSED);
             states.put(channelConfiguration.stateClosing, STATE_CLOSING);
             states.put(channelConfiguration.stateOpen, STATE_OPEN);

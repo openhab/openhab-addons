@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt.generic.values;
 
 import static java.util.function.Predicate.not;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -54,12 +55,12 @@ public class TextValue extends Value {
     public TextValue(Map<String, String> states, Map<String, String> commands) {
         super(CoreItemFactory.STRING, List.of(StringType.class));
         if (!states.isEmpty()) {
-            this.states = Map.copyOf(states);
+            this.states = new LinkedHashMap(states);
         } else {
             this.states = null;
         }
         if (!commands.isEmpty()) {
-            this.commands = Map.copyOf(commands);
+            this.commands = new LinkedHashMap(commands);
         } else {
             this.commands = null;
         }
@@ -76,14 +77,14 @@ public class TextValue extends Value {
     public TextValue(String[] states, String[] commands) {
         super(CoreItemFactory.STRING, List.of(StringType.class));
         Map<String, String> s = Stream.of(states).filter(not(String::isBlank))
-                .collect(Collectors.toMap(str -> str, str -> str, (a, b) -> a));
+                .collect(Collectors.toMap(str -> str, str -> str, (a, b) -> a, LinkedHashMap::new));
         if (!s.isEmpty()) {
             this.states = s;
         } else {
             this.states = null;
         }
         Map<String, String> c = Stream.of(commands).filter(not(String::isBlank))
-                .collect(Collectors.toMap(str -> str, str -> str, (a, b) -> a));
+                .collect(Collectors.toMap(str -> str, str -> str, (a, b) -> a, LinkedHashMap::new));
         if (!c.isEmpty()) {
             this.commands = c;
         } else {

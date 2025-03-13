@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -104,7 +104,7 @@ public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.Chann
     public AlarmControlPanel(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
-        Map<String, String> stateEnum = new HashMap<>();
+        Map<String, String> stateEnum = new LinkedHashMap<>();
         stateEnum.put(STATE_DISARMED, STATE_DISARMED);
         stateEnum.put(STATE_TRIGGERED, STATE_TRIGGERED);
         stateEnum.put(STATE_ARMING, STATE_ARMING);
@@ -112,7 +112,7 @@ public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.Chann
         stateEnum.put(STATE_PENDING, STATE_PENDING);
 
         String commandTopic = channelConfiguration.commandTopic;
-        Map<String, String> commandEnum = new HashMap<>();
+        Map<String, String> commandEnum = new LinkedHashMap<>();
         if (commandTopic != null) {
             commandEnum.put(PAYLOAD_DISARM, channelConfiguration.payloadDisarm);
         }

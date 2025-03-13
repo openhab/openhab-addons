@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -108,14 +108,14 @@ public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
                     return true;
                 }).build();
 
-        Map<String, String> commands = new HashMap<>();
+        Map<String, String> commands = new LinkedHashMap<>();
         commands.put(PAYLOAD_LOCK, channelConfiguration.payloadLock);
         commands.put(PAYLOAD_UNLOCK, channelConfiguration.payloadUnlock);
         String payloadOpen = channelConfiguration.payloadOpen;
         if (payloadOpen != null) {
             commands.put(PAYLOAD_OPEN, payloadOpen);
         }
-        Map<String, String> states = new HashMap<>();
+        Map<String, String> states = new LinkedHashMap<>();
         states.put(channelConfiguration.stateLocked, STATE_LOCKED);
         states.put(channelConfiguration.stateUnlocked, STATE_UNLOCKED);
         states.put(channelConfiguration.stateLocking, STATE_LOCKING);
