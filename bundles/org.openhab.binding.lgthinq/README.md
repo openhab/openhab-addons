@@ -39,7 +39,7 @@ The following parameters are available to configure the Bridge and to link to yo
 ## Discovery
 
 This Binding has auto-discovery for the supported LG Thinq devices. 
-Once LG Thinq Bridge has been added, LG Thinq devices linked to your account will be automatically discovered and displayed in the OpenHab Inbox. 
+Once LG Thinq Bridge has been added, LG Thinq devices linked to your account will be automatically discovered and displayed in the openHAB Inbox. 
 
 ## Thing Configuration
 
