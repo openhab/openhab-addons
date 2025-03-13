@@ -41,6 +41,7 @@ import org.openhab.binding.sedif.internal.types.SedifException;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -156,9 +157,9 @@ public class ThingSedifHandler extends BaseThingHandler {
             updateState(SEDIF_CONTRAT_GROUP, CHANNEL_AUTORITE_ORGANISATRICE,
                     new StringType(values.contrat.AutoriteOrganisatrice));
             updateState(SEDIF_CONTRAT_GROUP, CHANNEL_DATE_SORTIE_EPT, new StringType(values.contrat.DateSortieEPT));
-            // updateState(SEDIF_CONTRAT_GROUP, CHANNEL_EFACTURE, OnOffType.valueOf("" + values.contrat.eFacture));
-            // updateState(SEDIF_CONTRAT_GROUP, CHANNEL_ICL_ACTIVE, OnOffType.valueOf("" + values.contrat.iclActive));
-            // updateState(SEDIF_CONTRAT_GROUP, CHANNEL_PRELEVAUTO, OnOffType.valueOf("" + values.contrat.prelevAuto));
+            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_EFACTURE, OnOffType.from(values.contrat.eFacture));
+            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_ICL_ACTIVE, OnOffType.from(values.contrat.iclActive));
+            updateState(SEDIF_CONTRAT_GROUP, CHANNEL_PRELEVAUTO, OnOffType.from(values.contrat.prelevAuto));
             updateState(SEDIF_CONTRAT_GROUP, CHANNEL_NAME, new StringType(values.contrat.Name));
             updateState(SEDIF_CONTRAT_GROUP, CHANNEL_STREET, new StringType(values.contrat.SITE_Rue));
             updateState(SEDIF_CONTRAT_GROUP, CHANNEL_CP, new StringType(values.contrat.SITE_CP));
@@ -185,14 +186,13 @@ public class ThingSedifHandler extends BaseThingHandler {
             updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_NAME_SUP,
                     new StringType(values.contratClient.Name));
             updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_EMAIL, new StringType(values.contratClient.Email));
-            // updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_GC,
-            // OnOffType.valueOf("" + values.contratClient.GC));
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_GC, OnOffType.from(values.contratClient.GC));
             updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_MOBILE_PHONE,
                     new StringType(values.contratClient.MobilePhone));
             updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_SALUTATION,
                     new StringType(values.contratClient.Salutation));
-            // updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT__VEROUILLAGE_FICHE,
-            // OnOffType.valueOf("" + values.contratClient.VerrouillageFiche));
+            updateState(SEDIF_CONTRAT_CLIENT_GROUP, CHANNEL_CONTRAT_VEROUILLAGE_FICHE,
+                    OnOffType.from(values.contratClient.VerrouillageFiche));
 
             updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_BILLING_CITY,
                     new StringType(values.payeurClient.BillingCity));
@@ -206,14 +206,13 @@ public class ThingSedifHandler extends BaseThingHandler {
                     new StringType(values.payeurClient.LastName));
             updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_NAME_SUP, new StringType(values.payeurClient.Name));
             updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_EMAIL, new StringType(values.payeurClient.Email));
-            // updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_GC, OnOffType.valueOf("" +
-            // values.payeurClient.GC));
+            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_GC, OnOffType.from(values.payeurClient.GC));
             updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_MOBILE_PHONE,
                     new StringType(values.payeurClient.MobilePhone));
             updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_SALUTATION,
                     new StringType(values.payeurClient.Salutation));
-            // updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_VEROUILLAGE_FICHE,
-            // OnOffType.valueOf("" + values.payeurClient.VerrouillageFiche));
+            updateState(SEDIF_CONTRAT_PAYER_GROUP, CHANNEL_PAYER_VEROUILLAGE_FICHE,
+                    OnOffType.from(values.payeurClient.VerrouillageFiche));
 
         }, () -> {
             updateState(SEDIF_BASE_GROUP, CHANNEL_CONSUMPTION, new QuantityType<>(0.00, Units.LITRE));
