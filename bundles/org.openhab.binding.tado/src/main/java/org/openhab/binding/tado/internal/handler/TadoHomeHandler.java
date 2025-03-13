@@ -21,8 +21,6 @@ import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.ServletException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
@@ -51,8 +49,6 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,17 +68,11 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
 
     // tado specific RFC-8628 oAuth authentication parameters
     private static final ZonedDateTime OAUTH_MANDATORY_FROM_DATE = ZonedDateTime.parse("2025-03-15T00:00:00Z");
-    private static final String OAUTH_DEVICE_URL = "https://login.tado.com/oauth2/device_authorize";
-    private static final String OAUTH_TOKEN_URL = "https://login.tado.com/oauth2/token";
-    private static final String OAUTH_CLIENT_ID = "1bb50063-6b0c-4d11-bd99-387f4a91cc46";
-    private static final String OAUTH_SCOPE = "offline_access";
 
     private final Logger logger = LoggerFactory.getLogger(TadoHomeHandler.class);
 
     private final TadoBatteryChecker batteryChecker;
-    private final HttpService httpService;
-    private final TadoAuthenticationServlet httpServlet;
-    private final OAuthFactory oAuthFactory;
+    private final TadoHandlerFactory tadoHandlerFactory;
 
     private @NonNullByDefault({}) TadoHomeConfig configuration;
     private @NonNullByDefault({}) String confPendingText;
@@ -92,13 +82,11 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
     private @Nullable ScheduledFuture<?> initializationFuture;
     private @Nullable OAuthClientService oAuthClientService;
 
-    public TadoHomeHandler(Bridge bridge, HttpService httpService, OAuthFactory oAuthFactory) {
+    public TadoHomeHandler(Bridge bridge, TadoHandlerFactory tadoHandlerFactory, OAuthFactory oAuthFactory) {
         super(bridge);
         this.batteryChecker = new TadoBatteryChecker(this);
         this.configuration = getConfigAs(TadoHomeConfig.class);
-        this.httpService = httpService;
-        this.httpServlet = new TadoAuthenticationServlet(this);
-        this.oAuthFactory = oAuthFactory;
+        this.tadoHandlerFactory = tadoHandlerFactory;
     }
 
     public TemperatureUnit getTemperatureUnit() {
@@ -120,29 +108,16 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
         suggestRfc8628 |= ZonedDateTime.now().isAfter(OAUTH_MANDATORY_FROM_DATE);
 
         if (suggestRfc8628) {
-            // note: we must use the (fixed) thing type id since the actual thing id could change
-            String oAuthHandle = THING_TYPE_HOME.toString();
-            OAuthClientService oAuthService = oAuthFactory.getOAuthClientService(oAuthHandle);
-            if (oAuthService == null) {
-                oAuthService = oAuthFactory.createOAuthClientService(oAuthHandle, OAUTH_TOKEN_URL, OAUTH_DEVICE_URL,
-                        OAUTH_CLIENT_ID, null, OAUTH_SCOPE, false);
-            }
-            oAuthService.addAccessTokenRefreshListener(this);
-            oAuthClientService = oAuthService;
-
-            api = new HomeApiFactory().create(oAuthService);
-            confPendingText = CONF_PENDING_OAUTH_CREDS.formatted(TadoAuthenticationServlet.PATH);
+            OAuthClientService oAuthClientService = tadoHandlerFactory.subscribeOAuthClientService(this);
+            oAuthClientService.addAccessTokenRefreshListener(this);
+            this.api = new HomeApiFactory().create(oAuthClientService);
+            this.oAuthClientService = oAuthClientService;
             logger.trace("initialize() api v2 created");
+            confPendingText = CONF_PENDING_OAUTH_CREDS.formatted(TadoAuthenticationServlet.PATH);
         } else {
             api = new HomeApiFactory().create(Objects.requireNonNull(userName), Objects.requireNonNull(password));
-            confPendingText = CONF_PENDING_USER_CREDS;
             logger.trace("initialize() api v1 created");
-        }
-
-        try {
-            httpService.registerServlet(TadoAuthenticationServlet.PATH, httpServlet, null, null);
-        } catch (ServletException | NamespaceException e) {
-            logger.warn("initialize() failed to register servlet", e);
+            confPendingText = CONF_PENDING_USER_CREDS;
         }
 
         ScheduledFuture<?> initializationFuture = this.initializationFuture;
@@ -205,9 +180,10 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
     @Override
     public void dispose() {
         super.dispose();
-        OAuthClientService service = oAuthClientService;
-        if (service != null) {
-            service.removeAccessTokenRefreshListener(this);
+        OAuthClientService oAuthClientService = this.oAuthClientService;
+        if (oAuthClientService != null) {
+            tadoHandlerFactory.unsubscribeOAuthClientService(this);
+            oAuthClientService.removeAccessTokenRefreshListener(this);
         }
         ScheduledFuture<?> initializationFuture = this.initializationFuture;
         if (initializationFuture != null && !initializationFuture.isCancelled()) {

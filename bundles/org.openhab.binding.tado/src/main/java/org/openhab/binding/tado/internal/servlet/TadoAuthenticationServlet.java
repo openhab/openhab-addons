@@ -13,7 +13,6 @@
 package org.openhab.binding.tado.internal.servlet;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,14 +21,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.tado.internal.auth.OAuthorizerV2;
-import org.openhab.binding.tado.internal.handler.TadoHomeHandler;
-import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
-import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.binding.tado.internal.handler.TadoHandlerFactory;
 import org.openhab.core.auth.client.oauth2.DeviceCodeResponse;
 import org.openhab.core.auth.client.oauth2.OAuthException;
-import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 
 /**
  * The {@link TadoAuthenticationServlet} manages the authorization with the Tado API.
@@ -63,10 +57,10 @@ public class TadoAuthenticationServlet extends HttpServlet {
             </html>
             """;
 
-    private final TadoHomeHandler tadoHomeHandler;
+    private final TadoHandlerFactory tadoHandlerFactory;
 
-    public TadoAuthenticationServlet(TadoHomeHandler tadoHomeHandler) {
-        this.tadoHomeHandler = tadoHomeHandler;
+    public TadoAuthenticationServlet(TadoHandlerFactory tadoHandlerFactory) {
+        this.tadoHandlerFactory = tadoHandlerFactory;
     }
 
     /**
@@ -82,26 +76,18 @@ public class TadoAuthenticationServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        OAuthorizerV2 authorizerV2 = tadoHomeHandler.getApi().getAuthorizerV2();
-
-        if (request.getQueryString() == null) {
-            serveStatusPage(request, response, authorizerV2);
-        } else
-
-        // if the query string is '?oauth=start' then serve the user authentication page
-        if (PARAM_VALUE.equals(request.getParameter(PARAM_NAME))) {
-            if (authorizerV2 == null) {
-                serveStatusPage(request, response, authorizerV2);
-            } else {
-                serveUserAuthenticationPage(response, authorizerV2);
-            }
+        // if the query string is "?oauth=start" then serve the user authentication page
+        if (PARAM_VALUE.equals(request.getParameter(PARAM_NAME)) && tadoHandlerFactory.hasOAuthClientService()) {
+            serveUserAuthenticationPage(request, response);
+        } else {
+            serveStatusPage(request, response);
         }
     }
 
     /**
      * Serves the status page.
      *
-     * Depending on the type of {@link Authorizer} it serves three flavours of page:
+     * Depending on the type of authentication, it serves three flavours of page:
      *
      * <ul>
      * <li>A page saying that authentication is not required</li>
@@ -111,21 +97,19 @@ public class TadoAuthenticationServlet extends HttpServlet {
      *
      * @throws IOException
      */
-    private void serveStatusPage(HttpServletRequest request, HttpServletResponse response,
-            @Nullable OAuthorizerV2 authorizerV2) throws IOException {
+    private void serveStatusPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String dynamicHtml = null;
 
-        if (authorizerV2 == null) {
+        if (!tadoHandlerFactory.hasOAuthClientService()) {
             dynamicHtml = HTML_AUTH_NOT_REQUIRED;
         }
 
         if (dynamicHtml == null) {
             try {
-                AccessTokenResponse accessToken = Objects.requireNonNull(authorizerV2).getAccessTokenResponse();
-                if (accessToken != null) {
+                if (tadoHandlerFactory.getAccessTokenResponse() != null) {
                     dynamicHtml = HTML_AUTH_PASSED;
                 }
-            } catch (OAuthException | IOException | OAuthResponseException e) {
+            } catch (OAuthException e) {
                 dynamicHtml = HTML_AUTH_ERROR_TEMPLATE.replace(REPLACE_TAG,
                         e.getMessage() instanceof String exception ? exception : e.getClass().getName());
             }
@@ -156,12 +140,12 @@ public class TadoAuthenticationServlet extends HttpServlet {
      *
      * @throws IOException
      */
-    private void serveUserAuthenticationPage(HttpServletResponse response, OAuthorizerV2 authorizerV2)
+    private void serveUserAuthenticationPage(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         String dynamicHtml = null;
 
         try {
-            DeviceCodeResponse deviceCodeResponse = authorizerV2.getDeviceCodeResponse();
+            DeviceCodeResponse deviceCodeResponse = tadoHandlerFactory.getDeviceCodeResponse();
             String userVerificationUri = deviceCodeResponse.getVerificationUriComplete();
             if (userVerificationUri != null && !userVerificationUri.isBlank()) {
                 response.sendRedirect(userVerificationUri);

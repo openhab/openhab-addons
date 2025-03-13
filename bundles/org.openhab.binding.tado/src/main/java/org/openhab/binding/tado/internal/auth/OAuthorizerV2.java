@@ -14,12 +14,10 @@ package org.openhab.binding.tado.internal.auth;
 
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
-import org.openhab.core.auth.client.oauth2.DeviceCodeResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
@@ -57,14 +55,5 @@ public class OAuthorizerV2 implements Authorizer {
         } catch (OAuthException | IOException | OAuthResponseException e) {
             logger.debug("addAuthorization() => getAccessTokenResponse() error: {}", e.getMessage(), e);
         }
-    }
-
-    public @Nullable DeviceCodeResponse getDeviceCodeResponse() throws OAuthException {
-        return oAuthService.getDeviceCodeResponse();
-    }
-
-    public @Nullable AccessTokenResponse getAccessTokenResponse()
-            throws OAuthException, IOException, OAuthResponseException {
-        return oAuthService.getAccessTokenResponse();
     }
 }
