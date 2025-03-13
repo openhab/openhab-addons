@@ -338,6 +338,39 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         }
     }
 
+    synchronized private void bundler(Console console, String[] args) {
+        final String BUNDLER = """
+                require "bundler"
+                require "bundler/friendly_errors"
+
+                Bundler.with_friendly_errors do
+                  require "bundler/cli"
+
+                  # Allow any command to use --help flag to show help for that command
+                  help_flags = %w[--help -h]
+                  help_flag_used = ARGV.any? { |a| help_flags.include? a }
+                  args = help_flag_used ? Bundler::CLI.reformatted_help_args(ARGV) : ARGV
+
+                  Bundler::CLI.start(args, debug: true)
+                end
+                """;
+
+        String originalDir = System.setProperty("user.dir", scriptFileWatcher.getWatchPath().toString());
+        try {
+            executeWithPlainJRuby(console, engine -> {
+                engine.put(ScriptEngine.ARGV, args);
+                engine.eval(BUNDLER);
+                return null;
+            });
+        } finally {
+            if (originalDir == null) {
+                System.clearProperty("user.dir");
+            } else {
+                System.setProperty("user.dir", originalDir);
+            }
+        }
+    }
+
     synchronized private void gem(Console console, String[] args) {
         final String GEM = """
                 require "rubygems/gem_runner"
