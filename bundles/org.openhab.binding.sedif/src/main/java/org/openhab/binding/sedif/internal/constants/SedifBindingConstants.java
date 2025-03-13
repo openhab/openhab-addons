@@ -106,4 +106,9 @@ public class SedifBindingConstants {
     public static final String CHANNEL_PAYER_VEROUILLAGE_FICHE = "payer-verrouillage-fiche";
     public static final String CHANNEL_SOLDE = "solde";
 
+    public static final String THING_WATER_METER_PROPERTY_ELMA = "elma";
+    public static final String THING_WATER_METER_PROPERTY_ELMB = "elmb";
+    public static final String THING_WATER_METER_PROPERTY_NUM_COMPTEUR = "num-compteur";
+    public static final String THING_WATER_METER_PROPERTY_ID_PDS = "id-pds";
+
 }

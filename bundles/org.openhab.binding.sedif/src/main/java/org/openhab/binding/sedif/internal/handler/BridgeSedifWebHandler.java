@@ -16,7 +16,12 @@ import java.net.HttpCookie;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -26,12 +31,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.sedif.internal.api.SedifHttpApi;
-import org.openhab.binding.sedif.internal.config.SedifConfiguration;
+import org.openhab.binding.sedif.internal.config.SedifBridgeConfiguration;
 import org.openhab.binding.sedif.internal.constants.SedifBindingConstants;
+import org.openhab.binding.sedif.internal.discovery.SedifDiscoveryService;
 import org.openhab.binding.sedif.internal.dto.AuraContext;
 import org.openhab.binding.sedif.internal.dto.AuraResponse;
+import org.openhab.binding.sedif.internal.dto.Contract;
 import org.openhab.binding.sedif.internal.dto.Contracts;
 import org.openhab.binding.sedif.internal.dto.Event;
+import org.openhab.binding.sedif.internal.helpers.SedifListener;
 import org.openhab.binding.sedif.internal.types.SedifException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -42,6 +50,7 @@ import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
@@ -61,7 +70,11 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class BridgeSedifWebHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(BridgeSedifWebHandler.class);
-    protected @Nullable SedifConfiguration config;
+    protected @Nullable SedifBridgeConfiguration config;
+
+    private Set<SedifListener> listeners = new CopyOnWriteArraySet<>();
+
+    private Dictionary<String, Contract> contractDict = new Hashtable<String, Contract>();
 
     protected final HttpService httpService;
     protected final BundleContext bundleContext;
@@ -88,9 +101,6 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
 
     private @Nullable AuraContext appCtx;
 
-    private @Nullable String contractId = "";
-    private @Nullable String meterIdA = "";
-    private @Nullable String meterIdB = "";
     private @Nullable String token = "";
 
     protected boolean connected = false;
@@ -162,9 +172,9 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
     }
 
     public synchronized void connectionInit() throws SedifException {
-        config = getConfigAs(SedifConfiguration.class);
+        config = getConfigAs(SedifBridgeConfiguration.class);
 
-        SedifConfiguration lcConfig = config;
+        SedifBridgeConfiguration lcConfig = config;
 
         try {
             sedifApi.removeAllCookie();
@@ -245,7 +255,12 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
             logger.debug("Step 6: Get contract");
             Contracts contracts = sedifApi.getContracts();
             if (contracts != null && contracts.contrats != null) {
-                contractId = contracts.contrats.get(1).Id;
+                for (Contract contract : contracts.contrats) {
+                    if (contract.Name != null) {
+                        contractDict.put(contract.Name, contract);
+                        fireOnContractReceivedEvent(contract);
+                    }
+                }
             }
 
             connected = true;
@@ -274,18 +289,6 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         return API_DATE_FORMAT_YEAR_FIRST;
     }
 
-    public @Nullable String getContractId() {
-        return contractId;
-    }
-
-    public @Nullable String getMeterIdA() {
-        return meterIdA;
-    }
-
-    public @Nullable String getMeterIdB() {
-        return meterIdB;
-    }
-
     public @Nullable String getToken() {
         return token;
     }
@@ -296,6 +299,27 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
 
     public SedifHttpApi getSedifApi() {
         return sedifApi;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(SedifDiscoveryService.class);
+    }
+
+    public void addListener(final SedifListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(final SedifListener listener) {
+        listeners.remove(listener);
+    }
+
+    protected void fireOnContractReceivedEvent(final Contract contract) {
+        listeners.forEach(l -> l.onContractInit(contract));
+    }
+
+    public Contract getContract(String contractName) {
+        return contractDict.get(contractName);
     }
 
 }
