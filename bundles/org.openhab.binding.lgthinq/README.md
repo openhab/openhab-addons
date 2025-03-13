@@ -203,7 +203,7 @@ OBS: some versions of this device can not support all the channels, depending on
 
 Example of how to configure a thing.
 
-demo.thing
+### Example `demo.things`
 
 ```java
 Bridge lgthinq:bridge:MyLGThinqBridge [ username="user@registered.com", password="cleartext-password", language="en", country="US", poolingIntervalSec=600] {
