@@ -34,6 +34,7 @@ import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_
 import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_USER_INFO;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -101,6 +102,9 @@ class LGThinqBridgeTests {
     private final String accessToken = "11a1222c39f16a5c8b3fa45bb4c9be2e00a29a69dced2fa7fe731f1728346ee669f1a96d1f0b4925e5aa330b6dbab882772";
     private final String sessionTokenReturned = String.format(JsonUtils.loadJson("session-token-response-1.json"),
             accessToken, refreshToken);
+
+    LGThinqBridgeTests() throws IOException {
+    }
 
     // private String getCurrentTimestamp() {
     // SimpleDateFormat sdf = new SimpleDateFormat(LG_API_DATE_FORMAT);

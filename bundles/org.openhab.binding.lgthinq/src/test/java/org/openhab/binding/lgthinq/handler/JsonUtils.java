@@ -19,14 +19,18 @@ import java.nio.charset.StandardCharsets;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link JsonUtils}
+ * The {@link JsonUtils} used for test classes to json files serialization.
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
 public class JsonUtils {
+
     public static String loadJson(String fileName) {
         ClassLoader classLoader = JsonUtils.class.getClassLoader();
+        if (classLoader == null) {
+            throw new IllegalStateException("Can't get classloader from a custom class ? Security Context issue ?");
+        }
         try (InputStream inputStream = classLoader.getResourceAsStream(fileName)) {
             if (inputStream == null) {
                 throw new IllegalArgumentException(

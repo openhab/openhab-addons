@@ -66,7 +66,6 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link LGThinQAbstractDeviceHandler} is a main interface contract for all LG Thinq things
@@ -744,8 +743,8 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                         getLogger().debug("Turning OFF extended information collector");
                         stopExtraInfoCollectorPolling();
                     } else {
-                        getLogger().error("Command {} for {} channel is unexpected. It's most likely a bug", params.command,
-                                CHANNEL_EXTENDED_INFO_COLLECTOR_ID);
+                        getLogger().error("Command {} for {} channel is unexpected. It's most likely a bug",
+                                params.command, CHANNEL_EXTENDED_INFO_COLLECTOR_ID);
                     }
                 }
             } catch (LGThinqException e) {
