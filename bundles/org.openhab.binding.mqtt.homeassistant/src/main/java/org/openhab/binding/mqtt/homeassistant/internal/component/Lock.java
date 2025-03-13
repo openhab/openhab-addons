@@ -44,11 +44,18 @@ public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
     public static final String PAYLOAD_UNLOCK = "UNLOCK";
     public static final String PAYLOAD_OPEN = "OPEN";
 
+    private static final Map<String, String> COMMAND_LABELS = Map.of(PAYLOAD_LOCK, "@text/command.lock.lock",
+            PAYLOAD_UNLOCK, "@text/command.lock.unlock", PAYLOAD_OPEN, "@text/command.lock.open");
+
     public static final String STATE_JAMMED = "JAMMED";
     public static final String STATE_LOCKED = "LOCKED";
     public static final String STATE_LOCKING = "LOCKING";
     public static final String STATE_UNLOCKED = "UNLOCKED";
     public static final String STATE_UNLOCKING = "UNLOCKING";
+
+    private static final Map<String, String> STATE_LABELS = Map.of(STATE_JAMMED, "@text/state.lock.jammed",
+            STATE_LOCKED, "@text/state.lock.locked", STATE_LOCKING, "@text/state.lock.locking", STATE_UNLOCKED,
+            "@text/state.lock.unlocked", STATE_UNLOCKING, "@text/state.lock.unlocking");
 
     /**
      * Configuration class for MQTT component
@@ -121,7 +128,7 @@ public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
         states.put(channelConfiguration.stateLocking, STATE_LOCKING);
         states.put(channelConfiguration.stateUnlocking, STATE_UNLOCKING);
         states.put(channelConfiguration.stateJammed, STATE_JAMMED);
-        stateValue = new TextValue(states, commands);
+        stateValue = new TextValue(states, commands, STATE_LABELS, COMMAND_LABELS);
 
         buildChannel(STATE_CHANNEL_ID, ComponentChannelType.STRING, stateValue, "State",
                 componentConfiguration.getUpdateListener())

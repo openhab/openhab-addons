@@ -41,8 +41,48 @@ import org.openhab.core.types.UnDefType;
 public class TextValue extends Value {
     private final @Nullable Map<String, String> states;
     private final @Nullable Map<String, String> commands;
+    private final @Nullable Map<String, String> stateLabels;
+    private final @Nullable Map<String, String> commandLabels;
 
     protected @Nullable String nullValue = null;
+
+    /**
+     * Create a string value with a limited number of allowed states and commands.
+     *
+     * @param states Allowed states. The key is the value that is received from MQTT,
+     *            and the value is how matching values will be presented in openHAB.
+     * @param commands Allowed commands. The key is the value that will be received by
+     *            openHAB, and the value is how matching commands will be sent to MQTT.
+     * @param stateLabels Labels for the states in the StateDescription. If a state is not found in this map, the state
+     *            itself is used as label.
+     *            Keys are the openHAB state, not the MQTT state.
+     * @param commandLabels Labels for the commands in the CommandDescription. If a command is not found in this map,
+     *            the command itself is used as label.
+     */
+    public TextValue(Map<String, String> states, Map<String, String> commands, Map<String, String> stateLabels,
+            Map<String, String> commandLabels) {
+        super(CoreItemFactory.STRING, List.of(StringType.class));
+        if (!states.isEmpty()) {
+            this.states = new LinkedHashMap(states);
+        } else {
+            this.states = null;
+        }
+        if (!commands.isEmpty()) {
+            this.commands = new LinkedHashMap(commands);
+        } else {
+            this.commands = null;
+        }
+        if (!stateLabels.isEmpty()) {
+            this.stateLabels = Map.copyOf(stateLabels);
+        } else {
+            this.stateLabels = null;
+        }
+        if (!commandLabels.isEmpty()) {
+            this.commandLabels = Map.copyOf(commandLabels);
+        } else {
+            this.commandLabels = null;
+        }
+    }
 
     /**
      * Create a string value with a limited number of allowed states and commands.
@@ -64,6 +104,8 @@ public class TextValue extends Value {
         } else {
             this.commands = null;
         }
+        this.stateLabels = null;
+        this.commandLabels = null;
     }
 
     /**
@@ -90,6 +132,8 @@ public class TextValue extends Value {
         } else {
             this.commands = null;
         }
+        this.stateLabels = null;
+        this.commandLabels = null;
     }
 
     /**
@@ -106,6 +150,8 @@ public class TextValue extends Value {
         super(CoreItemFactory.STRING, List.of(StringType.class));
         this.states = null;
         this.commands = null;
+        this.stateLabels = null;
+        this.commandLabels = null;
     }
 
     public void setNullValue(@Nullable String nullValue) {
@@ -159,7 +205,13 @@ public class TextValue extends Value {
         StateDescriptionFragmentBuilder builder = super.createStateDescription(readOnly);
         final Map<String, String> states = this.states;
         if (states != null) {
-            states.forEach((ohState, mqttState) -> builder.withOption(new StateOption(ohState, ohState)));
+            states.forEach((ohState, mqttState) -> {
+                String label = ohState;
+                if (stateLabels != null) {
+                    label = stateLabels.getOrDefault(ohState, ohState);
+                }
+                builder.withOption(new StateOption(ohState, label));
+            });
         }
         return builder;
     }
@@ -170,7 +222,11 @@ public class TextValue extends Value {
         final Map<String, String> commands = this.commands;
         if (commands != null) {
             for (String command : commands.keySet()) {
-                builder.withCommandOption(new CommandOption(command, command));
+                String label = command;
+                if (commandLabels != null) {
+                    label = commandLabels.getOrDefault(command, command);
+                }
+                builder.withCommandOption(new CommandOption(command, label));
             }
         }
         return builder;
