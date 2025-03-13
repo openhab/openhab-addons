@@ -33,9 +33,13 @@
 		</channel-groups>
 
 		<config-description>
+		    <parameter name="contractId" type="text" required="true">
+                <label>ContractId</label>
+                <description>Your Contract Id</description>
+            </parameter>
 			<parameter name="meterId" type="text" required="true">
-				<label>PrmId</label>
-				<description>Your Prm Id</description>
+				<label>MeterId</label>
+				<description>Your Meter Id</description>
 			</parameter>
 		</config-description>
 	</thing-type>
