@@ -12,17 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.ac;
 
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_AIRCLEAN;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_AIR_CLEAN_COMMAND_OFF;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_AIR_CLEAN_COMMAND_ON;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_AUTODRY;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_COMMAND_OFF;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_COMMAND_ON;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_COOL_JET;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_ENERGYSAVING;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_SUB_MODE_COOL_JET;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_SUB_MODE_STEP_LEFT_RIGHT;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_SUB_MODE_STEP_UP_DOWN;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.*;
 import static org.openhab.binding.lgthinq.lgservices.model.DeviceTypes.HEAT_PUMP;
 
 import java.util.ArrayList;

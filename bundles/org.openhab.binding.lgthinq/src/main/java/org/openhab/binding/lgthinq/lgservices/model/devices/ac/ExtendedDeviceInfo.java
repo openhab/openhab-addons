@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.ac;
 
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_EXTRA_ATTR_FILTER_MAX_TIME_TO_USE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_EXTRA_ATTR_FILTER_USED_TIME;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_EXTRA_ATTR_INSTANT_POWER;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

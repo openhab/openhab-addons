@@ -12,26 +12,11 @@
  */
 package org.openhab.binding.lgthinq.handler;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.containing;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.ok;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_GATEWAY_SERVICE_PATH_V2;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_OAUTH_SEARCH_KEY_PATH;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_PLATFORM_TYPE_V1;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_PLATFORM_TYPE_V2;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_PRE_LOGIN_PATH;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_LS_PATH;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_SESSION_LOGIN_PATH;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_USER_INFO;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.*;
 
 import java.io.File;
 import java.io.IOException;

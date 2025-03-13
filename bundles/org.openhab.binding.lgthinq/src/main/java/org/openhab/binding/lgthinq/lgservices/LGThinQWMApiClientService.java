@@ -20,31 +20,31 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDr
 import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDryerSnapshot;
 
 /**
- * The {@link LGThinQWMApiClientService} - Methods specifics for Washing/Drier Machines
- *
+ * Represents an API client service for LG ThinQ Washer/Dryer devices.
+ * 
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
 public interface LGThinQWMApiClientService extends LGThinQApiClientService<WasherDryerCapability, WasherDryerSnapshot> {
     /**
-     * Control the remote start feature
-     * 
-     * @param bridgeName Bridge Name
-     * @param cap Capabilities of the device
-     * @param deviceId LG Device ID
-     * @param data Data to control the remote start
-     * @throws LGThinqApiException if some error is reported from the LG API
+     * Start the LG ThinQ Washer/Dryer device remotely using the specified capability and data.
+     *
+     * @param bridgeName The name of the bridge connected to the device
+     * @param cap The WasherDryerCapability object representing the capabilities of the device
+     * @param deviceId The ID of the LG ThinQ device
+     * @param data A Map containing key-value pairs of data to be used for starting the device
+     * @throws LGThinqApiException if an error occurs while trying to start the device remotely
      */
     void remoteStart(String bridgeName, WasherDryerCapability cap, String deviceId, Map<String, Object> data)
             throws LGThinqApiException;
 
     /**
-     * Waking UP feature
-     * 
-     * @param bridgeName Bridge Name
-     * @param deviceId LG Device Name
-     * @param wakeUp to Wake Up (true/false)
-     * @throws LGThinqApiException if some error is reported from the LG API
+     * Controls the wake-up feature of the LG ThinQ Washer/Dryer device.
+     *
+     * @param bridgeName The name of the bridge connected to the device
+     * @param deviceId The ID of the LG device
+     * @param wakeUp Boolean value indicating whether to wake up the device
+     * @throws LGThinqApiException if an error occurs while trying to wake up the device
      */
     void wakeUp(String bridgeName, String deviceId, Boolean wakeUp) throws LGThinqApiException;
 }

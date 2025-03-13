@@ -13,8 +13,7 @@
 package org.openhab.binding.lgthinq.lgservices.api;
 
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THINQ_CONNECTION_DATA_FILE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_GATEWAY_SERVICE_PATH_V2;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_GATEWAY_URL_V2;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.*;
 
 import java.io.File;
 import java.io.IOException;

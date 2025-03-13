@@ -44,13 +44,19 @@ public class WasherDryerSnapshotBuilder extends DefaultSnapshotBuilder<WasherDry
     public WasherDryerSnapshot createFromBinary(String binaryData, List<MonitoringBinaryProtocol> prot,
             CapabilityDefinition capDef) throws LGThinqUnmarshallException, LGThinqApiException {
         WasherDryerSnapshot snap = super.createFromBinary(binaryData, prot, capDef);
-        snap.setRemoteStart(
-                bitValue(((WasherDryerCapability) capDef).getRemoteStartFeatName(), snap.getRawData(), capDef));
-        if (((WasherDryerCapability) capDef).hasDoorLook()) {
-            snap.setDoorLock(
-                    bitValue(((WasherDryerCapability) capDef).getDoorLockFeatName(), snap.getRawData(), capDef));
+
+        if (!(capDef instanceof WasherDryerCapability washerCap)) {
+            throw new IllegalArgumentException(
+                    "Capability must be an WasherDryerCapability for WasherDryerSnapshotBuilder. It most likely a bug!");
         }
-        snap.setChildLock(bitValue(((WasherDryerCapability) capDef).getChildLockFeatName(), snap.getRawData(), capDef));
+
+        snap.setRemoteStart(bitValue(washerCap.getRemoteStartFeatName(), snap.getRawData(), capDef));
+        snap.setChildLock(bitValue(washerCap.getChildLockFeatName(), snap.getRawData(), capDef));
+
+        if (washerCap.hasDoorLook()) {
+            snap.setDoorLock(bitValue(washerCap.getDoorLockFeatName(), snap.getRawData(), capDef));
+        }
+
         return snap;
     }
 

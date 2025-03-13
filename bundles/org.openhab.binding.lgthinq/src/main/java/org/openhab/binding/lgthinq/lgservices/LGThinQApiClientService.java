@@ -30,118 +30,132 @@ import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.openhab.binding.lgthinq.lgservices.model.SnapshotDefinition;
 
 /**
- * The {@link LGThinQApiClientService} - defines the basic methods to manage devices in the LG Cloud
+ * The {@link LGThinQApiClientService} interface defines the core methods for managing LG ThinQ devices
+ * via the LG Cloud API. It provides functionalities for retrieving device metadata, controlling power states,
+ * monitoring device status, and handling device capabilities.
+ *
+ * @param <C> The type representing the capability definition for a device.
+ * @param <S> The type representing a snapshot definition of device data.
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
 public interface LGThinQApiClientService<C extends CapabilityDefinition, S extends SnapshotDefinition> {
+
     /**
-     * List all devices registers in the LG Account
-     * 
-     * @param bridgeName bridge name
-     * @return return a List off all devices registered for the user account.
-     * @throws LGThinqApiException if some error occur accessing LG API
+     * Retrieves a list of all devices registered under the LG account.
+     *
+     * @param bridgeName The name of the bridge managing the devices.
+     * @return A list of {@link LGDevice} representing the registered devices.
+     * @throws LGThinqApiException If an error occurs while accessing the LG API.
      */
     List<LGDevice> listAccountDevices(String bridgeName) throws LGThinqApiException;
 
     /**
-     * Get the LG device metadata about the settings and capabilities of the Device
-     * 
-     * @param bridgeName bridge name
-     * @param deviceId LG Device ID
-     * @return A map containing all the device settings.
-     * @throws LGThinqApiException
+     * Retrieves device metadata, including settings and capabilities.
+     *
+     * @param bridgeName The name of the bridge managing the device.
+     * @param deviceId The unique ID of the LG ThinQ device.
+     * @return A map containing device settings and metadata.
+     * @throws LGThinqApiException If an error occurs while accessing the LG API.
      */
     Map<String, Object> getDeviceSettings(String bridgeName, String deviceId) throws LGThinqApiException;
 
+    /**
+     * Initializes a device, preparing it for interaction.
+     *
+     * @param bridgeName The name of the bridge managing the device.
+     * @param deviceId The unique ID of the LG ThinQ device.
+     * @throws LGThinqApiException If an error occurs while accessing the LG API.
+     */
     void initializeDevice(String bridgeName, String deviceId) throws LGThinqApiException;
 
     /**
-     * Retrieve actual data from device (its sensors and points states).
+     * Retrieves the latest data snapshot from the device, including sensor readings and state values.
      *
-     * @param deviceId device number
-     * @param capDef Capabilities definition/settings of the device
-     * @return return snapshot state of the device sensors and features
-     * @throws LGThinqApiException if some error interacting with LG API Server occur.
+     * @param bridgeName The name of the bridge managing the device.
+     * @param deviceId The unique ID of the LG ThinQ device.
+     * @param capDef The capability definition of the device.
+     * @return A snapshot containing the device's current data.
+     * @throws LGThinqApiException If an error occurs while accessing the LG API.
      */
     @Nullable
     S getDeviceData(String bridgeName, String deviceId, CapabilityDefinition capDef) throws LGThinqApiException;
 
     /**
-     * Turn on/off the device
-     * 
-     * @param bridgeName bridge name
-     * @param deviceId LG device ID
-     * @param newPowerState new Power State
-     * @throws LGThinqApiException if some error interacting with LG API Server occur.
+     * Toggles the power state of the device (on/off).
+     *
+     * @param bridgeName The name of the bridge managing the device.
+     * @param deviceId The unique ID of the LG ThinQ device.
+     * @param newPowerState The desired power state.
+     * @throws LGThinqApiException If an error occurs while accessing the LG API.
      */
     void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState) throws LGThinqApiException;
 
     /**
-     * Start the device Monitor responsible to open a window of data collection. (only used for V1 protocol)
-     * 
-     * @param bridgeName bridge name
-     * @param deviceId LG device ID
-     * @return string with the monitor ID
-     * @throws LGThinqApiException if some error interacting with LG API Server occur.
-     * @throws IOException if some error occur opening device's configuration files.
+     * Starts a monitoring session for data collection (only applicable for protocol V1).
+     *
+     * @param bridgeName The name of the bridge managing the device.
+     * @param deviceId The unique ID of the LG ThinQ device.
+     * @return The monitor session ID.
+     * @throws LGThinqApiException If an error occurs while accessing the LG API.
+     * @throws IOException If an error occurs while handling device configuration files.
      */
     String startMonitor(String bridgeName, String deviceId) throws LGThinqApiException, IOException;
 
     /**
-     * Get the capabilities of the device (got from device settings)
-     * 
-     * @param deviceId The LG device ID
-     * @param uri the URL containing the XML descriptor of the device
-     * @param forceRecreate If you want to recreate the cached file of the XML descriptor
-     * @return the capability object related to the device
-     * @throws LGThinqApiException if some error interacting with LG API Server occur.
+     * Retrieves the capability definition of the device.
+     *
+     * @param deviceId The unique ID of the LG ThinQ device.
+     * @param uri The URI containing the XML descriptor of the device.
+     * @param forceRecreate Whether to force recreation of the cached capability file.
+     * @return The capability definition of the device.
+     * @throws LGThinqApiException If an error occurs while accessing the LG API.
      */
     C getCapability(String deviceId, String uri, boolean forceRecreate) throws LGThinqApiException;
 
     /**
-     * Build a default snapshot data of the device when it's offline, junto to keep data integrity in the channels
-     * 
-     * @return Default snapshot.
+     * Builds a default snapshot to maintain data integrity when the device is offline.
+     *
+     * @return A default snapshot representing offline device data.
      */
     S buildDefaultOfflineSnapshot();
 
     /**
-     * Load device capabilities from the cached file.
-     * 
-     * @param deviceId LG Thinq Device ID
-     * @param uri if the file doesn't exist, get the content from registered URI and save locally.
-     * @param forceRecreate force to recreate the file even if was previously saved locally
-     * @return File pointing to the capability file
-     * @throws LGThinqApiException if some error interacting with LG API Server occur.
+     * Loads device capabilities from a cached file or retrieves them from the API if necessary.
+     *
+     * @param deviceId The unique ID of the LG ThinQ device.
+     * @param uri The URI used to retrieve capability data if the file is missing.
+     * @param forceRecreate Whether to force recreation of the cached file.
+     * @return A file containing the device capability data.
+     * @throws LGThinqApiException If an error occurs while accessing the LG API.
      */
     File loadDeviceCapability(String deviceId, String uri, boolean forceRecreate) throws LGThinqApiException;
 
     /**
-     * Stop the monitor of data collection
-     * 
-     * @param bridgeName Bridge name
-     * @param deviceId LG Device ID
-     * @param workId name of the monitor
-     * @throws LGThinqApiException if some error interacting with LG API Server occur.
-     * @throws IOException if some error occur opening device's configuration files.
+     * Stops a previously started monitoring session.
+     *
+     * @param bridgeName The name of the bridge managing the device.
+     * @param deviceId The unique ID of the LG ThinQ device.
+     * @param workId The monitor session ID.
+     * @throws LGThinqException If an error occurs while stopping the monitor.
+     * @throws IOException If an error occurs while handling device configuration files.
      */
     void stopMonitor(String bridgeName, String deviceId, String workId) throws LGThinqException, IOException;
 
     /**
-     * Get data collected by the monitor
-     * 
-     * @param bridgeName Bridge name
-     * @param deviceId LG Device ID
-     * @param workerId monitor ID
-     * @param deviceType Device Type related to the data collected
-     * @param deviceCapability capabilities of the device
-     * @return Snapshot of the device collected from LG API
-     * @throws LGThinqApiException if some error is returned from LG API
-     * @throws LGThinqDeviceV1MonitorExpiredException if the monitor is not valid anymore
-     * @throws IOException if some IO error happen when accessing token cache file.
-     * @throws LGThinqUnmarshallException if some error happen reading data collected from LG API
+     * Retrieves data collected from an active monitoring session.
+     *
+     * @param bridgeName The name of the bridge managing the device.
+     * @param deviceId The unique ID of the LG ThinQ device.
+     * @param workerId The monitoring session ID.
+     * @param deviceType The type of device being monitored.
+     * @param deviceCapability The capability definition of the device.
+     * @return A snapshot containing the collected data.
+     * @throws LGThinqApiException If an error occurs while accessing the LG API.
+     * @throws LGThinqDeviceV1MonitorExpiredException If the monitoring session has expired.
+     * @throws IOException If an error occurs while accessing cached token files.
+     * @throws LGThinqUnmarshallException If an error occurs while parsing collected data.
      */
     @Nullable
     S getMonitorData(String bridgeName, String deviceId, String workerId, DeviceTypes deviceType, C deviceCapability)

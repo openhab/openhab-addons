@@ -15,7 +15,8 @@ package org.openhab.binding.lgthinq.lgservices.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link DeviceTypes}
+ * An enumeration representing various device types along with their unique identifiers, acronyms, submodels, and thing
+ * type IDs.
  *
  * @author Nemer Daud - Initial contribution
  */
@@ -52,6 +53,13 @@ public enum DeviceTypes {
         return thingTypeId;
     }
 
+    /**
+     * Returns the DeviceTypes enum based on the given device type ID and device code.
+     *
+     * @param deviceTypeId the device type ID to determine the corresponding DeviceTypes enum
+     * @param deviceCode the code of the device
+     * @return the DeviceTypes enum associated with the given device type ID and device code
+     */
     public static DeviceTypes fromDeviceTypeId(int deviceTypeId, String deviceCode) {
         switch (deviceTypeId) {
             case 401:
@@ -76,6 +84,13 @@ public enum DeviceTypes {
         }
     }
 
+    /**
+     * Converts the device type acronym and model type to a corresponding DeviceTypes enum value.
+     *
+     * @param deviceTypeAcron The device type acronym.
+     * @param modelType The model type of the device.
+     * @return The DeviceTypes enum value corresponding to the device type acronym and model type.
+     */
     public static DeviceTypes fromDeviceTypeAcron(String deviceTypeAcron, String modelType) {
         return switch (deviceTypeAcron) {
             case "AC" -> {

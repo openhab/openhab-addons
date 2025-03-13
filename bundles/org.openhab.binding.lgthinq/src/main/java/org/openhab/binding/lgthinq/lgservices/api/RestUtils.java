@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.api;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.HMAC_SHA1_ALGORITHM;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.MESSAGE_DIGEST_ALGORITHM;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 
 import java.math.BigInteger;
 import java.net.URI;

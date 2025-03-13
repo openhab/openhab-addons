@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.api;
 
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_EMP_SESS_PATH;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_EMP_SESS_URL;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.*;
 
 import java.io.Serial;
 import java.io.Serializable;

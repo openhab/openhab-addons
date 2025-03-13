@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V1_CONTROL_OP;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_ROOT_TAG_V1;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.*;
 
 import java.io.IOException;
 import java.util.Base64;

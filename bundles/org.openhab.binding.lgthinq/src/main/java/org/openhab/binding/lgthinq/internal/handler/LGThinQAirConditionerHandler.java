@@ -12,40 +12,7 @@
  */
 package org.openhab.binding.lgthinq.internal.handler;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CAP_EXTRA_ATTR_FILTER_MAX_TIME_TO_USE;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CAP_EXTRA_ATTR_FILTER_USED_TIME;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CAP_EXTRA_ATTR_INSTANT_POWER;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_AIR_CLEAN_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_AIR_WATER_SWITCH_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_AUTO_DRY_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_COOL_JET_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_CURRENT_ENERGY_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_CURRENT_TEMP_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_ENERGY_SAVING_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_FAN_SPEED_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_MAX_TEMP_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_MIN_TEMP_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_MOD_OP_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_POWER_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_REMAINING_FILTER_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_STEP_LEFT_RIGHT_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_STEP_UP_DOWN_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_TARGET_TEMP_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_DASHBOARD_GRP_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_EXTENDED_INFO_COLLECTOR_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_EXTENDED_INFO_GRP_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_DEVICE_ALIAS;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_MODEL_URL_INFO;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_AIR_CONDITIONER;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_HEAT_PUMP;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_ACHP_OP_MODE_COOL_KEY;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_ACHP_OP_MODE_HEAT_KEY;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_FAN_SPEED;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_OP_MODE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_STEP_LEFT_RIGHT_MODE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_STEP_UP_DOWN_MODE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_HP_AIR_SWITCH;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_HP_WATER_SWITCH;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

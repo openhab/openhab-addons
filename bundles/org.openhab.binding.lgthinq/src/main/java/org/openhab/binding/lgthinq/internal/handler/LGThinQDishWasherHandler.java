@@ -12,22 +12,7 @@
  */
 package org.openhab.binding.lgthinq.internal.handler;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_POWER_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_DASHBOARD_GRP_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_COURSE_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_DOOR_LOCK_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_PROCESS_STATE_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMAIN_TIME_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_SMART_COURSE_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_STATE_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_DEVICE_ALIAS;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_MODEL_URL_INFO;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_WASHING_MACHINE;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_WASHING_TOWER;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_DW_DOOR_STATE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_DW_PROCESS_STATE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_DW_STATE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.WMD_POWER_OFF_VALUE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.List;

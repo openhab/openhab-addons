@@ -12,14 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_START_RINSE;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_START_SPIN;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_START_TEMP;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_RINSE_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_SPIN_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_TEMP_LEVEL_ID;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.WM_LOST_WASHING_STATE_KEY;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.WM_LOST_WASHING_STATE_VALUE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.List;

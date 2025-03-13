@@ -21,82 +21,86 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeCanonic
 import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeCapability;
 
 /**
- * The {@link LGThinQFridgeApiClientService} - Interface with specific methods for Fridge Devices
+ * {@link LGThinQFridgeApiClientService} defines methods for interacting with LG ThinQ refrigerator devices.
+ * It extends {@link LGThinQApiClientService} to provide core functionalities while adding refrigerator-specific
+ * operations.
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
 public interface LGThinQFridgeApiClientService
         extends LGThinQApiClientService<FridgeCapability, FridgeCanonicalSnapshot> {
+
     /**
-     * Set fridge temperature
-     * 
-     * @param bridgeId Bridge ID
-     * @param deviceId LG Device ID
-     * @param fridgeCapability Fridge Capabilities
-     * @param targetTemperatureIndex target temperature
-     * @param tempUnit Temperature Unit
-     * @param snapCmdData Snapshot template for the target temperature command
-     * @throws LGThinqApiException If some error is reported from LG API
+     * Sets the refrigerator temperature.
+     *
+     * @param bridgeId The bridge ID managing the device.
+     * @param deviceId The unique identifier of the LG refrigerator.
+     * @param fridgeCapability The capabilities definition of the refrigerator.
+     * @param targetTemperatureIndex The desired temperature index.
+     * @param tempUnit The unit of temperature measurement.
+     * @param snapCmdData Optional snapshot template for the temperature command.
+     * @throws LGThinqApiException If an error occurs while communicating with the LG API.
      */
     void setFridgeTemperature(String bridgeId, String deviceId, FridgeCapability fridgeCapability,
             Integer targetTemperatureIndex, String tempUnit, @Nullable Map<String, Object> snapCmdData)
             throws LGThinqApiException;
 
     /**
-     * Set fridge temperature
-     * 
-     * @param bridgeId Bridge ID
-     * @param deviceId LG Device ID
-     * @param fridgeCapability Fridge Capabilities
-     * @param targetTemperatureIndex target temperature
-     * @param tempUnit Temperature Unit
-     * @param snapCmdData Snapshot template for the target temperature command
-     * @throws LGThinqApiException If some error is reported from LG API
+     * Sets the freezer temperature.
+     *
+     * @param bridgeId The bridge ID managing the device.
+     * @param deviceId The unique identifier of the LG freezer.
+     * @param fridgeCapability The capabilities definition of the freezer.
+     * @param targetTemperatureIndex The desired temperature index.
+     * @param tempUnit The unit of temperature measurement.
+     * @param snapCmdData Optional snapshot template for the temperature command.
+     * @throws LGThinqApiException If an error occurs while communicating with the LG API.
      */
     void setFreezerTemperature(String bridgeId, String deviceId, FridgeCapability fridgeCapability,
             Integer targetTemperatureIndex, String tempUnit, @Nullable Map<String, Object> snapCmdData)
             throws LGThinqApiException;
 
     /**
-     * Setup Express Mode
-     * 
-     * @param bridgeId Bridge ID
-     * @param deviceId LG Device ID
-     * @param expressModeIndex Empress mode desired
-     * @throws LGThinqApiException If some error is reported from LG API
+     * Activates or deactivates the Express Mode.
+     *
+     * @param bridgeId The bridge ID managing the device.
+     * @param deviceId The unique identifier of the LG refrigerator.
+     * @param expressModeIndex The desired express mode setting.
+     * @throws LGThinqApiException If an error occurs while communicating with the LG API.
      */
     void setExpressMode(String bridgeId, String deviceId, String expressModeIndex) throws LGThinqApiException;
 
     /**
-     * Set the Express Cool Mode
-     * 
-     * @param bridgeId Bridge ID
-     * @param deviceId LG Device id
-     * @param trueOnFalseOff ON/OFF the Cool Mode
-     * @throws LGThinqApiException If some error is reported from LG API
-     */
-    void setExpressCoolMode(String bridgeId, String deviceId, boolean trueOnFalseOff) throws LGThinqApiException;
-
-    /**
-     * Set the Express Cool Mode
-     * 
-     * @param bridgeId Bridge ID
-     * @param deviceId LG Device id
-     * @param trueOnFalseOff ON/OFF the Eco Mode
-     * @throws LGThinqApiException If some error is reported from LG API
-     */
-    void setEcoFriendlyMode(String bridgeId, String deviceId, boolean trueOnFalseOff) throws LGThinqApiException;
-
-    /**
+     * Enables or disables the Express Cool Mode.
      *
-     * @param bridgeId Bridge ID
-     * @param deviceId LG Thinq Device ID
-     * @param fridgeCapability Fridge Capabilities
-     * @param trueOnFalseOff Set ON/OFF the ICE Plus
-     * @param snapCmdData Snapshot template for the ICE Plus Command
-     * @throws LGThinqApiException If some error is reported from LG API
+     * @param bridgeId The bridge ID managing the device.
+     * @param deviceId The unique identifier of the LG refrigerator.
+     * @param enable {@code true} to enable Express Cool Mode, {@code false} to disable.
+     * @throws LGThinqApiException If an error occurs while communicating with the LG API.
      */
-    void setIcePlus(String bridgeId, String deviceId, FridgeCapability fridgeCapability, boolean trueOnFalseOff,
+    void setExpressCoolMode(String bridgeId, String deviceId, boolean enable) throws LGThinqApiException;
+
+    /**
+     * Enables or disables the Eco-Friendly Mode.
+     *
+     * @param bridgeId The bridge ID managing the device.
+     * @param deviceId The unique identifier of the LG refrigerator.
+     * @param enable {@code true} to enable Eco Mode, {@code false} to disable.
+     * @throws LGThinqApiException If an error occurs while communicating with the LG API.
+     */
+    void setEcoFriendlyMode(String bridgeId, String deviceId, boolean enable) throws LGThinqApiException;
+
+    /**
+     * Enables or disables the Ice Plus feature.
+     *
+     * @param bridgeId The bridge ID managing the device.
+     * @param deviceId The unique identifier of the LG refrigerator.
+     * @param fridgeCapability The capabilities definition of the refrigerator.
+     * @param enable {@code true} to enable Ice Plus, {@code false} to disable.
+     * @param snapCmdData A map containing the snapshot template for the Ice Plus command.
+     * @throws LGThinqApiException If an error occurs while communicating with the LG API.
+     */
+    void setIcePlus(String bridgeId, String deviceId, FridgeCapability fridgeCapability, boolean enable,
             Map<String, Object> snapCmdData) throws LGThinqApiException;
 }

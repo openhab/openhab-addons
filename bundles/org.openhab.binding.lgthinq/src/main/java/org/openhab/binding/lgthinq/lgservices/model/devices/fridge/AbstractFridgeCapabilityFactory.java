@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.fridge;
 
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_TEMP_UNIT_CELSIUS_SYMBOL;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_TEMP_UNIT_FAHRENHEIT_SYMBOL;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.*;
 
 import java.util.HashMap;
 import java.util.List;

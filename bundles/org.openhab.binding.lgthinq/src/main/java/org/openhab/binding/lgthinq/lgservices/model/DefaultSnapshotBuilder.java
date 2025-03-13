@@ -38,8 +38,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * The {@link DefaultSnapshotBuilder}
+ * An abstract class representing a Default Snapshot Builder for creating different types of snapshots.
  *
+ * @param <S> The type parameter representing the Abstract Snapshot Definition
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
@@ -55,15 +56,17 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
     private static final Map<String, Map<String, Map<String, Object>>> modelsCachedBitKeyDefinitions = new HashMap<>();
 
     /**
-     * Create a Snapshot result based on snapshotData collected from LG API (V1/C2)
+     * Create a Snapshot object from binary data using the provided monitoring binary protocols and capability
+     * definitions.
      *
-     * @param binaryData V1: decoded returnedData
-     * @param capDef Capability Definition
-     * @return returns Snapshot implementation based on device type provided
-     * @throws LGThinqApiException any error.
+     * @param binaryData The binary data to create the Snapshot from
+     * @param prot The list of MonitoringBinaryProtocol objects for defining how to parse the binary data
+     * @param capDef The CapabilityDefinition object for the Snapshot
+     * @return The created Snapshot object based on the binary data
+     * @throws LGThinqUnmarshallException if unmarshalling the binary data encounters an error
+     * @throws LGThinqApiException if any LG Thinq API related error occurs
      */
     @Override
-
     public S createFromBinary(String binaryData, List<MonitoringBinaryProtocol> prot, CapabilityDefinition capDef)
             throws LGThinqUnmarshallException, LGThinqApiException {
         try {
@@ -130,12 +133,14 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
     }
 
     /**
-     * Create a Snapshot result based on snapshotData collected from LG API (V1/C2)
+     * Create a Snapshot object from JSON data with the provided device type and capability definition.
      *
-     * @param snapshotDataJson V1: decoded returnedData; V2: snapshot body
-     * @param deviceType device type
-     * @return returns Snapshot implementation based on device type provided
-     * @throws LGThinqApiException any error.
+     * @param snapshotDataJson The JSON data to create the Snapshot from
+     * @param deviceType The DeviceTypes enum representing the type of device
+     * @param capDef The CapabilityDefinition object for the Snapshot
+     * @return The created Snapshot object
+     * @throws LGThinqUnmarshallException if unmarshalling the JSON data encounters an error
+     * @throws LGThinqApiException if any LG Thinq API related error occurs
      */
     @Override
     public S createFromJson(String snapshotDataJson, DeviceTypes deviceType, CapabilityDefinition capDef)
@@ -163,8 +168,21 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
         return getSnapshot(snapMap, capDef);
     }
 
+    /**
+     * Retrieves a snapshot object based on the provided map and capability definition.
+     *
+     * @param snapMap The map containing snapshot data
+     * @param capDef The CapabilityDefinition object defining the capabilities
+     * @return The retrieved snapshot object
+     */
     protected abstract S getSnapshot(Map<String, Object> snapMap, CapabilityDefinition capDef);
 
+    /**
+     * Retrieves the DeviceTypes enum based on the deviceType field and deviceCode from the provided root map.
+     *
+     * @param rootMap The map containing the deviceType and deviceCode fields
+     * @return The DeviceTypes enum corresponding to the deviceType and deviceCode
+     */
     protected DeviceTypes getDeviceType(Map<String, Object> rootMap) {
         Integer deviceTypeId = (Integer) rootMap.get("deviceType");
         // device code is only present in v2 devices snapshot.
@@ -174,12 +192,12 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
     }
 
     /**
-     * Create the map containing the bit representation of device features
-     * 
-     * @param key raw value
-     * @param capFeatureValues capability features defined to the device
-     * @param cachedBitKey chached bitKey representation if any was done previously
-     * @return the bitKey - map os key features, position and options available
+     * Retrieves the bit key for the given key from the capability feature values map.
+     *
+     * @param key The key for which the bit key is needed
+     * @param capFeatureValues The map containing capability feature values
+     * @param cachedBitKey The cached bit key values map
+     * @return The bit key as a map containing 'option', 'startbit', and 'length' entries
      */
     private Map<String, Object> getBitKey(String key, final Map<String, Map<String, Object>> capFeatureValues,
             final Map<String, Map<String, Object>> cachedBitKey) {
@@ -290,6 +308,12 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
         return Integer.toString(val);
     }
 
+    /**
+     * Retrieves a specific cache bit key based on the provided CapabilityDefinition object.
+     *
+     * @param capDef The CapabilityDefinition object representing the device capabilities.
+     * @return A map containing the specific cache bit key for the given CapabilityDefinition.
+     */
     protected synchronized Map<String, Map<String, Object>> getSpecificCacheBitKey(CapabilityDefinition capDef) {
         return Objects.requireNonNull(
                 modelsCachedBitKeyDefinitions.computeIfAbsent(capDef.getModelName(), k -> new HashMap<>()));

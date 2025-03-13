@@ -19,8 +19,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * The {@link LGDevice}
- *
+ * Class representing an LG device with various properties such as model name, device type, alias, device ID, platform
+ * type, online status, and more.
+ * 
  * @author Nemer Daud - Initial contribution
  */
 @JsonIgnoreProperties(ignoreUnknown = true)

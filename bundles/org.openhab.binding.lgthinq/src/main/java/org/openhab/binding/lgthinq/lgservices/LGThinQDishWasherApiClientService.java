@@ -19,20 +19,23 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher.DishWashe
 import org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher.DishWasherSnapshot;
 
 /**
- * The {@link LGThinQDishWasherApiClientService} - implements specific methods for DishWashers
+ * {@link LGThinQDishWasherApiClientService} provides specific methods for interacting with LG ThinQ dishwashers.
+ * It extends the {@link LGThinQApiClientService} to inherit core functionalities while adding specialized methods
+ * for dishwashers.
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
 public interface LGThinQDishWasherApiClientService
         extends LGThinQApiClientService<DishWasherCapability, DishWasherSnapshot> {
+
     /**
-     * Remote start machine funcion
-     * 
-     * @param bridgeName Bridge name
-     * @param cap Capabilities of the device
-     * @param deviceId LG Device ID
-     * @param data data to sent to remote start
+     * Initiates a remote start operation for the dishwasher.
+     *
+     * @param bridgeName The name of the bridge managing the device.
+     * @param cap The capability definition of the dishwasher.
+     * @param deviceId The unique identifier of the LG ThinQ dishwasher.
+     * @param data A map containing the required parameters for remote start.
      */
     void remoteStart(String bridgeName, DishWasherCapability cap, String deviceId, Map<String, Object> data);
 }

@@ -12,32 +12,7 @@
  */
 package org.openhab.binding.lgthinq.internal.handler;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_DASHBOARD_GRP_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_EXTENDED_INFO_GRP_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_FR_ACTIVE_SAVING;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_FR_DOOR_OPEN;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_FR_EXPRESS_COOL_MODE;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_FR_EXPRESS_FREEZE_MODE;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_FR_FREEZER_TEMP_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_FR_FRESH_AIR_FILTER;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_FR_FRIDGE_TEMP_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_FR_ICE_PLUS;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_FR_REF_TEMP_UNIT;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_FR_SMART_SAVING_MODE_V2;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_FR_SMART_SAVING_SWITCH_V1;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_FR_VACATION_MODE;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_FR_WATER_FILTER;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_DEVICE_ALIAS;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_MODEL_URL_INFO;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_FRESH_AIR_FILTER_MAP;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_WATER_FILTER;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_PLATFORM_TYPE_V2;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_CELSIUS_UNIT_VALUES;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_DOOR_CLOSE_VALUES;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_DOOR_OPEN_VALUES;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_FAHRENHEIT_UNIT_VALUES;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_TEMP_UNIT_CELSIUS;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_TEMP_UNIT_FAHRENHEIT;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;

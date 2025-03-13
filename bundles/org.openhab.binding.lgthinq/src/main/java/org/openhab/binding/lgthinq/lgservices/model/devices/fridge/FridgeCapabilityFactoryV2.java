@@ -12,13 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.fridge;
 
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_EXPRESS_FREEZE_MODES;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_FRESH_AIR_FILTER_MAP;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_LABEL_CLOSE_OPEN;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_LABEL_ON_OFF;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_SMART_SAVING_V2_MODE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_TEMP_UNIT_V2_MAP;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_WATER_FILTER;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.*;
 
 import java.util.Collections;
 import java.util.List;

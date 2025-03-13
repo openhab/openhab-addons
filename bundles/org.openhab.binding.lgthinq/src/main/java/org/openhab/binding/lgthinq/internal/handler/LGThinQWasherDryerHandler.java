@@ -12,42 +12,7 @@
  */
 package org.openhab.binding.lgthinq.internal.handler;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_POWER_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_DASHBOARD_GRP_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_CHILD_LOCK_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_COURSE_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_DELAY_TIME_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_DOOR_LOCK_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_DRY_LEVEL_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_PROCESS_STATE_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMAIN_TIME_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_COURSE;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_START_GRP_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_START_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_START_RINSE;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_START_SPIN;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_START_START_STOP;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_START_TEMP;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_RINSE_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_SMART_COURSE_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_SPIN_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_STAND_BY_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_STATE_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_TEMP_LEVEL_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_DEVICE_ALIAS;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_MODEL_URL_INFO;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_DRYER;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_WASHING_MACHINE;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_WASHING_TOWER;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_DR_DRY_LEVEL;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_WMD_PROCESS_STATE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_WMD_STATE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_WMD_TEMPERATURE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_WM_DICT_V2;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_WM_RINSE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_WM_SPIN;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.WMD_COURSE_NOT_SELECTED_VALUE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.WMD_POWER_OFF_VALUE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collections;

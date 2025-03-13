@@ -13,17 +13,7 @@
 package org.openhab.binding.lgthinq.lgservices;
 
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.BASE_CAP_CONFIG_DATA_FILE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_SVC_CODE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V1_MON_DATA_PATH;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V1_START_MON_PATH;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_API_KEY;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_APP_LEVEL;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_APP_OS;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_APP_TYPE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_APP_VER;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_DEVICE_CONFIG_PATH;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_LS_PATH;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_SVC_PHASE;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.*;
 
 import java.io.File;
 import java.io.IOException;
