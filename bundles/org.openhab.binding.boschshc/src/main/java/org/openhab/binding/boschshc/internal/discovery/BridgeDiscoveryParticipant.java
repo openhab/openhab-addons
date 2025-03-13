@@ -30,6 +30,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.binding.boschshc.internal.devices.bridge.BoschHttpClient;
+import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.PublicInformation;
 import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -145,9 +146,12 @@ public class BridgeDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
         return DiscoveryResultBuilder.create(uid)
                 .withLabel("Bosch Smart Home Controller (" + publicInformation.shcIpAddress + ")")
-                .withProperty("ipAddress", publicInformation.shcIpAddress)
-                .withProperty("shcGeneration", publicInformation.shcGeneration)
-                .withProperty("apiVersions", publicInformation.apiVersions).withTTL(TTL_SECONDS).build();
+                .withProperty(BridgeHandler.THING_PROPERTY_MAC_ADDRESS, publicInformation.macAddress)
+                .withProperty(BridgeHandler.THING_PROPERTY_IP_ADDRESS, publicInformation.shcIpAddress)
+                .withProperty(BridgeHandler.THING_PROPERTY_SHC_GENERATION, publicInformation.shcGeneration)
+                .withProperty(BridgeHandler.THING_PROPERTY_API_VERSIONS,
+                        publicInformation.getApiVersionsAsCommaSeparatedList())
+                .withTTL(TTL_SECONDS).build();
     }
 
     private @Nullable String getFirstIPAddress(ServiceInfo serviceInfo) {
@@ -186,8 +190,11 @@ public class BridgeDiscoveryParticipant implements MDNSDiscoveryParticipant {
             @Nullable
             PublicInformation publicInformation = getOrComputePublicInformation(ipAddress);
             if (publicInformation != null) {
-                String resolvedIpAddress = publicInformation.shcIpAddress;
-                return new ThingUID(BoschSHCBindingConstants.THING_TYPE_SHC, resolvedIpAddress.replace('.', '-'));
+                String macAddress = publicInformation.macAddress;
+                if (macAddress == null) {
+                    return null;
+                }
+                return new ThingUID(BoschSHCBindingConstants.THING_TYPE_SHC, macAddress.replace("-", ""));
             }
         }
         return null;
