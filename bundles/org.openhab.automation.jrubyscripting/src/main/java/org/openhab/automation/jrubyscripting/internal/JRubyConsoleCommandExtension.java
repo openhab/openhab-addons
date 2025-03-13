@@ -64,6 +64,8 @@ import org.slf4j.LoggerFactory;
 public class JRubyConsoleCommandExtension implements Command, Completer {
     private final Logger logger = LoggerFactory.getLogger(JRubyConsoleCommandExtension.class);
 
+    private final String DEFAULT_CONSOLE_PATH = "openhab/console/";
+
     private static final String INFO = "info";
     private static final String CONSOLE = "console";
     private static final String BUNDLE = "bundle";
@@ -164,6 +166,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
                     }
                     break;
                 case "--help":
+                case "-h":
                     printUsage(console);
                     break;
                 default:
@@ -224,33 +227,58 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     }
 
     private Map<String, String> getConsoles() {
-        return (Map<String, String>) executeWithPlainJRuby(null, engine -> engine
-                .eval("require 'openhab/console/registry'; OpenHAB::Console::REGISTRY.transform_keys(&:to_s)"));
+        return (Map<String, String>) executeWithPlainJRuby(null, engine -> engine.eval(
+                "require '" + DEFAULT_CONSOLE_PATH + "registry'; OpenHAB::Console::REGISTRY.transform_keys(&:to_s)"));
     }
 
     private void startConsole(Console console, Session session, String[] args) {
-        String script = jRubyScriptEngineFactory.getConfiguration().getConsole();
-        if (args.length > 0) {
-            if ("--list".equals(args[0])) {
-                Map<String, String> consoles = (Map<String, String>) getConsoles();
-                if (consoles == null) {
-                    console.println("No console scripts available. Please install the JRuby helper library gem.");
-                } else {
-                    console.println("Available console scripts:");
-                    String defaultConsole = jRubyScriptEngineFactory.getConfiguration().getConsole();
-                    consoles.forEach((name, description) -> {
-                        if (defaultConsole.endsWith(name)) {
-                            description = description + " (default)";
-                        }
-                        console.println("  " + name + " - " + description);
-                    });
-                }
-                return;
-            }
+        final String defaultConsole = jRubyScriptEngineFactory.getConfiguration().getConsole();
+        String script = defaultConsole;
 
-            if (!args[0].startsWith("-")) {
-                script = args[0];
-                args = Arrays.copyOfRange(args, 1, args.length);
+        if (args.length > 0) {
+            switch (args[0]) {
+                case "--help":
+                case "-h":
+                    console.printUsage("jrubyscripting console [--list|-l|--help|-h] | [script] [options]");
+                    console.println("");
+                    console.println("  --list, -l: list available console scripts");
+                    console.println("  --help, -h: show this help");
+                    console.println("  script: name of the console script to run");
+                    console.println("  options: arguments to pass to the console script");
+                    console.println("");
+                    console.printf("  If no script is specified, the default console script '%s' is used.\n",
+                            defaultConsole);
+                    console.println("  The default console script can be configured in the add-on configuration.");
+                    console.println("");
+                    return;
+                case "--list":
+                case "-l":
+                    boolean defaultConsoleInRegistry = false;
+                    Map<String, String> consoles = (Map<String, String>) getConsoles();
+                    if (consoles == null) {
+                        console.println(
+                                "The list of console scripts is not available. Please install/update the JRuby helper library gem.");
+                    } else {
+                        console.println("Available console scripts:");
+                        for (Map.Entry<String, String> consoleScript : consoles.entrySet()) {
+                            String name = consoleScript.getKey();
+                            String description = consoleScript.getValue();
+                            if (defaultConsole.equals(DEFAULT_CONSOLE_PATH + name) || defaultConsole.equals(name)) {
+                                description = description + " (default)";
+                                defaultConsoleInRegistry = true;
+                            }
+                            console.println("  " + name + " - " + description);
+                        }
+                    }
+                    if (!defaultConsoleInRegistry && defaultConsole != null && !defaultConsole.isBlank()) {
+                        console.println("Default console script: '" + defaultConsole + "'");
+                    }
+                    return;
+                default:
+                    if (!args[0].startsWith("-")) {
+                        script = args[0];
+                        args = Arrays.copyOfRange(args, 1, args.length);
+                    }
             }
         }
 
@@ -261,7 +289,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
             return;
         }
 
-        final String consoleScript = script.contains("/") ? script : "openhab/console/" + script;
+        final String consoleScript = script.contains("/") ? script : DEFAULT_CONSOLE_PATH + script;
         final String[] argv = args;
 
         logger.debug("Starting JRuby console with script: {}", consoleScript);
@@ -449,7 +477,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
             if (console != null) {
                 console.println("Error: " + e.getMessage());
             } else {
-                logger.error("Error: {}", e.getMessage());
+                logger.warn("Error: {}", e.getMessage());
             }
             return null;
         }
@@ -458,7 +486,8 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     private List<String> getUsages() {
         return Arrays.asList( //
                 buildCommandUsage(INFO, "displays information about JRuby Scripting add-on"), //
-                buildCommandUsage(CONSOLE + " [--list] | [script] [options]", "starts an interactive JRuby console"), //
+                buildCommandUsage(CONSOLE + " [--list|-l|--help|-h] | [script] [options]",
+                        "starts an interactive JRuby console"), //
                 buildCommandUsage(BUNDLE + " [arguments]", "runs Ruby bundler in the main Script path"), //
                 buildCommandUsage(GEM + " [arguments]", "manages JRuby Scripting add-on's RubyGems"), //
                 buildCommandUsage(UPDATE, "updates the configured gems"), //

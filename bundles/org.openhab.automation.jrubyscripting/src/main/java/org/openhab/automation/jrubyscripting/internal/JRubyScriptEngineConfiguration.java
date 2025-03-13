@@ -91,7 +91,7 @@ public class JRubyScriptEngineConfiguration {
 
             Map.entry(DEPENDENCY_TRACKING_CONFIG_KEY, new OptionalConfigurationElement("true")),
 
-            Map.entry(CONSOLE_CONFIG_KEY, new OptionalConfigurationElement("openhab/console/irb")));
+            Map.entry(CONSOLE_CONFIG_KEY, new OptionalConfigurationElement("irb")));
 
     /**
      * Update configuration
