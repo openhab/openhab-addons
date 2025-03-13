@@ -247,7 +247,9 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                 }
             } catch (JsonProcessingException e) {
                 // This exception doesn't matter, it's because response is not in json format. Logging raw response.
-                logger.trace("Error calling device settings from LG Server API. Response is not in json format. Ignoring...", e);
+                logger.trace(
+                        "Error calling device settings from LG Server API. Response is not in json format. Ignoring...",
+                        e);
             }
             throw new LGThinqApiException(String.format(
                     "Error calling device settings from LG Server API. The reason is:%s", resp.getJsonResponse()));

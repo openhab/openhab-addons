@@ -233,6 +233,7 @@ Number               ACFanVDir      "Vertical Direction"      <text>    { channe
 ```
 
 ### Example `demo.sitemap`
+
 All the channels already have StateDescription for the selection Channels. So, unless you want to rename theirs into demo.items,
 you can simply define as Selection that the default description of the values will be displayed.
 
