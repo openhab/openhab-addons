@@ -15,6 +15,8 @@ package org.openhab.binding.danfossairunit.internal.handler;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.DateTimeException;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -27,8 +29,10 @@ import org.openhab.binding.danfossairunit.internal.DanfossAirUnit;
 import org.openhab.binding.danfossairunit.internal.DanfossAirUnitCommunicationController;
 import org.openhab.binding.danfossairunit.internal.DanfossAirUnitConfiguration;
 import org.openhab.binding.danfossairunit.internal.DanfossAirUnitWriteAccessor;
+import org.openhab.binding.danfossairunit.internal.FixedTimeZoneProvider;
 import org.openhab.binding.danfossairunit.internal.UnexpectedResponseValueException;
 import org.openhab.binding.danfossairunit.internal.ValueCache;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -54,7 +58,10 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
 
     private static final int TCP_PORT = 30046;
     private static final int POLLING_INTERVAL_SECONDS = 5;
+
     private final Logger logger = LoggerFactory.getLogger(DanfossAirUnitHandler.class);
+    private final TimeZoneProvider timeZoneProvider;
+
     private @NonNullByDefault({}) DanfossAirUnitConfiguration config;
     private @Nullable ValueCache valueCache;
     private @Nullable ScheduledFuture<?> pollingJob;
@@ -62,8 +69,9 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
     private @Nullable DanfossAirUnit airUnit;
     private boolean propertiesInitializedSuccessfully = false;
 
-    public DanfossAirUnitHandler(Thing thing) {
+    public DanfossAirUnitHandler(final Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -101,12 +109,16 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
             var localCommunicationController = new DanfossAirUnitCommunicationController(
                     InetAddress.getByName(config.host), TCP_PORT);
             this.communicationController = localCommunicationController;
-            this.airUnit = new DanfossAirUnit(localCommunicationController);
+            TimeZoneProvider timeZoneProvider = config.timeZone.isBlank() ? this.timeZoneProvider
+                    : FixedTimeZoneProvider.of(ZoneId.of(config.timeZone));
+
+            airUnit = new DanfossAirUnit(localCommunicationController, timeZoneProvider);
             startPolling();
         } catch (UnknownHostException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "@text/offline.communication-error.unknown-host [\"" + config.host + "\"]");
-            return;
+        } catch (DateTimeException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 
