@@ -326,9 +326,9 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     public void initialize() {
         getLogger().debug("Initializing Thinq thing.");
 
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            this.account = (LGThinQBridgeHandler) bridge.getHandler();
+        final Bridge bridge = getBridge();
+        if (bridge != null && bridge.getHandler() instanceof LGThinQBridgeHandler bridgeHandler) {
+            this.account = bridgeHandler;
             this.bridgeId = bridge.getUID().getId();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge not set");
