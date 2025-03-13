@@ -29,4 +29,6 @@ public class DanfossAirUnitConfiguration {
     public int refreshInterval = 10;
 
     public long updateUnchangedValuesEveryMillis = 60000;
+
+    public String timeZone = "";
 }
