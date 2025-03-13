@@ -76,7 +76,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends CapabilityDefinition, @NonNull S extends SnapshotDefinition>
         extends BaseThingWithExtraInfoHandler {
-    private final Logger logger = LoggerFactory.getLogger(LGThinQAbstractDeviceHandler.class);
     protected @Nullable LGThinQBridgeHandler account;
     protected final String lgPlatformType;
     private S lastShot;
@@ -258,7 +257,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                             commandExecutorQueueJob == null || commandExecutorQueueJob.isDone() ? "OFF" : "ON",
                             commandBlockQueue.size());
                 }
-                if (logger.isTraceEnabled()) {
+                if (getLogger().isTraceEnabled()) {
                     // logging the thread dump to analise possible stuck thread.
                     ThreadMXBean bean = ManagementFactory.getThreadMXBean();
                     ThreadInfo[] infos = bean.dumpAllThreads(true, true);
@@ -266,7 +265,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                     for (ThreadInfo i : infos) {
                         message = String.format("%s\n%s", message, i.toString());
                     }
-                    logger.trace("{}", message);
+                    getLogger().trace("{}", message);
                 }
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Device Command Queue is Busy");
@@ -389,7 +388,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             try {
                 getLgThinQAPIClientService().initializeDevice(bridgeId, getDeviceId());
             } catch (Exception e) {
-                logger.warn("Error initializing the device {} from bridge {}.", thingId, bridgeId, e);
+                getLogger().warn("Error initializing the device {} from bridge {}.", thingId, bridgeId, e);
             }
             // force start state pooling if the device is ONLINE
             resetExtraInfoChannels();
@@ -463,7 +462,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
 
     private void updateExtraInfoState() {
         if (!isExtraInfoCollectorSupported()) {
-            logger.error(
+            getLogger().error(
                     "The Energy Collector was started for a Handler that doesn't support it. It most likely a bug.");
             return;
         }
@@ -736,16 +735,16 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                     updateThingStateFromLG();
                 } else if (CHANNEL_EXTENDED_INFO_COLLECTOR_ID.equals(channelUid)) {
                     if (OnOffType.ON.equals(params.command)) {
-                        logger.debug("Turning ON extended information collector");
+                        getLogger().debug("Turning ON extended information collector");
                         if (pollExtraInfoOnPowerOff
                                 || DevicePowerState.DV_POWER_ON.equals(getLastShot().getPowerStatus())) {
                             startExtraInfoCollectorPolling();
                         }
                     } else if (OnOffType.OFF.equals(params.command)) {
-                        logger.debug("Turning OFF extended information collector");
+                        getLogger().debug("Turning OFF extended information collector");
                         stopExtraInfoCollectorPolling();
                     } else {
-                        logger.error("Command {} for {} channel is unexpected. It's most likely a bug", params.command,
+                        getLogger().error("Command {} for {} channel is unexpected. It's most likely a bug", params.command,
                                 CHANNEL_EXTENDED_INFO_COLLECTOR_ID);
                     }
                 }
@@ -762,7 +761,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
 
     @Override
     public void dispose() {
-        logger.debug("Disposing Thinq Thing {}", getDeviceId());
+        getLogger().debug("Disposing Thinq Thing {}", getDeviceId());
 
         if (account != null) {
             getAccountBridgeHandler().unRegistryListenerThing(this);
@@ -776,7 +775,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 stopDeviceV1Monitor(getDeviceId());
             }
         } catch (Exception e) {
-            logger.warn("Can't stop active monitor. It's can be normally ignored. Cause:{}", e.getMessage());
+            getLogger().warn("Can't stop active monitor. It's can be normally ignored. Cause:{}", e.getMessage());
         }
     }
 

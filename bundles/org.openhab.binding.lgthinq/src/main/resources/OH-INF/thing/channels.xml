@@ -123,20 +123,13 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="current-watts-power">
-		<item-type>Number:Power</item-type>
-		<label>Current Energy</label>
-		<description>Current Energy Consumption (W)</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
 	<channel-type id="fan-speed">
 		<item-type>Number</item-type>
 		<label>Fan Speed</label>
 		<description>AC Wind Strength</description>
 		<category>Wind</category>
 	</channel-type>
+
 	<channel-type id="operation-mode">
 		<item-type>Number</item-type>
 		<label>Operation Mode</label>

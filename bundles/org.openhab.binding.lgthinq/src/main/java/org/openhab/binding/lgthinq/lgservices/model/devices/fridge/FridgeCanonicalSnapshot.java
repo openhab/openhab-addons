@@ -12,12 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.fridge;
 
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.FREEZER_TEMPERATURE_IGNORE_VALUE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.FRIDGE_TEMPERATURE_IGNORE_VALUE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_TEMP_UNIT_CELSIUS;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_TEMP_UNIT_CELSIUS_SYMBOL;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_TEMP_UNIT_FAHRENHEIT;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_TEMP_UNIT_FAHRENHEIT_SYMBOL;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;

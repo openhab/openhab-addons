@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class JsonUtils {
     public static String loadJson(String fileName) {
         ClassLoader classLoader = JsonUtils.class.getClassLoader();
