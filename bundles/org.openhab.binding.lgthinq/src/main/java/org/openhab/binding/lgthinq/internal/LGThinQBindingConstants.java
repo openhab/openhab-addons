@@ -100,19 +100,19 @@ public class LGThinQBindingConstants extends LGServicesConstants {
     /**
      * ============ Refrigerator's Channels & Constant Definition =============
      */
-    public static final String CHANNEL_FR_ACTIVE_SAVING = "fr-active-saving";
-    public static final String CHANNEL_FR_DOOR_OPEN = "fr-door-open";
-    public static final String CHANNEL_FR_EXPRESS_COOL_MODE = "fr-express-cool-mode";
-    public static final String CHANNEL_FR_EXPRESS_FREEZE_MODE = "fr-express-mode";
-    public static final String CHANNEL_FR_FREEZER_TEMP_ID = "fr-freezer-temperature";
-    public static final String CHANNEL_FR_FRESH_AIR_FILTER = "fr-fresh-air-filter";
-    public static final String CHANNEL_FR_FRIDGE_TEMP_ID = "fr-fridge-temperature";
-    public static final String CHANNEL_FR_ICE_PLUS = "fr-ice-plus";
-    public static final String CHANNEL_FR_REF_TEMP_UNIT = "fr-temp-unit";
-    public static final String CHANNEL_FR_SMART_SAVING_MODE_V2 = "fr-smart-saving-mode";
-    public static final String CHANNEL_FR_SMART_SAVING_SWITCH_V1 = "fr-smart-saving-switch";
-    public static final String CHANNEL_FR_VACATION_MODE = "fr-eco-friendly-mode";
-    public static final String CHANNEL_FR_WATER_FILTER = "fr-water-filter";
+    public static final String CHANNEL_FR_ACTIVE_SAVING = "active-saving";
+    public static final String CHANNEL_FR_DOOR_OPEN = "door-open";
+    public static final String CHANNEL_FR_EXPRESS_COOL_MODE = "express-cool-mode";
+    public static final String CHANNEL_FR_EXPRESS_FREEZE_MODE = "express-mode";
+    public static final String CHANNEL_FR_FREEZER_TEMP_ID = "freezer-temperature";
+    public static final String CHANNEL_FR_FRESH_AIR_FILTER = "fresh-air-filter";
+    public static final String CHANNEL_FR_FRIDGE_TEMP_ID = "fridge-temperature";
+    public static final String CHANNEL_FR_ICE_PLUS = "ice-plus";
+    public static final String CHANNEL_FR_REF_TEMP_UNIT = "temp-unit";
+    public static final String CHANNEL_FR_SMART_SAVING_MODE_V2 = "smart-saving-mode";
+    public static final String CHANNEL_FR_SMART_SAVING_SWITCH_V1 = "smart-saving-switch";
+    public static final String CHANNEL_FR_VACATION_MODE = "eco-friendly-mode";
+    public static final String CHANNEL_FR_WATER_FILTER = "water-filter";
 
     /**
      * ============ Washing Machine/Dryer and DishWasher Channels & Constant Definition =============

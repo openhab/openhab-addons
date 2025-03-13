@@ -32,14 +32,14 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="fr-water-filter">
+	<channel-type id="water-filter">
 		<item-type>String</item-type>
 		<label>Water Filter</label>
 		<description>Months passed since filter has been changed.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="fr-fresh-air-filter">
+	<channel-type id="fresh-air-filter">
 		<item-type>String</item-type>
 		<label>Fresh Air Filter</label>
 		<description>Fresh Air Filter State.</description>
@@ -325,7 +325,7 @@
 	</channel-type>
 
 	<!-- Fridge -->
-	<channel-type id="fr-door-open">
+	<channel-type id="door-open">
 		<item-type>Contact</item-type>
 		<label>Door Open</label>
 		<description>Door status (at least one if combined fridge/freezer)</description>
@@ -336,7 +336,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="fr-temp-unit">
+	<channel-type id="temp-unit">
 		<item-type>String</item-type>
 		<label>Temp. Unit</label>
 		<description>Temperature Unit</description>
@@ -348,7 +348,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="fr-freezer-temperature">
+	<channel-type id="freezer-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Freezer Temp.</label>
 		<description>Freezer target temperature</description>
@@ -356,7 +356,7 @@
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="fr-fridge-temperature">
+	<channel-type id="fridge-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Fridge Temp.</label>
 		<description>Fridge target temperature</description>
@@ -364,43 +364,43 @@
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="fr-express-mode">
+	<channel-type id="express-mode">
 		<item-type>String</item-type>
 		<label>Express Freeze</label>
 		<description>Express Freeze Mode</description>
 	</channel-type>
 
-	<channel-type id="fr-express-cool-mode">
+	<channel-type id="express-cool-mode">
 		<item-type>Switch</item-type>
 		<label>Express Cool</label>
 		<description>Express Cool</description>
 	</channel-type>
 
-	<channel-type id="fr-eco-friendly-mode">
+	<channel-type id="eco-friendly-mode">
 		<item-type>Switch</item-type>
 		<label>Vacation</label>
 		<description>Vacation Mode</description>
 	</channel-type>
 
-	<channel-type id="fr-ice-plus">
+	<channel-type id="ice-plus">
 		<item-type>Switch</item-type>
 		<label>Ice Plus</label>
 		<description>Ice Plus Feature</description>
 	</channel-type>
 
-	<channel-type id="fr-smart-saving-switch">
+	<channel-type id="smart-saving-switch">
 		<item-type>Switch</item-type>
 		<label>Smart Saving</label>
 		<description>Smart Saving</description>
 	</channel-type>
 
-	<channel-type id="fr-smart-saving-mode">
+	<channel-type id="smart-saving-mode">
 		<item-type>String</item-type>
 		<label>Smart Saving</label>
 		<description>Smart Saving Mode</description>
 	</channel-type>
 
-	<channel-type id="fr-active-saving">
+	<channel-type id="active-saving">
 		<item-type>Switch</item-type>
 		<label>Active Saving</label>
 		<description>Active Saving</description>

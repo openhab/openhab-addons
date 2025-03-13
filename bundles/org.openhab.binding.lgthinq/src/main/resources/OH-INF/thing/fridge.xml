@@ -23,18 +23,18 @@
 		<label>Dashboard</label>
 		<description>This is the Displayed Information.</description>
 		<channels>
-			<channel id="fr-door-open" typeId="fr-door-open"/>
-			<channel id="fr-freezer-temperature" typeId="fr-freezer-temperature"/>
-			<channel id="fr-fridge-temperature" typeId="fr-fridge-temperature"/>
-			<channel id="fr-temp-unit" typeId="fr-temp-unit"/>
+			<channel id="door-open" typeId="door-open"/>
+			<channel id="freezer-temperature" typeId="freezer-temperature"/>
+			<channel id="fridge-temperature" typeId="fridge-temperature"/>
+			<channel id="temp-unit" typeId="temp-unit"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="fr-extra-info">
 		<label>More Info</label>
 		<description>Show more information about the device.</description>
 		<channels>
-			<channel id="fr-fresh-air-filter" typeId="fr-fresh-air-filter"/>
-			<channel id="fr-water-filter" typeId="fr-water-filter"/>
+			<channel id="fresh-air-filter" typeId="fresh-air-filter"/>
+			<channel id="water-filter" typeId="water-filter"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

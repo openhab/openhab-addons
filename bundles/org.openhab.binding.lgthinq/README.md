@@ -185,9 +185,9 @@ LG ThinQ Refrigerator supports the following channels
 | freezer-temperature  | Freezer Set Point Temperature | Number:Temperature | Temperature level chosen. This channel supports commands to change temperature |
 | fridge-temperature   | Fridge Set Point Temperature  | Number:Temperature | Temperature level chosen. This channel supports commands to change temperature |
 | temp-unit            | Temp. Unit                    | String             | Temperature Unit (°C/F). Supports command to change the unit                   |
-| fr-express-mode      | Express Freeze                | Switch             | Channel to change the express freeze function (ON/OFF/Rapid)                   |
-| fr-express-cool-mode | Express Cool                  | Switch             | Channel to switch ON/OFF express cool function                                 |
-| fr-eco-friendly-mode | Vacation                      | Switch             | Channel to switch ON/OFF Vacation function (unit will work in eco mode)        | 
+| express-mode      | Express Freeze                | Switch             | Channel to change the express freeze function (ON/OFF/Rapid)                   |
+| express-cool-mode | Express Cool                  | Switch             | Channel to switch ON/OFF express cool function                                 |
+| eco-friendly-mode | Vacation                      | Switch             | Channel to switch ON/OFF Vacation function (unit will work in eco mode)        | 
 
 #### More Information
 
@@ -195,8 +195,8 @@ This Channel Group is reports useful information data for the device:
 
 | channel #           | channel          | type      | description                                                |
 |---------------------|------------------|-----------|------------------------------------------------------------|
-| fr-fresh-air-filter | Fresh Air Filter | String    | Shows the Fresh Air filter status (OFF/AUTO/POWER/REPLACE) |
-| fr-water-filter     | Water Filter     | String    | Shows the filter's used months                             |
+| fresh-air-filter | Fresh Air Filter | String    | Shows the Fresh Air filter status (OFF/AUTO/POWER/REPLACE) |
+| water-filter     | Water Filter     | String    | Shows the filter's used months                             |
 
 OBS: some versions of this device can not support all the channels, depending on the model's capabilities.
 
