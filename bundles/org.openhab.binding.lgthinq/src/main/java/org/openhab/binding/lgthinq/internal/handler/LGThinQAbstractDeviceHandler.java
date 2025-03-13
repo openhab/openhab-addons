@@ -222,12 +222,8 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 && BRIDGE_STATUS_DETAIL_ERROR.contains(statusDetail)) {
             // comunication error is not a specific Bridge error, then we must analise it to give
             // this thinq the change to recovery from communication errors
-            @Nullable
-            Bridge bridge = getBridge();
             if (statusDetail != ThingStatusDetail.COMMUNICATION_ERROR
-                    || (bridge != null && bridge.getStatus() != ThingStatus.ONLINE)) {
                     || (getBridge() instanceof Bridge bridge && bridge.getStatus() != ThingStatus.ONLINE)) {
-                // the bridge is out
                 stopThingStatePolling();
                 stopExtraInfoCollectorPolling();
             }

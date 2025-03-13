@@ -28,6 +28,8 @@ import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -184,11 +186,11 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         File regFile = new File(String.format(BASE_CAP_CONFIG_DATA_FILE, deviceId));
         try {
             if (!regFile.isFile() || forceRecreate) {
-                try (InputStream in = new URL(uri).openStream()) {
+                try (InputStream in = new URI(uri).toURL().openStream()) {
                     Files.copy(in, regFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new LGThinqApiException("Error reading IO interface", e);
         }
         return regFile;
