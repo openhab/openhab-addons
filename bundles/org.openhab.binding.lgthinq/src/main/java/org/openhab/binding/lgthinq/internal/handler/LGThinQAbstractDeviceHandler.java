@@ -226,7 +226,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             Bridge bridge = getBridge();
             if (statusDetail != ThingStatusDetail.COMMUNICATION_ERROR
                     || (bridge != null && bridge.getStatus() != ThingStatus.ONLINE)) {
-                // in case of status offline, I only stop the polling if is not an COMMUNICATION_ERROR or if
+                    || (getBridge() instanceof Bridge bridge && bridge.getStatus() != ThingStatus.ONLINE)) {
                 // the bridge is out
                 stopThingStatePolling();
                 stopExtraInfoCollectorPolling();
