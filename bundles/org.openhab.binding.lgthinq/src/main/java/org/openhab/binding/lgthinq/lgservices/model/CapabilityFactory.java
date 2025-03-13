@@ -111,7 +111,7 @@ public class CapabilityFactory {
     public <C extends CapabilityDefinition> C create(JsonNode rootNode, Class<C> clazz) throws LGThinqException {
         DeviceTypes type = ModelUtils.getDeviceType(rootNode);
         LGAPIVerion version = ModelUtils.discoveryAPIVersion(rootNode);
-        logger.info("Getting factory for device type: {} and version: {}", type.deviceTypeId(), version);
+        logger.debug("Getting factory for device type: {} and version: {}", type.deviceTypeId(), version);
 
         Map<LGAPIVerion, AbstractCapabilityFactory<? extends CapabilityDefinition>> versionsFactory = capabilityDeviceFactories
                 .get(type);

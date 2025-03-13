@@ -139,8 +139,6 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         // headers.put("x-thinq-security-key", LG_API_SECURITY_KEY);
         headers.put("x-thinq-app-logintype", "LGE");
         headers.put("x-origin", "app-native");
-        // headers.put("x-model-name", "Xiaomi/Mi 9T Pro");
-        // headers.put("x-os-version", "AOS/11");
         headers.put("x-device-type", "601");
 
         if (!accessToken.isBlank())

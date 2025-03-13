@@ -22,7 +22,6 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,13 +118,6 @@ public abstract class AbstractCapabilityFactory<T extends CapabilityDefinition> 
     }
 
     protected abstract T getCapabilityInstance();
-
-    protected void validateMandatoryNote(JsonNode node) throws LGThinqException {
-        if (node.isMissingNode()) {
-            throw new LGThinqApiException(
-                    String.format("Error extracting mandatory %s node for this device cap file", node));
-        }
-    }
 
     protected abstract Map<String, CommandDefinition> getCommandsDefinition(JsonNode rootNode);
 

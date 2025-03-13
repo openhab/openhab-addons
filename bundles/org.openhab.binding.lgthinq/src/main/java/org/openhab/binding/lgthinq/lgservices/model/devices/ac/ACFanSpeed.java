@@ -29,7 +29,10 @@ public enum ACFanSpeed {
     F_AUTO(8.0),
     F_UNK(-1);
 
+    double speed;
+
     ACFanSpeed(double v) {
+        speed = v;
     }
 
     public static ACFanSpeed statusOf(double value) {
@@ -42,40 +45,5 @@ public enum ACFanSpeed {
             case 8 -> F_AUTO;
             default -> F_UNK;
         };
-    }
-
-    /**
-     * "0": "@AC_MAIN_WIND_STRENGTH_SLOW_W",
-     * "1": "@AC_MAIN_WIND_STRENGTH_SLOW_LOW_W",
-     * "2": "@AC_MAIN_WIND_STRENGTH_LOW_W",
-     * "3": "@AC_MAIN_WIND_STRENGTH_LOW_MID_W",
-     * "4": "@AC_MAIN_WIND_STRENGTH_MID_W",
-     * "5": "@AC_MAIN_WIND_STRENGTH_MID_HIGH_W",
-     * "6": "@AC_MAIN_WIND_STRENGTH_HIGH_W",
-     * "7": "@AC_MAIN_WIND_STRENGTH_POWER_W",
-     * "8": "@AC_MAIN_WIND_STRENGTH_NATURE_W",
-     */
-    /**
-     * Value of command (not state, but command to change the state of device)
-     *
-     * @return value of the command to reach the state
-     */
-    public int commandValue() {
-        switch (this) {
-            case F1:
-                return 2;
-            case F2:
-                return 3;
-            case F3:
-                return 4;
-            case F4:
-                return 5;
-            case F5:
-                return 6;
-            case F_AUTO:
-                return 8;
-            default:
-                throw new IllegalArgumentException("Enum not accepted for command:" + this);
-        }
     }
 }

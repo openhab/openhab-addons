@@ -55,7 +55,7 @@ public class FridgeCapabilityFactoryV1 extends AbstractFridgeCapabilityFactory {
         });
     }
 
-    protected void loadTempNode(JsonNode tempNode, Map<String, String> capMap, String unit) {
+    protected void loadTempNode(JsonNode tempNode, Map<String, String> capMap) {
         loadGenericFeatNode(tempNode, capMap, Collections.emptyMap());
     }
 

@@ -91,18 +91,9 @@ class LGThinqBridgeTests {
     LGThinqBridgeTests() throws IOException {
     }
 
-    // private String getCurrentTimestamp() {
-    // SimpleDateFormat sdf = new SimpleDateFormat(LG_API_DATE_FORMAT);
-    // sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-    // return sdf.format(new Date());
-    // }
-
     @Test
     public void testDiscoveryACThings() {
         setupAuthenticationMock();
-        // LGThinQApiClientService service1 =
-        // LGThinQApiClientServiceFactory.newACApiClientService(LG_API_PLATFORM_TYPE_V1,
-        // mock(HttpClientFactory.class));
         LGThinQApiClientService<ACCapability, ACCanonicalSnapshot> service2 = LGThinQApiClientServiceFactory
                 .newACApiClientService(LG_API_PLATFORM_TYPE_V2, mock(HttpClientFactory.class));
         try {
@@ -195,10 +186,6 @@ class LGThinqBridgeTests {
                 .withRequestBody(containing("username=" + URLEncoder.encode(fakeUserName, StandardCharsets.UTF_8)))
                 .withHeader("lgemp-x-session-key", equalTo(loginSessionId)).willReturn(ok(sessionTokenReturned)));
 
-        // Bridge fakeThing = mock(Bridge.class);
-        // ThingUID fakeThingUid = mock(ThingUID.class);
-        // when(fakeThingUid.getId()).thenReturn(fakeBridgeName);
-        // when(fakeThing.getUID()).thenReturn(fakeThingUid);
         String tempDir = Objects.requireNonNull(System.getProperty("java.io.tmpdir"),
                 "java.io.tmpdir environment variable must be set");
         LGThinQBindingConstants.THINQ_USER_DATA_FOLDER = tempDir;

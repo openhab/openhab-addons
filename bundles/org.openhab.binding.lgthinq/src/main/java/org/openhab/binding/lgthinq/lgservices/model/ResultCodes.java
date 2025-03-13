@@ -251,15 +251,6 @@ public enum ResultCodes {
     }
 
     /**
-     * Gets the list of error codes associated with this result code.
-     *
-     * @return a list of error codes
-     */
-    public List<String> getCodes() {
-        return codes;
-    }
-
-    /**
      * Constructor for the enum. Initializes the description and associated error codes.
      *
      * @param description the description of the result code
