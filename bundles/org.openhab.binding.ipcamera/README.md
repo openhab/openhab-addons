@@ -703,6 +703,16 @@ then
 end
 ```
 
+## How To Reboot Camera
+```
+rule "Reboot Camera At 12:00 AM"
+when
+    Time cron "0 0 0 ? *"
+then
+  getActions("ipcamera", "ipcamera:reolink:1a40bbe041").reboot()
+end
+```
+
 ## HABpanel
 
 This section is about how to get things working in HABpanel.
