@@ -15,6 +15,7 @@ package org.openhab.automation.jrubyscripting.internal;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.script.ScriptEngine;
@@ -39,6 +41,9 @@ import org.apache.karaf.shell.api.console.SessionFactory;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.automation.jrubyscripting.internal.watch.JRubyScriptFileWatcher;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
+import org.openhab.core.config.core.ConfigDescription;
+import org.openhab.core.config.core.ConfigDescriptionParameter;
+import org.openhab.core.config.core.ConfigDescriptionRegistry;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.StringsCompleter;
 import org.osgi.service.component.annotations.Activate;
@@ -70,19 +75,24 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     private final ScriptEngineManager scriptEngineManager;
     private final JRubyScriptEngineFactory jRubyScriptEngineFactory;
     private final JRubyScriptFileWatcher scriptFileWatcher;
+    private final ConfigDescriptionRegistry configDescriptionRegistry;
 
     private final SessionFactory sessionFactory;
 
     private final String scriptType;
 
     @Activate
-    public JRubyConsoleCommandExtension(@Reference ScriptEngineManager scriptEngineManager,
-            @Reference JRubyScriptEngineFactory jRubyScriptEngineFactory,
-            @Reference JRubyScriptFileWatcher scriptFileWatcher, @Reference SessionFactory sessionFactory) {
+    public JRubyConsoleCommandExtension( //
+            @Reference ScriptEngineManager scriptEngineManager, //
+            @Reference JRubyScriptEngineFactory jRubyScriptEngineFactory, //
+            @Reference JRubyScriptFileWatcher scriptFileWatcher, //
+            @Reference ConfigDescriptionRegistry configDescriptionRegistry, //
+            @Reference SessionFactory sessionFactory) {
         this.scriptEngineManager = scriptEngineManager;
         this.jRubyScriptEngineFactory = jRubyScriptEngineFactory;
         this.scriptFileWatcher = scriptFileWatcher;
         this.scriptType = jRubyScriptEngineFactory.getScriptTypes().getFirst();
+        this.configDescriptionRegistry = configDescriptionRegistry;
         this.sessionFactory = sessionFactory;
         sessionFactory.getRegistry().register(this);
     }
@@ -178,8 +188,34 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         console.println("");
         console.println("JRuby Scripting Add-on Configuration:");
         console.println("=====================================");
-        jRubyScriptEngineFactory.getConfiguration().getConfigurations().forEach((key, value) -> {
-            console.println(key + ": " + value);
+
+        ConfigDescription configDescription = configDescriptionRegistry
+                .getConfigDescription(URI.create(JRubyScriptEngineFactory.CONFIG_DESCRIPTION_URI));
+
+        if (configDescription == null) {
+            console.println("No configuration found for JRuby Scripting add-on. This is probably a bug.");
+            return;
+        }
+
+        Map<String, String> config = jRubyScriptEngineFactory.getConfiguration().getConfigurations();
+        Map<String, List<ConfigDescriptionParameter>> paramsByGroup = configDescription.getParameters().stream()
+                .collect(Collectors.groupingBy(ConfigDescriptionParameter::getGroupName));
+
+        configDescription.getParameterGroups().forEach(group -> {
+            List<ConfigDescriptionParameter> parameters = paramsByGroup.get(group.getName());
+            if (parameters == null) {
+                return;
+            }
+
+            String groupLabel = group.getLabel();
+            if (groupLabel == null) {
+                groupLabel = group.getName();
+            }
+            console.println(groupLabel);
+            parameters.forEach(parameter -> {
+                console.println("  " + parameter.getName() + ": " + config.get(parameter.getName()));
+            });
+            console.println("");
         });
     }
 
