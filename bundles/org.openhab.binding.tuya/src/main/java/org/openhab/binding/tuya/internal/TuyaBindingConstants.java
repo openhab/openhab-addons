@@ -45,7 +45,6 @@ public class TuyaBindingConstants {
     public static final ThingTypeUID THING_TYPE_TUYA_DEVICE = new ThingTypeUID(BINDING_ID, "tuyaDevice");
 
     public static final String PROPERTY_CATEGORY = "category";
-    public static final String PROPERTY_MAC = "mac";
 
     public static final String CONFIG_LOCAL_KEY = "localKey";
     public static final String CONFIG_DEVICE_ID = "deviceId";

@@ -401,16 +401,15 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             this.tuyaDevice = null;
         }
         irStopLearning();
-    }
 
-    @Override
-    public void initialize() {
-        // clear all maps
         dpToChannelId.clear();
         dp2ToChannelId.clear();
         channelIdToChannelTypeUID.clear();
         channelIdToConfiguration.clear();
+    }
 
+    @Override
+    public void initialize() {
         configuration = getConfigAs(DeviceConfiguration.class);
 
         // check if we have channels and add them if available

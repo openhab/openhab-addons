@@ -16,7 +16,6 @@ import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_DEVI
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_LOCAL_KEY;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_PRODUCT_ID;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.PROPERTY_CATEGORY;
-import static org.openhab.binding.tuya.internal.TuyaBindingConstants.PROPERTY_MAC;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.THING_TYPE_TUYA_DEVICE;
 
 import java.util.ArrayList;
@@ -40,6 +39,7 @@ import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.storage.Storage;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
@@ -98,7 +98,8 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
 
             Map<String, Object> properties = new HashMap<>();
             properties.put(PROPERTY_CATEGORY, device.category);
-            properties.put(PROPERTY_MAC, Objects.requireNonNull(deviceMac).replaceAll("(..)(?!$)", "$1:"));
+            properties.put(Thing.PROPERTY_MAC_ADDRESS,
+                    Objects.requireNonNull(deviceMac).replaceAll("(..)(?!$)", "$1:"));
             properties.put(CONFIG_LOCAL_KEY, device.localKey);
             properties.put(CONFIG_DEVICE_ID, device.id);
             properties.put(CONFIG_PRODUCT_ID, device.productId);
