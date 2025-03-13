@@ -235,7 +235,7 @@ Number               ACFanVDir      "Vertical Direction"      <text>    { channe
 
 demo.sitemap
 All the channels already have StateDescription for the selection Channels. So, unless you want to rename theirs into demo.items,
-you can simply define as Selection that the default description of the values will be displayed
+you can simply define as Selection that the default description of the values will be displayed.
 
 ```perl
 sitemap demo label="Air Conditioner"
