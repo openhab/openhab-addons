@@ -144,7 +144,7 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
         try {
             Set<ElectricityPriceListener> spotPricesUpdatedListeners = new HashSet<>();
             boolean spotPricesSubscribed = false;
-            long numberOfFutureSpotPrices = 0;
+            boolean arePricesFullyCached = true;
 
             for (Entry<Subscription, Set<ElectricityPriceListener>> subscriptionListener : subscriptionToListeners
                     .entrySet()) {
@@ -157,11 +157,10 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
                     if (pricesUpdated) {
                         spotPricesUpdatedListeners.addAll(listeners);
                     }
-                    long numberOfFutureSpotPricesForSubscription = getSpotPriceSubscriptionDataCache(subscription)
-                            .getNumberOfFuturePrices();
-                    if (numberOfFutureSpotPrices == 0
-                            || numberOfFutureSpotPricesForSubscription < numberOfFutureSpotPrices) {
-                        numberOfFutureSpotPrices = numberOfFutureSpotPricesForSubscription;
+                    boolean arePricesFullyCachedForSubscription = getSpotPriceSubscriptionDataCache(subscription)
+                            .arePricesFullyCached();
+                    if (!arePricesFullyCachedForSubscription) {
+                        arePricesFullyCached = false;
                     }
                 }
                 updateCurrentPrices(subscription);
@@ -171,10 +170,7 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
             reschedulePriceUpdateJob();
 
             if (spotPricesSubscribed) {
-                LocalTime now = LocalTime.now(NORD_POOL_TIMEZONE);
-
-                if (numberOfFutureSpotPrices >= 13 || (numberOfFutureSpotPrices == 12
-                        && now.isAfter(DAILY_REFRESH_TIME_CET.minusHours(1)) && now.isBefore(DAILY_REFRESH_TIME_CET))) {
+                if (arePricesFullyCached) {
                     spotPricesUpdatedListeners.forEach(listener -> listener.onDayAheadAvailable());
                     retryPolicy = RetryPolicyFactory.atFixedTime(DAILY_REFRESH_TIME_CET, NORD_POOL_TIMEZONE);
                 } else {
