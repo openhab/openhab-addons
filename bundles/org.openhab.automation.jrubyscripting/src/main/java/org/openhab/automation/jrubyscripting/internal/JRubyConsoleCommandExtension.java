@@ -66,11 +66,12 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
 
     private static final String INFO = "info";
     private static final String CONSOLE = "console";
+    private static final String BUNDLE = "bundle";
     private static final String GEM = "gem";
     private static final String UPDATE = "update";
     private static final String PRUNE = "prune";
 
-    private static final List<String> SUB_COMMANDS = List.of(INFO, CONSOLE, GEM, UPDATE, PRUNE);
+    private static final List<String> SUB_COMMANDS = List.of(INFO, CONSOLE, BUNDLE, GEM, UPDATE, PRUNE);
 
     private final ScriptEngineManager scriptEngineManager;
     private final JRubyScriptEngineFactory jRubyScriptEngineFactory;
@@ -141,6 +142,9 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
                     break;
                 case CONSOLE:
                     startConsole(console, session, Arrays.copyOfRange(args, 1, args.length));
+                    break;
+                case BUNDLE:
+                    bundler(console, Arrays.copyOfRange(args, 1, args.length));
                     break;
                 case GEM:
                     gem(console, Arrays.copyOfRange(args, 1, args.length));
@@ -220,9 +224,8 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     }
 
     private Map<String, String> getConsoles() {
-        return (Map<String, String>) executeWithPlainJRuby(null, engine -> {
-            return engine.eval("require 'openhab/console/registry'; OpenHAB::Console::REGISTRY.transform_keys(&:to_s)");
-        });
+        return (Map<String, String>) executeWithPlainJRuby(null, engine -> engine
+                .eval("require 'openhab/console/registry'; OpenHAB::Console::REGISTRY.transform_keys(&:to_s)"));
     }
 
     private void startConsole(Console console, Session session, String[] args) {
@@ -271,9 +274,41 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         });
     }
 
-    private void gem(Console console, String[] args) {
+    synchronized private void bundler(Console console, String[] args) {
+        final String BUNDLER = """
+                require "bundler"
+                require "bundler/friendly_errors"
+
+                Bundler.with_friendly_errors do
+                  require "bundler/cli"
+
+                  # Allow any command to use --help flag to show help for that command
+                  help_flags = %w[--help -h]
+                  help_flag_used = ARGV.any? { |a| help_flags.include? a }
+                  args = help_flag_used ? Bundler::CLI.reformatted_help_args(ARGV) : ARGV
+
+                  Bundler::CLI.start(args, debug: true)
+                end
+                """;
+
+        String originalDir = System.setProperty("user.dir", scriptFileWatcher.getWatchPath().toString());
+        try {
+            executeWithPlainJRuby(console, engine -> {
+                engine.put(ScriptEngine.ARGV, args);
+                engine.eval(BUNDLER);
+                return null;
+            });
+        } finally {
+            if (originalDir == null) {
+                System.clearProperty("user.dir");
+            } else {
+                System.setProperty("user.dir", originalDir);
+            }
+        }
+    }
+
+    synchronized private void gem(Console console, String[] args) {
         final String GEM = """
-                ENV['PATH'] ||= '' # gem command requires PATH to be set
                 require "rubygems/gem_runner"
                 Gem::GemRunner.new.run ARGV
                     """;
@@ -424,6 +459,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         return Arrays.asList( //
                 buildCommandUsage(INFO, "displays information about JRuby Scripting add-on"), //
                 buildCommandUsage(CONSOLE + " [--list] | [script] [options]", "starts an interactive JRuby console"), //
+                buildCommandUsage(BUNDLE + " [arguments]", "runs Ruby bundler in the main Script path"), //
                 buildCommandUsage(GEM + " [arguments]", "manages JRuby Scripting add-on's RubyGems"), //
                 buildCommandUsage(UPDATE, "updates the configured gems"), //
                 buildCommandUsage(PRUNE + " [-f|--force]", "cleans up older versions in the .gem directory") //
