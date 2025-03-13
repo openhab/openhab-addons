@@ -76,16 +76,16 @@ public class SedifHttpApi {
     }
 
     public String getContent(String url) throws SedifException {
-        return getContent(logger, bridgeHandler, url, httpClient, null);
+        return getContent(logger, bridgeHandler, null, url, httpClient, null);
     }
 
-    public String getContent(BridgeSedifWebHandler handler, String url, @Nullable AuraCommand cmd)
-            throws SedifException {
-        return getContent(logger, handler, url, httpClient, cmd);
-    }
-
-    private String getContent(Logger logger, BridgeSedifWebHandler bridgeHandler, String url, HttpClient httpClient,
+    public String getContent(BridgeSedifWebHandler bridgeHandler, @Nullable ThingSedifHandler handler, String url,
             @Nullable AuraCommand cmd) throws SedifException {
+        return getContent(logger, bridgeHandler, handler, url, httpClient, cmd);
+    }
+
+    private String getContent(Logger logger, BridgeSedifWebHandler bridgeHandler, @Nullable ThingSedifHandler handler,
+            String url, HttpClient httpClient, @Nullable AuraCommand cmd) throws SedifException {
         try {
             Request request = httpClient.newRequest(url);
 
@@ -99,32 +99,34 @@ public class SedifHttpApi {
 
                 request = request.method(HttpMethod.POST);
 
-                String contractId = bridgeHandler.getContractId();
-                String meterIdB = bridgeHandler.getMeterIdB();
-                String meterIdA = bridgeHandler.getMeterIdA();
-                String token = bridgeHandler.getToken();
                 AuraContext appCtx = bridgeHandler.getAppCtx();
-
-                if (contractId != null && !"".equals(contractId)) {
-                    paramsSub.put("contratId", contractId);
-                    paramsSub.put("contractId", contractId);
-                }
                 if (appCtx != null) {
                     fields.put("aura.context", getAuraContextPayload(appCtx));
                 }
 
-                if (meterIdB != null && !"".equals(meterIdB)) {
-                    paramsSub.put("NUMERO_COMPTEUR", meterIdB);
-                }
+                String token = bridgeHandler.getToken();
+                fields.put("aura.token", token);
 
-                if (meterIdA != null && !"".equals(meterIdA)) {
-                    paramsSub.put("ID_PDS", meterIdA);
+                if (handler != null) {
+                    String contractId = handler.getContractId();
+                    String meterIdB = handler.getMeterIdB();
+                    String meterIdA = handler.getMeterIdA();
+
+                    if (contractId != null && !"".equals(contractId)) {
+                        paramsSub.put("contratId", contractId);
+                        paramsSub.put("contractId", contractId);
+                    }
+                    if (meterIdB != null && !"".equals(meterIdB)) {
+                        paramsSub.put("NUMERO_COMPTEUR", meterIdB);
+                    }
+
+                    if (meterIdA != null && !"".equals(meterIdA)) {
+                        paramsSub.put("ID_PDS", meterIdA);
+                    }
                 }
 
                 String msg = getActionPayload(cmd);
                 fields.put("message", msg);
-
-                fields.put("aura.token", token);
 
                 request = request.content(new FormContentProvider(fields));
             }
@@ -189,11 +191,16 @@ public class SedifHttpApi {
         return contracts;
     }
 
-    public @Nullable ContractDetail getContractDetails() throws SedifException {
+    public @Nullable ContractDetail getContractDetails(String contractId) throws SedifException {
         // =====================================================================
         logger.debug("Step 7: Get contractDetails");
 
         AuraCommand cmd = AuraCommand.make("", "LTN008_ICL_ContratDetails", "getContratDetails");
+        Hashtable<String, Object> paramsSub = cmd.getParamsSub();
+        if (!"".equals(contractId)) {
+            paramsSub.put("contratId", contractId);
+            paramsSub.put("contractId", contractId);
+        }
         Actions actions = getData(bridgeHandler, bridgeHandler.getUrlSedifSite(), cmd, Actions.class);
         ReturnValue retValue = actions.actions.get(0).returnValue;
         ContractDetail contractDetail = (ContractDetail) ((retValue == null) ? null : retValue.returnValue);
@@ -222,14 +229,19 @@ public class SedifHttpApi {
         paramsSub.put("DATE_DEBUT", dtStart);
         paramsSub.put("DATE_FIN", dtEnd);
 
-        Actions actions = getData(bridgeHandler, apiUrl, cmd, Actions.class);
+        Actions actions = getData(bridgeHandler, handler, apiUrl, cmd, Actions.class);
         ReturnValue retValue = actions.actions.get(0).returnValue;
         MeterReading meterResponse = (MeterReading) ((retValue == null) ? null : retValue.returnValue);
         return meterResponse;
     }
 
-    public <T> T getData(BridgeSedifWebHandler handler, String url, @Nullable AuraCommand cmd, Class<T> clazz)
+    public <T> T getData(BridgeSedifWebHandler bridgeHandler, String url, @Nullable AuraCommand cmd, Class<T> clazz)
             throws SedifException {
+        return getData(bridgeHandler, null, url, cmd, clazz);
+    }
+
+    public <T> T getData(BridgeSedifWebHandler bridgeHandler, @Nullable ThingSedifHandler handler, String url,
+            @Nullable AuraCommand cmd, Class<T> clazz) throws SedifException {
         if (!bridgeHandler.isConnected()) {
             bridgeHandler.initialize();
         }
@@ -240,7 +252,7 @@ public class SedifHttpApi {
 
         while (numberRetry < 3) {
             try {
-                String data = getContent(handler, url, cmd);
+                String data = getContent(bridgeHandler, handler, url, cmd);
 
                 if (!data.isEmpty()) {
                     try {
