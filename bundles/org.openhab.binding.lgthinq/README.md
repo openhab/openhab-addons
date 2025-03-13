@@ -238,6 +238,7 @@ All the channels already have StateDescription for the selection Channels. So, u
 you can simply define as Selection that the default description of the values will be displayed.
 
 ```perl
+
 sitemap demo label="Air Conditioner"
 {
     Frame label="Dashboard" {
