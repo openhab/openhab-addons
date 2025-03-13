@@ -16,14 +16,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.config.core.Configuration;
 
 /**
- * The {@link SedifConfiguration} is the class used to match the
+ * The {@link SedifBridgeConfiguration} is the class used to match the
  * thing configuration.
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 @NonNullByDefault
-public class SedifConfiguration extends Configuration {
+public class SedifBridgeConfiguration extends Configuration {
     public String username = "";
     public String password = "";
 
