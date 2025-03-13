@@ -33,6 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sedif.internal.api.ExpiringDayCache;
 import org.openhab.binding.sedif.internal.api.SedifHttpApi;
 import org.openhab.binding.sedif.internal.config.SedifConfiguration;
+import org.openhab.binding.sedif.internal.dto.Contract;
 import org.openhab.binding.sedif.internal.dto.ContractDetail;
 import org.openhab.binding.sedif.internal.dto.ContractDetail.CompteInfo;
 import org.openhab.binding.sedif.internal.dto.MeterReading;
@@ -79,6 +80,13 @@ public class ThingSedifHandler extends BaseThingHandler {
     private static final int REFRESH_MINUTE_OF_DAY = RANDOM_NUMBERS.nextInt(60);
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
 
+    private String contractName;
+    private String contractId;
+    private String meterIdA;
+    private String meterIdB;
+    private String idPds;
+    private String numCompteur;
+
     private final ExpiringDayCache<ContractDetail> contractDetail;
     private final ExpiringDayCache<MeterReading> consumption;
 
@@ -87,6 +95,13 @@ public class ThingSedifHandler extends BaseThingHandler {
 
     public ThingSedifHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider) {
         super(thing);
+
+        contractName = "";
+        contractId = "";
+        meterIdA = "";
+        meterIdB = "";
+        idPds = "";
+        numCompteur = "";
 
         this.contractDetail = new ExpiringDayCache<ContractDetail>("contractDetail", REFRESH_HOUR_OF_DAY,
                 REFRESH_MINUTE_OF_DAY, () -> {
@@ -104,30 +119,52 @@ public class ThingSedifHandler extends BaseThingHandler {
                 });
 
         config = getConfigAs(SedifConfiguration.class);
+        logger.debug("aa");
     }
 
     @Override
     public synchronized void initialize() {
-        updateStatus(ThingStatus.ONLINE);
-
         Bridge bridge = getBridge();
         if (bridge == null) {
             return;
         }
 
+        // force reread data if we pause / start the thing
+        this.contractDetail.invalidate();
+        this.consumption.invalidate();
+
         BridgeSedifWebHandler bridgeHandler = (BridgeSedifWebHandler) bridge.getHandler();
         if (bridgeHandler == null) {
             return;
         }
-        sedifApi = bridgeHandler.getSedifApi();
 
-        if (!config.seemsValid()) {
+        if (config.seemsValid()) {
+            contractName = config.contractId;
+            numCompteur = config.meterId;
+
             pollingJob = scheduler.schedule(this::pollingCode, 5, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error-mandatory-settings");
         }
 
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("Disposing the Linky handler {}", numCompteur);
+        ScheduledFuture<?> job = this.refreshJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
+            refreshJob = null;
+        }
+
+        ScheduledFuture<?> lcPollingJob = pollingJob;
+        if (lcPollingJob != null) {
+            lcPollingJob.cancel(true);
+            pollingJob = null;
+        }
+        sedifApi = null;
     }
 
     @Override
@@ -153,6 +190,20 @@ public class ThingSedifHandler extends BaseThingHandler {
      */
     private synchronized void updateContractDetail() {
         contractDetail.getValue().ifPresentOrElse(values -> {
+
+            for (CompteInfo compteInfo : values.compteInfo) {
+                if (compteInfo.NUM_COMPTEUR.equals(numCompteur)) {
+                    meterIdA = compteInfo.ELEMA;
+                    meterIdB = compteInfo.ELEMB;
+                    idPds = compteInfo.ID_PDS;
+                }
+            }
+
+            if (meterIdA.isBlank()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        String.format("Can't find meter for meterId {}", numCompteur));
+                return;
+            }
 
             updateState(SEDIF_CONTRAT_GROUP, CHANNEL_AUTORITE_ORGANISATRICE,
                     new StringType(values.contrat.AutoriteOrganisatrice));
@@ -345,7 +396,7 @@ public class ThingSedifHandler extends BaseThingHandler {
         SedifHttpApi api = this.sedifApi;
         if (api != null) {
             try {
-                ContractDetail contractDetail = api.getContractDetails();
+                ContractDetail contractDetail = api.getContractDetails(contractId);
                 return contractDetail;
             } catch (Exception e) {
                 logger.debug("Exception when getting consumption data for : {}", e.getMessage(), e);
@@ -381,20 +432,44 @@ public class ThingSedifHandler extends BaseThingHandler {
 
     private void pollingCode() {
         try {
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                return;
+            }
+
+            BridgeSedifWebHandler bridgeHandler = (BridgeSedifWebHandler) bridge.getHandler();
+            if (bridgeHandler == null) {
+                return;
+            }
+
+            int idx = 0;
+            while (bridge.getStatus() != ThingStatus.ONLINE && idx < 5) {
+                idx++;
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException ex) {
+
+                }
+            }
+
+            if (bridge.getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                        "Bridge take too much time to initialize");
+                return;
+            }
+
+            updateStatus(ThingStatus.ONLINE);
+
+            Contract contract = bridgeHandler.getContract(contractName);
+            if (contract.Id != null) {
+                contractId = contract.Id;
+            }
+            sedifApi = bridgeHandler.getSedifApi();
+
             SedifHttpApi api = this.sedifApi;
 
             if (api != null) {
-                Bridge lcBridge = getBridge();
                 ScheduledFuture<?> lcPollingJob = pollingJob;
-
-                if (lcBridge == null || lcBridge.getStatus() != ThingStatus.ONLINE) {
-                    return;
-                }
-
-                BridgeSedifWebHandler bridgeHandler = (BridgeSedifWebHandler) lcBridge.getHandler();
-                if (bridgeHandler == null) {
-                    return;
-                }
 
                 if (!bridgeHandler.isConnected()) {
                     bridgeHandler.connectionInit();
@@ -552,6 +627,26 @@ public class ThingSedifHandler extends BaseThingHandler {
         } else {
             throw new SedifException("Invalid meterReading == null");
         }
+    }
+
+    public String getContractId() {
+        return contractId;
+    }
+
+    public String getMeterIdA() {
+        return meterIdA;
+    }
+
+    public String getMeterIdB() {
+        return meterIdB;
+    }
+
+    public String getIdPds() {
+        return idPds;
+    }
+
+    public String getNumCompteur() {
+        return idPds;
     }
 
 }
