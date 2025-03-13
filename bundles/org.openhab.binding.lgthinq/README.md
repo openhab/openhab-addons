@@ -5,6 +5,7 @@ This binding was developed to integrate the LG ThinQ API with openHAB.
 ## Supported Things
 
 This binding support several devices from the LG ThinQ Devices V1 & V2 line. 
+All devices require a configured Bridge.
 See the table bellow:
 
 | Thing ID            | Device Name     | Versions | Special Functions            | Commands                                        | Obs                                                                                                                                                              |
