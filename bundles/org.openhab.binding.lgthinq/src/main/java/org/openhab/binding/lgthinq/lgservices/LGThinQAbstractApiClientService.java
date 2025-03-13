@@ -141,10 +141,12 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         headers.put("x-origin", "app-native");
         headers.put("x-device-type", "601");
 
-        if (!accessToken.isBlank())
+        if (!accessToken.isBlank()) {
             headers.put("x-emp-token", accessToken);
-        if (!userNumber.isBlank())
+        }
+        if (!userNumber.isBlank()) {
             headers.put("x-user-no", userNumber);
+        }
         return headers;
     }
 
