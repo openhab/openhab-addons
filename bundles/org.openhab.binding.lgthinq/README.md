@@ -218,7 +218,7 @@ these properties from the thing created and complete the textual configuration.
 
 Here are some examples on how to map the channels to items.
 
-demo.items:
+### Example `demo.items`
 
 ```java
 Switch               ACPower        "Power"                   <switch>  { channel="lgthinq:air-conditioner-401:myAC:dashboard#power" }
