@@ -70,8 +70,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * The {@link LGThinQAbstractApiClientService} - base class for all LG API client service. It's provide commons methods
- * to
- * communicate to the LG Cloud and exchange basic data.
+ * to communicate to the LG Cloud and exchange basic data.
  *
  * @author Nemer Daud - Initial contribution
  */
@@ -94,19 +93,21 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         this.snapshotClass = snapshotClass;
     }
 
-    // Método para gerar o ClientID
+    /**
+     * Retrieves the client ID based on the provided user number.
+     *
+     * @param userNumber the user number to generate the client ID
+     * @return the generated client ID
+     */
     private String getClientId(String userNumber) {
-        // Retorna o ID já gerado, se existir
         if (!clientId.isEmpty()) {
             return clientId;
         }
-
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             String data = userNumber + Instant.now().toString();
             byte[] hash = digest.digest(data.getBytes(StandardCharsets.UTF_8));
-            clientId = bytesToHex(hash);
-            return clientId;
+            return bytesToHex(hash);
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalArgumentException("SHA-256 algorithm not found", e);
         }
@@ -136,7 +137,6 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         headers.put("x-thinq-app-os", LG_API_V2_APP_OS);
         headers.put("x-thinq-app-type", LG_API_V2_APP_TYPE);
         headers.put("x-thinq-app-ver", LG_API_V2_APP_VER);
-        // headers.put("x-thinq-security-key", LG_API_SECURITY_KEY);
         headers.put("x-thinq-app-logintype", "LGE");
         headers.put("x-origin", "app-native");
         headers.put("x-device-type", "601");
@@ -149,7 +149,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
     }
 
     /**
-     * Even using V2 URL, this endpoint support grab informations about account devices from V1 and V2.
+     * Even using V2 URL, this endpoint support grab information about account devices from V1 and V2.
      * 
      * @return list os LG Devices.
      * @throws LGThinqApiException if some communication error occur.
@@ -212,6 +212,14 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         return genericHandleDeviceSettingsResult(resp, objectMapper);
     }
 
+    /**
+     * Handles the result of device settings retrieved from an API call.
+     *
+     * @param resp The RestResult object containing the API response
+     * @param objectMapper The ObjectMapper to convert JSON to Java objects
+     * @return A Map containing the device settings
+     * @throws LGThinqApiException If an error occurs during handling the device settings result
+     */
     static Map<String, Object> genericHandleDeviceSettingsResult(RestResult resp, ObjectMapper objectMapper)
             throws LGThinqApiException {
         Map<String, Object> deviceSettings;
@@ -237,6 +245,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                 }
             } catch (JsonProcessingException e) {
                 // This exception doesn't matter, it's because response is not in json format. Logging raw response.
+                logger.trace("Error calling device settings from LG Server API. Response is not in json format. Ignoring...", e);
             }
             throw new LGThinqApiException(String.format(
                     "Error calling device settings from LG Server API. The reason is:%s", resp.getJsonResponse()));

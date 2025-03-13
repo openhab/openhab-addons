@@ -117,8 +117,13 @@ public class LGThinqDiscoveryService extends AbstractThingHandlerDiscoveryServic
         thingDiscovered(discoveryResult);
     }
 
+    /**
+     * Normalizes the Thing UID by replacing any non-alphanumeric characters with a hyphen.
+     *
+     * @param uid the original Thing UID to be normalized
+     * @return the normalized Thing UID with non-alphanumeric characters replaced by hyphens
+     */
     private String normalizeThingUID(String uid) {
-        // Substitui apenas os símbolos por "-"
         return uid.replaceAll("[^a-zA-Z0-9]", "-");
     }
 

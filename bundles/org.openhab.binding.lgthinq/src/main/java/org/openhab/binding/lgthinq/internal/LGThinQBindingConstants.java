@@ -33,7 +33,7 @@ public class LGThinQBindingConstants extends LGServicesConstants {
     public static final String BINDING_ID = "lgthinq";
 
     // =============== Thing Type IDs ==================
-    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
+    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "cloud-account");
     public static final ThingTypeUID THING_TYPE_AIR_CONDITIONER = new ThingTypeUID(BINDING_ID,
             DeviceTypes.AIR_CONDITIONER.thingTypeId());
     public static final ThingTypeUID THING_TYPE_WASHING_MACHINE = new ThingTypeUID(BINDING_ID,
