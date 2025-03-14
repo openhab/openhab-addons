@@ -84,7 +84,7 @@ public class GreeHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(GreeConfiguration.class);
-        if (config.ipAddress.isEmpty() || (config.refreshInterval < 0)) {
+        if (config.ipAddress.isBlank() || (config.refreshInterval < 0)) {
             String message = messages.get("thinginit.invconf");
             logger.warn("{}: {}", thingId, message);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
