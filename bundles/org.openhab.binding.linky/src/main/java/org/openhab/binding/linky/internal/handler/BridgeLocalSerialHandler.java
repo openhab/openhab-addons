@@ -107,11 +107,18 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
                         logger.warn("Got illegal state exception", e);
                     }
                 }
+                linkyStream.close();
             } catch (IOException e) {
                 logger.warn("An error occurred during serial port input stream opening", e);
             }
 
             serialPort.removeEventListener();
+            try {
+                serialPort.getInputStream().close();
+                serialPort.getOutputStream().close();
+            } catch (IOException ex) {
+
+            }
             serialPort.close();
         }
     }
@@ -176,7 +183,6 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
             currentOwner = portIdentifier.getCurrentOwner();
             logger.debug("portIdentifier.getCurrentOwner() = {}", currentOwner);
             SerialPort commPort = portIdentifier.open("org.openhab.binding.linky", 5000);
-
             LinkyTicMode ticMode = LinkyTicMode.valueOf(config.ticMode);
             commPort.setSerialPortParams(ticMode.getBitrate(), SerialPort.DATABITS_7, SerialPort.STOPBITS_1,
                     SerialPort.PARITY_EVEN);
