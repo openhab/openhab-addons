@@ -72,19 +72,6 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
             .appendPattern("uuuu-MM-dd['T'][' ']HH:mm").optionalStart().appendLiteral(':')
             .appendValue(SECOND_OF_MINUTE, 2).optionalStart().appendFraction(NANO_OF_SECOND, 0, 9, true).toFormatter();
 
-    /*
-     * ;
-     *
-     * DateTimeFormatter formatter1 = new DateTimeFormatterBuilder()
-     * .appendPattern(DATE_TIME_FORMAT_PATTERN)
-     * // optional decimal point followed by 1 to 6 digits
-     * .optionalStart()
-     * .appendPattern(".")
-     * .appendFraction(ChronoField.MICRO_OF_SECOND, 1, 6, false)
-     * .optionalEnd()
-     * .toFormatter();
-     */
-
     private final HttpClientFactory httpClientFactory;
     private final OAuthFactory oAuthFactory;
     private final HttpService httpService;
