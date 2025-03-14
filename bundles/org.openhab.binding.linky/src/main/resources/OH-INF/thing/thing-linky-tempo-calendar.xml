@@ -10,9 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Tempo Calendar</label>
-		<description>
-			Provides tempo calendar.
-		</description>
+		<description>Provides tempo calendar</description>
 
 		<channel-groups>
 			<channel-group typeId="linky-tempo-calendar" id="linky-tempo-calendar"/>

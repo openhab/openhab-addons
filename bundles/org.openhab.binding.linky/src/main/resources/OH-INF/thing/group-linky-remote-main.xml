@@ -7,79 +7,97 @@
 	<channel-group-type id="linky-remote-main">
 		<label>Main</label>
 		<channels>
-			<channel id="identity" typeId="info-type">
+			<channel id="identity" typeId="info">
 				<label>Identity</label>
 			</channel>
 
-			<channel id="contract-subscribed-power" typeId="info-type">
+			<channel id="contract-subscribed-power" typeId="info">
 				<label>Subscribed Power</label>
+				<description>The power subscribed on the contract</description>
 			</channel>
 
-			<channel id="contract-last-activationdate" typeId="info-date-type">
+			<channel id="contract-last-activationdate" typeId="info-date">
 				<label>Last Activation Date</label>
+				<description>The activation date of the contract</description>
 			</channel>
 
-			<channel id="contract-distribution-tariff" typeId="info-type">
+			<channel id="contract-distribution-tariff" typeId="info">
 				<label>Distribution Tariff</label>
+				<description>The current distribution tariff in progres</description>
 			</channel>
 
-			<channel id="contract-offpeak-hours" typeId="info-type">
+			<channel id="contract-offpeak-hours" typeId="info">
 				<label>Offpeak Hours</label>
+				<description>The offpeak hours in the contract</description>
 			</channel>
 
-			<channel id="contract-status" typeId="info-type">
+			<channel id="contract-status" typeId="info">
 				<label>Contract Status</label>
+				<description>The current state of the contract</description>
 			</channel>
 
-			<channel id="contract-type" typeId="info-type">
+			<channel id="contract" typeId="info">
 				<label>Contract Type</label>
+				<description>The type of the contract</description>
 			</channel>
 
-			<channel id="contract-lastdistribution-tariff-changedate" typeId="info-date-type">
+			<channel id="contract-lastdistribution-tariff-changedate" typeId="info-date">
 				<label>Last Distribution Tariff ChangeDate</label>
+				<description>The last time the tariff option have changed</description>
 			</channel>
 
-			<channel id="contract-segment" typeId="info-type">
+			<channel id="contract-segment" typeId="info">
 				<label>Contract Segment</label>
+				<description>The contract customer market segment</description>
 			</channel>
 
-			<channel id="usage-point-id" typeId="info-type">
+			<channel id="usage-point-id" typeId="info">
 				<label>UsagePoint Id</label>
+				<description>The delivery / usage point id</description>
 			</channel>
 
-			<channel id="usage-point-status" typeId="info-type">
+			<channel id="usage-point-status" typeId="info">
 				<label>UsagePoint Status</label>
+				<description>The usage point current status</description>
 			</channel>
 
-			<channel id="usage-point-meter-type" typeId="info-type">
+			<channel id="usage-point-meter" typeId="info">
 				<label>UsagePoint Meter Type</label>
+				<description>The usage point installed meter type</description>
 			</channel>
 
-			<channel id="usage-point-address-city" typeId="info-type">
+			<channel id="usage-point-address-city" typeId="info">
 				<label>City</label>
+				<description>The usage point adress city</description>
 			</channel>
 
-			<channel id="usage-point-address-country" typeId="info-type">
+			<channel id="usage-point-address-country" typeId="info">
 				<label>Country</label>
+				<description>The usage point adress country</description>
 			</channel>
 
-			<channel id="usage-point-address-insee-code" typeId="info-type">
+			<channel id="usage-point-address-insee-code" typeId="info">
 				<label>Insee Code</label>
+				<description>The usage point adress Insee code</description>
 			</channel>
 
-			<channel id="usage-point-address-postal-code" typeId="info-type">
+			<channel id="usage-point-address-postal-code" typeId="info">
 				<label>Postal Code</label>
+				<description>The usage point adress Postal code</description>
 			</channel>
 
-			<channel id="usage-point-address-street" typeId="info-type">
+			<channel id="usage-point-address-street" typeId="info">
 				<label>Street</label>
+				<description>The usage point adress Street</description>
 			</channel>
 
-			<channel id="contact-mail" typeId="info-type">
+			<channel id="contact-mail" typeId="info">
 				<label>Mail</label>
+				<description>The email contact for this contract</description>
 			</channel>
-			<channel id="contact-phone" typeId="info-type">
+			<channel id="contact-phone" typeId="info">
 				<label>Phone</label>
+				<description>The phone contact for this contract</description>
 			</channel>
 		</channels>
 	</channel-group-type>

@@ -50,8 +50,7 @@ import org.slf4j.LoggerFactory;
  * The {@link ThingTempoCalendarHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Gaël L'hopital - Initial contribution
- * @author Laurent Arnal - Rewrite addon to use official dataconect API
+ * @author Laurent Arnal - Initial contribution
  */
 
 @NonNullByDefault

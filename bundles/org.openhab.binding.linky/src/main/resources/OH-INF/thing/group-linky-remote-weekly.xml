@@ -7,19 +7,23 @@
 	<channel-group-type id="linky-remote-weekly">
 		<label>Weekly Consumption</label>
 		<channels>
-			<channel id="thisWeek" typeId="consumption-type">
+			<channel id="thisWeek" typeId="consumption">
 				<label>This Week Consumption</label>
+				<description>The energy consumption for the current Week</description>
 			</channel>
-			<channel id="lastWeek" typeId="consumption-type">
+			<channel id="lastWeek" typeId="consumption">
 				<label>Last Week Consumption</label>
+				<description>The energy consumption for the previous Week</description>
 			</channel>
-			<channel id="week-2" typeId="consumption-type">
-				<label>Last Week Consumption</label>
+			<channel id="week-2" typeId="consumption">
+				<label>Week -2 Consumption</label>
+				<description>The energy consumption for the Week -2</description>
 			</channel>
-			<channel id="consumption" typeId="consumption-type">
+			<channel id="consumption" typeId="consumption">
 				<label>Consumption</label>
+				<description>The energy consumption</description>
 			</channel>
-			<channel id="max-power" typeId="power-type">
+			<channel id="max-power" typeId="power">
 				<label>Peak Value</label>
 				<description>Maximum power usage value</description>
 			</channel>

@@ -15,7 +15,7 @@ package org.openhab.binding.linky.internal.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link UserInfo} holds informations about energy delivery point
+ * The {@link ResponseContact} holds informations about the person contact associate with a contract
  *
  * @author Laurent Arnal - Initial contribution - Rewrite addon to use official dataconect API
  */

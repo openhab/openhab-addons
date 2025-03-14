@@ -7,19 +7,23 @@
 	<channel-group-type id="linky-remote-yearly">
 		<label>Yearly Consumption</label>
 		<channels>
-			<channel id="thisYear" typeId="consumption-type">
+			<channel id="thisYear" typeId="consumption">
 				<label>This Year Consumption</label>
+				<description>The energy consumption for the current Year</description>
 			</channel>
-			<channel id="lastYear" typeId="consumption-type">
+			<channel id="lastYear" typeId="consumption">
 				<label>Last Year Consumption</label>
+				<description>The energy consumption for the previous Year</description>
 			</channel>
-			<channel id="year-2" typeId="consumption-type">
-				<label>Last Year Consumption</label>
+			<channel id="year-2" typeId="consumption">
+				<label>Year -2 Consumption</label>
+				<description>The energy consumption for the Year -2</description>
 			</channel>
-			<channel id="consumption" typeId="consumption-type">
+			<channel id="consumption" typeId="consumption">
 				<label>Consumption</label>
+				<description>The energy consumption</description>
 			</channel>
-			<channel id="max-power" typeId="power-type">
+			<channel id="max-power" typeId="power">
 				<label>Peak Value</label>
 				<description>Maximum power usage value</description>
 			</channel>

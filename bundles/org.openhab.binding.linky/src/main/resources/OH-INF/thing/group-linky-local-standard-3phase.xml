@@ -7,117 +7,117 @@
 	<channel-group-type id="linky-local-standard-3phase">
 		<label>Standard 3 Phase</label>
 		<channels>
-			<channel id="irms2" typeId="current-type">
+			<channel id="irms2" typeId="current">
 				<label>Irms 2</label>
 				<description>RMS Current on phase 2</description>
 			</channel>
 
-			<channel id="irms3" typeId="current-type">
+			<channel id="irms3" typeId="current">
 				<label>Irms 3</label>
 				<description>RMS Current on phase 3</description>
 			</channel>
 
-			<channel id="urms2" typeId="potential-type">
+			<channel id="urms2" typeId="potential">
 				<label>Urms 2</label>
 				<description>RMS Voltage on phase 2</description>
 			</channel>
 
-			<channel id="urms3" typeId="potential-type">
+			<channel id="urms3" typeId="potential">
 				<label>Urms 3</label>
 				<description>RMS Voltage on phase 3</description>
 			</channel>
 
-			<channel id="sinsts1" typeId="power-type">
+			<channel id="sinsts1" typeId="power">
 				<label>Sinst 1</label>
 				<description>Instantaneous withdrawn apparent power</description>
 			</channel>
 
-			<channel id="sinsts2" typeId="power-type">
+			<channel id="sinsts2" typeId="power">
 				<label>Sinst 2</label>
 				<description>Instantaneous withdrawn apparent power</description>
 			</channel>
 
-			<channel id="sinsts3" typeId="power-type">
+			<channel id="sinsts3" typeId="power">
 				<label>Sinst 3</label>
 				<description>Instantaneous withdrawn apparent power</description>
 			</channel>
 
-			<channel id="smaxsn1" typeId="power-type">
+			<channel id="smaxsn1" typeId="power">
 				<label>Smax Sn1</label>
 				<description>Maximum withdrawn apparent power of the day on phase 1</description>
 			</channel>
 
-			<channel id="smaxsn1-date" typeId="datetime-type">
+			<channel id="smaxsn1-date" typeId="datetime">
 				<label>Smax Sn1 Timestamp</label>
 				<description>Timestamp of SMAXSN1 value</description>
 			</channel>
 
-			<channel id="smaxsn2" typeId="power-type">
+			<channel id="smaxsn2" typeId="power">
 				<label>Smax Sn2</label>
 				<description>Maximum withdrawn apparent power of the day on phase 2</description>
 			</channel>
 
-			<channel id="smaxsn2-date" typeId="datetime-type">
+			<channel id="smaxsn2-date" typeId="datetime">
 				<label>Smax Sn2 Timestamp</label>
 				<description>Timestamp of SMAXSN2 value</description>
 			</channel>
 
-			<channel id="smaxsn3" typeId="power-type">
+			<channel id="smaxsn3" typeId="power">
 				<label>Smax Sn3</label>
 				<description>Maximum withdrawn apparent power of the day on phase 3</description>
 			</channel>
 
-			<channel id="smaxsn3-date" typeId="datetime-type">
+			<channel id="smaxsn3-date" typeId="datetime">
 				<label>Smax Sn3 Timestamp</label>
 				<description>Timestamp of SMAXSN3 value</description>
 			</channel>
 
-			<channel id="smaxsn1-minus1" typeId="power-type">
+			<channel id="smaxsn1-minus1" typeId="power">
 				<label>Smax Sn1 -1</label>
 				<description>Maximum withdrawn apparent power of the previous day on phase 1</description>
 			</channel>
 
-			<channel id="smaxsn1-minus1-date" typeId="datetime-type">
+			<channel id="smaxsn1-minus1-date" typeId="datetime">
 				<label>max Sn1 -1 Timestamp</label>
 				<description>Timestamp of SMAXSN1-1 value</description>
 			</channel>
 
-			<channel id="smaxsn2-minus1" typeId="power-type">
+			<channel id="smaxsn2-minus1" typeId="power">
 				<label>max Sn2 -1</label>
 				<description>Maximum withdrawn apparent power of the previous day on phase 2</description>
 			</channel>
 
-			<channel id="smaxsn2-minus1-date" typeId="datetime-type">
+			<channel id="smaxsn2-minus1-date" typeId="datetime">
 				<label>max Sn2 -1 Timestamp</label>
 				<description>Timestamp of SMAXSN2-1 value</description>
 			</channel>
 
-			<channel id="smaxsn3-minus1" typeId="power-type">
+			<channel id="smaxsn3-minus1" typeId="power">
 				<label>max Sn3 -1</label>
 				<description>Maximum withdrawn apparent power of the previous day on phase 3</description>
 			</channel>
 
-			<channel id="smaxsn3-minus1-date" typeId="datetime-type">
+			<channel id="smaxsn3-minus1-date" typeId="datetime">
 				<label>max Sn3 -1 Timestamp</label>
 				<description>Timestamp of SMAXSN3-1 value</description>
 			</channel>
 
-			<channel id="umoy2" typeId="potential-type">
+			<channel id="umoy2" typeId="potential">
 				<label>Umoy 2</label>
 				<description>Mean Voltage on phase 2</description>
 			</channel>
 
-			<channel id="umoy2-date" typeId="datetime-type">
+			<channel id="umoy2-date" typeId="datetime">
 				<label>Umoy 2 Timestamp</label>
 				<description>Timestamp of UMOY2 value</description>
 			</channel>
 
-			<channel id="umoy3" typeId="potential-type">
+			<channel id="umoy3" typeId="potential">
 				<label>Umoy 3</label>
 				<description>Mean Voltage on phase 3</description>
 			</channel>
 
-			<channel id="umoy3-date" typeId="datetime-type">
+			<channel id="umoy3-date" typeId="datetime">
 				<label>Umoy 3 Timestamp</label>
 				<description>Timestamp of UMOY3 value</description>
 			</channel>

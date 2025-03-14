@@ -7,54 +7,54 @@
 	<channel-group-type id="linky-local-historical-3phase">
 		<label>Historical 3 Phase</label>
 		<channels>
-			<channel id="iinst1" typeId="current-type">
-				<label>IINST1</label>
-				<description>Intensité Instantanée Phase 1</description>
+			<channel id="iinst1" typeId="current">
+				<label>Instantaneous Intensity Ph1</label>
+				<description>Instantaneous Intensity Phase 1</description>
 			</channel>
 
-			<channel id="iinst2" typeId="current-type">
-				<label>IINST2</label>
-				<description>Intensité Instantanée Phase 2</description>
+			<channel id="iinst2" typeId="current">
+				<label>Instantaneous Intensity Ph2</label>
+				<description>Instantaneous Intensity Phase 2</description>
 			</channel>
 
-			<channel id="iinst3" typeId="current-type">
-				<label>IINST3</label>
-				<description>Intensité Instantanée Phase 3</description>
+			<channel id="iinst3" typeId="current">
+				<label>Instantaneous Intensity Ph3</label>
+				<description>Instantaneous Intensity Phase 3</description>
 			</channel>
 
-			<channel id="imax1" typeId="current-type">
-				<label>IMAX1</label>
-				<description>Intensité maximale appelée Phase 1</description>
+			<channel id="imax1" typeId="current">
+				<label>Max Intensity Ph1</label>
+				<description>Intensity max called on Phase 1</description>
 			</channel>
 
-			<channel id="imax2" typeId="current-type">
-				<label>IMAX2</label>
-				<description>Intensité maximale appelée Phase 2</description>
+			<channel id="imax2" typeId="current">
+				<label>Max Intensity Ph2</label>
+				<description>Intensity max called on Phase 2</description>
 			</channel>
 
-			<channel id="imax3" typeId="current-type">
-				<label>IMAX3</label>
-				<description>Intensité maximale appelée Phase 3</description>
+			<channel id="imax3" typeId="current">
+				<label>Max Intensity Ph3</label>
+				<description>Intensity max called on Phase 3</description>
 			</channel>
 
-			<channel id="ppot" typeId="info-type">
-				<label>PPOT</label>
-				<description>Présence des potentiels</description>
+			<channel id="ppot" typeId="info">
+				<label>Electric Potential Present</label>
+				<description>Electric potential are present on the meter</description>
 			</channel>
 
-			<channel id="adir1" typeId="current-type">
-				<label>ADIR1</label>
-				<description>Avertissement de Dépassement d'intensité de réglage Phase 1</description>
+			<channel id="adir1" typeId="current">
+				<label>Over Intensity Warning Ph1</label>
+				<description>Over intensity warning for Phase 1</description>
 			</channel>
 
-			<channel id="adir2" typeId="current-type">
-				<label>ADIR2</label>
-				<description>Avertissement de Dépassement d'intensité de réglage Phase 2</description>
+			<channel id="adir2" typeId="current">
+				<label>Over Intensity Warning Ph2</label>
+				<description>Over intensity warning for Phase 2</description>
 			</channel>
 
-			<channel id="adir3" typeId="current-type">
-				<label>ADIR3</label>
-				<description>Avertissement de Dépassement d'intensité de réglage Phase 3</description>
+			<channel id="adir3" typeId="current">
+				<label>Over Intensity Warning Ph3</label>
+				<description>Over intensity warning for Phase 3</description>
 			</channel>
 		</channels>
 	</channel-group-type>

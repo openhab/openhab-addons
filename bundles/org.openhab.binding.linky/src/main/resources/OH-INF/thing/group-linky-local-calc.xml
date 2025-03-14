@@ -7,226 +7,226 @@
 	<channel-group-type id="linky-local-calc">
 		<label>Calc</label>
 		<channels>
-			<channel id="irms1f" typeId="current-type">
+			<channel id="irms1f" typeId="current">
 				<label>Irms 1f</label>
-				<description>RMS Current on phase 1 (floating value)</description>
+				<description>Intensity (floating value)</description>
 			</channel>
 
-			<channel id="cosphi" typeId="power-factor-type">
+			<channel id="cosphi" typeId="power-factor">
 				<label>CosPhi</label>
-				<description>RMS Current on phase 1 (floating value)</description>
+				<description>CosPhi (floating value)</description>
 			</channel>
 
-			<channel id="sactive" typeId="power-type">
+			<channel id="sactive" typeId="power">
 				<label>Sactive</label>
 				<description>Instantaneous withdrawn active power</description>
 			</channel>
 
-			<channel id="sreactive" typeId="power-type">
+			<channel id="sreactive" typeId="power">
 				<label>Sreactive</label>
 				<description>Instantaneous withdrawn reactive power</description>
 			</channel>
 
-			<channel id="relais1" typeId="switch-type">
-				<label>Relais 1</label>
+			<channel id="relais1" typeId="switch">
+				<label>Relay 1</label>
 			</channel>
 
-			<channel id="relais2" typeId="switch-type">
-				<label>Relais 2</label>
+			<channel id="relais2" typeId="switch">
+				<label>Relay 2</label>
 			</channel>
 
-			<channel id="relais3" typeId="switch-type">
-				<label>Relais 3</label>
+			<channel id="relais3" typeId="switch">
+				<label>Relay 3</label>
 			</channel>
 
-			<channel id="relais4" typeId="switch-type">
-				<label>Relais 4</label>
+			<channel id="relais4" typeId="switch">
+				<label>Relay 4</label>
 			</channel>
 
-			<channel id="relais5" typeId="switch-type">
-				<label>Relais 5</label>
+			<channel id="relais5" typeId="switch">
+				<label>Relay 5</label>
 			</channel>
 
-			<channel id="relais6" typeId="switch-type">
-				<label>Relais 6</label>
+			<channel id="relais6" typeId="switch">
+				<label>Relay 6</label>
 			</channel>
 
-			<channel id="relais7" typeId="switch-type">
-				<label>Relais 7</label>
+			<channel id="relais7" typeId="switch">
+				<label>Relay 7</label>
 			</channel>
 
-			<channel id="relais8" typeId="switch-type">
-				<label>Relais 8</label>
+			<channel id="relais8" typeId="switch">
+				<label>Relay 8</label>
 			</channel>
 
 
-			<channel id="contact-sec" typeId="contact-type">
-				<label>Contact Sec</label>
-				<description>State of main relais</description>
+			<channel id="contact-sec" typeId="contact">
+				<label>Dry contact</label>
+				<description>State of main relay</description>
 			</channel>
 
-			<channel id="cut-off" typeId="cutoff-type">
-				<label>Coupure</label>
-				<description>State of coupure switch</description>
+			<channel id="cut-off" typeId="cutoff">
+				<label>Cut Off</label>
+				<description>State of Cut Off switch</description>
 			</channel>
 
-			<channel id="cache" typeId="contact-type">
+			<channel id="cache" typeId="contact">
 				<label>Cache</label>
-				<description>State of coupure switch</description>
+				<description>State of linky cache switch</description>
 			</channel>
 
 
-			<channel id="over-voltage" typeId="over-voltage-state-type">
+			<channel id="over-voltage" typeId="over-voltage-state">
 				<label>Over Voltage</label>
 				<description>State of over voltage</description>
 			</channel>
 
-			<channel id="exceeding-power" typeId="exceeding-power-state-type">
+			<channel id="exceeding-power" typeId="exceeding-power-state">
 				<label>Exceeding</label>
 				<description>State of exceeding</description>
 			</channel>
 
-			<channel id="function" typeId="function-type">
+			<channel id="function" typeId="function">
 				<label>Function</label>
 				<description>State of functionnality : consummer/producer</description>
 			</channel>
 
-			<channel id="direction" typeId="direction-type">
+			<channel id="direction" typeId="direction">
 				<label>Direction</label>
 				<description>Direction of the active energy</description>
 			</channel>
 
-			<channel id="supplier-rate" typeId="numeric-type">
+			<channel id="supplier-rate" typeId="numeric">
 				<label>Supplier Rate</label>
 				<description>The supplier rate</description>
 			</channel>
 
-			<channel id="distributor-rate" typeId="numeric-type">
+			<channel id="distributor-rate" typeId="numeric">
 				<label>Distributor Rate</label>
 				<description>The distributor rate</description>
 			</channel>
 
-			<channel id="clock" typeId="clock-state-type">
+			<channel id="clock" typeId="clock-state">
 				<label>Clock state</label>
 				<description>State Of Clock</description>
 			</channel>
 
-			<channel id="plc" typeId="plc-type">
+			<channel id="plc" typeId="plc">
 				<label>Plc Type</label>
 				<description>Type of PLC</description>
 			</channel>
 
-			<channel id="outputcom" typeId="ouputcom-state-type">
+			<channel id="outputcom" typeId="ouputcom-state">
 				<label>Communication Output State</label>
 				<description>State of communication output</description>
 			</channel>
 
-			<channel id="plc-state" typeId="plc-state-type">
+			<channel id="plc-state" typeId="plc-state">
 				<label>Plc State</label>
 				<description>State of PLC</description>
 			</channel>
 
-			<channel id="plc-synchro" typeId="synchro-plc-state-type">
+			<channel id="plc-synchro" typeId="synchro-plc-state">
 				<label>Plc Synchro</label>
 				<description>State of PLC Synchro</description>
 			</channel>
 
-			<channel id="tempo-today" typeId="tempo-type">
+			<channel id="tempo-today" typeId="tempo">
 				<label>Tempo Today</label>
 				<description>State of coupure switch</description>
 			</channel>
 
-			<channel id="tempo-tomorrow" typeId="tempo-type">
+			<channel id="tempo-tomorrow" typeId="tempo">
 				<label>Tempo Tomorrow</label>
 				<description>State of coupure switch</description>
 			</channel>
 
-			<channel id="advice-moving-tips" typeId="moving-tips-type">
+			<channel id="advice-moving-tips" typeId="moving-tips">
 				<label>Moving Tips Advice</label>
 				<description>State of moving tips adviceh</description>
 			</channel>
 
-			<channel id="moving-tips" typeId="moving-tips-type">
+			<channel id="moving-tips" typeId="moving-tips">
 				<label>Moving Tips</label>
 				<description>State of moving tips</description>
 			</channel>
 
-			<channel id="pjourf1-plus1" typeId="string-type">
+			<channel id="pjourf1-plus1" typeId="string">
 				<label>Pjour f1 +1</label>
 				<description>Profile of next day provider schedule</description>
 			</channel>
 
-			<channel id="ppointe1" typeId="string-type">
+			<channel id="ppointe1" typeId="string">
 				<label>Ppointe 1</label>
 				<description>Profile of next rush day</description>
 			</channel>
 
-			<channel id="pjourf2-plus1" typeId="string-type">
+			<channel id="pjourf2-plus1" typeId="string">
 				<label>Pjour f2 +1</label>
 				<description>Profile of next day provider schedule</description>
 			</channel>
 
-			<channel id="ppointe2" typeId="string-type">
+			<channel id="ppointe2" typeId="string">
 				<label>Ppointe 2</label>
 				<description>Profile of next rush day</description>
 			</channel>
 
-			<channel id="pjourf3-plus1" typeId="string-type">
+			<channel id="pjourf3-plus1" typeId="string">
 				<label>Pjour f3 +1</label>
 				<description>Profile of next day provider schedule</description>
 			</channel>
 
-			<channel id="ppointe3" typeId="string-type">
+			<channel id="ppointe3" typeId="string">
 				<label>Ppointe 3</label>
 				<description>Profile of next rush day</description>
 			</channel>
 
-			<channel id="pjourf4-plus1" typeId="string-type">
+			<channel id="pjourf4-plus1" typeId="string">
 				<label>Pjour f4 +1</label>
 				<description>Profile of next day provider schedule</description>
 			</channel>
 
-			<channel id="ppointe4" typeId="string-type">
+			<channel id="ppointe4" typeId="string">
 				<label>Ppointe 4</label>
 				<description>Profile of next rush day</description>
 			</channel>
 
-			<channel id="pjourf5-plus1" typeId="string-type">
+			<channel id="pjourf5-plus1" typeId="string">
 				<label>Pjour f5 +1</label>
 				<description>Profile of next day provider schedule</description>
 			</channel>
 
-			<channel id="ppointe5" typeId="string-type">
+			<channel id="ppointe5" typeId="string">
 				<label>Ppointe 5</label>
 				<description>Profile of next rush day</description>
 			</channel>
 
-			<channel id="pjourf6-plus1" typeId="string-type">
+			<channel id="pjourf6-plus1" typeId="string">
 				<label>Pjour f6 +1</label>
 				<description>Profile of next day provider schedule</description>
 			</channel>
 
-			<channel id="ppointe6" typeId="string-type">
+			<channel id="ppointe6" typeId="string">
 				<label>Ppointe 6</label>
 				<description>Profile of next rush day</description>
 			</channel>
 
-			<channel id="pjourf7-plus1" typeId="string-type">
+			<channel id="pjourf7-plus1" typeId="string">
 				<label>Pjour f7 +1</label>
 				<description>Profile of next day provider schedule</description>
 			</channel>
 
-			<channel id="ppointe7" typeId="string-type">
+			<channel id="ppointe7" typeId="string">
 				<label>Ppointe 7</label>
 				<description>Profile of next rush day</description>
 			</channel>
 
-			<channel id="pjourf8-plus1" typeId="string-type">
+			<channel id="pjourf8-plus1" typeId="string">
 				<label>Pjour f8 +1</label>
 				<description>Profile of next day provider schedule</description>
 			</channel>
 
-			<channel id="ppointe8" typeId="string-type">
+			<channel id="ppointe8" typeId="string">
 				<label>Ppointe 8</label>
 				<description>Profile of next rush day</description>
 			</channel>

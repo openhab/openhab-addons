@@ -8,18 +8,18 @@
 		<label>Historical EJP</label>
 		<channels>
 			<channel id="ejphn" typeId="consumption-type">
-				<label>EJPHN</label>
-				<description>Index option EJP Heures normales</description>
+				<label>EJP Index Standard Hours</label>
+				<description>Index EJP option Standard Hours</description>
 			</channel>
 
 			<channel id="ejphpm" typeId="consumption-type">
-				<label>EJPHPM</label>
-				<description>Index option EJP Heures de pointes</description>
+				<label>EJP Index High Hours</label>
+				<description>Index EJP option High hours</description>
 			</channel>
 
 			<channel id="pejp" typeId="time-type">
-				<label>PEJP</label>
-				<description>Préavis Début EJP (30 min)</description>
+				<label>Advice EJP Start</label>
+				<description>Advice an EJP period start (30 min before)</description>
 			</channel>
 		</channels>
 	</channel-group-type>

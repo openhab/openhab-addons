@@ -7,59 +7,59 @@
 	<channel-group-type id="linky-local-historical-base">
 		<label>Historical Base</label>
 		<channels>
-			<channel id="adco" typeId="string-type">
+			<channel id="adco" typeId="string">
 				<label>Adco</label>
-				<description>Adresse Secondaire du Compteur</description>
+				<description>Secondary meter adresse</description>
 			</channel>
 
-			<channel id="optarif" typeId="string-type">
-				<label>OpTarif</label>
-				<description>Option tarifaire choisie</description>
+			<channel id="optarif" typeId="string">
+				<label>Tarif Option</label>
+				<description>Tarif options in place</description>
 			</channel>
 
-			<channel id="isousc" typeId="power-type">
-				<label>ISousc</label>
-				<description>Intensité souscrite</description>
+			<channel id="isousc" typeId="power">
+				<label>Subscribed Intensity</label>
+				<description>Subscribed Intensity</description>
 			</channel>
 
-			<channel id="base" typeId="consumption-type">
+			<channel id="base" typeId="consumption">
 				<label>Base</label>
 				<description>Index option Base</description>
 			</channel>
 
-			<channel id="ptec" typeId="ptecType">
-				<label>PTEC</label>
-				<description>Période Tarifaire en cours</description>
+			<channel id="ptec" typeId="ptec">
+				<label>Tarif Periods</label>
+				<description>Tarif periods in progres</description>
 			</channel>
 
-			<channel id="iinst" typeId="current-type">
-				<label>IINST</label>
-				<description>Intensité Instantanée</description>
+			<channel id="iinst" typeId="current">
+				<label>Intensity</label>
+				<description>Instantaneous Intensity</description>
 			</channel>
 
-			<channel id="adps" typeId="current-type">
-				<label>ADPS</label>
-				<description>Avertissement de Dépassement De Puissance Souscrite</description>
+			<channel id="adps" typeId="current">
+				<label>Over Power</label>
+				<description>Over subscribed power warning</description>
 			</channel>
 
-			<channel id="imax" typeId="current-type">
-				<label>IMAX</label>
-				<description>Intensité maximale appelée</description>
+			<channel id="imax" typeId="current">
+				<label>Intensity Max</label>
+				<description>Maximum Intensity called</description>
 			</channel>
 
-			<channel id="pmax" typeId="power-type">
-				<label>PMAX</label>
-				<description>Puissance maximale triphasée atteinte</description>
+			<channel id="pmax" typeId="power">
+				<label>Power Max</label>
+				<description>Maximum three-phase power called</description>
 			</channel>
 
-			<channel id="papp" typeId="power-type">
-				<label>PAPP</label>
-				<description>Puissance apparente</description>
+			<channel id="papp" typeId="power">
+				<label>Apparent Power</label>
+				<description>Apparent power</description>
 			</channel>
 
-			<channel id="motdetat" typeId="info-type">
-				<label>MOTDETAT</label>
-				<description>Mot d'état du compteur</description>
+			<channel id="motdetat" typeId="info">
+				<label>Status word</label>
+				<description>Status word of the meter</description>
 			</channel>
 		</channels>
 	</channel-group-type>

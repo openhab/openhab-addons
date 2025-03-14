@@ -18,7 +18,7 @@ You can use :
 - The enedis bridge : this one will also use the new Rest Enedis API, and will directly gather data from Enedis Site.
 
 You first need to create an Enedis account [here](https://mon-compte-client.enedis.fr/) if you don't have one already.
- Please ensure that you have accepted their conditions, and check that you can see graphs on the website.
+Please ensure that you have accepted their conditions, and check that you can see graphs on the website.
 Especially, check hourly view/graph. Enedis may ask for permission the first time to start collecting hourly data.
 
 The binding will not provide these informations unless this step is ok.
@@ -184,77 +184,77 @@ The information that is retrieved is available as many different groups.
 
   | Channel ID                                                     | Item Type         | Description                                                                   |
   |----------------------------------------------------------------|-------------------|-------------------------------------------------------------------------------|
-  | linky-remote-main#identitiy                                    | info-type         | The full name of the contract older                                           |
-  | linky-remote-main#contract-subscribed-power                    | info-type         | The subscribed max Power                                                      |
-  | linky-remote-main#contract-last-activationdate                 | info-type         | The contract activation date                                                  |
-  | linky-remote-main#contract-distribution-tariff                 | info-type         | The current applied tarif                                                     |
-  | linky-remote-main#contract-offpeak-hours                       | info-type         | The OffPeakHour link to your contract                                         |
-  | linky-remote-main#contract-status                              | info-type         | The current contract status                                                   |
-  | linky-remote-main#contract-type                                | info-type         | The contract type                                                             |
-  | linky-remote-main#contract-lastdistribution-tariff-changedate  | info-type         | The date of the last tariff change                                            |
-  | linky-remote-main#contract-segment                             | info-type         | The customer segment for this contract                                        |
-  | linky-remote-main#usage-point-id                               | info-type         | The distribution / usage point uniq indentifier                               |
-  | linky-remote-main#usage-point-status                           | info-type         | The usage point current state                                                 |
-  | linky-remote-main#usage-point-meter-type                       | info-type         | The usage point meter type                                                    |
-  | linky-remote-main#usage-point-address-city                     | info-type         | The usage point City                                                          |
-  | linky-remote-main#usage-point-address-country                  | info-type         | The usage point Country                                                       |
-  | linky-remote-main#usage-point-address-insee-code               | info-type         | The usage point Insee Code                                                    |
-  | linky-remote-main#usage-point-address-postal-code              | info-type         | The usage point Postal Code                                                   |
-  | linky-remote-main#usage-point-address-street                   | info-type         | The usage point Address Street                                                |
-  | linky-remote-main#contact-mail                                 | info-type         | The usage point Contact Mail                                                  |
-  | linky-remote-main#contact-phone                                | info-type         | The usage point Contact Phone                                                 |
+  | linky-remote-main#identitiy                                    | info              | The full name of the contract older                                           |
+  | linky-remote-main#contract-subscribed-power                    | info              | The subscribed max Power                                                      |
+  | linky-remote-main#contract-last-activationdate                 | info              | The contract activation date                                                  |
+  | linky-remote-main#contract-distribution-tariff                 | info              | The current applied tarif                                                     |
+  | linky-remote-main#contract-offpeak-hours                       | info              | The OffPeakHour link to your contract                                         |
+  | linky-remote-main#contract-status                              | info              | The current contract status                                                   |
+  | linky-remote-main#contract-type                                | info              | The contract type                                                             |
+  | linky-remote-main#contract-lastdistribution-tariff-changedate  | info              | The date of the last tariff change                                            |
+  | linky-remote-main#contract-segment                             | info              | The customer segment for this contract                                        |
+  | linky-remote-main#usage-point-id                               | info              | The distribution / usage point uniq indentifier                               |
+  | linky-remote-main#usage-point-status                           | info              | The usage point current state                                                 |
+  | linky-remote-main#usage-point-meter-type                       | info              | The usage point meter type                                                    |
+  | linky-remote-main#usage-point-address-city                     | info              | The usage point City                                                          |
+  | linky-remote-main#usage-point-address-country                  | info              | The usage point Country                                                       |
+  | linky-remote-main#usage-point-address-insee-code               | info              | The usage point Insee Code                                                    |
+  | linky-remote-main#usage-point-address-postal-code              | info              | The usage point Postal Code                                                   |
+  | linky-remote-main#usage-point-address-street                   | info              | The usage point Address Street                                                |
+  | linky-remote-main#contact-mail                                 | info              | The usage point Contact Mail                                                  |
+  | linky-remote-main#contact-phone                                | info              | The usage point Contact Phone                                                 |
 
 - The linky-remote-daily group will give consumtion information with day granularity
 
   | Channel ID                                                     | Item Type         | Description                                                                   |
   |----------------------------------------------------------------|-------------------|-------------------------------------------------------------------------------|
-  | linky-remote-daily#yesterday                                   | consumption-type  | Yesterday energy usage                                                        |
-  | linky-remote-daily#day-2                                       | consumption-type  | Day-2 energy usage                                                            |
-  | linky-remote-daily#day-3                                       | consumption-type  | Day-3 energy usage                                                            |
-  | linky-remote-daily#consumption                                 | consumption-type  | timeseries for energy usage  (up to three years will be store if available)   |
-  | linky-remote-daily#maw-power                                   | power-type        | timeseries for max-power usage                                                |
-  | linky-remote-daily#power                                       | power-type        | Yesterday's peak power usage                                                  |
-  | linky-remote-daily#timestamp                                   | timestamp-type    | Timestamp of the power peak                                                   |
-  | linky-remote-daily#power-2                                     | power-type        | Day-2's peak power usage                                                      |
-  | linky-remote-daily#timestamp-2                                 | timestamp-type    | Timestamp Day-2's of the power peak                                           |
-  | linky-remote-daily#power-3                                     | power-type        | Day-3's peak power usage                                                      |
-  | linky-remote-daily#timestamp-3                                 | timestamp-type    | Timestamp Day-3's  of the power peak                                          |
+  | linky-remote-daily#yesterday                                   | consumption       | Yesterday energy usage                                                        |
+  | linky-remote-daily#day-2                                       | consumption       | Day-2 energy usage                                                            |
+  | linky-remote-daily#day-3                                       | consumption       | Day-3 energy usage                                                            |
+  | linky-remote-daily#consumption                                 | consumption       | timeseries for energy usage  (up to three years will be store if available)   |
+  | linky-remote-daily#maw-power                                   | power             | timeseries for max-power usage                                                |
+  | linky-remote-daily#power                                       | power             | Yesterday's peak power usage                                                  |
+  | linky-remote-daily#timestamp                                   | timestamp         | Timestamp of the power peak                                                   |
+  | linky-remote-daily#power-2                                     | power             | Day-2's peak power usage                                                      |
+  | linky-remote-daily#timestamp-2                                 | timestamp         | Timestamp Day-2's of the power peak                                           |
+  | linky-remote-daily#power-3                                     | power             | Day-3's peak power usage                                                      |
+  | linky-remote-daily#timestamp-3                                 | timestamp         | Timestamp Day-3's  of the power peak                                          |
 
 - The linky-remote-weekly group will give consumtion information with week granularity
 
   | Channel ID                                                     | Item Type         | Description                                                                   |
   |----------------------------------------------------------------|-------------------|-------------------------------------------------------------------------------|
-  | linky-remote-weekly#thisWeek                                   | consumption-type  | Current week energy usage                                                     |
-  | linky-remote-weekly#lastWeek                                   | consumption-typey | Last week energy usage                                                        |
-  | linky-remote-weekly#week-2                                     | consumption-type  | Week -2 energy usage                                                          |
-  | linky-remote-weekly#consumption                                | consumption-type  | timeseries for weeks energy usage                                             |
-  | linky-remote-weekly#max-power                                  | power-type        | timeseries for max-power weekly usage                                         |
+  | linky-remote-weekly#thisWeek                                   | consumption       | Current week energy usage                                                     |
+  | linky-remote-weekly#lastWeek                                   | consumption       | Last week energy usage                                                        |
+  | linky-remote-weekly#week-2                                     | consumption       | Week -2 energy usage                                                          |
+  | linky-remote-weekly#consumption                                | consumption       | timeseries for weeks energy usage                                             |
+  | linky-remote-weekly#max-power                                  | power             | timeseries for max-power weekly usage                                         |
 
 - The linky-remote-monthly group will give consumtion information with month granularity
 
   | Channel ID                                                     | Item Type         | Description                                                                   |
   |----------------------------------------------------------------|-------------------|-------------------------------------------------------------------------------|
-  | linky-remote-monthly#thisMonth                                 | consumption-type  | Current month energy usage                                                    |
-  | linky-remote-monthly#lastMonth                                 | consumption-type  | Last month energy usage                                                       |
-  | linky-remote-monthly#month-2                                   | consumption-type  | Month-2 energy usage                                                          |
-  | linky-remote-monthly#consumption                               | consumption-type  | timeseries for months energy usage                                            |
-  | linky-remote-monthly#max-power                                 | power-type        | timeseries for max-power monthly usage                                        |
+  | linky-remote-monthly#thisMonth                                 | consumption       | Current month energy usage                                                    |
+  | linky-remote-monthly#lastMonth                                 | consumption       | Last month energy usage                                                       |
+  | linky-remote-monthly#month-2                                   | consumption       | Month-2 energy usage                                                          |
+  | linky-remote-monthly#consumption                               | consumption       | timeseries for months energy usage                                            |
+  | linky-remote-monthly#max-power                                 | power             | timeseries for max-power monthly usage                                        |
 
 - The linky-remote-yearly group will give consumtion information with year granularity
 
   | Channel ID                                                     | Item Type         | Description                                                                   |
   |----------------------------------------------------------------|-------------------|-------------------------------------------------------------------------------|
-  | linky-remote-yearly#thisYear                                   | consumption-type  | Current year energy usage                                                     |
-  | linky-remote-yearly#lastYear                                   | consumption-type  | Last year energy usage                                                        |
-  | linky-remote-yearly#year-2                                     | consumption-type  | year-2 energy usage                                                           |
-  | linky-remote-yearly#consumption                                | consumption-type  | timeseries for years energy usage                                             |
-  | linky-remote-yearly#maxPower                                   | power-type        | timeseries for max-power yearly usage                                         |
+  | linky-remote-yearly#thisYear                                   | consumption       | Current year energy usage                                                     |
+  | linky-remote-yearly#lastYear                                   | consumption       | Last year energy usage                                                        |
+  | linky-remote-yearly#year-2                                     | consumption       | year-2 energy usage                                                           |
+  | linky-remote-yearly#consumption                                | consumption       | timeseries for years energy usage                                             |
+  | linky-remote-yearly#maxPower                                   | power             | timeseries for max-power yearly usage                                         |
  
 - The linky-remote-load-curve group will give you access to load curve data with granularity as low as 30mn
 
   | Channel ID                                                     | Item Type         | Description                                                                   |
   |----------------------------------------------------------------|-------------------|-------------------------------------------------------------------------------|
-  | linky-remote-load-curve#power                                  | power-type        | The load curve data                                                           |
+  | linky-remote-load-curve#power                                  | power             | The load curve data                                                           |
 
 
 ### Displaying information / Graph
@@ -496,59 +496,59 @@ For direct serial connected meter, you will not need any futher action.
 
 | Channel                              | Type                      | Description                                              | Connection   | Mode  |
 |--------------------------------------|---------------------------|----------------------------------------------------------|--------------|-------|
-| linky-local-historical-base#adco     | string-type               | Subscribed electric current                              | All          | All   |
-| linky-local-historical-base#optarif  | string-type               | Subscribed electric current                              | All          | All   |
-| linky-local-historical-base#isousc   | power-type                | Subscribed electric current                              | All          | All   |
-| linky-local-historical-base#base     | consumption-type          | Total consumed energy                                    | All          | Base  |
+| linky-local-historical-base#adco     | string                    | Subscribed electric current                              | All          | All   |
+| linky-local-historical-base#optarif  | string                    | Subscribed electric current                              | All          | All   |
+| linky-local-historical-base#isousc   | power                     | Subscribed electric current                              | All          | All   |
+| linky-local-historical-base#base     | consumption               | Total consumed energy                                    | All          | Base  |
 | linky-local-historical-base#ptec     | ptecType                  | Current pricing period                                   | All          | All   |
-| linky-local-historical-base#iinst    | current-type              | Instantaneous electric current                           | Single-phase | All   |
-| linky-local-historical-base#adps     | current-type              | Excess electric current warning                          | Single-phase | All   |
-| linky-local-historical-base#imax     | current-type              | Maximum consumed electric current                        | Single-phase | All   |
-| linky-local-historical-base#papp     | power-type                | Maximum consumed electric power on all phases            | All          | All   |
-| linky-local-historical-base#modetat  | info-type                 | Etat                                                     | All          | All   |
+| linky-local-historical-base#iinst    | current                   | Instantaneous electric current                           | Single-phase | All   |
+| linky-local-historical-base#adps     | current                   | Excess electric current warning                          | Single-phase | All   |
+| linky-local-historical-base#imax     | current                   | Maximum consumed electric current                        | Single-phase | All   |
+| linky-local-historical-base#papp     | power                     | Maximum consumed electric power on all phases            | All          | All   |
+| linky-local-historical-base#modetat  | info                      | Etat                                                     | All          | All   |
 
 ##### 3 Phase channels
 
 | Channel                              | Type                      | Description                                              | Connection   | Mode  |
 |--------------------------------------|---------------------------|----------------------------------------------------------|--------------|-------|
-| linky-local-historical-3phase#iinst1 | current-type              | Instantaneous electric current on phase 1                | Three-phase  | All   |
-| linky-local-historical-3phase#iinst2 | current-type              | Instantaneous electric current on phase 2                | Three-phase  | All   |
-| linky-local-historical-3phase#iinst3 | current-type              | Instantaneous electric current on phase 3                | Three-phase  | All   |
-| linky-local-historical-3phase#imax1  | current-type              | Maximum consumed electric current on phase 1             | Three-phase  | All   |
-| linky-local-historical-3phase#imax2  | current-type              | Maximum consumed electric current on phase 2             | Three-phase  | All   |
-| linky-local-historical-3phase#imax3  | current-type              | Maximum consumed electric current on phase 3             | Three-phase  | All   |
-| linky-local-historical-3phase#adir1  | current-type              | Excess electric current on phase 1 warning               | Three-phase  | All   |
-| linky-local-historical-3phase#adir2  | current-type              | Excess electric current on phase 2 warning               | Three-phase  | All   |
-| linky-local-historical-3phase#adir3  | current-type              | Excess electric current on phase 3 warning               | Three-phase  | All   |
-| linky-local-historical-3phase#ppot   | info-type                 | Electrical potential presence                            | Three-phase  | All   |
+| linky-local-historical-3phase#iinst1 | current                   | Instantaneous electric current on phase 1                | Three-phase  | All   |
+| linky-local-historical-3phase#iinst2 | current                   | Instantaneous electric current on phase 2                | Three-phase  | All   |
+| linky-local-historical-3phase#iinst3 | current                   | Instantaneous electric current on phase 3                | Three-phase  | All   |
+| linky-local-historical-3phase#imax1  | current                   | Maximum consumed electric current on phase 1             | Three-phase  | All   |
+| linky-local-historical-3phase#imax2  | current                   | Maximum consumed electric current on phase 2             | Three-phase  | All   |
+| linky-local-historical-3phase#imax3  | current                   | Maximum consumed electric current on phase 3             | Three-phase  | All   |
+| linky-local-historical-3phase#adir1  | current                   | Excess electric current on phase 1 warning               | Three-phase  | All   |
+| linky-local-historical-3phase#adir2  | current                   | Excess electric current on phase 2 warning               | Three-phase  | All   |
+| linky-local-historical-3phase#adir3  | current                   | Excess electric current on phase 3 warning               | Three-phase  | All   |
+| linky-local-historical-3phase#ppot   | info                      | Electrical potential presence                            | Three-phase  | All   |
 
 ##### HpHc channels
 
 | Channel                              | Type                      | Description                                              | Connection   | Mode  |
 |--------------------------------------|---------------------------|----------------------------------------------------------|--------------|-------|
 | linky-local-historical-hphc#hhphc    | hhphcType                 | Pricing schedule group                                   | All          | HCHP  |
-| linky-local-historical-hphc#hchc     | consumption-type          | Total consumed energy at low rate pricing                | All          | HCHP  |
-| linky-local-historical-hphc#hchp     | consumption-type          | Total consumed energy at high rate pricing               | All          | HCHP  |
+| linky-local-historical-hphc#hchc     | consumption               | Total consumed energy at low rate pricing                | All          | HCHP  |
+| linky-local-historical-hphc#hchp     | consumption               | Total consumed energy at high rate pricing               | All          | HCHP  |
 
 ##### EJP channels
 
 | Channel                              | Type                      | Description                                              | Connection   | Mode  |
 |--------------------------------------|---------------------------|----------------------------------------------------------|--------------|-------|
-| linky-local-historical-ejp#ejphn     | consumption-type          | Total consumed energy at low rate pricing                | All          | EJP   |
-| linky-local-historical-ejp#ejphpm    | consumption-type          | Total consumed energy at high rate pricing               | All          | EJP   |
-| linky-local-historical-tempo#pejp    | time-type                 | Prior notice to EJP start                                | All          | EJP   |
+| linky-local-historical-ejp#ejphn     | consumption               | Total consumed energy at low rate pricing                | All          | EJP   |
+| linky-local-historical-ejp#ejphpm    | consumption               | Total consumed energy at high rate pricing               | All          | EJP   |
+| linky-local-historical-tempo#pejp    | time      	               | Prior notice to EJP start                                | All          | EJP   |
 
 ##### Tempo channels
 
 | Channel                              | Type                      | Description                                              | Connection   | Mode  |
 |--------------------------------------|---------------------------|----------------------------------------------------------|--------------|-------|
-| linky-local-historical-tempo#bbrhcjb | consumption-type          | Total consumed energy at low rate pricing on blue days   | All          | Tempo |
-| linky-local-historical-tempo#bbrhpjb | consumption-type          | Total consumed energy at high rate pricing on blue days  | All          | Tempo |
-| linky-local-historical-tempo#bbrhcjw | consumption-type          | Total consumed energy at low rate pricing on white days  | All          | Tempo |
-| linky-local-historical-tempo#bbrhpjw | consumption-type          | Total consumed energy at high rate pricing on white days | All          | Tempo |
-| linky-local-historical-tempo#bbrhcjr | consumption-type          | Total consumed energy at low rate pricing on red days    | All          | Tempo |
-| linky-local-historical-tempo#bbrhpjr | consumption-type          | Total consumed energy at high rate pricing on red days   | All          | Tempo |
-| linky-local-historical-tempo#demain  | couleurDemainType         | Following day color                                      | All          | Tempo |
+| linky-local-historical-tempo#bbrhcjb | consumption               | Total consumed energy at low rate pricing on blue days   | All          | Tempo |
+| linky-local-historical-tempo#bbrhpjb | consumption               | Total consumed energy at high rate pricing on blue days  | All          | Tempo |
+| linky-local-historical-tempo#bbrhcjw | consumption               | Total consumed energy at low rate pricing on white days  | All          | Tempo |
+| linky-local-historical-tempo#bbrhpjw | consumption               | Total consumed energy at high rate pricing on white days | All          | Tempo |
+| linky-local-historical-tempo#bbrhcjr | consumption               | Total consumed energy at low rate pricing on red days    | All          | Tempo |
+| linky-local-historical-tempo#bbrhpjr | consumption               | Total consumed energy at high rate pricing on red days   | All          | Tempo |
+| linky-local-historical-tempo#demain  | tomorrow-color            | Following day color                                      | All          | Tempo |
 
 #### Standard TIC mode
 
@@ -557,42 +557,42 @@ For direct serial connected meter, you will not need any futher action.
 
 | Channel                                      | Type                      | Description                                                                 |
 |----------------------------------------------|---------------------------|-----------------------------------------------------------------------------|
-| linky-local-standard-base#adsc               | string-type               | Second meter address                                                        |
-| linky-local-standard-base#vtic               | string-type               | Vtic version                                                                |
-| linky-local-standard-base#prm                | string-type               | The prmId                                                                   |
-| linky-local-standard-base#date               | datetime-type             | Date and Time                                                               |
-| linky-local-standard-base#ngtf               | string-type               | Provider schedule name                                                      |
-| linky-local-standard-base#ltarf              | string-type               | Current pricing label                                                       |
-| linky-local-standard-base#stge               | string-type               | Registre d'état                                                             |
-| linky-local-standard-base#east               | energy-type               | Total active energy withdrawn                                               |
-| linky-local-standard-base#easf_XX_           | energy-type               | Active energy withdrawn from provider on index XX, XX in {01,...,10}        |
-| linky-local-standard-base#easd_XX_           | energy-type               | Active energy withdrawn from distributor on index XX, XX in {01,...,04}     |
-| linky-local-standard-base#irms1              | current-type              | RMS Current on phase 1                                                      |
-| linky-local-standard-base#urms1              | potential-type            | RMS Voltage on phase 1                                                      |
-| linky-local-standard-base#pref               | power-type                | Reference apparent power                                                    |
-| linky-local-standard-base#pcoup              | power-type                | Apparent power rupture capacity                                             |
-| linky-local-standard-base#sinsts             | power-type                | Instantaneous withdrawn apparent power                                      |
-| linky-local-standard-base#smaxsn             | power-type                | Maximum withdrawn apparent power of the day                                 |
-| linky-local-standard-base#smaxsn-date        | datetime-type             | Timestamp of SMAXSN value                                                   |
-| linky-local-standard-base#smaxsn-minus1      | power-type                | Maximum withdrawn apparent power of the previous day                        |
-| linky-local-standard-base#smaxsn-minus1-date | datetime-type             | Timestamp of SMAXSN-1 value                                                 |
-| linky-local-standard-base#ccasn              | power-type                | Active charge point N                                                       |
-| linky-local-standard-base#ccasn-date         | datetime-type`            | Timestamp of CCASN value                                                    |
-| linky-local-standard-base#ccasn-minus1       | power-type                | Active charge point N-1                                                     |
-| linky-local-standard-base#ccasn-minus1-date  | datetime-type             | Timestamp of CCASN-1 value                                                  |
-| linky-local-standard-base#umoy1              | potential-type            | Mean Voltage on phase 1                                                     |
-| linky-local-standard-base#umoy1-date         | datetime-type             | Timestamp of UMOY1 value                                                    |
-| linky-local-standard-base#dpm_X_             | string-type               | Start of mobile peak period X, X in {1,2,3}                                 |
-| linky-local-standard-base#dpm-X-date         | datetime-type             | Date of DPMX, X in {1,2,3}                                                  |
-| linky-local-standard-base#fpm_X_             | string-type               | End of mobile peak period X, X in {1,2,3}                                   |
-| linky-local-standard-base#fpm-X-date         | datetime-type             | Date of FPMX, X in {1,2,3}                                                  |
-| linky-local-standard-base#msg1               | string-type               | Short message                                                               |
-| linky-local-standard-base#msg2               | string-type               | Very short message                                                          |
-| linky-local-standard-base#ntarf              | string-type               | Index of current pricing                                                    |
-| linky-local-standard-base#njourf             | string-type               | Number of current provider schedule                                         |
-| linky-local-standard-base#njourf-plus1       | string-type               | Number of next day provider schedule                                        |
-| linky-local-standard-base#pjourf-plus1       | string-type               | Profile of next day provider schedule                                       |
-| linky-local-standard-base#ppointe            | string-type               | Profile of next rush day                                                    |
+| linky-local-standard-base#adsc               | string                    | Second meter address                                                        |
+| linky-local-standard-base#vtic               | string                    | Vtic version                                                                |
+| linky-local-standard-base#prm                | string                    | The prmId                                                                   |
+| linky-local-standard-base#date               | datetime                  | Date and Time                                                               |
+| linky-local-standard-base#ngtf               | string                    | Provider schedule name                                                      |
+| linky-local-standard-base#ltarf              | string                    | Current pricing label                                                       |
+| linky-local-standard-base#stge               | string                    | Registre d'état                                                             |
+| linky-local-standard-base#east               | energy                    | Total active energy withdrawn                                               |
+| linky-local-standard-base#easf_XX_           | energy                    | Active energy withdrawn from provider on index XX, XX in {01,...,10}        |
+| linky-local-standard-base#easd_XX_           | energy                    | Active energy withdrawn from distributor on index XX, XX in {01,...,04}     |
+| linky-local-standard-base#irms1              | current                   | RMS Current on phase 1                                                      |
+| linky-local-standard-base#urms1              | potential                 | RMS Voltage on phase 1                                                      |
+| linky-local-standard-base#pref               | power                     | Reference apparent power                                                    |
+| linky-local-standard-base#pcoup              | power                     | Apparent power rupture capacity                                             |
+| linky-local-standard-base#sinsts             | power                     | Instantaneous withdrawn apparent power                                      |
+| linky-local-standard-base#smaxsn             | power                     | Maximum withdrawn apparent power of the day                                 |
+| linky-local-standard-base#smaxsn-date        | datetime                  | Timestamp of SMAXSN value                                                   |
+| linky-local-standard-base#smaxsn-minus1      | power                     | Maximum withdrawn apparent power of the previous day                        |
+| linky-local-standard-base#smaxsn-minus1-date | datetime                  | Timestamp of SMAXSN-1 value                                                 |
+| linky-local-standard-base#ccasn              | power                     | Active charge point N                                                       |
+| linky-local-standard-base#ccasn-date         | datetime                  | Timestamp of CCASN value                                                    |
+| linky-local-standard-base#ccasn-minus1       | power                     | Active charge point N-1                                                     |
+| linky-local-standard-base#ccasn-minus1-date  | datetime                  | Timestamp of CCASN-1 value                                                  |
+| linky-local-standard-base#umoy1              | potential                 | Mean Voltage on phase 1                                                     |
+| linky-local-standard-base#umoy1-date         | datetime                  | Timestamp of UMOY1 value                                                    |
+| linky-local-standard-base#dpm_X_             | string                    | Start of mobile peak period X, X in {1,2,3}                                 |
+| linky-local-standard-base#dpm-X-date         | datetime                  | Date of DPMX, X in {1,2,3}                                                  |
+| linky-local-standard-base#fpm_X_             | string                    | End of mobile peak period X, X in {1,2,3}                                   |
+| linky-local-standard-base#fpm-X-date         | datetime                  | Date of FPMX, X in {1,2,3}                                                  |
+| linky-local-standard-base#msg1               | string                    | Short message                                                               |
+| linky-local-standard-base#msg2               | string                    | Very short message                                                          |
+| linky-local-standard-base#ntarf              | string                    | Index of current pricing                                                    |
+| linky-local-standard-base#njourf             | string                    | Number of current provider schedule                                         |
+| linky-local-standard-base#njourf-plus1       | string                    | Number of next day provider schedule                                        |
+| linky-local-standard-base#pjourf-plus1       | string                    | Profile of next day provider schedule                                       |
+| linky-local-standard-base#ppointe            | string                    | Profile of next rush day                                                    |
 | linky-local-standard-base#relaisX            | switch-rtpe               | state of relais X, X in {1,...,8}                                           |
 
 ##### Three phase only channels
@@ -601,33 +601,33 @@ For direct serial connected meter, you will not need any futher action.
 
 | Channel                                         | Type                      | Description                                                                       |
 |-------------------------------------------------|---------------------------|-----------------------------------------------------------------------------------|
-| linky-local-standard-3phase#irmsX               | current-type              | RMS Current on phase X, X in {2,3}                                                |
-| linky-local-standard-3phase#urmsX               | potential-type            | RMS Voltage on phase X, X in {2,3}                                                |
-| linky-local-standard-3phase#umoyX               | potential-type            | Mean Voltage on phase X, X in {2,3}                                               |
-| linky-local-standard-3phase#sinstsX             | power-type                | Instantaneous withdrawn apparent power on phase X, X in {1,2,3}                   |
-| linky-local-standard-3phase#smaxsnX             | power-type                | Maximum withdrawn apparent power of the day on phase X, X in {1,2,3}              |
-| linky-local-standard-3phase#umoyX-date          | datetime-type             | Timestamp of UMOYX value, X in {2,3}                                              |
-| linky-local-standard-3phase#smaxsnX-minus1      | power-type                | Maximum withdrawn apparent power on the previous day on phase X, X in {1,2,3}     |
-| linky-local-standard-3phase#smaxsX-date         | datetime-type             | Timestamp of SMAXSNX value, X in {1,2,3}                                          |
-| linky-local-standard-3phase#smaxsnX-minus1-date | datetime-type             | Timestamp of SMAXSNX-1 value, X in {1,2,3}                                        |
+| linky-local-standard-3phase#irmsX               | current                   | RMS Current on phase X, X in {2,3}                                                |
+| linky-local-standard-3phase#urmsX               | potential                 | RMS Voltage on phase X, X in {2,3}                                                |
+| linky-local-standard-3phase#umoyX               | potential                 | Mean Voltage on phase X, X in {2,3}                                               |
+| linky-local-standard-3phase#sinstsX             | power                     | Instantaneous withdrawn apparent power on phase X, X in {1,2,3}                   |
+| linky-local-standard-3phase#smaxsnX             | power                     | Maximum withdrawn apparent power of the day on phase X, X in {1,2,3}              |
+| linky-local-standard-3phase#umoyX-date          | datetime                  | Timestamp of UMOYX value, X in {2,3}                                              |
+| linky-local-standard-3phase#smaxsnX-minus1      | power                     | Maximum withdrawn apparent power on the previous day on phase X, X in {1,2,3}     |
+| linky-local-standard-3phase#smaxsX-date         | datetime                  | Timestamp of SMAXSNX value, X in {1,2,3}                                          |
+| linky-local-standard-3phase#smaxsnX-minus1-date | datetime                  | Timestamp of SMAXSNX-1 value, X in {1,2,3}                                        |
 
 ##### Producer only channels
 
 
 
-| Channel                                          | Type               | Description                                              |
+| Channel                                          | Type             | Description                                              |
 |--------------------------------------------------|------------------|----------------------------------------------------------|
-| linky-local-standard-producer#eait               | energy-type      | Total active energy injected                             |
-| linky-local-standard-producer#erqX               | energy-type      | Total reactive energy on index X, X in {1,...,4}         |
-| linky-local-standard-producer#sinsti             | power-type       | Instantaneous injected apparent power                    |
-| linky-local-standard-producer#smaxin             | power-type       | Maximum injected apparent power of the day               |
-| linky-local-standard-producer#smaxin-minus1      | power-type       | Maximum injected apparent power of the previous day      |
-| linky-local-standard-producer#ccain              | power-type       | Injected active charge point N                           |
-| linky-local-standard-producer#ccain-minus1       | power-type       | Injected active charge point N-1                         |
-| linky-local-standard-producer#smaxin-date        | datetime-type    | Timestamp of SMAXIN value                                |
-| linky-local-standard-producer#smaxin-minus1-date | datetime-type    | Timestamp of SMAXIN-1 value                              |
-| linky-local-standard-producer#ccain-date         | datetime-type    | Timestamp of CCAIN value                                 |
-| linky-local-standard-producer#ccain-minus1-date  | datetime-type    | Timestamp of CCAIN-1 value                               |
+| linky-local-standard-producer#eait               | energy           | Total active energy injected                             |
+| linky-local-standard-producer#erqX               | energy           | Total reactive energy on index X, X in {1,...,4}         |
+| linky-local-standard-producer#sinsti             | power            | Instantaneous injected apparent power                    |
+| linky-local-standard-producer#smaxin             | power            | Maximum injected apparent power of the day               |
+| linky-local-standard-producer#smaxin-minus1      | power            | Maximum injected apparent power of the previous day      |
+| linky-local-standard-producer#ccain              | power            | Injected active charge point N                           |
+| linky-local-standard-producer#ccain-minus1       | power            | Injected active charge point N-1                         |
+| linky-local-standard-producer#smaxin-date        | datetime         | Timestamp of SMAXIN value                                |
+| linky-local-standard-producer#smaxin-minus1-date | datetime         | Timestamp of SMAXIN-1 value                              |
+| linky-local-standard-producer#ccain-date         | datetime         | Timestamp of CCAIN value                                 |
+| linky-local-standard-producer#ccain-minus1-date  | datetime         | Timestamp of CCAIN-1 value                               |
 
 #### Calculated channels
 
@@ -647,52 +647,52 @@ Active power is particulary important because this is the one that is use to cal
 
 | Channel                                          | Type                       | Description                                              |
 |--------------------------------------------------|----------------------------|----------------------------------------------------------|
-| linky-local-calc#irms1f                          | current-type               | Floating value for Irms1                                 |
-| linky-local-calc#power-factor-type               | power-factor-type          | Channel to feed external cosPhi calculation              |
-| linky-local-calc#sactive                         | power-type                 | Active power calculate from apparent power and Cosphi    |
-| linky-local-calc#sreactive                       | power-type                 | Reactive power calculate from apparent power and Cosphi  |
-| linky-local-calc#relais1                         | switch-type                | Current value for Relais 1                               |
-| linky-local-calc#relais2                         | switch-type                | Current value for Relais 2                               |
-| linky-local-calc#relais3                         | switch-type                | Current value for Relais 3                               |
-| linky-local-calc#relais4                         | switch-type                | Current value for Relais 4                               |
-| linky-local-calc#relais5                         | switch-type                | Current value for Relais 5                               |
-| linky-local-calc#relais6                         | switch-type                | Current value for Relais 6                               |
-| linky-local-calc#relais7                         | switch-type                | Current value for Relais 7                               |
-| linky-local-calc#relais8                         | switch-type                | Current value for Relais 8                               |
-| linky-local-calc#contact-sec                     | contact-type               | Stge decode : contact Sec Value                          |
-| linky-local-calc#cutoff-type                     | cutoff-type                | Stge decode : type of cutoff                             |
-| linky-local-calc#cache                           | contact-type               | Stge decode : linky cache state                          |
-| linky-local-calc#over-voltage                    | over-voltage-state-type    | Stge decode : overvoltage state type                     |
-| linky-local-calc#exceeding-power                 | exceeding-power-state-type | Stge decode : exceding power state type                  |
-| linky-local-calc#function                        | function-type              | Stge decode : function type                              |
-| linky-local-calc#direction                       | direction-type             | Stge decode : direction type                             |
-| linky-local-calc#supplier-rate                   | numeric-type               | Stge decode : supplier rate index                        |
-| linky-local-calc#distributor-rate                | numeric-type               | Stge decode : distributor rate index                     |
-| linky-local-calc#clock                           | contact-type               | Stge decode : clock state                                |
-| linky-local-calc#plc                             | plc-type                   | Stge decode : PLC type                                   |
-| linky-local-calc#outputcom                       | ouputcom-state-type        | Stge decode : Output com state type                      |
-| linky-local-calc#plc-state                       | plc-state-type             | Stge decode : PLC state type                             |
-| linky-local-calc#plc-synchro                     | synchro-plc-state-type     | Stge decode : PLC Synchro state type                     |
-| linky-local-calc#tempo-today                     | tempo-type                 | Stge decode : Today tempo color                          |
-| linky-local-calc#tempo-tomorrow                  | tempo-type                 | Stge decode : Tomorrow tempo color                       |
-| linky-local-calc#advice-moving-tips              | moving-tips-type           | Stge decode : Advice of moving tips type                 |
-| linky-local-calc#moving-tips                     | moving-tips-type           | Stge decode : Current moving tips type                   |
-| linky-local-calc#pjourf1-plus1                   | string-type                | Pjourf decode : Slot 1                                   |
-| linky-local-calc#pjourf2-plus1                   | string-type                | Pjourf decode : Slot 2                                   |
-| linky-local-calc#pjourf3-plus1                   | string-type                | Pjourf decode : Slot 3                                   |
-| linky-local-calc#pjourf4-plus1                   | string-type                | Pjourf decode : Slot 4                                   |
-| linky-local-calc#pjourf5-plus1                   | string-type                | Pjourf decode : Slot 5                                   |
-| linky-local-calc#pjourf6-plus1                   | string-type                | Pjourf decode : Slot 6                                   |
-| linky-local-calc#pjourf7-plus1                   | string-type                | Pjourf decode : Slot 7                                   |
-| linky-local-calc#pjourf8-plus1                   | string-type                | Pjourf decode : Slot 8                                   |
-| linky-local-calc#ppointe1                        | string-type                | PPointe decode : Slot 1                                  |
-| linky-local-calc#ppointe2                        | string-type                | PPointe decode : Slot 2                                  |
-| linky-local-calc#ppointe3                        | string-type                | PPointe decode : Slot 3                                  |
-| linky-local-calc#ppointe4                        | string-type                | PPointe decode : Slot 4                                  |
-| linky-local-calc#ppointe5                        | string-type                | PPointe decode : Slot 5                                  |
-| linky-local-calc#ppointe6                        | string-type                | PPointe decode : Slot 6                                  |
-| linky-local-calc#ppointe7                        | string-type                | PPointe decode : Slot 7                                  |
-| linky-local-calc#ppointe8                        | string-type                | PPointe decode : Slot 8                                  |
+| linky-local-calc#irms1f                          | current                    | Floating value for Irms1                                 |
+| linky-local-calc#power-factor-type               | power-factor               | Channel to feed external cosPhi calculation              |
+| linky-local-calc#sactive                         | power                      | Active power calculate from apparent power and Cosphi    |
+| linky-local-calc#sreactive                       | power                      | Reactive power calculate from apparent power and Cosphi  |
+| linky-local-calc#relais1                         | switch                     | Current value for Relais 1                               |
+| linky-local-calc#relais2                         | switch                     | Current value for Relais 2                               |
+| linky-local-calc#relais3                         | switch                     | Current value for Relais 3                               |
+| linky-local-calc#relais4                         | switch                     | Current value for Relais 4                               |
+| linky-local-calc#relais5                         | switch                     | Current value for Relais 5                               |
+| linky-local-calc#relais6                         | switch                     | Current value for Relais 6                               |
+| linky-local-calc#relais7                         | switch                     | Current value for Relais 7                               |
+| linky-local-calc#relais8                         | switch                     | Current value for Relais 8                               |
+| linky-local-calc#contact-sec                     | contact                    | Stge decode : contact Sec Value                          |
+| linky-local-calc#cutoff-type                     | cutoff                     | Stge decode : type of cutoff                             |
+| linky-local-calc#cache                           | contact                    | Stge decode : linky cache state                          |
+| linky-local-calc#over-voltage                    | over-voltage-state         | Stge decode : overvoltage state type                     |
+| linky-local-calc#exceeding-power                 | exceeding-power-state      | Stge decode : exceding power state type                  |
+| linky-local-calc#function                        | function                   | Stge decode : function type                              |
+| linky-local-calc#direction                       | direction                  | Stge decode : direction type                             |
+| linky-local-calc#supplier-rate                   | numeric                    | Stge decode : supplier rate index                        |
+| linky-local-calc#distributor-rate                | numeric                    | Stge decode : distributor rate index                     |
+| linky-local-calc#clock                           | contact                    | Stge decode : clock state                                |
+| linky-local-calc#plc                             | plc                        | Stge decode : PLC type                                   |
+| linky-local-calc#outputcom                       | ouputcom-state             | Stge decode : Output com state type                      |
+| linky-local-calc#plc-state                       | plc-state                  | Stge decode : PLC state type                             |
+| linky-local-calc#plc-synchro                     | synchro-plc-state          | Stge decode : PLC Synchro state type                     |
+| linky-local-calc#tempo-today                     | tempo                      | Stge decode : Today tempo color                          |
+| linky-local-calc#tempo-tomorrow                  | tempo                      | Stge decode : Tomorrow tempo color                       |
+| linky-local-calc#advice-moving-tips              | moving-tips                | Stge decode : Advice of moving tips type                 |
+| linky-local-calc#moving-tips                     | moving-tips                | Stge decode : Current moving tips type                   |
+| linky-local-calc#pjourf1-plus1                   | string                     | Pjourf decode : Slot 1                                   |
+| linky-local-calc#pjourf2-plus1                   | string                     | Pjourf decode : Slot 2                                   |
+| linky-local-calc#pjourf3-plus1                   | string                     | Pjourf decode : Slot 3                                   |
+| linky-local-calc#pjourf4-plus1                   | string                     | Pjourf decode : Slot 4                                   |
+| linky-local-calc#pjourf5-plus1                   | string                     | Pjourf decode : Slot 5                                   |
+| linky-local-calc#pjourf6-plus1                   | string                     | Pjourf decode : Slot 6                                   |
+| linky-local-calc#pjourf7-plus1                   | string                     | Pjourf decode : Slot 7                                   |
+| linky-local-calc#pjourf8-plus1                   | string                     | Pjourf decode : Slot 8                                   |
+| linky-local-calc#ppointe1                        | string                     | PPointe decode : Slot 1                                  |
+| linky-local-calc#ppointe2                        | string                     | PPointe decode : Slot 2                                  |
+| linky-local-calc#ppointe3                        | string                     | PPointe decode : Slot 3                                  |
+| linky-local-calc#ppointe4                        | string                     | PPointe decode : Slot 4                                  |
+| linky-local-calc#ppointe5                        | string                     | PPointe decode : Slot 5                                  |
+| linky-local-calc#ppointe6                        | string                     | PPointe decode : Slot 6                                  |
+| linky-local-calc#ppointe7                        | string                     | PPointe decode : Slot 7                                  |
+| linky-local-calc#ppointe8                        | string                     | PPointe decode : Slot 8                                  |
 
 How to feed cosphi ?
 
@@ -939,9 +939,9 @@ Number:EnergyPrice Prix_Heure_Creuse {channel="linky:hphc:local:hc-ttc"}
 
   | Channel ID                                                     | Item Type         | Description                                                                   |
   |----------------------------------------------------------------|-------------------|-------------------------------------------------------------------------------|
-  | linky-tempo-calendar#tempo-info-today                          | tempo-value-type  | The tempo color for the current day                                           |
-  | linky-tempo-calendar#tempo-info-tomorrow                       | tempo-value-type  | The tempo color for the tomorrow                                              |
-  | linky-tempo-calendar#tempo-info-timeseries                     | tempo-value-type  | A timeseries channel that will expose full tempo information for one year     |
+  | linky-tempo-calendar#tempo-info-today                          | tempo-value       | The tempo color for the current day                                           |
+  | linky-tempo-calendar#tempo-info-tomorrow                       | tempo-value       | The tempo color for the tomorrow                                              |
+  | linky-tempo-calendar#tempo-info-timeseries                     | tempo-value       | A timeseries channel that will expose full tempo information for one year     |
 
 ### Displaying information / Graph
 

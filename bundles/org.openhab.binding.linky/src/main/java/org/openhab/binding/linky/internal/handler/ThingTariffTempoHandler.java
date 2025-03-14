@@ -24,10 +24,10 @@ import org.openhab.core.library.unit.CurrencyUnits;
 import org.openhab.core.thing.Thing;
 
 /**
- * The {@link ThingTariffHpHcHandler} is responsible for handling commands, which are
+ * The {@link ThingTariffTempoHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
 public class ThingTariffTempoHandler extends ThingTariffHandler<TariffTempo> {
