@@ -67,9 +67,6 @@ import org.openhab.core.types.TimeSeries.Policy;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.threeten.extra.Months;
-import org.threeten.extra.Weeks;
-import org.threeten.extra.Years;
 
 /**
  * The {@link ThingLinkyRemoteHandler} is responsible for handling commands, which are
@@ -719,7 +716,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         }
     }
 
-    private @Nullable MeterReading getMeterReadingAfterChecks(@Nullable MeterReading meterReading) {
+    public @Nullable MeterReading getMeterReadingAfterChecks(@Nullable MeterReading meterReading) {
         try {
             checkData(meterReading);
         } catch (LinkyException e) {
@@ -737,9 +734,14 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 LocalDate startDate = meterReading.baseValue[0].date.toLocalDate();
                 LocalDate endDate = meterReading.baseValue[meterReading.baseValue.length - 1].date.toLocalDate();
 
-                int weeksNum = Weeks.between(startDate, endDate).getAmount() + 2;
-                int monthsNum = Months.between(startDate, endDate).getAmount() + 2;
-                int yearsNum = Years.between(startDate, endDate).getAmount() + 2;
+                int startWeek = startDate.get(WeekFields.of(Locale.FRANCE).weekOfYear());
+                int endWeek = endDate.get(WeekFields.of(Locale.FRANCE).weekOfYear());
+
+                int yearsNum = endDate.getYear() - startDate.getYear() + 1;
+                int monthsNum = (endDate.getYear() - startDate.getYear()) * 12 + endDate.getMonthValue()
+                        - startDate.getMonthValue() + 1;
+
+                int weeksNum = (endDate.getYear() - startDate.getYear()) * 52 + endWeek - startWeek + 1;
 
                 meterReading.weekValue = new IntervalReading[weeksNum];
                 meterReading.monthValue = new IntervalReading[monthsNum];
@@ -756,9 +758,9 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 }
 
                 int size = meterReading.baseValue.length;
-                int baseYear = meterReading.baseValue[0].date.getYear();
-                int baseMonth = meterReading.baseValue[0].date.getMonthValue();
-                int baseWeek = meterReading.baseValue[0].date.get(WeekFields.of(Locale.FRANCE).weekOfYear());
+                int baseYear = startDate.getYear();
+                int baseMonth = startDate.getMonthValue();
+                int baseWeek = startWeek;
 
                 for (int idx = 0; idx < size; idx++) {
                     IntervalReading ir = meterReading.baseValue[idx];
@@ -768,11 +770,10 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                     ir.value = value;
 
                     int idxYear = dt.getYear() - baseYear;
+                    int idxMonth = idxYear * 12 + dt.getMonthValue() - baseMonth;
+                    int dtWeek = dt.get(WeekFields.of(Locale.FRANCE).weekOfYear());
+                    int idxWeek = (idxYear * 52) + dtWeek - baseWeek;
                     int month = dt.getMonthValue();
-                    int weekOfYear = dt.get(WeekFields.of(Locale.FRANCE).weekOfYear());
-
-                    int idxMonth = (idxYear * 12) + month - baseMonth;
-                    int idxWeek = (idxYear * 52) + weekOfYear - baseWeek;
 
                     if (idxWeek < weeksNum) {
                         meterReading.weekValue[idxWeek].value += value;

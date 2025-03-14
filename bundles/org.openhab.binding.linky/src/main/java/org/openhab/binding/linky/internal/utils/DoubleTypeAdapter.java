@@ -38,25 +38,30 @@ public class DoubleTypeAdapter extends TypeAdapter<Double> {
 
     @Override
     public @NonNull Double read(@Nullable JsonReader reader) throws IOException {
-        if (reader.peek() == JsonToken.NULL) {
-            reader.nextNull();
-            return Double.NaN;
+        if (reader != null) {
+            if (reader.peek() == JsonToken.NULL) {
+                reader.nextNull();
+                return Double.NaN;
+            }
+            String stringValue = reader.nextString();
+            try {
+                Double value = Double.valueOf(stringValue);
+                return value;
+            } catch (NumberFormatException e) {
+                return Double.NaN;
+            }
         }
-        String stringValue = reader.nextString();
-        try {
-            Double value = Double.valueOf(stringValue);
-            return value;
-        } catch (NumberFormatException e) {
-            return Double.NaN;
-        }
+        return Double.NaN;
     }
 
     @Override
     public void write(@Nullable JsonWriter writer, @Nullable Double value) throws IOException {
-        if (value == null) {
-            writer.nullValue();
-            return;
+        if (writer != null) {
+            if (value == null) {
+                writer.nullValue();
+                return;
+            }
+            writer.value(value.doubleValue());
         }
-        writer.value(value.doubleValue());
     }
 }

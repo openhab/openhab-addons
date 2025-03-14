@@ -143,7 +143,7 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
         try {
             ThingBuilder updateThing = editThing();
 
-            String id = getThing().getUID().getId();
+            // String id = getThing().getUID().getId();
             Phase phase = frame.getPhase();
             LinkyTicMode ticMode = frame.getTicMode();
             boolean isProducerMode = frame.isProducerMode();
