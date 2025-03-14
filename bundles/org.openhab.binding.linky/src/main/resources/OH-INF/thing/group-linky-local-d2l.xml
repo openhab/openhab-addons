@@ -7,17 +7,17 @@
 	<channel-group-type id="linky-local-d2l">
 		<label>D2l</label>
 		<channels>
-			<channel id="id-d2l" typeId="string-type">
+			<channel id="id-d2l" typeId="string">
 				<label>Id D2l</label>
 				<description>Id of the D2L module</description>
 			</channel>
 
-			<channel id="type-trame" typeId="string-type">
-				<label>Type Trame</label>
-				<description>Type trame D2L module</description>
+			<channel id="type-trame" typeId="string">
+				<label>Frame Type </label>
+				<description>frame type for D2L module</description>
 			</channel>
 
-			<channel id="date-firmware" typeId="string-type">
+			<channel id="date-firmware" typeId="string">
 				<label>Date Firmware</label>
 				<description>Date of firmware D2L module</description>
 			</channel>

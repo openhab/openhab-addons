@@ -7,286 +7,286 @@
 	<channel-group-type id="linky-local-standard-base">
 		<label>Standard Base</label>
 		<channels>
-			<channel id="adsc" typeId="string-type">
+			<channel id="adsc" typeId="string">
 				<label>Adsc</label>
-				<description>Adresse Secondaire du Compteur</description>
+				<description>Secondary meter adress</description>
 			</channel>
 
-			<channel id="vtic" typeId="numeric-type">
+			<channel id="vtic" typeId="numeric">
 				<label>Vtic</label>
-				<description>Version de la TIC</description>
+				<description>TIC Version</description>
 			</channel>
 
-			<channel id="date" typeId="datetime-type">
+			<channel id="date" typeId="datetime">
 				<label>Date</label>
 				<description>Date and Time</description>
 			</channel>
 
-			<channel id="ngtf" typeId="string-type">
+			<channel id="ngtf" typeId="string">
 				<label>Ngtf</label>
 				<description>Provider schedule name</description>
 			</channel>
 
-			<channel id="ltarf" typeId="string-type">
+			<channel id="ltarf" typeId="string">
 				<label>Ltarf</label>
 				<description>Current pricing label</description>
 			</channel>
 
-			<channel id="east" typeId="energy-type">
+			<channel id="east" typeId="energy">
 				<label>East</label>
 				<description>Total active energy withdrawn</description>
 			</channel>
 
-			<channel id="easf01" typeId="energy-type">
+			<channel id="easf01" typeId="energy">
 				<label>Easf 01</label>
 				<description>Active energy withdrawn from provider on index 01</description>
 			</channel>
 
-			<channel id="easf02" typeId="energy-type">
+			<channel id="easf02" typeId="energy">
 				<label>Easf 02</label>
 				<description>Active energy withdrawn from provider on index 02</description>
 			</channel>
 
-			<channel id="easf03" typeId="energy-type">
+			<channel id="easf03" typeId="energy">
 				<label>Easf 03</label>
 				<description>Active energy withdrawn from provider on index 03</description>
 			</channel>
 
-			<channel id="easf04" typeId="energy-type">
+			<channel id="easf04" typeId="energy">
 				<label>Easf 04</label>
 				<description>Active energy withdrawn from provider on index 04</description>
 			</channel>
 
-			<channel id="easf05" typeId="energy-type">
+			<channel id="easf05" typeId="energy">
 				<label>Easf 05</label>
 				<description>Active energy withdrawn from provider on index 05</description>
 			</channel>
 
-			<channel id="easf06" typeId="energy-type">
+			<channel id="easf06" typeId="energy">
 				<label>Easf 06</label>
 				<description>Active energy withdrawn from provider on index 06</description>
 			</channel>
 
-			<channel id="easf07" typeId="energy-type">
+			<channel id="easf07" typeId="energy">
 				<label>Easf 07</label>
 				<description>Active energy withdrawn from provider on index 07</description>
 			</channel>
 
-			<channel id="easf08" typeId="energy-type">
+			<channel id="easf08" typeId="energy">
 				<label>Easf 08</label>
 				<description>Active energy withdrawn from provider on index 08</description>
 			</channel>
 
-			<channel id="easf09" typeId="energy-type">
+			<channel id="easf09" typeId="energy">
 				<label>Easf 09</label>
 				<description>Active energy withdrawn from provider on index 09</description>
 			</channel>
 
-			<channel id="easf10" typeId="energy-type">
+			<channel id="easf10" typeId="energy">
 				<label>Easf 10</label>
 				<description>Active energy withdrawn from provider on index 10</description>
 			</channel>
 
-			<channel id="easd01" typeId="energy-type">
+			<channel id="easd01" typeId="energy">
 				<label>Easd 01</label>
 				<description>Active energy withdrawn from distributor on index 01</description>
 			</channel>
 
-			<channel id="easd02" typeId="energy-type">
+			<channel id="easd02" typeId="energy">
 				<label>Easd 02</label>
 				<description>Active energy withdrawn from distributor on index 02</description>
 			</channel>
 
-			<channel id="easd03" typeId="energy-type">
+			<channel id="easd03" typeId="energy">
 				<label>Easd 03</label>
 				<description>Active energy withdrawn from distributor on index 03</description>
 			</channel>
 
-			<channel id="easd04" typeId="energy-type">
+			<channel id="easd04" typeId="energy">
 				<label>Easd 04</label>
 				<description>Active energy withdrawn from distributor on index 04</description>
 			</channel>
 
-			<channel id="irms1" typeId="current-type">
+			<channel id="irms1" typeId="current">
 				<label>Irms 1</label>
 				<description>RMS Current on phase 1</description>
 			</channel>
 
-			<channel id="urms1" typeId="potential-type">
+			<channel id="urms1" typeId="potential">
 				<label>Urms 1</label>
 				<description>RMS Voltage on phase 1</description>
 			</channel>
 
-			<channel id="pref" typeId="power-type">
+			<channel id="pref" typeId="power">
 				<label>P Ref</label>
 				<description>Reference apparent power</description>
 			</channel>
 
-			<channel id="pcoup" typeId="power-type">
+			<channel id="pcoup" typeId="power">
 				<label>P Coup</label>
 				<description>Apparent power rupture capacity</description>
 			</channel>
 
-			<channel id="sinsts" typeId="power-type">
+			<channel id="sinsts" typeId="power">
 				<label>S Insts</label>
 				<description>Instantaneous withdrawn apparent power</description>
 			</channel>
 
-			<channel id="smaxsn" typeId="power-type">
+			<channel id="smaxsn" typeId="power">
 				<label>S Max Sn</label>
 				<description>Maximum withdrawn apparent power of the day</description>
 			</channel>
 
-			<channel id="smaxsn-date" typeId="datetime-type">
+			<channel id="smaxsn-date" typeId="datetime">
 				<label>S Max Sn Timestamp</label>
 				<description>Timestamp of SMAXSN value</description>
 			</channel>
 
-			<channel id="smaxsn-minus1" typeId="power-type">
+			<channel id="smaxsn-minus1" typeId="power">
 				<label>S Max Sn -1</label>
 				<description>Maximum withdrawn apparent power of the previous day</description>
 			</channel>
 
-			<channel id="smaxsn-minus1-date" typeId="datetime-type">
+			<channel id="smaxsn-minus1-date" typeId="datetime">
 				<label>S Max Sn -1 Timestamp</label>
 				<description>Timestamp of SMAXSN-1 value</description>
 			</channel>
 
-			<channel id="ccasn" typeId="power-type">
+			<channel id="ccasn" typeId="power">
 				<label>Ccasn</label>
 				<description>Active charge point N</description>
 			</channel>
 
-			<channel id="ccasn-date" typeId="datetime-type">
+			<channel id="ccasn-date" typeId="datetime">
 				<label>Ccasn Timestamp</label>
 				<description>Timestamp of CCASN value</description>
 			</channel>
 
-			<channel id="ccasn-minus1" typeId="power-type">
+			<channel id="ccasn-minus1" typeId="power">
 				<label>Ccasn -1</label>
 				<description>Active charge point N-1</description>
 			</channel>
 
-			<channel id="ccasn-minus1-date" typeId="datetime-type">
+			<channel id="ccasn-minus1-date" typeId="datetime">
 				<label>Ccasn -1 Timestamp</label>
 				<description>Timestamp of CCASN-1 value</description>
 			</channel>
 
-			<channel id="umoy1" typeId="potential-type">
+			<channel id="umoy1" typeId="potential">
 				<label>UMoy 1</label>
 				<description>Mean Voltage on phase 1</description>
 			</channel>
 
-			<channel id="umoy1-date" typeId="datetime-type">
+			<channel id="umoy1-date" typeId="datetime">
 				<label>UMoy 1 Timestamp</label>
 				<description>Timestamp of UMOY1 value</description>
 			</channel>
 
-			<channel id="stge" typeId="string-type">
+			<channel id="stge" typeId="string">
 				<label>Stge</label>
 				<description>Status registry</description>
 			</channel>
 
-			<channel id="dpm1" typeId="string-type">
+			<channel id="dpm1" typeId="string">
 				<label>Dpm1</label>
 				<description>Start of mobile peak period 1</description>
 			</channel>
 
-			<channel id="dpm1-date" typeId="datetime-type">
+			<channel id="dpm1-date" typeId="datetime">
 				<label>Dpm1 Timestamp</label>
 				<description>Date of DPM1</description>
 			</channel>
 
-			<channel id="fpm1" typeId="string-type">
+			<channel id="fpm1" typeId="string">
 				<label>Fpm1</label>
 				<description>End of mobile peak period 1</description>
 			</channel>
 
-			<channel id="fpm1-date" typeId="datetime-type">
+			<channel id="fpm1-date" typeId="datetime">
 				<label>Fpm1 Timestamp</label>
 				<description>Date of FPM1</description>
 			</channel>
 
-			<channel id="dpm2" typeId="string-type">
+			<channel id="dpm2" typeId="string">
 				<label>Dpm2</label>
 				<description>Start of mobile peak period 2</description>
 			</channel>
 
-			<channel id="dpm2-date" typeId="datetime-type">
+			<channel id="dpm2-date" typeId="datetime">
 				<label>Dpm2 Timestamp</label>
 				<description>Date of DPM2</description>
 			</channel>
 
-			<channel id="fpm2" typeId="string-type">
+			<channel id="fpm2" typeId="string">
 				<label>Fpm2</label>
 				<description>End of mobile peak period 2</description>
 			</channel>
 
-			<channel id="fpm2-date" typeId="datetime-type">
+			<channel id="fpm2-date" typeId="datetime">
 				<label>Fpm2 Timestamp</label>
 				<description>Date of FPM2</description>
 			</channel>
 
-			<channel id="dpm3" typeId="string-type">
+			<channel id="dpm3" typeId="string">
 				<label>Dpm3</label>
 				<description>Start of mobile peak period 3</description>
 			</channel>
 
-			<channel id="dpm3-date" typeId="datetime-type">
+			<channel id="dpm3-date" typeId="datetime">
 				<label>Dpm3 Timestamp</label>
 				<description>Date of DPM3</description>
 			</channel>
 
-			<channel id="fpm3" typeId="string-type">
+			<channel id="fpm3" typeId="string">
 				<label>Fpm3</label>
 				<description>End of mobile peak period 3</description>
 			</channel>
 
-			<channel id="fpm3-date" typeId="datetime-type">
+			<channel id="fpm3-date" typeId="datetime">
 				<label>Fpm3 Timestamp</label>
 				<description>Date of FPM3</description>
 			</channel>
 
-			<channel id="msg1" typeId="string-type">
+			<channel id="msg1" typeId="string">
 				<label>Msg 1</label>
 				<description>Short message</description>
 			</channel>
 
-			<channel id="msg2" typeId="string-type">
+			<channel id="msg2" typeId="string">
 				<label>Msg 2</label>
 				<description>Very short message</description>
 			</channel>
 
-			<channel id="prm" typeId="string-type">
+			<channel id="prm" typeId="string">
 				<label>Prm</label>
 				<description>PRM</description>
 			</channel>
 
-			<channel id="relais" typeId="switch-type">
+			<channel id="relais" typeId="switch">
 				<label>Relais</label>
 			</channel>
 
-			<channel id="ntarf" typeId="string-type">
+			<channel id="ntarf" typeId="string">
 				<label>Ntarf</label>
 				<description>Index of current pricing</description>
 			</channel>
 
-			<channel id="njourf" typeId="string-type">
+			<channel id="njourf" typeId="string">
 				<label>Njourf</label>
 				<description>Number of current provider schedule</description>
 			</channel>
 
-			<channel id="njourf-plus1" typeId="string-type">
+			<channel id="njourf-plus1" typeId="string">
 				<label>Njourf +1</label>
 				<description>Number of next day provider schedule</description>
 			</channel>
 
-			<channel id="pjourf-plus1" typeId="string-type">
+			<channel id="pjourf-plus1" typeId="string">
 				<label>Pjourf +1</label>
 				<description>Profile of next day provider schedule</description>
 			</channel>
 
-			<channel id="ppointe" typeId="string-type">
+			<channel id="ppointe" typeId="string">
 				<label>ppointe</label>
 				<description>Profile of next rush day</description>
 			</channel>

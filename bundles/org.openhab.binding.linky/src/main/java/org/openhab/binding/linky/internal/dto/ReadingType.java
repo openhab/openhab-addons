@@ -15,7 +15,7 @@ package org.openhab.binding.linky.internal.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link UserInfo} holds informations about energy delivery point
+ * The {@link ReadingType} the type info associate with a meter reading
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Arnal - Rewrite addon to use official dataconect API

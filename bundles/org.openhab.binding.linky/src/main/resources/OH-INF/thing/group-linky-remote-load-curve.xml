@@ -7,7 +7,7 @@
 	<channel-group-type id="linky-remote-load-curve">
 		<label>Load curve</label>
 		<channels>
-			<channel id="power" typeId="power-type">
+			<channel id="power" typeId="power">
 				<label>Load Curve Power</label>
 			</channel>
 		</channels>

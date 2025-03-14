@@ -11,7 +11,7 @@
 		</description>
 
 		<channels>
-			<channel id="invalidFrameCounter" typeId="invalidFrameCounterType"/>
+			<channel id="invalidFrameCounter" typeId="invalid-frame-counter"/>
 		</channels>
 
 
@@ -49,7 +49,7 @@
 		</config-description>
 	</bridge-type>
 
-	<channel-type id="invalidFrameCounterType">
+	<channel-type id="invalid-frame-counter">
 		<item-type>Number</item-type>
 		<label>Frames Corrupted</label>
 		<description>Counter tracking the number of frames invalid/corrupted (checksum)</description>

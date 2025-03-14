@@ -5,21 +5,21 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-group-type id="linky-local-historical-hphc">
-		<label>Historical HpHc</label>
+		<label>Historical High/Low Hours</label>
 		<channels>
-			<channel id="hchc" typeId="consumption-type">
-				<label>HCHC</label>
-				<description>Index option Heures Creuses </description>
+			<channel id="hchc" typeId="consumption">
+				<label>Low Hours</label>
+				<description>Index option Low Hours</description>
 			</channel>
 
-			<channel id="hchp" typeId="consumption-type">
-				<label>HCHP</label>
-				<description>Index option Heures Pleines</description>
+			<channel id="hchp" typeId="consumption">
+				<label>High Hours</label>
+				<description>Index option High Hours</description>
 			</channel>
 
-			<channel id="hhphc" typeId="hhphcType">
-				<label>HHPHC</label>
-				<description>Horaire Heures Pleines Heures Creuses</description>
+			<channel id="hhphc" typeId="hhphc">
+				<label>High Low Periods</label>
+				<description>Hours for High/Low periods</description>
 			</channel>
 		</channels>
 	</channel-group-type>
