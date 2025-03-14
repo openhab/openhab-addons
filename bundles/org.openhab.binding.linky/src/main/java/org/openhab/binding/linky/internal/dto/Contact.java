@@ -13,7 +13,7 @@
 package org.openhab.binding.linky.internal.dto;
 
 /**
- * The {@link UserInfo} holds informations about energy delivery point
+ * The {@link Contact} holds informations about the contact of a contract
  *
  * @author Laurent Arnal - Initial contribution
  */

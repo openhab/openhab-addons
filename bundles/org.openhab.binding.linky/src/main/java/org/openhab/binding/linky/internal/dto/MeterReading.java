@@ -17,7 +17,7 @@ import org.openhab.binding.linky.internal.dto.ConsumptionReport.Data;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link UserInfo} holds informations about energy delivery point
+ * The {@link MeterReading} holds informations about energy consumption
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Arnal - Rewrite addon to use official dataconect API

@@ -29,7 +29,7 @@
 		</channels>
 
 		<config-description>
-			<parameter name="puissance" type="integer" min="3" max="36">
+			<parameter name="power" type="integer" min="3" max="36">
 				<default>6</default>
 				<label>Power output</label>
 				<description>PDL power output (in kVA)</description>

@@ -15,7 +15,7 @@ package org.openhab.binding.linky.internal.dto;
 import java.time.LocalDateTime;
 
 /**
- * The {@link UserInfo} holds informations about energy delivery point
+ * The {@link IntervalReading} holds informations for the energy consumption of a period
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Arnal - Rewrite addon to use official dataconect API

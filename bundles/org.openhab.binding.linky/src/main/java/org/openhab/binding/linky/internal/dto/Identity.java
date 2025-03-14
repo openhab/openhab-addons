@@ -13,7 +13,7 @@
 package org.openhab.binding.linky.internal.dto;
 
 /**
- * The {@link UserInfo} holds informations about energy delivery point
+ * The {@link Indentity} holds the informations about the contractor identity
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Arnal - Rewrite addon to use official dataconect API

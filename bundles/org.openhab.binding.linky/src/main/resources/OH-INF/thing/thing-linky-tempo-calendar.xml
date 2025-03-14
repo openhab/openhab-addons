@@ -15,9 +15,6 @@
 		<channel-groups>
 			<channel-group typeId="linky-tempo-calendar" id="linky-tempo-calendar"/>
 		</channel-groups>
-
-		<config-description>
-		</config-description>
 	</thing-type>
 
 

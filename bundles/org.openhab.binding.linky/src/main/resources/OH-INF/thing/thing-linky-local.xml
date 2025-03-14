@@ -35,11 +35,11 @@
 		<config-description>
 			<parameter name="prmId" type="text" required="true">
 				<label>PrmId</label>
-				<description>Your Prm Id</description>
+				<description>The Meter Id (PRM)</description>
 			</parameter>
 			<parameter name="id" type="text" required="false">
 				<label>Id</label>
-				<description>Your D2L id</description>
+				<description>The D2L Module Id</description>
 			</parameter>
 			<parameter name="appKey" type="text" required="false">
 				<label>AppKey</label>
