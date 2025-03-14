@@ -7,7 +7,7 @@
 	<!-- LG Device Type relative to Heat Pump -->
 	<thing-type id="heatpump-401HP">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="cloud-account"/>
 		</supported-bridge-type-refs>
 
 		<label>Heat Pump</label>

@@ -200,7 +200,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
     private final LGDevicePollingRunnable lgDevicePollingRunnable;
 
     private LGThinQGeneralApiClientService getLgApiClient() {
-        return Objects.requireNonNull(lgApiClient, "Not expected lgApiClient null. It most likely a bug");
+        return Objects.requireNonNull(lgApiClient, "Not expected lgApiClient null. It is most likely a bug");
     }
 
     class LGDevicePollingRunnable extends PollingRunnable {

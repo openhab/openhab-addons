@@ -7,7 +7,7 @@
 	<!-- LG Device Type relative to Washer -->
 	<thing-type id="washer-201">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="cloud-account"/>
 		</supported-bridge-type-refs>
 
 		<label>LGThinQ Washer</label>
@@ -42,7 +42,7 @@
 	</thing-type>
 	<thing-type id="washer-tower-221">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="cloud-account"/>
 		</supported-bridge-type-refs>
 
 		<label>LGThinQ Washer Tower</label>

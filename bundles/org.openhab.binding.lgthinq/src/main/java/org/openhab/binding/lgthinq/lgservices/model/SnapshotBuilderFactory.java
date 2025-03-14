@@ -59,7 +59,7 @@ public class SnapshotBuilderFactory {
                 result = new DishWasherSnapshotBuilder();
             } else {
                 throw new IllegalStateException(
-                        "Snapshot definition " + snapDef + " not supported by this Factory. It most likely a bug");
+                        "Snapshot definition " + snapDef + " not supported by this Factory. It is most likely a bug");
             }
             internalBuilders.put(snapDef, result);
         }

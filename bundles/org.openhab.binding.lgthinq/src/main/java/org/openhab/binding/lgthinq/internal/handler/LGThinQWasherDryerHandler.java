@@ -320,7 +320,7 @@ public class LGThinQWasherDryerHandler
         data.put(cap.getDefaultSmartCourseFeatName(), smartCourse);
         CourseType courseType = Objects
                 .requireNonNull(cap.getCourses().get("NOT_SELECTED".equals(smartCourse) ? selectedCourse : smartCourse),
-                        "NOT_SELECTED should be hardcoded. It most likely a bug")
+                        "NOT_SELECTED should be hardcoded. It is most likely a bug")
                 .getCourseType();
         data.put("courseType", courseType.getValue());
         // 3rd - replace custom selectable features with channel's ones.
@@ -338,7 +338,7 @@ public class LGThinQWasherDryerHandler
                     data.put(cap.getSpinFeat().getName(), value);
                     break;
                 default:
-                    logger.warn("channel [{}] not mapped for this binding. It most likely a bug.", simpleChannelUID);
+                    logger.warn("channel [{}] not mapped for this binding. It is most likely a bug.", simpleChannelUID);
             }
         }
 

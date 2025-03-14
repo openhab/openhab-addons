@@ -107,14 +107,14 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     protected final LGThinQStateDescriptionProvider stateDescriptionProvider;
 
     protected S getLastShot() {
-        return Objects.requireNonNull(lastShot, "LastShot shouldn't be null. It most likely a bug.");
+        return Objects.requireNonNull(lastShot, "LastShot shouldn't be null. It is most likely a bug.");
     }
 
     @SuppressWarnings("unchecked")
     public Class<S> getSnapshotClass() {
         ParameterizedType genSupClass = (ParameterizedType) getClass().getGenericSuperclass();
         if (genSupClass == null) {
-            throw new IllegalStateException("Snapshot class has no parameterized type. It most likely a bug!");
+            throw new IllegalStateException("Snapshot class has no parameterized type. It is most likely a bug!");
         }
         return (Class<S>) genSupClass.getActualTypeArguments()[1];
     }
@@ -133,12 +133,12 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             this.lastShot = Objects.requireNonNull(constructor.newInstance(),
                     "Unexpected null returned from newInstance()");
         } catch (Exception e) {
-            throw new IllegalArgumentException("Snapshot class can't be instantiated. It most likely a bug", e);
+            throw new IllegalArgumentException("Snapshot class can't be instantiated. It is most likely a bug", e);
         }
     }
 
     private LGThinQBridgeHandler getAccountBridgeHandler() {
-        return Objects.requireNonNull(this.account, "BridgeHandler not initialized. It most likely a bug");
+        return Objects.requireNonNull(this.account, "BridgeHandler not initialized. It is most likely a bug");
     }
 
     private void normalizeConfigurationsAndProperties() {
@@ -462,7 +462,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     private void updateExtraInfoState() {
         if (!isExtraInfoCollectorSupported()) {
             getLogger().error(
-                    "The Energy Collector was started for a Handler that doesn't support it. It most likely a bug.");
+                    "The Energy Collector was started for a Handler that doesn't support it. It is most likely a bug.");
             return;
         }
         try {
@@ -794,7 +794,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         } else {
             // dynamic create channel
             ChannelBuilder builder = Objects
-                    .requireNonNull(getCallback(), "Not expected callback null here. It most likely a bug")
+                    .requireNonNull(getCallback(), "Not expected callback null here. It is most likely a bug")
                     .createChannelBuilder(channelUuid, new ChannelTypeUID(BINDING_ID, channelNameAndTypeName));
             Channel channel = builder.withKind(ChannelKind.STATE).withAcceptedItemType(itemType).build();
             updateThing(editThing().withChannel(channel).build());

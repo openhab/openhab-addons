@@ -7,7 +7,7 @@
 	<!-- LG Device Type relative to Air Conditioners -->
 	<thing-type id="dryer-202">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="cloud-account"/>
 		</supported-bridge-type-refs>
 
 		<label>Dryer</label>
@@ -43,7 +43,7 @@
 
 	<thing-type id="dryer-tower-222">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="cloud-account"/>
 		</supported-bridge-type-refs>
 		<label>LGThinQ DryerTower</label>
 		<description>LG ThinQ Dryer Tower</description>

@@ -66,6 +66,6 @@ public class FridgeSnapshotBuilder extends DefaultSnapshotBuilder<FridgeCanonica
         }
 
         throw new IllegalStateException("Snapshot for device type " + capDef.getDeviceType()
-                + " not supported for this builder. It most likely a bug");
+                + " not supported for this builder. It is most likely a bug");
     }
 }

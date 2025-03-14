@@ -43,7 +43,7 @@ public abstract class BaseThingWithExtraInfoHandler extends BaseThingHandler {
      */
     protected void updateExtraInfoStateChannels(Map<String, Object> energyStateAttributes) {
         throw new UnsupportedOperationException(
-                "Method must be implemented in the Handle that supports energy collector. It most likely a bug");
+                "Method must be implemented in the Handle that supports energy collector. It is most likely a bug");
     }
 
     /**
@@ -53,7 +53,7 @@ public abstract class BaseThingWithExtraInfoHandler extends BaseThingHandler {
      */
     protected Map<String, Object> collectExtraInfoState() throws LGThinqException {
         throw new UnsupportedOperationException(
-                "Method must be implemented in the Handle that supports energy collector. It most likely a bug");
+                "Method must be implemented in the Handle that supports energy collector. It is most likely a bug");
     }
 
     /**

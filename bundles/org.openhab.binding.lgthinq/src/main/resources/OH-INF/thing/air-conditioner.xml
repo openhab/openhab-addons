@@ -7,7 +7,7 @@
 	<!-- LG Device Type relative to Air Conditioners -->
 	<thing-type id="air-conditioner-401">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="cloud-account"/>
 		</supported-bridge-type-refs>
 
 		<label>Air Conditioner</label>

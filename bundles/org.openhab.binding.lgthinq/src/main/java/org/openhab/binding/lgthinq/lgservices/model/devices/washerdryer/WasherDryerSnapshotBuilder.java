@@ -47,7 +47,7 @@ public class WasherDryerSnapshotBuilder extends DefaultSnapshotBuilder<WasherDry
 
         if (!(capDef instanceof WasherDryerCapability washerCap)) {
             throw new IllegalArgumentException(
-                    "Capability must be an WasherDryerCapability for WasherDryerSnapshotBuilder. It most likely a bug!");
+                    "Capability must be an WasherDryerCapability for WasherDryerSnapshotBuilder. It is most likely a bug!");
         }
 
         snap.setRemoteStart(bitValue(washerCap.getRemoteStartFeatName(), snap.getRawData(), capDef));
@@ -91,11 +91,11 @@ public class WasherDryerSnapshotBuilder extends DefaultSnapshotBuilder<WasherDry
                     }
                     default:
                         throw new IllegalStateException("Snapshot for device type " + type + " and version " + version
-                                + " are not supported for this builder. It most likely a bug");
+                                + " are not supported for this builder. It is most likely a bug");
                 }
             default:
                 throw new IllegalStateException(
-                        "Snapshot for device type " + type + " not supported for this builder. It most likely a bug");
+                        "Snapshot for device type " + type + " not supported for this builder. It is most likely a bug");
         }
     }
 
