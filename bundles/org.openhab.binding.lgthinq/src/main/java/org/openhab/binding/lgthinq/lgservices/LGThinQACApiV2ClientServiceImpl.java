@@ -41,7 +41,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class LGThinQACApiV2ClientServiceImpl extends
         LGThinQAbstractApiV2ClientService<ACCapability, ACCanonicalSnapshot> implements LGThinQACApiClientService {
 
-    private static final Logger logger = LoggerFactory.getLogger(LGThinQACApiV2ClientServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(LGThinQACApiV2ClientServiceImpl.class);
 
     protected LGThinQACApiV2ClientServiceImpl(HttpClient httpClient) {
         super(ACCapability.class, ACCanonicalSnapshot.class, httpClient);
@@ -154,7 +154,7 @@ public class LGThinQACApiV2ClientServiceImpl extends
 
     /**
      * Start monitor data form specific device. This is old one, <b>works only on V1 API supported devices</b>.
-     * 
+     *
      * @param deviceId Device ID
      * @return Work1 to be uses to grab data during monitoring.
      */
@@ -201,7 +201,7 @@ public class LGThinQACApiV2ClientServiceImpl extends
      * }
      * }
      * Data node will be deserialized into the object informed
-     * 
+     *
      * @param jsonResult json result
      * @param obj object to be updated
      * @throws IOException if there are errors deserialization the jsonResult

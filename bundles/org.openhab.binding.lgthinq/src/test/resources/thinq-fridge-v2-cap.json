@@ -126,35 +126,40 @@
         "image": "wpm/GRM/image/ref_sidemenu_btn_shopping.png"
       }
     },
-    "visibleItems": [{
-      "feature": "fridgeTemp",
-      "imageUrl": "",
-      "monTitle": "@RE_TERM_FRIDGE_W",
-      "controlTitle": "@RE_TERM_FRIDGE_W",
-      "controlDisabledOption": [{
-        "optionValue": "@CP_OFF_EN_W",
-        "replaceOptionValue": "IGNORE"
+    "visibleItems": [
+      {
+        "feature": "fridgeTemp",
+        "imageUrl": "",
+        "monTitle": "@RE_TERM_FRIDGE_W",
+        "controlTitle": "@RE_TERM_FRIDGE_W",
+        "controlDisabledOption": [
+          {
+            "optionValue": "@CP_OFF_EN_W",
+            "replaceOptionValue": "IGNORE"
+          }
+        ]
+      },
+      {
+        "feature": "expressFridge",
+        "imageUrl": "wpm/GRM/image/ref_home_ic_coldstorage.png",
+        "monTitle": "@RE_TERM_EXPRESS_FRIDGE_W",
+        "controlTitle": "@RE_TERM_EXPRESS_FRIDGE_W",
+        "templateType": "typeSwitch.html"
+      },
+      {
+        "feature": "ecoFriendly",
+        "imageUrl": "image/icon_fridge_eco.png",
+        "monTitle": "@RE_TERM_ECO_FRIENDLY_W",
+        "controlTitle": "@RE_TERM_ECO_FRIENDLY_W",
+        "templateType": "typeSwitch.html"
+      },
+      {
+        "feature": "smartCareV2",
+        "imageUrl": "wpm/GRM/image/ref_home_ic_smartcare.png",
+        "monTitle": "@RE_SMARTCARE_RUN_V2_W",
+        "controlTitle": "@RE_SMARTCARE_RUN_V2_W",
+        "templateType": "NONE"
       }
-      ]
-    }, {
-      "feature": "expressFridge",
-      "imageUrl": "wpm/GRM/image/ref_home_ic_coldstorage.png",
-      "monTitle": "@RE_TERM_EXPRESS_FRIDGE_W",
-      "controlTitle": "@RE_TERM_EXPRESS_FRIDGE_W",
-      "templateType": "typeSwitch.html"
-    }, {
-      "feature": "ecoFriendly",
-      "imageUrl": "image/icon_fridge_eco.png",
-      "monTitle": "@RE_TERM_ECO_FRIENDLY_W",
-      "controlTitle": "@RE_TERM_ECO_FRIENDLY_W",
-      "templateType": "typeSwitch.html"
-    }, {
-      "feature": "smartCareV2",
-      "imageUrl": "wpm/GRM/image/ref_home_ic_smartcare.png",
-      "monTitle": "@RE_SMARTCARE_RUN_V2_W",
-      "controlTitle": "@RE_SMARTCARE_RUN_V2_W",
-      "templateType": "NONE"
-    }
     ]
   },
   "MonitoringValue": {
@@ -1337,11 +1342,12 @@
       "data": {}
     }
   },
-  "Push": [{
-    "category": "PUSH_REF_STATE",
-    "label": "@RE_SETTING_PUSH_PRODUCT_STATE_W",
-    "groupCode": "10101"
-  }
+  "Push": [
+    {
+      "category": "PUSH_REF_STATE",
+      "label": "@RE_SETTING_PUSH_PRODUCT_STATE_W",
+      "groupCode": "10101"
+    }
   ],
   "SmartMode": {}
 }

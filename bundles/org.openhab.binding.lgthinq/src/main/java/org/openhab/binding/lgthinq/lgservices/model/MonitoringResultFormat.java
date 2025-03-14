@@ -31,15 +31,15 @@ public enum MonitoringResultFormat {
         this.format = format;
     }
 
-    public String getFormat() {
-        return format;
-    }
-
     public static MonitoringResultFormat getFormatOf(String formatValue) {
         return switch (formatValue.toUpperCase()) {
             case "BINARY(BYTE)" -> BINARY_FORMAT;
             case "JSON" -> JSON_FORMAT;
             default -> UNKNOWN_FORMAT;
         };
+    }
+
+    public String getFormat() {
+        return format;
     }
 }

@@ -61,10 +61,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements LGThinQBridge {
 
-    private final Map<String, LGThinQAbstractDeviceHandler<? extends CapabilityDefinition, ? extends SnapshotDefinition>> lGDeviceRegister = new ConcurrentHashMap<>();
-    private final Map<String, LGDevice> lastDevicesDiscovered = new ConcurrentHashMap<>();
-
     private static final LGThinqDiscoveryService DUMMY_DISCOVERY_SERVICE = new LGThinqDiscoveryService();
+
     static {
         var logger = LoggerFactory.getLogger(LGThinQBridgeHandler.class);
         try {
@@ -78,13 +76,18 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
             logger.warn("Unable to setup thinq userdata directory: {}", e.getMessage());
         }
     }
+
+    final ReentrantLock pollingLock = new ReentrantLock();
+    private final Map<String, LGThinQAbstractDeviceHandler<? extends CapabilityDefinition, ? extends SnapshotDefinition>> lGDeviceRegister = new ConcurrentHashMap<>();
+    private final Map<String, LGDevice> lastDevicesDiscovered = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(LGThinQBridgeHandler.class);
-    private LGThinQBridgeConfiguration lgthinqConfig = new LGThinQBridgeConfiguration();
     private final TokenManager tokenManager;
-    private LGThinqDiscoveryService discoveryService = DUMMY_DISCOVERY_SERVICE;
     private final @Nullable LGThinQGeneralApiClientService lgApiClient;
-    private @Nullable ScheduledFuture<?> devicePollingJob;
     private final HttpClientFactory httpClientFactory;
+    private final LGDevicePollingRunnable lgDevicePollingRunnable;
+    private LGThinQBridgeConfiguration lgthinqConfig = new LGThinQBridgeConfiguration();
+    private LGThinqDiscoveryService discoveryService = DUMMY_DISCOVERY_SERVICE;
+    private @Nullable ScheduledFuture<?> devicePollingJob;
 
     public LGThinQBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
         super(bridge);
@@ -96,81 +99,6 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
 
     public HttpClientFactory getHttpClientFactory() {
         return httpClientFactory;
-    }
-
-    final ReentrantLock pollingLock = new ReentrantLock();
-
-    /**
-     * Abstract Runnable Polling Class to schedule synchronization status of the Bridge Thing Kinds !
-     */
-    abstract class PollingRunnable implements Runnable {
-        protected final String bridgeName;
-        protected LGThinQBridgeConfiguration lgthinqConfig = new LGThinQBridgeConfiguration();
-
-        PollingRunnable(String bridgeName) {
-            this.bridgeName = bridgeName;
-        }
-
-        @Override
-        public void run() {
-            try {
-                pollingLock.lock();
-                // check if configuration file already exists
-                if (tokenManager.isOauthTokenRegistered(bridgeName)) {
-                    logger.debug(
-                            "Token authentication process has been already done. Skip first authentication process.");
-                    try {
-                        tokenManager.getValidRegisteredToken(bridgeName);
-                    } catch (IOException e) {
-                        logger.error("Unexpected error reading LGThinq TokenFile", e);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                                "@text/error.toke-file-corrupted");
-                        return;
-                    } catch (RefreshTokenException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                                "@text/error.toke-refresh");
-                        logger.error("Error refreshing token", e);
-                        return;
-                    }
-                } else {
-                    try {
-                        tokenManager.oauthFirstRegistration(bridgeName, lgthinqConfig.getLanguage(),
-                                lgthinqConfig.getCountry(), lgthinqConfig.getUsername(), lgthinqConfig.getPassword(),
-                                lgthinqConfig.getAlternativeServer());
-                        tokenManager.getValidRegisteredToken(bridgeName);
-                        logger.debug("Successful getting token from LG API");
-                    } catch (IOException e) {
-                        logger.debug(
-                                "I/O error accessing json token configuration file. Updating Bridge Status to OFFLINE.",
-                                e);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "@text/error.toke-file-access-error");
-                        return;
-                    } catch (LGThinqException e) {
-                        logger.debug("Error accessing LG API. Updating Bridge Status to OFFLINE.", e);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/error.lgapi-communication-error");
-                        return;
-                    }
-                }
-                if (thing.getStatus() != ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
-
-                try {
-                    doConnectedRun();
-                } catch (Exception e) {
-                    logger.error("Unexpected error getting device list from LG account", e);
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "@text/error.lgapi-getting-devices");
-                }
-
-            } finally {
-                pollingLock.unlock();
-            }
-        }
-
-        protected abstract void doConnectedRun() throws LGThinqException;
     }
 
     @Override
@@ -197,55 +125,8 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
         lGDeviceRegister.remove(thing.getDeviceId());
     }
 
-    private final LGDevicePollingRunnable lgDevicePollingRunnable;
-
     private LGThinQGeneralApiClientService getLgApiClient() {
         return Objects.requireNonNull(lgApiClient, "Not expected lgApiClient null. It is most likely a bug");
-    }
-
-    class LGDevicePollingRunnable extends PollingRunnable {
-        public LGDevicePollingRunnable(String bridgeName) {
-            super(bridgeName);
-        }
-
-        @Override
-        protected void doConnectedRun() throws LGThinqException {
-            Map<String, LGDevice> lastDevicesDiscoveredCopy = new HashMap<>(lastDevicesDiscovered);
-            List<LGDevice> devices = getLgApiClient().listAccountDevices(bridgeName);
-            // if not registered yet, and not discovered before, then add to discovery list.
-            devices.forEach(device -> {
-                String deviceId = device.getDeviceId();
-                logger.debug("Device found: {}", deviceId);
-                if (lGDeviceRegister.get(deviceId) == null && !lastDevicesDiscovered.containsKey(deviceId)) {
-                    logger.debug("Adding new LG Device to things registry with id:{}", deviceId);
-                    if (discoveryService != DUMMY_DISCOVERY_SERVICE) {
-                        discoveryService.addLgDeviceDiscovery(device);
-                    }
-                } else {
-                    if (discoveryService != DUMMY_DISCOVERY_SERVICE && lGDeviceRegister.get(deviceId) != null) {
-                        discoveryService.removeLgDeviceDiscovery(device);
-                    }
-                }
-                lastDevicesDiscovered.put(deviceId, device);
-                lastDevicesDiscoveredCopy.remove(deviceId);
-            });
-            // the rest in lastDevicesDiscoveredCopy is not more registered in LG API. Remove from discovery
-            lastDevicesDiscoveredCopy.forEach((deviceId, device) -> {
-                logger.debug("LG Device '{}' removed.", deviceId);
-                lastDevicesDiscovered.remove(deviceId);
-
-                LGThinQAbstractDeviceHandler<? extends CapabilityDefinition, ? extends SnapshotDefinition> deviceThing = lGDeviceRegister
-                        .get(deviceId);
-                if (deviceThing != null) {
-                    deviceThing.onDeviceRemoved();
-                }
-                if (discoveryService != DUMMY_DISCOVERY_SERVICE && deviceThing != null) {
-                    discoveryService.removeLgDeviceDiscovery(device);
-                }
-            });
-
-            lGDeviceRegister.values().forEach(LGThinQAbstractDeviceHandler::refreshStatus);
-        }
     }
 
     @Override
@@ -266,7 +147,6 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
         if (lgthinqConfig.country.isEmpty()) {
             resultList.add(ConfigStatusMessage.Builder.error("COUNTRY").withMessageKeySuffix("missing field")
                     .withArguments("country").build());
-
         }
         return resultList;
     }
@@ -371,5 +251,122 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
      */
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(LGThinqDiscoveryService.class);
+    }
+
+    /**
+     * Abstract Runnable Polling Class to schedule synchronization status of the Bridge Thing Kinds !
+     */
+    abstract class PollingRunnable implements Runnable {
+        protected final String bridgeName;
+        protected LGThinQBridgeConfiguration lgthinqConfig = new LGThinQBridgeConfiguration();
+
+        PollingRunnable(String bridgeName) {
+            this.bridgeName = bridgeName;
+        }
+
+        @Override
+        public void run() {
+            try {
+                pollingLock.lock();
+                // check if configuration file already exists
+                if (tokenManager.isOauthTokenRegistered(bridgeName)) {
+                    logger.debug(
+                            "Token authentication process has been already done. Skip first authentication process.");
+                    try {
+                        tokenManager.getValidRegisteredToken(bridgeName);
+                    } catch (IOException e) {
+                        logger.error("Unexpected error reading LGThinq TokenFile", e);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                                "@text/error.toke-file-corrupted");
+                        return;
+                    } catch (RefreshTokenException e) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                                "@text/error.toke-refresh");
+                        logger.error("Error refreshing token", e);
+                        return;
+                    }
+                } else {
+                    try {
+                        tokenManager.oauthFirstRegistration(bridgeName, lgthinqConfig.getLanguage(),
+                                lgthinqConfig.getCountry(), lgthinqConfig.getUsername(), lgthinqConfig.getPassword(),
+                                lgthinqConfig.getAlternativeServer());
+                        tokenManager.getValidRegisteredToken(bridgeName);
+                        logger.debug("Successful getting token from LG API");
+                    } catch (IOException e) {
+                        logger.debug(
+                                "I/O error accessing json token configuration file. Updating Bridge Status to OFFLINE.",
+                                e);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "@text/error.toke-file-access-error");
+                        return;
+                    } catch (LGThinqException e) {
+                        logger.debug("Error accessing LG API. Updating Bridge Status to OFFLINE.", e);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/error.lgapi-communication-error");
+                        return;
+                    }
+                }
+                if (thing.getStatus() != ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+
+                try {
+                    doConnectedRun();
+                } catch (Exception e) {
+                    logger.error("Unexpected error getting device list from LG account", e);
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                            "@text/error.lgapi-getting-devices");
+                }
+            } finally {
+                pollingLock.unlock();
+            }
+        }
+
+        protected abstract void doConnectedRun() throws LGThinqException;
+    }
+
+    class LGDevicePollingRunnable extends PollingRunnable {
+        public LGDevicePollingRunnable(String bridgeName) {
+            super(bridgeName);
+        }
+
+        @Override
+        protected void doConnectedRun() throws LGThinqException {
+            Map<String, LGDevice> lastDevicesDiscoveredCopy = new HashMap<>(lastDevicesDiscovered);
+            List<LGDevice> devices = getLgApiClient().listAccountDevices(bridgeName);
+            // if not registered yet, and not discovered before, then add to discovery list.
+            devices.forEach(device -> {
+                String deviceId = device.getDeviceId();
+                logger.debug("Device found: {}", deviceId);
+                if (lGDeviceRegister.get(deviceId) == null && !lastDevicesDiscovered.containsKey(deviceId)) {
+                    logger.debug("Adding new LG Device to things registry with id:{}", deviceId);
+                    if (discoveryService != DUMMY_DISCOVERY_SERVICE) {
+                        discoveryService.addLgDeviceDiscovery(device);
+                    }
+                } else {
+                    if (discoveryService != DUMMY_DISCOVERY_SERVICE && lGDeviceRegister.get(deviceId) != null) {
+                        discoveryService.removeLgDeviceDiscovery(device);
+                    }
+                }
+                lastDevicesDiscovered.put(deviceId, device);
+                lastDevicesDiscoveredCopy.remove(deviceId);
+            });
+            // the rest in lastDevicesDiscoveredCopy is not more registered in LG API. Remove from discovery
+            lastDevicesDiscoveredCopy.forEach((deviceId, device) -> {
+                logger.debug("LG Device '{}' removed.", deviceId);
+                lastDevicesDiscovered.remove(deviceId);
+
+                LGThinQAbstractDeviceHandler<? extends CapabilityDefinition, ? extends SnapshotDefinition> deviceThing = lGDeviceRegister
+                        .get(deviceId);
+                if (deviceThing != null) {
+                    deviceThing.onDeviceRemoved();
+                }
+                if (discoveryService != DUMMY_DISCOVERY_SERVICE && deviceThing != null) {
+                    discoveryService.removeLgDeviceDiscovery(device);
+                }
+            });
+
+            lGDeviceRegister.values().forEach(LGThinQAbstractDeviceHandler::refreshStatus);
+        }
     }
 }

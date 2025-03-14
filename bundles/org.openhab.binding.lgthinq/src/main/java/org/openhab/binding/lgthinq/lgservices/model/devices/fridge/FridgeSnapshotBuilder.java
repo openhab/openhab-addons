@@ -54,9 +54,9 @@ public class FridgeSnapshotBuilder extends DefaultSnapshotBuilder<FridgeCanonica
                     throw new IllegalArgumentException("Version 1.0 for Fridge driver is not supported yet.");
                 case V2_0: {
                     Map<String, Object> refMap = Objects.requireNonNull(
-                            objectMapper.convertValue(snapMap.get(RE_SNAPSHOT_NODE_V2), new TypeReference<>() {
+                            MAPPER.convertValue(snapMap.get(RE_SNAPSHOT_NODE_V2), new TypeReference<>() {
                             }), "washerDryer node must be present in the snapshot");
-                    snap = objectMapper.convertValue(refMap, snapClass);
+                    snap = MAPPER.convertValue(refMap, snapClass);
                     snap.setRawData(snapMap);
                     return snap;
                 }

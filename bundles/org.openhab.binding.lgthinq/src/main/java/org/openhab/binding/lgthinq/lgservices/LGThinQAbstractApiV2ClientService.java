@@ -47,7 +47,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @NonNullByDefault
 public abstract class LGThinQAbstractApiV2ClientService<C extends CapabilityDefinition, S extends AbstractSnapshotDefinition>
         extends LGThinQAbstractApiClientService<C, S> {
-    private static final Logger logger = LoggerFactory.getLogger(LGThinQAbstractApiV2ClientService.class);
+    private final Logger logger = LoggerFactory.getLogger(LGThinQAbstractApiV2ClientService.class);
 
     protected LGThinQAbstractApiV2ClientService(Class<C> capabilityClass, Class<S> snapshotClass,
             HttpClient httpClient) {

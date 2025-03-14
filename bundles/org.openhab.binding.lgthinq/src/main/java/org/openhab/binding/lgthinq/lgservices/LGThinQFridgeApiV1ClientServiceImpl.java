@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class LGThinQFridgeApiV1ClientServiceImpl
         extends LGThinQAbstractApiV1ClientService<FridgeCapability, FridgeCanonicalSnapshot>
         implements LGThinQFridgeApiClientService {
-    private static final Logger logger = LoggerFactory.getLogger(LGThinQFridgeApiV1ClientServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(LGThinQFridgeApiV1ClientServiceImpl.class);
 
     protected LGThinQFridgeApiV1ClientServiceImpl(HttpClient httpClient) {
         super(FridgeCapability.class, FridgeCanonicalSnapshot.class, httpClient);

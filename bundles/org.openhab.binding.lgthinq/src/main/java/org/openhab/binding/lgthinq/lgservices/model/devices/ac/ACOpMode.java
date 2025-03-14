@@ -63,7 +63,7 @@ public enum ACOpMode {
 
     /**
      * Value of command (not state, but command to change the state of device)
-     * 
+     *
      * @return value of the command to reach the state
      */
     public int commandValue() {

@@ -31,7 +31,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * <p>
  * Usage Example:
- * 
+ *
  * <pre>
  * SnapshotDefinition snapshot = new MySnapshotImplementation();
  * snapshot.setPowerStatus(DevicePowerState.ON);

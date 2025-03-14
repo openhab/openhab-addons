@@ -37,20 +37,11 @@ public enum DeviceTypes {
     private final String deviceSubModel;
     private final String thingTypeId;
 
-    public String deviceTypeAcron() {
-        return deviceTypeAcron;
-    }
-
-    public int deviceTypeId() {
-        return deviceTypeId;
-    }
-
-    public String deviceSubModel() {
-        return deviceSubModel;
-    }
-
-    public String thingTypeId() {
-        return thingTypeId;
+    DeviceTypes(int i, String n, String submodel, String thingTypeId) {
+        this.deviceTypeId = i;
+        this.deviceTypeAcron = n;
+        this.deviceSubModel = submodel;
+        this.thingTypeId = thingTypeId;
     }
 
     /**
@@ -111,10 +102,19 @@ public enum DeviceTypes {
         };
     }
 
-    DeviceTypes(int i, String n, String submodel, String thingTypeId) {
-        this.deviceTypeId = i;
-        this.deviceTypeAcron = n;
-        this.deviceSubModel = submodel;
-        this.thingTypeId = thingTypeId;
+    public String deviceTypeAcron() {
+        return deviceTypeAcron;
+    }
+
+    public int deviceTypeId() {
+        return deviceTypeId;
+    }
+
+    public String deviceSubModel() {
+        return deviceSubModel;
+    }
+
+    public String thingTypeId() {
+        return thingTypeId;
     }
 }

@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.lgthinq")
 public class LGThinQHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(LGThinQHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(LGThinQHandlerFactory.class);
 
     private final HttpClientFactory httpClientFactory;
     private final LGThinQStateDescriptionProvider stateDescriptionProvider;

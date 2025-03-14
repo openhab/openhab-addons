@@ -85,7 +85,6 @@ public class LGThinQWMApiV1ClientServiceImpl
     @Override
     public void wakeUp(String bridgeName, String deviceId, Boolean wakeUp) throws LGThinqApiException {
         try {
-
             RestResult result = sendCommand(bridgeName, deviceId, "", "Control", "Operation", "", "WakeUp");
             handleGenericErrorResult(result);
         } catch (LGThinqApiException e) {

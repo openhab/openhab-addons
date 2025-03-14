@@ -21,7 +21,7 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDr
 
 /**
  * Represents an API client service for LG ThinQ Washer/Dryer devices.
- * 
+ *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault

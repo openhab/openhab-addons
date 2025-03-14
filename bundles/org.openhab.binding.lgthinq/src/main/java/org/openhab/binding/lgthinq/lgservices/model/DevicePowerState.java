@@ -28,10 +28,6 @@ public enum DevicePowerState {
 
     private final int powerState;
 
-    public double getValue() {
-        return powerState;
-    }
-
     DevicePowerState(int i) {
         powerState = i;
     }
@@ -48,9 +44,13 @@ public enum DevicePowerState {
         return dps.powerState;
     }
 
+    public double getValue() {
+        return powerState;
+    }
+
     /**
      * Value of command (not state, but command to change the state of device)
-     * 
+     *
      * @return value of the command to reach the state
      */
     public int commandValue() {

@@ -51,27 +51,6 @@ public class WasherDryerCapability extends AbstractCapability<WasherDryerCapabil
     private Map<String, CommandDefinition> commandsDefinition = new HashMap<>();
     private Map<String, CourseDefinition> courses = new LinkedHashMap<>();
 
-    static class RinseFeatureFunction implements Function<WasherDryerCapability, FeatureDefinition> {
-        @Override
-        public FeatureDefinition apply(WasherDryerCapability c) {
-            return c.getRinseFeat();
-        }
-    }
-
-    static class TemperatureFeatureFunction implements Function<WasherDryerCapability, FeatureDefinition> {
-        @Override
-        public FeatureDefinition apply(WasherDryerCapability c) {
-            return c.getTemperatureFeat();
-        }
-    }
-
-    static class SpinFeatureFunction implements Function<WasherDryerCapability, FeatureDefinition> {
-        @Override
-        public FeatureDefinition apply(WasherDryerCapability c) {
-            return c.getSpinFeat();
-        }
-    }
-
     public String getDefaultCourseId() {
         return defaultCourseId;
     }
@@ -84,8 +63,16 @@ public class WasherDryerCapability extends AbstractCapability<WasherDryerCapabil
         return commandsDefinition;
     }
 
+    public void setCommandsDefinition(Map<String, CommandDefinition> commandsDefinition) {
+        this.commandsDefinition = commandsDefinition;
+    }
+
     public FeatureDefinition getDryLevel() {
         return dryLevel;
+    }
+
+    public void setDryLevel(FeatureDefinition dryLevel) {
+        this.dryLevel = dryLevel;
     }
 
     public String getCommandStop() {
@@ -112,20 +99,12 @@ public class WasherDryerCapability extends AbstractCapability<WasherDryerCapabil
         this.commandWakeUp = commandWakeUp;
     }
 
-    public void setDryLevel(FeatureDefinition dryLevel) {
-        this.dryLevel = dryLevel;
-    }
-
     public FeatureDefinition getProcessState() {
         return processState;
     }
 
     public void setProcessState(FeatureDefinition processState) {
         this.processState = processState;
-    }
-
-    public void setCommandsDefinition(Map<String, CommandDefinition> commandsDefinition) {
-        this.commandsDefinition = commandsDefinition;
     }
 
     public Map<String, CourseDefinition> getCourses() {
@@ -230,5 +209,26 @@ public class WasherDryerCapability extends AbstractCapability<WasherDryerCapabil
 
     public void setDoorLockFeatName(String doorLockFeatName) {
         this.doorLockFeatName = doorLockFeatName;
+    }
+
+    static class RinseFeatureFunction implements Function<WasherDryerCapability, FeatureDefinition> {
+        @Override
+        public FeatureDefinition apply(WasherDryerCapability c) {
+            return c.getRinseFeat();
+        }
+    }
+
+    static class TemperatureFeatureFunction implements Function<WasherDryerCapability, FeatureDefinition> {
+        @Override
+        public FeatureDefinition apply(WasherDryerCapability c) {
+            return c.getTemperatureFeat();
+        }
+    }
+
+    static class SpinFeatureFunction implements Function<WasherDryerCapability, FeatureDefinition> {
+        @Override
+        public FeatureDefinition apply(WasherDryerCapability c) {
+            return c.getSpinFeat();
+        }
     }
 }

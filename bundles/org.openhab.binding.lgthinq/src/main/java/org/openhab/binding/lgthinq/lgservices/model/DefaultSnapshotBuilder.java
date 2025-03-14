@@ -45,15 +45,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @NonNullByDefault
 public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinition> implements SnapshotBuilder<S> {
+    protected static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final Map<String, Map<String, Map<String, Object>>> MODEL_CACHED_BITKEY_DEF = new HashMap<>();
     protected final Class<S> snapClass;
-    protected static final ObjectMapper objectMapper = new ObjectMapper();
-    private static final Logger logger = LoggerFactory.getLogger(DefaultSnapshotBuilder.class);
+    private final Logger logger = LoggerFactory.getLogger(DefaultSnapshotBuilder.class);
 
     public DefaultSnapshotBuilder(Class<S> clazz) {
         snapClass = clazz;
     }
-
-    private static final Map<String, Map<String, Map<String, Object>>> modelsCachedBitKeyDefinitions = new HashMap<>();
 
     /**
      * Create a Snapshot object from binary data using the provided monitoring binary protocols and capability
@@ -146,7 +145,7 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
     public S createFromJson(String snapshotDataJson, DeviceTypes deviceType, CapabilityDefinition capDef)
             throws LGThinqUnmarshallException, LGThinqApiException {
         try {
-            Map<String, Object> snapshotMap = objectMapper.readValue(snapshotDataJson, new TypeReference<>() {
+            Map<String, Object> snapshotMap = MAPPER.readValue(snapshotDataJson, new TypeReference<>() {
             });
             Map<String, Object> deviceSetting = new HashMap<>();
             deviceSetting.put("deviceType", deviceType.deviceTypeId());
@@ -160,7 +159,7 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
     @Override
     public S createFromJson(Map<String, Object> deviceSettings, CapabilityDefinition capDef)
             throws LGThinqApiException {
-        Map<String, Object> snapMap = objectMapper.convertValue(deviceSettings.get("snapshot"), new TypeReference<>() {
+        Map<String, Object> snapMap = MAPPER.convertValue(deviceSettings.get("snapshot"), new TypeReference<>() {
         });
         if (snapMap == null) {
             throw new LGThinqApiException("snapshot node not present in device monitoring result.");
@@ -215,9 +214,8 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
                     continue;
                 }
 
-                List<Map<String, Object>> optionList = objectMapper.convertValue(option.get("option"),
-                        new TypeReference<>() {
-                        });
+                List<Map<String, Object>> optionList = MAPPER.convertValue(option.get("option"), new TypeReference<>() {
+                });
 
                 if (optionList == null) {
                     continue;
@@ -262,7 +260,7 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
      * Return the value related to the bit-value definition. It's used in Washer/Dryer V1 snapshot parser.
      * It was here, in the parent, because maybe other devices need the same functionality. If not,
      * We can transfer these methods to the WasherDryer Snapshot Builder.
-     * 
+     *
      * @param key Key trying to get the value
      * @param snapRawValues snap raw value
      * @param capDef capability
@@ -315,7 +313,7 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
      * @return A map containing the specific cache bit key for the given CapabilityDefinition.
      */
     protected synchronized Map<String, Map<String, Object>> getSpecificCacheBitKey(CapabilityDefinition capDef) {
-        return Objects.requireNonNull(
-                modelsCachedBitKeyDefinitions.computeIfAbsent(capDef.getModelName(), k -> new HashMap<>()));
+        return Objects
+                .requireNonNull(MODEL_CACHED_BITKEY_DEF.computeIfAbsent(capDef.getModelName(), k -> new HashMap<>()));
     }
 }

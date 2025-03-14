@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * The WasherFeatureDefinition
- * 
+ *
  * @author nemer (nemer.daud@gmail.com) - Initial contribution
  */
 @NonNullByDefault
@@ -47,7 +47,6 @@ public class WasherFeatureDefinition {
         fd.setDataType(FeatureDataType.ENUM);
         JsonNode valuesMappingNode = featureNode.path("option");
         if (!valuesMappingNode.isMissingNode()) {
-
             Map<String, String> valuesMapping = new HashMap<>();
             valuesMappingNode.fields().forEachRemaining(e -> {
                 // collect values as:

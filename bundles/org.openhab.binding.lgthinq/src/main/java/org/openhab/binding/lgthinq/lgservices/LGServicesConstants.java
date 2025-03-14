@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The LGServicesConstants constants class for lg services
- * 
+ *
  * @author Nemer Daud - Initial Contribution
  */
 @NonNullByDefault

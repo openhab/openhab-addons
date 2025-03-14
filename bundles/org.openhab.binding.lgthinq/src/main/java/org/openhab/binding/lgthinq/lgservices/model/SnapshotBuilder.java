@@ -32,7 +32,7 @@ import org.openhab.binding.lgthinq.lgservices.errors.LGThinqUnmarshallException;
  *
  * <p>
  * Usage Example:
- * 
+ *
  * <pre>
  * SnapshotBuilder&lt;MySnapshot&gt; snapshotBuilder = new MySnapshotBuilder();
  * MySnapshot snapshot = snapshotBuilder.createFromJson(jsonData, deviceType, capDef);
@@ -40,7 +40,6 @@ import org.openhab.binding.lgthinq.lgservices.errors.LGThinqUnmarshallException;
  * </p>
  *
  * @param <S> the type of snapshot to be created, extending {@link SnapshotDefinition}
- *
  * @author Nemer Daud - Initial contribution
  * @version 1.0
  */

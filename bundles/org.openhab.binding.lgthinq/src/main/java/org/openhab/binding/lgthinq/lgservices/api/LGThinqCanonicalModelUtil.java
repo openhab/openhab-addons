@@ -29,11 +29,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @NonNullByDefault
 public class LGThinqCanonicalModelUtil {
-    public static final ObjectMapper mapper = new ObjectMapper();
+    public static ObjectMapper mapper = new ObjectMapper();
 
     /**
      * Get structured result from the LG Authentication Gateway
-     * 
+     *
      * @param rawJson RAW Json to process
      * @return Structured Object returned from the API
      * @throws IOException If some error happen procession token from file.

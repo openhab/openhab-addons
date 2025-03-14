@@ -44,10 +44,6 @@ public class FridgeCanonicalCapability extends AbstractCapability<FridgeCanonica
     private boolean isExpressCoolModePresent = false;
     private boolean isEcoFriendlyModePresent = false;
 
-    public void setExpressCoolModePresent(boolean expressCoolModePresent) {
-        isExpressCoolModePresent = expressCoolModePresent;
-    }
-
     @Override
     public boolean isEcoFriendlyModePresent() {
         return isEcoFriendlyModePresent;
@@ -121,5 +117,9 @@ public class FridgeCanonicalCapability extends AbstractCapability<FridgeCanonica
     @Override
     public boolean isExpressCoolModePresent() {
         return isExpressCoolModePresent;
+    }
+
+    public void setExpressCoolModePresent(boolean expressCoolModePresent) {
+        isExpressCoolModePresent = expressCoolModePresent;
     }
 }

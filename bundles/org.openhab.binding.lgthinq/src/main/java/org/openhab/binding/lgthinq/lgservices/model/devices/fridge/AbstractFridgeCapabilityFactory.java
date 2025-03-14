@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @NonNullByDefault
 public abstract class AbstractFridgeCapabilityFactory extends AbstractCapabilityFactory<FridgeCapability> {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractFridgeCapabilityFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractFridgeCapabilityFactory.class);
 
     protected abstract void loadTempNode(JsonNode tempNode, Map<String, String> capMap);
 

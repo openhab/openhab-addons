@@ -40,7 +40,7 @@ public class FeatureDefinition {
     /**
      * Return the optional referenced channel Id. In some cases, the feature has a reference from another channel.
      * In other words, in some cases, it copies or use value hold for other channels.
-     * 
+     *
      * @return the optional referenced field for this feature
      */
     public String getRefChannelId() {
@@ -51,7 +51,7 @@ public class FeatureDefinition {
      * Set the optional reference field for this channel In some cases, the feature has a reference from another
      * channel.
      * In other words, in some cases, it copies or use value hold for other channels.
-     * 
+     *
      * @param refChannelId the optional referenced field for this feature
      */
     public void setRefChannelId(String refChannelId) {
@@ -78,16 +78,16 @@ public class FeatureDefinition {
         return dataType;
     }
 
+    public void setDataType(FeatureDataType dataType) {
+        this.dataType = dataType;
+    }
+
     public Boolean isReadOnly() {
         return readOnly;
     }
 
     public void setReadOnly(Boolean readOnly) {
         this.readOnly = readOnly;
-    }
-
-    public void setDataType(FeatureDataType dataType) {
-        this.dataType = dataType;
     }
 
     public Map<String, String> getValuesMapping() {
@@ -108,10 +108,12 @@ public class FeatureDefinition {
 
     @Override
     public boolean equals(@Nullable Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         FeatureDefinition that = (FeatureDefinition) o;
         return Objects.equals(name, that.name);
     }

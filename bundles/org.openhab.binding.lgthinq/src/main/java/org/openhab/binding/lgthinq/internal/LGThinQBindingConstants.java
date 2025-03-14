@@ -32,6 +32,11 @@ public class LGThinQBindingConstants extends LGServicesConstants {
 
     public static final String BINDING_ID = "lgthinq";
 
+    // =============== Thing Configuration Constants ===========
+    public static final String CFG_POLLING_PERIOD_POWER_ON_SEC = "pollingPeriodPowerOnSeconds";
+    public static final String CFG_POLLING_PERIOD_POWER_OFF_SEC = "pollingPeriodPowerOffSeconds";
+    public static final String CFG_POLLING_EXTRA_INFO_PERIOD_SEC = "pollingExtraInfoPeriodSeconds";
+    public static final String CFG_POLLING_EXTRA_INFO_ON_POWER_OFF = "pollExtraInfoOnPowerOff";
     // =============== Thing Type IDs ==================
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "cloud-account");
     public static final ThingTypeUID THING_TYPE_AIR_CONDITIONER = new ThingTypeUID(BINDING_ID,
@@ -45,17 +50,15 @@ public class LGThinQBindingConstants extends LGServicesConstants {
             DeviceTypes.HEAT_PUMP.thingTypeId());
     public static final ThingTypeUID THING_TYPE_DRYER_TOWER = new ThingTypeUID(BINDING_ID,
             DeviceTypes.DRYER_TOWER.thingTypeId());
-
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_AIR_CONDITIONER,
+            THING_TYPE_WASHING_MACHINE, THING_TYPE_WASHING_TOWER, THING_TYPE_DRYER, THING_TYPE_DRYER_TOWER,
+            THING_TYPE_HEAT_PUMP);
     public static final ThingTypeUID THING_TYPE_FRIDGE = new ThingTypeUID(BINDING_ID, DeviceTypes.FRIDGE.thingTypeId());
     public static final ThingTypeUID THING_TYPE_DISHWASHER = new ThingTypeUID(BINDING_ID,
             DeviceTypes.DISH_WASHER.thingTypeId());
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AIR_CONDITIONER,
             THING_TYPE_WASHING_MACHINE, THING_TYPE_WASHING_TOWER, THING_TYPE_DRYER_TOWER, THING_TYPE_DRYER,
             THING_TYPE_FRIDGE, THING_TYPE_BRIDGE, THING_TYPE_HEAT_PUMP, THING_TYPE_DISHWASHER);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_AIR_CONDITIONER,
-            THING_TYPE_WASHING_MACHINE, THING_TYPE_WASHING_TOWER, THING_TYPE_DRYER, THING_TYPE_DRYER_TOWER,
-            THING_TYPE_HEAT_PUMP);
-
     // ======== Common Channels & Constants ========
     public static final String CHANNEL_DASHBOARD_GRP_ID = "dashboard";
     public static final String CHANNEL_EXTENDED_INFO_GRP_ID = "extended-information";
@@ -71,9 +74,11 @@ public class LGThinQBindingConstants extends LGServicesConstants {
     public static final String PROP_INFO_MODEL_ID = "modelId";
 
     // === UserData Directory and File Format
-    public static String THINQ_USER_DATA_FOLDER = OpenHAB.getUserDataFolder() + File.separator + "thinq";
-    public static String THINQ_CONNECTION_DATA_FILE = THINQ_USER_DATA_FOLDER + File.separator + "thinqbridge-%s.json";
-    public static String BASE_CAP_CONFIG_DATA_FILE = THINQ_USER_DATA_FOLDER + File.separator + "thinq-%s-cap.json";
+    public static final String THINQ_USER_DATA_FOLDER = OpenHAB.getUserDataFolder() + File.separator + "thinq";
+    public static final String THINQ_CONNECTION_DATA_FILE = THINQ_USER_DATA_FOLDER + File.separator
+            + "thinqbridge-%s.json";
+    public static final String BASE_CAP_CONFIG_DATA_FILE = THINQ_USER_DATA_FOLDER + File.separator
+            + "thinq-%s-cap.json";
 
     // ====================================================
 

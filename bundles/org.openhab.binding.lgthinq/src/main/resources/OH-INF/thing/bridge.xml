@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="lgthinq"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+<thing:thing-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" bindingId="lgthinq"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="cloud-account">
@@ -48,7 +47,8 @@
 			</parameter>
 			<parameter name="manualLanguage" type="text" required="false">
 				<label>Manual User Lang.</label>
-				<description>Fill this only if selected "Other" in the Language above. Example value: de-DE </description>
+				<description>Fill this only if selected "Other" in the Language above. Example value: de-DE
+				</description>
 			</parameter>
 			<parameter name="manualCountry" type="text" required="false">
 				<label>Manual User Country</label>
@@ -65,7 +65,8 @@
 			</parameter>
 			<parameter name="pollingIntervalSec" type="integer">
 				<label>Discovery Interval</label>
-				<description>Polling interval to discover new devices from LG Account (in Seconds >300 or 0 disabled).</description>
+				<description>Polling interval to discover new devices from LG Account (in Seconds >300 or 0 disabled).
+				</description>
 				<default>86400</default>
 			</parameter>
 			<parameter name="alternativeServer" type="text">

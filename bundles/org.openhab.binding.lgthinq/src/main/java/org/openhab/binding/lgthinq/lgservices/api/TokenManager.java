@@ -44,7 +44,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @NonNullByDefault
 public class TokenManager {
     private static final int EXPIRICY_TOLERANCE_SEC = 60;
-    private static final Logger logger = LoggerFactory.getLogger(TokenManager.class);
+    private final Logger logger = LoggerFactory.getLogger(TokenManager.class);
     private final LGThinqOauthEmpAuthenticator authenticator;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Map<String, TokenResult> tokenCached = new ConcurrentHashMap<>();

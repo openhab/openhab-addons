@@ -78,19 +78,27 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @SuppressWarnings("unchecked")
 public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefinition, S extends AbstractSnapshotDefinition>
         implements LGThinQApiClientService<C, S> {
-    private static final Logger logger = LoggerFactory.getLogger(LGThinQAbstractApiClientService.class);
     protected final ObjectMapper objectMapper = new ObjectMapper();
     protected final TokenManager tokenManager;
     protected final Class<C> capabilityClass;
     protected final Class<S> snapshotClass;
     protected final HttpClient httpClient;
-    private String clientId = "";
+    private final Logger logger = LoggerFactory.getLogger(LGThinQAbstractApiClientService.class);
+    private final String clientId = "";
 
     protected LGThinQAbstractApiClientService(Class<C> capabilityClass, Class<S> snapshotClass, HttpClient httpClient) {
         this.httpClient = httpClient;
         this.tokenManager = new TokenManager(httpClient);
         this.capabilityClass = capabilityClass;
         this.snapshotClass = snapshotClass;
+    }
+
+    protected static String getErrorCodeMessage(@Nullable String code) {
+        if (code == null) {
+            return "";
+        }
+        ResultCodes resultCode = ResultCodes.fromCode(code);
+        return resultCode.getDescription();
     }
 
     /**
@@ -152,7 +160,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
 
     /**
      * Even using V2 URL, this endpoint support grab information about account devices from V1 and V2.
-     * 
+     *
      * @return list os LG Devices.
      * @throws LGThinqApiException if some communication error occur.
      */
@@ -188,7 +196,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
     /**
      * Get device settings and snapshot for a specific device.
      * <b>It works only for API V2 device versions!</b>
-     * 
+     *
      * @param deviceId device ID for de desired V2 LG Thinq.
      * @return return map containing metamodel of settings and snapshot
      * @throws LGThinqApiException if some communication error occur.
@@ -222,15 +230,14 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
      * @return A Map containing the device settings
      * @throws LGThinqApiException If an error occurs during handling the device settings result
      */
-    static Map<String, Object> genericHandleDeviceSettingsResult(RestResult resp, ObjectMapper objectMapper)
+    protected Map<String, Object> genericHandleDeviceSettingsResult(RestResult resp, ObjectMapper objectMapper)
             throws LGThinqApiException {
         Map<String, Object> deviceSettings;
         Map<String, String> respMap;
         String resultCode;
         if (resp.getStatusCode() != 200) {
             if (resp.getStatusCode() == 400) {
-                LGThinQAbstractApiClientService.logger.warn(
-                        "Error calling device settings from LG Server API. HTTP Status: {}. The reason is: {}",
+                logger.warn("Error calling device settings from LG Server API. HTTP Status: {}. The reason is: {}",
                         resp.getStatusCode(), ResultCodes.getReasonResponse(resp.getJsonResponse()));
                 throw new LGThinqAccessException(String.format(
                         "Error calling device settings from LG Server API. HTTP Status: %d. The reason is: %s",
@@ -253,7 +260,6 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
             }
             throw new LGThinqApiException(String.format(
                     "Error calling device settings from LG Server API. The reason is:%s", resp.getJsonResponse()));
-
         } else {
             try {
                 deviceSettings = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
@@ -267,7 +273,6 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
             } catch (JsonProcessingException e) {
                 throw new IllegalStateException("Unknown error occurred deserializing json stream", e);
             }
-
         }
         return Objects.requireNonNull((Map<String, Object>) deviceSettings.get("result"),
                 "Unexpected json result asking for Device Settings. Node 'result' no present");
@@ -302,18 +307,9 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
             } catch (JsonProcessingException e) {
                 throw new IllegalStateException("Unknown error occurred deserializing json stream.", e);
             }
-
         }
 
         return devices;
-    }
-
-    protected static String getErrorCodeMessage(@Nullable String code) {
-        if (code == null) {
-            return "";
-        }
-        ResultCodes resultCode = ResultCodes.fromCode(code);
-        return resultCode.getDescription();
     }
 
     /**

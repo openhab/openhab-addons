@@ -80,11 +80,10 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     private final ChannelUID extendedInfoCollectorChannelUID;
     private final ChannelUID currentEnergyConsumptionChannelUID;
     private final ChannelUID remainingFilterChannelUID;
-
-    private double minTempConstraint = 16, maxTempConstraint = 30;
     private final ObjectMapper mapper = new ObjectMapper();
     private final Logger logger = LoggerFactory.getLogger(LGThinQAirConditionerHandler.class);
     private final LGThinQACApiClientService lgThinqACApiClientService;
+    private double minTempConstraint = 16, maxTempConstraint = 30;
 
     public LGThinQAirConditionerHandler(Thing thing, LGThinQStateDescriptionProvider stateDescriptionProvider,
             ItemChannelLinkRegistry itemChannelLinkRegistry, HttpClientFactory httpClientFactory) {
@@ -202,7 +201,6 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 updateState(minTempChannelUID, new DecimalType(BigDecimal.valueOf(minTempConstraint)));
                 updateState(maxTempChannelUID, new DecimalType(BigDecimal.valueOf(maxTempConstraint)));
             }
-
         } catch (LGThinqApiException e) {
             logger.error("Unexpected Error getting ACCapability Capabilities", e);
         } catch (NumberFormatException e) {

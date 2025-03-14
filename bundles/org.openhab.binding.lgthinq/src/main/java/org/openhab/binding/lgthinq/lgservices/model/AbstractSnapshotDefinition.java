@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public abstract class AbstractSnapshotDefinition implements SnapshotDefinition {
 
     protected final Map<String, Object> otherInfo = new HashMap<>();
+    private Map<String, Object> rawData = new HashMap<>();
 
     @JsonAnySetter
     public void addOtherInfo(String propertyKey, Object value) {
@@ -40,8 +41,6 @@ public abstract class AbstractSnapshotDefinition implements SnapshotDefinition {
     public Object getOtherInfo(String propertyKey) {
         return this.otherInfo.get(propertyKey);
     }
-
-    private Map<String, Object> rawData = new HashMap<>();
 
     @JsonIgnore
     public Map<String, Object> getRawData() {

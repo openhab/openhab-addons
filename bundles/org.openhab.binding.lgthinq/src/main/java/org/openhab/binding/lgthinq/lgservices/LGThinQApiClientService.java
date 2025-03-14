@@ -36,7 +36,6 @@ import org.openhab.binding.lgthinq.lgservices.model.SnapshotDefinition;
  *
  * @param <C> The type representing the capability definition for a device.
  * @param <S> The type representing a snapshot definition of device data.
- *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault

@@ -113,10 +113,6 @@ public class ACCapability extends AbstractCapability<ACCapability> {
         this.fanSpeed = fanSpeed;
     }
 
-    public void setJetModeAvailable(boolean jetModeAvailable) {
-        this.isJetModeAvailable = jetModeAvailable;
-    }
-
     public boolean isAutoDryModeAvailable() {
         return isAutoDryModeAvailable;
     }
@@ -143,6 +139,10 @@ public class ACCapability extends AbstractCapability<ACCapability> {
 
     public boolean isJetModeAvailable() {
         return this.isJetModeAvailable;
+    }
+
+    public void setJetModeAvailable(boolean jetModeAvailable) {
+        this.isJetModeAvailable = jetModeAvailable;
     }
 
     public String getAutoDryModeCommandOn() {

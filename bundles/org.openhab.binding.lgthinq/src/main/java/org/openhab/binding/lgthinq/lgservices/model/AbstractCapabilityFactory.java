@@ -39,7 +39,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 @NonNullByDefault
 public abstract class AbstractCapabilityFactory<T extends CapabilityDefinition> {
     protected final ObjectMapper mapper = new ObjectMapper();
-    private static final Logger logger = LoggerFactory.getLogger(AbstractCapabilityFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractCapabilityFactory.class);
 
     public T create(JsonNode rootNode) throws LGThinqException {
         T cap = getCapabilityInstance();
@@ -87,7 +87,7 @@ public abstract class AbstractCapabilityFactory<T extends CapabilityDefinition> 
      * Return constant pointing to MonitoringNode. This node has information about monitoring response description,
      * <b>only present in V1 devices</b>. If some device has different node name for this descriptor, please override
      * it.
-     * 
+     *
      * @return Monitoring node name
      */
     protected String getMonitoringNodeName() {
@@ -123,7 +123,7 @@ public abstract class AbstractCapabilityFactory<T extends CapabilityDefinition> 
 
     /**
      * General method to parse commands for average of V1 Thinq Devices.
-     * 
+     *
      * @param rootNode ControlWifi root node
      * @return return map with commands definition
      */

@@ -136,10 +136,23 @@ public class WasherDryerSnapshot extends AbstractSnapshotDefinition {
         return state;
     }
 
+    public void setState(String state) {
+        this.state = state;
+        if (state.equals(WMD_POWER_OFF_VALUE)) {
+            powerState = DevicePowerState.DV_POWER_OFF;
+        } else {
+            powerState = DevicePowerState.DV_POWER_ON;
+        }
+    }
+
     @JsonProperty("smartCourseFL24inchBaseTitan")
     @JsonAlias({ "smartCourseFL24inchBaseTitan", "SmartCourse" })
     public String getSmartCourse() {
         return smartCourse;
+    }
+
+    public void setSmartCourse(String smartCourse) {
+        this.smartCourse = smartCourse;
     }
 
     @JsonProperty("downloadedCourseFL24inchBaseTitan")
@@ -202,10 +215,6 @@ public class WasherDryerSnapshot extends AbstractSnapshotDefinition {
         this.reserveMinute = reserveMinute;
     }
 
-    public void setSmartCourse(String smartCourse) {
-        this.smartCourse = smartCourse;
-    }
-
     @JsonProperty("temp")
     @JsonAlias({ "WaterTemp" })
     public String getTemperatureLevel() {
@@ -234,15 +243,6 @@ public class WasherDryerSnapshot extends AbstractSnapshotDefinition {
 
     public void setChildLock(String childLock) {
         this.childLock = childLock;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-        if (state.equals(WMD_POWER_OFF_VALUE)) {
-            powerState = DevicePowerState.DV_POWER_OFF;
-        } else {
-            powerState = DevicePowerState.DV_POWER_ON;
-        }
     }
 
     public boolean isRemoteStartEnabled() {

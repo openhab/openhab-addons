@@ -40,6 +40,16 @@ public class WasherDryerSnapshotBuilder extends DefaultSnapshotBuilder<WasherDry
         super(WasherDryerSnapshot.class);
     }
 
+    private static void setAltCourseNodeName(CapabilityDefinition capDef, WasherDryerSnapshot snap,
+            Map<String, Object> washerDryerMap) {
+        if (snap.getCourse().isEmpty() && capDef instanceof WasherDryerCapability capability) {
+            String altCourseNodeName = capability.getDefaultCourseFieldName();
+            String altSmartCourseNodeName = capability.getDefaultSmartCourseFeatName();
+            snap.setCourse(Objects.requireNonNullElse((String) washerDryerMap.get(altCourseNodeName), ""));
+            snap.setSmartCourse(Objects.requireNonNullElse((String) washerDryerMap.get(altSmartCourseNodeName), ""));
+        }
+    }
+
     @Override
     public WasherDryerSnapshot createFromBinary(String binaryData, List<MonitoringBinaryProtocol> prot,
             CapabilityDefinition capDef) throws LGThinqUnmarshallException, LGThinqApiException {
@@ -75,15 +85,15 @@ public class WasherDryerSnapshotBuilder extends DefaultSnapshotBuilder<WasherDry
                         if (type == DeviceTypes.DRYER || type == DeviceTypes.DRYER_TOWER) {
                             throw new IllegalArgumentException("Version 1.0 for Dryer is not supported yet.");
                         } else {
-                            snap = objectMapper.convertValue(snapMap, snapClass);
+                            snap = MAPPER.convertValue(snapMap, snapClass);
                             snap.setRawData(snapMap);
                         }
                     }
                     case V2_0: {
-                        Map<String, Object> washerDryerMap = Objects.requireNonNull(objectMapper
+                        Map<String, Object> washerDryerMap = Objects.requireNonNull(MAPPER
                                 .convertValue(snapMap.get(WMD_SNAPSHOT_WASHER_DRYER_NODE_V2), new TypeReference<>() {
                                 }), "washerDryer node must be present in the snapshot");
-                        snap = Objects.requireNonNull(objectMapper.convertValue(washerDryerMap, snapClass),
+                        snap = Objects.requireNonNull(MAPPER.convertValue(washerDryerMap, snapClass),
                                 "Unexpected null returned from conversion");
                         setAltCourseNodeName(capDef, snap, washerDryerMap);
                         snap.setRawData(washerDryerMap);
@@ -94,18 +104,8 @@ public class WasherDryerSnapshotBuilder extends DefaultSnapshotBuilder<WasherDry
                                 + " are not supported for this builder. It is most likely a bug");
                 }
             default:
-                throw new IllegalStateException(
-                        "Snapshot for device type " + type + " not supported for this builder. It is most likely a bug");
-        }
-    }
-
-    private static void setAltCourseNodeName(CapabilityDefinition capDef, WasherDryerSnapshot snap,
-            Map<String, Object> washerDryerMap) {
-        if (snap.getCourse().isEmpty() && capDef instanceof WasherDryerCapability capability) {
-            String altCourseNodeName = capability.getDefaultCourseFieldName();
-            String altSmartCourseNodeName = capability.getDefaultSmartCourseFeatName();
-            snap.setCourse(Objects.requireNonNullElse((String) washerDryerMap.get(altCourseNodeName), ""));
-            snap.setSmartCourse(Objects.requireNonNullElse((String) washerDryerMap.get(altSmartCourseNodeName), ""));
+                throw new IllegalStateException("Snapshot for device type " + type
+                        + " not supported for this builder. It is most likely a bug");
         }
     }
 }

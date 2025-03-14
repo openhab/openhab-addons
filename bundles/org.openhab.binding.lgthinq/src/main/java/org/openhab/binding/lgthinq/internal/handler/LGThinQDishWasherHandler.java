@@ -46,15 +46,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishWasherCapability, DishWasherSnapshot> {
 
+    public final ChannelGroupUID channelGroupDashboardUID;
     private final LGThinQStateDescriptionProvider stateDescriptionProvider;
     private final ChannelUID courseChannelUID;
     private final ChannelUID remainTimeChannelUID;
     private final ChannelUID stateChannelUID;
     private final ChannelUID processStateChannelUID;
     private final ChannelUID doorLockChannelUID;
-
-    public final ChannelGroupUID channelGroupDashboardUID;
-
     private final Logger logger = LoggerFactory.getLogger(LGThinQDishWasherHandler.class);
 
     private final LGThinQDishWasherApiClientService lgThinqDishWasherApiClientService;

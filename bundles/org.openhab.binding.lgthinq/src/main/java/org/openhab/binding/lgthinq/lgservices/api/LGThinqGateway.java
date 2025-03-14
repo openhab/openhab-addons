@@ -66,6 +66,10 @@ public class LGThinqGateway implements Serializable {
         return empBaseUri;
     }
 
+    public void setEmpBaseUri(String empBaseUri) {
+        this.empBaseUri = empBaseUri;
+    }
+
     public int getAccountVersion() {
         return accountVersion;
     }
@@ -74,52 +78,48 @@ public class LGThinqGateway implements Serializable {
         return apiRootV2;
     }
 
-    public String getAuthBase() {
-        return authBase;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public String getLoginBaseUri() {
-        return loginBaseUri;
-    }
-
-    public String getApiRootV1() {
-        return apiRootV1;
-    }
-
-    public void setEmpBaseUri(String empBaseUri) {
-        this.empBaseUri = empBaseUri;
-    }
-
-    public void setLoginBaseUri(String loginBaseUri) {
-        this.loginBaseUri = loginBaseUri;
-    }
-
-    public void setApiRootV1(String apiRootV1) {
-        this.apiRootV1 = apiRootV1;
-    }
-
     public void setApiRootV2(String apiRootV2) {
         this.apiRootV2 = apiRootV2;
+    }
+
+    public String getAuthBase() {
+        return authBase;
     }
 
     public void setAuthBase(String authBase) {
         this.authBase = authBase;
     }
 
+    public String getLanguage() {
+        return language;
+    }
+
     public void setLanguage(String language) {
         this.language = language;
     }
 
+    public String getCountry() {
+        return country;
+    }
+
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String getLoginBaseUri() {
+        return loginBaseUri;
+    }
+
+    public void setLoginBaseUri(String loginBaseUri) {
+        this.loginBaseUri = loginBaseUri;
+    }
+
+    public String getApiRootV1() {
+        return apiRootV1;
+    }
+
+    public void setApiRootV1(String apiRootV1) {
+        this.apiRootV1 = apiRootV1;
     }
 
     public String getUsername() {

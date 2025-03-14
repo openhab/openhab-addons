@@ -89,10 +89,23 @@ public class DishWasherSnapshot extends AbstractSnapshotDefinition {
         return state;
     }
 
+    public void setState(String state) {
+        this.state = state;
+        if (state.equals(DW_POWER_OFF_VALUE)) {
+            powerState = DevicePowerState.DV_POWER_OFF;
+        } else {
+            powerState = DevicePowerState.DV_POWER_ON;
+        }
+    }
+
     @JsonProperty("smartCourse")
     @JsonAlias({ "SmartCourse" })
     public String getSmartCourse() {
         return smartCourse;
+    }
+
+    public void setSmartCourse(String smartCourse) {
+        this.smartCourse = smartCourse;
     }
 
     @JsonIgnore
@@ -146,10 +159,6 @@ public class DishWasherSnapshot extends AbstractSnapshotDefinition {
         this.reserveMinute = reserveMinute;
     }
 
-    public void setSmartCourse(String smartCourse) {
-        this.smartCourse = smartCourse;
-    }
-
     @JsonProperty("door")
     @JsonAlias({ "Door" })
     public String getDoorLock() {
@@ -158,14 +167,5 @@ public class DishWasherSnapshot extends AbstractSnapshotDefinition {
 
     public void setDoorLock(String doorLock) {
         this.doorLock = doorLock;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-        if (state.equals(DW_POWER_OFF_VALUE)) {
-            powerState = DevicePowerState.DV_POWER_OFF;
-        } else {
-            powerState = DevicePowerState.DV_POWER_ON;
-        }
     }
 }

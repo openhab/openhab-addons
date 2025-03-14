@@ -38,7 +38,7 @@ public abstract class BaseThingWithExtraInfoHandler extends BaseThingHandler {
 
     /**
      * Handle must implement this method to update device's extra information collected to the respective channels.
-     * 
+     *
      * @param energyStateAttributes map containing the key and values collected
      */
     protected void updateExtraInfoStateChannels(Map<String, Object> energyStateAttributes) {
@@ -48,7 +48,7 @@ public abstract class BaseThingWithExtraInfoHandler extends BaseThingHandler {
 
     /**
      * Must be implemented with the code to get energy state if the thing supports it.
-     * 
+     *
      * @return map containing energy state attributes
      */
     protected Map<String, Object> collectExtraInfoState() throws LGThinqException {

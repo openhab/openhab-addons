@@ -94,18 +94,18 @@ public interface CapabilityDefinition {
     DeviceTypes getDeviceType();
 
     /**
-     * Retrieves the LG API version associated with the device.
-     *
-     * @return The {@link LGAPIVerion} of the device.
-     */
-    LGAPIVerion getDeviceVersion();
-
-    /**
      * Sets the device type.
      *
      * @param deviceType The {@link DeviceTypes} to set.
      */
     void setDeviceType(DeviceTypes deviceType);
+
+    /**
+     * Retrieves the LG API version associated with the device.
+     *
+     * @return The {@link LGAPIVerion} of the device.
+     */
+    LGAPIVerion getDeviceVersion();
 
     /**
      * Sets the LG API version associated with the device.
@@ -122,6 +122,13 @@ public interface CapabilityDefinition {
     Map<String, Object> getRawData();
 
     /**
+     * Sets the raw data for the device.
+     *
+     * @param rawData A {@link Map} containing raw data values.
+     */
+    void setRawData(Map<String, Object> rawData);
+
+    /**
      * Retrieves raw data values for each feature of the device.
      *
      * @return A {@link Map} where each key is a feature name and
@@ -133,7 +140,7 @@ public interface CapabilityDefinition {
      * Retrieves the feature definition based on its name from the device's JSON definition.
      * <p>
      * Example (for API v2):
-     * 
+     *
      * <pre>
      * "MonitoringValue": {
      *     "spin": {
@@ -141,7 +148,7 @@ public interface CapabilityDefinition {
      *     }
      * }
      * </pre>
-     * 
+     * <p>
      * Calling {@code getFeatureDefinition("spin")} will return the corresponding
      * {@link FeatureDefinition} object representing the "spin" feature.
      * </p>
@@ -150,11 +157,4 @@ public interface CapabilityDefinition {
      * @return A {@link FeatureDefinition} representing the specified feature.
      */
     FeatureDefinition getFeatureDefinition(String featureName);
-
-    /**
-     * Sets the raw data for the device.
-     *
-     * @param rawData A {@link Map} containing raw data values.
-     */
-    void setRawData(Map<String, Object> rawData);
 }

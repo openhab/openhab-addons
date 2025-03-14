@@ -72,10 +72,9 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
     private final ChannelUID freshAirFilterChannelUID;
     private final ChannelUID waterFilterChannelUID;
     private final ChannelUID tempUnitUID;
-    private String tempUnit = RE_TEMP_UNIT_CELSIUS;
     private final Logger logger = LoggerFactory.getLogger(LGThinQFridgeHandler.class);
-
     private final LGThinQFridgeApiClientService lgThinqFridgeApiClientService;
+    private String tempUnit = RE_TEMP_UNIT_CELSIUS;
 
     public LGThinQFridgeHandler(Thing thing, LGThinQStateDescriptionProvider stateDescriptionProvider,
             ItemChannelLinkRegistry itemChannelLinkRegistry, HttpClientFactory httpClientFactory) {
@@ -172,8 +171,8 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
             return 0;
         }
         // temperature channels are little different. First we need to get the tempUnit in the first snapshot,
-        Map<String, String> convertionMap = getConvertionMap(ch, refCap);
-        String strValue = convertionMap.get(value.toString());
+        Map<String, String> conversionMap = getConversionMap(ch, refCap);
+        String strValue = conversionMap.get(value.toString());
         if (strValue == null) {
             logger.error(
                     "Temperature value informed [{}] can't be converted based on the cap file. It mostly like a bug",
@@ -197,9 +196,9 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
             return 0;
         }
         // temperature channels are little different. First we need to get the tempUnit in the first snapshot,
-        final Map<String, String> convertionMap = getConvertionMap(ch, refCap);
+        final Map<String, String> conversionMap = getConversionMap(ch, refCap);
         final Map<String, String> invertedMap = new HashMap<>();
-        convertionMap.forEach((k, v) -> {
+        conversionMap.forEach((k, v) -> {
             invertedMap.put(v, k);
         });
 
@@ -216,18 +215,18 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
         }
     }
 
-    private Map<String, String> getConvertionMap(ChannelUID ch, FridgeCapability refCap) {
-        Map<String, String> convertionMap;
+    private Map<String, String> getConversionMap(ChannelUID ch, FridgeCapability refCap) {
+        Map<String, String> conversionMap;
         if (fridgeTempChannelUID.equals(ch)) {
-            convertionMap = RE_TEMP_UNIT_FAHRENHEIT.equals(tempUnit) ? refCap.getFridgeTempFMap()
+            conversionMap = RE_TEMP_UNIT_FAHRENHEIT.equals(tempUnit) ? refCap.getFridgeTempFMap()
                     : refCap.getFridgeTempCMap();
         } else if (freezerTempChannelUID.equals(ch)) {
-            convertionMap = RE_TEMP_UNIT_FAHRENHEIT.equals(tempUnit) ? refCap.getFreezerTempFMap()
+            conversionMap = RE_TEMP_UNIT_FAHRENHEIT.equals(tempUnit) ? refCap.getFreezerTempFMap()
                     : refCap.getFreezerTempCMap();
         } else {
             throw new IllegalStateException("Conversion Map Channel temperature not mapped. It's most likely a bug");
         }
-        return convertionMap;
+        return conversionMap;
     }
 
     @Override

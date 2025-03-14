@@ -35,9 +35,23 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @NonNullByDefault
 @SuppressWarnings("unchecked")
 public abstract class AbstractCapability<C extends CapabilityDefinition> implements CapabilityDefinition {
+    final Class<C> realClass;
+    // default result format
+    protected Map<String, Function<C, FeatureDefinition>> featureDefinitionMap = new HashMap<>();
+    protected String modelName = "";
+    protected DeviceTypes deviceType = DeviceTypes.UNKNOWN;
+    protected LGAPIVerion version = LGAPIVerion.UNDEF;
     // Define if the device supports sending setup commands before monitoring
     // This is to control result 400 for some devices that doesn't support or permit setup commands before monitoring
     boolean isBeforeCommandSupporter = true;
+    private MonitoringResultFormat monitoringDataFormat = MonitoringResultFormat.UNKNOWN_FORMAT;
+    private List<MonitoringBinaryProtocol> monitoringBinaryProtocol = new ArrayList<>();
+    private Map<String, Object> rawData = new HashMap<>();
+
+    protected AbstractCapability() {
+        this.realClass = (Class<C>) ((ParameterizedType) Objects.requireNonNull(getClass().getGenericSuperclass()))
+                .getActualTypeArguments()[0];
+    }
 
     public boolean isBeforeCommandSupported() {
         return isBeforeCommandSupporter;
@@ -46,12 +60,6 @@ public abstract class AbstractCapability<C extends CapabilityDefinition> impleme
     public void setBeforeCommandSupported(boolean beforeCommandSupporter) {
         isBeforeCommandSupporter = beforeCommandSupporter;
     }
-
-    // default result format
-    protected Map<String, Function<C, FeatureDefinition>> featureDefinitionMap = new HashMap<>();
-
-    protected String modelName = "";
-    final Class<C> realClass;
 
     @Override
     public String getModelName() {
@@ -62,17 +70,6 @@ public abstract class AbstractCapability<C extends CapabilityDefinition> impleme
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
-
-    protected AbstractCapability() {
-        this.realClass = (Class<C>) ((ParameterizedType) Objects.requireNonNull(getClass().getGenericSuperclass()))
-                .getActualTypeArguments()[0];
-    }
-
-    protected DeviceTypes deviceType = DeviceTypes.UNKNOWN;
-    protected LGAPIVerion version = LGAPIVerion.UNDEF;
-    private MonitoringResultFormat monitoringDataFormat = MonitoringResultFormat.UNKNOWN_FORMAT;
-
-    private List<MonitoringBinaryProtocol> monitoringBinaryProtocol = new ArrayList<>();
 
     @Override
     public MonitoringResultFormat getMonitoringDataFormat() {
@@ -99,18 +96,13 @@ public abstract class AbstractCapability<C extends CapabilityDefinition> impleme
     }
 
     @Override
-    public void setDeviceType(DeviceTypes deviceType) {
-        this.deviceType = deviceType;
-    }
-
-    @Override
-    public void setDeviceVersion(LGAPIVerion version) {
-        this.version = version;
-    }
-
-    @Override
     public DeviceTypes getDeviceType() {
         return deviceType;
+    }
+
+    @Override
+    public void setDeviceType(DeviceTypes deviceType) {
+        this.deviceType = deviceType;
     }
 
     @Override
@@ -118,11 +110,18 @@ public abstract class AbstractCapability<C extends CapabilityDefinition> impleme
         return version;
     }
 
-    private Map<String, Object> rawData = new HashMap<>();
+    @Override
+    public void setDeviceVersion(LGAPIVerion version) {
+        this.version = version;
+    }
 
     @JsonIgnore
     public Map<String, Object> getRawData() {
         return rawData;
+    }
+
+    public void setRawData(Map<String, Object> rawData) {
+        this.rawData = rawData;
     }
 
     public Map<String, Map<String, Object>> getFeatureValuesRawData() {
@@ -136,10 +135,6 @@ public abstract class AbstractCapability<C extends CapabilityDefinition> impleme
             default:
                 throw new IllegalStateException("Invalid version 'UNDEF' to get capability feature monitoring values");
         }
-    }
-
-    public void setRawData(Map<String, Object> rawData) {
-        this.rawData = rawData;
     }
 
     @Override

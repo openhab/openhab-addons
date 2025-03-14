@@ -82,10 +82,18 @@ public class ACCanonicalSnapshot extends AbstractSnapshotDefinition {
         return airWindStrength;
     }
 
+    public void setAirWindStrength(Integer airWindStrength) {
+        this.airWindStrength = airWindStrength;
+    }
+
     @JsonProperty("airState.wMode.jet")
     @JsonAlias("Jet")
     public Double getCoolJetMode() {
         return coolJetMode;
+    }
+
+    public void setCoolJetMode(Double coolJetMode) {
+        this.coolJetMode = coolJetMode;
     }
 
     @JsonProperty("airState.wMode.airClean")
@@ -94,10 +102,18 @@ public class ACCanonicalSnapshot extends AbstractSnapshotDefinition {
         return airCleanMode;
     }
 
+    public void setAirCleanMode(double airCleanMode) {
+        this.airCleanMode = airCleanMode;
+    }
+
     @JsonProperty("airState.miscFuncState.autoDry")
     @JsonAlias("AutoDry")
     public Double getAutoDryMode() {
         return autoDryMode;
+    }
+
+    public void setAutoDryMode(double autoDryMode) {
+        this.autoDryMode = autoDryMode;
     }
 
     @JsonProperty("airState.powerSave.basic")
@@ -106,24 +122,8 @@ public class ACCanonicalSnapshot extends AbstractSnapshotDefinition {
         return energySavingMode;
     }
 
-    public void setAirCleanMode(double airCleanMode) {
-        this.airCleanMode = airCleanMode;
-    }
-
-    public void setAutoDryMode(double autoDryMode) {
-        this.autoDryMode = autoDryMode;
-    }
-
     public void setEnergySavingMode(double energySavingMode) {
         this.energySavingMode = energySavingMode;
-    }
-
-    public void setCoolJetMode(Double coolJetMode) {
-        this.coolJetMode = coolJetMode;
-    }
-
-    public void setAirWindStrength(Integer airWindStrength) {
-        this.airWindStrength = airWindStrength;
     }
 
     @JsonProperty("airState.energy.onCurrent")

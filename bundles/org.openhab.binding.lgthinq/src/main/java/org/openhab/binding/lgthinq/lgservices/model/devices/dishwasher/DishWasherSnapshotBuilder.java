@@ -50,9 +50,9 @@ public class DishWasherSnapshotBuilder extends DefaultSnapshotBuilder<DishWasher
                 throw new IllegalArgumentException("Version 1.0 for DishWasher is not supported yet.");
             case V2_0:
                 Map<String, Object> dishWasher = Objects.requireNonNull(
-                        objectMapper.convertValue(snapMap.get(DW_SNAPSHOT_WASHER_DRYER_NODE_V2), new TypeReference<>() {
+                        MAPPER.convertValue(snapMap.get(DW_SNAPSHOT_WASHER_DRYER_NODE_V2), new TypeReference<>() {
                         }), "dishwasher node must be present in the snapshot");
-                snap = objectMapper.convertValue(dishWasher, snapClass);
+                snap = MAPPER.convertValue(dishWasher, snapClass);
                 snap.setRawData(dishWasher);
                 return snap;
             default:

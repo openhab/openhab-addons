@@ -41,7 +41,7 @@ import com.fasterxml.jackson.databind.node.ValueNode;
  */
 @NonNullByDefault
 public class WasherDryerCapabilityFactoryV2 extends AbstractWasherDryerCapabilityFactory {
-    private static final Logger logger = LoggerFactory.getLogger(WasherDryerCapabilityFactoryV2.class);
+    private final Logger logger = LoggerFactory.getLogger(WasherDryerCapabilityFactoryV2.class);
 
     @Override
     protected List<LGAPIVerion> getSupportedAPIVersions() {
@@ -82,7 +82,6 @@ public class WasherDryerCapabilityFactoryV2 extends AbstractWasherDryerCapabilit
         fd.setDataType(FeatureDataType.ENUM);
         JsonNode valuesMappingNode = featureNode.path("valueMapping");
         if (!valuesMappingNode.isMissingNode()) {
-
             Map<String, String> valuesMapping = new HashMap<>();
             valuesMappingNode.fields().forEachRemaining(e -> {
                 // collect values as:

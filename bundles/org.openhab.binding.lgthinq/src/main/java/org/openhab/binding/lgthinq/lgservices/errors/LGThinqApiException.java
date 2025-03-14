@@ -37,10 +37,6 @@ public class LGThinqApiException extends LGThinqException {
         this.apiReasonCode = reasonCode;
     }
 
-    public ResultCodes getApiReasonCode() {
-        return apiReasonCode;
-    }
-
     public LGThinqApiException(String message) {
         super(message);
     }
@@ -48,5 +44,9 @@ public class LGThinqApiException extends LGThinqException {
     public LGThinqApiException(String message, ResultCodes resultCode) {
         super(message);
         this.apiReasonCode = resultCode;
+    }
+
+    public ResultCodes getApiReasonCode() {
+        return apiReasonCode;
     }
 }

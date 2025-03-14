@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * <p>
  * Usage Example:
- * 
+ *
  * <pre>
  * ResultCodes result = ResultCodes.fromCode("0000");
  * System.out.println(result.getDescription()); // Outputs: "Success"
@@ -209,46 +209,9 @@ public enum ResultCodes {
      */
     public static final Map<String, String> OTHER_ERROR_CODE_RESPONSE = Map
             .ofEntries(Map.entry("0109", "NO_INFORMATION_DR"), Map.entry("0108", "NO_INFORMATION_SLEEP_MODE"));
-
+    private static final ObjectMapper MAPPER = new ObjectMapper();
     private final String description;
     private final List<String> codes;
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-
-    /**
-     * Checks if the result code contains the specified code.
-     *
-     * @param code the error code to check
-     * @return true if the result code contains the specified code, false otherwise
-     */
-    public boolean containsResultCode(String code) {
-        return codes.contains(code);
-    }
-
-    /**
-     * Gets the description of the result code.
-     *
-     * @return the description of the result code
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * Gets the reason response for a given JSON response string.
-     *
-     * @param jsonResponse the JSON response string to process
-     * @return a formatted string containing the result code and its corresponding description
-     */
-    public static String getReasonResponse(String jsonResponse) {
-        try {
-            JsonNode devicesResult = objectMapper.readValue(jsonResponse, new TypeReference<>() {
-            });
-            String resultCode = devicesResult.path("resultCode").asText();
-            return String.format("%s - %s", resultCode, fromCode(resultCode).description);
-        } catch (JsonProcessingException e) {
-            return "";
-        }
-    }
 
     /**
      * Constructor for the enum. Initializes the description and associated error codes.
@@ -259,6 +222,23 @@ public enum ResultCodes {
     ResultCodes(String description, String... codes) {
         this.codes = Arrays.asList(codes);
         this.description = description;
+    }
+
+    /**
+     * Gets the reason response for a given JSON response string.
+     *
+     * @param jsonResponse the JSON response string to process
+     * @return a formatted string containing the result code and its corresponding description
+     */
+    public static String getReasonResponse(String jsonResponse) {
+        try {
+            JsonNode devicesResult = MAPPER.readValue(jsonResponse, new TypeReference<>() {
+            });
+            String resultCode = devicesResult.path("resultCode").asText();
+            return String.format("%s - %s", resultCode, fromCode(resultCode).description);
+        } catch (JsonProcessingException e) {
+            return "";
+        }
     }
 
     /**
@@ -303,5 +283,24 @@ public enum ResultCodes {
                 yield UNKNOWN;
             }
         };
+    }
+
+    /**
+     * Checks if the result code contains the specified code.
+     *
+     * @param code the error code to check
+     * @return true if the result code contains the specified code, false otherwise
+     */
+    public boolean containsResultCode(String code) {
+        return codes.contains(code);
+    }
+
+    /**
+     * Gets the description of the result code.
+     *
+     * @return the description of the result code
+     */
+    public String getDescription() {
+        return description;
     }
 }

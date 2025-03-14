@@ -46,8 +46,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 @NonNullByDefault
 public class CapabilityFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(CapabilityFactory.class);
-
+    /**
+     * Singleton instance of {@code CapabilityFactory}.
+     */
+    private static final CapabilityFactory INSTANCE = new CapabilityFactory();
+    private final Logger logger = LoggerFactory.getLogger(CapabilityFactory.class);
     /**
      * A map that associates device types with their corresponding capability factories
      * based on the API version.
@@ -81,16 +84,13 @@ public class CapabilityFactory {
         });
     }
 
-    /** Singleton instance of {@code CapabilityFactory}. */
-    private static final CapabilityFactory instance = new CapabilityFactory();
-
     /**
      * Retrieves the singleton instance of {@link CapabilityFactory}.
      *
      * @return The singleton instance.
      */
     public static CapabilityFactory getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     /**

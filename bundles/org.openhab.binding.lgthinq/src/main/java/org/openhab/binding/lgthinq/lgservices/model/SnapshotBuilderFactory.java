@@ -32,18 +32,19 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDr
  */
 @NonNullByDefault
 public class SnapshotBuilderFactory {
-    private final Map<Class<? extends SnapshotDefinition>, SnapshotBuilder<? extends SnapshotDefinition>> internalBuilders = new HashMap<>();
+    private static final SnapshotBuilderFactory INSTANCE;
 
-    private static final SnapshotBuilderFactory instance;
     static {
-        instance = new SnapshotBuilderFactory();
+        INSTANCE = new SnapshotBuilderFactory();
     }
+
+    private final Map<Class<? extends SnapshotDefinition>, SnapshotBuilder<? extends SnapshotDefinition>> internalBuilders = new HashMap<>();
 
     private SnapshotBuilderFactory() {
     }
 
     public static SnapshotBuilderFactory getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     public SnapshotBuilder<? extends SnapshotDefinition> getBuilder(Class<? extends SnapshotDefinition> snapDef) {

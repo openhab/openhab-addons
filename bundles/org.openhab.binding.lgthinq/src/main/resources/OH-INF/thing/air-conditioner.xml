@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="lgthinq"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+<thing:thing-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" bindingId="lgthinq"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- LG Device Type relative to Air Conditioners -->
@@ -25,7 +24,8 @@
 			</parameter-group>
 			<parameter name="pollingPeriodPowerOffSeconds" type="integer" min="10" required="true" groupName="Settings">
 				<label>Polling When Off</label>
-				<description>Seconds to wait to the next polling when device is off. Useful to save up i/o and cpu when your device
+				<description>Seconds to wait to the next polling when device is off. Useful to save up i/o and cpu when
+					your device
 					is not working. If you use only this binding to control the device, you can put higher values here.
 				</description>
 				<default>10</default>

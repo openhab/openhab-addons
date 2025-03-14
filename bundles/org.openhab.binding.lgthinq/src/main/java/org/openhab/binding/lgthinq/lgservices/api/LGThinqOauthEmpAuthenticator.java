@@ -50,25 +50,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @NonNullByDefault
 public class LGThinqOauthEmpAuthenticator {
 
-    private static final Logger logger = LoggerFactory.getLogger(LGThinqOauthEmpAuthenticator.class);
-    private static final Map<String, String> oauthSearchKeyQueryParams = new LinkedHashMap<>();
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final Map<String, String> OAUTH_SEARCH_KEY_QUERY_PARAMS = new LinkedHashMap<>();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     static {
-        oauthSearchKeyQueryParams.put("key_name", "OAUTH_SECRETKEY");
-        oauthSearchKeyQueryParams.put("sever_type", "OP");
+        OAUTH_SEARCH_KEY_QUERY_PARAMS.put("key_name", "OAUTH_SECRETKEY");
+        OAUTH_SEARCH_KEY_QUERY_PARAMS.put("sever_type", "OP");
     }
 
+    private final Logger logger = LoggerFactory.getLogger(LGThinqOauthEmpAuthenticator.class);
     private final HttpClient httpClient;
 
     public LGThinqOauthEmpAuthenticator(HttpClient httpClient) {
         this.httpClient = httpClient;
-    }
-
-    record PreLoginResult(String username, String signature, String timestamp, String encryptedPwd) {
-    }
-
-    record LoginAccountResult(String userIdType, String userId, String country, String loginSessionId) {
     }
 
     private Map<String, String> getGatewayRestHeader(String language, String country) {
@@ -145,7 +139,7 @@ public class LGThinqOauthEmpAuthenticator {
                     String.format("Error preLogin into account: The reason is: %s", resp.getJsonResponse()));
         }
 
-        Map<String, String> preLoginResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
+        Map<String, String> preLoginResult = MAPPER.readValue(resp.getJsonResponse(), new TypeReference<>() {
         });
         logger.debug("encrypted_pw={}, signature={}, tStamp={}", preLoginResult.get("encrypted_pw"),
                 preLoginResult.get("signature"), preLoginResult.get("tStamp"));
@@ -165,7 +159,7 @@ public class LGThinqOauthEmpAuthenticator {
         headers.put("X-Timestamp", preLoginResult.timestamp());
         Map<String, String> formData = Map.of("user_auth2", preLoginResult.encryptedPwd(),
                 "password_hash_prameter_flag", "Y", "svc_list", "SVC202,SVC710"); // SVC202=LG SmartHome, SVC710=EMP
-                                                                                  // OAuth
+        // OAuth
         String loginUrl = gw.getEmpBaseUri() + LG_API_V2_SESSION_LOGIN_PATH
                 + URLEncoder.encode(preLoginResult.username(), StandardCharsets.UTF_8);
         RestResult resp = RestUtils.postCall(httpClient, loginUrl, headers, formData);
@@ -175,7 +169,7 @@ public class LGThinqOauthEmpAuthenticator {
             throw new IllegalStateException(
                     String.format("Error login into account. The reason is: %s", resp.getJsonResponse()));
         }
-        Map<String, Object> loginResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
+        Map<String, Object> loginResult = MAPPER.readValue(resp.getJsonResponse(), new TypeReference<>() {
         });
         @SuppressWarnings("unchecked")
         Map<String, String> accountResult = (Map<String, String>) loginResult.get("account");
@@ -203,12 +197,12 @@ public class LGThinqOauthEmpAuthenticator {
         // 3 - get secret key from emp signature
         String empSearchKeyUrl = gw.getLoginBaseUri() + LG_API_OAUTH_SEARCH_KEY_PATH;
 
-        RestResult resp = RestUtils.getCall(httpClient, empSearchKeyUrl, null, oauthSearchKeyQueryParams);
+        RestResult resp = RestUtils.getCall(httpClient, empSearchKeyUrl, null, OAUTH_SEARCH_KEY_QUERY_PARAMS);
         if (resp.getStatusCode() != 200) {
             throw new IllegalStateException(
                     String.format("Error loggin into acccount. The reason is:%s", resp.getJsonResponse()));
         }
-        Map<String, String> secretResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
+        Map<String, String> secretResult = MAPPER.readValue(resp.getJsonResponse(), new TypeReference<>() {
         });
         String secretKey = Objects.requireNonNull(secretResult.get("returnData"),
                 "Unexpected json returned. Expected 'returnData' node here");
@@ -267,7 +261,7 @@ public class LGThinqOauthEmpAuthenticator {
     }
 
     private UserInfo handleAccountInfoResult(RestResult resp) throws IOException {
-        Map<String, Object> result = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
+        Map<String, Object> result = MAPPER.readValue(resp.getJsonResponse(), new TypeReference<>() {
         });
         if (resp.getStatusCode() != 200) {
             throw new IllegalStateException(
@@ -318,7 +312,7 @@ public class LGThinqOauthEmpAuthenticator {
                     String.format("Error getting oauth token. HTTP Status Code is:%s, The reason is:%s",
                             resp.getStatusCode(), resp.getJsonResponse()));
         } else {
-            tokenResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
+            tokenResult = MAPPER.readValue(resp.getJsonResponse(), new TypeReference<>() {
             });
             Integer status = (Integer) tokenResult.get("status");
             if ((status != null && !"1".equals("" + status)) || tokenResult.get("expires_in") == null) {
@@ -348,7 +342,7 @@ public class LGThinqOauthEmpAuthenticator {
                     String.format("Error getting oauth token. HTTP Status Code is:%s, The reason is:%s",
                             resp.getStatusCode(), resp.getJsonResponse()));
         } else {
-            tokenResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
+            tokenResult = MAPPER.readValue(resp.getJsonResponse(), new TypeReference<>() {
             });
             if (tokenResult.get("access_token") == null || tokenResult.get("expires_in") == null) {
                 throw new RefreshTokenException(String.format("Status error get refresh token info:%s", tokenResult));
@@ -361,5 +355,11 @@ public class LGThinqOauthEmpAuthenticator {
         currentToken.setExpiresIn(Integer.parseInt(Objects.requireNonNull(tokenResult.get("expires_in"),
                 "Unexpected error. Access Token must ever been provided by LG API")));
         return currentToken;
+    }
+
+    record PreLoginResult(String username, String signature, String timestamp, String encryptedPwd) {
+    }
+
+    record LoginAccountResult(String userIdType, String userId, String country, String loginSessionId) {
     }
 }

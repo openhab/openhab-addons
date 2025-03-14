@@ -75,18 +75,26 @@ import org.slf4j.Logger;
 @NonNullByDefault
 public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends CapabilityDefinition, @NonNull S extends SnapshotDefinition>
         extends BaseThingWithExtraInfoHandler {
-    protected @Nullable LGThinQBridgeHandler account;
+    // Bridges status that this thing must top scanning for state change
+    private static final Set<ThingStatusDetail> BRIDGE_STATUS_DETAIL_ERROR = Set.of(ThingStatusDetail.BRIDGE_OFFLINE,
+            ThingStatusDetail.BRIDGE_UNINITIALIZED, ThingStatusDetail.COMMUNICATION_ERROR,
+            ThingStatusDetail.CONFIGURATION_ERROR);
     protected final String lgPlatformType;
-    private S lastShot;
     protected final ItemChannelLinkRegistry itemChannelLinkRegistry;
+    protected final LinkedBlockingQueue<AsyncCommandParams> commandBlockQueue = new LinkedBlockingQueue<>(30);
+    protected final LGThinQStateDescriptionProvider stateDescriptionProvider;
+    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
+    private final ScheduledExecutorService pollingScheduler = Executors.newScheduledThreadPool(1);
+    protected @Nullable LGThinQBridgeHandler account;
     @Nullable
     protected C thinQCapability;
+    private S lastShot;
     private @Nullable Future<?> commandExecutorQueueJob;
-    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
     private @Nullable ScheduledFuture<?> thingStatePollingJob;
     private @Nullable ScheduledFuture<?> extraInfoCollectorPollingJob;
-    private final ScheduledExecutorService pollingScheduler = Executors.newScheduledThreadPool(1);
-    /** Defined in the configurations of the thing. */
+    /**
+     * Defined in the configurations of the thing.
+     */
     private int pollingPeriodOnSeconds = 10;
     private int pollingPeriodOffSeconds = 10;
     private int currentPeriodSeconds = 10;
@@ -96,28 +104,50 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     private boolean monitorV1Began = false;
     private boolean isThingReconfigured = false;
     private String monitorWorkId = "";
-    protected final LinkedBlockingQueue<AsyncCommandParams> commandBlockQueue = new LinkedBlockingQueue<>(30);
     private String bridgeId = "";
     private ThingStatus lastThingStatus = ThingStatus.UNKNOWN;
-    // Bridges status that this thing must top scanning for state change
-    private static final Set<ThingStatusDetail> BRIDGE_STATUS_DETAIL_ERROR = Set.of(ThingStatusDetail.BRIDGE_OFFLINE,
-            ThingStatusDetail.BRIDGE_UNINITIALIZED, ThingStatusDetail.COMMUNICATION_ERROR,
-            ThingStatusDetail.CONFIGURATION_ERROR);
+    private final Runnable queuedCommandExecutor = () -> {
+        while (true) {
+            AsyncCommandParams params;
+            try {
+                params = commandBlockQueue.take();
+            } catch (InterruptedException e) {
+                getLogger().debug("Interrupting async command queue executor.");
+                return;
+            }
 
-    protected final LGThinQStateDescriptionProvider stateDescriptionProvider;
-
-    protected S getLastShot() {
-        return Objects.requireNonNull(lastShot, "LastShot shouldn't be null. It is most likely a bug.");
-    }
-
-    @SuppressWarnings("unchecked")
-    public Class<S> getSnapshotClass() {
-        ParameterizedType genSupClass = (ParameterizedType) getClass().getGenericSuperclass();
-        if (genSupClass == null) {
-            throw new IllegalStateException("Snapshot class has no parameterized type. It is most likely a bug!");
+            try {
+                processCommand(params);
+                String channelUid = getSimpleChannelUID(params.channelUID);
+                if (CHANNEL_AC_POWER_ID.equals(channelUid)) {
+                    // if processed command come from POWER channel, then force updateDeviceChannels immediatly
+                    // this is importante to analise if the poolings need to be changed in time.
+                    updateThingStateFromLG();
+                } else if (CHANNEL_EXTENDED_INFO_COLLECTOR_ID.equals(channelUid)) {
+                    if (OnOffType.ON.equals(params.command)) {
+                        getLogger().debug("Turning ON extended information collector");
+                        if (pollExtraInfoOnPowerOff
+                                || DevicePowerState.DV_POWER_ON.equals(getLastShot().getPowerStatus())) {
+                            startExtraInfoCollectorPolling();
+                        }
+                    } else if (OnOffType.OFF.equals(params.command)) {
+                        getLogger().debug("Turning OFF extended information collector");
+                        stopExtraInfoCollectorPolling();
+                    } else {
+                        getLogger().error("Command {} for {} channel is unexpected. It's most likely a bug",
+                                params.command, CHANNEL_EXTENDED_INFO_COLLECTOR_ID);
+                    }
+                }
+            } catch (LGThinqException e) {
+                getLogger().error("Error executing Command {} to the channel {}. Thing goes offline until retry",
+                        params.command, params.channelUID, e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (Exception e) {
+                getLogger().error("System error executing Command {} to the channel {}. Ignoring command",
+                        params.command, params.channelUID, e);
+            }
         }
-        return (Class<S>) genSupClass.getActualTypeArguments()[1];
-    }
+    };
 
     public LGThinQAbstractDeviceHandler(Thing thing, LGThinQStateDescriptionProvider stateDescriptionProvider,
             ItemChannelLinkRegistry itemChannelLinkRegistry) {
@@ -137,6 +167,19 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         }
     }
 
+    protected S getLastShot() {
+        return Objects.requireNonNull(lastShot, "LastShot shouldn't be null. It is most likely a bug.");
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<S> getSnapshotClass() {
+        ParameterizedType genSupClass = (ParameterizedType) getClass().getGenericSuperclass();
+        if (genSupClass == null) {
+            throw new IllegalStateException("Snapshot class has no parameterized type. It is most likely a bug!");
+        }
+        return (Class<S>) genSupClass.getActualTypeArguments()[1];
+    }
+
     private LGThinQBridgeHandler getAccountBridgeHandler() {
         return Objects.requireNonNull(this.account, "BridgeHandler not initialized. It is most likely a bug");
     }
@@ -147,16 +190,6 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 thing.setProperty(p, (String) thing.getConfiguration().get(p));
             }
         });
-    }
-
-    protected static class AsyncCommandParams {
-        final String channelUID;
-        final Command command;
-
-        public AsyncCommandParams(String channelUUID, Command command) {
-            this.channelUID = channelUUID;
-            this.command = command;
-        }
     }
 
     /**
@@ -225,7 +258,6 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 stopThingStatePolling();
                 stopExtraInfoCollectorPolling();
             }
-
         }
         lastThingStatus = newStatus;
     }
@@ -250,7 +282,6 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 getLogger().warn(
                         "Device's command queue reached the size limit. Probably the device is busy or stuck. Ignoring command.");
                 if (getLogger().isDebugEnabled()) {
-
                     Future<?> commandExecutorQueueJob = this.commandExecutorQueueJob;
                     getLogger().debug("Status of the commandQueue: consumer: {}, size: {}",
                             commandExecutorQueueJob == null || commandExecutorQueueJob.isDone() ? "OFF" : "ON",
@@ -269,7 +300,6 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Device Command Queue is Busy");
             }
-
         }
     }
 
@@ -303,7 +333,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
 
     /**
      * Get the first item value associated to the channel
-     * 
+     *
      * @param channelUID channel
      * @return value of the first item related to this channel.
      */
@@ -403,21 +433,18 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
 
     private void loadConfigurations() {
         isThingReconfigured = true;
-        if (getThing().getConfiguration().containsKey("pollingPeriodPowerOnSeconds")) {
-            pollingPeriodOnSeconds = ((BigDecimal) getThing().getConfiguration().get("pollingPeriodPowerOnSeconds"))
-                    .intValue();
-        }
-        if (getThing().getConfiguration().containsKey("pollingPeriodPowerOffSeconds")) {
-            pollingPeriodOffSeconds = ((BigDecimal) getThing().getConfiguration().get("pollingPeriodPowerOffSeconds"))
-                    .intValue();
-        }
-        if (getThing().getConfiguration().containsKey("pollingExtraInfoPeriodSeconds")) {
-            pollingExtraInfoPeriodSeconds = ((BigDecimal) getThing().getConfiguration()
-                    .get("pollingExtraInfoPeriodSeconds")).intValue();
-        }
-        if (getThing().getConfiguration().containsKey("pollExtraInfoOnPowerOff")) {
-            pollExtraInfoOnPowerOff = (Boolean) getThing().getConfiguration().get("pollExtraInfoOnPowerOff");
-        }
+        Map<String, Object> props = getThing().getConfiguration().getProperties();
+        pollingPeriodOnSeconds = (props.get(CFG_POLLING_PERIOD_POWER_ON_SEC) instanceof BigDecimal value)
+                ? value.intValue()
+                : pollingPeriodOnSeconds;
+        pollingPeriodOffSeconds = (props.get(CFG_POLLING_PERIOD_POWER_OFF_SEC) instanceof BigDecimal value)
+                ? value.intValue()
+                : pollingPeriodOffSeconds;
+        pollingExtraInfoPeriodSeconds = (props.get(CFG_POLLING_EXTRA_INFO_PERIOD_SEC) instanceof BigDecimal value)
+                ? value.intValue()
+                : pollingExtraInfoPeriodSeconds;
+        pollExtraInfoOnPowerOff = (props.get(CFG_POLLING_EXTRA_INFO_ON_POWER_OFF) instanceof Boolean value) ? value
+                : pollExtraInfoOnPowerOff;
         // if the periods are the same, I can define currentPeriod for polling right now. If not, I postpone to the nest
         // snapshot update
         if (pollingPeriodOffSeconds == pollingPeriodOnSeconds) {
@@ -434,7 +461,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
 
     /**
      * Determine if the Handle for this device supports Energy State Collector
-     * 
+     *
      * @return always false and must be overridden if the implemented handler supports energy collector
      */
     protected boolean isExtraInfoCollectorSupported() {
@@ -445,18 +472,11 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
      * Returns if the energy collector is enabled. The handle that supports energy collection must
      * provide a logic that defines if the collector is currently enabled. Normally, it uses a Switch Channel
      * to provide a way to the user turn on/off the collector.
-     * 
+     *
      * @return true if the energyCollector must be enabled.
      */
     protected boolean isExtraInfoCollectorEnabled() {
         return false;
-    }
-
-    private class UpdateExtraInfoCollector implements Runnable {
-        @Override
-        public void run() {
-            updateExtraInfoState();
-        }
     }
 
     private void updateExtraInfoState() {
@@ -472,13 +492,6 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             getLogger().error(
                     "Error getting energy state and update the correlated channels. DeviceName: {}, DeviceId: {}. Error: {}",
                     getDeviceAlias(), getDeviceId(), ex.getMessage(), ex);
-        }
-    }
-
-    private class UpdateThingStateFromLG implements Runnable {
-        @Override
-        public void run() {
-            updateThingStateFromLG();
         }
     }
 
@@ -501,10 +514,10 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             } else {
                 // do not update channels if the device is offline
                 updateDeviceChannelsWrapper(shot);
-                if (getThing().getStatus() != ThingStatus.ONLINE)
+                if (getThing().getStatus() != ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
+                }
             }
-
         } catch (LGThinqAccessException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (LGThinqApiExhaustionException e) {
@@ -652,7 +665,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         return bridgeId;
     }
 
-    abstract protected DeviceTypes getDeviceType();
+    protected abstract DeviceTypes getDeviceType();
 
     @Nullable
     protected S getSnapshotDeviceAdapter(String deviceId) throws LGThinqApiException, LGThinqApiExhaustionException {
@@ -689,7 +702,6 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                     }
                     Thread.sleep(500);
                     retries--;
-
                 }
             } catch (LGThinqDeviceV1MonitorExpiredException | LGThinqUnmarshallException e) {
                 getLogger().debug("Monitor for device {} is invalid. Forcing stop and start to next cycle.", deviceId);
@@ -715,49 +727,6 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         return queuedCommandExecutor;
     }
 
-    private final Runnable queuedCommandExecutor = () -> {
-        while (true) {
-            AsyncCommandParams params;
-            try {
-                params = commandBlockQueue.take();
-            } catch (InterruptedException e) {
-                getLogger().debug("Interrupting async command queue executor.");
-                return;
-            }
-
-            try {
-                processCommand(params);
-                String channelUid = getSimpleChannelUID(params.channelUID);
-                if (CHANNEL_AC_POWER_ID.equals(channelUid)) {
-                    // if processed command come from POWER channel, then force updateDeviceChannels immediatly
-                    // this is importante to analise if the poolings need to be changed in time.
-                    updateThingStateFromLG();
-                } else if (CHANNEL_EXTENDED_INFO_COLLECTOR_ID.equals(channelUid)) {
-                    if (OnOffType.ON.equals(params.command)) {
-                        getLogger().debug("Turning ON extended information collector");
-                        if (pollExtraInfoOnPowerOff
-                                || DevicePowerState.DV_POWER_ON.equals(getLastShot().getPowerStatus())) {
-                            startExtraInfoCollectorPolling();
-                        }
-                    } else if (OnOffType.OFF.equals(params.command)) {
-                        getLogger().debug("Turning OFF extended information collector");
-                        stopExtraInfoCollectorPolling();
-                    } else {
-                        getLogger().error("Command {} for {} channel is unexpected. It's most likely a bug",
-                                params.command, CHANNEL_EXTENDED_INFO_COLLECTOR_ID);
-                    }
-                }
-            } catch (LGThinqException e) {
-                getLogger().error("Error executing Command {} to the channel {}. Thing goes offline until retry",
-                        params.command, params.channelUID, e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            } catch (Exception e) {
-                getLogger().error("System error executing Command {} to the channel {}. Ignoring command",
-                        params.command, params.channelUID, e);
-            }
-        }
-    };
-
     @Override
     public void dispose() {
         getLogger().debug("Disposing Thinq Thing {}", getDeviceId());
@@ -781,7 +750,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     /**
      * Create Dynamic channel. The channel type <b>must be pre-defined in the thing definition (xml) and with
      * the same name as the channel.</b>
-     * 
+     *
      * @param channelNameAndTypeName channel name to be created and the same channel type name defined in the channels
      *            descriptor
      * @param channelUuid Uid of the channel
@@ -809,6 +778,30 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             createDynChannel(channelName, channelUid, itemType);
         } else if (chan != null && (!isFeatureAvailable)) {
             updateThing(editThing().withoutChannel(chan.getUID()).build());
+        }
+    }
+
+    protected static class AsyncCommandParams {
+        final String channelUID;
+        final Command command;
+
+        public AsyncCommandParams(String channelUUID, Command command) {
+            this.channelUID = channelUUID;
+            this.command = command;
+        }
+    }
+
+    private class UpdateExtraInfoCollector implements Runnable {
+        @Override
+        public void run() {
+            updateExtraInfoState();
+        }
+    }
+
+    private class UpdateThingStateFromLG implements Runnable {
+        @Override
+        public void run() {
+            updateThingStateFromLG();
         }
     }
 }

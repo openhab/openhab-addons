@@ -34,16 +34,16 @@ public class CourseDefinition {
         return courseName;
     }
 
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
+
     public String getBaseCourseName() {
         return baseCourseName;
     }
 
     public void setBaseCourseName(String baseCourseName) {
         this.baseCourseName = baseCourseName;
-    }
-
-    public void setCourseName(String courseName) {
-        this.courseName = courseName;
     }
 
     public CourseType getCourseType() {

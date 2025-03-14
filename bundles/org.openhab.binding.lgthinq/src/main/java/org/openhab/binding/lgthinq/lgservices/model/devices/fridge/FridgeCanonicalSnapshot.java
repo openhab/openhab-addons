@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * This map the snapshot result from Washing Machine devices
  * This json payload come with path: snapshot->fridge, but this POJO expects
  * to map field below washerDryer
- * 
+ *
  * @author Nemer Daud - Initial contribution
  * @author Arne Seime - Complementary sensors
  */
@@ -83,6 +83,10 @@ public class FridgeCanonicalSnapshot extends AbstractFridgeSnapshot {
         return tempUnit;
     }
 
+    public void setTempUnit(String tempUnit) {
+        this.tempUnit = tempUnit;
+    }
+
     private String getStrTempWithUnit(Double temp) {
         return temp.intValue() + (RE_TEMP_UNIT_CELSIUS.equals(tempUnit) ? " " + RE_TEMP_UNIT_CELSIUS_SYMBOL
                 : (RE_TEMP_UNIT_FAHRENHEIT).equals(tempUnit) ? " " + RE_TEMP_UNIT_FAHRENHEIT_SYMBOL : "");
@@ -98,10 +102,6 @@ public class FridgeCanonicalSnapshot extends AbstractFridgeSnapshot {
     @JsonIgnore
     public String getFreezerStrTemp() {
         return getStrTempWithUnit(getFreezerTemp());
-    }
-
-    public void setTempUnit(String tempUnit) {
-        this.tempUnit = tempUnit;
     }
 
     @JsonAlias({ "TempRefrigerator" })
@@ -139,14 +139,14 @@ public class FridgeCanonicalSnapshot extends AbstractFridgeSnapshot {
         return waterFilterUsedMonth;
     }
 
+    public void setWaterFilterUsedMonth(String waterFilterUsedMonth) {
+        this.waterFilterUsedMonth = waterFilterUsedMonth;
+    }
+
     @JsonAlias({ "FreshAirFilter" })
     @JsonProperty("freshAirFilter")
     public String getFreshAirFilterState() {
         return freshAirFilterState;
-    }
-
-    public void setWaterFilterUsedMonth(String waterFilterUsedMonth) {
-        this.waterFilterUsedMonth = waterFilterUsedMonth;
     }
 
     public void setFreshAirFilterState(String freshAirFilterState) {

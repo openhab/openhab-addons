@@ -60,36 +60,36 @@ public class TokenResult implements Serializable {
         return accessToken;
     }
 
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public int getExpiresIn() {
-        return expiresIn;
-    }
-
-    public Date getGeneratedTime() {
-        return generatedTime;
-    }
-
-    public String getOauthBackendUrl() {
-        return oauthBackendUrl;
-    }
-
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
     }
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
 
+    public int getExpiresIn() {
+        return expiresIn;
+    }
+
     public void setExpiresIn(int expiresIn) {
         this.expiresIn = expiresIn;
     }
 
+    public Date getGeneratedTime() {
+        return generatedTime;
+    }
+
     public void setGeneratedTime(Date generatedTime) {
         this.generatedTime = generatedTime;
+    }
+
+    public String getOauthBackendUrl() {
+        return oauthBackendUrl;
     }
 
     public void setOauthBackendUrl(String ouathBackendUrl) {

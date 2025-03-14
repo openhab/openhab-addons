@@ -45,7 +45,7 @@ public class ACSnapshotBuilder extends DefaultSnapshotBuilder<ACCanonicalSnapsho
         switch (capDef.getDeviceType()) {
             case AIR_CONDITIONER:
             case HEAT_PUMP:
-                snap = objectMapper.convertValue(snapMap, snapClass);
+                snap = MAPPER.convertValue(snapMap, snapClass);
                 snap.setRawData(snapMap);
                 return snap;
             default:

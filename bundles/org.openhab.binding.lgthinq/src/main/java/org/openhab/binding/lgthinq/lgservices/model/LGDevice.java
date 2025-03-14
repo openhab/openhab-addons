@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Class representing an LG device with various properties such as model name, device type, alias, device ID, platform
  * type, online status, and more.
- * 
+ *
  * @author Nemer Daud - Initial contribution
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -41,13 +41,13 @@ public class LGDevice {
         return modelName;
     }
 
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
+    }
+
     @JsonIgnore
     public DeviceTypes getDeviceType() {
         return DeviceTypes.fromDeviceTypeId(deviceTypeId, deviceCode);
-    }
-
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
     }
 
     public int getDeviceTypeId() {

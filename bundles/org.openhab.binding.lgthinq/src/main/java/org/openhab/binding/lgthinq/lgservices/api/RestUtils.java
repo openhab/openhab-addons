@@ -51,14 +51,14 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RestUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(RestUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RestUtils.class);
 
     public static String getPreLoginEncPwd(String pwdToEnc) {
         MessageDigest digest;
         try {
             digest = MessageDigest.getInstance(MESSAGE_DIGEST_ALGORITHM);
         } catch (NoSuchAlgorithmException e) {
-            logger.warn("The required algorithm is not available.", e);
+            LOGGER.warn("The required algorithm is not available.", e);
             throw new IllegalStateException("Unexpected error. SHA-512 algorithm must exists in JDK distribution", e);
         }
         digest.reset();
@@ -76,10 +76,10 @@ public class RestUtils {
             mac.init(signingKey);
             return Base64.getEncoder().encode(mac.doFinal(messageSign.getBytes(StandardCharsets.UTF_8)));
         } catch (NoSuchAlgorithmException e) {
-            logger.debug("Unexpected error. SHA1 algorithm must exists in JDK distribution.", e);
+            LOGGER.debug("Unexpected error. SHA1 algorithm must exists in JDK distribution.", e);
             throw new IllegalStateException("Unexpected error. SHA1 algorithm must exists in JDK distribution", e);
         } catch (InvalidKeyException e) {
-            logger.debug("Unexpected error.", e);
+            LOGGER.debug("Unexpected error.", e);
             throw new IllegalStateException("Unexpected error.", e);
         }
     }
@@ -97,7 +97,6 @@ public class RestUtils {
 
     public static RestResult getCall(HttpClient httpClient, String encodedUrl, @Nullable Map<String, String> headers,
             @Nullable Map<String, String> params) {
-
         Request request = httpClient.newRequest(encodedUrl).method("GET");
         if (params != null) {
             params.forEach(request::param);
@@ -106,17 +105,17 @@ public class RestUtils {
             headers.forEach(request::header);
         }
 
-        if (logger.isTraceEnabled()) {
-            logger.trace("GET request: {}", request.getURI());
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("GET request: {}", request.getURI());
         }
         try {
             ContentResponse response = request.send();
 
-            logger.trace("GET response: {}", response.getContentAsString());
+            LOGGER.trace("GET response: {}", response.getContentAsString());
 
             return new RestResult(response.getContentAsString(), response.getStatus());
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("Exception occurred during GET execution: {}", e.getMessage(), e);
+            LOGGER.debug("Exception occurred during GET execution: {}", e.getMessage(), e);
             throw new CommunicationException(e);
         }
     }
@@ -138,22 +137,21 @@ public class RestUtils {
     @Nullable
     private static RestResult postCall(HttpClient httpClient, String encodedUrl, Map<String, String> headers,
             ContentProvider contentProvider) {
-
         try {
             Request request = httpClient.newRequest(encodedUrl).method("POST").content(contentProvider).timeout(10,
                     TimeUnit.SECONDS);
             headers.forEach(request::header);
-            logger.trace("POST request to URI: {}", request.getURI());
+            LOGGER.trace("POST request to URI: {}", request.getURI());
 
             ContentResponse response = request.content(contentProvider).timeout(10, TimeUnit.SECONDS).send();
 
-            logger.trace("POST response: {}", response.getContentAsString());
+            LOGGER.trace("POST response: {}", response.getContentAsString());
 
             return new RestResult(response.getContentAsString(), response.getStatus());
         } catch (TimeoutException e) {
-            logger.warn("Timeout reading post call result from LG API", e); // In SocketTimeout cases I'm considering
-                                                                            // that I have no response on time. Then, I
-                                                                            // return null data
+            LOGGER.warn("Timeout reading post call result from LG API", e); // In SocketTimeout cases I'm considering
+            // that I have no response on time. Then, I
+            // return null data
             // forcing caller to retry.
             return null;
         } catch (InterruptedException e) {

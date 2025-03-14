@@ -54,7 +54,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @NonNullByDefault
 public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefinition, S extends AbstractSnapshotDefinition>
         extends LGThinQAbstractApiClientService<C, S> {
-    private static final Logger logger = LoggerFactory.getLogger(LGThinQAbstractApiV1ClientService.class);
+    private final Logger logger = LoggerFactory.getLogger(LGThinQAbstractApiV1ClientService.class);
 
     protected LGThinQAbstractApiV1ClientService(Class<C> capabilityClass, Class<S> snapshotClass,
             HttpClient httpClient) {
@@ -185,11 +185,11 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
     /**
      * Principal method to prepare the command to be sent to V1 Devices mainly when the command is generic,
      * i.e, you can send a command structure to redefine any changeable feature of the device
-     * 
+     *
      * @param cmdDef command definition with template of the payload and data (binary or not)
      * @param snapData snapshot data with features to be set in the device
      * @return return the command structure.
-     * @throws JsonProcessingException - unmarshall error.
+     * @throws JsonProcessingException unmarshall error.
      */
     protected Map<String, Object> prepareCommandV1(CommandDefinition cmdDef, Map<String, Object> snapData)
             throws JsonProcessingException {
@@ -219,8 +219,7 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
             for (int i = 0; i < list.size(); i++) {
                 byteArray[i] = list.get(i).byteValue(); // Converte Integer para byte
             }
-            String str_data_encoded = new String(Base64.getEncoder().encode(byteArray));
-            data.put("data", str_data_encoded);
+            data.put("data", new String(Base64.getEncoder().encode(byteArray)));
         } else {
             data.put("data", dataStr);
         }

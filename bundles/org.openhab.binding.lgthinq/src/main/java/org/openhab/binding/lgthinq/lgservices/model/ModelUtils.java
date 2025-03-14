@@ -30,10 +30,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @NonNullByDefault
 public class ModelUtils {
-    public static final ObjectMapper objectMapper = new ObjectMapper();
+    public static final ObjectMapper MAPPER = new ObjectMapper();
 
     public static DeviceTypes getDeviceType(Map<String, Object> rootMap) {
-        Map<String, String> infoMap = objectMapper.convertValue(rootMap.get("Info"), new TypeReference<>() {
+        Map<String, String> infoMap = MAPPER.convertValue(rootMap.get("Info"), new TypeReference<>() {
         });
         Objects.requireNonNull(infoMap, "Unexpected error. Info node not present in capability schema");
         String productType = infoMap.getOrDefault("productType", "");
@@ -43,13 +43,13 @@ public class ModelUtils {
     }
 
     public static DeviceTypes getDeviceType(JsonNode rootNode) {
-        Map<String, Object> mapper = objectMapper.convertValue(rootNode, new TypeReference<>() {
+        Map<String, Object> mapper = MAPPER.convertValue(rootNode, new TypeReference<>() {
         });
         return getDeviceType(mapper);
     }
 
     public static LGAPIVerion discoveryAPIVersion(JsonNode rootNode) {
-        Map<String, Object> mapper = objectMapper.convertValue(rootNode, new TypeReference<>() {
+        Map<String, Object> mapper = MAPPER.convertValue(rootNode, new TypeReference<>() {
         });
         return discoveryAPIVersion(mapper);
     }
@@ -59,7 +59,7 @@ public class ModelUtils {
         switch (type) {
             case AIR_CONDITIONER:
             case HEAT_PUMP:
-                Map<String, Object> valueNode = objectMapper.convertValue(rootMap.get("Value"), new TypeReference<>() {
+                Map<String, Object> valueNode = MAPPER.convertValue(rootMap.get("Value"), new TypeReference<>() {
                 });
                 if (valueNode.containsKey("support.airState.opMode")) {
                     return LGAPIVerion.V2_0;

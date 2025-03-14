@@ -63,6 +63,8 @@ import org.slf4j.LoggerFactory;
 public class LGThinQWasherDryerHandler
         extends LGThinQAbstractDeviceHandler<WasherDryerCapability, WasherDryerSnapshot> {
 
+    public final ChannelGroupUID channelGroupRemoteStartUID;
+    public final ChannelGroupUID channelGroupDashboardUID;
     private final LGThinQStateDescriptionProvider stateDescriptionProvider;
     private final ChannelUID courseChannelUID;
     private final ChannelUID remoteStartStopChannelUID;
@@ -79,10 +81,6 @@ public class LGThinQWasherDryerHandler
     private final ChannelUID standByModeChannelUID;
     private final ChannelUID remoteStartFlagChannelUID;
     private final ChannelUID remoteStartCourseChannelUID;
-
-    public final ChannelGroupUID channelGroupRemoteStartUID;
-    public final ChannelGroupUID channelGroupDashboardUID;
-
     private final List<Channel> remoteStartEnabledChannels = new CopyOnWriteArrayList<>();
 
     private final Logger logger = LoggerFactory.getLogger(LGThinQWasherDryerHandler.class);
@@ -262,7 +260,6 @@ public class LGThinQWasherDryerHandler
                 }
 
                 remoteStartEnabledChannels.addAll(dynChannels);
-
             }
         } else if (!remoteStartEnabledChannels.isEmpty()) {
             ThingBuilder builder = editThing().withoutChannels(remoteStartEnabledChannels);

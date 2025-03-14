@@ -39,7 +39,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * <p>
  * Usage example: A typical command definition might look like the following:
- * 
+ *
  * <pre>
  * {
  *     "cmd": "Control",

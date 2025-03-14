@@ -26,14 +26,14 @@ import org.openhab.binding.lgthinq.lgservices.model.SnapshotDefinition;
 public interface LGThinQBridge {
     /**
      * Register Discovery Listener
-     * 
+     *
      * @param listener
      */
     void registerDiscoveryListener(LGThinqDiscoveryService listener);
 
     /**
      * Registry a device Thing to the bridge
-     * 
+     *
      * @param thing Thing to be registered.
      */
     void registryListenerThing(
@@ -41,7 +41,7 @@ public interface LGThinQBridge {
 
     /**
      * Unregistry the thing
-     * 
+     *
      * @param thing to be unregistered
      */
     void unRegistryListenerThing(
