@@ -25,7 +25,7 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VehicleState {
     // vehicle_state
-    public int locked;
+    public boolean locked;
 
     @SerializedName("sentry_mode")
     public boolean sentryMode;

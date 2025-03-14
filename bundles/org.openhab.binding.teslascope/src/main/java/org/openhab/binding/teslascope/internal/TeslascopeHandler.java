@@ -285,7 +285,7 @@ public class TeslascopeHandler extends BaseThingHandler {
 
             // vehicle state
             updateState(TeslascopeBindingConstants.CHANNEL_DOOR_LOCK,
-                    OnOffType.from(1 == detailedInformation.vehicleState.locked));
+                    OnOffType.from(true == detailedInformation.vehicleState.locked));
             updateState(TeslascopeBindingConstants.CHANNEL_SENTRY_MODE,
                     OnOffType.from(true == detailedInformation.vehicleState.sentryMode));
             updateState(TeslascopeBindingConstants.CHANNEL_VALET_MODE,
