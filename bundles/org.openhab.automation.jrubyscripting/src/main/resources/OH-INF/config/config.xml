@@ -2,8 +2,7 @@
 <config-description:config-descriptions
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
-		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="automation:jrubyscripting">
 
 		<parameter-group name="gems">
@@ -20,6 +19,12 @@
 		<parameter-group name="system">
 			<label>System Properties</label>
 			<description>This group defines JRuby system properties.</description>
+			<advanced>true</advanced>
+		</parameter-group>
+
+		<parameter-group name="bundler">
+			<label>Bundler</label>
+			<description>This group defines the Bundler settings.</description>
 			<advanced>true</advanced>
 		</parameter-group>
 
@@ -105,6 +110,34 @@
 				<option value="persistent">Persistent</option>
 				<option value="global">Global</option>
 			</options>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="bundle_gemfile_path" type="text" required="false" groupName="bundler">
+			<label>Gemfile Path</label>
+			<description><![CDATA[Path to Gemfile relative to <tt>OPENHAB_CONF/automation/ruby/</tt>.
+				An absolute path can be used.
+			  If this file exists, <tt>require 'bundler/setup'</tt> will be inserted for all scripts.
+				Defaults to "<tt>Gemfile</tt>" when not specified.
+				]]></description>
+			<default>Gemfile</default>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="bundle_gemfile_content" type="text" multiple="true" required="false" groupName="bundler">
+			<label>Gemfile Content</label>
+			<description><![CDATA[Literal content of bundler's Gemfile.
+				This will be used when the Gemfile doesn't exist in the Gemfile path above.
+				]]></description>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="bundle_install" type="boolean" required="true" groupName="bundler">
+			<label>Run Bundler Install at Startup</label>
+			<description><![CDATA[Run <tt>bundle install</tt> when the add-on loads or the configuration is changed.
+			  This will install any gems specified in the Gemfile.
+				]]></description>
+			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
 

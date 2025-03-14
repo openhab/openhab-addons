@@ -181,14 +181,17 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     }
 
     private void info(Console console) {
+        String gemfile = jRubyScriptEngineFactory.getConfiguration().getGemfilePath();
         final String PRINT_VERSION_NUMBERS = """
                 library_version = defined?(OpenHAB::DSL::VERSION) && OpenHAB::DSL::VERSION
 
                 puts "JRuby #{JRUBY_VERSION}"
                 puts "JRuby Scripting Library #{library_version || 'is not installed'}"
-                puts "GEM_HOME: #{ENV['GEM_HOME']}"
-                puts "RUBYLIB: #{ENV['RUBYLIB']}"
-                    """;
+                puts "ENV['GEM_HOME']: #{ENV['GEM_HOME']}"
+                puts "ENV['RUBYLIB']: #{ENV['RUBYLIB']}"
+                    """ + (gemfile == null ? "" : """
+                puts "ENV['BUNDLE_GEMFILE']: #{ENV['BUNDLE_GEMFILE']}"
+                    """);
 
         executeWithFullJRuby(console, engine -> engine.eval(PRINT_VERSION_NUMBERS));
         console.println("Script path: " + scriptFileWatcher.getWatchPath());
@@ -220,7 +223,14 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
             }
             console.println(groupLabel);
             parameters.forEach(parameter -> {
-                console.println("  " + parameter.getName() + ": " + config.get(parameter.getName()));
+                console.print("  " + parameter.getName() + ": ");
+                String value = config.get(parameter.getName());
+                if (value.contains("\n")) {
+                    console.println("  (multiline)");
+                    console.println("    " + value.replace("\n", "\n    "));
+                } else {
+                    console.println(value);
+                }
             });
             console.println("");
         });
@@ -303,7 +313,20 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     }
 
     synchronized private void bundler(Console console, String[] args) {
+        final String gemfilePath = jRubyScriptEngineFactory.getConfiguration().getGemfilePath();
+        if (gemfilePath == null) {
+            console.println(
+                    "No Gemfile configured. Please set the 'bundle_gemfile_path' or 'bundle_gemfile_content' property in the add-on configuration.");
+            return;
+        }
+
+        // we have to split this because we dont want to format the string with ruby '%w' in it
         final String BUNDLER = """
+                require 'jruby'
+                JRuby.runtime.instance_config.update_native_env_enabled = false
+                ENV['BUNDLE_GEMFILE'] = '%s'
+                """.formatted(gemfilePath) + """
+
                 require "bundler"
                 require "bundler/friendly_errors"
 
@@ -319,20 +342,11 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
                 end
                 """;
 
-        String originalDir = System.setProperty("user.dir", scriptFileWatcher.getWatchPath().toString());
-        try {
-            executeWithPlainJRuby(console, engine -> {
-                engine.put(ScriptEngine.ARGV, args);
-                engine.eval(BUNDLER);
-                return null;
-            });
-        } finally {
-            if (originalDir == null) {
-                System.clearProperty("user.dir");
-            } else {
-                System.setProperty("user.dir", originalDir);
-            }
-        }
+        executeWithPlainJRuby(console, engine -> {
+            engine.put(ScriptEngine.ARGV, args);
+            engine.eval(BUNDLER);
+            return null;
+        });
     }
 
     synchronized private void gem(Console console, String[] args) {
@@ -488,7 +502,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
                 buildCommandUsage(INFO, "displays information about JRuby Scripting add-on"), //
                 buildCommandUsage(CONSOLE + " [--list|-l|--help|-h] | [script] [options]",
                         "starts an interactive JRuby console"), //
-                buildCommandUsage(BUNDLE + " [arguments]", "runs Ruby bundler in the main Script path"), //
+                buildCommandUsage(BUNDLE + " [arguments]", "runs Ruby bundler with the configured Gemfile"), //
                 buildCommandUsage(GEM + " [arguments]", "manages JRuby Scripting add-on's RubyGems"), //
                 buildCommandUsage(UPDATE, "updates the configured gems"), //
                 buildCommandUsage(PRUNE + " [-f|--force]", "cleans up older versions in the .gem directory") //
