@@ -197,7 +197,7 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
             return 0;
         }
         // temperature channels are little different. First we need to get the tempUnit in the first snapshot,
-        final Map<String, String> convertionMap = getConvertionMap(ch, refCap);
+        final Map<String, String> conversionMap = getConversionMap(ch, refCap);
         final Map<String, String> invertedMap = new HashMap<>();
         convertionMap.forEach((k, v) -> {
             invertedMap.put(v, k);
