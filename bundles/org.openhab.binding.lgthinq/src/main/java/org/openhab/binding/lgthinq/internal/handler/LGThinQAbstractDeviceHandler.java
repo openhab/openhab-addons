@@ -377,7 +377,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             try {
                 updateChannelDynStateDescription();
             } catch (LGThinqApiException e) {
-                getLogger().error(
+                getLogger().warn(
                         "Error updating channels dynamic options descriptions based on capabilities of the device. Fallback to default values.",
                         e);
             }
