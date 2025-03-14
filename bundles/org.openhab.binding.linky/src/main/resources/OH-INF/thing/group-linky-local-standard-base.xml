@@ -259,7 +259,7 @@
 
 			<channel id="prm" typeId="string">
 				<label>Prm</label>
-				<description>PRM</description>
+				<description>The Meter Id (PRM)</description>
 			</channel>
 
 			<channel id="relais" typeId="switch">

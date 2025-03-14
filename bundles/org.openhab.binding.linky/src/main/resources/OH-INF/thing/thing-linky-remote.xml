@@ -30,7 +30,7 @@
 		<config-description>
 			<parameter name="prmId" type="text" required="true">
 				<label>prmId</label>
-				<description>Your prmId</description>
+				<description>The Meter Id (PRM)</description>
 			</parameter>
 			<parameter name="timezone" type="text" required="false">
 				<label>timezone</label>

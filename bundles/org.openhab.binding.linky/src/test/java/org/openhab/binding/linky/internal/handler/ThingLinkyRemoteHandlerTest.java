@@ -327,6 +327,5 @@ public class ThingLinkyRemoteHandlerTest {
 
         assertEquals(mr.yearValue[0].value, 595);
         assertEquals(mr.yearValue[0].date, LocalDateTime.of(2025, 1, 1, 0, 0, 0));
-
     }
 }
