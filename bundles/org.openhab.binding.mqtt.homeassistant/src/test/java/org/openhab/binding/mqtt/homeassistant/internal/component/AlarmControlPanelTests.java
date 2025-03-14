@@ -78,11 +78,11 @@ public class AlarmControlPanelTests extends AbstractComponentTests {
         publishMessage("zigbee2mqtt/alarm/state", "armed_away");
         assertState(component, AlarmControlPanel.STATE_CHANNEL_ID, new StringType("armed_away"));
 
-        component.getChannel(AlarmControlPanel.STATE_CHANNEL_ID).getState().publishValue(new StringType("DISARM_"));
+        component.getChannel(AlarmControlPanel.STATE_CHANNEL_ID).getState().publishValue(new StringType("DISARM"));
         assertPublished("zigbee2mqtt/alarm/set/state", "DISARM_");
-        component.getChannel(AlarmControlPanel.STATE_CHANNEL_ID).getState().publishValue(new StringType("ARM_AWAY_"));
+        component.getChannel(AlarmControlPanel.STATE_CHANNEL_ID).getState().publishValue(new StringType("ARM_AWAY"));
         assertPublished("zigbee2mqtt/alarm/set/state", "ARM_AWAY_");
-        component.getChannel(AlarmControlPanel.STATE_CHANNEL_ID).getState().publishValue(new StringType("ARM_HOME_"));
+        component.getChannel(AlarmControlPanel.STATE_CHANNEL_ID).getState().publishValue(new StringType("ARM_HOME"));
         assertPublished("zigbee2mqtt/alarm/set/state", "ARM_HOME_");
     }
 
