@@ -1,0 +1,15 @@
+{
+	"attributes": {
+		"sensorConfig": {
+			"scheduleOn": true,
+			"schedule": {
+				"onCondition": {
+					"time": "sunset"
+				},
+				"offCondition": {
+					"time": "sunrise"
+				}
+			}
+		}
+	}
+}
