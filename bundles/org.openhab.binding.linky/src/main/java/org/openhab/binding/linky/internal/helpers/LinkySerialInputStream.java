@@ -127,6 +127,10 @@ public class LinkySerialInputStream extends InputStream {
                         } else {
                             timestampString = groupLineTokens[1];
                             valueString = groupLineTokens[2];
+
+                            if (channelName.equals(LinkyChannel.DATE.name())) {
+                                valueString = timestampString;
+                            }
                         }
                         break;
                 }
