@@ -51,7 +51,7 @@ public class JRubyDependencyTracker implements ScriptDependencyTracker {
     }
 
     public void activate() {
-        String gemHome = scriptEngineFactory.getGemHome();
+        String gemHome = scriptEngineFactory.getConfiguration().getSpecificGemHome();
         if (!gemHome.isEmpty()) {
             dependencyWatchServices.add(new JRubyGemWatchService(watchService, gemHome, this));
         }
