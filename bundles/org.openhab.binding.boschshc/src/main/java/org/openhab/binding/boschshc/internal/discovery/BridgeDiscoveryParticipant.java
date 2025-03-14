@@ -151,7 +151,7 @@ public class BridgeDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 .withProperty(BridgeHandler.THING_PROPERTY_SHC_GENERATION, publicInformation.shcGeneration)
                 .withProperty(BridgeHandler.THING_PROPERTY_API_VERSIONS,
                         publicInformation.getApiVersionsAsCommaSeparatedList())
-                .withTTL(TTL_SECONDS).build();
+                .withRepresentationProperty(BridgeHandler.THING_PROPERTY_MAC_ADDRESS).withTTL(TTL_SECONDS).build();
     }
 
     private @Nullable String getFirstIPAddress(ServiceInfo serviceInfo) {
