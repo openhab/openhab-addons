@@ -8,7 +8,7 @@
 		<parameter name="pollInterval" type="integer" required="true" min="100" unit="ms">
 			<label>Poll Interval</label>
 			<description>Time between polling the data in ms.</description>
-			<default>5000</default>
+			<default>10000</default>
 		</parameter>
 	</config-description>
 
