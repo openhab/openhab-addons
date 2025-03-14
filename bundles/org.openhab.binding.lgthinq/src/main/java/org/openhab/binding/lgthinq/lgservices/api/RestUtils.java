@@ -97,7 +97,6 @@ public class RestUtils {
 
     public static RestResult getCall(HttpClient httpClient, String encodedUrl, @Nullable Map<String, String> headers,
             @Nullable Map<String, String> params) {
-
         Request request = httpClient.newRequest(encodedUrl).method("GET");
         if (params != null) {
             params.forEach(request::param);
