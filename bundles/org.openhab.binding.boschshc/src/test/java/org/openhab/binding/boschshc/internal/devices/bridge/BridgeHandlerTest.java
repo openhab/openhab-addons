@@ -235,6 +235,14 @@ class BridgeHandlerTest {
         when(devicesRequest.send()).thenReturn(devicesResponse);
         when(httpClient.createRequest(contains("/devices"), same(HttpMethod.GET))).thenReturn(devicesRequest);
 
+        PublicInformation publicInformation = new PublicInformation();
+        publicInformation.shcIpAddress = "192.168.0.123";
+        publicInformation.macAddress = "64-da-a0-ab-cd-ef";
+        publicInformation.shcGeneration = "SHC_1";
+        publicInformation.apiVersions = List.of("2.9", "3.2");
+        when(httpClient.sendRequest(any(), same(PublicInformation.class), any(), isNull()))
+                .thenReturn(publicInformation);
+
         SubscribeResult subscribeResult = new SubscribeResult();
         when(httpClient.sendRequest(any(), same(SubscribeResult.class), any(), any())).thenReturn(subscribeResult);
 
@@ -249,6 +257,12 @@ class BridgeHandlerTest {
 
         verify(thingHandlerCallback).statusUpdated(any(),
                 eq(ThingStatusInfoBuilder.create(ThingStatus.ONLINE, ThingStatusDetail.NONE).build()));
+
+        verify(thing).setProperty(BridgeHandler.THING_PROPERTY_IP_ADDRESS, "192.168.0.123");
+        verify(thing).setProperty(BridgeHandler.THING_PROPERTY_MAC_ADDRESS, "64-da-a0-ab-cd-ef");
+        verify(thing).setProperty(BridgeHandler.THING_PROPERTY_API_VERSIONS, "2.9, 3.2");
+        verify(thingHandlerCallback).thingUpdated(thing);
+
         verify(thingDiscoveryListener).doScan();
     }
 

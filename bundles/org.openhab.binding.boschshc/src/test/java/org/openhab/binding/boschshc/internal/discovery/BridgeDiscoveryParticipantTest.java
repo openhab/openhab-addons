@@ -86,8 +86,14 @@ class BridgeDiscoveryParticipantTest {
         when(otherDevice.getHostAddresses()).thenReturn(new String[] { "192.168.0.1" });
         when(otherDevice.getName()).thenReturn("Other Device");
 
-        when(contentResponse.getContentAsString()).thenReturn(
-                "{\"apiVersions\":[\"2.9\",\"3.2\"], \"shcIpAddress\":\"192.168.0.123\", \"shcGeneration\":\"SHC_1\"}");
+        when(contentResponse.getContentAsString()).thenReturn("""
+                {
+                    "apiVersions": ["2.9","3.2"],
+                    "macAddress": "64-da-a0-ab-cd-ef",
+                    "shcIpAddress": "192.168.0.123",
+                    "shcGeneration": "SHC_1"
+                }
+                """);
         when(contentResponse.getStatus()).thenReturn(HttpStatus.OK_200);
 
         Request mockRequest = mock(Request.class);
@@ -124,30 +130,30 @@ class BridgeDiscoveryParticipantTest {
      *
      */
     @Test
-    void testGetServiceType() throws Exception {
+    void testGetServiceType() {
         assertThat(fixture.getServiceType(), is("_http._tcp.local."));
     }
 
     @Test
-    void testCreateResult() throws Exception {
+    void testCreateResult() {
         DiscoveryResult result = fixture.createResult(shcBridge);
 
         assertNotNull(result);
         assertThat(result.getBindingId(), is(BoschSHCBindingConstants.BINDING_ID));
-        assertThat(result.getThingUID().getId(), is("192-168-0-123"));
+        assertThat(result.getThingUID().getId(), is("64daa0abcdef"));
         assertThat(result.getThingTypeUID().getId(), is("shc"));
         assertThat(result.getLabel(), is("Bosch Smart Home Controller (192.168.0.123)"));
     }
 
     @Test
-    void testCreateResultOtherDevice() throws Exception {
+    void testCreateResultOtherDevice() {
         DiscoveryResult result = fixture.createResult(otherDevice);
 
         assertNull(result);
     }
 
     @Test
-    void testCreateResultNoIPAddress() throws Exception {
+    void testCreateResultNoIPAddress() {
         when(shcBridge.getHostAddresses()).thenReturn(new String[] { "" });
 
         DiscoveryResult result = fixture.createResult(shcBridge);
@@ -156,21 +162,21 @@ class BridgeDiscoveryParticipantTest {
     }
 
     @Test
-    void testGetThingUID() throws Exception {
+    void testGetThingUID() {
         ThingUID thingUID = fixture.getThingUID(shcBridge);
 
         assertNotNull(thingUID);
         assertThat(thingUID.getBindingId(), is(BoschSHCBindingConstants.BINDING_ID));
-        assertThat(thingUID.getId(), is("192-168-0-123"));
+        assertThat(thingUID.getId(), is("64daa0abcdef"));
     }
 
     @Test
-    void testGetThingUIDOtherDevice() throws Exception {
+    void testGetThingUIDOtherDevice() {
         assertNull(fixture.getThingUID(otherDevice));
     }
 
     @Test
-    void testGetBridgeAddress() throws Exception {
+    void testGetBridgeAddress() {
         @Nullable
         PublicInformation bridgeInformation = fixture.discoverBridge("192.168.0.123");
 
@@ -179,12 +185,12 @@ class BridgeDiscoveryParticipantTest {
     }
 
     @Test
-    void testGetBridgeAddressOtherDevice() throws Exception {
+    void testGetBridgeAddressOtherDevice() {
         assertThat(fixture.discoverBridge("192.168.0.1"), is(nullValue()));
     }
 
     @Test
-    void testGetPublicInformationFromPossibleBridgeAddress() throws Exception {
+    void testGetPublicInformationFromPossibleBridgeAddress() {
         @Nullable
         PublicInformation bridgeInformation = fixture.getPublicInformationFromPossibleBridgeAddress("192.168.0.123");
 
@@ -193,7 +199,7 @@ class BridgeDiscoveryParticipantTest {
     }
 
     @Test
-    void testGetPublicInformationFromPossibleBridgeAddressInvalidContent() throws Exception {
+    void testGetPublicInformationFromPossibleBridgeAddressInvalidContent() {
         when(contentResponse.getContentAsString()).thenReturn("{\"nothing\":\"useful\"}");
 
         fixture = new BridgeDiscoveryParticipant(mockHttpClient);
@@ -202,7 +208,7 @@ class BridgeDiscoveryParticipantTest {
     }
 
     @Test
-    void testGetPublicInformationFromPossibleBridgeAddressInvalidStatus() throws Exception {
+    void testGetPublicInformationFromPossibleBridgeAddressInvalidStatus() {
         when(contentResponse.getStatus()).thenReturn(HttpStatus.BAD_REQUEST_400);
 
         fixture = new BridgeDiscoveryParticipant(mockHttpClient);
@@ -211,7 +217,7 @@ class BridgeDiscoveryParticipantTest {
     }
 
     @Test
-    void testGetOrComputePublicInformation() throws Exception {
+    void testGetOrComputePublicInformation() {
         @Nullable
         PublicInformation result = fixture.getOrComputePublicInformation("192.168.0.123");
         assertNotNull(result);
