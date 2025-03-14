@@ -140,6 +140,7 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
         // presets, including 'ir'. We wait for the second call before running the
         // require statements.
         if (scopeValues.containsKey("ir")) {
+            configuration.bundlerSetup(scriptEngine);
             configuration.injectRequire(scriptEngine);
         }
     }

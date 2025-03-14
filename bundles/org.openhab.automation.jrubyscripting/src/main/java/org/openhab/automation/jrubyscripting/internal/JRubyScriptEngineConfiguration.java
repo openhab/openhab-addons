@@ -18,8 +18,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,8 +31,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jruby.runtime.Constants;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.config.core.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Processes JRuby Configuration Parameters.
@@ -44,6 +46,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class JRubyScriptEngineConfiguration {
 
+    public static final String HOME_PATH = Path.of("automation", "ruby").toString();
+    private static final String HOME_PATH_ABS = Path.of(OpenHAB.getConfigFolder(), HOME_PATH).toString();
+    private static final String DEFAULT_GEMFILE = Path.of(HOME_PATH_ABS, "Gemfile").toString();
+    private static final String UI_GEMFILE_PATH = Path
+            .of(OpenHAB.getUserDataFolder(), "tmp", "jrubyscripting", "Gemfile").toString();
+
     private final Logger logger = LoggerFactory.getLogger(JRubyScriptEngineConfiguration.class);
 
     private static final String RUBY_ENGINE_REPLACEMENT = "{RUBY_ENGINE}";
@@ -52,46 +60,32 @@ public class JRubyScriptEngineConfiguration {
     private static final List<String> REPLACEMENTS = List.of(RUBY_ENGINE_REPLACEMENT, RUBY_ENGINE_VERSION_REPLACEMENT,
             RUBY_VERSION_REPLACEMENT);
 
-    private static final String DEFAULT_GEM_HOME = Paths
-            .get(OpenHAB.getConfigFolder(), "automation", "ruby", ".gem", RUBY_ENGINE_VERSION_REPLACEMENT).toString();
-    private static final String DEFAULT_RUBYLIB = Paths.get(OpenHAB.getConfigFolder(), "automation", "ruby", "lib")
-            .toString();
+    // The variable names must match the configuration keys in config.xml
+    public static class JRubyScriptingConfiguration {
+        // System Properties
+        public String local_context = "singlethread";
+        public String local_variable = "transient";
 
-    private static final String GEM_HOME_CONFIG_KEY = "gem_home";
-    private static final String RUBYLIB_CONFIG_KEY = "rubylib";
-    private static final String GEMS_CONFIG_KEY = "gems";
-    private static final String REQUIRE_CONFIG_KEY = "require";
-    private static final String CHECK_UPDATE_CONFIG_KEY = "check_update";
-    private static final String DEPENDENCY_TRACKING_CONFIG_KEY = "dependency_tracking";
-    private static final String CONSOLE_CONFIG_KEY = "console";
+        // Ruby Environment
+        public String gem_home = Path.of(HOME_PATH_ABS, ".gem", RUBY_ENGINE_VERSION_REPLACEMENT).toString();
+        public String rubylib = Path.of(HOME_PATH_ABS, "lib").toString();
+        public boolean dependency_tracking = true;
 
-    // Map of configuration parameters
-    private final Map<String, OptionalConfigurationElement> configurationParameters = Map.ofEntries(
-            Map.entry("local_context",
-                    new OptionalConfigurationElement(OptionalConfigurationElement.Type.SYSTEM_PROPERTY, "singlethread",
-                            "org.jruby.embed.localcontext.scope")),
+        // Gems
+        public String gems = "openhab-scripting=~>5.0";
+        public String require = "openhab/dsl";
+        public boolean check_update = true;
 
-            Map.entry("local_variable",
-                    new OptionalConfigurationElement(OptionalConfigurationElement.Type.SYSTEM_PROPERTY, "transient",
-                            "org.jruby.embed.localvariable.behavior")),
+        // Bundler
+        public String bundle_gemfile_path = DEFAULT_GEMFILE;
+        public List<String> bundle_gemfile_content = List.of();
+        public boolean bundle_install = true;
 
-            Map.entry(GEM_HOME_CONFIG_KEY,
-                    new OptionalConfigurationElement(OptionalConfigurationElement.Type.RUBY_ENVIRONMENT,
-                            DEFAULT_GEM_HOME, "GEM_HOME")),
+        // Console
+        public String console = "irb";
+    }
 
-            Map.entry(RUBYLIB_CONFIG_KEY,
-                    new OptionalConfigurationElement(OptionalConfigurationElement.Type.RUBY_ENVIRONMENT,
-                            DEFAULT_RUBYLIB, "RUBYLIB")),
-
-            Map.entry(GEMS_CONFIG_KEY, new OptionalConfigurationElement("openhab-scripting=~>5.0")),
-
-            Map.entry(REQUIRE_CONFIG_KEY, new OptionalConfigurationElement("openhab/dsl")),
-
-            Map.entry(CHECK_UPDATE_CONFIG_KEY, new OptionalConfigurationElement("true")),
-
-            Map.entry(DEPENDENCY_TRACKING_CONFIG_KEY, new OptionalConfigurationElement("true")),
-
-            Map.entry(CONSOLE_CONFIG_KEY, new OptionalConfigurationElement("irb")));
+    private JRubyScriptingConfiguration configuration = new JRubyScriptingConfiguration();
 
     /**
      * Update configuration
@@ -101,8 +95,10 @@ public class JRubyScriptEngineConfiguration {
      */
     void update(Map<String, Object> config, ScriptEngineFactory factory) {
         logger.trace("JRuby Script Engine Configuration: {}", config);
-        configurationParameters.forEach((k, v) -> v.clearValue());
-        config.forEach(this::processConfigValue);
+
+        // This converts Map<String, Object> to the configuration class,
+        // leaving the default values in place when it's null or not set in the map.
+        this.configuration = new Configuration(config).as(JRubyScriptingConfiguration.class);
 
         configureSystemProperties();
 
@@ -115,6 +111,7 @@ public class JRubyScriptEngineConfiguration {
         StringWriter errorWriter = new StringWriter();
         context.setWriter(writer);
         context.setErrorWriter(errorWriter);
+        bundlerInstall(engine);
         configureGems(engine, false);
         logger.debug("{}", writer);
         if (errorWriter.toString().length() > 0) {
@@ -123,43 +120,25 @@ public class JRubyScriptEngineConfiguration {
     }
 
     /**
-     * Apply configuration key/value to known configuration parameters
-     *
-     * @param key Configuration key
-     * @param value Configuration value
-     */
-    private void processConfigValue(String key, Object value) {
-        OptionalConfigurationElement configurationElement = configurationParameters.get(key);
-        if (configurationElement != null) {
-            configurationElement.setValue(value.toString().trim());
-        } else {
-            logger.debug("Ignoring unexpected configuration key: {}", key);
-        }
-    }
-
-    /**
-     * Gets a single configuration element.
-     */
-    private String get(String key) {
-        OptionalConfigurationElement configElement = configurationParameters.get(key);
-
-        return Objects.requireNonNull(configElement).getValue();
-    }
-
-    /**
-     * Returns the current configuration.
+     * Returns the current configuration as a map.
+     * This is used to display the configuration in the console.
      */
     public Map<String, String> getConfigurations() {
-        return configurationParameters.entrySet().stream()
-                .map(entry -> Map.entry(entry.getKey(), entry.getValue().getValue()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> objectMap = objectMapper.convertValue(configuration, Map.class);
+        return objectMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
+            if (entry.getValue() instanceof List listValue) {
+                return listValue.stream().map(Object::toString).collect(Collectors.joining("\n")).toString();
+            }
+            return entry.getValue().toString();
+        }));
     }
 
     /**
      * Returns the console script to be used for the console.
      */
     public String getConsole() {
-        return get(CONSOLE_CONFIG_KEY);
+        return configuration.console;
     }
 
     /**
@@ -168,7 +147,7 @@ public class JRubyScriptEngineConfiguration {
      * {RUBY_ENGINE} and {RUBY_VERSION} are replaced with their current actual values.
      */
     public String getSpecificGemHome() {
-        String gemHome = get(GEM_HOME_CONFIG_KEY);
+        String gemHome = configuration.gem_home;
         if (gemHome.isEmpty()) {
             return gemHome;
         }
@@ -189,7 +168,7 @@ public class JRubyScriptEngineConfiguration {
      *
      */
     public String getGemHomeBase() {
-        String gemHome = get(GEM_HOME_CONFIG_KEY);
+        String gemHome = configuration.gem_home;
 
         for (String replacement : REPLACEMENTS) {
             int loc = gemHome.indexOf(replacement);
@@ -219,7 +198,7 @@ public class JRubyScriptEngineConfiguration {
      * @return the configured gems
      */
     public String getGems() {
-        return get(GEMS_CONFIG_KEY);
+        return configuration.gems;
     }
 
     /**
@@ -271,7 +250,7 @@ public class JRubyScriptEngineConfiguration {
             return;
         }
 
-        boolean checkUpdate = force || "true".equals(get(CHECK_UPDATE_CONFIG_KEY));
+        boolean checkUpdate = force || configuration.check_update;
         // Set update_native_env_enabled to false so that bundler doesn't leak into other script engines
         String gemCommand = """
                 require 'jruby'
@@ -295,12 +274,133 @@ public class JRubyScriptEngineConfiguration {
     }
 
     /**
+     * Returns the path to the Gemfile.
+     * 
+     * If the bundle_gemfile_path points to an existing file, it will be used as the Gemfile for Bundler.
+     * 
+     * If the file does not exist, bundle_gemfile_content config value will be saved as
+     * USERDATA/tmp/jrubyscripting/Gemfile and Bundler will be run with this Gemfile.
+     * 
+     * If the content is empty, Bundler will be skipped.
+     * 
+     * @return the path to the Gemfile or null if no Gemfile is found or configured
+     */
+    public @Nullable String getGemfilePath() {
+        boolean createGemfileFromConfig = false;
+        Path gemfilePath = Path.of(configuration.bundle_gemfile_path);
+
+        if (gemfilePath.equals(Path.of(""))) {
+            gemfilePath = Path.of(DEFAULT_GEMFILE);
+        } else if (!gemfilePath.isAbsolute()) {
+            gemfilePath = Path.of(HOME_PATH_ABS).resolve(gemfilePath);
+        }
+
+        if (gemfilePath.toFile().exists()) {
+            return gemfilePath.toString();
+        }
+
+        String configuredGemfileString = String.join("\n", configuration.bundle_gemfile_content);
+        if (configuredGemfileString.isBlank()) {
+            return null;
+        }
+
+        gemfilePath = Path.of(UI_GEMFILE_PATH);
+        Path gemfileDirectory = gemfilePath.getParent();
+        if (!gemfileDirectory.toFile().exists()) {
+            logger.debug("Creating Gemfile directory {}", gemfileDirectory);
+            gemfileDirectory.toFile().mkdirs();
+        }
+
+        File gemfile = gemfilePath.toFile();
+        try {
+            List<String> headers = List.of( //
+                    "# This Gemfile is auto-generated by the JRuby Scripting add-on", //
+                    "# Do not edit this file directly.", //
+                    "# Edit the JRuby Scripting configuration 'bundle_gemfile_content' instead.", //
+                    "");
+
+            List<String> configuredGemfileContent = new ArrayList<>(headers);
+            configuredGemfileContent.addAll(configuration.bundle_gemfile_content);
+
+            if (gemfile.exists()) {
+                List<String> fileContent = Files.readAllLines(gemfilePath, StandardCharsets.UTF_8);
+                if (fileContent.equals(configuredGemfileContent)) {
+                    logger.debug("Gemfile already exists and is up to date.");
+                    return gemfilePath.toString();
+                }
+            }
+
+            Files.write(gemfilePath, configuredGemfileContent, StandardCharsets.UTF_8);
+            return gemfilePath.toString();
+        } catch (IOException e) {
+            logger.warn("Error creating/writing to Gemfile {}: {}", gemfilePath, e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Require Bundler setup in the ScriptEngine
+     * 
+     * @param engine
+     */
+    public void bundlerSetup(ScriptEngine engine) {
+        String gemfilePath = getGemfilePath();
+        if (gemfilePath == null) {
+            logger.debug("No Gemfile is found or configured. Skipping Bundler setup.");
+            return;
+        }
+
+        String code = """
+                require 'jruby'
+                JRuby.runtime.instance_config.update_native_env_enabled = false
+                ENV['BUNDLE_GEMFILE'] = '%s'
+                require 'bundler/setup'
+                """.formatted(gemfilePath);
+
+        try {
+            logger.debug("Running Bundler on Gemfile {}", gemfilePath);
+            logger.trace("Bundler code:\n{}", code);
+            engine.eval(code);
+        } catch (ScriptException e) {
+            logger.warn("Error running Bundler setup: {}", e.getMessage());
+        }
+    }
+
+    public void bundlerInstall(ScriptEngine engine) {
+        if (!configuration.bundle_install) {
+            return;
+        }
+
+        String gemfilePath = getGemfilePath();
+        if (gemfilePath == null) {
+            logger.debug("No Gemfile is found or configured. Skipping Bundler install.");
+            return;
+        }
+
+        String code = """
+                require 'jruby'
+                JRuby.runtime.instance_config.update_native_env_enabled = false
+                ENV['BUNDLE_GEMFILE'] = '%s'
+                require 'bundler'
+                Bundler::CLI.start(['install'])
+                """.formatted(gemfilePath);
+
+        try {
+            logger.debug("Running Bundler on Gemfile {}", gemfilePath);
+            logger.trace("Bundler code:\n{}", code);
+            engine.eval(code);
+        } catch (ScriptException e) {
+            logger.warn("Error running Bundler install: {}", e.getMessage());
+        }
+    }
+
+    /**
      * Execute ruby require statement in the ScriptEngine
      *
      * @param engine Engine to insert the require statements
      */
     public void injectRequire(ScriptEngine engine) {
-        String requires = get(REQUIRE_CONFIG_KEY);
+        String requires = configuration.require;
 
         if (requires.isEmpty()) {
             return;
@@ -323,26 +423,25 @@ public class JRubyScriptEngineConfiguration {
      * @param scriptEngine Engine in which to configure environment
      */
     public void configureRubyEnvironment(ScriptEngine scriptEngine) {
-        getConfigurationElements(OptionalConfigurationElement.Type.RUBY_ENVIRONMENT).forEach(configElement -> {
-            String value;
-            if ("GEM_HOME".equals(configElement.mappedTo().get())) {
-                // this value has to be post-processed to handle replacements.
-                value = getSpecificGemHome();
-            } else {
-                value = configElement.getValue();
-            }
-            scriptEngine.put("__key", configElement.mappedTo().get());
-            scriptEngine.put("__value", value);
-            logger.trace("Setting Ruby environment ENV['{}''] = '{}'", configElement.mappedTo().get(), value);
+        Map.of( //
+                "GEM_HOME", getSpecificGemHome(), //
+                "RUBYLIB", configuration.rubylib //
+        ).forEach((key, value) -> {
+            if (!value.isEmpty()) {
+                scriptEngine.put("__key", key);
+                scriptEngine.put("__value", value);
+                logger.trace("Setting Ruby environment ENV['{}''] = '{}'", key, value);
 
-            try {
-                scriptEngine.eval("ENV[__key] = __value");
-            } catch (ScriptException e) {
-                logger.warn("Error setting Ruby environment", unwrap(e));
+                try {
+                    scriptEngine.eval("ENV[__key] = __value");
+                } catch (ScriptException e) {
+                    logger.warn("Error setting Ruby environment", unwrap(e));
+                } finally {
+                    // clean up our temporary variables
+                    scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE).remove("__key");
+                    scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE).remove("__value");
+                }
             }
-            // clean up our temporary variables
-            scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE).remove("__key");
-            scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE).remove("__value");
         });
 
         configureRubyLib(scriptEngine);
@@ -357,7 +456,7 @@ public class JRubyScriptEngineConfiguration {
      * @param engine Engine in which to configure environment
      */
     private void configureRubyLib(ScriptEngine engine) {
-        String rubyLib = get(RUBYLIB_CONFIG_KEY);
+        String rubyLib = configuration.rubylib;
         if (!rubyLib.isEmpty()) {
             final String code = "$LOAD_PATH.unshift *ENV['RUBYLIB']&.split(File::PATH_SEPARATOR)" + //
                     "&.reject(&:empty?)" + //
@@ -413,7 +512,7 @@ public class JRubyScriptEngineConfiguration {
     }
 
     public List<String> getRubyLibPaths() {
-        String rubyLib = get(RUBYLIB_CONFIG_KEY);
+        String rubyLib = configuration.rubylib;
         if (rubyLib.isEmpty()) {
             return List.of();
         }
@@ -421,25 +520,22 @@ public class JRubyScriptEngineConfiguration {
     }
 
     public boolean enableDependencyTracking() {
-        return "true".equals(get(DEPENDENCY_TRACKING_CONFIG_KEY));
+        return configuration.dependency_tracking;
     }
 
     /**
      * Configure system properties
-     *
-     * @param optionalConfigurationElements Optional system properties to configure
      */
     private void configureSystemProperties() {
-        getConfigurationElements(OptionalConfigurationElement.Type.SYSTEM_PROPERTY).forEach(configElement -> {
-            String systemProperty = configElement.mappedTo().get();
-            String propertyValue = configElement.getValue();
-            logger.trace("Setting system property ({}) to ({})", systemProperty, propertyValue);
-            System.setProperty(systemProperty, propertyValue);
+        Map.of( //
+                "org.jruby.embed.localcontext.scope", configuration.local_context, //
+                "org.jruby.embed.localvariable.behavior", configuration.local_variable //
+        ).forEach((key, value) -> {
+            if (value != null) {
+                logger.trace("Setting system property ({}) to ({})", key, value);
+                System.setProperty(key, value);
+            }
         });
-    }
-
-    private Stream<OptionalConfigurationElement> getConfigurationElements(OptionalConfigurationElement.Type type) {
-        return configurationParameters.values().stream().filter(element -> element.type.equals(type));
     }
 
     /**
@@ -454,48 +550,5 @@ public class JRubyScriptEngineConfiguration {
             return cause;
         }
         return e;
-    }
-
-    /**
-     * Inner static companion class for configuration elements
-     */
-    private static class OptionalConfigurationElement {
-        private enum Type {
-            SYSTEM_PROPERTY,
-            RUBY_ENVIRONMENT,
-            OTHER
-        }
-
-        private final String defaultValue;
-        private final Optional<String> mappedTo;
-        private final Type type;
-        private @Nullable String value;
-
-        private OptionalConfigurationElement(String defaultValue) {
-            this(Type.OTHER, defaultValue, null);
-        }
-
-        private OptionalConfigurationElement(Type type, String defaultValue, @Nullable String mappedTo) {
-            this.type = type;
-            this.defaultValue = defaultValue;
-            this.mappedTo = Optional.ofNullable(mappedTo);
-        }
-
-        private String getValue() {
-            String value = this.value;
-            return value != null ? value : this.defaultValue;
-        }
-
-        private void setValue(@Nullable String value) {
-            this.value = value;
-        }
-
-        private void clearValue() {
-            this.value = null;
-        }
-
-        private Optional<String> mappedTo() {
-            return mappedTo;
-        }
     }
 }
