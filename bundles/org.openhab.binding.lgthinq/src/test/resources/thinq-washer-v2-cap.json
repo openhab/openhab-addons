@@ -1,0 +1,3235 @@
+{
+  "Info": {
+    "productType": "WM",
+    "country": "WW",
+    "modelType": "FL",
+    "MP Project": "Vivace",
+    "ProjectName": "Vivace WO VC3 550 V700 1600 rpm ",
+    "modelName": "F_V8_Y___W.B_2QEUK",
+    "networkType": "WIFI",
+    "version": "0.8"
+  },
+  "Module": {
+    "WPM": {
+      "GWM_CEN01_Main": "201",
+      "GWM_CRS01_Main": "201",
+      "GWM_CRS02_CourseList": "201",
+      "GWM_CRS03_CourseDetail": "201",
+      "GWM_WCH01_Main": "201",
+      "GWM_WCH01_UserGuide2": "201",
+      "GWM_ENM01_Main": "201",
+      "GCM_SDS01_SdsMain": "001",
+      "GWM_SET01_Main": "201",
+      "GWM_SET02_PushList": "201",
+      "GWM_FOT01_Main": "201"
+    },
+    "Menu": [
+      "GWM_CRS01_Main",
+      "GWM_WCH01_Main",
+      "GWM_ENM01_Main",
+      "GCM_SDS01_SdsMain",
+      "GWM_SET01_Main"
+    ]
+  },
+  "Config": {
+    "downloadPanelLabel": "@WM_TERM_DOWNLOAD_CYCLE_EN_W",
+    "remoteStartLabel": "@WM_TITAN2_OPTION_REMOTE_START_W",
+    "maxDownloadCourseNum": 1,
+    "defaultCourse": "COTTON",
+    "downloadCourseAPId": "RINSESPIN",
+    "defaultSmartCourse": "RINSESPIN",
+    "tubCleanCourseId": "TUB_CLEAN",
+    "standbyEnable": true,
+    "fota": true,
+    "powerOffDownload": true,
+    "expectedStartTime": false,
+    "isAIDDAvailable": true,
+    "SmartCourseCategory": [
+      {
+        "label": "@WM_COURSE_CATEGORY_HOME_FAMILY_W",
+        "courseIdList": [
+          "BABYCARE",
+          "HYGIENE",
+          "SMALLLOAD",
+          "SKINCARE",
+          "RINSESPIN",
+          "KIDSWEAR",
+          "SCHOOLUNIFORM",
+          "RAINYSEASON",
+          "SINGLEGARMENT",
+          "NOISEMINIMIZE",
+          "MINIMIZEWRINKLES",
+          "LIGHTLYSOILEDITEMS",
+          "MINIMIZEDETERGENT",
+          "SLEEVEHEMSANDCOLLARS",
+          "JUICEANDFOODSTAINS",
+          "QUICKTUBCLEAN",
+          "DRAIN",
+          "SPIN"
+        ]
+      },
+      {
+        "label": "@WM_COURSE_CATEGORY_SPORTS_LEISURE_W",
+        "courseIdList": [
+          "SWIMMINGWEAR",
+          "GYMCLOTHES",
+          "SWEATSTAIN"
+        ]
+      },
+      {
+        "label": "@WM_COURSE_CATEGORY_FABRIC_CARE_W",
+        "courseIdList": [
+          "LINGERIE",
+          "COLDWASH",
+          "JEANS",
+          "BLANKET",
+          "COLORPROTECTION"
+        ]
+      }
+    ],
+    "smartCourseType": "smartCourseFL24inchBaseTitan",
+    "courseType": "courseFL24inchBaseTitan",
+    "downloadedCourseType": "downloadedCourseFL24inchBaseTitan"
+  },
+  "MonitoringValue": {
+    "state": {
+      "dataType": "enum",
+      "label": null,
+      "valueMapping": {
+        "POWEROFF": {
+          "index": 0,
+          "label": "@WM_STATE_POWER_OFF_W"
+        },
+        "INITIAL": {
+          "index": 1,
+          "label": "@WM_STATE_INITIAL_W"
+        },
+        "PAUSE": {
+          "index": 2,
+          "label": "@WM_STATE_PAUSE_W"
+        },
+        "RESERVED": {
+          "index": 3,
+          "label": "@WM_STATE_RESERVE_W"
+        },
+        "DETECTING": {
+          "index": 4,
+          "label": "@WM_STATE_DETECTING_W"
+        },
+        "RUNNING": {
+          "index": 6,
+          "label": "@WM_STATE_RUNNING_W"
+        },
+        "RINSING": {
+          "index": 7,
+          "label": "@WM_STATE_RINSING_W"
+        },
+        "SPINNING": {
+          "index": 8,
+          "label": "@WM_STATE_SPINNING_W"
+        },
+        "DRYING": {
+          "index": 9,
+          "label": "@WM_STATE_DRYING_W"
+        },
+        "END": {
+          "index": 10,
+          "label": "@WM_STATE_END_W"
+        },
+        "COOLDOWN": {
+          "index": 11,
+          "label": "@WM_STATE_COOLDOWN_W"
+        },
+        "RINSEHOLD": {
+          "index": 12,
+          "label": "@WM_STATE_RINSEHOLD_W"
+        },
+        "WASH_REFRESHING": {
+          "index": 14,
+          "label": "@WM_STATE_WASH_REFRESHING_W"
+        },
+        "STEAMSOFTENING": {
+          "index": 15,
+          "label": "@WM_STATE_STEAMSOFTENING_W"
+        },
+        "DEMO": {
+          "index": 16,
+          "label": "@WM_STATE_DEMO_W"
+        },
+        "ERROR": {
+          "index": 18,
+          "label": "@WM_STATE_ERROR_W"
+        }
+      }
+    },
+    "preState": {
+      "dataType": "enum",
+      "label": null,
+      "valueMapping": {
+        "POWEROFF": {
+          "index": 0,
+          "label": "@WM_STATE_POWER_OFF_W"
+        },
+        "INITIAL": {
+          "index": 1,
+          "label": "@WM_STATE_INITIAL_W"
+        },
+        "PAUSE": {
+          "index": 2,
+          "label": "@WM_STATE_PAUSE_W"
+        },
+        "RESERVED": {
+          "index": 3,
+          "label": "@WM_STATE_RESERVE_W"
+        },
+        "DETECTING": {
+          "index": 4,
+          "label": "@WM_STATE_DETECTING_W"
+        },
+        "RUNNING": {
+          "index": 6,
+          "label": "@WM_STATE_RUNNING_W"
+        },
+        "RINSING": {
+          "index": 7,
+          "label": "@WM_STATE_RINSING_W"
+        },
+        "SPINNING": {
+          "index": 8,
+          "label": "@WM_STATE_SPINNING_W"
+        },
+        "DRYING": {
+          "index": 9,
+          "label": "@WM_STATE_DRYING_W"
+        },
+        "END": {
+          "index": 10,
+          "label": "@WM_STATE_END_W"
+        },
+        "COOLDOWN": {
+          "index": 11,
+          "label": "@WM_STATE_COOLDOWN_W"
+        },
+        "RINSEHOLD": {
+          "index": 12,
+          "label": "@WM_STATE_RINSEHOLD_W"
+        },
+        "WASH_REFRESHING": {
+          "index": 14,
+          "label": "@WM_STATE_WASH_REFRESHING_W"
+        },
+        "STEAMSOFTENING": {
+          "index": 15,
+          "label": "@WM_STATE_STEAMSOFTENING_W"
+        },
+        "DEMO": {
+          "index": 16,
+          "label": "@WM_STATE_DEMO_W"
+        },
+        "ERROR": {
+          "index": 18,
+          "label": "@WM_STATE_ERROR_W"
+        }
+      }
+    },
+    "remoteStart": {
+      "dataType": "enum",
+      "label": "@WM_OPTION_REMOTE_START_W",
+      "valueMapping": {
+        "REMOTE_START_OFF": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W"
+        },
+        "REMOTE_START_ON": {
+          "index": 1,
+          "label": "@CP_ON_EN_W"
+        }
+      }
+    },
+    "initialBit": {
+      "dataType": "enum",
+      "label": null,
+      "valueMapping": {
+        "INITIAL_BIT_OFF": {
+          "index": 0,
+          "label": "INITIAL_BIT_OFF"
+        },
+        "INITIAL_BIT_ON": {
+          "index": 1,
+          "label": "INITIAL_BIT_ON"
+        }
+      }
+    },
+    "AIDDLed": {
+      "dataType": "enum",
+      "valueMapping": {
+        "AIDDLed_OFF": {
+          "index": 0,
+          "label": "AIDDLed_OFF"
+        },
+        "AIDDLed_ON": {
+          "index": 1,
+          "label": "AIDDLed_ON"
+        }
+      }
+    },
+    "childLock": {
+      "dataType": "enum",
+      "label": "@WM_OPTION_CHILDLOCK_W",
+      "valueMapping": {
+        "CHILDLOCK_OFF": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W"
+        },
+        "CHILDLOCK_ON": {
+          "index": 1,
+          "label": "@CP_ON_EN_W"
+        }
+      }
+    },
+    "TCLCount": {
+      "dataType": "range",
+      "label": null,
+      "valueMapping": {
+        "min": 0,
+        "max": 60
+      }
+    },
+    "reserveTimeHour": {
+      "dataType": "range",
+      "label": "@WM_TITAN2_OPTION_DELAY_END_W",
+      "valueMapping": {
+        "min": 3,
+        "max": 19
+      }
+    },
+    "reserveTimeMinute": {
+      "dataType": "range",
+      "label": null,
+      "valueMapping": {
+        "min": 0,
+        "max": 59
+      }
+    },
+    "remainTimeHour": {
+      "dataType": "range",
+      "label": null,
+      "valueMapping": {
+        "min": 0,
+        "max": 30
+      }
+    },
+    "remainTimeMinute": {
+      "dataType": "range",
+      "label": null,
+      "valueMapping": {
+        "min": 0,
+        "max": 59
+      }
+    },
+    "initialTimeHour": {
+      "dataType": "range",
+      "label": null,
+      "valueMapping": {
+        "min": 0,
+        "max": 30
+      }
+    },
+    "initialTimeMinute": {
+      "dataType": "range",
+      "label": null,
+      "valueMapping": {
+        "min": 0,
+        "max": 59
+      }
+    },
+    "soilWash": {
+      "dataType": "enum",
+      "label": "@WM_TITAN2_OPTION_WASH_W",
+      "valueMapping": {
+        "NO_SOILWASH": {
+          "index": 0,
+          "label": "@WM_TERM_NO_SELECT_W"
+        },
+        "SOILWASH_TURBO_WASH": {
+          "index": 1,
+          "label": "@WM_TITAN2_OPTION_TURBO_WASH_W"
+        },
+        "SOILWASH_TIMESAVE": {
+          "index": 2,
+          "label": "@WM_TITAN2_OPTION_WASH_TIMESAVE_W"
+        },
+        "SOILWASH_NORMAL": {
+          "index": 3,
+          "label": "@WM_TITAN2_OPTION_WASH_NORMAL_W"
+        },
+        "SOILWASH_INTENSIVE": {
+          "index": 4,
+          "label": "@WM_TITAN2_OPTION_WASH_INTENSIVE_W"
+        }
+      }
+    },
+    "spin": {
+      "dataType": "enum",
+      "label": "@WM_TITAN2_OPTION_SPIN_SPEED_W",
+      "valueMapping": {
+        "NOT_SELECTED": {
+          "index": 0,
+          "label": "@WM_TERM_NO_SELECT_W"
+        },
+        "NO_SPIN": {
+          "index": 1,
+          "label": "@WM_TITAN2_OPTION_SPIN_NO_SPIN_W"
+        },
+        "SPIN_400": {
+          "index": 2,
+          "label": "@WM_TITAN2_OPTION_SPIN_400_W"
+        },
+        "SPIN_600": {
+          "index": 3,
+          "label": "@WM_TITAN2_OPTION_SPIN_600_W"
+        },
+        "SPIN_700": {
+          "index": 4,
+          "label": "@WM_TITAN2_OPTION_SPIN_700_W"
+        },
+        "SPIN_800": {
+          "index": 5,
+          "label": "@WM_TITAN2_OPTION_SPIN_800_W"
+        },
+        "SPIN_900": {
+          "index": 6,
+          "label": "@WM_TITAN2_OPTION_SPIN_900_W"
+        },
+        "SPIN_1000": {
+          "index": 7,
+          "label": "@WM_TITAN2_OPTION_SPIN_1000_W"
+        },
+        "SPIN_1100": {
+          "index": 8,
+          "label": "@WM_TITAN2_OPTION_SPIN_1100_W"
+        },
+        "SPIN_1200": {
+          "index": 9,
+          "label": "@WM_TITAN2_OPTION_SPIN_1200_W"
+        },
+        "SPIN_1400": {
+          "index": 10,
+          "label": "@WM_TITAN2_OPTION_SPIN_1400_W"
+        },
+        "SPIN_1600": {
+          "index": 11,
+          "label": "@WM_TITAN2_OPTION_SPIN_1600_W"
+        },
+        "SPIN_Max": {
+          "index": 255,
+          "label": "@WM_TITAN2_OPTION_SPIN_MAX_W"
+        }
+      }
+    },
+    "temp": {
+      "dataType": "enum",
+      "label": "@WM_TITAN2_OPTION_TEMP_W",
+      "valueMapping": {
+        "NO_TEMP": {
+          "index": 0,
+          "label": "@WM_TERM_NO_SELECT_W"
+        },
+        "TEMP_COLD": {
+          "index": 1,
+          "label": "@WM_TITAN2_OPTION_TEMP_COLD_W"
+        },
+        "TEMP_20": {
+          "index": 2,
+          "label": "@WM_TITAN2_OPTION_TEMP_20_W"
+        },
+        "TEMP_30": {
+          "index": 3,
+          "label": "@WM_TITAN2_OPTION_TEMP_30_W"
+        },
+        "TEMP_40": {
+          "index": 4,
+          "label": "@WM_TITAN2_OPTION_TEMP_40_W"
+        },
+        "TEMP_50": {
+          "index": 5,
+          "label": "@WM_TITAN2_OPTION_TEMP_50_W"
+        },
+        "TEMP_60": {
+          "index": 6,
+          "label": "@WM_TITAN2_OPTION_TEMP_60_W"
+        },
+        "TEMP_95": {
+          "index": 7,
+          "label": "@WM_TITAN2_OPTION_TEMP_95_W"
+        }
+      }
+    },
+    "rinse": {
+      "dataType": "enum",
+      "label": "@WM_TITAN2_OPTION_RINSE_W",
+      "valueMapping": {
+        "NO_RINSE": {
+          "index": 0,
+          "label": "@WM_TERM_NO_SELECT_W"
+        },
+        "RINSE_NORMAL": {
+          "index": 1,
+          "label": "@WM_TITAN2_OPTION_RINSE_NORMAL_W"
+        },
+        "RINSE_PLUS": {
+          "index": 2,
+          "label": "@WM_TITAN2_OPTION_RINSE_RINSE+_W"
+        },
+        "RINSE_PLUSPLUS": {
+          "index": 3,
+          "label": "@WM_TITAN2_OPTION_RINSE_RINSE++_W"
+        },
+        "RINSE_NORMAL_HOLD": {
+          "index": 4,
+          "label": "@WM_TITAN2_OPTION_RINSE_NORMALHOLD_W"
+        },
+        "RINSE_PLUS_HOLD": {
+          "index": 5,
+          "label": "@WM_TITAN2_OPTION_RINSE_RINSE+HOLD_W"
+        }
+      }
+    },
+    "turboWash": {
+      "dataType": "enum",
+      "label": "@WM_TITAN2_OPTION_TURBO_WASH_W",
+      "valueMapping": {
+        "TURBOWASH_OFF": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W"
+        },
+        "TURBOWASH_ON": {
+          "index": 1,
+          "label": "@CP_ON_EN_W"
+        }
+      }
+    },
+    "steam": {
+      "dataType": "enum",
+      "label": "@WM_TITAN2_OPTION_STEAM_W",
+      "valueMapping": {
+        "STEAM_OFF": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W"
+        },
+        "STEAM_ON": {
+          "index": 1,
+          "label": "@CP_ON_EN_W"
+        }
+      }
+    },
+    "preWash": {
+      "dataType": "enum",
+      "label": "@WM_TITAN2_OPTION_PRE_WASH_W",
+      "valueMapping": {
+        "PREWASH_OFF": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W"
+        },
+        "PREWASH_ON": {
+          "index": 1,
+          "label": "@CP_ON_EN_W"
+        }
+      }
+    },
+    "medicRinse": {
+      "dataType": "enum",
+      "label": "@WM_TITAN2_OPTION_MEDIC_RINSE_W",
+      "valueMapping": {
+        "MEDICRINSE_OFF": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W"
+        },
+        "MEDICRINSE_ON": {
+          "index": 1,
+          "label": "@CP_ON_EN_W"
+        }
+      }
+    },
+    "steamSoftener": {
+      "dataType": "enum",
+      "label": "@WM_TITAN2_OPTION_STEAM_SOFTENER_W",
+      "valueMapping": {
+        "STEAMSOFTENER_OFF": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W"
+        },
+        "STEAMSOFTENER_ON": {
+          "index": 1,
+          "label": "@CP_ON_EN_W"
+        }
+      }
+    },
+    "loadItemWasher": {
+      "dataType": "enum",
+      "label": "@WM_TITAN2_OPTION_LOAD_ITEM_W",
+      "valueMapping": {
+        "LOADITEM_OFF": {
+          "index": 0,
+          "label": "0"
+        },
+        "LOADITEM_1": {
+          "index": 1,
+          "label": "1"
+        },
+        "LOADITEM_2": {
+          "index": 2,
+          "label": "2"
+        },
+        "LOADITEM_3": {
+          "index": 3,
+          "label": "3"
+        }
+      }
+    },
+    "standby": {
+      "dataType": "enum",
+      "label": "@WM_TITAN2_OPTION_STANDBY_W",
+      "valueMapping": {
+        "STANDBY_OFF": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W"
+        },
+        "STANDBY_ON": {
+          "index": 1,
+          "label": "@CP_ON_EN_W"
+        }
+      }
+    },
+    "creaseCare": {
+      "dataType": "enum",
+      "label": "@WM_TITAN2_OPTION_CREASE_CARE_W",
+      "valueMapping": {
+        "CREASECARE_OFF": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W"
+        },
+        "CREASECARE_ON": {
+          "index": 1,
+          "label": "@CP_ON_EN_W"
+        }
+      }
+    },
+    "proofing": {
+      "dataType": "enum",
+      "label": "@WM_TITAN2_OPTION_PROOFING_W",
+      "valueMapping": {
+        "PROOFING_OFF": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W"
+        },
+        "PROOFING_ON": {
+          "index": 1,
+          "label": "@CP_ON_EN_W"
+        }
+      }
+    },
+    "courseFL24inchBaseTitan": {
+      "ref": "Course"
+    },
+    "error": {
+      "dataType": "enum",
+      "valueMapping": {
+        "ERROR_NO": {
+          "_comment": "No Error",
+          "index": 0,
+          "label": "ERROR_NOERROR",
+          "title": "ERROR_NOERROR_TITLE",
+          "content": "ERROR_NOERROR_CONTENT"
+        },
+        "ERROR_DE2": {
+          "_comment": "DE2 Error",
+          "index": 1,
+          "label": "@WM_WW_FL_ERROR_DE2_W",
+          "title": "@WM_WW_FL_ERROR_DE2_TITLE_W",
+          "content": "@WM_WW_FL_ERROR_DE2_CONTENT_S"
+        },
+        "ERROR_DE1": {
+          "_comment": "DE1 Error",
+          "index": 2,
+          "label": "@WM_WW_FL_ERROR_DE1_W",
+          "title": "@WM_WW_FL_ERROR_DE1_TITLE_W",
+          "content": "@WM_WW_FL_ERROR_DE1_CONTENT_S"
+        },
+        "ERROR_IE": {
+          "_comment": "IE Error",
+          "index": 3,
+          "label": "@WM_WW_FL_ERROR_IE_W",
+          "title": "@WM_WW_FL_ERROR_IE_TITLE_W",
+          "content": "@WM_WW_FL_ERROR_IE_CONTENT_S"
+        },
+        "ERROR_OE": {
+          "_comment": "OE Error",
+          "index": 4,
+          "label": "@WM_WW_FL_ERROR_OE_W",
+          "title": "@WM_WW_FL_ERROR_OE_TITLE_W",
+          "content": "@WM_WW_FL_ERROR_OE_CONTENT_S"
+        },
+        "ERROR_UE": {
+          "_comment": "UE Error",
+          "index": 5,
+          "label": "@WM_WW_FL_ERROR_UE_W",
+          "title": "@WM_WW_FL_ERROR_UE_TITLE_W",
+          "content": "@WM_WW_FL_ERROR_UE_CONTENT_S"
+        },
+        "ERROR_FE": {
+          "_comment": "FE Error",
+          "index": 6,
+          "label": "@WM_WW_FL_ERROR_FE_W",
+          "title": "@WM_WW_FL_ERROR_FE_TITLE_W",
+          "content": "@WM_WW_FL_ERROR_FE_CONTENT_S"
+        },
+        "ERROR_PE": {
+          "_comment": "PE Error",
+          "index": 7,
+          "label": "@WM_WW_FL_ERROR_PE_W",
+          "title": "@WM_WW_FL_ERROR_PE_TITLE_W",
+          "content": "@WM_WW_FL_ERROR_PE_CONTENT_S"
+        },
+        "ERROR_TE": {
+          "_comment": "tE error",
+          "index": 8,
+          "label": "@WM_WW_FL_ERROR_TE_W",
+          "title": "@WM_WW_FL_ERROR_TE_TITLE_W",
+          "content": "@WM_WW_FL_ERROR_TE_CONTENT_S"
+        },
+        "ERROR_LE": {
+          "_comment": "LE error",
+          "index": 9,
+          "label": "@WM_WW_FL_ERROR_LE_W",
+          "title": "@WM_WW_FL_ERROR_LE_TITLE_W",
+          "content": "@WM_WW_FL_ERROR_LE_CONTENT_S"
+        },
+        "ERROR_DHE": {
+          "_comment": "dHE error",
+          "index": 11,
+          "label": "@WM_WW_FL_ERROR_DHE_W",
+          "title": "@WM_WW_FL_ERROR_DHE_TITLE_W",
+          "content": "@WM_WW_FL_ERROR_DHE_CONTENT_S"
+        },
+        "ERROR_PF": {
+          "_comment": "PF error",
+          "index": 12,
+          "label": "@WM_WW_FL_ERROR_PF_W",
+          "title": "@WM_WW_FL_ERROR_PF_TITLE_W",
+          "content": "@WM_WW_FL_ERROR_PF_CONTENT_S"
+        },
+        "ERROR_FF": {
+          "_comment": "FF error",
+          "index": 13,
+          "label": "@WM_WW_FL_ERROR_FF_W",
+          "title": "@WM_WW_FL_ERROR_FF_TITLE_W",
+          "content": "@WM_WW_FL_ERROR_FF_CONTENT_S"
+        },
+        "ERROR_DCE": {
+          "_comment": "dCE Error",
+          "index": 14,
+          "label": "@WM_WW_FL_ERROR_DCE_W",
+          "title": "@WM_WW_FL_ERROR_DCE_TITLE_W",
+          "content": "@WM_WW_FL_ERROR_DCE_CONTENT_S"
+        },
+        "ERROR_AE": {
+          "_comment": "AE Error (AquaLock)",
+          "index": 15,
+          "label": "@WM_WW_FL_ERROR_AE_W",
+          "title": "@WM_WW_FL_ERROR_AE_TITLE_W",
+          "content": "@WM_WW_FL_ERROR_AE_CONTENT_S"
+        },
+        "ERROR_EE": {
+          "_comment": "EE error",
+          "index": 16,
+          "label": "@WM_WW_FL_ERROR_EE_W",
+          "title": "@WM_WW_FL_ERROR_EE_TITLE_W",
+          "content": "@WM_WW_FL_ERROR_EE_CONTENT_S"
+        },
+        "ERROR_PS": {
+          "_comment": "PS Error",
+          "index": 17,
+          "label": "@WM_WW_FL_ERROR_PS_W",
+          "title": "@WM_WW_FL_ERROR_PS_TITLE_W",
+          "content": "@WM_WW_FL_ERROR_PS_CONTENT_S"
+        },
+        "ERROR_DE4": {
+          "_comment": "dE4 Error",
+          "index": 18,
+          "label": "@WM_WW_FL_ERROR_DE4_W",
+          "title": "@WM_WW_FL_ERROR_DE4_TITLE_W",
+          "content": "@WM_WW_FL_ERROR_DE4_CONTENT_S"
+        },
+        "ERROR_VS": {
+          "_comment": "vS Error",
+          "index": 19,
+          "label": "@WM_WW_FL_ERROR_VS_W",
+          "title": "@WM_WW_FL_ERROR_VS_TITLE_W",
+          "content": "@WM_WW_FL_ERROR_VS_CONTENT_S"
+        }
+      }
+    },
+    "smartCourseFL24inchBaseTitan": {
+      "ref": "SmartCourse"
+    },
+    "doorLock": {
+      "dataType": "enum",
+      "label": null,
+      "valueMapping": {
+        "DOOR_LOCK_OFF": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W"
+        },
+        "DOOR_LOCK_ON": {
+          "index": 1,
+          "label": "@CP_ON_EN_W"
+        }
+      }
+    },
+    "downloadedCourseFL24inchBaseTitan": {
+      "ref": "SmartCourse"
+    }
+  },
+  "ControlWifi": {
+    "WMStart": {
+      "command": "Set",
+      "data": {
+        "washerDryer": {
+          "course": "temp",
+          "soilWash": "NO_SOILWASH",
+          "spin": "NOT_SELECTED",
+          "temp": "NO_TEMP",
+          "rinse": "NO_RINSE",
+          "reserveTimeHour": 0,
+          "reserveTimeMinute": 0,
+          "loadItemWasher": "LOADITEM_OFF",
+          "turboWash": "TURBOWASH_OFF",
+          "creaseCare": "CREASECARE_OFF",
+          "steamSoftener": "STEAMSOFTENER_OFF",
+          "ecoHybrid": "ECOHYBRID_OFF",
+          "medicRinse": "MEDICRINSE_OFF",
+          "rinseSpin": "RINSE_SPIN_OFF",
+          "preWash": "PREWASH_OFF",
+          "steam": "STEAM_OFF",
+          "initialBit": "INITIAL_BIT_OFF",
+          "remoteStart": "REMOTE_START_OFF",
+          "doorLock": "DOOR_LOCK_OFF",
+          "childLock": "CHILDLOCK_OFF",
+          "SmartCourse": "temp"
+        }
+      }
+    },
+    "WMDownload": {
+      "command": "Set",
+      "data": {
+        "washerDryer": {
+          "courseDownloadType": "COURSEDATA",
+          "courseDownloadDataLength": 21,
+          "course": "temp",
+          "soilWash": "NO_SOILWASH",
+          "spin": "NOT_SELECTED",
+          "temp": "NO_TEMP",
+          "rinse": "NO_RINSE",
+          "reserveTimeHour": 0,
+          "reserveTimeMinute": 0,
+          "loadItemWasher": "LOADITEM_OFF",
+          "turboWash": "TURBOWASH_OFF",
+          "creaseCare": "CREASECARE_OFF",
+          "steamSoftener": "STEAMSOFTENER_OFF",
+          "ecoHybrid": "ECOHYBRID_OFF",
+          "medicRinse": "MEDICRINSE_OFF",
+          "rinseSpin": "RINSE_SPIN_OFF",
+          "preWash": "PREWASH_OFF",
+          "steam": "STEAM_OFF",
+          "initialBit": "INITIAL_BIT_OFF",
+          "remoteStart": "REMOTE_START_OFF",
+          "doorLock": "DOOR_LOCK_OFF",
+          "childLock": "CHILDLOCK_OFF",
+          "SmartCourse": "temp"
+        }
+      }
+    },
+    "WMOff": {
+      "command": "Set",
+      "data": {
+        "washerDryer": {
+          "controlDataType": "POWEROFF",
+          "controlDataValueLength": 1,
+          "controlDataValue": 0
+        }
+      }
+    },
+    "WMStop": {
+      "command": "Set",
+      "data": {
+        "washerDryer": {
+          "controlDataType": "PAUSE",
+          "controlDataValueLength": 1,
+          "controlDataValue": 0
+        }
+      }
+    },
+    "WMWakeup": {
+      "command": "Set",
+      "data": {
+        "washerDryer": {
+          "controlDataType": "WAKEUP",
+          "controlDataValueLength": 0
+        }
+      }
+    }
+  },
+  "Course": {
+    "COTTON": {
+      "_comment": "Cotton",
+      "courseType": "Course",
+      "name": "@WM_WW_FL_TITAN2_COURSE_COTTON_W",
+      "script": "",
+      "controlEnable": true,
+      "courseValue": "COTTON",
+      "imgIndex": 141,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_40",
+          "selectable": [
+            "TEMP_COLD",
+            "TEMP_20",
+            "TEMP_30",
+            "TEMP_40",
+            "TEMP_60",
+            "TEMP_95"
+          ]
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_Max",
+          "selectable": [
+            "NO_SPIN",
+            "SPIN_400",
+            "SPIN_800",
+            "SPIN_1000",
+            "SPIN_Max"
+          ]
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL",
+          "selectable": [
+            "RINSE_NORMAL",
+            "RINSE_PLUS"
+          ]
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "EASYCARE": {
+      "_comment": "Easy Care",
+      "courseType": "Course",
+      "name": "@WM_WW_FL_TITAN2_COURSE_EASY_CARE_W",
+      "script": "",
+      "controlEnable": true,
+      "courseValue": "EASYCARE",
+      "imgIndex": 145,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_40",
+          "selectable": [
+            "TEMP_COLD",
+            "TEMP_20",
+            "TEMP_30",
+            "TEMP_40",
+            "TEMP_60"
+          ]
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_Max",
+          "selectable": [
+            "NO_SPIN",
+            "SPIN_400",
+            "SPIN_800",
+            "SPIN_1000",
+            "SPIN_Max"
+          ]
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL",
+          "selectable": [
+            "RINSE_NORMAL",
+            "RINSE_PLUS"
+          ]
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "COTTONPLUS": {
+      "_comment": "Eco 40-60",
+      "courseType": "Course",
+      "name": "@WM_WW_FL_TITAN2_COURSE_ECO_40_60_W",
+      "script": "",
+      "controlEnable": true,
+      "courseValue": "COTTONPLUS",
+      "imgIndex": 148,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_40",
+          "selectable": [
+            "TEMP_40",
+            "TEMP_60"
+          ]
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_Max",
+          "selectable": [
+            "NO_SPIN",
+            "SPIN_400",
+            "SPIN_800",
+            "SPIN_1000",
+            "SPIN_Max"
+          ]
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL",
+          "selectable": [
+            "RINSE_NORMAL",
+            "RINSE_PLUS"
+          ]
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "DUVET": {
+      "_comment": "Duvet",
+      "courseType": "Course",
+      "name": "@WM_WW_FL_TITAN2_COURSE_DUVET_W",
+      "script": "",
+      "controlEnable": true,
+      "courseValue": "DUVET",
+      "imgIndex": 202,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_COLD",
+          "selectable": [
+            "TEMP_COLD",
+            "TEMP_20",
+            "TEMP_30",
+            "TEMP_40"
+          ]
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_1000",
+          "selectable": [
+            "NO_SPIN",
+            "SPIN_400",
+            "SPIN_800",
+            "SPIN_1000"
+          ]
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL",
+          "selectable": [
+            "RINSE_NORMAL",
+            "RINSE_PLUS"
+          ]
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "MIXEDFABRIC": {
+      "_comment": "Mix",
+      "courseType": "Course",
+      "name": "@WM_WW_FL_TITAN2_COURSE_MIX_W",
+      "script": "",
+      "controlEnable": true,
+      "courseValue": "MIXEDFABRIC",
+      "imgIndex": 142,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_40",
+          "selectable": [
+            "TEMP_COLD",
+            "TEMP_20",
+            "TEMP_30",
+            "TEMP_40",
+            "TEMP_60"
+          ]
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_1000",
+          "selectable": [
+            "NO_SPIN",
+            "SPIN_400",
+            "SPIN_800",
+            "SPIN_1000",
+            "SPIN_Max"
+          ]
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL",
+          "selectable": [
+            "RINSE_NORMAL",
+            "RINSE_PLUS"
+          ]
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "SPORTSWEAR": {
+      "_comment": "Sports Wear",
+      "courseType": "Course",
+      "name": "@WM_WW_FL_TITAN2_COURSE_SPORTS_WEAR_W",
+      "script": "",
+      "controlEnable": true,
+      "courseValue": "SPORTSWEAR",
+      "imgIndex": 51,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_40",
+          "selectable": [
+            "TEMP_COLD",
+            "TEMP_20",
+            "TEMP_30",
+            "TEMP_40"
+          ]
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_800",
+          "selectable": [
+            "NO_SPIN",
+            "SPIN_400",
+            "SPIN_800"
+          ]
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL",
+          "selectable": [
+            "RINSE_NORMAL",
+            "RINSE_PLUS"
+          ]
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "SILENTWASH": {
+      "_comment": "Silent Wash",
+      "courseType": "Course",
+      "name": "@WM_WW_FL_TITAN2_COURSE_SILENT_WASH_W",
+      "script": "",
+      "controlEnable": true,
+      "courseValue": "SILENTWASH",
+      "imgIndex": 26,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_40",
+          "selectable": [
+            "TEMP_COLD",
+            "TEMP_20",
+            "TEMP_30",
+            "TEMP_40",
+            "TEMP_60"
+          ]
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_800",
+          "selectable": [
+            "NO_SPIN",
+            "SPIN_400",
+            "SPIN_800",
+            "SPIN_1000"
+          ]
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL",
+          "selectable": [
+            "RINSE_NORMAL",
+            "RINSE_PLUS"
+          ]
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "SPEED14": {
+      "_comment": "Speed 14",
+      "courseType": "Course",
+      "name": "@WM_WW_FL_TITAN2_COURSE_SPEED_14_W",
+      "script": "",
+      "controlEnable": true,
+      "courseValue": "SPEED14",
+      "imgIndex": 143,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_20",
+          "selectable": [
+            "TEMP_20",
+            "TEMP_30",
+            "TEMP_40"
+          ]
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_400",
+          "selectable": [
+            "NO_SPIN",
+            "SPIN_400",
+            "SPIN_800",
+            "SPIN_1000",
+            "SPIN_Max"
+          ]
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL",
+          "selectable": [
+            "RINSE_NORMAL",
+            "RINSE_PLUS"
+          ]
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_ON"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "TUB_CLEAN": {
+      "_comment": "Tub Clean",
+      "courseType": "Course",
+      "name": "@WM_WW_FL_TITAN2_COURSE_TUB_CLEAN_W",
+      "script": "",
+      "controlEnable": true,
+      "courseValue": "TUB_CLEAN",
+      "imgIndex": 152,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL",
+          "showing": "@WM_TERM_NO_SELECT_W"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_60",
+          "showing": "@WM_TERM_NO_SELECT_W"
+        },
+        {
+          "value": "spin",
+          "default": "NO_SPIN",
+          "showing": "@WM_TERM_NO_SELECT_W"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL",
+          "showing": "@WM_TERM_NO_SELECT_W"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        }
+      ]
+    },
+    "WOOL": {
+      "_comment": "Wool",
+      "courseType": "Course",
+      "name": "@WM_WW_FL_TITAN2_COURSE_WOOL_W",
+      "script": "",
+      "controlEnable": true,
+      "courseValue": "WOOL",
+      "imgIndex": 99,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_30",
+          "selectable": [
+            "TEMP_COLD",
+            "TEMP_20",
+            "TEMP_30",
+            "TEMP_40"
+          ]
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_800",
+          "selectable": [
+            "NO_SPIN",
+            "SPIN_400",
+            "SPIN_800"
+          ]
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL",
+          "selectable": [
+            "RINSE_NORMAL",
+            "RINSE_PLUS"
+          ]
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "DELICATE": {
+      "_comment": "Delicate",
+      "courseType": "Course",
+      "name": "@WM_WW_FL_TITAN2_COURSE_DELICATE_W",
+      "script": "",
+      "controlEnable": true,
+      "courseValue": "DELICATE",
+      "imgIndex": 149,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_20",
+          "selectable": [
+            "TEMP_COLD",
+            "TEMP_20",
+            "TEMP_30",
+            "TEMP_40"
+          ]
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_800",
+          "selectable": [
+            "NO_SPIN",
+            "SPIN_400",
+            "SPIN_800"
+          ]
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL",
+          "selectable": [
+            "RINSE_NORMAL",
+            "RINSE_PLUS"
+          ]
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "ALLERGYSPASTEAM": {
+      "_comment": "Allergy SpaSteam",
+      "courseType": "Course",
+      "name": "@WM_WW_FL_TITAN2_COURSE_ALLERGY_SPASTEAM_W",
+      "script": "",
+      "controlEnable": true,
+      "courseValue": "ALLERGYSPASTEAM",
+      "imgIndex": 147,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_60"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_Max",
+          "selectable": [
+            "NO_SPIN",
+            "SPIN_400",
+            "SPIN_800",
+            "SPIN_1000",
+            "SPIN_Max"
+          ]
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL",
+          "selectable": [
+            "RINSE_NORMAL",
+            "RINSE_PLUS"
+          ]
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_ON"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "TURBO39": {
+      "_comment": "Turbo Wash 39",
+      "courseType": "Course",
+      "name": "@WM_WW_FL_TITAN2_COURSE_TURBO_39_W",
+      "script": "",
+      "controlEnable": true,
+      "courseValue": "TURBO39",
+      "imgIndex": 212,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_40",
+          "selectable": [
+            "TEMP_COLD",
+            "TEMP_20",
+            "TEMP_30",
+            "TEMP_40",
+            "TEMP_60"
+          ]
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_1200",
+          "selectable": [
+            "SPIN_400",
+            "SPIN_800",
+            "SPIN_1000",
+            "SPIN_1200",
+            "SPIN_Max"
+          ]
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL",
+          "selectable": [
+            "RINSE_NORMAL",
+            "RINSE_PLUS"
+          ]
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_ON"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    }
+  },
+  "SmartCourse": {
+    "BABYCARE": {
+      "_comment": "baby_care",
+      "Course": "COTTON",
+      "courseType": "SmartCourse",
+      "courseValue": "BABYCARE",
+      "name": "@WM_WW_FL_SMARTCOURSE_BABY_CARE_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_BABY_CARE_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 52,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_1000"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_60"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_PLUS"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_ON"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_ON",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "HYGIENE": {
+      "_comment": "Hygiene",
+      "Course": "ALLERGYCARE",
+      "courseType": "SmartCourse",
+      "courseValue": "HYGIENE",
+      "name": "@WM_WW_FL_SMARTCOURSE_HYGIENE_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_HYGIENE_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 36,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_Max"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_60"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_ON"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "SMALLLOAD": {
+      "_comment": "Small Load",
+      "Course": "SPEED14",
+      "courseType": "SmartCourse",
+      "courseValue": "SMALLLOAD",
+      "name": "@WM_WW_FL_SMARTCOURSE_SMALL_LOAD_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_SMALL_LOAD_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 46,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_400"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_20"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_ON"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "LINGERIE": {
+      "_comment": "Lingerie",
+      "Course": "DELICATE",
+      "courseType": "SmartCourse",
+      "courseValue": "LINGERIE",
+      "name": "@WM_WW_FL_SMARTCOURSE_LINGERIE_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_LINGERIE_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 13,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_800"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_20"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "SKINCARE": {
+      "_comment": "skin_care",
+      "Course": "COTTON",
+      "courseType": "SmartCourse",
+      "courseValue": "SKINCARE",
+      "name": "@WM_WW_FL_SMARTCOURSE_SKIN_CARE_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_SKIN_CARE_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 16,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_Max"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_40"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_PLUS"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_ON",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "COLDWASH": {
+      "_comment": "Cold Wash",
+      "Course": "COTTON",
+      "courseType": "SmartCourse",
+      "courseValue": "COLDWASH",
+      "name": "@WM_WW_FL_SMARTCOURSE_COLD_WASH_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_COLD_WASH_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 22,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_Max"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_COLD"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "RINSESPIN": {
+      "_comment": "Rinse + Spin",
+      "Course": "RINSESPIN",
+      "courseType": "SmartCourse",
+      "courseValue": "RINSESPIN",
+      "name": "@WM_WW_FL_SMARTCOURSE_RINSE_SPIN_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_RINSE_SPIN_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 60,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_Max"
+        },
+        {
+          "value": "temp",
+          "default": "NO_TEMP"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "KIDSWEAR": {
+      "_comment": "Kids Wear",
+      "Course": "COTTON",
+      "courseType": "SmartCourse",
+      "courseValue": "KIDSWEAR",
+      "name": "@WM_WW_FL_SMARTCOURSE_KIDS_WEAR_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_KIDS_WEAR_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 53,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_1200"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_60"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_ON"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "SCHOOLUNIFORM": {
+      "_comment": "School Uniform",
+      "Course": "EASYCARE",
+      "courseType": "SmartCourse",
+      "courseValue": "SCHOOLUNIFORM",
+      "name": "@WM_WW_FL_SMARTCOURSE_SCHOOL_UNIFORM_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_SCHOOL_UNIFORM_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 130,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_1000"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_40"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "SWIMMINGWEAR": {
+      "_comment": "Swimming Wear",
+      "Course": "WOOL",
+      "courseType": "SmartCourse",
+      "courseValue": "SWIMMINGWEAR",
+      "name": "@WM_WW_FL_SMARTCOURSE_SWIMMING_WEAR_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_SWIMMING_WEAR_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 54,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_400"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_20"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "RAINYSEASON": {
+      "_comment": "Rainy Season",
+      "Course": "COTTON",
+      "courseType": "SmartCourse",
+      "courseValue": "RAINYSEASON",
+      "name": "@WM_WW_FL_SMARTCOURSE_RAINY_SEASON_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_RAINY_SEASON_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 55,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_Max"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_40"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "GYMCLOTHES": {
+      "_comment": "Gym Clothes",
+      "Course": "SPORTSWEAR",
+      "courseType": "SmartCourse",
+      "courseValue": "GYMCLOTHES",
+      "name": "@WM_WW_FL_SMARTCOURSE_GYM_CLOTHES_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_GYM_CLOTHES_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 56,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_800"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_COLD"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "JEANS": {
+      "_comment": "Jeans",
+      "Course": "DELICATE",
+      "courseType": "SmartCourse",
+      "courseValue": "JEANS",
+      "name": "@WM_WW_FL_SMARTCOURSE_JEANS_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_JEANS_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 76,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_Max"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_20"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "BLANKET": {
+      "_comment": "Blanket",
+      "Course": "DUVET",
+      "courseType": "SmartCourse",
+      "courseValue": "BLANKET",
+      "name": "@WM_WW_FL_SMARTCOURSE_BLANKET_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_BLANKET_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 57,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_400"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_COLD"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "SWEATSTAIN": {
+      "_comment": "Sweat Stain",
+      "Course": "COTTON",
+      "courseType": "SmartCourse",
+      "courseValue": "SWEATSTAIN",
+      "name": "@WM_WW_FL_SMARTCOURSE_SWEAT_STAIN_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_SWEAT_STAIN_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 58,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_Max"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_40"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "SINGLEGARMENT": {
+      "_comment": "Single Garment",
+      "Course": "SPEED14",
+      "courseType": "SmartCourse",
+      "courseValue": "SINGLEGARMENT",
+      "name": "@WM_WW_FL_SMARTCOURSE_SINGLE_GARMENT_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_SINGLE_GARMENT_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 59,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_400"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_20"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_ON"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "COLORPROTECTION": {
+      "_comment": "Color Protection",
+      "Course": "DELICATE",
+      "courseType": "SmartCourse",
+      "courseValue": "COLORPROTECTION",
+      "name": "@WM_WW_FL_SMARTCOURSE_COLOR_PROTECTION_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_COLOR_PROTECTION_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 47,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_800"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_20"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "NOISEMINIMIZE": {
+      "_comment": "Noise Minimize",
+      "Course": "SILENTWASH",
+      "courseType": "SmartCourse",
+      "courseValue": "NOISEMINIMIZE",
+      "name": "@WM_WW_FL_SMARTCOURSE_NOISE_MINIMIZE_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_NOISE_MINIMIZE_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 88,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_1000"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_40"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "MINIMIZEWRINKLES": {
+      "_comment": "Minimize Wrinkles",
+      "Course": "COTTON",
+      "courseType": "SmartCourse",
+      "courseValue": "MINIMIZEWRINKLES",
+      "name": "@WM_WW_FL_SMARTCOURSE_MINIMIZE_WRINKLES_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_MINIMIZE_WRINKLES_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 80,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_Max"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_40"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "LIGHTLYSOILEDITEMS": {
+      "_comment": "Lightly Soiled Items",
+      "Course": "WOOL",
+      "courseType": "SmartCourse",
+      "courseValue": "LIGHTLYSOILEDITEMS",
+      "name": "@WM_WW_FL_SMARTCOURSE_LIGHTLY_SOILED_ITEMS_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_LIGHTLY_SOILED_ITEMS_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 43,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_400"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_20"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "MINIMIZEDETERGENT": {
+      "_comment": "Minimize Detergent Residue",
+      "Course": "COTTON",
+      "courseType": "SmartCourse",
+      "courseValue": "MINIMIZEDETERGENT",
+      "name": "@WM_WW_FL_SMARTCOURSE_MINIMIZE_DETERGENT_RESIDUE_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_MINIMIZE_DETERGENT_RESIDUE_1_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 30,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_Max"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_40"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_PLUS"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "SLEEVEHEMSANDCOLLARS": {
+      "_comment": "Sleeve Hems and Collars",
+      "Course": "COTTON",
+      "courseType": "SmartCourse",
+      "courseValue": "SLEEVEHEMSANDCOLLARS",
+      "name": "@WM_WW_FL_SMARTCOURSE_SLEEVE_HEMS_AND_COLLARS_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_SLEEVE_HEMS_AND_COLLARS_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 37,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_1000"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_60"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_ON"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "JUICEANDFOODSTAINS": {
+      "_comment": "Juice and Food Stains",
+      "Course": "COTTON",
+      "courseType": "SmartCourse",
+      "courseValue": "JUICEANDFOODSTAINS",
+      "name": "@WM_WW_FL_SMARTCOURSE_JUICE_AND_FOOD_STAINS_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_JUICE_AND_FOOD_STAINS_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 108,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_1000"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_40"
+        },
+        {
+          "value": "rinse",
+          "default": "RINSE_NORMAL"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_ON"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "QUICKTUBCLEAN": {
+      "_comment": "quick_tub_clean",
+      "Course": "QUICKTUBCLEAN",
+      "courseType": "SmartCourse",
+      "courseValue": "QUICKTUBCLEAN",
+      "name": "@WM_WW_FL_SMARTCOURSE_QUICK_TUB_CLEAN_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_QUICK_TUB_CLEAN_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 38,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "SOILWASH_NORMAL"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_400"
+        },
+        {
+          "value": "temp",
+          "default": "TEMP_COLD"
+        },
+        {
+          "value": "rinse",
+          "default": "NO_RINSE"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        }
+      ]
+    },
+    "DRAIN": {
+      "_comment": "Drain",
+      "Course": "SPINONLY",
+      "courseType": "SmartCourse",
+      "courseValue": "DRAIN",
+      "name": "@WM_WW_FL_SMARTCOURSE_DRAIN_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_DRAIN_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 217,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "NO_SOILWASH"
+        },
+        {
+          "value": "spin",
+          "default": "NO_SPIN"
+        },
+        {
+          "value": "temp",
+          "default": "NO_TEMP"
+        },
+        {
+          "value": "rinse",
+          "default": "NO_RINSE"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    },
+    "SPIN": {
+      "_comment": "Spin",
+      "Course": "SPINONLY",
+      "courseType": "SmartCourse",
+      "courseValue": "SPIN",
+      "name": "@WM_WW_FL_SMARTCOURSE_SPIN_W",
+      "script": "@WM_WW_FL_SMARTCOURSE_SPIN_SCRIPT_S",
+      "downloadEnable": true,
+      "controlEnable": true,
+      "imgIndex": 27,
+      "function": [
+        {
+          "value": "soilWash",
+          "default": "NO_SOILWASH"
+        },
+        {
+          "value": "spin",
+          "default": "SPIN_Max"
+        },
+        {
+          "value": "temp",
+          "default": "NO_TEMP"
+        },
+        {
+          "value": "rinse",
+          "default": "NO_RINSE"
+        },
+        {
+          "value": "preWash",
+          "default": "PREWASH_OFF"
+        },
+        {
+          "value": "turboWash",
+          "default": "TURBOWASH_OFF"
+        },
+        {
+          "value": "steam",
+          "default": "STEAM_OFF"
+        },
+        {
+          "value": "medicRinse",
+          "default": "MEDICRINSE_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "loadItemWasher",
+          "default": "LOADITEM_OFF",
+          "visibility": "gone"
+        },
+        {
+          "value": "reserveTimeHour",
+          "default": 0
+        }
+      ]
+    }
+  },
+  "Push": [
+    {
+      "category": "PUSH_WM_STATE",
+      "label": "@CP_ALARM_PRODUCT_STATE_W",
+      "groupCode": "20101",
+      "pushList": [
+        {
+          "0000": "PUSH_WM_COMPLETE"
+        },
+        {
+          "0001": "PUSH_WM_REMOTE_ANOTHER_ID"
+        },
+        {
+          "0100": "PUSH_WM_ERROR"
+        },
+        {
+          "0200": "PUSH_WM_REMOTE_START_OFF"
+        },
+        {
+          "0201": "PUSH_WM_REMOTE_START_ON"
+        }
+      ]
+    }
+  ],
+  "EnergyMonitoring": {
+    "valueMapping": [
+      "temp",
+      "spin",
+      "soilWash"
+    ],
+    "powertable": {
+      "1": 1,
+      "2": 2,
+      "3": 3,
+      "4": 4,
+      "5": 5,
+      "6": 6
+    },
+    "watertable": null
+  }
+}
