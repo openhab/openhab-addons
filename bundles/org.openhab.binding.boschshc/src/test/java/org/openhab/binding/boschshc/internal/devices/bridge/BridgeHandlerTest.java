@@ -12,28 +12,13 @@
  */
 package org.openhab.binding.boschshc.internal.devices.bridge;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -258,10 +243,11 @@ class BridgeHandlerTest {
         verify(thingHandlerCallback).statusUpdated(any(),
                 eq(ThingStatusInfoBuilder.create(ThingStatus.ONLINE, ThingStatusDetail.NONE).build()));
 
-        verify(thing).setProperty(BridgeHandler.THING_PROPERTY_IP_ADDRESS, "192.168.0.123");
-        verify(thing).setProperty(BridgeHandler.THING_PROPERTY_MAC_ADDRESS, "64-da-a0-ab-cd-ef");
+        verify(thing).setProperty("ipAddress", null);
+        verify(thing).setProperty(Thing.PROPERTY_MAC_ADDRESS, "64-da-a0-ab-cd-ef");
         verify(thing).setProperty(BridgeHandler.THING_PROPERTY_API_VERSIONS, "2.9, 3.2");
-        verify(thingHandlerCallback).thingUpdated(thing);
+
+        verify(thingHandlerCallback, times(2)).thingUpdated(thing);
 
         verify(thingDiscoveryListener).doScan();
     }

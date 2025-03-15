@@ -92,8 +92,6 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
 
-    public static final String THING_PROPERTY_MAC_ADDRESS = "macAddress";
-    public static final String THING_PROPERTY_IP_ADDRESS = "ipAddress";
     public static final String THING_PROPERTY_SHC_GENERATION = "shcGeneration";
     public static final String THING_PROPERTY_API_VERSIONS = "apiVersions";
 
@@ -313,11 +311,16 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     private void updateThingProperties() {
         try {
+            // IP address was added as a thing property in previous versions
+            // but it is already a configuration parameter, so it is redundant and is removed here
+            // see https://github.com/openhab/openhab-addons/pull/18391#discussion_r1996803614
+            updateProperty("ipAddress", null);
+
             PublicInformation publicInformation = getPublicInformation();
             @Nullable
             Map<String, String> properties = new HashMap<>();
-            properties.put(THING_PROPERTY_MAC_ADDRESS, publicInformation.macAddress);
-            properties.put(THING_PROPERTY_IP_ADDRESS, publicInformation.shcIpAddress);
+            properties.put(Thing.PROPERTY_MAC_ADDRESS, publicInformation.macAddress);
+            properties.put(THING_PROPERTY_SHC_GENERATION, publicInformation.shcGeneration);
             properties.put(THING_PROPERTY_API_VERSIONS, publicInformation.getApiVersionsAsCommaSeparatedList());
             updateProperties(properties);
         } catch (InterruptedException e) {

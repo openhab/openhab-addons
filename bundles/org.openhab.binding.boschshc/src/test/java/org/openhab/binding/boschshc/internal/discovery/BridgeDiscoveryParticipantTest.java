@@ -20,14 +20,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.net.ConnectException;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import javax.jmdns.ServiceInfo;
@@ -48,9 +47,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
+import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.PublicInformation;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 
 /**
@@ -143,6 +144,12 @@ class BridgeDiscoveryParticipantTest {
         assertThat(result.getThingUID().getId(), is("64daa0abcdef"));
         assertThat(result.getThingTypeUID().getId(), is("shc"));
         assertThat(result.getLabel(), is("Bosch Smart Home Controller (192.168.0.123)"));
+        Map<String, Object> properties = result.getProperties();
+        assertThat(String.valueOf(properties.get(Thing.PROPERTY_MAC_ADDRESS)), is("64-da-a0-ab-cd-ef"));
+        assertThat(String.valueOf(properties.get(BridgeHandler.THING_PROPERTY_SHC_GENERATION)), is("SHC_1"));
+        assertThat(String.valueOf(properties.get(BridgeHandler.THING_PROPERTY_API_VERSIONS)), is("2.9, 3.2"));
+        assertThat(properties.get("ipAddress"), nullValue());
+        assertThat(result.getRepresentationProperty(), is(Thing.PROPERTY_MAC_ADDRESS));
     }
 
     @Test

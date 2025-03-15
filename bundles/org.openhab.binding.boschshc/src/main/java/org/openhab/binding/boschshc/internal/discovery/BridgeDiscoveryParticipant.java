@@ -37,6 +37,7 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
@@ -146,12 +147,11 @@ public class BridgeDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
         return DiscoveryResultBuilder.create(uid)
                 .withLabel("Bosch Smart Home Controller (" + publicInformation.shcIpAddress + ")")
-                .withProperty(BridgeHandler.THING_PROPERTY_MAC_ADDRESS, publicInformation.macAddress)
-                .withProperty(BridgeHandler.THING_PROPERTY_IP_ADDRESS, publicInformation.shcIpAddress)
+                .withProperty(Thing.PROPERTY_MAC_ADDRESS, publicInformation.macAddress)
                 .withProperty(BridgeHandler.THING_PROPERTY_SHC_GENERATION, publicInformation.shcGeneration)
                 .withProperty(BridgeHandler.THING_PROPERTY_API_VERSIONS,
                         publicInformation.getApiVersionsAsCommaSeparatedList())
-                .withRepresentationProperty(BridgeHandler.THING_PROPERTY_MAC_ADDRESS).withTTL(TTL_SECONDS).build();
+                .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).withTTL(TTL_SECONDS).build();
     }
 
     private @Nullable String getFirstIPAddress(ServiceInfo serviceInfo) {
