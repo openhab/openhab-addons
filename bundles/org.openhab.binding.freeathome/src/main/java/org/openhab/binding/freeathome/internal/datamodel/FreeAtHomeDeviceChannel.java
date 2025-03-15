@@ -301,9 +301,36 @@ public class FreeAtHomeDeviceChannel {
 
                 break;
             }
+            case FID_DIMMING_SENSOR_PUSHBUTTON_TYPE0:
+            case FID_DIMMING_SENSOR_PUSHBUTTON_TYPE1:
+            case FID_DIMMING_SENSOR_PUSHBUTTON_TYPE2:
+            case FID_DIMMING_SENSOR_PUSHBUTTON_TYPE3:
+            case FID_DIMMING_SENSOR_PUSHBUTTON_TYPE4:
+            case FID_DIMMING_SENSOR_PUSHBUTTON_TYPE5:
+            case FID_DIMMING_SENSOR_PUSHBUTTON_TYPE6:
+            case FID_DIMMING_SENSOR_PUSHBUTTON_TYPE7: {
+                this.channelId = channelId;
+
+                logger.debug("Dimming actuator channel - Channel FID: 0x{}", channelFunctionID);
+
+                FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
+                newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 17, channelId, channelObject);
+                newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT, 272, channelId, channelObject);
+
+                AddDatapointGroup(newDatapointGroup);
+
+                newDatapointGroup = new FreeAtHomeDatapointGroup();
+                newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1, channelId, channelObject);
+                newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT, 256, channelId, channelObject);
+
+                AddDatapointGroup(newDatapointGroup);
+
+                break;
+            }
             case FID_AWNING_ACTUATOR:
             case FID_ATTIC_WINDOW_ACTUATOR:
             case FID_BLIND_ACTUATOR:
+            case FID_BLIND_ACTUATOR_WIRELESS:
             case FID_SHUTTER_ACTUATOR: {
                 this.channelId = channelId;
 
@@ -334,6 +361,13 @@ public class FreeAtHomeDeviceChannel {
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 290, channelId, channelObject);
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT, 36, channelId, channelObject);
                 AddDatapointGroup(newDatapointGroup);
+
+                break;
+            }
+            case FID_BLIND_SENSOR: {
+                this.channelId = channelId;
+
+                logger.warn("Blind sensor channel - Channel FID: 0x{}, not implemented yet", channelFunctionID);
 
                 break;
             }
@@ -520,7 +554,7 @@ public class FreeAtHomeDeviceChannel {
 
                 break;
             }
-            case FID_RAIN_ALARM_SENSOR: { // 0x000E Wind Alarm
+            case FID_RAIN_ALARM_SENSOR: { // 0x000E Rain Alarm
                 this.channelId = channelId;
                 logger.debug("Rain Alarm channel - Channel FID: 0x{}", channelFunctionID);
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
