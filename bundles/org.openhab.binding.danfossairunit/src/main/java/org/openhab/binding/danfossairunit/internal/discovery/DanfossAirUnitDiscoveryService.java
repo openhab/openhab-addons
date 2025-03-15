@@ -120,7 +120,7 @@ public class DanfossAirUnitDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Discover message sent");
 
         // wait for responses
-        while (true) {
+        while (!Thread.interrupted()) {
             byte[] receiveBuffer = new byte[7];
             DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
             try {
