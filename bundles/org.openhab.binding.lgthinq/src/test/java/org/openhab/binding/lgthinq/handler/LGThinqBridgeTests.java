@@ -20,7 +20,6 @@ import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -37,7 +36,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openhab.binding.lgthinq.internal.LGThinQBindingConstants;
 import org.openhab.binding.lgthinq.internal.LGThinQBridgeConfiguration;
 import org.openhab.binding.lgthinq.internal.handler.LGThinQBridgeHandler;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
@@ -92,14 +90,6 @@ class LGThinqBridgeTests {
     LGThinqBridgeTests() throws IOException {
     }
 
-    private static void setFinalStatic(Field field, Object newValue) throws Exception {
-        field.setAccessible(true);
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~java.lang.reflect.Modifier.FINAL);
-        field.set(null, newValue);
-    }
-
     @Test
     public void testDiscoveryACThings() throws Exception {
         setupAuthenticationMock();
@@ -143,10 +133,8 @@ class LGThinqBridgeTests {
         when(fakeThingUid.getId()).thenReturn(fakeBridgeName);
         when(fakeThing.getUID()).thenReturn(fakeThingUid);
         String tempDir = System.getProperty("java.io.tmpdir");
-        setFinalStatic(LGThinQBindingConstants.class.getDeclaredField("THINQ_CONNECTION_DATA_FILE"),
-                tempDir + File.separator + "token.json");
-        setFinalStatic(LGThinQBindingConstants.class.getDeclaredField("BASE_CAP_CONFIG_DATA_FILE"),
-                tempDir + File.separator + "thinq-cap.json");
+        System.setProperty("THINQ_CONNECTION_DATA_FILE", tempDir + File.separator + "token.json");
+        System.setProperty("BASE_CAP_CONFIG_DATA_FILE", tempDir + File.separator + "thinq-cap.json");
         LGThinQBridgeHandler b = new LGThinQBridgeHandler(fakeThing, mock(HttpClientFactory.class));
         LGThinQBridgeHandler spyBridge = spy(b);
         doReturn(new LGThinQBridgeConfiguration(fakeUserName, fakePassword, fakeCountry, fakeLanguage, 60,
@@ -199,11 +187,9 @@ class LGThinqBridgeTests {
 
         String tempDir = Objects.requireNonNull(System.getProperty("java.io.tmpdir"),
                 "java.io.tmpdir environment variable must be set");
-        setFinalStatic(LGThinQBindingConstants.class.getDeclaredField("THINQ_USER_DATA_FOLDER"), tempDir);
-        setFinalStatic(LGThinQBindingConstants.class.getDeclaredField("THINQ_CONNECTION_DATA_FILE"),
-                tempDir + File.separator + "token.json");
-        setFinalStatic(LGThinQBindingConstants.class.getDeclaredField("BASE_CAP_CONFIG_DATA_FILE"),
-                tempDir + File.separator + "thinq-cap.json");
+        System.setProperty("THINQ_USER_DATA_FOLDER", tempDir);
+        System.setProperty("THINQ_CONNECTION_DATA_FILE", tempDir + File.separator + "token.json");
+        System.setProperty("BASE_CAP_CONFIG_DATA_FILE", tempDir + File.separator + "thinq-cap.json");
         // LGThinQBridgeHandler b = new LGThinQBridgeHandler(fakeThing, mock(HttpClientFactory.class));
 
         final LGThinQWMApiClientService service2 = LGThinQApiClientServiceFactory

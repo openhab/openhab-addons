@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.BASE_CAP_CONFIG_DATA_FILE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.*;
 
 import java.io.File;
@@ -180,7 +180,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
 
     @Override
     public File loadDeviceCapability(String deviceId, String uri, boolean forceRecreate) throws LGThinqApiException {
-        File regFile = new File(String.format(BASE_CAP_CONFIG_DATA_FILE, deviceId));
+        File regFile = new File(String.format(getBaseCapConfigDataFile(), deviceId));
         try {
             if (!regFile.isFile() || forceRecreate) {
                 try (InputStream in = new URI(uri).toURL().openStream()) {
@@ -371,9 +371,8 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         if (workList.get("returnData") != null) {
             if (logger.isDebugEnabled()) {
                 try {
-                    objectMapper.writeValue(new File(String.format(
-                            LGThinQBindingConstants.THINQ_USER_DATA_FOLDER + File.separator + "thinq-%s-datatrace.json",
-                            deviceId)), workList);
+                    objectMapper.writeValue(new File(String.format(LGThinQBindingConstants.getThinqUserDataFolder()
+                            + File.separator + "thinq-%s-datatrace.json", deviceId)), workList);
                 } catch (IOException e) {
                     // Only debug since datatrace is a trace data.
                     logger.debug("Unexpected error saving data trace", e);
@@ -454,9 +453,8 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
             Map<String, Object> snapMap = (Map<String, Object>) deviceSettings.get("snapshot");
             if (logger.isDebugEnabled()) {
                 try {
-                    objectMapper.writeValue(new File(String.format(
-                            LGThinQBindingConstants.THINQ_USER_DATA_FOLDER + File.separator + "thinq-%s-datatrace.json",
-                            deviceId)), deviceSettings);
+                    objectMapper.writeValue(new File(String.format(LGThinQBindingConstants.getThinqUserDataFolder()
+                            + File.separator + "thinq-%s-datatrace.json", deviceId)), deviceSettings);
                 } catch (IOException e) {
                     logger.debug("Error saving data trace", e);
                 }

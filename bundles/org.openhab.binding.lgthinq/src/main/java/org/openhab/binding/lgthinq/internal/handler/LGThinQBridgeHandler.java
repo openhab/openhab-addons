@@ -66,7 +66,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
     static {
         var logger = LoggerFactory.getLogger(LGThinQBridgeHandler.class);
         try {
-            File directory = new File(THINQ_USER_DATA_FOLDER);
+            File directory = new File(getThinqUserDataFolder());
             if (!directory.exists()) {
                 if (!directory.mkdir()) {
                     throw new LGThinqException("Can't create directory for userdata thinq");
@@ -196,7 +196,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         logger.debug("Bridge Configuration was updated. Cleaning the token registry file");
-        File f = new File(String.format(THINQ_CONNECTION_DATA_FILE, getThing().getUID().getId()));
+        File f = new File(String.format(getThinqConnectionDataFile(), getThing().getUID().getId()));
         if (f.isFile()) {
             // file exists. Delete it
             if (!f.delete()) {

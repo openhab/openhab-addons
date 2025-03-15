@@ -13,6 +13,7 @@
 package org.openhab.binding.lgthinq.internal;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -74,11 +75,21 @@ public class LGThinQBindingConstants extends LGServicesConstants {
     public static final String PROP_INFO_MODEL_ID = "modelId";
 
     // === UserData Directory and File Format
-    public static final String THINQ_USER_DATA_FOLDER = OpenHAB.getUserDataFolder() + File.separator + "thinq";
-    public static final String THINQ_CONNECTION_DATA_FILE = THINQ_USER_DATA_FOLDER + File.separator
-            + "thinqbridge-%s.json";
-    public static final String BASE_CAP_CONFIG_DATA_FILE = THINQ_USER_DATA_FOLDER + File.separator
-            + "thinq-%s-cap.json";
+    private static final String DEFAULT_USER_DATA_FOLDER = OpenHAB.getUserDataFolder() + File.separator + "thinq";
+
+    public static String getThinqUserDataFolder() {
+        return Objects.requireNonNullElse(System.getProperty("THINQ_USER_DATA_FOLDER"), DEFAULT_USER_DATA_FOLDER);
+    }
+
+    public static String getThinqConnectionDataFile() {
+        return Objects.requireNonNullElse(System.getProperty("THINQ_CONNECTION_DATA_FILE"),
+                getThinqUserDataFolder() + File.separator + "thinqbridge-%s.json");
+    }
+
+    public static String getBaseCapConfigDataFile() {
+        return Objects.requireNonNullElse(System.getProperty("BASE_CAP_CONFIG_DATA_FILE"),
+                getThinqUserDataFolder() + File.separator + "thinq-%s-cap.json");
+    }
 
     // ====================================================
 

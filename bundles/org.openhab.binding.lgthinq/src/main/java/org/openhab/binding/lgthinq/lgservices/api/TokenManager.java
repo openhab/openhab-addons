@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.api;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THINQ_CONNECTION_DATA_FILE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.*;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,7 +71,7 @@ public class TokenManager {
     }
 
     private String getConfigDataFileName(String bridgeName) {
-        return String.format(THINQ_CONNECTION_DATA_FILE, bridgeName);
+        return String.format(getThinqConnectionDataFile(), bridgeName);
     }
 
     public boolean isOauthTokenRegistered(String bridgeName) {
