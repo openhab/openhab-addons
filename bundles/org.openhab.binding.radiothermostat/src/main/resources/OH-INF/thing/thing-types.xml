@@ -15,13 +15,13 @@
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="humidity"/>
 			<channel id="mode" typeId="mode"/>
-			<channel id="fan_mode" typeId="fanMode"/>
+			<channel id="fan_mode" typeId="fan-mode"/>
 			<channel id="program_mode" typeId="program_mode"/>
-			<channel id="set_point" typeId="temperatureSetpoint"/>
+			<channel id="set_point" typeId="temperature-setpoint"/>
 			<channel id="override" typeId="override"/>
 			<channel id="hold" typeId="hold"/>
 			<channel id="status" typeId="status"/>
-			<channel id="fan_status" typeId="fanStatus"/>
+			<channel id="fan_status" typeId="fan-status"/>
 			<channel id="remote_temp" typeId="remote_temp"/>
 			<channel id="day" typeId="t_day"/>
 			<channel id="hour" typeId="t_hour"/>
@@ -85,7 +85,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="fanMode">
+	<channel-type id="fan-mode">
 		<item-type>Number</item-type>
 		<label>Fan Mode</label>
 		<description>The Current Operating Mode of the Fan</description>
@@ -110,7 +110,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="temperatureSetpoint">
+	<channel-type id="temperature-setpoint">
 		<item-type>Number</item-type>
 		<label>Setpoint</label>
 		<description>The Current Temperature Set Point of the Thermostat</description>
@@ -145,7 +145,7 @@
 		<state min="0" max="2" pattern="%d"/>
 	</channel-type>
 
-	<channel-type id="fanStatus">
+	<channel-type id="fan-status">
 		<item-type>Number</item-type>
 		<label>Fan Status</label>
 		<description>Indicates the Current Fan Status of the HVAC System</description>

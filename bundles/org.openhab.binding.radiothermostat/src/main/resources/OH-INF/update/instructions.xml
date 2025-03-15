@@ -30,16 +30,16 @@
 				<type>radiothermostat:mode</type>
 			</update-channel>
 			<update-channel id="fan_mode">
-				<type>radiothermostat:fanMode</type>
+				<type>radiothermostat:fan-mode</type>
 			</update-channel>
 			<update-channel id="set_point">
-				<type>radiothermostat:temperatureSetpoint</type>
+				<type>radiothermostat:temperature-setpoint</type>
 			</update-channel>
 			<update-channel id="status">
 				<type>radiothermostat:status</type>
 			</update-channel>
 			<update-channel id="fan_status">
-				<type>radiothermostat:fanStatus</type>
+				<type>radiothermostat:fan-status</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
