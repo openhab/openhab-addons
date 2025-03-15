@@ -36,6 +36,10 @@ public class ApiException extends Exception {
         super(message);
     }
 
+    public ApiException(String message, Throwable throwable) {
+        super(message, throwable);
+    }
+
     public ApiException(ContentResponse response, String message, Throwable throwable) {
         super(message, throwable);
         this.code = response.getStatus();

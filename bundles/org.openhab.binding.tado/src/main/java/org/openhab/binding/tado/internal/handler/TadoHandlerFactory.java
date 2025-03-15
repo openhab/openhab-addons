@@ -14,14 +14,25 @@ package org.openhab.binding.tado.internal.handler;
 
 import static org.openhab.binding.tado.internal.TadoBindingConstants.*;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.ServletException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.discovery.TadoDiscoveryService;
+import org.openhab.binding.tado.internal.servlet.TadoAuthenticationServlet;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.DeviceCodeResponseDTO;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.auth.client.oauth2.OAuthException;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -34,6 +45,10 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.http.HttpService;
+import org.osgi.service.http.NamespaceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link TadoHandlerFactory} is responsible for creating things and thing
@@ -48,13 +63,30 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_HOME, THING_TYPE_ZONE,
             THING_TYPE_MOBILE_DEVICE);
 
+    // tado specific RFC-8628 oAuth authentication parameters
+    private static final String OAUTH_DEVICE_URL = "https://login.tado.com/oauth2/device_authorize";
+    private static final String OAUTH_TOKEN_URL = "https://login.tado.com/oauth2/token";
+    private static final String OAUTH_CLIENT_ID = "1bb50063-6b0c-4d11-bd99-387f4a91cc46";
+    private static final String OAUTH_SCOPE = "offline_access";
+
+    private final Logger logger = LoggerFactory.getLogger(TadoHandlerFactory.class);
+    private final Set<TadoHomeHandler> oAuthClientServiceSubscribers = new HashSet<>();
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     private final TadoStateDescriptionProvider stateDescriptionProvider;
+    private final HttpService httpService;
+    private final OAuthFactory oAuthFactory;
+    private final TadoAuthenticationServlet httpServlet;
+
+    private @Nullable OAuthClientService oAuthClientService;
 
     @Activate
-    public TadoHandlerFactory(final @Reference TadoStateDescriptionProvider stateDescriptionProvider) {
+    public TadoHandlerFactory(@Reference TadoStateDescriptionProvider stateDescriptionProvider,
+            @Reference HttpService httpService, @Reference OAuthFactory oAuthFactory) {
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.httpService = httpService;
+        this.oAuthFactory = oAuthFactory;
+        this.httpServlet = new TadoAuthenticationServlet(this);
     }
 
     @Override
@@ -67,7 +99,7 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_HOME)) {
-            TadoHomeHandler tadoHomeHandler = new TadoHomeHandler((Bridge) thing);
+            TadoHomeHandler tadoHomeHandler = new TadoHomeHandler((Bridge) thing, this, oAuthFactory);
             registerTadoDiscoveryService(tadoHomeHandler);
             return tadoHomeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_ZONE)) {
@@ -100,5 +132,95 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
                 }
             }
         }
+    }
+
+    /**
+     * A {@link TadoHomeHandler} calls this to subscribe to an {@link OAuthClientService}.
+     * Note: that TadoHomeHandlers which do not require a OAuthClientService do not call this.
+     * Retrieves the pre-existing {@link OAuthClientService} if present, or creates a new one.
+     * If necessary also registers the {@link TadoAuthenticationServlet}.
+     *
+     * @param tadoHomeHandler
+     * @return an {@link OAuthClientService}
+     */
+    public OAuthClientService subscribeOAuthClientService(TadoHomeHandler tadoHomeHandler) {
+        if (oAuthClientServiceSubscribers.isEmpty()) {
+            try {
+                httpService.registerServlet(TadoAuthenticationServlet.PATH, httpServlet, null, null);
+            } catch (ServletException | NamespaceException e) {
+                logger.debug("subscribeOAuthClientService() error {}", e.getMessage(), e);
+            }
+        }
+
+        oAuthClientServiceSubscribers.add(tadoHomeHandler);
+
+        OAuthClientService oAuthClientService = this.oAuthClientService;
+        if (oAuthClientService == null) {
+            oAuthClientService = oAuthFactory.getOAuthClientService(THING_TYPE_HOME.toString());
+            this.oAuthClientService = oAuthClientService;
+        }
+
+        if (oAuthClientService == null) {
+            oAuthClientService = oAuthFactory.createOAuthClientService(THING_TYPE_HOME.toString(), //
+                    OAUTH_TOKEN_URL, OAUTH_DEVICE_URL, OAUTH_CLIENT_ID, null, OAUTH_SCOPE, false);
+            this.oAuthClientService = oAuthClientService;
+        }
+
+        return oAuthClientService;
+    }
+
+    /**
+     * A {@link TadoHomeHandler} calls this to unsubscribe from the {@link OAuthClientService}.
+     * If it is the last one then it clears the {@link OAuthClientService} and unregisters the
+     * {@link TadoAuthenticationServlet}
+     *
+     * @param tadoHomeHandler
+     */
+    public void unsubscribeOAuthClientService(TadoHomeHandler tadoHomeHandler) {
+        if (oAuthClientServiceSubscribers.remove(tadoHomeHandler) && oAuthClientServiceSubscribers.isEmpty()) {
+            httpService.unregister(TadoAuthenticationServlet.PATH);
+            oAuthFactory.ungetOAuthService(THING_TYPE_HOME.toString());
+        }
+    }
+
+    /**
+     * Returns a nullable {@link AccessTokenResponse} if the OAuthClientService exists.
+     *
+     * @return a nullable {@link AccessTokenResponse}.
+     * @throws OAuthException on any error
+     */
+    public @Nullable AccessTokenResponse getAccessTokenResponse() throws OAuthException {
+        OAuthClientService oAuthClientService = this.oAuthClientService;
+        if (oAuthClientService == null) {
+            throw new OAuthException("Missing OAuthClientService");
+        }
+        try {
+            return oAuthClientService.getAccessTokenResponse();
+        } catch (OAuthException | IOException | OAuthResponseException e) {
+            logger.debug("getAccessTokenResponse() error {}", e.getMessage(), e);
+            throw new OAuthException("OAuthClientService error" + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Returns a non null DeviceCodeResponse from the OAuthClientService if it exists.
+     *
+     * @return a {@link DeviceCodeResponseDTO}
+     * @throws OAuthException if it cannot return a non null result
+     */
+    public DeviceCodeResponseDTO getDeviceCodeResponse() throws OAuthException {
+        OAuthClientService oAuthClientService = this.oAuthClientService;
+        if (oAuthClientService == null) {
+            throw new OAuthException("Missing OAuthClientService");
+        }
+        DeviceCodeResponseDTO result = oAuthClientService.getDeviceCodeResponse();
+        if (result == null) {
+            throw new OAuthException("Expecting non null DeviceCodeResponse");
+        }
+        return result;
+    }
+
+    public boolean hasOAuthClientService() {
+        return oAuthClientService != null;
     }
 }
