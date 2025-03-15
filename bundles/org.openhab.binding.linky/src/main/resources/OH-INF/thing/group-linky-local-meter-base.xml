@@ -22,15 +22,15 @@
 				<description>The category of the meter</description>
 			</channel>
 
-            <channel id="meter-matricule" typeId="info">
-                <label>Meter Matricule</label>
-                <description>The matricule of the meter</description>
-            </channel>
-            
-             <channel id="meter-manufacture-year" typeId="info">
-                <label>Meter Manufacture Year</label>
-                <description>The year of the meter manufacture</description>
-            </channel>
+			<channel id="meter-matricule" typeId="info">
+				<label>Meter Matricule</label>
+				<description>The matricule of the meter</description>
+			</channel>
+
+			<channel id="meter-manufacture-year" typeId="info">
+				<label>Meter Manufacture Year</label>
+				<description>The year of the meter manufacture</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

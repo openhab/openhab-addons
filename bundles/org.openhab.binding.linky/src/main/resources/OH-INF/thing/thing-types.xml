@@ -364,165 +364,165 @@
 			</options>
 		</state>
 	</channel-type>
-	
-	
+
+
 	<channel-type id="meter-manufacturer">
-        <item-type>Number</item-type>
-        <label>Meter Manufacturer</label>
-        <description>The manufacturer of the meter</description>
-        <state>
-            <options>
-                <option value="0">No Attrib</option>
-                <option value="1">CROUZET / MONETEL</option>
-                <option value="2">SAGEM / SAGEMCOM</option>
-                <option value="3">SCHLUMBERGER / ACTARIS / ITRON</option>
-                <option value="4">LANDIS ET GYR / SIEMENS METERING / LANDIS+GYR</option>
-                <option value="5">SAUTER / STEPPER ENERGIE France / ZELLWEGER</option>
-                <option value="6">ITRON</option>
-                <option value="7">MAEC</option>
-                <option value="8">MATRA-CHAUVIN ARNOUX / ENERDIS</option>
-                <option value="9">FAURE-HERMAN</option>
-                <option value="10">SEVME / SIS</option>
-                <option value="11">MAGNOL / ELSTER / HONEYWELL</option>
-                <option value="12">GAZ THERMIQUE</option>
-                <option value="14">GHIELMETTI / DIALOG E.S. / MICRONIQUE</option>
-                <option value="15">MECELEC</option>
-                <option value="16">LEGRAND / BACO</option>
-                <option value="17">SERD-SCHLUMBERGER</option>
-                <option value="18">SCHNEIDER / MERLIN GERIN / GARDY</option>
-                <option value="19">GENERAL ELECTRIC / POWER CONTROL</option>
-                <option value="20">NUOVO PIGNONE / DRESSER</option>
-                <option value="21">SCLE</option>
-                <option value="22">EDF</option>
-                <option value="23">GDF / GDF-SUEZ</option>
-                <option value="24">HAGER – GENERAL ELECTRIC</option>
-                <option value="25">DELTA-DORE</option>
-                <option value="26">RIZ</option>
-                <option value="27">ISKRAEMECO</option>
-                <option value="28">GMT</option>
-                <option value="29">ANALOG DEVICE</option>
-                <option value="30">MICHAUD</option>
-                <option value="31">HEXING ELECTRICAL CO. Ltd</option>
-                <option value="32">SIAME</option>
-                <option value="33">LARSEN et TOUBRO Limited</option>
-                <option value="34">ELSTER / HONEYWELL</option>
-                <option value="35">ELECTRONIC AFZAR AZMA</option>
-                <option value="36">ADVANCED ELECTRONIC COMPAGNY Ldt</option>
-                <option value="37">AEM</option>
-                <option value="38">ZHEJIANG CHINT INSTRUMENT et METER CO. Ldt</option>
-                <option value="39">ZIV</option>
-                <option value="70">LANDIS et GYR (export ou régie)</option>
-                <option value="71">STEPPER ENERGIE France</option>
-                <option value="81">SAGEM / SAGEMCOM</option>
-                <option value="82">LANDIS ET GYR / SIEMENS METERING / LANDIS+GYR</option>
-                <option value="83">ELSTER / HONEYWELL</option>
-                <option value="84">SAGEM / SAGEMCOM</option>
-                <option value="85">ITRON</option>
-            </options>
-        </state>
-    </channel-type>
-    
-    <channel-type id="meter">
-        <item-type>Number</item-type>
-        <label>Meter Manufacturer</label>
-        <description>The manufacturer of the meter</description>
-        <state>
-            <options>
-                <option value="0">No Attrib</option>
-                <option value="1">Compteur bleu monophasé multitarif (BBR) - 1ère gen</option>
-                <option value="2">Centrale de mesure G3 - Poste HTA/BT</option>
-                <option value="3">Concentrateur multi-compteurs / électrique + 2 fluides</option>
-                <option value="4">Concentrateur simplifié / élec</option>
-                <option value="5">Compteur bleu monophasé simple tarif électronique - 1ère gen</option>
-                <option value="6">Compteur jaune électronique / tarif modulable</option>
-                <option value="7">Compteur électronique universel (PRISME ou ICE)</option>
-                <option value="8">Compteur sauter modifié EURIDIS</option>
-                <option value="9">Compteur bleu triphasé électronique - 1ère gen</option>
-                <option value="10">Compteur jaune électronique 2ème gen</option>
-                <option value="11">Compteur bleu monophasé simple tarif FERRARIS</option>
-                <option value="12">ompteur prisme</option>
-                <option value="13">Centrale de mesure G1 - Poste HTA/BT</option>
-                <option value="14">Analyseur de courbe de charge (panel BT)</option>
-                <option value="15">Compteur bleu monophasé multitarif électronique sans BBR</option>
-                <option value="16">Compteur bleu expérimentation « 10000 ICC »</option>
-                <option value="17">ICC expérimentation « 10000 ICC »</option>
-                <option value="18">Détecteur de défauts / HTA , neutre compensé</option>
-                <option value="19">Concentrateur multi-compteurs / 3 fluides indifférenciés</option>
-                <option value="20">Compteur bleu monophasé multitarif 1/2 - 1ère gen</option>
-                <option value="21">Compteur bleu triphasé 1/2 taux - 1ére gen</option>
-                <option value="22">Compteur bleu monophasé multitarif - 2ème gen</option>
-                <option value="23">Compteur bleu monophasé multitarif 1/2 - 2ème gen</option>
-                <option value="25">Compteur bleu monophasé simple tarif - 2ème gen</option>
-                <option value="26">Compteur bleu triphasé - palier 2000 - 2ème gen</option>
-                <option value="27">Compteur bleu triphasé - palier 2000 ½ taux - 2ème gen</option>
-                <option value="28">Compteur bleu monophasé multitarif - palier 2007 - 3ème gen</option>
-                <option value="29">Compteur bleu monophasé multi ½ - 2007 - 3ème gen</option>
-                <option value="30">Compteur bleu triphasé - palier 2007 - 3ème gen</option>
-                <option value="31">Compteur bleu triphasé ½ taux - palier 2007 – 3ème gen</option>
-                <option value="32">Compteur bleu triphasé télétotalisation</option>
-                <option value="33">Compteur jaune électronique branchement direct</option>
-                <option value="34">Compteur ICE 4 quadrants</option>
-                <option value="35">Compteur trimaran 2P classe 0,2s pour RTE</option>
-                <option value="36">Compteur PME-PMI BT > 36kva</option>
-                <option value="37">Compteur prépaiement</option>
-                <option value="38">Compteur triphasé HXE34 de HECL</option>
-                <option value="40">Système d'affichage multiusage (SAM)</option>
-                <option value="42">Compteur monophasé export (ACTARIS)</option>
-                <option value="43">Compteur monophasé export (ACTARIS)</option>
-                <option value="44">Compteur triphasé export ACTARIS</option>
-                <option value="45">Compteur triphasé export ACTARIS</option>
-                <option value="46">Modem EURIDIS pour compteur PME-PMI</option>
-                <option value="52">Concentrateur simplifié / gaz ou Transpondeur Gaz EURIDIS</option>
-                <option value="53">Concentrateur multi-compteurs / VGR</option>
-                <option value="54">Concentrateur multi-compteurs / gaz</option>
-                <option value="58">Baie prisme de télétotalisation, exp Lyon</option>
-                <option value="60">Compteur monophasé 60A LINKY - généralisation G1 - arrivée basse</option>
-                <option value="61">Compteur monophasé 60A LINKY - généralisation G3 - arrivée haute</option>
-                <option value="62">Compteur monophasé 90A LINKY - généralisation G1 - arrivée basse</option>
-                <option value="63">Compteur triphasé 60A LINKY - généralisation G1 - arrivée basse</option>
-                <option value="64">Compteur monophasé 60A LINKY - généralisation G3 - arrivée basse</option>
-                <option value="65">Compteur monophasé 90A LINKY expérimentation CPL G3 (2000 ex.)</option>
-                <option value="66">Module du compteur modulaire généralisation</option>
-                <option value="67">Compteur monophasé 90A LINKY - pilote G1 - arrivée basse</option>
-                <option value="68">Compteur triphasé 60A LINKY - pilote G1 - arrivée basse</option>
-                <option value="70">Compteur monophasé 60A LINKY - interopérabilité G3 - arrivée basse</option>
-                <option value="71">Compteur triphasé 60A LINKY - interopérabilité G3 - arrivée basse</option>
-                <option value="72">Compteur monophasé HXE12K 10-80A 4 tarifs (Hexing Electrical co,Ltd)</option>
-                <option value="74">Compteur triphasé HXE34K 230/400V 10-80A</option>
-                <option value="75">Compteur monophasé 90A LINKY - palier 1 G3 - arrivée basse</option>
-                <option value="76">Compteur triphasé 60A LINKY - palier 1 G3 - arrivée bass</option>
-                <option value="86">Compteur numérique SEI monophasé 60A 230V - G3 - arrivée basse - 60Hz</option>
-                <option value="87">Compteur numérique SEI triphasé 60A 230/400V - G3 - 60Hz</option>
-                <option value="88">Compteur monophasé PLC DSMR2.2 (Actaris)</option>
-                <option value="89">Compteur triphasé PLC DSMR2.2 (Actaris)</option>
-                <option value="90">Compteur monophasé CPL intégré 1ère gen</option>
-                <option value="91">Compteur triphasé CPL intégré 2ème gen</option>
-                <option value="92">Compteur monophasé 90A LINKY ORES – G3 Palier 1</option>
-                <option value="93">Compteur triphasé 60A 3 fils LINKY ORES – G3 Palier 1</option>
-                <option value="94">Compteur triphasé 60A 3 fils LINKY ORES – G3 Palier 1</option>
-                <option value="98">BCPL G0 pour compteur CJE et CBE</option>
-                <option value="170">Coupleur EURIDIS bluetooth (PKE)</option>
-                <option value="220">BCPL G1 LINKY pour compteur CJE</option>
-            </options>
-        </state>
-    </channel-type>
-    
-    <channel-type id="meter-category">
-        <item-type>Number</item-type>
-        <label>Meter Manufacturer</label>
-        <description>The manufacturer of the meter</description>
-        <state>
-            <options>
-                <option value="0">NoAttrib</option>
-                <option value="1">Blue</option>
-                <option value="2">Yellow</option>
-                <option value="3">Linky</option>
-                <option value="4">Prisme</option>
-                <option value="5">Other</option>
-            </options>
-        </state>
-    </channel-type>
-	
+		<item-type>Number</item-type>
+		<label>Meter Manufacturer</label>
+		<description>The manufacturer of the meter</description>
+		<state>
+			<options>
+				<option value="0">No Attrib</option>
+				<option value="1">CROUZET / MONETEL</option>
+				<option value="2">SAGEM / SAGEMCOM</option>
+				<option value="3">SCHLUMBERGER / ACTARIS / ITRON</option>
+				<option value="4">LANDIS ET GYR / SIEMENS METERING / LANDIS+GYR</option>
+				<option value="5">SAUTER / STEPPER ENERGIE France / ZELLWEGER</option>
+				<option value="6">ITRON</option>
+				<option value="7">MAEC</option>
+				<option value="8">MATRA-CHAUVIN ARNOUX / ENERDIS</option>
+				<option value="9">FAURE-HERMAN</option>
+				<option value="10">SEVME / SIS</option>
+				<option value="11">MAGNOL / ELSTER / HONEYWELL</option>
+				<option value="12">GAZ THERMIQUE</option>
+				<option value="14">GHIELMETTI / DIALOG E.S. / MICRONIQUE</option>
+				<option value="15">MECELEC</option>
+				<option value="16">LEGRAND / BACO</option>
+				<option value="17">SERD-SCHLUMBERGER</option>
+				<option value="18">SCHNEIDER / MERLIN GERIN / GARDY</option>
+				<option value="19">GENERAL ELECTRIC / POWER CONTROL</option>
+				<option value="20">NUOVO PIGNONE / DRESSER</option>
+				<option value="21">SCLE</option>
+				<option value="22">EDF</option>
+				<option value="23">GDF / GDF-SUEZ</option>
+				<option value="24">HAGER – GENERAL ELECTRIC</option>
+				<option value="25">DELTA-DORE</option>
+				<option value="26">RIZ</option>
+				<option value="27">ISKRAEMECO</option>
+				<option value="28">GMT</option>
+				<option value="29">ANALOG DEVICE</option>
+				<option value="30">MICHAUD</option>
+				<option value="31">HEXING ELECTRICAL CO. Ltd</option>
+				<option value="32">SIAME</option>
+				<option value="33">LARSEN et TOUBRO Limited</option>
+				<option value="34">ELSTER / HONEYWELL</option>
+				<option value="35">ELECTRONIC AFZAR AZMA</option>
+				<option value="36">ADVANCED ELECTRONIC COMPAGNY Ldt</option>
+				<option value="37">AEM</option>
+				<option value="38">ZHEJIANG CHINT INSTRUMENT et METER CO. Ldt</option>
+				<option value="39">ZIV</option>
+				<option value="70">LANDIS et GYR (export ou régie)</option>
+				<option value="71">STEPPER ENERGIE France</option>
+				<option value="81">SAGEM / SAGEMCOM</option>
+				<option value="82">LANDIS ET GYR / SIEMENS METERING / LANDIS+GYR</option>
+				<option value="83">ELSTER / HONEYWELL</option>
+				<option value="84">SAGEM / SAGEMCOM</option>
+				<option value="85">ITRON</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="meter">
+		<item-type>Number</item-type>
+		<label>Meter Manufacturer</label>
+		<description>The manufacturer of the meter</description>
+		<state>
+			<options>
+				<option value="0">No Attrib</option>
+				<option value="1">Compteur bleu monophasé multitarif (BBR) - 1ère gen</option>
+				<option value="2">Centrale de mesure G3 - Poste HTA/BT</option>
+				<option value="3">Concentrateur multi-compteurs / électrique + 2 fluides</option>
+				<option value="4">Concentrateur simplifié / élec</option>
+				<option value="5">Compteur bleu monophasé simple tarif électronique - 1ère gen</option>
+				<option value="6">Compteur jaune électronique / tarif modulable</option>
+				<option value="7">Compteur électronique universel (PRISME ou ICE)</option>
+				<option value="8">Compteur sauter modifié EURIDIS</option>
+				<option value="9">Compteur bleu triphasé électronique - 1ère gen</option>
+				<option value="10">Compteur jaune électronique 2ème gen</option>
+				<option value="11">Compteur bleu monophasé simple tarif FERRARIS</option>
+				<option value="12">ompteur prisme</option>
+				<option value="13">Centrale de mesure G1 - Poste HTA/BT</option>
+				<option value="14">Analyseur de courbe de charge (panel BT)</option>
+				<option value="15">Compteur bleu monophasé multitarif électronique sans BBR</option>
+				<option value="16">Compteur bleu expérimentation « 10000 ICC »</option>
+				<option value="17">ICC expérimentation « 10000 ICC »</option>
+				<option value="18">Détecteur de défauts / HTA , neutre compensé</option>
+				<option value="19">Concentrateur multi-compteurs / 3 fluides indifférenciés</option>
+				<option value="20">Compteur bleu monophasé multitarif 1/2 - 1ère gen</option>
+				<option value="21">Compteur bleu triphasé 1/2 taux - 1ére gen</option>
+				<option value="22">Compteur bleu monophasé multitarif - 2ème gen</option>
+				<option value="23">Compteur bleu monophasé multitarif 1/2 - 2ème gen</option>
+				<option value="25">Compteur bleu monophasé simple tarif - 2ème gen</option>
+				<option value="26">Compteur bleu triphasé - palier 2000 - 2ème gen</option>
+				<option value="27">Compteur bleu triphasé - palier 2000 ½ taux - 2ème gen</option>
+				<option value="28">Compteur bleu monophasé multitarif - palier 2007 - 3ème gen</option>
+				<option value="29">Compteur bleu monophasé multi ½ - 2007 - 3ème gen</option>
+				<option value="30">Compteur bleu triphasé - palier 2007 - 3ème gen</option>
+				<option value="31">Compteur bleu triphasé ½ taux - palier 2007 – 3ème gen</option>
+				<option value="32">Compteur bleu triphasé télétotalisation</option>
+				<option value="33">Compteur jaune électronique branchement direct</option>
+				<option value="34">Compteur ICE 4 quadrants</option>
+				<option value="35">Compteur trimaran 2P classe 0,2s pour RTE</option>
+				<option value="36">Compteur PME-PMI BT > 36kva</option>
+				<option value="37">Compteur prépaiement</option>
+				<option value="38">Compteur triphasé HXE34 de HECL</option>
+				<option value="40">Système d'affichage multiusage (SAM)</option>
+				<option value="42">Compteur monophasé export (ACTARIS)</option>
+				<option value="43">Compteur monophasé export (ACTARIS)</option>
+				<option value="44">Compteur triphasé export ACTARIS</option>
+				<option value="45">Compteur triphasé export ACTARIS</option>
+				<option value="46">Modem EURIDIS pour compteur PME-PMI</option>
+				<option value="52">Concentrateur simplifié / gaz ou Transpondeur Gaz EURIDIS</option>
+				<option value="53">Concentrateur multi-compteurs / VGR</option>
+				<option value="54">Concentrateur multi-compteurs / gaz</option>
+				<option value="58">Baie prisme de télétotalisation, exp Lyon</option>
+				<option value="60">Compteur monophasé 60A LINKY - généralisation G1 - arrivée basse</option>
+				<option value="61">Compteur monophasé 60A LINKY - généralisation G3 - arrivée haute</option>
+				<option value="62">Compteur monophasé 90A LINKY - généralisation G1 - arrivée basse</option>
+				<option value="63">Compteur triphasé 60A LINKY - généralisation G1 - arrivée basse</option>
+				<option value="64">Compteur monophasé 60A LINKY - généralisation G3 - arrivée basse</option>
+				<option value="65">Compteur monophasé 90A LINKY expérimentation CPL G3 (2000 ex.)</option>
+				<option value="66">Module du compteur modulaire généralisation</option>
+				<option value="67">Compteur monophasé 90A LINKY - pilote G1 - arrivée basse</option>
+				<option value="68">Compteur triphasé 60A LINKY - pilote G1 - arrivée basse</option>
+				<option value="70">Compteur monophasé 60A LINKY - interopérabilité G3 - arrivée basse</option>
+				<option value="71">Compteur triphasé 60A LINKY - interopérabilité G3 - arrivée basse</option>
+				<option value="72">Compteur monophasé HXE12K 10-80A 4 tarifs (Hexing Electrical co,Ltd)</option>
+				<option value="74">Compteur triphasé HXE34K 230/400V 10-80A</option>
+				<option value="75">Compteur monophasé 90A LINKY - palier 1 G3 - arrivée basse</option>
+				<option value="76">Compteur triphasé 60A LINKY - palier 1 G3 - arrivée bass</option>
+				<option value="86">Compteur numérique SEI monophasé 60A 230V - G3 - arrivée basse - 60Hz</option>
+				<option value="87">Compteur numérique SEI triphasé 60A 230/400V - G3 - 60Hz</option>
+				<option value="88">Compteur monophasé PLC DSMR2.2 (Actaris)</option>
+				<option value="89">Compteur triphasé PLC DSMR2.2 (Actaris)</option>
+				<option value="90">Compteur monophasé CPL intégré 1ère gen</option>
+				<option value="91">Compteur triphasé CPL intégré 2ème gen</option>
+				<option value="92">Compteur monophasé 90A LINKY ORES – G3 Palier 1</option>
+				<option value="93">Compteur triphasé 60A 3 fils LINKY ORES – G3 Palier 1</option>
+				<option value="94">Compteur triphasé 60A 3 fils LINKY ORES – G3 Palier 1</option>
+				<option value="98">BCPL G0 pour compteur CJE et CBE</option>
+				<option value="170">Coupleur EURIDIS bluetooth (PKE)</option>
+				<option value="220">BCPL G1 LINKY pour compteur CJE</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="meter-category">
+		<item-type>Number</item-type>
+		<label>Meter Manufacturer</label>
+		<description>The manufacturer of the meter</description>
+		<state>
+			<options>
+				<option value="0">NoAttrib</option>
+				<option value="1">Blue</option>
+				<option value="2">Yellow</option>
+				<option value="3">Linky</option>
+				<option value="4">Prisme</option>
+				<option value="5">Other</option>
+			</options>
+		</state>
+	</channel-type>
+
 
 
 </thing:thing-descriptions>
