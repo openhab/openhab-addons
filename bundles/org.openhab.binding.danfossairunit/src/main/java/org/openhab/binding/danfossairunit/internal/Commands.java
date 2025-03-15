@@ -15,7 +15,7 @@ package org.openhab.binding.danfossairunit.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Commands} interface holds the commands which can be send to the air unit to read/write values or trigger
+ * The {@link Commands} interface holds the commands which can be sent to the air unit to read/write values or trigger
  * actions.
  *
  * @author Robert Bach - Initial contribution
@@ -24,8 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class Commands {
 
-    public static final byte[] DISCOVER_SEND = { 0x0c, 0x00, 0x30, 0x00, 0x11, 0x00, 0x12, 0x00, 0x13 };
-    public static final byte[] DISCOVER_RECEIVE = { 0x0d, 0x00, 0x07, 0x00, 0x02, 0x02, 0x00 };
     public static final byte[] EMPTY = {};
     public static final byte[] GET_HISTORY = { 0x00, 0x30 };
     public static final byte[] REGISTER_0_READ = { 0x00, 0x04 };
@@ -46,6 +44,7 @@ public class Commands {
     public static final byte[] BYPASS_DEACTIVATION = { 0x14, 0x63 };
     public static final byte[] BOOST = { 0x15, 0x30 };
     public static final byte[] NIGHT_COOLING = { 0x15, 0x71 };
+    public static final byte[] DEFROST_STATUS = { 0x15, (byte) 0xf1 };
     public static final byte[] AUTOMATIC_BYPASS = { 0x17, 0x06 };
     public static final byte[] AUTOMATIC_RUSH_AIRING = { 0x17, 0x02 };
     public static final byte[] HUMIDITY = { 0x14, 0x70 };
