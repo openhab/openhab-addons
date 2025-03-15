@@ -44,5 +44,4 @@ public enum MeterType {
     public final String getLabel() {
         return label;
     }
-
 }
