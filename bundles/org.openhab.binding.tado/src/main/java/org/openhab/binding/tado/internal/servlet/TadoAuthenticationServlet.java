@@ -22,7 +22,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tado.internal.handler.TadoHandlerFactory;
-import org.openhab.core.auth.client.oauth2.DeviceCodeResponse;
+import org.openhab.core.auth.client.oauth2.DeviceCodeResponseDTO;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 
 /**
@@ -145,7 +145,7 @@ public class TadoAuthenticationServlet extends HttpServlet {
         String dynamicHtml = null;
 
         try {
-            DeviceCodeResponse deviceCodeResponse = tadoHandlerFactory.getDeviceCodeResponse();
+            DeviceCodeResponseDTO deviceCodeResponse = tadoHandlerFactory.getDeviceCodeResponse();
             String userVerificationUri = deviceCodeResponse.getVerificationUriComplete();
             if (userVerificationUri != null && !userVerificationUri.isBlank()) {
                 response.sendRedirect(userVerificationUri);

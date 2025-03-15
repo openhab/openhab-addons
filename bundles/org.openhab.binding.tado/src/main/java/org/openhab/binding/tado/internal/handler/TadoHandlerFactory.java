@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.discovery.TadoDiscoveryService;
 import org.openhab.binding.tado.internal.servlet.TadoAuthenticationServlet;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
-import org.openhab.core.auth.client.oauth2.DeviceCodeResponse;
+import org.openhab.core.auth.client.oauth2.DeviceCodeResponseDTO;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -205,15 +205,15 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Returns a non null DeviceCodeResponse from the OAuthClientService if it exists.
      *
-     * @return a {@link DeviceCodeResponse}
+     * @return a {@link DeviceCodeResponseDTO}
      * @throws OAuthException if it cannot return a non null result
      */
-    public DeviceCodeResponse getDeviceCodeResponse() throws OAuthException {
+    public DeviceCodeResponseDTO getDeviceCodeResponse() throws OAuthException {
         OAuthClientService oAuthClientService = this.oAuthClientService;
         if (oAuthClientService == null) {
             throw new OAuthException("Missing OAuthClientService");
         }
-        DeviceCodeResponse result = oAuthClientService.getDeviceCodeResponse();
+        DeviceCodeResponseDTO result = oAuthClientService.getDeviceCodeResponse();
         if (result == null) {
             throw new OAuthException("Expecting non null DeviceCodeResponse");
         }
