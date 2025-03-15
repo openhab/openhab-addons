@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linky"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="linky-local-meter-base">
+		<label>D2l</label>
+		<channels>
+			<channel id="meter-manufacturer" typeId="meter-manufacturer">
+				<label>Meter Manufacturer</label>
+				<description>The manufacturer of the meter</description>
+			</channel>
+
+			<channel id="meter-type" typeId="meter">
+				<label>Meter Type </label>
+				<description>The type of Meter</description>
+			</channel>
+
+			<channel id="meter-category" typeId="meter-category">
+				<label>Meter Category</label>
+				<description>The category of the meter</description>
+			</channel>
+
+            <channel id="meter-matricule" typeId="info">
+                <label>Meter Matricule</label>
+                <description>The matricule of the meter</description>
+            </channel>
+            
+             <channel id="meter-manufacture-year" typeId="info">
+                <label>Meter Manufacture Year</label>
+                <description>The year of the meter manufacture</description>
+            </channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

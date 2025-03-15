@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 @NonNullByDefault
-public enum Constructor {
+public enum Manufacturer {
 
     NotAttrib000(0x00, "Non attribué"),
 
@@ -137,7 +137,7 @@ public enum Constructor {
     private final int id;
     private final String label;
 
-    Constructor(int id, String label) {
+    Manufacturer(int id, String label) {
         this.id = id;
         this.label = label;
     }

@@ -21,11 +21,28 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 @NonNullByDefault
-public enum CompteurType {
-    NOATTRIB,
-    BLEUE,
-    JAUNE,
-    LINKY,
-    PRISME,
-    OTHER
+public enum MeterType {
+    NOATTRIB(0, "NoAttrib"),
+    BLEUE(1, "Blue"),
+    JAUNE(2, "Yellow"),
+    LINKY(3, "Linky"),
+    PRISME(4, "Prisme"),
+    OTHER(5, "Other");
+
+    private final int id;
+    private final String label;
+
+    MeterType(int id, String label) {
+        this.id = id;
+        this.label = label;
+    }
+
+    public final int getId() {
+        return id;
+    }
+
+    public final String getLabel() {
+        return label;
+    }
+
 }
