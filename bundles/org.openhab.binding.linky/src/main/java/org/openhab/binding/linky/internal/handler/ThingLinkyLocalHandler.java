@@ -33,6 +33,7 @@ import org.openhab.binding.linky.internal.helpers.LinkyFrame;
 import org.openhab.binding.linky.internal.types.InvalidFrameException;
 import org.openhab.binding.linky.internal.types.LinkyChannel;
 import org.openhab.binding.linky.internal.types.LinkyTicMode;
+import org.openhab.binding.linky.internal.types.Meter;
 import org.openhab.binding.linky.internal.types.Phase;
 import org.openhab.binding.linky.internal.types.ValueType;
 import org.openhab.core.config.core.Configuration;
@@ -285,6 +286,31 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
 
                     if (channel == LinkyChannel.STGE) {
                         handleStgePayload(value);
+                    }
+                    if (channel == LinkyChannel.ADSC || channel == LinkyChannel.ADCO) {
+                        String adco = frame.get(LinkyChannel.ADCO) != null ? frame.get(LinkyChannel.ADCO)
+                                : frame.get(LinkyChannel.ADSC);
+
+                        if (adco.length() != 12) {
+
+                        } else {
+                            String manufacturer = adco.substring(0, 2);
+                            String year = adco.substring(2, 4);
+                            String type = adco.substring(4, 6);
+                            String matricule = adco.substring(6, 12);
+
+                            Meter cpt = Meter.getCompteurForId(Integer.parseInt(type));
+
+                            updateState(LINKY_LOCAL_METER_BASE_GROUP, CHANNEL_METER_MANUFACTURER,
+                                    new DecimalType(manufacturer));
+                            updateState(LINKY_LOCAL_METER_BASE_GROUP, CHANNEL_METER_TYPE, new DecimalType(type));
+                            updateState(LINKY_LOCAL_METER_BASE_GROUP, CHANNEL_METER_MATRICULE,
+                                    new StringType(matricule));
+                            updateState(LINKY_LOCAL_METER_BASE_GROUP, CHANNEL_METER_CATEGORY,
+                                    new DecimalType(cpt.getCompteurType().getId()));
+                            updateState(LINKY_LOCAL_METER_BASE_GROUP, CHANNEL_METER_MANUFACTURE_YEAR,
+                                    new StringType("" + (Integer.parseInt(year) + 2000)));
+                        }
                     } else if (channel == LinkyChannel.RELAIS) {
                         handleRelaisPayload(value);
                     } else if (channel == LinkyChannel.PJOURF_PLUS_1) {
@@ -319,11 +345,6 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
         }
 
         updateCalcVars(urms, sinst);
-
-        // updateState(LINKY_DIRECT_MAIN_GROUP, "_ID_D2L", new StringType(payLoad.get("_ID_D2L")));
-        // updateState(LINKY_DIRECT_MAIN_GROUP, "SINSTS", new StringType(payLoad.get("SINSTS")));
-        // updateState(LINKY_DIRECT_MAIN_GROUP, "DATE", new StringType(payLoad.get("DATE")));
-        // updateState(LINKY_DIRECT_MAIN_GROUP, "IRMS1", new StringType(payLoad.get("IRMS1")));
     }
 
     private void updateCalcVars(double urms, double sinst) {

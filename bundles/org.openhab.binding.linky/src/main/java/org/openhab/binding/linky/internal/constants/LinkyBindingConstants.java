@@ -67,6 +67,8 @@ public class LinkyBindingConstants {
     public static final String LINKY_TEMPO_CALENDAR_GROUP = "linky-tempo-calendar";
     public static final String LINKY_REMOTE_LOAD_CURVE_GROUP = "linky-remote-load-curve";
 
+    public static final String LINKY_LOCAL_METER_BASE_GROUP = "linky-local-meter-base";
+
     public static final String LINKY_LOCAL_STANDARD_3PHASE_GROUP = "linky-local-standard-3phase";
     public static final String LINKY_LOCAL_STANDARD_BASE_GROUP = "linky-local-standard-base";
     public static final String LINKY_LOCAL_STANDARD_PRODUCER_GROUP = "linky-local-standard-producer";
@@ -391,6 +393,14 @@ public class LinkyBindingConstants {
     public static final String CHANNEL_BLUE_HC_TTC = "blue-hc-ttc";
     public static final String CHANNEL_BLUE_HP_HT = "blue-hp-ht";
     public static final String CHANNEL_BLUE_HP_TTC = "blue-hp-ttc";
+
+    //
+
+    public static final String CHANNEL_METER_MANUFACTURER = "meter-manufacturer";
+    public static final String CHANNEL_METER_TYPE = "meter-type";
+    public static final String CHANNEL_METER_CATEGORY = "meter-category";
+    public static final String CHANNEL_METER_MATRICULE = "meter-matricule";
+    public static final String CHANNEL_METER_MANUFACTURE_YEAR = "meter-manufacture-year";
 
     public static final Currency CURRENCY_EUR = Currency.getInstance("EUR");
 
