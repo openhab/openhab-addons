@@ -85,7 +85,7 @@ import org.openapitools.client.ApiClient;
   LibraryOptions.JSON_PROPERTY_ALLOW_EMBEDDED_SUBTITLES,
   LibraryOptions.JSON_PROPERTY_TYPE_OPTIONS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:58.939457991Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class LibraryOptions {
   public static final String JSON_PROPERTY_ENABLED = "Enabled";
   @javax.annotation.Nullable

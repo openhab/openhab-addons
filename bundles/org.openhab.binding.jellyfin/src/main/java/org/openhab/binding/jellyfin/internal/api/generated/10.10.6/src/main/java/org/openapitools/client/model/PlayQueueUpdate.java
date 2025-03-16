@@ -49,7 +49,7 @@ import org.openapitools.client.ApiClient;
   PlayQueueUpdate.JSON_PROPERTY_SHUFFLE_MODE,
   PlayQueueUpdate.JSON_PROPERTY_REPEAT_MODE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:58.939457991Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PlayQueueUpdate {
   public static final String JSON_PROPERTY_REASON = "Reason";
   @javax.annotation.Nullable

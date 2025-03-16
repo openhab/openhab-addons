@@ -38,7 +38,7 @@ import org.openapitools.client.ApiClient;
   FileSystemEntryInfo.JSON_PROPERTY_PATH,
   FileSystemEntryInfo.JSON_PROPERTY_TYPE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:58.939457991Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class FileSystemEntryInfo {
   public static final String JSON_PROPERTY_NAME = "Name";
   @javax.annotation.Nullable

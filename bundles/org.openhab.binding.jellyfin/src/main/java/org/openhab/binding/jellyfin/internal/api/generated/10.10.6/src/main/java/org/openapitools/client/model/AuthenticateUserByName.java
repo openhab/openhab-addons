@@ -40,7 +40,7 @@ import org.openapitools.client.ApiClient;
   AuthenticateUserByName.JSON_PROPERTY_USERNAME,
   AuthenticateUserByName.JSON_PROPERTY_PW
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:58.939457991Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class AuthenticateUserByName {
   public static final String JSON_PROPERTY_USERNAME = "Username";
   private JsonNullable<String> username = JsonNullable.<String>undefined();

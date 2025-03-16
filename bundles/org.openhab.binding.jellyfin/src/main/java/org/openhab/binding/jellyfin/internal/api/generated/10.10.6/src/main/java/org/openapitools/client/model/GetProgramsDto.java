@@ -73,7 +73,7 @@ import org.openapitools.client.ApiClient;
   GetProgramsDto.JSON_PROPERTY_LIBRARY_SERIES_ID,
   GetProgramsDto.JSON_PROPERTY_FIELDS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:58.939457991Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class GetProgramsDto {
   public static final String JSON_PROPERTY_CHANNEL_IDS = "ChannelIds";
   private JsonNullable<List<UUID>> channelIds = JsonNullable.<List<UUID>>undefined();

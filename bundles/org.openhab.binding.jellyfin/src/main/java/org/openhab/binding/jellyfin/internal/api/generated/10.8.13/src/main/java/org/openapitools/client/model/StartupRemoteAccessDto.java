@@ -36,7 +36,7 @@ import org.openapitools.client.ApiClient;
   StartupRemoteAccessDto.JSON_PROPERTY_ENABLE_REMOTE_ACCESS,
   StartupRemoteAccessDto.JSON_PROPERTY_ENABLE_AUTOMATIC_PORT_MAPPING
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:31.285278872Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class StartupRemoteAccessDto {
   public static final String JSON_PROPERTY_ENABLE_REMOTE_ACCESS = "EnableRemoteAccess";
   @javax.annotation.Nonnull

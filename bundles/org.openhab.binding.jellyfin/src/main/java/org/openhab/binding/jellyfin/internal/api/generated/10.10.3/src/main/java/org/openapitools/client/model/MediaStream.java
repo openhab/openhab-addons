@@ -106,7 +106,7 @@ import org.openapitools.client.ApiClient;
   MediaStream.JSON_PROPERTY_LEVEL,
   MediaStream.JSON_PROPERTY_IS_ANAMORPHIC
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:50.987643556Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class MediaStream {
   public static final String JSON_PROPERTY_CODEC = "Codec";
   private JsonNullable<String> codec = JsonNullable.<String>undefined();

@@ -56,7 +56,7 @@ import org.openapitools.client.ApiClient;
   PlaybackInfoDto.JSON_PROPERTY_AUTO_OPEN_LIVE_STREAM,
   PlaybackInfoDto.JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:58.939457991Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PlaybackInfoDto {
   public static final String JSON_PROPERTY_USER_ID = "UserId";
   private JsonNullable<UUID> userId = JsonNullable.<UUID>undefined();

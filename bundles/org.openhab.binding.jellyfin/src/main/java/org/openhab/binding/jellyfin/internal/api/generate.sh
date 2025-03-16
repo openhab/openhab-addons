@@ -23,7 +23,7 @@ DOCKER_IMAGE=openapitools/openapi-generator-cli:v7.12.0
 DOCKER_VOLUME_WORK="/work"
 
 for i in "${VERSIONS[@]}"; do
-    echo "ℹ➡️ API Version to generate: $i"
+    echo "ℹ➡️  API Version to generate: $i"
 
     FILENAME_JSON="./specifications/json/jellyfin-openapi-${i}.json"
     FILENAME_YAML="./specifications/yaml/jellyfin-openapi-${i}.yaml"
@@ -39,7 +39,7 @@ for i in "${VERSIONS[@]}"; do
             ${SERVER}
 
         if [ ! -e "${FILENAME_YAML}" ]; then
-            echo "⚙️: json ➡️ yaml"
+            echo "⚙️: json ➡️  yaml"
             yq -oy ${FILENAME_JSON} >${FILENAME_YAML}
         fi
     fi
@@ -49,6 +49,6 @@ for i in "${VERSIONS[@]}"; do
         --volume "${PWD}:${DOCKER_VOLUME_WORK}" \
         --workdir ${DOCKER_VOLUME_WORK}         \
         --env-file environment.ini              \
-        $DOCKER_IMAGE generate --generator-name java --global-property apis,apiTests=false,apiDocs=false,models,modelDocs=false,modelTests=false,apiPackage=org.openhab.binding.jellyfin.internal.api.${i} --config java.config.json --input-spec ${FILENAME_YAML} -o ./generated/${i} \
+        $DOCKER_IMAGE generate --generator-name java --global-property apiTests=false,modelTests=false --config java.config.json --input-spec ${FILENAME_YAML} -o ./generated/${i} \
         > /dev/null
 done

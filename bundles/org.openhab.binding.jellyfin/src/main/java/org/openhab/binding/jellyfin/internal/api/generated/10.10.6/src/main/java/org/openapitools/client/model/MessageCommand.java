@@ -41,7 +41,7 @@ import org.openapitools.client.ApiClient;
   MessageCommand.JSON_PROPERTY_TEXT,
   MessageCommand.JSON_PROPERTY_TIMEOUT_MS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:58.939457991Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class MessageCommand {
   public static final String JSON_PROPERTY_HEADER = "Header";
   private JsonNullable<String> header = JsonNullable.<String>undefined();

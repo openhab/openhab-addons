@@ -44,7 +44,7 @@ import org.openapitools.client.ApiClient;
   TaskTriggerInfo.JSON_PROPERTY_DAY_OF_WEEK,
   TaskTriggerInfo.JSON_PROPERTY_MAX_RUNTIME_TICKS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:58.939457991Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class TaskTriggerInfo {
   public static final String JSON_PROPERTY_TYPE = "Type";
   private JsonNullable<String> type = JsonNullable.<String>undefined();

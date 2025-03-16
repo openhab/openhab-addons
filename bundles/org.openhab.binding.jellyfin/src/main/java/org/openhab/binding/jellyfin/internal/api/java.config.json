@@ -1,7 +1,7 @@
 {
-  "enablePostProcessFile": false,
-  "openApiNullable": true,
   "library": "native",
-  "serializationLibrary": "jackson",
-  "dateLibrary": "java8"
+  "developerOrganization": "openHAB.org",
+  "developerOrganizationUrl": "https://www.openhab.org",
+  "dateLibrary": "java8",
+  "documentationProvider": "none"
 }

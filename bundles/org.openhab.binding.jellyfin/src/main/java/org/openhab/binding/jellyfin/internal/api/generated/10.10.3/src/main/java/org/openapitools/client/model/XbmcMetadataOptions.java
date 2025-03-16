@@ -43,7 +43,7 @@ import org.openapitools.client.ApiClient;
   XbmcMetadataOptions.JSON_PROPERTY_ENABLE_PATH_SUBSTITUTION,
   XbmcMetadataOptions.JSON_PROPERTY_ENABLE_EXTRA_THUMBS_DUPLICATION
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:50.987643556Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class XbmcMetadataOptions {
   public static final String JSON_PROPERTY_USER_ID = "UserId";
   private JsonNullable<String> userId = JsonNullable.<String>undefined();

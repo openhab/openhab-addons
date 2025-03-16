@@ -53,7 +53,7 @@ import org.openapitools.client.ApiClient;
   PlayerStateInfo.JSON_PROPERTY_PLAYBACK_ORDER,
   PlayerStateInfo.JSON_PROPERTY_LIVE_STREAM_ID
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:48.410245241Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:50.987643556Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PlayerStateInfo {
   public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
   private JsonNullable<Long> positionTicks = JsonNullable.<Long>undefined();

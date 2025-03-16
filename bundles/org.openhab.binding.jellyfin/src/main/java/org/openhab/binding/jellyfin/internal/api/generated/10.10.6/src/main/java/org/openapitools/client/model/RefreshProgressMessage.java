@@ -45,7 +45,7 @@ import org.openapitools.client.ApiClient;
   RefreshProgressMessage.JSON_PROPERTY_MESSAGE_ID,
   RefreshProgressMessage.JSON_PROPERTY_MESSAGE_TYPE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:58.939457991Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class RefreshProgressMessage {
   public static final String JSON_PROPERTY_DATA = "Data";
   private JsonNullable<Map<String, String>> data = JsonNullable.<Map<String, String>>undefined();

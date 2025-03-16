@@ -54,7 +54,7 @@ import org.openapitools.client.ApiClient;
   PlaybackStopInfo.JSON_PROPERTY_PLAYLIST_ITEM_ID,
   PlaybackStopInfo.JSON_PROPERTY_NOW_PLAYING_QUEUE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:31.285278872Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PlaybackStopInfo {
   public static final String JSON_PROPERTY_ITEM = "Item";
   private JsonNullable<BaseItemDto> item = JsonNullable.<BaseItemDto>undefined();

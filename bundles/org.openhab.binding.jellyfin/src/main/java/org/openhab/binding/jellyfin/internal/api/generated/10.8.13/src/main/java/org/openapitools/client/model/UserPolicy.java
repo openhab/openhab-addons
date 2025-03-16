@@ -83,7 +83,7 @@ import org.openapitools.client.ApiClient;
   UserPolicy.JSON_PROPERTY_PASSWORD_RESET_PROVIDER_ID,
   UserPolicy.JSON_PROPERTY_SYNC_PLAY_ACCESS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:31.285278872Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class UserPolicy {
   public static final String JSON_PROPERTY_IS_ADMINISTRATOR = "IsAdministrator";
   @javax.annotation.Nullable

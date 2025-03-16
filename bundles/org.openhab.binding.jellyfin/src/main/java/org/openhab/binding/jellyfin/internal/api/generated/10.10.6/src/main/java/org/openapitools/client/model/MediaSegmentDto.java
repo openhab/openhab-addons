@@ -41,7 +41,7 @@ import org.openapitools.client.ApiClient;
   MediaSegmentDto.JSON_PROPERTY_START_TICKS,
   MediaSegmentDto.JSON_PROPERTY_END_TICKS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:58.939457991Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class MediaSegmentDto {
   public static final String JSON_PROPERTY_ID = "Id";
   @javax.annotation.Nullable

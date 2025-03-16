@@ -65,7 +65,7 @@ import org.openapitools.client.ApiClient;
   PlaybackStartInfo.JSON_PROPERTY_NOW_PLAYING_QUEUE,
   PlaybackStartInfo.JSON_PROPERTY_PLAYLIST_ITEM_ID
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:40.061690683Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:31.285278872Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class PlaybackStartInfo {
   public static final String JSON_PROPERTY_CAN_SEEK = "CanSeek";
   @javax.annotation.Nullable

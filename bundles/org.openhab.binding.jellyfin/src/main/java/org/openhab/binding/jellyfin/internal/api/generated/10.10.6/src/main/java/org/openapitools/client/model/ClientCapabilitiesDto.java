@@ -50,7 +50,7 @@ import org.openapitools.client.ApiClient;
   ClientCapabilitiesDto.JSON_PROPERTY_APP_STORE_URL,
   ClientCapabilitiesDto.JSON_PROPERTY_ICON_URL
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-02-28T21:48:58.939457991Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
 public class ClientCapabilitiesDto {
   public static final String JSON_PROPERTY_PLAYABLE_MEDIA_TYPES = "PlayableMediaTypes";
   @javax.annotation.Nullable
