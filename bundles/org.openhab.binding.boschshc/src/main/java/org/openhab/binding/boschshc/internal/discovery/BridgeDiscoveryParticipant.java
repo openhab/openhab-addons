@@ -147,6 +147,7 @@ public class BridgeDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
         return DiscoveryResultBuilder.create(uid)
                 .withLabel("Bosch Smart Home Controller (" + publicInformation.shcIpAddress + ")")
+                .withProperty("ipAddress", publicInformation.shcIpAddress)
                 .withProperty(Thing.PROPERTY_MAC_ADDRESS, publicInformation.macAddress)
                 .withProperty(BridgeHandler.THING_PROPERTY_SHC_GENERATION, publicInformation.shcGeneration)
                 .withProperty(BridgeHandler.THING_PROPERTY_API_VERSIONS,
