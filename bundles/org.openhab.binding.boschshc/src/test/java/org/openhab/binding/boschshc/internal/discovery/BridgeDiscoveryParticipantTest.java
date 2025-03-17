@@ -145,7 +145,7 @@ class BridgeDiscoveryParticipantTest {
         assertThat(result.getThingTypeUID().getId(), is("shc"));
         assertThat(result.getLabel(), is("Bosch Smart Home Controller (192.168.0.123)"));
         Map<String, Object> properties = result.getProperties();
-        assertThat(properties.get("ipAddress"), is("192.168.0.123"));
+        assertThat(properties.get(BridgeHandler.CONFIGURATION_PARAMETER_IP_ADDRESS), is("192.168.0.123"));
         assertThat(properties.get(Thing.PROPERTY_MAC_ADDRESS), is("64-da-a0-ab-cd-ef"));
         assertThat(properties.get(BridgeHandler.THING_PROPERTY_SHC_GENERATION), is("SHC_1"));
         assertThat(properties.get(BridgeHandler.THING_PROPERTY_API_VERSIONS), is("2.9, 3.2"));

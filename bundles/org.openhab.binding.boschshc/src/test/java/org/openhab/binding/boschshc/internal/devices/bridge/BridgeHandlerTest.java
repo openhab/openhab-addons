@@ -243,11 +243,10 @@ class BridgeHandlerTest {
         verify(thingHandlerCallback).statusUpdated(any(),
                 eq(ThingStatusInfoBuilder.create(ThingStatus.ONLINE, ThingStatusDetail.NONE).build()));
 
-        verify(thing).setProperty("ipAddress", null);
         verify(thing).setProperty(Thing.PROPERTY_MAC_ADDRESS, "64-da-a0-ab-cd-ef");
         verify(thing).setProperty(BridgeHandler.THING_PROPERTY_API_VERSIONS, "2.9, 3.2");
 
-        verify(thingHandlerCallback, times(2)).thingUpdated(thing);
+        verify(thingHandlerCallback).thingUpdated(thing);
 
         verify(thingDiscoveryListener).doScan();
     }

@@ -147,7 +147,9 @@ public class BridgeDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
         return DiscoveryResultBuilder.create(uid)
                 .withLabel("Bosch Smart Home Controller (" + publicInformation.shcIpAddress + ")")
-                .withProperty("ipAddress", publicInformation.shcIpAddress)
+                // note: the IP address will become a configuration parameter, not a thing property
+                // refer to https://github.com/openhab/openhab-addons/pull/18391#discussion_r1997703718 for more details
+                .withProperty(BridgeHandler.CONFIGURATION_PARAMETER_IP_ADDRESS, publicInformation.shcIpAddress)
                 .withProperty(Thing.PROPERTY_MAC_ADDRESS, publicInformation.macAddress)
                 .withProperty(BridgeHandler.THING_PROPERTY_SHC_GENERATION, publicInformation.shcGeneration)
                 .withProperty(BridgeHandler.THING_PROPERTY_API_VERSIONS,
