@@ -161,7 +161,7 @@
 		<description>The Currently Running App on the Roku</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Application</tag>
+			<tag>App</tag>
 		</tags>
 	</channel-type>
 
