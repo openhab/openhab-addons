@@ -59,7 +59,7 @@
 		<description>Start application and monitor running applications.</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Application</tag>
+			<tag>App</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="rcButtonType">
