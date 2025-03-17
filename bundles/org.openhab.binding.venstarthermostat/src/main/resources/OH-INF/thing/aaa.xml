@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Venstar Thermostat Thing -->
+	<!-- Sample Thing Type -->
 	<thing-type id="colorTouchThermostat">
 		<label>ColorTouch Thermostat</label>
 		<description>Venstar ColorTouch Thermostat</description>
@@ -88,7 +88,6 @@
 
 		<properties>
 			<property name="uuid"></property>
-			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>
@@ -117,7 +116,6 @@
 		<description>Current System Operating Mode</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -343,7 +341,8 @@
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
 	</channel-type>
 
 	<channel-type id="outdoorTemperature">
@@ -355,11 +354,12 @@
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Indoor Humidity</description>
 		<category>Humidity</category>
