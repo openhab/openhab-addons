@@ -68,7 +68,7 @@
 		<description>The currently running App on the TV</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Application</tag>
+			<tag>App</tag>
 		</tags>
 	</channel-type>
 
