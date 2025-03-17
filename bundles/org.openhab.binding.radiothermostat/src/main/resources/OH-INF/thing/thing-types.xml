@@ -91,7 +91,7 @@
 		<description>The Current Operating Mode of the Fan</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Mode</tag>
+			<tag>Airflow</tag>
 		</tags>
 	</channel-type>
 
