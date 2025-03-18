@@ -25,6 +25,9 @@ import static pl.grzeslowski.jbambuapi.PrinterClientConfig.requiredFields;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.regex.Pattern;
 
@@ -211,6 +214,9 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
         updateBooleanState(CHANNEL_TIME_LAPS.getName(), print.timelapse());
         updateBooleanState(CHANNEL_USE_AMS.getName(), print.useAms());
         updateBooleanState(CHANNEL_VIBRATION_CALIBRATION.getName(), print.vibrationCali());
+        // lights
+        updateLightState("chamber_light", CHANNEL_LED_CHAMBER_LIGHT, print.lightsReport());
+        updateLightState("work_light", CHANNEL_LED_WORK_LIGHT, print.lightsReport());
         // other
         if (print.wifiSignal() != null) {
             updateState(CHANNEL_WIFI_SIGNAL.getName(), parseWifiChannel(print.wifiSignal()));
@@ -276,6 +282,17 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
             logger.debug("Cannot parse percent number {}", integer, e);
             updateState(channelId, UNDEF);
         }
+    }
+
+    private void updateLightState(String lightName, BambuLabBindingConstants.Channel channel,
+            List<Map<String, String>> lights) {
+        lights.stream()//
+                .filter(map -> lightName.equalsIgnoreCase(map.get("node")))//
+                .map(map -> map.get("mode"))//
+                .filter(Objects::nonNull)//
+                .map(OnOffType::from)//
+                .findAny()//
+                .ifPresent(command -> updateState(channel.getName(), command));
     }
 
     private State parseWifiChannel(String wifi) {
