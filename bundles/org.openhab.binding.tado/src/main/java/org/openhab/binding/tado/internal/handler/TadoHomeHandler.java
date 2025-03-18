@@ -82,11 +82,14 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
     private @Nullable ScheduledFuture<?> initializationFuture;
     private @Nullable OAuthClientService oAuthClientService;
 
+    private HomePresence cachedHomePresence;
+
     public TadoHomeHandler(Bridge bridge, TadoHandlerFactory tadoHandlerFactory, OAuthFactory oAuthFactory) {
         super(bridge);
         this.batteryChecker = new TadoBatteryChecker(this);
         this.configuration = getConfigAs(TadoHomeConfig.class);
         this.tadoHandlerFactory = tadoHandlerFactory;
+        cachedHomePresence = new HomePresence();
     }
 
     public TemperatureUnit getTemperatureUnit() {
@@ -205,7 +208,11 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
 
     public void updateHomeState() {
         try {
-            updateState(CHANNEL_HOME_PRESENCE_MODE, OnOffType.from(getHomeState().getPresence() == PresenceState.HOME));
+            HomeState homeState = getHomeState();
+            PresenceState homePresence = homeState.getPresence();
+            cachedHomePresence.setHomePresence(homePresence);
+            updateState(CHANNEL_HOME_PRESENCE_MODE, OnOffType.from(PresenceState.HOME == homePresence));
+            updateState(CHANNEL_HOME_GEOFENCING_ENABLED, OnOffType.from(!homeState.isPresenceLocked()));
         } catch (IOException | ApiException e) {
             logger.debug("Error accessing tado server: {}", e.getMessage(), e);
         }
@@ -220,19 +227,46 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
             return;
         }
 
+        final @Nullable HomePresence newHomePresence;
+        String commandString = command.toFullString().toUpperCase();
         switch (id) {
+            case CHANNEL_HOME_GEOFENCING_ENABLED:
+                switch (commandString) {
+                    case "ON":
+                        newHomePresence = null;
+                        break;
+                    case "OFF":
+                        newHomePresence = cachedHomePresence;
+                        break;
+                    default:
+                        return;
+                }
+                break;
+
             case CHANNEL_HOME_PRESENCE_MODE:
-                HomePresence presence = new HomePresence();
-                presence.setHomePresence("ON".equals(command.toFullString().toUpperCase())
-                        || "HOME".equals(command.toFullString().toUpperCase()) ? PresenceState.HOME
-                                : PresenceState.AWAY);
-                try {
-                    api.updatePresenceLock(homeId, presence);
-                } catch (IOException | ApiException e) {
-                    logger.warn("Error setting home presence: {}", e.getMessage(), e);
+                switch (commandString) {
+                    case "ON", "HOME":
+                        newHomePresence = new HomePresence();
+                        newHomePresence.setHomePresence(PresenceState.HOME);
+                        cachedHomePresence = newHomePresence;
+                        break;
+                    case "OFF", "AWAY":
+                        newHomePresence = new HomePresence();
+                        newHomePresence.setHomePresence(PresenceState.AWAY);
+                        cachedHomePresence = newHomePresence;
+                        break;
+                    default:
+                        return;
                 }
 
-                break;
+            default:
+                return;
+        }
+
+        try {
+            api.updatePresenceLock(homeId, newHomePresence);
+        } catch (IOException | ApiException e) {
+            logger.warn("Error setting home presence: {}", e.getMessage(), e);
         }
     }
 
