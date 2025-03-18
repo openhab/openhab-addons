@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,8 @@ class EmotivaMenuNotifyDTOTest extends AbstractDTOTestBase {
 
     @Test
     void testUnmarshallMenu() throws JAXBException {
-        EmotivaMenuNotifyDTO dto = (EmotivaMenuNotifyDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaMenuNotify);
+        var dto = (EmotivaMenuNotifyDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaMenuNotify);
+
         assertThat(dto.getProgress(), is(nullValue()));
         assertThat(dto.getSequence(), is("2378"));
         assertThat(dto.getRow().size(), is(11));
@@ -57,7 +58,8 @@ class EmotivaMenuNotifyDTOTest extends AbstractDTOTestBase {
 
     @Test
     void testUnmarshallProgress() throws JAXBException {
-        EmotivaMenuNotifyDTO dto = (EmotivaMenuNotifyDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaMenuNotifyProgress);
+        var dto = (EmotivaMenuNotifyDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaMenuNotifyProgress);
+
         assertThat(dto.getSequence(), is("2405"));
         assertThat(dto.getRow(), is(nullValue()));
         assertThat(dto.getProgress().getTime(), is("15"));

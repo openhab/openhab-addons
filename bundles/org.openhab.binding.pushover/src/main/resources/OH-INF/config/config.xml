@@ -55,6 +55,12 @@
 				take.</description>
 			<default>10</default>
 		</parameter>
+		<parameter name="idleTimeout" type="integer" min="0" max="10800" unit="s">
+			<advanced>true</advanced>
+			<label>Idle Timeout</label>
+			<description>The idle-timeout parameter specifies maximum number of seconds a connection with Pushover can be idle.</description>
+			<default>300</default>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

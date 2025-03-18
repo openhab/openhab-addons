@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import java.net.SocketTimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.denonmarantz.internal.DenonMarantzBindingConstants;
 import org.openhab.binding.denonmarantz.internal.config.DenonMarantzConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +55,7 @@ public class DenonMarantzTelnetClientThread extends Thread {
     private @Nullable BufferedReader in;
 
     public DenonMarantzTelnetClientThread(DenonMarantzConfiguration config, DenonMarantzTelnetListener listener) {
+        super(String.format("OH-binding-%s-%s", DenonMarantzBindingConstants.BINDING_ID, "TelnetClient"));
         logger.debug("Denon listener created");
         this.config = config;
         this.listener = listener;

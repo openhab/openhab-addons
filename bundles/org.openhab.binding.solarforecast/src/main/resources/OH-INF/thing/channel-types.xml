@@ -45,4 +45,14 @@
 		<label>Raw JSON Response</label>
 		<description>Plain JSON response without conversions</description>
 	</channel-type>
+	<channel-type id="api-count">
+		<item-type>String</item-type>
+		<label>API Request Count</label>
+		<description>Number of requests send to Solcast API starting 0:00 UTC</description>
+	</channel-type>
+	<channel-type id="latest-update">
+		<item-type>DateTime</item-type>
+		<label>Latest Update</label>
+		<description>Date and time of the latest forecast update</description>
+	</channel-type>
 </thing:thing-descriptions>

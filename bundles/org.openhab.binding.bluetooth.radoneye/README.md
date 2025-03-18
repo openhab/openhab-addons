@@ -28,21 +28,22 @@ Supported configuration parameters for the things:
 
 Following channels are supported for `RadonEye` thing:
 
-| Channel ID         | Item Type                | Description                                 |
-| ------------------ | ------------------------ | ------------------------------------------- |
-| radon              | Number:Density           | The measured radon level                    |
-
+| Channel ID | Item Type                        | Description                            |
+|------------|----------------------------------|----------------------------------------|
+| radon      | Number:RadiationSpecificActivity | The measured radon level               |
+| decay      | Number:Dimensionless             | The decay count in the last time frame |
 
 ## Example
 
 radoneye.things (assuming you have a Bluetooth bridge with the ID `bluetooth:bluegiga:adapter1`:
 
-```
+```java
 bluetooth:radoneye_rd200:adapter1:sensor1  "radoneye Wave Plus Sensor 1" (bluetooth:bluegiga:adapter1) [ address="12:34:56:78:9A:BC", refreshInterval=300 ]
 ```
 
 radoneye.items:
 
-```
-Number:Density          radon    "Radon level [%d %unit%]"   { channel="bluetooth:radoneye_rd200:adapter1:sensor1:radon" }
+```java
+Number:RadiationSpecificActivity     radon    "Radon level [%d %unit%]"   { channel="bluetooth:radoneye_rd200:adapter1:sensor1:radon" }
+Number:Dimensionless                 decay    "Decay count [%d %unit%]"   { channel="bluetooth:radoneye_rd200:adapter1:sensor1:decay" }
 ```

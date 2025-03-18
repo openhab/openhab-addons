@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChanne
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -47,6 +48,8 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
         ChannelConfiguration() {
             super("MQTT Cover");
         }
+
+        protected @Nullable Boolean optimistic;
 
         @SerializedName("state_topic")
         protected @Nullable String stateTopic;
@@ -85,9 +88,15 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
     @Nullable
     ComponentChannel stateChannel = null;
 
-    public Cover(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Cover(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
+        boolean optimistic = false;
+        Boolean localOptimistic = channelConfiguration.optimistic;
+        if (localOptimistic != null && localOptimistic == true
+                || channelConfiguration.stateTopic == null && channelConfiguration.positionTopic == null) {
+            optimistic = true;
+        }
         String stateTopic = channelConfiguration.stateTopic;
 
         // State can indicate additional information than just
@@ -149,6 +158,8 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
                         return false;
                     }
                     return true;
-                }).build();
+                }).withAutoUpdatePolicy(optimistic ? AutoUpdatePolicy.RECOMMEND : null).build();
+
+        finalizeChannels();
     }
 }

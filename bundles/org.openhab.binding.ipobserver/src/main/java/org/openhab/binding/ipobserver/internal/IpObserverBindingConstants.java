@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,6 +55,7 @@ public class IpObserverBindingConstants {
     public static final String WEEKLY_RAIN = "rainForWeek";
     public static final String MONTHLY_RAIN = "rainForMonth";
     public static final String YEARLY_RAIN = "rainForYear";
+    public static final String TOTAL_RAIN = "rainTotal";
     public static final String INDOOR_BATTERY = "batteryIndoor";
     public static final String OUTDOOR_BATTERY = "batteryOutdoor";
     public static final String RESPONSE_TIME = "responseTime";

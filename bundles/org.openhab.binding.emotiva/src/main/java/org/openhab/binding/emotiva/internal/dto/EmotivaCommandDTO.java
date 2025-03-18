@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,7 +71,7 @@ public class EmotivaCommandDTO {
      * @return EmotivaCommandDTO with ack=yes always added
      */
     public static EmotivaCommandDTO fromTypeWithAck(EmotivaControlCommands command) {
-        EmotivaCommandDTO emotivaCommandDTO = new EmotivaCommandDTO(command);
+        var emotivaCommandDTO = new EmotivaCommandDTO(command);
         emotivaCommandDTO.setAck(DEFAULT_CONTROL_ACK_VALUE);
         return emotivaCommandDTO;
     }
@@ -82,7 +82,7 @@ public class EmotivaCommandDTO {
      * @return EmotivaCommandDTO with ack=yes always added
      */
     public static EmotivaCommandDTO fromTypeWithAck(EmotivaControlCommands command, String value) {
-        EmotivaCommandDTO emotivaCommandDTO = new EmotivaCommandDTO(command);
+        var emotivaCommandDTO = new EmotivaCommandDTO(command);
         if (value != null) {
             emotivaCommandDTO.setValue(value);
         }
@@ -99,7 +99,7 @@ public class EmotivaCommandDTO {
     }
 
     public static EmotivaCommandDTO fromTypeWithAck(EmotivaSubscriptionTags command) {
-        EmotivaCommandDTO emotivaCommandDTO = new EmotivaCommandDTO(command);
+        var emotivaCommandDTO = new EmotivaCommandDTO(command);
         emotivaCommandDTO.setAck(DEFAULT_CONTROL_ACK_VALUE);
         return emotivaCommandDTO;
     }

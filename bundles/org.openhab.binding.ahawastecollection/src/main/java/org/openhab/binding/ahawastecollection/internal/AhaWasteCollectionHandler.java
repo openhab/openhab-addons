@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.ahawastecollection.internal;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
@@ -26,7 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ahawastecollection.internal.CollectionDate.WasteType;
 import org.openhab.core.cache.ExpiringCache;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.scheduler.CronScheduler;
 import org.openhab.core.scheduler.ScheduledCompletableFuture;
@@ -57,7 +55,6 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
     private final Lock monitor = new ReentrantLock();
     private final ExpiringCache<Map<WasteType, CollectionDate>> cache;
 
-    private final TimeZoneProvider timeZoneProvider;
     private final Logger logger = LoggerFactory.getLogger(AhaWasteCollectionHandler.class);
 
     private @Nullable AhaCollectionSchedule collectionSchedule;
@@ -69,11 +66,10 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
     private final ScheduledExecutorService executorService;
 
     public AhaWasteCollectionHandler(final Thing thing, final CronScheduler scheduler,
-            final TimeZoneProvider timeZoneProvider, final AhaCollectionScheduleFactory scheduleFactory,
+            final AhaCollectionScheduleFactory scheduleFactory,
             @Nullable final ScheduledExecutorService executorService) {
         super(thing);
         this.cronScheduler = scheduler;
-        this.timeZoneProvider = timeZoneProvider;
         this.scheduleFactory = scheduleFactory;
         this.cache = new ExpiringCache<>(Duration.ofMinutes(5), this::loadCollectionDates);
         this.executorService = executorService == null ? this.scheduler : executorService;
@@ -190,9 +186,7 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
 
             final Date nextCollectionDate = collectionDate.getDates().get(0);
 
-            final ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(nextCollectionDate.toInstant(),
-                    this.timeZoneProvider.getTimeZone());
-            this.updateState(channel.getUID(), new DateTimeType(zonedDateTime));
+            this.updateState(channel.getUID(), new DateTimeType(nextCollectionDate.toInstant()));
         }
     }
 

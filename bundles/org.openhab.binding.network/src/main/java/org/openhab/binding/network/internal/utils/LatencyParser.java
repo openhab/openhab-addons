@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.network.internal.utils;
 
-import static org.openhab.binding.network.internal.utils.NetworkUtils.millisToDuration;
+import static org.openhab.binding.network.internal.utils.NetworkUtils.*;
 
 import java.time.Duration;
 import java.util.regex.Matcher;
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LatencyParser {
 
-    private static final Pattern LATENCY_PATTERN = Pattern.compile(".*time=(.*) ?ms");
+    private static final Pattern LATENCY_PATTERN = Pattern.compile(".*time=(.*) ?(u|m)s.*");
     private final Logger logger = LoggerFactory.getLogger(LatencyParser.class);
 
     // This is how the input looks like on Mac and Linux:
@@ -43,18 +43,30 @@ public class LatencyParser {
     // 1 packets transmitted, 1 packets received, 0.0% packet loss
     // round-trip min/avg/max/stddev = 1.225/1.225/1.225/0.000 ms
 
+    // This is an example of an arping response on Linux:
+    // arping -c 1 -i eth0 192.168.0.1
+    // ARPING 192.168.0.1
+    // 60 bytes from xx:xx:xx:xx:xx:xx (192.168.0.1): index=0 time=792.847 usec
+    //
+    // --- 192.168.0.1 statistics ---
+    // 1 packets transmitted, 1 packets received, 0% unanswered (0 extra)
+    // rtt min/avg/max/std-dev = 0.793/0.793/0.793/0.000 ms
+
     /**
-     * Examine a single ping command output line and try to extract the latency value if it is contained.
+     * Examine a single ping or arping command output line and try to extract the latency value if it is contained.
      *
-     * @param inputLine Single output line of the ping command.
-     * @return Latency value provided by the ping command. <code>null</code> if the provided line did not contain a
-     *         latency value which matches the known patterns.
+     * @param inputLine Single output line of the ping or arping command.
+     * @return Latency value provided by the ping or arping command. <code>null</code> if the provided line did not
+     *         contain a latency value which matches the known patterns.
      */
     public @Nullable Duration parseLatency(String inputLine) {
         logger.debug("Parsing latency from input {}", inputLine);
 
         Matcher m = LATENCY_PATTERN.matcher(inputLine);
-        if (m.find() && m.groupCount() == 1) {
+        if (m.find() && m.groupCount() >= 2) {
+            if ("u".equals(m.group(2))) {
+                return microsToDuration(Double.parseDouble(m.group(1).replace(",", ".")));
+            }
             return millisToDuration(Double.parseDouble(m.group(1).replace(",", ".")));
         }
 

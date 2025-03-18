@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,7 +52,7 @@ public class PushbulletActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actionSendPushbulletNoteLabel", description = "@text/actionSendPushbulletNoteDesc")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPushbulletNote(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendPushbulletNote(
             @ActionInput(name = "recipient", label = "@text/actionSendPushbulletNoteInputRecipientLabel", description = "@text/actionSendPushbulletNoteInputRecipientDesc", type = "java.lang.String") @Nullable String recipient,
             @ActionInput(name = "title", label = "@text/actionSendPushbulletNoteInputTitleLabel", description = "@text/actionSendPushbulletNoteInputTitleDesc", type = "java.lang.String") @Nullable String title,
             @ActionInput(name = "message", label = "@text/actionSendPushbulletNoteInputMessageLabel", description = "@text/actionSendPushbulletNoteInputMessageDesc", type = "java.lang.String", required = true) String message) {
@@ -73,7 +73,7 @@ public class PushbulletActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actionSendPushbulletNoteLabel", description = "@text/actionSendPushbulletNoteDesc")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPushbulletNote(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendPushbulletNote(
             @ActionInput(name = "recipient", label = "@text/actionSendPushbulletNoteInputRecipientLabel", description = "@text/actionSendPushbulletNoteInputRecipientDesc", type = "java.lang.String") @Nullable String recipient,
             @ActionInput(name = "message", label = "@text/actionSendPushbulletNoteInputMessageLabel", description = "@text/actionSendPushbulletNoteInputMessageDesc", type = "java.lang.String", required = true) String message) {
         logger.trace("sendPushbulletNote '{}', '{}'", recipient, message);
@@ -92,7 +92,7 @@ public class PushbulletActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actionSendPushbulletLinkLabel", description = "@text/actionSendPushbulletLinkDesc")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPushbulletLink(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendPushbulletLink(
             @ActionInput(name = "recipient", label = "@text/actionSendPushbulletNoteInputRecipientLabel", description = "@text/actionSendPushbulletNoteInputRecipientDesc", type = "java.lang.String") @Nullable String recipient,
             @ActionInput(name = "title", label = "@text/actionSendPushbulletNoteInputTitleLabel", description = "@text/actionSendPushbulletNoteInputTitleDesc", type = "java.lang.String") @Nullable String title,
             @ActionInput(name = "message", label = "@text/actionSendPushbulletNoteInputMessageLabel", description = "@text/actionSendPushbulletNoteInputMessageDesc", type = "java.lang.String") @Nullable String message,
@@ -114,7 +114,7 @@ public class PushbulletActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actionSendPushbulletLinkLabel", description = "@text/actionSendPushbulletLinkDesc")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPushbulletLink(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendPushbulletLink(
             @ActionInput(name = "recipient", label = "@text/actionSendPushbulletNoteInputRecipientLabel", description = "@text/actionSendPushbulletNoteInputRecipientDesc", type = "java.lang.String") @Nullable String recipient,
             @ActionInput(name = "url", label = "@text/actionSendPushbulletLinkInputUrlLabel", description = "@text/actionSendPushbulletLinkInputUrlDesc", type = "java.lang.String", required = true) String url) {
         logger.trace("sendPushbulletLink '{}', '{}'", recipient, url);
@@ -133,7 +133,7 @@ public class PushbulletActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actionSendPushbulletFileLabel", description = "@text/actionSendPushbulletFileDesc")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPushbulletFile(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendPushbulletFile(
             @ActionInput(name = "recipient", label = "@text/actionSendPushbulletNoteInputRecipientLabel", description = "@text/actionSendPushbulletNoteInputRecipientDesc", type = "java.lang.String") @Nullable String recipient,
             @ActionInput(name = "title", label = "@text/actionSendPushbulletNoteInputTitleLabel", description = "@text/actionSendPushbulletNoteInputTitleDesc", type = "java.lang.String") @Nullable String title,
             @ActionInput(name = "message", label = "@text/actionSendPushbulletNoteInputMessageLabel", description = "@text/actionSendPushbulletNoteInputMessageDesc", type = "java.lang.String") @Nullable String message,
@@ -156,7 +156,7 @@ public class PushbulletActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actionSendPushbulletFileLabel", description = "@text/actionSendPushbulletFileDesc")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPushbulletFile(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendPushbulletFile(
             @ActionInput(name = "recipient", label = "@text/actionSendPushbulletNoteInputRecipientLabel", description = "@text/actionSendPushbulletNoteInputRecipientDesc", type = "java.lang.String") @Nullable String recipient,
             @ActionInput(name = "title", label = "@text/actionSendPushbulletNoteInputTitleLabel", description = "@text/actionSendPushbulletNoteInputTitleDesc", type = "java.lang.String") @Nullable String title,
             @ActionInput(name = "message", label = "@text/actionSendPushbulletNoteInputMessageLabel", description = "@text/actionSendPushbulletNoteInputMessageDesc", type = "java.lang.String") @Nullable String message,
@@ -178,7 +178,7 @@ public class PushbulletActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actionSendPushbulletFileLabel", description = "@text/actionSendPushbulletFileDesc")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPushbulletFile(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendPushbulletFile(
             @ActionInput(name = "recipient", label = "@text/actionSendPushbulletNoteInputRecipientLabel", description = "@text/actionSendPushbulletNoteInputRecipientDesc", type = "java.lang.String") @Nullable String recipient,
             @ActionInput(name = "content", label = "@text/actionSendPushbulletFileInputContent", description = "@text/actionSendPushbulletFileInputContentDesc", type = "java.lang.String", required = true) String content) {
         logger.trace("sendPushbulletFile '{}', '{}'", recipient, content);

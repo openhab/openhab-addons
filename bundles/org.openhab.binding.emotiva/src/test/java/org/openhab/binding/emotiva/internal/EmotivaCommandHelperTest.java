@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,9 +88,9 @@ class EmotivaCommandHelperTest {
     void testChannelToControlRequest(String channel, String name, EmotivaDataType emotivaDataType,
             EmotivaControlCommands defaultCommand, EmotivaControlCommands onCommand, EmotivaControlCommands offCommand,
             EmotivaControlCommands setCommand, EmotivaProtocolVersion version, double min, double max) {
-        EmotivaProcessorState state = new EmotivaProcessorState();
-
+        var state = new EmotivaProcessorState();
         EmotivaControlRequest surround = EmotivaCommandHelper.channelToControlRequest(channel, state, version);
+
         assertThat(surround.getName(), is(name));
         assertThat(surround.getChannel(), is(channel));
         assertThat(surround.getDataType(), is(emotivaDataType));

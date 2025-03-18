@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 class SecurityCapability extends RestCapability<SecurityApi> {
-    private final static ZonedDateTime ZDT_REFERENCE = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0),
+    private static final ZonedDateTime ZDT_REFERENCE = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0),
             ZoneId.systemDefault());
 
     private final Logger logger = LoggerFactory.getLogger(SecurityCapability.class);
@@ -133,7 +133,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
                 }
             });
         } catch (NetatmoException e) {
-            logger.warn("Error retrieving last events for home '{}' : {}", securityId, e.getMessage());
+            logger.warn("Error retrieving last events for home '{}': {}", securityId, e.getMessage());
         }
         return result;
     }
@@ -182,7 +182,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
             try {
                 return api.getDeviceEvents(securityId, moduleId, deviceType);
             } catch (NetatmoException e) {
-                logger.warn("Error retrieving last events of camera '{}' : {}", moduleId, e.getMessage());
+                logger.warn("Error retrieving last events of camera '{}': {}", moduleId, e.getMessage());
                 return null;
             }
         }).orElse(List.of()));
@@ -193,7 +193,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
             try {
                 return api.getPersonEvents(securityId, personId);
             } catch (NetatmoException e) {
-                logger.warn("Error retrieving last events of person '{}' : {}", personId, e.getMessage());
+                logger.warn("Error retrieving last events of person '{}': {}", personId, e.getMessage());
                 return null;
             }
         }).orElse(List.of()));
@@ -205,7 +205,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
                 api.setPersonAwayStatus(securityId, personId, away);
                 handler.expireData();
             } catch (NetatmoException e) {
-                logger.warn("Error setting person away/at home '{}' : {}", personId, e.getMessage());
+                logger.warn("Error setting person away/at home '{}': {}", personId, e.getMessage());
             }
         });
     }
@@ -224,7 +224,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
                 api.changeStatus(localURL, status);
                 handler.expireData();
             } catch (NetatmoException e) {
-                logger.warn("Error changing camera monitoring status '{}' : {}", status, e.getMessage());
+                logger.warn("Error changing camera monitoring status '{}': {}", status, e.getMessage());
             }
         });
     }
@@ -235,7 +235,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
                 api.changeFloodLightMode(securityId, cameraId, mode);
                 handler.expireData();
             } catch (NetatmoException e) {
-                logger.warn("Error changing Presence floodlight mode '{}' : {}", mode, e.getMessage());
+                logger.warn("Error changing Presence floodlight mode '{}': {}", mode, e.getMessage());
             }
         });
     }

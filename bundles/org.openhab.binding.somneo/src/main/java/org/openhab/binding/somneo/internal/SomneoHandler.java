@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.somneo.internal;
 import static org.openhab.binding.somneo.internal.SomneoBindingConstants.*;
 
 import java.io.EOFException;
+import java.time.ZoneId;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -356,8 +357,8 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_ALARM_TIME:
-                    if (command instanceof DateTimeType decimal) {
-                        connector.setAlarmTime(alarmPosition, decimal);
+                    if (command instanceof DateTimeType dateTimeCommand) {
+                        connector.setAlarmTime(alarmPosition, dateTimeCommand.getZonedDateTime(ZoneId.systemDefault()));
                     }
                     break;
                 case CHANNEL_ALARM_REPEAT_DAY:

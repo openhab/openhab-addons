@@ -7,12 +7,11 @@ This binding provides access to your Mercedes Benz vehicle like _Mercedes Me_ Sm
 First time users shall follow the following sequence
 
 1. Setup and configure [Bridge](#bridge-configuration)
-2. Follow the [Bridge Authorization](#bridge-authorization) process
-3. [Discovery](#discovery) shall find now vehicles associated to your account
-4. Add your vehicle from discovery and [configure](#thing-configuration) it with correct VIN
-5. Connect your desired items in UI or [text-configuration](#full-example)
-6. Optional: you can [Discover your Vehicle](#discover-your-vehicle) more deeply
-7. In case of problems check [Troubleshooting](#troubleshooting) section
+2. [Discovery](#discovery) shall find now vehicles associated to your account
+3. Add your vehicle from discovery and [configure](#thing-configuration) it with correct VIN
+4. Connect your desired items in UI or [text-configuration](#full-example)
+5. Optional: you can [Discover your Vehicle](#discover-your-vehicle) more deeply
+6. In case of problems check [Troubleshooting](#troubleshooting) section
 
 ## Supported Things
 
@@ -35,14 +34,20 @@ There's no manual discovery!
 
 Bridge needs configuration in order to connect properly to your Mercedes Me account.
 
-| Name            | Type    | Description                             | Default     | Required | Advanced |
-|-----------------|---------|-----------------------------------------|-------------|----------|----------|
-| email           | text    | Mercedes Me registered email Address    | N/A         | yes      | no       |
-| pin             | text    | Mercedes Me Smartphone App PIN          | N/A         | no       | no       |
-| region          | text    | Your region                             | EU          | yes      | no       |
-| refreshInterval | integer | API refresh interval                    | 15          | yes      | no       |
-| callbackIP      | text    | IP Address of openHAB Device            | N/A         | yes      | yes      |
-| callbackPort    | integer | Port Number of openHAB Device           | N/A         | yes      | yes      |
+| Name              | Type    | Description                                 | Default                   | Required |
+|-------------------|---------|---------------------------------------------|---------------------------|----------|
+| email             | text    | Mercedes Me registered email Address        | N/A                       | yes      |
+| refreshToken      | text    | Refresh Token from MB Token Requester app   | takeover previous token   | yes      |
+| pin               | text    | Mercedes Me Smartphone App PIN              | N/A                       | no       |
+| region            | text    | Your region                                 | EU                        | yes      |
+| refreshInterval   | integer | API refresh interval                        | 15                        | yes      |
+
+`refreshToken` is needed to get access to your Mercedes Me account.
+Users already running this binding can stay on default value `takeover previous token`.
+New users need to generate `refreshToken` with [MB Token Requester app]( https://github.com/ReneNulschDE/mbapi2020/wiki/How%E2%80%90to:-create-the-access-and-refresh-token ).
+It simulates the Mercedes Me application *only for authorization process* on your computer, **not your openHAB system!**
+The generated *refresh token* has to be pasted into the bridge configuration.
+The generated *token* can be ignored!
 
 Set `region` to your location
 
@@ -62,46 +67,6 @@ Commands protected by PIN
 - Unlock Doors
 - Open / Ventilate Windows
 - Open / Lift Sunroof
-
-IP `callbackIP` and port `callbackPort` will be auto-detected.
-If you're running on server with more than one network interface please select manually.
-
-### Bridge Authorization
-
-Authorization is needed to activate the Bridge which is connected to your Mercedes Me Account.
-The Bridge will indicate in the status headline if authorization is needed including the URL which needs to be opened in your browser.
-
-Three steps are needed
-
-1. Open the mentioned URL like 192.168.x.x:8090/mb-auth
-Opening this URL will request a PIN  which will be send to your configured email.
-Check your Mail Account if you received the PIN.
-Click on _Continue_ to proceed with Step 2.
-
-2. Enter your PIN in the shown field.
-Leave GUID as identifier as it is.
-Click on _Submit_ button.
-
-3. Confirmation shall be shown that authorization was successful.
-
-In case of non successful authorization check your log for errors.
-Below screenshots are illustrating the authorization flow.
-
-### After Bridge Setup
-
-<img src="./doc/OH-Step0.png" width="500" height="240"/>
-
-### Authorization Step 1
-
-<img src="./doc/OH-Step1.png" width="500" height="200"/>
-
-### Authorization Step 2
-
-<img src="./doc/OH-Step2.png" width="500" height="200"/>
-
-### Authorization Step 3
-
-<img src="./doc/OH-Step3.png" width="400" height="130"/>
 
 ## Thing Configuration
 
@@ -444,22 +409,23 @@ Group name: `range`
 
 All channels read-only.
 
-| Channel          | Type                 |  Description                 | bev | hybrid | combustion |
-|------------------|----------------------|------------------------------|-----|--------|------------|
-| mileage          | Number:Length        |  Total Mileage               | X   | X      | X          |
-| home-distance    | Number:Length        |  Distance to Home            | X   | X      | X          |
-| soc              | Number:Dimensionless |  Battery State of Charge     | X   | X      |            |
-| charged          | Number:Energy        |  Charged Battery Energy      | X   | X      |            |
-| uncharged        | Number:Energy        |  Uncharged Battery Energy    | X   | X      |            |
-| range-electric   | Number:Length        |  Electric Range              | X   | X      |            |
-| radius-electric  | Number:Length        |  Electric Radius for Map     | X   | X      |            |
-| fuel-level       | Number:Dimensionless |  Fuel Level in Percent       |     | X      | X          |
-| fuel-remain      | Number:Volume        |  Remaining Fuel              |     | X      | X          |
-| fuel-open        | Number:Volume        |  Open Fuel Capacity          |     | X      | X          |
-| range-fuel       | Number:Length        |  Fuel Range                  |     | X      | X          |
-| radius-fuel      | Number:Length        |  Fuel Radius for Map         |     | X      | X          |
-| range-hybrid     | Number:Length        |  Hybrid Range                |     | X      |            |
-| radius-hybrid    | Number:Length        |  Hybrid Radius for Map       |     | X      |            |
+| Channel          | Type                 |  Description                    | bev | hybrid | combustion |
+|------------------|----------------------|---------------------------------|-----|--------|------------|
+| mileage          | Number:Length        |  Total Mileage                  | X   | X      | X          |
+| home-distance    | Number:Length        |  Distance to Home               | X   | X      | X          |
+| soc              | Number:Dimensionless |  Battery State of Charge        | X   | X      |            |
+| charged          | Number:Energy        |  Charged Battery Energy         | X   | X      |            |
+| uncharged        | Number:Energy        |  Uncharged Battery Energy       | X   | X      |            |
+| range-electric   | Number:Length        |  Electric Range                 | X   | X      |            |
+| radius-electric  | Number:Length        |  Electric Radius for Map        | X   | X      |            |
+| fuel-level       | Number:Dimensionless |  Fuel Level in Percent          |     | X      | X          |
+| fuel-remain      | Number:Volume        |  Remaining Fuel                 |     | X      | X          |
+| fuel-open        | Number:Volume        |  Open Fuel Capacity             |     | X      | X          |
+| range-fuel       | Number:Length        |  Fuel Range                     |     | X      | X          |
+| radius-fuel      | Number:Length        |  Fuel Radius for Map            |     | X      | X          |
+| range-hybrid     | Number:Length        |  Hybrid Range                   |     | X      |            |
+| radius-hybrid    | Number:Length        |  Hybrid Radius for Map          |     | X      |            |
+| adblue-level     | Number:Dimensionless |  AdBlue tank level in percent   |     |        | X          |
 
 Channels with `radius` are just giving a _guess_ which radius can be reached in a map display.
 
@@ -813,7 +779,7 @@ Keep these 3 channels disconnected during normal operation.
 ### Things file
 
 ```java
-Bridge mercedesme:account:4711   "Mercedes Me John Doe" [ email="YOUR_MAIL_ADDRESS", region="EU", pin=9876, refreshInterval=15] {
+Bridge mercedesme:account:4711   "Mercedes Me John Doe" [ email="YOUR_MAIL_ADDRESS", region="EU", pin=9876, refreshToken="abc", refreshInterval=15] {
          Thing bev eqa           "Mercedes EQA"        [ vin="VEHICLE_VIN", batteryCapacity=66.5]
 }
 ```

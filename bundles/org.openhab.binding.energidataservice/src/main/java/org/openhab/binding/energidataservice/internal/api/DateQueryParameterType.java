@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,5 +36,14 @@ public enum DateQueryParameterType {
     @Override
     public String toString() {
         return name;
+    }
+
+    public static DateQueryParameterType of(String name) {
+        for (DateQueryParameterType type : values()) {
+            if (type.name.equals(name)) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("Unknown date query parameter: " + name);
     }
 }

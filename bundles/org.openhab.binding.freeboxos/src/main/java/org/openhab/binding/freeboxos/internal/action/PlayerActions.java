@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,8 +49,8 @@ public class PlayerActions implements ThingActions {
         return this.handler;
     }
 
-    @RuleAction(label = "send a key to player", description = "Sends a given key to the player")
-    public void sendKey(@ActionInput(name = "key") String key) {
+    @RuleAction(label = "@text/action.sendKey.label", description = "@text/action.sendKey.description")
+    public void sendKey(@ActionInput(name = "key", label = "@text/action.input.key.label") String key) {
         logger.debug("Sending key {} to player", key);
         PlayerHandler playerHandler = this.handler;
         if (playerHandler != null) {
@@ -60,8 +60,8 @@ public class PlayerActions implements ThingActions {
         }
     }
 
-    @RuleAction(label = "send a long key to player", description = "Sends a given key to the player and keep it pressed")
-    public void sendLongKey(@ActionInput(name = "key") String key) {
+    @RuleAction(label = "@text/action.sendLongKey.label", description = "@text/action.sendLongKey.description")
+    public void sendLongKey(@ActionInput(name = "key", label = "@text/action.input.key.label") String key) {
         logger.debug("Sending long press key {} to player", key);
         PlayerHandler playerHandler = this.handler;
         if (playerHandler != null) {
@@ -71,8 +71,9 @@ public class PlayerActions implements ThingActions {
         }
     }
 
-    @RuleAction(label = "send multiple keys to player", description = "Sends multiple keys to the player, comma separated")
-    public void sendMultipleKeys(@ActionInput(name = "keys") String keys) {
+    @RuleAction(label = "@text/action.sendMultipleKeys.label", description = "@text/action.sendMultipleKeys.description")
+    public void sendMultipleKeys(
+            @ActionInput(name = "keys", label = "@text/action.sendMultipleKeys.input.keys.label", description = "@text/action.sendMultipleKeys.input.keys.description") String keys) {
         logger.debug("Sending keys {} to player", keys);
         PlayerHandler playerHandler = this.handler;
         if (playerHandler != null) {
@@ -82,8 +83,9 @@ public class PlayerActions implements ThingActions {
         }
     }
 
-    @RuleAction(label = "send repeating key to player", description = "Sends a given key multiple times to the player")
-    public void sendKeyRepeat(@ActionInput(name = "key") String key, @ActionInput(name = "count") int count) {
+    @RuleAction(label = "@text/action.sendKeyRepeat.label", description = "@text/action.sendKeyRepeat.description")
+    public void sendKeyRepeat(@ActionInput(name = "key", label = "@text/action.input.key.label") String key,
+            @ActionInput(name = "count", label = "@text/action.sendKeyRepeat.input.count.label", description = "@text/action.sendKeyRepeat.input.count.description") int count) {
         logger.debug("Sending key {} to player {} times", key, count);
         PlayerHandler playerHandler = this.handler;
         if (playerHandler != null) {

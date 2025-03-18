@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,8 +23,8 @@ import org.openhab.binding.awattar.internal.handler.TimeRange;
  *
  * @param netPrice the net price in €/kWh
  * @param grossPrice the gross price in €/kWh
- * @param netTotal the net total price in €
- * @param grossTotal the gross total price in €
+ * @param netTotal the net total price in €/kWh
+ * @param grossTotal the gross total price in €/kWh
  * @param timerange the time range of the price
  */
 @NonNullByDefault

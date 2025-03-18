@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.openhab.binding.pioneeravr.internal.PioneerAvrBindingConstants;
 import org.openhab.binding.pioneeravr.internal.protocol.ParameterizedCommand.ParameterizedCommandType;
 import org.openhab.binding.pioneeravr.internal.protocol.SimpleCommand.SimpleCommandType;
 import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrCommand;
@@ -351,11 +352,10 @@ public abstract class StreamAvrConnection implements AvrConnection {
          * @throws IOException
          */
         public IpControlInputStreamReader(InputStream inputStream) {
+            super(String.format("OH-binding-%s-%s", PioneerAvrBindingConstants.BINDING_ID, getConnectionName()));
             this.bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             this.stopLatch = new CountDownLatch(1);
-
             this.setDaemon(true);
-            this.setName("IpControlInputStreamReader-" + getConnectionName());
         }
 
         @Override

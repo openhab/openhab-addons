@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.smsmodem.internal.SMSModemBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smslib.DeviceInformation.Modes;
@@ -41,6 +42,7 @@ public class MessageReader extends Thread {
     private static int HOURS_TO_RETAIN_ORPHANED_MESSAGE_PARTS = 72;
 
     public MessageReader(Modem modem) {
+        super(String.format("OH-binding-%s-%s", SMSModemBindingConstants.BINDING_ID, "MessageReader"));
         this.modem = modem;
     }
 

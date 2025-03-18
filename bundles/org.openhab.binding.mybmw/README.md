@@ -21,6 +21,8 @@ Please note **this isn't a real-time binding**.
 If a door is opened the state isn't transmitted and changed immediately.
 It's not a flaw in the binding itself because the state in BMW's own MyBMW App is also updated with some delay.
 
+This binding does not support the region: China.
+
 ## Supported Things
 
 ### Bridge
@@ -78,28 +80,38 @@ Properties will be attached to predefined vehicles if the VIN is matching.
 
 ### Bridge Configuration
 
-| Parameter       | Type    | Description                                                        |
-|-----------------|---------|--------------------------------------------------------------------|
-| userName        | text    | MyBMW Username                                                     |
-| password        | text    | MyBMW Password                                                     |
-| region          | text    | Select region in order to connect to the appropriate BMW server.   |
+| Parameter       | Type    | Description                                                                                            |
+|-----------------|---------|--------------------------------------------------------------------------------------------------------|
+| userName        | text    | MyBMW Username                                                                                         |
+| password        | text    | MyBMW Password                                                                                         |
+| region          | text    | Select region in order to connect to the appropriate BMW server.                                       |
 
-The region Configuration has 3 different options
+The region Configuration has 2 different options
 
 - _NORTH_AMERICA_
-- _CHINA_
 - _ROW_  (Rest of World)
+
+At first initialization, follow the online instructions for login into the BMW API.
 
 #### Advanced Configuration
 
-| Parameter       | Type    | Description                                             |
-|-----------------|---------|---------------------------------------------------------|
-| language        | text    | Channel data can be returned in the desired language    |
+| Parameter       | Type    | Description                                                                                            |
+|-----------------|---------|--------------------------------------------------------------------------------------------------------|
+| language        | text    | Channel data can be returned in the desired language                                                   |
+| hcaptchatoken   | text    | HCaptcha-Token for initial login (see https://bimmer-connected.readthedocs.io/en/stable/captcha.html)  |
+| callbackIP      | text    | IP address for openHAB callback URL, defaults to IP of openHAB host                                    |
+| callbackPort    | integer | Port Number for openHAB callback URL, default 8090                                                     |
 
 Language is predefined as _AUTODETECT_.
 Some textual descriptions, date and times are delivered based on your local language.
 You can overwrite this setting with lowercase 2-letter [language code reagrding ISO 639](https://www.oracle.com/java/technologies/javase/jdk8-jre8-suported-locales.html)
 So if want your UI in english language place _en_ as desired language.
+
+The initial login to the BMW API requires a Captcha Token.
+At first configuration, you can set the Captcha Token as a configuration parameter manually.
+
+To set the Captcha Token online, a webpage is presented and a callback to the bridge is created temporarily on the hosts IP address and a default port.
+If the port is already in use, or you have a complex network setup, you may have to override the defaults provided.
 
 ### Thing Configuration
 
@@ -354,7 +366,7 @@ GPS location and heading of the vehicle.
 | gps                 | Location      | Current GPS coordinates of the vehicle                       |
 | heading             | Number:Angle  | Current direction of the vehicle                             |
 | address             | String        | Current address                                              |
-| home-distance       | Number:Length | Calculated distance from configured home position of Openhab |
+| home-distance       | Number:Length | Calculated distance from configured home position of openHAB |
 
 #### Remote Services
 
@@ -849,4 +861,4 @@ sitemap BMW label="BMW" {
 
 ## Credits
 
-This work is based on the project of [Bimmer Connected](https://github.com/bimmerconnected/bimmer_connected).
+This work is based on the great work of the project of [Bimmer Connected](https://github.com/bimmerconnected/bimmer_connected).

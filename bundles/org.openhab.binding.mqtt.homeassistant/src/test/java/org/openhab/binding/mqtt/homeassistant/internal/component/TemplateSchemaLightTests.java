@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,6 +78,8 @@ public class TemplateSchemaLightTests extends AbstractComponentTests {
 
         assertChannel(component, Light.COLOR_CHANNEL_ID, "", "dummy", "Color", ColorValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("zigbee2mqtt/light/state", """
                 { "state": "on", "r": 255, "g": 255, "b": 255, "brightness": 255 }
                 """);
@@ -110,6 +112,8 @@ public class TemplateSchemaLightTests extends AbstractComponentTests {
         assertThat(component.getName(), is("light"));
 
         assertChannel(component, Light.BRIGHTNESS_CHANNEL_ID, "", "dummy", "Brightness", PercentageValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("zigbee2mqtt/light/state", "{ \"state\": \"on\", \"brightness\": 128 }");
         assertState(component, Light.BRIGHTNESS_CHANNEL_ID,
@@ -153,6 +157,8 @@ public class TemplateSchemaLightTests extends AbstractComponentTests {
         assertChannel(component, Light.BRIGHTNESS_CHANNEL_ID, "", "dummy", "Brightness", PercentageValue.class);
         assertChannel(component, Light.COLOR_TEMP_CHANNEL_ID, "", "dummy", "Color Temperature", NumberValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("shellies/bulb/color/0/status", "{ \"state\": \"on\", \"brightness\": 100 }");
         assertState(component, Light.BRIGHTNESS_CHANNEL_ID, PercentType.HUNDRED);
         assertState(component, Light.COLOR_TEMP_CHANNEL_ID, UnDefType.NULL);
@@ -184,16 +190,18 @@ public class TemplateSchemaLightTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("light"));
 
-        assertChannel(component, Light.ON_OFF_CHANNEL_ID, "", "dummy", "On/Off State", OnOffValue.class);
+        assertChannel(component, Light.SWITCH_CHANNEL_ID, "", "dummy", "On/Off State", OnOffValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("zigbee2mqtt/light/state", "{\"power\": \"on\"}");
-        assertState(component, Light.ON_OFF_CHANNEL_ID, OnOffType.ON);
+        assertState(component, Light.SWITCH_CHANNEL_ID, OnOffType.ON);
         publishMessage("zigbee2mqtt/light/state", "{\"power\": \"off\"}");
-        assertState(component, Light.ON_OFF_CHANNEL_ID, OnOffType.OFF);
+        assertState(component, Light.SWITCH_CHANNEL_ID, OnOffType.OFF);
 
-        sendCommand(component, Light.ON_OFF_CHANNEL_ID, OnOffType.OFF);
+        sendCommand(component, Light.SWITCH_CHANNEL_ID, OnOffType.OFF);
         assertPublished("zigbee2mqtt/light/set/state", "off");
-        sendCommand(component, Light.ON_OFF_CHANNEL_ID, OnOffType.ON);
+        sendCommand(component, Light.SWITCH_CHANNEL_ID, OnOffType.ON);
         assertPublished("zigbee2mqtt/light/set/state", "on");
     }
 

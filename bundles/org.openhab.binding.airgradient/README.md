@@ -77,7 +77,7 @@ For more information about the data in the channels, please refer to the models 
 | tvoc               | Number:Density       | Read       | Total Volatile Organic Compounds                                                 |
 | atmp               | Number:Temperature   | Read       | Ambient Temperature                                                              |
 | rhum               | Number:Dimensionless | Read       | Relative Humidity Percentage                                                     |
-| wifi               | Number               | Read       | Received signal strength indicator                                               |
+| wifi               | Number:Power         | Read       | Received signal strength indicator                                               |
 | uploads-since-boot | Number:Dimensionless | Read       | Number of measure uploads since last reboot (boot)                               |
 | leds               | String               | Read/Write | Sets the leds mode (off/co2/pm)                                                  |
 | calibration        | String               | Write      | Triggers co2 calibration on the device                                           |
@@ -101,7 +101,6 @@ These configuration settings needs AirGradient firmware on the sensor of version
 | model                 | String               | Read/Write | The model of the device (can be changed e.g. if you change sensors)              |
 | led-bar-test          | String               | Write      | Trigger test of LED bar                                                          |
 
-
 ## Full Example
 
 ### Thing Configuration
@@ -118,5 +117,3 @@ Bridge airgradient:airgradient-api:home "My Home" [ token="abc123...." ] {
 Number:Density      AirGradient_Location_PM2        "%.0f kg/m³"                         <density>       {channel="airgradient:location:654321:pm2"}"
 Number:Temperature  AirGradient_Location_PM2        "Temperature [%.1f °C]"              <temperature>   {channel="airgradient:location:654321:atmp"}"
 ```
-
-

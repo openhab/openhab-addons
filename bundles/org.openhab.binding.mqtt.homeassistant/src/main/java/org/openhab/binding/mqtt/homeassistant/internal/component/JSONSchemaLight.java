@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.TextValue;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -30,9 +31,11 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +57,8 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
 
     private final Logger logger = LoggerFactory.getLogger(JSONSchemaLight.class);
 
+    private @Nullable ComponentChannel colorTempChannel;
+
     private static class JSONState {
         protected static class Color {
             protected @Nullable Integer r, g, b, c, w;
@@ -71,12 +76,14 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
         protected @Nullable Integer transition;
     }
 
-    public JSONSchemaLight(ComponentFactory.ComponentConfiguration builder, boolean newStyleChannels) {
-        super(builder, newStyleChannels);
+    public JSONSchemaLight(ComponentFactory.ComponentConfiguration builder) {
+        super(builder);
     }
 
     @Override
     protected void buildChannels() {
+        boolean hasColorChannel = false;
+        AutoUpdatePolicy autoUpdatePolicy = optimistic ? AutoUpdatePolicy.RECOMMEND : null;
         List<LightColorMode> supportedColorModes = channelConfiguration.supportedColorModes;
         if (supportedColorModes != null) {
             if (LightColorMode.hasColorChannel(supportedColorModes)) {
@@ -84,35 +91,40 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
             }
 
             if (supportedColorModes.contains(LightColorMode.COLOR_MODE_COLOR_TEMP)) {
-                buildChannel(COLOR_TEMP_CHANNEL_ID, ComponentChannelType.NUMBER, colorTempValue, "Color Temperature",
-                        this).commandTopic(DUMMY_TOPIC, true, 1)
-                        .commandFilter(command -> handleColorTempCommand(command)).build();
+                colorTempChannel = buildChannel(COLOR_TEMP_CHANNEL_ID, ComponentChannelType.NUMBER, colorTempValue,
+                        "Color Temperature", this).commandTopic(DUMMY_TOPIC, true, 1)
+                        .commandFilter(command -> handleColorTempCommand(command))
+                        .withAutoUpdatePolicy(autoUpdatePolicy).build();
 
                 if (hasColorChannel) {
                     colorModeValue = new TextValue(
                             supportedColorModes.stream().map(LightColorMode::serializedName).toArray(String[]::new));
                     buildChannel(COLOR_MODE_CHANNEL_ID, ComponentChannelType.STRING, colorModeValue, "Color Mode", this)
-                            .isAdvanced(true).build();
+                            .withAutoUpdatePolicy(autoUpdatePolicy).isAdvanced(true).build();
 
                 }
             }
         }
 
         if (hasColorChannel) {
-            buildChannel(COLOR_CHANNEL_ID, ComponentChannelType.COLOR, colorValue, "Color", this)
-                    .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand).build();
+            colorChannel = buildChannel(COLOR_CHANNEL_ID, ComponentChannelType.COLOR, colorValue, "Color", this)
+                    .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand)
+                    .withAutoUpdatePolicy(autoUpdatePolicy).build();
         } else if (channelConfiguration.brightness) {
             brightnessChannel = buildChannel(BRIGHTNESS_CHANNEL_ID, ComponentChannelType.DIMMER, brightnessValue,
-                    "Brightness", this).commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand).build();
+                    "Brightness", this).commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand)
+                    .withAutoUpdatePolicy(autoUpdatePolicy).build();
         } else {
-            onOffChannel = buildChannel(ON_OFF_CHANNEL_ID, ComponentChannelType.SWITCH, onOffValue, "On/Off State",
-                    this).commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand).build();
+            onOffChannel = buildChannel(SWITCH_CHANNEL_ID, ComponentChannelType.SWITCH, onOffValue, "On/Off State",
+                    this).commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand)
+                    .withAutoUpdatePolicy(autoUpdatePolicy).build();
         }
 
         if (effectValue != null) {
             buildChannel(EFFECT_CHANNEL_ID, ComponentChannelType.STRING, Objects.requireNonNull(effectValue),
                     "Lighting Effect", this).commandTopic(DUMMY_TOPIC, true, 1)
-                    .commandFilter(command -> handleEffectCommand(command)).build();
+                    .commandFilter(command -> handleEffectCommand(command)).withAutoUpdatePolicy(autoUpdatePolicy)
+                    .build();
 
         }
     }
@@ -144,7 +156,7 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
                         .divide(new BigDecimal(100), MathContext.DECIMAL128).intValue();
             }
 
-            if (hasColorChannel) {
+            if (colorChannel != null) {
                 json.color = new JSONState.Color();
                 if (channelConfiguration.supportedColorModes.contains(LightColorMode.COLOR_MODE_HS)) {
                     json.color.h = state.getHue().toBigDecimal();
@@ -224,6 +236,8 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
     @Override
     public void updateChannelState(ChannelUID channel, State state) {
         ChannelStateUpdateListener listener = this.channelStateUpdateListener;
+        ComponentChannel localBrightnessChannel = brightnessChannel;
+        ComponentChannel localColorChannel = colorChannel;
 
         @Nullable
         JSONState jsonState;
@@ -285,45 +299,127 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
             }
         }
 
-        if (jsonState.colorTemp != null) {
-            colorTempValue.update(new QuantityType(Objects.requireNonNull(jsonState.colorTemp), Units.MIRED));
-            listener.updateChannelState(buildChannelUID(COLOR_TEMP_CHANNEL_ID), colorTempValue.getChannelState());
+        try {
+            LightColorMode localColorMode = jsonState.colorMode;
+            if (localColorMode != null) {
+                colorModeValue.update(new StringType(localColorMode.serializedName()));
 
-            colorModeValue.update(new StringType(LightColorMode.COLOR_MODE_COLOR_TEMP.serializedName()));
-        }
+                switch (localColorMode) {
+                    case COLOR_MODE_COLOR_TEMP:
+                        Integer localColorTemp = jsonState.colorTemp;
+                        if (localColorTemp == null) {
+                            logger.warn("Incomplete color_temp received for {}", getHaID());
+                        } else {
+                            colorTempValue
+                                    .update(new QuantityType(Objects.requireNonNull(jsonState.colorTemp), Units.MIRED));
+                            listener.updateChannelState(buildChannelUID(COLOR_TEMP_CHANNEL_ID),
+                                    colorTempValue.getChannelState());
 
-        if (jsonState.color != null) {
-            // This corresponds to "deprecated" color mode handling, since we're not checking which color
-            // mode is currently active.
-            // HS is highest priority, then XY, then RGB
-            // See
-            // https://github.com/home-assistant/core/blob/4f965f0eca09f0d12ae1c98c6786054063a36b44/homeassistant/components/mqtt/light/schema_json.py#L258
-            if (jsonState.color.h != null && jsonState.color.s != null) {
-                colorValue.update(new HSBType(new DecimalType(Objects.requireNonNull(jsonState.color.h)),
-                        new PercentType(Objects.requireNonNull(jsonState.color.s)), brightness));
-                colorModeValue.update(new StringType(LightColorMode.COLOR_MODE_HS.serializedName()));
-            } else if (jsonState.color.x != null && jsonState.color.y != null) {
-                HSBType newColor = HSBType.fromXY(jsonState.color.x.floatValue(), jsonState.color.y.floatValue());
-                colorValue.update(new HSBType(newColor.getHue(), newColor.getSaturation(), brightness));
-                colorModeValue.update(new StringType(LightColorMode.COLOR_MODE_XY.serializedName()));
-            } else if (jsonState.color.r != null && jsonState.color.g != null && jsonState.color.b != null) {
-                colorValue.update(HSBType.fromRGB(jsonState.color.r, jsonState.color.g, jsonState.color.b));
-                colorModeValue.update(new StringType(LightColorMode.COLOR_MODE_RGB.serializedName()));
+                            // Populate the color channel (if there is one) to match the color temperature.
+                            // First convert color temp to XY, then to HSB, then add in the brightness
+                            try {
+                                final double[] xy = ColorUtil.kelvinToXY(1000000d / localColorTemp);
+                                HSBType color = ColorUtil.xyToHsb(xy);
+                                color = new HSBType(color.getHue(), color.getSaturation(), brightness);
+                                colorValue.update(color);
+                            } catch (IndexOutOfBoundsException e) {
+                                logger.warn("Color temperature {} cannot be converted to a color for {}",
+                                        localColorTemp, getHaID());
+                            }
+                        }
+                        break;
+                    case COLOR_MODE_XY:
+                        if (jsonState.color == null || jsonState.color.x == null || jsonState.color.y == null) {
+                            logger.warn("Incomplete xy color received for {}", getHaID());
+                        } else {
+                            final double[] xy = new double[] { jsonState.color.x.doubleValue(),
+                                    jsonState.color.y.doubleValue() };
+                            HSBType newColor = ColorUtil.xyToHsb(xy);
+                            colorValue.update(new HSBType(newColor.getHue(), newColor.getSaturation(), brightness));
+                            if (colorTempChannel != null) {
+                                double kelvin = ColorUtil.xyToKelvin(xy);
+                                colorTempValue.update(new QuantityType(kelvin, Units.KELVIN));
+                                listener.updateChannelState(buildChannelUID(COLOR_TEMP_CHANNEL_ID),
+                                        colorTempValue.getChannelState());
+                            }
+                        }
+                        break;
+                    case COLOR_MODE_HS:
+                        if (jsonState.color == null || jsonState.color.h == null || jsonState.color.s == null) {
+                            logger.warn("Incomplete hs color received for {}", getHaID());
+                        } else {
+                            colorValue.update(new HSBType(new DecimalType(Objects.requireNonNull(jsonState.color.h)),
+                                    new PercentType(Objects.requireNonNull(jsonState.color.s)), brightness));
+                        }
+                        break;
+                    case COLOR_MODE_RGB:
+                    case COLOR_MODE_RGBW:
+                    case COLOR_MODE_RGBWW:
+                        if (jsonState.color == null || jsonState.color.r == null || jsonState.color.g == null
+                                || jsonState.color.b == null) {
+                            logger.warn("Incomplete rgb color received for {}", getHaID());
+                        } else {
+                            colorValue.update(ColorUtil
+                                    .rgbToHsb(new int[] { jsonState.color.r, jsonState.color.g, jsonState.color.b }));
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
+                // calculate the CCT of the color (xy was special cased above, to do a more direct calculation)
+                if (!localColorMode.equals(LightColorMode.COLOR_MODE_COLOR_TEMP)
+                        && !localColorMode.equals(LightColorMode.COLOR_MODE_XY) && localColorChannel != null
+                        && colorTempChannel != null && colorValue.getChannelState() instanceof HSBType colorState) {
+                    final double[] xy = ColorUtil.hsbToXY(colorState);
+                    double kelvin = ColorUtil.xyToKelvin(new double[] { xy[0], xy[1] });
+                    colorTempValue.update(new QuantityType(kelvin, Units.KELVIN));
+                    listener.updateChannelState(buildChannelUID(COLOR_TEMP_CHANNEL_ID),
+                            colorTempValue.getChannelState());
+                }
+
+            } else {
+                // "deprecated" color mode handling - color mode not specified, so we just accept what we can. See
+                // https://github.com/home-assistant/core/blob/4f965f0eca09f0d12ae1c98c6786054063a36b44/homeassistant/components/mqtt/light/schema_json.py#L258
+                if (jsonState.colorTemp != null) {
+                    colorTempValue.update(new QuantityType(Objects.requireNonNull(jsonState.colorTemp), Units.MIRED));
+                    listener.updateChannelState(buildChannelUID(COLOR_TEMP_CHANNEL_ID),
+                            colorTempValue.getChannelState());
+
+                    colorModeValue.update(new StringType(LightColorMode.COLOR_MODE_COLOR_TEMP.serializedName()));
+                }
+
+                if (jsonState.color != null) {
+                    if (jsonState.color.h != null && jsonState.color.s != null) {
+                        colorValue.update(new HSBType(new DecimalType(Objects.requireNonNull(jsonState.color.h)),
+                                new PercentType(Objects.requireNonNull(jsonState.color.s)), brightness));
+                        colorModeValue.update(new StringType(LightColorMode.COLOR_MODE_HS.serializedName()));
+                    } else if (jsonState.color.x != null && jsonState.color.y != null) {
+                        HSBType newColor = ColorUtil.xyToHsb(
+                                new double[] { jsonState.color.x.doubleValue(), jsonState.color.y.doubleValue() });
+                        colorValue.update(new HSBType(newColor.getHue(), newColor.getSaturation(), brightness));
+                        colorModeValue.update(new StringType(LightColorMode.COLOR_MODE_XY.serializedName()));
+                    } else if (jsonState.color.r != null && jsonState.color.g != null && jsonState.color.b != null) {
+                        colorValue.update(ColorUtil
+                                .rgbToHsb(new int[] { jsonState.color.r, jsonState.color.g, jsonState.color.b }));
+                        colorModeValue.update(new StringType(LightColorMode.COLOR_MODE_RGB.serializedName()));
+                    }
+
+                }
             }
-        }
-
-        if (jsonState.colorMode != null) {
-            colorModeValue.update(new StringType(jsonState.colorMode.serializedName()));
+        } catch (IllegalArgumentException e) {
+            logger.warn("Invalid color value for {}", getHaID());
         }
 
         listener.updateChannelState(buildChannelUID(COLOR_MODE_CHANNEL_ID), colorModeValue.getChannelState());
 
-        if (hasColorChannel) {
-            listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID), colorValue.getChannelState());
-        } else if (brightnessChannel != null) {
-            listener.updateChannelState(buildChannelUID(BRIGHTNESS_CHANNEL_ID), brightnessValue.getChannelState());
+        if (localColorChannel != null) {
+            listener.updateChannelState(localColorChannel.getChannel().getUID(), colorValue.getChannelState());
+        } else if (localBrightnessChannel != null) {
+            listener.updateChannelState(localBrightnessChannel.getChannel().getUID(),
+                    brightnessValue.getChannelState());
         } else {
-            listener.updateChannelState(buildChannelUID(ON_OFF_CHANNEL_ID), onOffValue.getChannelState());
+            listener.updateChannelState(onOffChannel.getChannel().getUID(), onOffValue.getChannelState());
         }
     }
 }

@@ -34,6 +34,16 @@
 				<label>Auth ID</label>
 				<description>Authentication ID delivered after the captcha (see documentation).</description>
 			</parameter>
+			<parameter name="timezone" type="text" required="false">
+				<label>Timezone</label>
+				<description>The timezone associated with your Point of delivery.
+					Will default to openHAB default timezone.
+					You will
+					need to change this if your Linky is located in a different timezone that your openHAB location.
+					You can use an
+					offset, or a label like Europe/Paris</description>
+			</parameter>
+
 		</config-description>
 	</thing-type>
 
@@ -96,10 +106,10 @@
 	</channel-type>
 
 	<channel-type id="power">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="kVA">Number:Power</item-type>
 		<label>Yesterday Peak Power</label>
 		<description>Maximum power usage yesterday</description>
-		<state readOnly="true" pattern="%.3f %unit%"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="timestamp">

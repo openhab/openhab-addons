@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,7 +43,7 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Update extends AbstractComponent<Update.ChannelConfiguration> implements ChannelStateUpdateListener {
     public static final String UPDATE_CHANNEL_ID = "update";
-    public static final String LATEST_VERSION_CHANNEL_ID = "latestVersion";
+    public static final String LATEST_VERSION_CHANNEL_ID = "latest-version";
 
     /**
      * Configuration class for MQTT component
@@ -143,8 +143,8 @@ public class Update extends AbstractComponent<Update.ChannelConfiguration> imple
     private ReleaseState state = new ReleaseState();
     private @Nullable ReleaseStateListener listener = null;
 
-    public Update(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Update(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         TextValue value = new TextValue();
         String commandTopic = channelConfiguration.commandTopic;
@@ -172,6 +172,8 @@ public class Update extends AbstractComponent<Update.ChannelConfiguration> imple
         state.title = channelConfiguration.title;
         state.releaseSummary = channelConfiguration.releaseSummary;
         state.releaseUrl = channelConfiguration.releaseUrl;
+
+        addJsonAttributesChannel();
     }
 
     /**

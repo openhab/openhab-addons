@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -80,7 +80,13 @@ public class SolarmanChannelManager {
             baseChannelConfig.scale = scale;
         }
 
-        baseChannelConfig.rule = item.getRule();
+        if (item.hasLookup() || Boolean.TRUE.equals(item.getIsstr())) {
+            // Set 5 for Text (String), when isstr is true or Lookup is present
+            baseChannelConfig.rule = 5;
+        } else {
+            baseChannelConfig.rule = item.getRule();
+        }
+
         baseChannelConfig.registers = convertRegisters(item.getRegisters());
         baseChannelConfig.uom = item.getUom();
 

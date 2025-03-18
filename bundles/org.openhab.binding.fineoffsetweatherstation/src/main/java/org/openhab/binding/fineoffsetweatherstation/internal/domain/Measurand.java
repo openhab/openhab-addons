@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -246,19 +246,19 @@ public enum Measurand {
         return MEASURANDS.get(code);
     }
 
-    private int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel, ConversionContext context,
+    private int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel,
             @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result,
             DebugDetails debugDetails) {
         int subOffset = 0;
         for (Parser parser : parsers) {
-            subOffset += parser.extractMeasuredValues(data, offset + subOffset, channel, context, customizationType,
-                    result, debugDetails);
+            subOffset += parser.extractMeasuredValues(data, offset + subOffset, channel, customizationType, result,
+                    debugDetails);
         }
         return subOffset;
     }
 
     private interface Parser {
-        int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel, ConversionContext context,
+        int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel,
                 @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result,
                 DebugDetails debugDetails);
     }
@@ -271,7 +271,7 @@ public enum Measurand {
         }
 
         @Override
-        public int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel, ConversionContext context,
+        public int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel,
                 @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result,
                 DebugDetails debugDetails) {
             debugDetails.addDebugDetails(offset, skip, "skipped");
@@ -312,11 +312,9 @@ public enum Measurand {
             this.channel = channel;
         }
 
-        public int extractMeasuredValues(byte[] data, int offset, ConversionContext context,
-                @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result,
-                DebugDetails debugDetails) {
-            return measurand.extractMeasuredValues(data, offset, channel, context, customizationType, result,
-                    debugDetails);
+        public int extractMeasuredValues(byte[] data, int offset, @Nullable ParserCustomizationType customizationType,
+                List<MeasuredValue> result, DebugDetails debugDetails) {
+            return measurand.extractMeasuredValues(data, offset, channel, customizationType, result, debugDetails);
         }
 
         public String getDebugString() {
@@ -353,11 +351,11 @@ public enum Measurand {
         }
 
         @Override
-        public int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel, ConversionContext context,
+        public int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel,
                 @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result,
                 DebugDetails debugDetails) {
             MeasureType measureType = getMeasureType(customizationType);
-            State state = measureType.toState(data, offset, context);
+            State state = measureType.toState(data, offset);
             if (state != null) {
                 debugDetails.addDebugDetails(offset, measureType.getByteSize(),
                         measureType.name() + ": " + state.toFullString());

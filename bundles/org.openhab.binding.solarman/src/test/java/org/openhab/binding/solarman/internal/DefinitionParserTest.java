@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,9 +16,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -27,45 +30,44 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.solarman.internal.defmodel.InverterDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Catalin Sanda - Initial contribution
  */
 @NonNullByDefault
 public class DefinitionParserTest {
-    private final Logger logger = LoggerFactory.getLogger(DefinitionParserTest.class);
+    private static final String YAML_EXTENSION = ".yaml";
+    private static final String DIRECTORY_PREFIX = "definitions/";
+
     private final DefinitionParser definitionParser = new DefinitionParser();
 
     @Test
     void testInverterDefinitionsCanBeLoaded() throws IOException {
-        List<String> yamlFiles = scanForYamlFiles("definitions");
+        List<String> yamlFiles = scanForYamlFiles(DIRECTORY_PREFIX);
         List<String> definitionIds = extractDefinitionIdFromYamlFiles(yamlFiles);
 
-        assertFalse(definitionIds.isEmpty());
+        assertFalse(definitionIds.isEmpty(), "No YAML files found in directory: " + DIRECTORY_PREFIX);
 
         definitionIds.forEach(definitionId -> {
             @Nullable
             InverterDefinition inverterDefinition = definitionParser.parseDefinition(definitionId);
-            assertNotNull(inverterDefinition);
+            assertNotNull(inverterDefinition, "Failed to parse inverter definition: " + definitionId);
         });
     }
 
     public static List<String> extractDefinitionIdFromYamlFiles(List<String> yamlFiles) {
-        Pattern pattern = Pattern.compile("definitions/(.*)\\.yaml");
+        Pattern pattern = Pattern.compile("definitions/(.*)\\" + YAML_EXTENSION);
 
         return yamlFiles.stream().map(file -> {
             Matcher matcher = pattern.matcher(file);
             return matcher.matches() ? matcher.group(1) : file;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     public List<String> scanForYamlFiles(String directoryPath) throws IOException {
@@ -75,19 +77,19 @@ public class DefinitionParserTest {
 
         Collections.list(resources).stream().flatMap(resource -> {
             try {
-                if (resource.getProtocol().equals("jar")) {
+                if ("jar".equals(resource.getProtocol())) {
                     String path = resource.getPath();
-                    String jarPath = path.substring(5, path.indexOf("!"));
+                    String jarPath = path.substring(path.indexOf("file:") + 5, path.indexOf("!"));
                     try (JarFile jarFile = new JarFile(jarPath)) {
-                        return jarFile.stream()
-                                .filter(e -> e.getName().startsWith(directoryPath) && e.getName().endsWith(".yaml"))
+                        return jarFile.stream().filter(
+                                e -> e.getName().startsWith(directoryPath) && e.getName().endsWith(YAML_EXTENSION))
                                 .map(JarEntry::getName);
                     }
-                } else if (resource.getProtocol().equals("file")) {
+                } else if ("file".equals(resource.getProtocol())) {
                     return scanDirectory(directoryPath).stream();
                 }
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
+            } catch (IOException | URISyntaxException e) {
+                throw new IllegalStateException("Error processing resource: " + resource, e);
             }
             return Stream.empty();
         }).forEach(yamlFiles::add);
@@ -95,15 +97,18 @@ public class DefinitionParserTest {
         return yamlFiles;
     }
 
-    private static List<String> scanDirectory(String directoryPath) throws IOException {
-        URL url = Objects.requireNonNull(DefinitionParserTest.class.getClassLoader()).getResource(directoryPath);
-        if (url == null) {
+    private static List<String> scanDirectory(String directoryPath) throws IOException, URISyntaxException {
+        URL url = Objects.requireNonNull(
+                Objects.requireNonNull(DefinitionParserTest.class.getClassLoader()).getResource(directoryPath));
+        Path directory = Paths.get(url.toURI());
+
+        if (!Files.isDirectory(directory)) {
             throw new IllegalArgumentException("Invalid directory path: " + directoryPath);
         }
-        String[] files = new java.io.File(url.getPath()).list((dir, name) -> name.endsWith(".yaml"));
-        if (files != null) {
-            return Arrays.stream(files).map(file -> directoryPath + "/" + file).toList();
+
+        try (Stream<Path> stream = Files.list(directory)) {
+            return stream.filter(file -> file.getFileName().toString().endsWith(YAML_EXTENSION))
+                    .map(file -> directoryPath + "/" + file.getFileName()).toList();
         }
-        return Collections.emptyList();
     }
 }

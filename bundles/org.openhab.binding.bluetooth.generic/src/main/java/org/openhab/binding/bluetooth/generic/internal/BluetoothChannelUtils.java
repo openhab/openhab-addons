@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BluetoothChannelUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(BluetoothChannelUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BluetoothChannelUtils.class);
 
     public static String encodeFieldID(Field field) {
         String requirements = Optional.ofNullable(field.getRequirements()).orElse(Collections.emptyList()).stream()
@@ -130,7 +130,7 @@ public class BluetoothChannelUtils {
         if (fieldType == FieldType.BOOLEAN) {
             OnOffType onOffType = convert(state, OnOffType.class);
             if (onOffType == null) {
-                logger.debug("Could not convert state to OnOffType: {} : {} : {} ", request.getCharacteristicUUID(),
+                LOGGER.debug("Could not convert state to OnOffType: {} : {} : {} ", request.getCharacteristicUUID(),
                         fieldName, state);
                 return;
             }
@@ -144,7 +144,7 @@ public class BluetoothChannelUtils {
                 request.setField(fieldName, enumeration);
                 return;
             } else {
-                logger.debug("Could not convert state to enumeration: {} : {} : {} ", request.getCharacteristicUUID(),
+                LOGGER.debug("Could not convert state to enumeration: {} : {} : {} ", request.getCharacteristicUUID(),
                         fieldName, state);
             }
             // fall back to simple types
@@ -154,7 +154,7 @@ public class BluetoothChannelUtils {
             case SINT: {
                 DecimalType decimalType = convert(state, DecimalType.class);
                 if (decimalType == null) {
-                    logger.debug("Could not convert state to DecimalType: {} : {} : {} ",
+                    LOGGER.debug("Could not convert state to DecimalType: {} : {} : {} ",
                             request.getCharacteristicUUID(), fieldName, state);
                     return;
                 }
@@ -165,7 +165,7 @@ public class BluetoothChannelUtils {
             case FLOAT_IEE11073: {
                 DecimalType decimalType = convert(state, DecimalType.class);
                 if (decimalType == null) {
-                    logger.debug("Could not convert state to DecimalType: {} : {} : {} ",
+                    LOGGER.debug("Could not convert state to DecimalType: {} : {} : {} ",
                             request.getCharacteristicUUID(), fieldName, state);
                     return;
                 }
@@ -176,7 +176,7 @@ public class BluetoothChannelUtils {
             case UTF16S: {
                 StringType textType = convert(state, StringType.class);
                 if (textType == null) {
-                    logger.debug("Could not convert state to StringType: {} : {} : {} ",
+                    LOGGER.debug("Could not convert state to StringType: {} : {} : {} ",
                             request.getCharacteristicUUID(), fieldName, state);
                     return;
                 }
@@ -186,7 +186,7 @@ public class BluetoothChannelUtils {
             case STRUCT:
                 StringType textType = convert(state, StringType.class);
                 if (textType == null) {
-                    logger.debug("Could not convert state to StringType: {} : {} : {} ",
+                    LOGGER.debug("Could not convert state to StringType: {} : {} : {} ",
                             request.getCharacteristicUUID(), fieldName, state);
                     return;
                 }

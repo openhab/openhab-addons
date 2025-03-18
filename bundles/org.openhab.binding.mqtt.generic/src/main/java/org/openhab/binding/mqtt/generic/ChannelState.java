@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,13 +51,13 @@ public class ChannelState implements MqttMessageSubscriber {
 
     // Immutable channel configuration
     protected final boolean readOnly;
-    protected final ChannelUID channelUID;
     protected final ChannelConfig config;
 
     /** Channel value **/
     protected final Value cachedValue;
 
     // Runtime variables
+    protected ChannelUID channelUID;
     private @Nullable MqttBrokerConnection connection;
     protected final ChannelTransformation incomingTransformation;
     protected final ChannelTransformation outgoingTransformation;
@@ -132,6 +132,11 @@ public class ChannelState implements MqttMessageSubscriber {
         return channelUID;
     }
 
+    // If the UID of the channel changed after it was initially created
+    public void setChannelUID(ChannelUID channelUID) {
+        this.channelUID = channelUID;
+    }
+
     /**
      * Incoming message from the MqttBrokerConnection
      *
@@ -168,6 +173,13 @@ public class ChannelState implements MqttMessageSubscriber {
 
         // Is trigger?: Special handling
         if (config.trigger) {
+            try {
+                cachedValue.parseMessage(new StringType(strValue));
+            } catch (IllegalArgumentException e) {
+                // invalid value for this trigger; ignore
+                receivedOrTimeout();
+                return;
+            }
             channelStateUpdateListener.triggerChannel(channelUID, strValue);
             receivedOrTimeout();
             return;

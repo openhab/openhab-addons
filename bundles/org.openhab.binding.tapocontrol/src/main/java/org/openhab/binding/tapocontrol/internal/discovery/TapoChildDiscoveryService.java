@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.tapocontrol.internal.discovery;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.utils.TapoUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.TapoUtils.formatMac;
 
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +55,7 @@ public class TapoChildDiscoveryService extends AbstractDiscoveryService implemen
 
     /**
      * INIT CLASS
-     * 
+     *
      */
     public TapoChildDiscoveryService() {
         super(SUPPORTED_HUB_CHILD_TYPES_UIDS, TAPO_DISCOVERY_TIMEOUT_S, false);
@@ -195,6 +195,8 @@ public class TapoChildDiscoveryService extends AbstractDiscoveryService implemen
                 deviceLabel = DEVICE_DESCRIPTION_SMART_CONTACT;
             } else if (SUPPORTED_MOTION_SENSORS.contains(deviceUID)) {
                 deviceLabel = DEVICE_DESCRIPTION_MOTION_SENSOR;
+            } else if (SUPPORTED_SMART_SWITCHES.contains(deviceUID)) {
+                deviceLabel = DEVICE_DESCRIPTION_SMART_SWITCH;
             }
             return DEVICE_VENDOR + " " + deviceModel + " " + deviceLabel;
         } catch (Exception e) {

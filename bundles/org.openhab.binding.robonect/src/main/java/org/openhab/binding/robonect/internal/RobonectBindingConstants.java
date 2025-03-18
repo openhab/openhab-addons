@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,6 +53,10 @@ public class RobonectBindingConstants {
 
     public static final String CHANNEL_HEALTH_TEMP = "health-temperature";
     public static final String CHANNEL_HEALTH_HUM = "health-humidity";
+
+    public static final String CHANNEL_BLADES_QUALITY = "blades-quality";
+    public static final String CHANNEL_BLADES_REPL_DAYS = "blades-replacement-days";
+    public static final String CHANNEL_BLADES_USAGE_HOURS = "blades-usage-hours";
 
     public static final String PROPERTY_COMPILED = "compiled";
     public static final String PROPERTY_COMMENT = "comment";

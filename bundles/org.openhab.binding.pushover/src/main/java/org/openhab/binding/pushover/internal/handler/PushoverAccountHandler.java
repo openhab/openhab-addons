@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,7 +83,7 @@ public class PushoverAccountHandler extends BaseThingHandler {
 
         if (configValid) {
             updateStatus(ThingStatus.UNKNOWN);
-
+            httpClient.setIdleTimeout(config.idleTimeout * 1000);
             connection = new PushoverAPIConnection(httpClient, config);
             scheduler.submit(this::asyncValidateUser);
         }

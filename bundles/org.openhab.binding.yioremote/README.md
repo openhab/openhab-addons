@@ -28,7 +28,7 @@ The YIO Dock has the following channels:
 | Channel        | Input/Output | Item Type | Description                                                                                                                                                         |
 | -------------- | ------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | receiverswitch | Input        | Switch    | The switch to enable disable the IR receiving diode/function                                                                                                        |
-| status         | Output       | String    | The status of the YIO Dock. If the reciever is on than the recognized IR code will be displayed otherwise the IR send status is displayed of the last IR code send. |
+| status         | Output       | String    | The status of the YIO Dock. If the receiver is on than the recognized IR code will be displayed otherwise the IR send status is displayed of the last IR code send. |
 
 # Actions
 
@@ -64,7 +64,7 @@ yioremote:yioRemoteDock:livingroom [     host="xxx.xxx.xxx.xxx",    accesstoken=
 .items
 
 ```java
-Switch     receiverswitch    "IR recieving switch"     {channel="yioremote:yioRemoteDock:livingroom:input#    receiverswitch"}
+Switch     receiverswitch    "IR receiving switch"     {channel="yioremote:yioRemoteDock:livingroom:input#    receiverswitch"}
 String     status            "YIO Dock status[%s]"     {channel="yioremote:yioRemoteDock:livingroom:output#    status"}
 ```
 

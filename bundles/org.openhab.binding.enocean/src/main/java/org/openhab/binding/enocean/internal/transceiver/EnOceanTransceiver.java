@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -135,7 +135,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
                                         logger.trace("Unable to process message", e);
                                         TransceiverErrorListener localListener = errorListener;
                                         if (localListener != null) {
-                                            localListener.errorOccured(e);
+                                            localListener.errorOccurred(e);
                                         }
                                         return;
                                     }
@@ -253,7 +253,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
                 try {
                     localInputStream.close();
                 } catch (IOException e) {
-                    logger.debug("IOException occured while closing the stream", e);
+                    logger.debug("IOException occurred while closing the stream", e);
                 }
             }
             this.readingTask = null;
@@ -269,7 +269,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
             try {
                 localOutputStream.close();
             } catch (IOException e) {
-                logger.debug("IOException occured while closing the output stream", e);
+                logger.debug("IOException occurred while closing the output stream", e);
             }
         }
 
@@ -278,7 +278,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
             try {
                 localInputStream.close();
             } catch (IOException e) {
-                logger.debug("IOException occured while closing the input stream", e);
+                logger.debug("IOException occurred while closing the input stream", e);
             }
         }
 
@@ -315,7 +315,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
             try {
                 return localInputStream.read(buffer, 0, length);
             } catch (IOException e) {
-                logger.debug("IOException occured while reading the input stream", e);
+                logger.debug("IOException occurred while reading the input stream", e);
                 return 0;
             }
         } else {
@@ -327,7 +327,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
             }
             TransceiverErrorListener localListener = errorListener;
             if (localListener != null) {
-                localListener.errorOccured(new IOException("Cannot read from null stream"));
+                localListener.errorOccurred(new IOException("Cannot read from null stream"));
             }
             return 0;
         }
@@ -448,7 +448,8 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
     protected abstract byte[] serializePacket(BasePacket packet) throws EnOceanException;
 
     public synchronized void addPacketListener(PacketListener listener, long senderIdToListenTo) {
-        if (listeners.computeIfAbsent(senderIdToListenTo, k -> new HashSet<>()).add(listener)) {
+        HashSet<PacketListener> lst = listeners.computeIfAbsent(senderIdToListenTo, k -> new HashSet<>());
+        if (lst != null && lst.add(listener)) {
             logger.debug("Listener added: {}", senderIdToListenTo);
         }
     }

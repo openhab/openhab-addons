@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,6 +31,7 @@ public class SolarmanLoggerConfiguration {
     public String serialNumber = "";
     public String inverterType = "sg04lp3";
     public int refreshInterval = 30;
+    public String solarmanLoggerMode = SolarmanLoggerMode.V5MODBUS.toString();
     @Nullable
     public String additionalRequests;
 
@@ -38,12 +39,13 @@ public class SolarmanLoggerConfiguration {
     }
 
     public SolarmanLoggerConfiguration(String hostname, Integer port, String serialNumber, String inverterType,
-            int refreshInterval, @Nullable String additionalRequests) {
+            int refreshInterval, String solarmanLoggerMode, @Nullable String additionalRequests) {
         this.hostname = hostname;
         this.port = port;
         this.serialNumber = serialNumber;
         this.inverterType = inverterType;
         this.refreshInterval = refreshInterval;
+        this.solarmanLoggerMode = solarmanLoggerMode;
         this.additionalRequests = additionalRequests;
     }
 
@@ -65,6 +67,10 @@ public class SolarmanLoggerConfiguration {
 
     public int getRefreshInterval() {
         return refreshInterval;
+    }
+
+    public SolarmanLoggerMode getSolarmanLoggerMode() {
+        return SolarmanLoggerMode.valueOf(solarmanLoggerMode);
     }
 
     @Nullable

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="shelly"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="shellyplusrgbwpm">
+		<label>Shelly Plus RGBW</label>
+		<description>@text/thing-type.shelly.shellyplusrgbw.description</description>
+		<category>ColorLight</category>
+		<channel-groups>
+			<channel-group id="control" typeId="rgbwpmColorControl"/>
+			<channel-group id="color" typeId="colorSettingsRGBWpm"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:rgbw2"/>
+	</thing-type>
+
+	<channel-group-type id="rgbwpmColorControl">
+		<label>@text/channel-group-type.shelly.rgbwpmColorControl.label</label>
+		<description>@text/channel-group-type.shelly.rgbwpmColorControl.description</description>
+	</channel-group-type>
+
+	<channel-group-type id="colorSettingsRGBWpm">
+		<label>@text/channel-group-type.shelly.colorSettingsRGBWpm.label</label>
+		<description>@text/channel-group-type.shelly.colorSettingsRGBWpm.description</description>
+		<channels>
+			<channel id="hsb" typeId="system.color"/>
+			<channel id="full" typeId="colorFull"/>
+			<channel id="red" typeId="colorRed"/>
+			<channel id="green" typeId="colorGreen"/>
+			<channel id="blue" typeId="colorBlue"/>
+			<channel id="white" typeId="colorWhite"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

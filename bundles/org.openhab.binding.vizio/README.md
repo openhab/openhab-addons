@@ -11,7 +11,7 @@ Multiple Things can be added if more than one Vizio TV is to be controlled.
 ## Discovery
 
 Auto-discovery is supported if the Vizio TV can be located on the local network using mDNS.
-Otherwise the thing must be manually added.
+Otherwise the Thing must be manually added.
 When the TV is discovered, a pairing process to obtain an authentication token from the TV must be completed using the openHAB console. See below for details.
 
 ## Thing Configuration
@@ -25,7 +25,7 @@ The thing has a few configuration parameters:
 | authToken   | The token that is used to authenticate all commands sent to the TV. See below for instructions to obtain via the openHAB console.    |
 | appListJson | A JSON string that defines the apps that are available in the `activeApp` channel drop down. See below for instructions for editing. |
 
-### Console Commands for Pairing:
+### Console Commands for Pairing
 
 To obtain an authorization token that enables openHAB to authenticate with the TV, the following console commands must be used while the TV is turned on.
 The first command will send a pairing start request to the TV. This triggers the TV to display a 4-digit pairing code on screen that must be sent with the second command.
@@ -48,12 +48,12 @@ openhab:vizio <thingUID> submit_code <pairingCode>
 Substitute `<thingUID>` with the same thing id used above
 Substitute `<pairingCode>` with the 4-digit pairing code displayed on the TV, ie: `1234`
 
-The console should then indicate that pairing was successful (token will be displayed) and that the token was saved to the thing configuration.
-If using file-based provisioning of the thing, the authorization token must be added to the thing configuration manually.
+The console should then indicate that pairing was successful (token will be displayed) and that the token was saved to the Thing configuration.
+If using file-based provisioning of the Thing, the authorization token must be added to the Thing configuration manually.
 With an authorization token in place, the binding can now control the TV.
 
 The authorization token text can be re-used in the event that it becomes necessary to setup the binding again.
-By simply adding the token that is already recognized by the TV to the thing configuration, the pairing process can be bypassed.
+By simply adding the token that is already recognized by the TV to the Thing configuration, the pairing process can be bypassed.
 
 ## Channels
 
@@ -69,47 +69,47 @@ The following channels are available:
 | control     | Player    | Control Playback e.g. Play/Pause/Next/Previous/FForward/Rewind                                                                                                                              |
 | button      | String    | Sends a remote control command the TV. See list of available commands below. (WriteOnly)                                                                                                    |
 
-### List of available button commands for Vizio TVs:
+### List of available button commands for Vizio TVs
 
-PowerOn
-PowerOff
-PowerToggle
-VolumeUp
-VolumeDown
-MuteOn **(may only work as a toggle)**
-MuteOff **(may only work as a toggle)**
-MuteToggle
-ChannelUp
-ChannelDown
-PreviousCh
-InputToggle
-SeekFwd
-SeekBack
-Play
-Pause
-Up
-Down
-Left
-Right
-Ok
-Back
-Info
-Menu
-Home
-Exit
-Smartcast
-ccToggle
-PictureMode
-WideMode
-WideToggle
+- PowerOn
+- PowerOff
+- PowerToggle
+- VolumeUp
+- VolumeDown
+- MuteOn **(may only work as a toggle)**
+- MuteOff **(may only work as a toggle)**
+- MuteToggle
+- ChannelUp
+- ChannelDown
+- PreviousCh
+- InputToggle
+- SeekFwd
+- SeekBack
+- Play
+- Pause
+- Up
+- Down
+- Left
+- Right
+- Ok
+- Back
+- Info
+- Menu
+- Home
+- Exit
+- Smartcast
+- ccToggle
+- PictureMode
+- WideMode
+- WideToggle
 
-### App List Configuration:
+### App List Configuration
 
 The Vizio API to launch and identify currently running apps on the TV is very complex.
 To handle this, the binding maintains a JSON database of applications and their associated metadata in order to populate the `activeApp` dropdown with available apps.
 
-When the thing is started for the first time, this JSON database is saved into the `appListJson` configuration parameter.
-This list of apps can be edited via the script editor on the thing configuration.
+When the Thing is started for the first time, this JSON database is saved into the `appListJson` configuration parameter.
+This list of apps can be edited via the script editor on the Thing configuration.
 By editing the JSON, apps that are not desired can be removed from the `activeApp` dropdown and newly discovered apps can be added.
 
 An entry for an application has a `name` element and a `config` element containing `APP_ID`, `NAME_SPACE` and `MESSAGE` (null for most apps):
@@ -134,12 +134,12 @@ If an app that is in the JSON database fails to start when selected, try adjusti
 A current list of `APP_ID`'s can be found at <http://scfs.vizio.com/appservice/vizio_apps_prod.json>
 and `NAME_SPACE` &amp; `MESSAGE` values needed can be found at <http://scfs.vizio.com/appservice/app_availability_prod.json>
 
-If there is an error in the user supplied `appListJson`, the thing will fail to start and display a CONFIGURATION_ERROR message.
-If all text in `appListJson` is removed (set to null) and the thing configuration saved, the binding will restore `appListJson` from the binding's JSON db.
+If there is an error in the user supplied `appListJson`, the Thing will fail to start and display a CONFIGURATION_ERROR message.
+If all text in `appListJson` is removed (set to null) and the Thing configuration saved, the binding will restore `appListJson` from the binding's JSON db.
 
 ## Full Example
 
-vizio.things:
+### `vizio.things` Example
 
 ```java
 // Vizio TV
@@ -147,7 +147,7 @@ vizio:vizio_tv:mytv1 "My Vizio TV" [ hostName="192.168.10.1", port=7345, authTok
 
 ```
 
-vizio.items:
+### `vizio.items` Example
 
 ```java
 // Vizio TV items:
@@ -162,7 +162,7 @@ String TV_Button      "Send Command to TV" { channel="vizio:vizio_tv:mytv1:butto
 
 ```
 
-vizio.sitemap:
+### `vizio.sitemap` Example
 
 ```perl
 sitemap vizio label="Vizio" {

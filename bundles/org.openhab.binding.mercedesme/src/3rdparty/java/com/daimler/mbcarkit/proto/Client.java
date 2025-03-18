@@ -341,6 +341,21 @@ public final class Client {
      */
     com.daimler.mbcarkit.proto.Protos.AcknowledgeAssignedVehiclesOrBuilder getAcknowledgeAssignedVehiclesOrBuilder();
 
+    /**
+     * <code>.proto.AcknowledgeDataChangeEvent acknowledge_data_change_event = 26;</code>
+     * @return Whether the acknowledgeDataChangeEvent field is set.
+     */
+    boolean hasAcknowledgeDataChangeEvent();
+    /**
+     * <code>.proto.AcknowledgeDataChangeEvent acknowledge_data_change_event = 26;</code>
+     * @return The acknowledgeDataChangeEvent.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent getAcknowledgeDataChangeEvent();
+    /**
+     * <code>.proto.AcknowledgeDataChangeEvent acknowledge_data_change_event = 26;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEventOrBuilder getAcknowledgeDataChangeEventOrBuilder();
+
     com.daimler.mbcarkit.proto.Client.ClientMessage.MsgCase getMsgCase();
   }
   /**
@@ -412,6 +427,7 @@ public final class Client {
       APPTWIN_PENDING_COMMANDS_RESPONSE(21),
       ACKNOWLEDGE_VEP_UPDATES_BY_VIN(22),
       ACKNOWLEDGE_ASSIGNED_VEHICLES(23),
+      ACKNOWLEDGE_DATA_CHANGE_EVENT(26),
       MSG_NOT_SET(0);
       private final int value;
       private MsgCase(int value) {
@@ -449,6 +465,7 @@ public final class Client {
           case 21: return APPTWIN_PENDING_COMMANDS_RESPONSE;
           case 22: return ACKNOWLEDGE_VEP_UPDATES_BY_VIN;
           case 23: return ACKNOWLEDGE_ASSIGNED_VEHICLES;
+          case 26: return ACKNOWLEDGE_DATA_CHANGE_EVENT;
           case 0: return MSG_NOT_SET;
           default: return null;
         }
@@ -1123,6 +1140,37 @@ public final class Client {
       return com.daimler.mbcarkit.proto.Protos.AcknowledgeAssignedVehicles.getDefaultInstance();
     }
 
+    public static final int ACKNOWLEDGE_DATA_CHANGE_EVENT_FIELD_NUMBER = 26;
+    /**
+     * <code>.proto.AcknowledgeDataChangeEvent acknowledge_data_change_event = 26;</code>
+     * @return Whether the acknowledgeDataChangeEvent field is set.
+     */
+    @java.lang.Override
+    public boolean hasAcknowledgeDataChangeEvent() {
+      return msgCase_ == 26;
+    }
+    /**
+     * <code>.proto.AcknowledgeDataChangeEvent acknowledge_data_change_event = 26;</code>
+     * @return The acknowledgeDataChangeEvent.
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent getAcknowledgeDataChangeEvent() {
+      if (msgCase_ == 26) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent) msg_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.getDefaultInstance();
+    }
+    /**
+     * <code>.proto.AcknowledgeDataChangeEvent acknowledge_data_change_event = 26;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEventOrBuilder getAcknowledgeDataChangeEventOrBuilder() {
+      if (msgCase_ == 26) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent) msg_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.getDefaultInstance();
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -1199,6 +1247,9 @@ public final class Client {
       }
       if (msgCase_ == 23) {
         output.writeMessage(23, (com.daimler.mbcarkit.proto.Protos.AcknowledgeAssignedVehicles) msg_);
+      }
+      if (msgCase_ == 26) {
+        output.writeMessage(26, (com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent) msg_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -1291,6 +1342,10 @@ public final class Client {
       if (msgCase_ == 23) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(23, (com.daimler.mbcarkit.proto.Protos.AcknowledgeAssignedVehicles) msg_);
+      }
+      if (msgCase_ == 26) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(26, (com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent) msg_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -1391,6 +1446,10 @@ public final class Client {
           if (!getAcknowledgeAssignedVehicles()
               .equals(other.getAcknowledgeAssignedVehicles())) return false;
           break;
+        case 26:
+          if (!getAcknowledgeDataChangeEvent()
+              .equals(other.getAcknowledgeDataChangeEvent())) return false;
+          break;
         case 0:
         default:
       }
@@ -1487,6 +1546,10 @@ public final class Client {
         case 23:
           hash = (37 * hash) + ACKNOWLEDGE_ASSIGNED_VEHICLES_FIELD_NUMBER;
           hash = (53 * hash) + getAcknowledgeAssignedVehicles().hashCode();
+          break;
+        case 26:
+          hash = (37 * hash) + ACKNOWLEDGE_DATA_CHANGE_EVENT_FIELD_NUMBER;
+          hash = (53 * hash) + getAcknowledgeDataChangeEvent().hashCode();
           break;
         case 0:
         default:
@@ -1688,6 +1751,9 @@ public final class Client {
         if (acknowledgeAssignedVehiclesBuilder_ != null) {
           acknowledgeAssignedVehiclesBuilder_.clear();
         }
+        if (acknowledgeDataChangeEventBuilder_ != null) {
+          acknowledgeDataChangeEventBuilder_.clear();
+        }
         msgCase_ = 0;
         msg_ = null;
         return this;
@@ -1812,6 +1878,10 @@ public final class Client {
             acknowledgeAssignedVehiclesBuilder_ != null) {
           result.msg_ = acknowledgeAssignedVehiclesBuilder_.build();
         }
+        if (msgCase_ == 26 &&
+            acknowledgeDataChangeEventBuilder_ != null) {
+          result.msg_ = acknowledgeDataChangeEventBuilder_.build();
+        }
       }
 
       @java.lang.Override
@@ -1910,6 +1980,10 @@ public final class Client {
           }
           case ACKNOWLEDGE_ASSIGNED_VEHICLES: {
             mergeAcknowledgeAssignedVehicles(other.getAcknowledgeAssignedVehicles());
+            break;
+          }
+          case ACKNOWLEDGE_DATA_CHANGE_EVENT: {
+            mergeAcknowledgeDataChangeEvent(other.getAcknowledgeDataChangeEvent());
             break;
           }
           case MSG_NOT_SET: {
@@ -2087,6 +2161,13 @@ public final class Client {
                 msgCase_ = 23;
                 break;
               } // case 186
+              case 210: {
+                input.readMessage(
+                    getAcknowledgeDataChangeEventFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                msgCase_ = 26;
+                break;
+              } // case 210
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -5031,6 +5112,148 @@ public final class Client {
         return acknowledgeAssignedVehiclesBuilder_;
       }
 
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent, com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.Builder, com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEventOrBuilder> acknowledgeDataChangeEventBuilder_;
+      /**
+       * <code>.proto.AcknowledgeDataChangeEvent acknowledge_data_change_event = 26;</code>
+       * @return Whether the acknowledgeDataChangeEvent field is set.
+       */
+      @java.lang.Override
+      public boolean hasAcknowledgeDataChangeEvent() {
+        return msgCase_ == 26;
+      }
+      /**
+       * <code>.proto.AcknowledgeDataChangeEvent acknowledge_data_change_event = 26;</code>
+       * @return The acknowledgeDataChangeEvent.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent getAcknowledgeDataChangeEvent() {
+        if (acknowledgeDataChangeEventBuilder_ == null) {
+          if (msgCase_ == 26) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent) msg_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.getDefaultInstance();
+        } else {
+          if (msgCase_ == 26) {
+            return acknowledgeDataChangeEventBuilder_.getMessage();
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.AcknowledgeDataChangeEvent acknowledge_data_change_event = 26;</code>
+       */
+      public Builder setAcknowledgeDataChangeEvent(com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent value) {
+        if (acknowledgeDataChangeEventBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          msg_ = value;
+          onChanged();
+        } else {
+          acknowledgeDataChangeEventBuilder_.setMessage(value);
+        }
+        msgCase_ = 26;
+        return this;
+      }
+      /**
+       * <code>.proto.AcknowledgeDataChangeEvent acknowledge_data_change_event = 26;</code>
+       */
+      public Builder setAcknowledgeDataChangeEvent(
+          com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.Builder builderForValue) {
+        if (acknowledgeDataChangeEventBuilder_ == null) {
+          msg_ = builderForValue.build();
+          onChanged();
+        } else {
+          acknowledgeDataChangeEventBuilder_.setMessage(builderForValue.build());
+        }
+        msgCase_ = 26;
+        return this;
+      }
+      /**
+       * <code>.proto.AcknowledgeDataChangeEvent acknowledge_data_change_event = 26;</code>
+       */
+      public Builder mergeAcknowledgeDataChangeEvent(com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent value) {
+        if (acknowledgeDataChangeEventBuilder_ == null) {
+          if (msgCase_ == 26 &&
+              msg_ != com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.getDefaultInstance()) {
+            msg_ = com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.newBuilder((com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent) msg_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            msg_ = value;
+          }
+          onChanged();
+        } else {
+          if (msgCase_ == 26) {
+            acknowledgeDataChangeEventBuilder_.mergeFrom(value);
+          } else {
+            acknowledgeDataChangeEventBuilder_.setMessage(value);
+          }
+        }
+        msgCase_ = 26;
+        return this;
+      }
+      /**
+       * <code>.proto.AcknowledgeDataChangeEvent acknowledge_data_change_event = 26;</code>
+       */
+      public Builder clearAcknowledgeDataChangeEvent() {
+        if (acknowledgeDataChangeEventBuilder_ == null) {
+          if (msgCase_ == 26) {
+            msgCase_ = 0;
+            msg_ = null;
+            onChanged();
+          }
+        } else {
+          if (msgCase_ == 26) {
+            msgCase_ = 0;
+            msg_ = null;
+          }
+          acknowledgeDataChangeEventBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.proto.AcknowledgeDataChangeEvent acknowledge_data_change_event = 26;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.Builder getAcknowledgeDataChangeEventBuilder() {
+        return getAcknowledgeDataChangeEventFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.proto.AcknowledgeDataChangeEvent acknowledge_data_change_event = 26;</code>
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEventOrBuilder getAcknowledgeDataChangeEventOrBuilder() {
+        if ((msgCase_ == 26) && (acknowledgeDataChangeEventBuilder_ != null)) {
+          return acknowledgeDataChangeEventBuilder_.getMessageOrBuilder();
+        } else {
+          if (msgCase_ == 26) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent) msg_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.AcknowledgeDataChangeEvent acknowledge_data_change_event = 26;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent, com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.Builder, com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEventOrBuilder> 
+          getAcknowledgeDataChangeEventFieldBuilder() {
+        if (acknowledgeDataChangeEventBuilder_ == null) {
+          if (!(msgCase_ == 26)) {
+            msg_ = com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.getDefaultInstance();
+          }
+          acknowledgeDataChangeEventBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent, com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.Builder, com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEventOrBuilder>(
+                  (com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent) msg_,
+                  getParentForChildren(),
+                  isClean());
+          msg_ = null;
+        }
+        msgCase_ = 26;
+        onChanged();
+        return acknowledgeDataChangeEventBuilder_;
+      }
+
       // @@protoc_insertion_point(builder_scope:proto.ClientMessage)
     }
 
@@ -5471,7 +5694,7 @@ public final class Client {
       "\n\014client.proto\022\005proto\032\014protos.proto\032\030ser" +
       "vice-activation.proto\032\021user-events.proto" +
       "\032\026vehicle-commands.proto\032\024vehicle-events" +
-      ".proto\032\020vehicleapi.proto\"\250\014\n\rClientMessa" +
+      ".proto\032\020vehicleapi.proto\"\364\014\n\rClientMessa" +
       "ge\022\023\n\013tracking_id\030\005 \001(\t\0227\n\022unsubscribeRe" +
       "quest\030\002 \001(\0132\031.proto.UnsubscribeRequestH\000" +
       "\022/\n\016commandRequest\030\003 \001(\0132\025.proto.Command" +
@@ -5510,9 +5733,11 @@ public final class Client {
       "acknowledge_vep_updates_by_vin\030\026 \001(\0132!.p" +
       "roto.AcknowledgeVEPUpdatesByVINH\000\022K\n\035ack" +
       "nowledge_assigned_vehicles\030\027 \001(\0132\".proto" +
-      ".AcknowledgeAssignedVehiclesH\000B\005\n\003msgJ\004\010" +
-      "\010\020\t\"\010\n\006LogoutB\034\n\032com.daimler.mbcarkit.pr" +
-      "otob\006proto3"
+      ".AcknowledgeAssignedVehiclesH\000\022J\n\035acknow" +
+      "ledge_data_change_event\030\032 \001(\0132!.proto.Ac" +
+      "knowledgeDataChangeEventH\000B\005\n\003msgJ\004\010\010\020\t\"" +
+      "\010\n\006LogoutB\034\n\032com.daimler.mbcarkit.protob" +
+      "\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -5529,7 +5754,7 @@ public final class Client {
     internal_static_proto_ClientMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_ClientMessage_descriptor,
-        new java.lang.String[] { "TrackingId", "UnsubscribeRequest", "CommandRequest", "TrackingEvent", "PingInterval", "AcknowledgeVepRequest", "AcknowledgeServiceStatusUpdatesByVin", "AcknowledgeServiceStatusUpdate", "AcknowledgeUserDataUpdate", "AcknowledgeUserPictureUpdate", "AcknowledgeUserPinUpdate", "UpdateUserJwtRequest", "AcknowledgeUserVehicleAuthChangedUpdate", "AcknowledgeAbilityToGetVehicleMasterDataFromRestApi", "AcknowledgeVehicleUpdated", "AcknowledgePreferredDealerChange", "AcknowledgeApptwinCommandStatusUpdateByVin", "Logout", "ApptwinPendingCommandsResponse", "AcknowledgeVepUpdatesByVin", "AcknowledgeAssignedVehicles", "Msg", });
+        new java.lang.String[] { "TrackingId", "UnsubscribeRequest", "CommandRequest", "TrackingEvent", "PingInterval", "AcknowledgeVepRequest", "AcknowledgeServiceStatusUpdatesByVin", "AcknowledgeServiceStatusUpdate", "AcknowledgeUserDataUpdate", "AcknowledgeUserPictureUpdate", "AcknowledgeUserPinUpdate", "UpdateUserJwtRequest", "AcknowledgeUserVehicleAuthChangedUpdate", "AcknowledgeAbilityToGetVehicleMasterDataFromRestApi", "AcknowledgeVehicleUpdated", "AcknowledgePreferredDealerChange", "AcknowledgeApptwinCommandStatusUpdateByVin", "Logout", "ApptwinPendingCommandsResponse", "AcknowledgeVepUpdatesByVin", "AcknowledgeAssignedVehicles", "AcknowledgeDataChangeEvent", "Msg", });
     internal_static_proto_Logout_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_proto_Logout_fieldAccessorTable = new

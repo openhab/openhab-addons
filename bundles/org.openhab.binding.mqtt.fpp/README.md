@@ -1,6 +1,6 @@
 # FPP Binding
 
-Binding to control Falcon Player (FPP) Devices using MQTT and HTTP. Status messages are recieved over MQTT and Commands are HTTP Commands.
+Binding to control Falcon Player (FPP) Devices using MQTT and HTTP. Status messages are received over MQTT and Commands are HTTP Commands.
 
 ## Discovery
 
@@ -32,7 +32,7 @@ The binding supports one Thing `player` that represents the Falcon Player.
 | `seconds-played`                       | Number:Time        | Sequence Playback time in secs.           |
 | `seconds-remaining`                    | Number:Time        | Sequence Playback time remaining in secs. |
 | `last-playlist`                        | String             | Lasted Played Playlist.                   |
-| `bridging-enabled`                     | Switch             | Is Recieving Bridge Data.                 |
+| `bridging-enabled`                     | Switch             | Is Receiving Bridge Data.                 |
 | `multisync-enabled`                    | Switch             | Multisync Mode Enabled.                   |
 | `scheduler-current-playlist`           | String (read only) | Scheduler Current Playlist.               |
 | `scheduler-current-playlist-start`     | String (read only) | Scheduler Current Playlist Start Time.    |
@@ -40,7 +40,6 @@ The binding supports one Thing `player` that represents the Falcon Player.
 | `scheduler-current-playlist-stop-type` | String (read only) | Scheduler Current Playlist End Type.      |
 | `scheduler-next-playlist`              | String (read only) | Next Scheduled Playlist.                  |
 | `scheduler-next-playlist-start`        | String (read only) | Next Scheduled Start Time.                |
-
 
 ## Full Example
 

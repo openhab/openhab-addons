@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.mercedesme.internal.handler;
 
 import static org.openhab.binding.mercedesme.internal.Constants.*;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -112,6 +113,7 @@ import com.google.protobuf.Int32Value;
  *
  * @author Bernd Weymann - Initial contribution
  * @author Bernd Weymann - Bugfix https://github.com/openhab/openhab-addons/issues/16932
+ * @author Bernd Weymann - Added adblue-channel https://community.openhab.org/t/mercedes-me-binding/136852/239
  */
 @NonNullByDefault
 public class VehicleHandler extends BaseThingHandler {
@@ -133,6 +135,8 @@ public class VehicleHandler extends BaseThingHandler {
     private JSONObject chargeGroupValueStorage = new JSONObject();
     private Map<String, State> hvacGroupValueStorage = new HashMap<>();
     private String vehicleType = NOT_SET;
+    private List<VEPUpdate> eventQueue = new ArrayList<>();
+    private boolean updateRunning = false;
 
     Map<String, ChannelStateMap> eventStorage = new HashMap<>();
     Optional<AccountHandler> accountHandler = Optional.empty();
@@ -181,6 +185,7 @@ public class VehicleHandler extends BaseThingHandler {
         accountHandler.ifPresent(ah -> {
             ah.unregisterVin(config.get().vin);
         });
+        eventQueue.clear();
         super.dispose();
     }
 
@@ -211,7 +216,7 @@ public class VehicleHandler extends BaseThingHandler {
         var crBuilder = CommandRequest.newBuilder().setVin(config.get().vin).setRequestId(UUID.randomUUID().toString());
         String group = channelUID.getGroupId();
         String channel = channelUID.getIdWithoutGroup();
-        String pin = accountHandler.get().config.get().pin;
+        String pin = accountHandler.get().config.pin;
         if (group == null) {
             logger.trace("No command {} found for {}", command, channel);
             return;
@@ -586,13 +591,49 @@ public class VehicleHandler extends BaseThingHandler {
         });
     }
 
-    public void distributeContent(VEPUpdate data) {
+    public void enqueueUpdate(VEPUpdate update) {
+        synchronized (eventQueue) {
+            eventQueue.add(update);
+            scheduler.execute(this::scheduleUpdate);
+        }
+    }
+
+    private void scheduleUpdate() {
+        VEPUpdate data;
+        synchronized (eventQueue) {
+            while (updateRunning) {
+                try {
+                    eventQueue.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    eventQueue.clear();
+                    return;
+                }
+            }
+            if (!eventQueue.isEmpty()) {
+                data = eventQueue.remove(0);
+            } else {
+                return;
+            }
+            updateRunning = true;
+        }
+        try {
+            handleUpdate(data);
+        } finally {
+            synchronized (eventQueue) {
+                updateRunning = false;
+                eventQueue.notifyAll();
+            }
+        }
+    }
+
+    public void handleUpdate(VEPUpdate update) {
         updateStatus(ThingStatus.ONLINE);
-        boolean fullUpdate = data.getFullUpdate();
+        boolean fullUpdate = update.getFullUpdate();
         /**
          * Deliver proto update
          */
-        String newProto = Utils.proto2Json(data, thing.getThingTypeUID());
+        String newProto = Utils.proto2Json(update, thing.getThingTypeUID());
         String combinedProto = newProto;
         ChannelUID protoUpdateChannelUID = new ChannelUID(thing.getUID(), GROUP_VEHICLE, OH_CHANNEL_PROTO_UPDATE);
         ChannelStateMap oldProtoMap = eventStorage.get(protoUpdateChannelUID.getId());
@@ -608,7 +649,7 @@ public class VehicleHandler extends BaseThingHandler {
                 StringType.valueOf(combinedProto));
         updateChannel(dataUpdateMap);
 
-        Map<String, VehicleAttributeStatus> atts = data.getAttributesMap();
+        Map<String, VehicleAttributeStatus> atts = update.getAttributesMap();
         /**
          * handle "simple" values
          */
@@ -706,6 +747,11 @@ public class VehicleHandler extends BaseThingHandler {
                                 updateChannel(tankOpen);
                             }
                         } else {
+                            block = true;
+                        }
+                        break;
+                    case OH_CHANNEL_ADBLUE_LEVEL:
+                        if (!Constants.COMBUSTION.equals(vehicleType)) {
                             block = true;
                         }
                         break;
@@ -909,7 +955,7 @@ public class VehicleHandler extends BaseThingHandler {
                 if (vas != null && !Utils.isNil(vas)) {
                     // proto weekday starts with MONDAY=0, java ZonedDateTime starts with MONDAY=1
                     long estimatedWeekday = Utils.getInt(vas) + 1;
-                    ZonedDateTime storedZdt = endDateTimeType.getZonedDateTime();
+                    ZonedDateTime storedZdt = endDateTimeType.getZonedDateTime(ZoneId.systemDefault());
                     long storedWeekday = storedZdt.getDayOfWeek().getValue();
                     // check if estimated weekday is smaller than stored
                     // estimation Monday=1 vs. stored Saturday=6 => (7+1)-6=2 days ahead

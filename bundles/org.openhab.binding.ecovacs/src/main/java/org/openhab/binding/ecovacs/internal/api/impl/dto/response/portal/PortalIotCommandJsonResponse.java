@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,8 +27,8 @@ public class PortalIotCommandJsonResponse extends AbstractPortalIotCommandRespon
     @SerializedName("resp")
     public final JsonElement response;
 
-    public PortalIotCommandJsonResponse(String result, JsonElement response, int errorCode, String errorMessage) {
-        super(result, errorCode, errorMessage);
+    public PortalIotCommandJsonResponse(String result, JsonElement response, int errorCode, Object errorObject) {
+        super(result, errorCode, errorObject);
         this.response = response;
     }
 

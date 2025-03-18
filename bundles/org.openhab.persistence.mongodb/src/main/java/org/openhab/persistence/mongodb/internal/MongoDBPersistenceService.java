@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.persistence.mongodb.internal;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -248,6 +247,15 @@ public class MongoDBPersistenceService implements ModifiablePersistenceService {
 
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
+        return query(filter, null);
+    }
+
+    @Override
+    public Iterable<HistoricItem> query(FilterCriteria filter, @Nullable String alias) {
+        String realItemName = filter.getItemName();
+        if (alias != null) {
+            filter.setItemName(alias);
+        }
         MongoCollection<Document> collection = prepareCollection(filter);
         // If collection creation failed, return nothing.
         if (collection == null) {
@@ -260,8 +268,6 @@ public class MongoDBPersistenceService implements ModifiablePersistenceService {
             return Collections.emptyList();
         }
 
-        @Nullable
-        String realItemName = filter.getItemName();
         if (realItemName == null) {
             logger.warn("Item name is missing in filter {}", filter);
             return Collections.emptyList();
@@ -287,8 +293,7 @@ public class MongoDBPersistenceService implements ModifiablePersistenceService {
 
                 final State state = MongoDBTypeConversions.getStateFromDocument(item, obj);
 
-                items.add(new MongoDBItem(realItemName, state, ZonedDateTime
-                        .ofInstant(obj.getDate(MongoDBFields.FIELD_TIMESTAMP).toInstant(), ZoneId.systemDefault())));
+                items.add(new MongoDBItem(realItemName, state, obj.getDate(MongoDBFields.FIELD_TIMESTAMP).toInstant()));
             }
         } finally {
             if (cursor != null) {
@@ -356,7 +361,8 @@ public class MongoDBPersistenceService implements ModifiablePersistenceService {
         }
 
         String realItemName = item.getName();
-        String collectionName = collectionPerItem ? realItemName : this.collection;
+        String name = (alias != null) ? alias : realItemName;
+        String collectionName = collectionPerItem ? name : this.collection;
 
         @Nullable
         MongoCollection<Document> collection = connectToCollection(collectionName);
@@ -366,7 +372,6 @@ public class MongoDBPersistenceService implements ModifiablePersistenceService {
             return;
         }
 
-        String name = (alias != null) ? alias : realItemName;
         Object value = MongoDBTypeConversions.convertValue(state);
 
         Document obj = new Document();

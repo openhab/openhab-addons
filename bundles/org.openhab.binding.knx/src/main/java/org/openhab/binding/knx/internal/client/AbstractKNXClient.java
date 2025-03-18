@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,12 +39,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import tuwien.auto.calimero.CloseEvent;
+import tuwien.auto.calimero.DataUnitBuilder;
 import tuwien.auto.calimero.DetachEvent;
 import tuwien.auto.calimero.FrameEvent;
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.IndividualAddress;
+import tuwien.auto.calimero.KNXAddress;
 import tuwien.auto.calimero.KNXException;
 import tuwien.auto.calimero.KNXIllegalArgumentException;
+import tuwien.auto.calimero.cemi.CEMILData;
+import tuwien.auto.calimero.cemi.CemiTData;
 import tuwien.auto.calimero.datapoint.CommandDP;
 import tuwien.auto.calimero.datapoint.Datapoint;
 import tuwien.auto.calimero.device.ProcessCommunicationResponder;
@@ -60,6 +64,7 @@ import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
 import tuwien.auto.calimero.process.ProcessEvent;
 import tuwien.auto.calimero.process.ProcessListener;
 import tuwien.auto.calimero.secure.KnxSecureException;
+import tuwien.auto.calimero.secure.SecureApplicationLayer;
 import tuwien.auto.calimero.secure.Security;
 
 /**
@@ -348,12 +353,13 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         if (!isHandled) {
             logger.trace("Address '{}' is not configured in openHAB", destination);
             final String type = switch (event.getServiceCode()) {
-                case 0x80 -> " GROUP_WRITE(";
-                case 0x40 -> " GROUP_RESPONSE(";
-                case 0x00 -> " GROUP_READ(";
-                default -> " ?(";
+                case 0x80 -> "GROUP_WRITE";
+                case 0x40 -> "GROUP_RESPONSE";
+                case 0x00 -> "GROUP_READ";
+                default -> "?";
             };
-            final String key = destination.toString() + type + event.getASDU().length + ")";
+            final String key = String.format("%2d/%1d/%3d  %s(%02d)", destination.getMainGroup(),
+                    destination.getMiddleGroup(), destination.getSubGroup8(), type, event.getASDU().length);
             commandExtensionData.unknownGA().compute(key, (k, v) -> v == null ? 1 : v + 1);
         }
     }
@@ -429,7 +435,38 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
     @Override
     public void indication(@Nullable FrameEvent e) {
-        // no-op
+        // NetworkLinkListener indication. This implementation is triggered whenever a frame is received.
+        // It is not necessary for OH, as we process incoming group writes via different triggers.
+        // However, this indication also covers encrypted data secure frames, which would typically
+        // be dropped silently by the Calimero library (a log message is only visible when log level for Calimero
+        // is set manually).
+
+        // Implementation searches for incoming data secure frames which cannot be decoded due to missing key
+        if (e != null) {
+            final var cemi = e.getFrame();
+            if (!(cemi instanceof CemiTData)) {
+                final CEMILData f = (CEMILData) cemi;
+                final int ctrl = f.getPayload()[0] & 0xfc;
+                if (ctrl == 0) {
+                    final KNXAddress dst = f.getDestination();
+                    if (dst instanceof GroupAddress ga) {
+                        if (dst.getRawAddress() != 0) {
+                            final byte[] payload = f.getPayload();
+                            final int service = DataUnitBuilder.getAPDUService(payload);
+                            if (service == SecureApplicationLayer.SecureService) {
+                                if (!openhabSecurity.groupKeys().containsKey(dst)) {
+                                    logger.trace("Address '{}' cannot be decrypted, group key missing", dst);
+                                    final String key = String.format(
+                                            "%2d/%1d/%3d  secure: missing group key, cannot decrypt", ga.getMainGroup(),
+                                            ga.getMiddleGroup(), ga.getSubGroup8());
+                                    commandExtensionData.unknownGA().compute(key, (k, v) -> v == null ? 1 : v + 1);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override

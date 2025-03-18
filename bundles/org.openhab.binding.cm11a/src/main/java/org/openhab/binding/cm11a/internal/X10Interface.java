@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -243,7 +243,7 @@ public class X10Interface extends Thread implements SerialPortEventListener {
      *
      */
     public X10Interface(String serialPort, Cm11aBridgeHandler bridgeHandler) throws NoSuchPortException {
-        super();
+        super("OH-binding-" + bridgeHandler.getThing().getUID());
         logger.trace("**** Constructing X10Interface for serial port: {} *******", serialPort);
         portId = CommPortIdentifier.getPortIdentifier(serialPort);
         this.bridgeHandler = bridgeHandler;

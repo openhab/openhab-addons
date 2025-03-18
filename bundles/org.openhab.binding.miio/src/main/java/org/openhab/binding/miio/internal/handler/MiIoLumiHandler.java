@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -144,7 +144,7 @@ public class MiIoLumiHandler extends MiIoBasicHandler {
                 logger.debug("Refresh custom commands for child device {}", getThing().getLabel());
                 refreshCustomProperties(midevice, false);
             } else {
-                logger.debug("Null value occured for device {}: {}", midevice, config);
+                logger.debug("Null value occurred for device {}: {}", midevice, config);
             }
         } catch (Exception e) {
             logger.debug("Error while performing periodic refresh for '{}': {}", getThing().getUID(), e.getMessage());

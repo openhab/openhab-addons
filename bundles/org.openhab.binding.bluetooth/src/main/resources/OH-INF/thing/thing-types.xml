@@ -17,6 +17,10 @@
 			<channel id="rssi" typeId="rssi"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="address" type="text">
 				<label>Address</label>

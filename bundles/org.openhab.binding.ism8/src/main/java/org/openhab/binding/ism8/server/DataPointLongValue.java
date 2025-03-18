@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,14 @@ public class DataPointLongValue extends DataPointBase<@Nullable Double> {
         if ("13.002".equals(knxDataType)) {
             this.setUnit(Units.CUBICMETRE_PER_HOUR);
             this.factor = 0.0001f;
+            this.outputFormat = "%.1f";
+        } else if ("13.010".equals(knxDataType)) {
+            this.setUnit(Units.WATT_HOUR);
+            this.factor = 1.0f;
+            this.outputFormat = "%.1f";
+        } else if ("13.013".equals(knxDataType)) {
+            this.setUnit(Units.WATT_HOUR);
+            this.factor = 1000.0f;
             this.outputFormat = "%.1f";
         } else {
             this.setUnit(Units.ONE);

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANN
 import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_REMAINING;
 import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_START;
 import static org.openhab.binding.awattar.internal.AwattarUtil.getCalendarForHour;
-import static org.openhab.binding.awattar.internal.AwattarUtil.getDateTimeType;
 import static org.openhab.binding.awattar.internal.AwattarUtil.getDuration;
 import static org.openhab.binding.awattar.internal.AwattarUtil.getMillisToNextMinute;
 
@@ -28,8 +27,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.concurrent.ScheduledFuture;
@@ -42,7 +39,8 @@ import org.openhab.binding.awattar.internal.AwattarBestPriceResult;
 import org.openhab.binding.awattar.internal.AwattarConsecutiveBestPriceResult;
 import org.openhab.binding.awattar.internal.AwattarNonConsecutiveBestPriceResult;
 import org.openhab.binding.awattar.internal.AwattarPrice;
-import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.binding.awattar.internal.dto.AwattarTimeProvider;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -72,14 +70,13 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
     private static final int THING_REFRESH_INTERVAL = 60;
 
     private final Logger logger = LoggerFactory.getLogger(AwattarBestPriceHandler.class);
+    private final AwattarTimeProvider timeProvider;
 
     private @Nullable ScheduledFuture<?> thingRefresher;
 
-    private final TimeZoneProvider timeZoneProvider;
-
-    public AwattarBestPriceHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+    public AwattarBestPriceHandler(Thing thing, AwattarTimeProvider timeProvider) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
+        this.timeProvider = timeProvider;
     }
 
     @Override
@@ -99,7 +96,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
                  * here
                  */
                 thingRefresher = scheduler.scheduleAtFixedRate(this::refreshChannels,
-                        getMillisToNextMinute(1, timeZoneProvider), THING_REFRESH_INTERVAL * 1000L,
+                        getMillisToNextMinute(1, timeProvider.getZoneId()), THING_REFRESH_INTERVAL * 1000L,
                         TimeUnit.MILLISECONDS);
             }
         }
@@ -128,11 +125,13 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
     public void refreshChannel(ChannelUID channelUID) {
         State state = UnDefType.UNDEF;
         Bridge bridge = getBridge();
+
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.bridge.missing");
             updateState(channelUID, state);
             return;
         }
+
         AwattarBridgeHandler bridgeHandler = (AwattarBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null || bridgeHandler.getPrices() == null) {
             logger.debug("No prices available, so can't refresh channel.");
@@ -140,9 +139,12 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
             updateState(channelUID, state);
             return;
         }
+
+        ZoneId zoneId = timeProvider.getZoneId();
+
         AwattarBestPriceConfiguration config = getConfigAs(AwattarBestPriceConfiguration.class);
-        TimeRange timerange = getRange(config.rangeStart, config.rangeDuration, bridgeHandler.getTimeZone());
-        if (!(bridgeHandler.containsPriceFor(timerange.start()) && bridgeHandler.containsPriceFor(timerange.end()))) {
+        TimeRange timerange = getRange(config.rangeStart, config.rangeDuration, zoneId);
+        if (!(bridgeHandler.containsPriceFor(timerange))) {
             updateState(channelUID, state);
             return;
         }
@@ -151,50 +153,25 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
         List<AwattarPrice> range = getPriceRange(bridgeHandler, timerange);
 
         if (config.consecutive) {
-            range.sort(Comparator.comparing(AwattarPrice::timerange));
-            AwattarConsecutiveBestPriceResult res = new AwattarConsecutiveBestPriceResult(
-                    range.subList(0, config.length), bridgeHandler.getTimeZone());
-
-            for (int i = 1; i <= range.size() - config.length; i++) {
-                AwattarConsecutiveBestPriceResult res2 = new AwattarConsecutiveBestPriceResult(
-                        range.subList(i, i + config.length), bridgeHandler.getTimeZone());
-                if (res2.getPriceSum() < res.getPriceSum()) {
-                    res = res2;
-                }
-            }
-            result = res;
+            result = new AwattarConsecutiveBestPriceResult(range, config.length, zoneId);
         } else {
-            range.sort(Comparator.naturalOrder());
-
-            // sort in descending order when inverted
-            if (config.inverted) {
-                Collections.reverse(range);
-            }
-
-            AwattarNonConsecutiveBestPriceResult res = new AwattarNonConsecutiveBestPriceResult(
-                    bridgeHandler.getTimeZone());
-
-            // take up to config.length prices
-            for (int i = 0; i < Math.min(config.length, range.size()); i++) {
-                res.addMember(range.get(i));
-            }
-
-            result = res;
+            result = new AwattarNonConsecutiveBestPriceResult(range, config.length, config.inverted, zoneId);
         }
+
         String channelId = channelUID.getIdWithoutGroup();
         long diff;
         switch (channelId) {
             case CHANNEL_ACTIVE:
-                state = OnOffType.from(result.isActive());
+                state = OnOffType.from(result.isActive(timeProvider.getInstantNow()));
                 break;
             case CHANNEL_START:
-                state = getDateTimeType(result.getStart(), timeZoneProvider);
+                state = new DateTimeType(Instant.ofEpochMilli(result.getStart()));
                 break;
             case CHANNEL_END:
-                state = getDateTimeType(result.getEnd(), timeZoneProvider);
+                state = new DateTimeType(Instant.ofEpochMilli(result.getEnd()));
                 break;
             case CHANNEL_COUNTDOWN:
-                diff = result.getStart() - Instant.now().toEpochMilli();
+                diff = result.getStart() - timeProvider.getInstantNow().toEpochMilli();
                 if (diff >= 0) {
                     state = getDuration(diff);
                 } else {
@@ -202,8 +179,8 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_REMAINING:
-                if (result.isActive()) {
-                    diff = result.getEnd() - Instant.now().toEpochMilli();
+                if (result.isActive(timeProvider.getInstantNow())) {
+                    diff = result.getEnd() - timeProvider.getInstantNow().toEpochMilli();
                     state = getDuration(diff);
                 } else {
                     state = QuantityType.valueOf(0, Units.MINUTE);
@@ -238,20 +215,39 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
         return result;
     }
 
+    /**
+     * Returns the time range for the given start hour and duration.
+     *
+     * @param start the start hour (0-23)
+     * @param duration the duration in hours
+     * @param zoneId the time zone to use
+     * @return the range
+     */
     protected TimeRange getRange(int start, int duration, ZoneId zoneId) {
-        ZonedDateTime startCal = getCalendarForHour(start, zoneId);
-        ZonedDateTime endCal = startCal.plusHours(duration);
-        ZonedDateTime now = ZonedDateTime.now(zoneId);
+        ZonedDateTime startTime = getStartTime(start, zoneId);
+        ZonedDateTime endTime = startTime.plusHours(duration);
+        ZonedDateTime now = timeProvider.getZonedDateTimeNow();
         if (now.getHour() < start) {
             // we are before the range, so we might be still within the last range
-            startCal = startCal.minusDays(1);
-            endCal = endCal.minusDays(1);
+            startTime = startTime.minusDays(1);
+            endTime = endTime.minusDays(1);
         }
-        if (endCal.toInstant().toEpochMilli() < Instant.now().toEpochMilli()) {
+        if (endTime.isBefore(now)) {
             // span is in the past, add one day
-            startCal = startCal.plusDays(1);
-            endCal = endCal.plusDays(1);
+            startTime = startTime.plusDays(1);
+            endTime = endTime.plusDays(1);
         }
-        return new TimeRange(startCal.toInstant().toEpochMilli(), endCal.toInstant().toEpochMilli());
+        return new TimeRange(startTime.toInstant().toEpochMilli(), endTime.toInstant().toEpochMilli());
+    }
+
+    /**
+     * Returns the start time for the given hour.
+     *
+     * @param start the hour. Must be between 0 and 23.
+     * @param zoneId the time zone
+     * @return the start time
+     */
+    protected ZonedDateTime getStartTime(int start, ZoneId zoneId) {
+        return getCalendarForHour(start, zoneId);
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,6 +51,29 @@ public class VeSyncV1AirPurifierDeviceDetailsResponse extends VeSyncResponse {
 
     public String getMode() {
         return mode;
+    }
+
+    @SerializedName("activeTime")
+    public int activeTime;
+
+    public int getActiveTime() {
+        return activeTime;
+    }
+
+    @SerializedName("filterLife")
+    public FilterLife filter;
+
+    public int getFilterPercent() {
+        return filter.getPercent();
+    }
+
+    public class FilterLife {
+        @SerializedName("percent")
+        public int percent;
+
+        public int getPercent() {
+            return percent;
+        }
     }
 
     @SerializedName("deviceName")

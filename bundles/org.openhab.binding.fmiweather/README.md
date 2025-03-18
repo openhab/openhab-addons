@@ -2,8 +2,12 @@
 
 This binding integrates to [the Finnish Meteorological Institute (FMI) Open Data API](https://en.ilmatieteenlaitos.fi/open-data).
 
-Binding provides access to weather observations from FMI weather stations and [HARMONIE weather forecast model](https://en.ilmatieteenlaitos.fi/weather-forecast-models) forecasts.
+The binding provides access to weather observations from FMI weather stations and FMI weather forecasts.
 Forecast covers "northern Europe" (Finland, Baltics, Scandinavia, some parts of surrounding countries), see [coverage map in the documentation](https://en.ilmatieteenlaitos.fi/weather-forecast-models).
+The binding supports two different forecast queries:
+
+- [HARMONIE weather forecast model](https://en.ilmatieteenlaitos.fi/weather-forecast-models), which is one of the weather models that meteorologists use in their work.
+- An edited query providing the official FMI forecast, which is often more accurate since it's edited by meteorologists who combine several different weather models and their experience to produce the official forecast.
 
 ![example of things](doc/images/fmi-example-things.png)
 
@@ -28,23 +32,24 @@ The binding automatically discovers weather stations and forecasts for nearby pl
 
 ## Thing Configuration
 
-### `observation` thing configuration
+### `observation` Thing Configuration
 
 | Parameter | Type | Required | Description                                                                                                                                                                                                                                                                                                                                                         | Example                              |
 | --------- | ---- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
 | `fmisid`  | text | ✓        | FMI Station ID. You can FMISID of see all weathers stations at [FMI web site](https://en.ilmatieteenlaitos.fi/observation-stations?p_p_id=stationlistingportlet_WAR_fmiwwwweatherportlets&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&p_p_col_id=column-4&p_p_col_count=1&_stationlistingportlet_WAR_fmiwwwweatherportlets_stationGroup=WEATHER#station-listing) | `"852678"` for Espoo Nuuksio station |
 
-### `forecast` thing configuration
+### `forecast` Thing Configuration
 
-| Parameter  | Type | Required | Description                                                                                          | Example                           |
-| ---------- | ---- | -------- | ---------------------------------------------------------------------------------------------------- | --------------------------------- |
+| Parameter  | Type | Required | Description                                                                                          | Example                               |
+| ---------- | ---- | -------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------- |
 | `location` | text | ✓        | Latitude longitude location for the forecast. The parameter is given in format `LATITUDE,LONGITUDE`. | `"60.192059, 24.945831"` for Helsinki |
+| `query`    | text |          | Stored query for official FMI forecast, either `harmonie` or `edited`.                               |                                       |
 
 ## Channels
 
 Observation and forecast things provide slightly different details on weather.
 
-### `observation` thing channels
+### `observation` Thing Channels
 
 Observation channels are grouped in single group, `current`.
 
@@ -67,11 +72,12 @@ You can check the exact observation time by using the `time` channel.
 
 To refer to certain channel, use the normal convention `THING_ID:GROUP_ID#CHANNEL_ID`, e.g. `fmiweather:observation:station_874863_Espoo_Tapiola:current#temperature`.
 
-### `forecast` thing channels
+### `forecast` Thing Channels
 
 Forecast has multiple channel groups, one for each forecasted time. The groups are named as follows:
 
-- `forecastNow`: Forecasted weather for the current time
+- `forecast`: Forecasted weather (with time series support)
+- `forecastNow`: Forecasted weather for the current time (deprecated, please use `forecast` instead)
 - `forecastHours01`: Forecasted weather for 1 hours from now
 - `forecastHours02`: Forecasted weather for 2 hours from now
 - etc.
@@ -210,7 +216,6 @@ for channel in forecast['channels']:
     if prev_group != group_name:
         print('')
     prev_group = group_name
-
 
     print(('{item_type} {item_name} ' +
      '"{label} [{unit}]" {icon} {{ channel="{channel_id}" }}').format(**locals()))

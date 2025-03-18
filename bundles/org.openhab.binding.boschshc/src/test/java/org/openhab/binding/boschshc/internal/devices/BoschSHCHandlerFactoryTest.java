@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,8 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import java.time.ZoneId;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +37,7 @@ class BoschSHCHandlerFactoryTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        fixture = new BoschSHCHandlerFactory(() -> ZoneId.systemDefault());
+        fixture = new BoschSHCHandlerFactory();
     }
 
     @Test

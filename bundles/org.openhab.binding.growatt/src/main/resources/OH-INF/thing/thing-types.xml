@@ -439,7 +439,141 @@
 				<description>Total reactive energy supplied.</description>
 			</channel>
 
+			<!-- ============== CHANNELS ADDED IN PR #17795 ============== -->
+
+			<!-- battery instantaneous measurements -->
+			<channel id="battery-voltage2" typeId="advanced-electric-voltage">
+				<label>Battery Voltage #2</label>
+				<description>Battery voltage.</description>
+			</channel>
+			<channel id="charge-va" typeId="advanced-electric-var">
+				<label>Charge VA</label>
+				<description>Charging reactive power.</description>
+			</channel>
+			<channel id="battery-discharge-va" typeId="advanced-electric-var">
+				<label>Battery discharge VA</label>
+				<description>Discharging reactive power.</description>
+			</channel>
+			<channel id="battery-discharge-watt" typeId="advanced-electric-power">
+				<label>Battery discharge power</label>
+				<description>Battery discharging power.</description>
+			</channel>
+
+			<!-- battery energy -->
+			<channel id="battery-discharge-energy-today" typeId="advanced-electric-energy">
+				<label>Discharge Energy Today</label>
+				<description>Battery discharge energy today.</description>
+			</channel>
+			<channel id="battery-discharge-energy-total" typeId="advanced-electric-energy">
+				<label>Discharge Energy Total</label>
+				<description>Total battery discharge energy.</description>
+			</channel>
+
+			<!-- inverter -->
+			<channel id="inverter-clock-offset" typeId="advanced-time"/>
+			<channel id="inverter-current" typeId="advanced-electric-current">
+				<label>Inverter Current</label>
+				<description>Inverter current.</description>
+			</channel>
+			<channel id="inverter-fan-speed" typeId="advanced-percent">
+				<label>Inverter Fan</label>
+				<description>Inverter fan speed.</description>
+			</channel>
+
+			<!-- ============== CHANNELS ADDED IN PR #17810 ============== -->
+
+			<!-- DC electric data for strings #3 and #4 -->
+			<channel id="pv3-voltage" typeId="advanced-electric-voltage">
+				<label>String #3 Voltage</label>
+				<description>Voltage from solar panel string #3.</description>
+			</channel>
+			<channel id="pv3-current" typeId="advanced-electric-current">
+				<label>String #3 Current</label>
+				<description>Current from solar panel string #3.</description>
+			</channel>
+			<channel id="pv3-power" typeId="advanced-electric-power">
+				<label>String #3 Power</label>
+				<description>Power from solar panel string #3.</description>
+			</channel>
+
+			<channel id="pv4-voltage" typeId="advanced-electric-voltage">
+				<label>String #4 Voltage </label>
+				<description>Voltage from solar panel string #4.</description>
+			</channel>
+			<channel id="pv4-current" typeId="advanced-electric-current">
+				<label>String #4 Current</label>
+				<description>Current from solar panel string #4.</description>
+			</channel>
+			<channel id="pv4-power" typeId="advanced-electric-power">
+				<label>String #4 Power</label>
+				<description>Power from solar panel string #4.</description>
+			</channel>
+
+			<!-- solar DC pv energy -->
+			<channel id="pv3-energy-today" typeId="advanced-electric-energy">
+				<label>DC Energy #3 Today</label>
+				<description>Solar DC energy collected by string #3 today.</description>
+			</channel>
+			<channel id="pv3-energy-total" typeId="advanced-electric-energy">
+				<label>DC Energy #3 Total</label>
+				<description>Total solar DC energy collected by string #3.</description>
+			</channel>
+
+			<!-- power factor -->
+			<channel id="power-factor" typeId="advanced-percent">
+				<label>Power Factor</label>
+				<description>Electrical power factor</description>
+			</channel>
+
+			<!-- emergency power supply (eps) -->
+			<channel id="eps-voltage-r" typeId="advanced-electric-voltage">
+				<label>EPS Voltage #R</label>
+				<description>Emergency Power Supply voltage (phase #R).</description>
+			</channel>
+			<channel id="eps-voltage-s" typeId="advanced-electric-voltage">
+				<label>EPS Voltage #S</label>
+				<description>Emergency Power Supply voltage (phase #S).</description>
+			</channel>
+			<channel id="eps-voltage-t" typeId="advanced-electric-voltage">
+				<label>EPS Voltage #T</label>
+				<description>Emergency Power Supply voltage (phase #T).</description>
+			</channel>
+
+			<channel id="eps-current-r" typeId="advanced-electric-current">
+				<label>EPS Current #R</label>
+				<description>Emergency Power Supply current (phase #R).</description>
+			</channel>
+			<channel id="eps-current-s" typeId="advanced-electric-current">
+				<label>EPS Current #S</label>
+				<description>Emergency Power Supply current (phase #S).</description>
+			</channel>
+			<channel id="eps-current-t" typeId="advanced-electric-current">
+				<label>EPS Current #T</label>
+				<description>Emergency Power Supply current (phase #T).</description>
+			</channel>
+
+			<channel id="eps-power" typeId="advanced-electric-power">
+				<label>EPS Power</label>
+				<description>Total Emergency Power Supply power.</description>
+			</channel>
+			<channel id="eps-power-r" typeId="advanced-electric-power">
+				<label>EPS Power #R</label>
+				<description>Emergency Power Supply power (phase #R).</description>
+			</channel>
+			<channel id="eps-power-s" typeId="advanced-electric-power">
+				<label>EPS Power #S</label>
+				<description>Emergency Power Supply power (phase #S).</description>
+			</channel>
+			<channel id="eps-power-t" typeId="advanced-electric-power">
+				<label>EPS Power #T</label>
+				<description>Emergency Power Supply power (phase #T).</description>
+			</channel>
+
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
@@ -546,6 +680,14 @@
 		<label>Outdoor Temperature</label>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%0.0f °C"/>
+	</channel-type>
+
+	<channel-type id="advanced-time" advanced="true">
+		<item-type unitHint="s">Number:Time</item-type>
+		<label>Inverter Clock Offset</label>
+		<description>Time offset of inverter clock vs. OH system clock.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%0.0f s"/>
 	</channel-type>
 
 </thing:thing-descriptions>

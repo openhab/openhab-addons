@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,8 +16,7 @@ import static org.openhab.binding.fmiweather.internal.BindingConstants.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -28,10 +27,11 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.fmiweather.internal.client.Client;
 import org.openhab.binding.fmiweather.internal.client.Data;
+import org.openhab.binding.fmiweather.internal.client.FMIRequest;
 import org.openhab.binding.fmiweather.internal.client.FMIResponse;
-import org.openhab.binding.fmiweather.internal.client.Request;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIResponseException;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIUnexpectedResponseException;
 import org.openhab.core.library.types.DateTimeType;
@@ -44,6 +44,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +58,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class AbstractWeatherHandler extends BaseThingHandler {
 
-    private static final ZoneId UTC = ZoneId.of("UTC");
     protected static final String PROP_LONGITUDE = "longitude";
     protected static final String PROP_LATITUDE = "latitude";
     protected static final String PROP_NAME = "name";
@@ -66,6 +66,7 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
 
     protected static final int TIMEOUT_MILLIS = 10_000;
     private final Logger logger = LoggerFactory.getLogger(AbstractWeatherHandler.class);
+    private final HttpClient httpClient;
 
     protected volatile @NonNullByDefault({}) Client client;
     protected final AtomicReference<@Nullable ScheduledFuture<?>> futureRef = new AtomicReference<>();
@@ -75,18 +76,17 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
     private volatile long lastRefreshMillis = 0;
     private final AtomicReference<@Nullable ScheduledFuture<?>> updateChannelsFutureRef = new AtomicReference<>();
 
-    public AbstractWeatherHandler(Thing thing) {
+    public AbstractWeatherHandler(final Thing thing, final HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
     }
 
     @Override
-    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
             ScheduledFuture<?> prevFuture = updateChannelsFutureRef.get();
-            ScheduledFuture<?> newFuture = updateChannelsFutureRef
-                    .updateAndGet(fut -> fut == null || fut.isDone() ? submitUpdateChannelsThrottled() : fut);
-            assert newFuture != null; // invariant
+            ScheduledFuture<?> newFuture = Objects.requireNonNull(updateChannelsFutureRef
+                    .updateAndGet(fut -> fut == null || fut.isDone() ? submitUpdateChannelsThrottled() : fut));
             if (logger.isTraceEnabled()) {
                 long delayRemainingMillis = newFuture.getDelay(TimeUnit.MILLISECONDS);
                 if (delayRemainingMillis <= 0) {
@@ -96,7 +96,7 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
                             delayRemainingMillis);
                 }
                 // Compare by reference to check if the future changed
-                if (prevFuture == newFuture) {
+                if (isSameFuture(prevFuture, newFuture)) {
                     logger.trace("REFRESH received. Previous refresh ongoing, will wait for it to complete in {} ms",
                             lastRefreshMillis + REFRESH_THROTTLE_MILLIS - System.currentTimeMillis());
                 }
@@ -104,9 +104,14 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
         }
     }
 
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
+    private boolean isSameFuture(@Nullable ScheduledFuture<?> future1, @Nullable ScheduledFuture<?> future2) {
+        return future1 == future2;
+    }
+
     @Override
     public void initialize() {
-        client = new Client();
+        client = new Client(httpClient);
         updateStatus(ThingStatus.UNKNOWN);
         rescheduleUpdate(0, false);
     }
@@ -131,17 +136,17 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
 
     protected abstract void updateChannels();
 
-    protected abstract Request getRequest();
+    protected abstract FMIRequest getRequest();
 
     protected void update(int retry) {
         if (retry < RETRIES) {
             try {
                 response = client.query(getRequest(), TIMEOUT_MILLIS);
-            } catch (FMIUnexpectedResponseException e) {
-                handleError(e, retry);
-                return;
             } catch (FMIResponseException e) {
                 handleError(e, retry);
+                return;
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 return;
             }
         } else {
@@ -194,8 +199,7 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
      */
     protected <T extends Quantity<T>> void updateEpochSecondStateIfLinked(ChannelUID channelUID, long epochSecond) {
         if (isLinked(channelUID)) {
-            updateState(channelUID, new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochSecond), UTC)
-                    .withZoneSameInstant(ZoneId.systemDefault())));
+            updateState(channelUID, new DateTimeType(Instant.ofEpochSecond(epochSecond)));
         }
     }
 
@@ -210,13 +214,24 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
      */
     protected void updateStateIfLinked(ChannelUID channelUID, @Nullable BigDecimal value, @Nullable Unit<?> unit) {
         if (isLinked(channelUID)) {
-            if (value == null) {
-                updateState(channelUID, UnDefType.UNDEF);
-            } else if (unit == null) {
-                updateState(channelUID, new DecimalType(value));
-            } else {
-                updateState(channelUID, new QuantityType<>(value, unit));
-            }
+            updateState(channelUID, getState(value, unit));
+        }
+    }
+
+    /**
+     * Return QuantityType or DecimalType channel state
+     *
+     * @param value value to update
+     * @param unit unit associated with the value
+     * @return UNDEF state when value is null, otherwise QuantityType or DecimalType
+     */
+    protected State getState(@Nullable BigDecimal value, @Nullable Unit<?> unit) {
+        if (value == null) {
+            return UnDefType.UNDEF;
+        } else if (unit == null) {
+            return new DecimalType(value);
+        } else {
+            return new QuantityType<>(value, unit);
         }
     }
 

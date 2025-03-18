@@ -33,7 +33,6 @@ Auto discovery is not supported at this time.
 | light-on         | Switch                 | RW         | Turns the light on/off              |
 | light-intensity  | Number:Dimensionless   | RW         | Controls the intensity of the light |
 
-
 ## Full Example
 
 ### Thing Configuration

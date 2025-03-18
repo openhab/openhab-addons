@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.ShellyBindingConstants;
 
 /**
  * {@link ShellyManagerCache} implements a cache with expiring times of the entries
@@ -76,6 +77,11 @@ public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
     }
 
     class CleanerThread extends Thread {
+
+        public CleanerThread() {
+            super(String.format("OH-binding-%s-%s", ShellyBindingConstants.BINDING_ID, "Cleaner"));
+        }
+
         @Override
         public void run() {
             while (true) {

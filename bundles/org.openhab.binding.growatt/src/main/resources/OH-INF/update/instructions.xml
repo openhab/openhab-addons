@@ -1,0 +1,155 @@
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="growatt:inverter">
+		<!-- ============== CHANNELS ADDED IN PR #17795 ============== -->
+		<instruction-set targetVersion="1">
+			<add-channel id="battery-voltage2">
+				<type>growatt:advanced-electric-voltage</type>
+				<label>Battery Voltage #2</label>
+				<description>Battery voltage.</description>
+			</add-channel>
+			<add-channel id="charge-va">
+				<type>growatt:advanced-electric-var</type>
+				<label>Charge VA</label>
+				<description>Charging reactive power.</description>
+			</add-channel>
+			<add-channel id="battery-discharge-va">
+				<type>growatt:advanced-electric-var</type>
+				<label>Battery discharge VA</label>
+				<description>Discharging reactive power.</description>
+			</add-channel>
+			<add-channel id="battery-discharge-watt">
+				<type>growatt:advanced-electric-power</type>
+				<label>Battery discharge power</label>
+				<description>Battery discharging power.</description>
+			</add-channel>
+			<add-channel id="battery-discharge-energy-today">
+				<type>growatt:advanced-electric-energy</type>
+				<label>Discharge Energy Today</label>
+				<description>Battery discharge energy today.</description>
+			</add-channel>
+			<add-channel id="battery-discharge-energy-total">
+				<type>growatt:advanced-electric-energy</type>
+				<label>Discharge Energy Total</label>
+				<description>Total battery discharge energy.</description>
+			</add-channel>
+			<add-channel id="inverter-clock-offset">
+				<type>growatt:advanced-time</type>
+			</add-channel>
+			<add-channel id="inverter-current">
+				<type>growatt:advanced-electric-current</type>
+				<label>Inverter Current</label>
+				<description>Inverter current.</description>
+			</add-channel>
+			<add-channel id="inverter-fan-speed">
+				<type>growatt:advanced-percent</type>
+				<label>Inverter Fan</label>
+				<description>Inverter fan speed.</description>
+			</add-channel>
+		</instruction-set>
+
+		<!-- ============== CHANNELS ADDED IN PR #17810 ============== -->
+		<instruction-set targetVersion="2">
+			<!-- DC electric data for strings #3 and #4 -->
+			<add-channel id="pv3-voltage">
+				<type>growatt:advanced-electric-voltage</type>
+				<label>String #3 Voltage</label>
+				<description>Voltage from solar panel string #3.</description>
+			</add-channel>
+			<add-channel id="pv3-current">
+				<type>growatt:advanced-electric-current</type>
+				<label>String #3 Current</label>
+				<description>Current from solar panel string #3.</description>
+			</add-channel>
+			<add-channel id="pv3-power">
+				<type>growatt:advanced-electric-power</type>
+				<label>String #3 Power</label>
+				<description>Power from solar panel string #3.</description>
+			</add-channel>
+			<add-channel id="pv4-voltage">
+				<type>growatt:advanced-electric-voltage</type>
+				<label>String #4 Voltage </label>
+				<description>Voltage from solar panel string #4.</description>
+			</add-channel>
+			<add-channel id="pv4-current">
+				<type>growatt:advanced-electric-current</type>
+				<label>String #4 Current</label>
+				<description>Current from solar panel string #4.</description>
+			</add-channel>
+			<add-channel id="pv4-power">
+				<type>growatt:advanced-electric-power</type>
+				<label>String #4 Power</label>
+				<description>Power from solar panel string #4.</description>
+			</add-channel>
+			<add-channel id="pv3-energy-today">
+				<type>growatt:advanced-electric-energy</type>
+				<label>DC Energy #3 Today</label>
+				<description>Solar DC energy collected by string #3 today.</description>
+			</add-channel>
+			<add-channel id="pv3-energy-total">
+				<type>growatt:advanced-electric-energy</type>
+				<label>DC Energy #3 Total</label>
+				<description>Total solar DC energy collected by string #3.</description>
+			</add-channel>
+			<add-channel id="power-factor">
+				<type>growatt:advanced-percent</type>
+				<label>Power Factor</label>
+				<description>Electrical power factor</description>
+			</add-channel>
+			<add-channel id="eps-voltage-r">
+				<type>growatt:advanced-electric-voltage</type>
+				<label>EPS Voltage #R</label>
+				<description>Emergency Power Supply voltage (phase #R).</description>
+			</add-channel>
+			<add-channel id="eps-voltage-s">
+				<type>growatt:advanced-electric-voltage</type>
+				<label>EPS Voltage #S</label>
+				<description>Emergency Power Supply voltage (phase #S).</description>
+			</add-channel>
+			<add-channel id="eps-voltage-t">
+				<type>growatt:advanced-electric-voltage</type>
+				<label>EPS Voltage #T</label>
+				<description>Emergency Power Supply voltage (phase #T).</description>
+			</add-channel>
+			<add-channel id="eps-current-r">
+				<type>growatt:advanced-electric-current</type>
+				<label>EPS Current #R</label>
+				<description>Emergency Power Supply current (phase #R).</description>
+			</add-channel>
+			<add-channel id="eps-current-s">
+				<type>growatt:advanced-electric-current</type>
+				<label>EPS Current #S</label>
+				<description>Emergency Power Supply current (phase #S).</description>
+			</add-channel>
+			<add-channel id="eps-current-t">
+				<type>growatt:advanced-electric-current</type>
+				<label>EPS Current #T</label>
+				<description>Emergency Power Supply current (phase #T).</description>
+			</add-channel>
+			<add-channel id="eps-power">
+				<type>growatt:advanced-electric-power</type>
+				<label>EPS Power</label>
+				<description>Total Emergency Power Supply power.</description>
+			</add-channel>
+			<add-channel id="eps-power-r">
+				<type>growatt:advanced-electric-power</type>
+				<label>EPS Power #R</label>
+				<description>Emergency Power Supply power (phase #R).</description>
+			</add-channel>
+			<add-channel id="eps-power-s">
+				<type>growatt:advanced-electric-power</type>
+				<label>EPS Power #S</label>
+				<description>Emergency Power Supply power (phase #S).</description>
+			</add-channel>
+			<add-channel id="eps-power-t">
+				<type>growatt:advanced-electric-power</type>
+				<label>EPS Power #T</label>
+				<description>Emergency Power Supply power (phase #T).</description>
+			</add-channel>
+		</instruction-set>
+
+	</thing-type>
+
+</update:update-descriptions>

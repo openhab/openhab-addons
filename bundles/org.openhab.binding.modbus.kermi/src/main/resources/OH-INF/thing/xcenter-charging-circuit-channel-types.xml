@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="flow-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Flow Temperature</label>
+		<description>B16 - Flow Temperature</description>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="return-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Return Temperature</label>
+		<description>B17 - Return Temperature</description>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="flow-speed-channel">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Flow Speed</label>
+		<description>P13 - Flow speed</description>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.benqprojector.internal;
 
+import static org.openhab.binding.benqprojector.internal.BenqProjectorBindingConstants.*;
+
 import java.time.Duration;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,10 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class BenqProjectorDevice {
-    private static final String UNSUPPORTED_ITM = "Unsupported item";
-    private static final String BLOCK_ITM = "Block item";
-    private static final String ILLEGAL_FMT = "Illegal format";
-
     private static final int LAMP_REFRESH_WAIT_MINUTES = 5;
 
     private ExpiringCache<Integer> cachedLampHours = new ExpiringCache<>(Duration.ofMinutes(LAMP_REFRESH_WAIT_MINUTES),
@@ -65,14 +64,6 @@ public class BenqProjectorDevice {
 
         if (response.contains(UNSUPPORTED_ITM)) {
             return "UNSUPPORTED";
-        }
-
-        if (response.contains(BLOCK_ITM)) {
-            throw new BenqProjectorCommandException("Block Item received for command: " + query);
-        }
-
-        if (response.contains(ILLEGAL_FMT)) {
-            throw new BenqProjectorCommandException("Illegal Format response received for command: " + query);
         }
 
         logger.debug("Response: '{}'", response);
@@ -122,11 +113,17 @@ public class BenqProjectorDevice {
      * Power
      */
     public Switch getPowerStatus() throws BenqProjectorCommandException, BenqProjectorException {
-        return (queryString("pow=?").contains("on") ? Switch.ON : Switch.OFF);
+        return (queryString("pow=?").toLowerCase(Locale.ENGLISH).contains("on") ? Switch.ON : Switch.OFF);
     }
 
     public void setPower(Switch value) throws BenqProjectorCommandException, BenqProjectorException {
-        sendCommand(value == Switch.ON ? "pow=on" : "pow=off");
+        if (value == Switch.ON) {
+            sendCommand("pow=on");
+        } else {
+            // some projectors need the off command twice to switch off
+            sendCommand("pow=off");
+            sendCommand("pow=off");
+        }
     }
 
     /*
@@ -166,7 +163,7 @@ public class BenqProjectorDevice {
      * Blank Screen
      */
     public Switch getBlank() throws BenqProjectorCommandException, BenqProjectorException {
-        return (queryString("blank=?").contains("on") ? Switch.ON : Switch.OFF);
+        return (queryString("blank=?").toLowerCase(Locale.ENGLISH).contains("on") ? Switch.ON : Switch.OFF);
     }
 
     public void setBlank(Switch value) throws BenqProjectorCommandException, BenqProjectorException {
@@ -177,7 +174,7 @@ public class BenqProjectorDevice {
      * Freeze
      */
     public Switch getFreeze() throws BenqProjectorCommandException, BenqProjectorException {
-        return (queryString("freeze=?").contains("on") ? Switch.ON : Switch.OFF);
+        return (queryString("freeze=?").toLowerCase(Locale.ENGLISH).contains("on") ? Switch.ON : Switch.OFF);
     }
 
     public void setFreeze(Switch value) throws BenqProjectorCommandException, BenqProjectorException {

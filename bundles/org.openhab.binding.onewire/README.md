@@ -235,7 +235,7 @@ Please use the pre-defined channel names only.**
 
 This is the configuration for a OneWire network consisting of an owserver as bridge (`onewire:owserver:mybridge`) as well as a temperature sensor, a BMS and a 2-port Digital I/O as things (`onewire:basic:mybridge:mysensor`, `onewire:bms:mybridge:mybms`, `onewire:basic:mybridge:mydio`).
 
-### demo.things:
+### `demo.things` Example
 
 ```java
 Bridge onewire:owserver:mybridge [
@@ -285,7 +285,7 @@ Bridge onewire:owserver:mybridge [
 }
 ```
 
-### demo.items:
+### `demo.items` Example
 
 ```java
 Number:Temperature      MySensor    "MySensor [%.1f °C]"            { channel="onewire:basic:mybridge:mysensor:temperature" }
@@ -296,7 +296,7 @@ Switch                  Digital1    "Digital 1"                     { channel="o
 Number                  CRC8Errors  "Bus-Errors [%d]"               { channel="onewire:owserver:mybridge:crc8errors" }
 ```
 
-### demo.sitemap:
+### `demo.sitemap` Example
 
 ```perl
 sitemap demo label="Main Menu"

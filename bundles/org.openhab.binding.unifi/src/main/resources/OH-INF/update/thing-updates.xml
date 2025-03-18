@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="unifi:accessPoint">
+		<instruction-set targetVersion="1">
+			<add-channel id="online">
+				<type>unifi:online</type>
+				<description>Online status of the device</description>
+			</add-channel>
+			<add-channel id="state">
+				<type>unifi:devState</type>
+			</add-channel>
+			<add-channel id="name">
+				<type>unifi:name</type>
+				<description>Name of the device</description>
+			</add-channel>
+			<add-channel id="site">
+				<type>unifi:site</type>
+			</add-channel>
+			<add-channel id="ipAddress">
+				<type>unifi:ipAddress</type>
+				<description>IP address of the device</description>
+			</add-channel>
+			<add-channel id="uptime">
+				<type>unifi:uptime</type>
+				<description>Uptime of the device (in seconds)</description>
+			</add-channel>
+			<add-channel id="lastSeen">
+				<type>unifi:lastSeen</type>
+				<description>Timestamp of when the device was last seen</description>
+			</add-channel>
+			<add-channel id="experience">
+				<type>unifi:experience</type>
+				<description>The average experience of the connected clients</description>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="led">
+				<type>system:power</type>
+				<label>LED</label>
+				<description>Switches the LED on or off</description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

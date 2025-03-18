@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,7 +52,7 @@ public class MaxDevicesActions implements ThingActions {
     }
 
     @RuleAction(label = "delete the device from the Cube", description = "Deletes the device from the MAX! Cube. Device will need to be included again!")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean deleteFromCube() {
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean deleteFromCube() {
         MaxDevicesHandler actionsHandler = handler;
         if (actionsHandler == null) {
             logger.info("MaxDevicesActions: Action service ThingHandler is null!");

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -300,6 +300,7 @@ public class JRubyScriptEngineConfiguration {
         });
 
         configureRubyLib(scriptEngine);
+        disallowExec(scriptEngine);
     }
 
     /**
@@ -319,6 +320,24 @@ public class JRubyScriptEngineConfiguration {
             } catch (ScriptException exception) {
                 logger.warn("Error setting $LOAD_PATH from RUBYLIB='{}'", rubyLib, unwrap(exception));
             }
+        }
+    }
+
+    private void disallowExec(ScriptEngine engine) {
+        try {
+            engine.eval("""
+                      def Process.exec(*)
+                        raise NotImplementedError, "You cannot call `exec` from within openHAB"
+                      end
+
+                      module Kernel
+                        module_function def exec(*)
+                          raise NotImplementedError, "You cannot call `exec` from within openHAB"
+                        end
+                      end
+                    """);
+        } catch (ScriptException exception) {
+            logger.warn("Error preventing exec", unwrap(exception));
         }
     }
 

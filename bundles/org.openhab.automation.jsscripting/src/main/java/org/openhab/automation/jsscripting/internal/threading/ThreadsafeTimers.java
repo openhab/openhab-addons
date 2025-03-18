@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,8 @@ import org.openhab.core.automation.module.script.action.Timer;
 import org.openhab.core.scheduler.ScheduledCompletableFuture;
 import org.openhab.core.scheduler.Scheduler;
 import org.openhab.core.scheduler.SchedulerTemporalAdjuster;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A polyfill implementation of NodeJS timer functionality (<code>setTimeout()</code>, <code>setInterval()</code> and
@@ -36,6 +38,8 @@ import org.openhab.core.scheduler.SchedulerTemporalAdjuster;
  *         Threadsafe reimplementation of the timer creation methods of {@link ScriptExecution}
  */
 public class ThreadsafeTimers {
+    private final Logger logger = LoggerFactory.getLogger(ThreadsafeTimers.class);
+
     private final Lock lock;
     private final Scheduler scheduler;
     private final ScriptExecution scriptExecution;
@@ -81,11 +85,13 @@ public class ThreadsafeTimers {
     public Timer createTimer(@Nullable String identifier, ZonedDateTime instant, Runnable closure) {
         return scriptExecution.createTimer(identifier, instant, () -> {
             lock.lock();
+            logger.debug("Lock acquired before timer execution");
             try {
                 closure.run();
-            } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid
+            } finally { // Make sure that Lock is unlocked regardless of an exception being thrown or not to avoid
                         // deadlocks
                 lock.unlock();
+                logger.debug("Lock released after timer execution");
             }
         });
     }
@@ -103,12 +109,14 @@ public class ThreadsafeTimers {
         long id = lastId.incrementAndGet();
         ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
             lock.lock();
+            logger.debug("Lock acquired before timeout execution");
             try {
                 callback.run();
                 idSchedulerMapping.remove(id);
-            } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid
+            } finally { // Make sure that Lock is unlocked regardless of an exception being thrown or not to avoid
                         // deadlocks
                 lock.unlock();
+                logger.debug("Lock released after timeout execution");
             }
         }, identifier + ".timeout." + id, Instant.now().plusMillis(delay));
         idSchedulerMapping.put(id, future);
@@ -146,11 +154,13 @@ public class ThreadsafeTimers {
         long id = lastId.incrementAndGet();
         ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
             lock.lock();
+            logger.debug("Lock acquired before interval execution");
             try {
                 callback.run();
-            } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid
+            } finally { // Make sure that Lock is unlocked regardless of an exception being thrown or not to avoid
                         // deadlocks
                 lock.unlock();
+                logger.debug("Lock released after interval execution");
             }
         }, identifier + ".interval." + id, new LoopingAdjuster(Duration.ofMillis(delay)));
         idSchedulerMapping.put(id, future);

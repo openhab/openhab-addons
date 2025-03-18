@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,7 @@ import org.openhab.binding.tplinksmarthome.internal.Connection;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeConfiguration;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeDiscoveryService;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType;
+import org.openhab.binding.tplinksmarthome.internal.TPLinkStateDescriptionProvider;
 import org.openhab.binding.tplinksmarthome.internal.device.SmartHomeDevice;
 import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
 import org.openhab.core.config.core.Configuration;
@@ -67,6 +68,7 @@ public class SmartHomeHandlerTest {
     private @Mock @NonNullByDefault({}) Thing thing;
     private @Mock @NonNullByDefault({}) SmartHomeDevice smartHomeDevice;
     private @Mock @NonNullByDefault({}) TPLinkSmartHomeDiscoveryService discoveryService;
+    private @Mock @NonNullByDefault({}) TPLinkStateDescriptionProvider stateDescriptionProvider;
 
     private final Configuration configuration = new Configuration();
 
@@ -78,7 +80,8 @@ public class SmartHomeHandlerTest {
         lenient().when(smartHomeDevice.getUpdateCommand()).thenReturn(Commands.getSysinfo());
         lenient().when(connection.sendCommand(Commands.getSysinfo()))
                 .thenReturn(ModelTestUtil.readJson("plug_get_sysinfo_response"));
-        handler = new SmartHomeHandler(thing, smartHomeDevice, TPLinkSmartHomeThingType.HS100, discoveryService) {
+        handler = new SmartHomeHandler(thing, smartHomeDevice, TPLinkSmartHomeThingType.HS100, discoveryService,
+                stateDescriptionProvider) {
             @Override
             Connection createConnection(TPLinkSmartHomeConfiguration config) {
                 return connection;

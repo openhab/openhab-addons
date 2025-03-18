@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -77,7 +77,7 @@ public class FlicSimpleclientDiscoveryServiceImpl extends AbstractDiscoveryServi
                 discoverVerifiedButtons();
             }
         } catch (IOException e) {
-            logger.warn("Error occured during button discovery", e);
+            logger.warn("Error occurred during button discovery", e);
             if (this.scanListener != null) {
                 scanListener.onErrorOccurred(e);
             }

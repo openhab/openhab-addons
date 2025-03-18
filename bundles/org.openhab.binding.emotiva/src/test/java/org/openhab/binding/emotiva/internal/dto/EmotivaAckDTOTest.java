@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,6 +38,7 @@ class EmotivaAckDTOTest extends AbstractDTOTestBase {
     @Test
     void unmarshallValidCommand() throws JAXBException {
         EmotivaAckDTO dto = (EmotivaAckDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaAckPowerOff);
+
         assertThat(dto, is(notNullValue()));
         assertThat(dto.getCommands().size(), is(1));
     }
@@ -45,8 +46,11 @@ class EmotivaAckDTOTest extends AbstractDTOTestBase {
     @Test
     void unmarshallOneValidCommand() throws JAXBException {
         EmotivaAckDTO dto = (EmotivaAckDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaAckPowerOffAndNotRealCommand);
+
         assertThat(dto, is(notNullValue()));
+
         List<EmotivaCommandDTO> commands = xmlUtils.unmarshallXmlObjectsToControlCommands(dto.getCommands());
+
         assertThat(commands.size(), is(2));
 
         assertThat(commands.get(0), is(notNullValue()));

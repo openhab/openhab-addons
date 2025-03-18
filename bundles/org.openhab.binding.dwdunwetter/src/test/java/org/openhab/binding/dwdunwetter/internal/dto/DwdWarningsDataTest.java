@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.time.ZoneId;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -105,31 +104,22 @@ public class DwdWarningsDataTest {
 
     @Test
     public void testGetExpires() {
-        // Conversion is needed as getExpires returns the Date with the System Default Zone
-        assertThat(((DateTimeType) warningsData.getExpires(0)).getZonedDateTime().withZoneSameInstant(ZoneId.of("UTC"))
-                .toString(), is("2018-12-22T18:00Z[UTC]"));
-        assertThat(((DateTimeType) warningsData.getExpires(1)).getZonedDateTime().withZoneSameInstant(ZoneId.of("UTC"))
-                .toString(), is("2018-12-23T01:00Z[UTC]"));
+        assertThat(((DateTimeType) warningsData.getExpires(0)).getInstant().toString(), is("2018-12-22T18:00:00Z"));
+        assertThat(((DateTimeType) warningsData.getExpires(1)).getInstant().toString(), is("2018-12-23T01:00:00Z"));
         assertThat(warningsData.getExpires(2), is(UnDefType.UNDEF));
     }
 
     @Test
     public void testGetOnset() {
-        // Conversion is needed as getOnset returns the Date with the System Default Zone
-        assertThat(((DateTimeType) warningsData.getOnset(0)).getZonedDateTime().withZoneSameInstant(ZoneId.of("UTC"))
-                .toString(), is("2018-12-21T10:00Z[UTC]"));
-        assertThat(((DateTimeType) warningsData.getOnset(1)).getZonedDateTime().withZoneSameInstant(ZoneId.of("UTC"))
-                .toString(), is("2018-12-22T18:00Z[UTC]"));
+        assertThat(((DateTimeType) warningsData.getOnset(0)).getInstant().toString(), is("2018-12-21T10:00:00Z"));
+        assertThat(((DateTimeType) warningsData.getOnset(1)).getInstant().toString(), is("2018-12-22T18:00:00Z"));
         assertThat(warningsData.getOnset(2), is(UnDefType.UNDEF));
     }
 
     @Test
     public void testGetEffective() {
-        // Conversion is needed as getEffective returns the Date with the System Default Zone
-        assertThat(((DateTimeType) warningsData.getEffective(0)).getZonedDateTime()
-                .withZoneSameInstant(ZoneId.of("UTC")).toString(), is("2018-12-22T03:02Z[UTC]"));
-        assertThat(((DateTimeType) warningsData.getEffective(1)).getZonedDateTime()
-                .withZoneSameInstant(ZoneId.of("UTC")).toString(), is("2018-12-22T10:15Z[UTC]"));
+        assertThat(((DateTimeType) warningsData.getEffective(0)).getInstant().toString(), is("2018-12-22T03:02:00Z"));
+        assertThat(((DateTimeType) warningsData.getEffective(1)).getInstant().toString(), is("2018-12-22T10:15:00Z"));
         assertThat(warningsData.getEffective(2), is(UnDefType.UNDEF));
     }
 

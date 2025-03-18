@@ -27,7 +27,7 @@
 	</channel-type>
 
 	<channel-type id="rssi">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>RSSI</label>
 		<description>Received signal strength indicator</description>
 		<category>QualityOfService</category>
@@ -126,8 +126,8 @@
 
 	<channel-type id="transfer-bytes" advanced="true">
 		<item-type unitHint="GB">Number:DataAmount</item-type>
-		<label>Transfered Bytes</label>
-		<description>Total data transfered since last connection</description>
+		<label>Transferred Bytes</label>
+		<description>Total data transferred since last connection</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 

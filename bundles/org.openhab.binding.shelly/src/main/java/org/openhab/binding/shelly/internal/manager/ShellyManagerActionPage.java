@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.shelly.internal.ShellyBindingConstants;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
@@ -103,7 +104,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                                 // maybe the device restarts before returning the http response
                             }
                             setRestarted(th, uid); // refresh after reboot
-                        }).start();
+                        }, "OH-binding-" + ShellyBindingConstants.BINDING_ID + "-" + uid + "-deviceReboot").start();
                         refreshTimer = profile.isMotion ? 60 : 30;
                     } else {
                         message = getMessageS("action.restart.confirm", MCINFO);
@@ -162,7 +163,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                                 // maybe the device restarts before returning the http response
                             }
                             setRestarted(th, uid); // refresh after reboot
-                        }).start();
+                        }, "OH-binding-" + ShellyBindingConstants.BINDING_ID + "-" + uid + "-reboot").start();
 
                         // The device needs a restart after changing the peer mode
                         message = getMessageP("action.restart.info", MCINFO);
@@ -188,7 +189,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                             } catch (ShellyApiException e) {
                                 // maybe the device restarts before returning the http response
                             }
-                        }).start();
+                        }, "OH-binding-" + ShellyBindingConstants.BINDING_ID + "-" + uid + "-factoryReset").start();
                         message = getMessageP("action.reset.confirm", MCINFO, serviceName);
                         refreshTimer = 5;
                     }
@@ -216,7 +217,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                             } catch (ShellyApiException e) {
                                 // maybe the device restarts before returning the http response
                             }
-                        }).start();
+                        }, "OH-binding-" + ShellyBindingConstants.BINDING_ID + "-" + uid + "-setDebug").start();
 
                         message = getMessage("action.debug-confirm", enable ? "enabled" : "disabled");
                         refreshTimer = 3;

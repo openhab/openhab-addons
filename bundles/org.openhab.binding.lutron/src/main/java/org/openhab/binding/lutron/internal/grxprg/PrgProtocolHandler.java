@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,6 @@
 package org.openhab.binding.lutron.internal.grxprg;
 
 import java.io.IOException;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -885,8 +883,7 @@ class PrgProtocolHandler {
                 final int yr = Integer.parseInt(m.group(5));
                 c.set(Calendar.YEAR, yr + (yr < 50 ? 1900 : 2000));
 
-                phCallback.stateChanged(PrgConstants.CHANNEL_TIMECLOCK,
-                        new DateTimeType(ZonedDateTime.ofInstant(c.toInstant(), ZoneId.systemDefault())));
+                phCallback.stateChanged(PrgConstants.CHANNEL_TIMECLOCK, new DateTimeType(c.toInstant()));
             } catch (NumberFormatException e) {
                 logger.error("Invalid time response (can't parse number): '{}'", resp);
             }
@@ -936,14 +933,12 @@ class PrgProtocolHandler {
                 final Calendar sunrise = Calendar.getInstance();
                 sunrise.set(Calendar.HOUR_OF_DAY, Integer.parseInt(m.group(1)));
                 sunrise.set(Calendar.MINUTE, Integer.parseInt(m.group(2)));
-                phCallback.stateChanged(PrgConstants.CHANNEL_SUNRISE,
-                        new DateTimeType(ZonedDateTime.ofInstant(sunrise.toInstant(), ZoneId.systemDefault())));
+                phCallback.stateChanged(PrgConstants.CHANNEL_SUNRISE, new DateTimeType(sunrise.toInstant()));
 
                 final Calendar sunset = Calendar.getInstance();
                 sunset.set(Calendar.HOUR_OF_DAY, Integer.parseInt(m.group(3)));
                 sunset.set(Calendar.MINUTE, Integer.parseInt(m.group(4)));
-                phCallback.stateChanged(PrgConstants.CHANNEL_SUNSET,
-                        new DateTimeType(ZonedDateTime.ofInstant(sunset.toInstant(), ZoneId.systemDefault())));
+                phCallback.stateChanged(PrgConstants.CHANNEL_SUNSET, new DateTimeType(sunset.toInstant()));
             } catch (NumberFormatException e) {
                 logger.error("Invalid sunrise/sunset response (can't parse number): '{}'", resp);
             }

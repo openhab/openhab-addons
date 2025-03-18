@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,7 +55,7 @@ public class EnergyChannelHelper extends ChannelHelper {
             ThermProgram currentProgram = energyData.getActiveProgram();
             switch (channelId) {
                 case CHANNEL_SETPOINT_DURATION:
-                    return toQuantityType(energyData.getThermSetpointDefaultDuration(), Units.MINUTE);
+                    return toQuantityType(energyData.getSetpointDefaultDuration().getSeconds(), Units.SECOND);
                 case CHANNEL_PLANNING:
                     return (currentProgram != null ? toStringType(currentProgram.getName()) : null);
                 case CHANNEL_SETPOINT_END_TIME:

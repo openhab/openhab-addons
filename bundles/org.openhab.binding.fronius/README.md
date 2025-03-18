@@ -60,7 +60,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 ## Channels
 
-### Channels for `powerinverter` Thing
+### `powerinverter` Thing Channels
 
 | Channel ID                           | Item Type                | Description                                                                                                       |
 | ------------------------------------ | ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
@@ -93,7 +93,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `powerflowinverter1power`            | Number:Power             | Current power of inverter 1, null if not running (+ produce/export, - consume/import) - DEPRECATED                |
 | `powerflowinverter1soc`              | Number:Dimensionless     | Current state of charge of inverter 1 in percent - DEPRECATED                                                     |
 
-### Channels for `meter` Thing
+### `meter` Thing Channels
 
 | Channel ID              | Item Type                | Description                                                                                                                                                                                                              |
 | ----------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -115,7 +115,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `energyrealsumconsumed` | Number:Energy            | Real Energy consumed                                                                                                                                                                                                     |
 | `energyrealsumproduced` | Number:Energy            | Real Energy produced                                                                                                                                                                                                     |
 
-### Channels for `ohmpilot` Thing
+### `ohmpilot` Thing Channels
 
 | Channel ID              | Item Type          | Description                                                                                                                                                              |
 | ----------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -127,14 +127,14 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 ## Properties
 
-### The `meter` Thing has the following properties:
+### `meter` Thing Properties
 
 | Property       | Description                    |
 | -------------- | ------------------------------ |
 | `modelId`      | The model name of the meter    |
 | `serialNumber` | The serial number of the meter |
 
-### The `ohmpilot` Thing has the following properties:
+### `ohmpilot` Thing Properties
 
 | Property       | Description                       |
 | -------------- | --------------------------------- |
@@ -185,6 +185,10 @@ Once the actions instance has been retrieved, you can invoke the following metho
 - `forceBatteryCharging(QuantityType<Power> power)`: Force the battery to charge with the specified power (removes all battery control schedules first and applies all the time).
 - `addForcedBatteryChargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)`: Add a schedule to force the battery to charge with the specified power in the specified time range.
 - `addForcedBatteryChargingSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to force the battery to charge with the specified power in the specified time range.
+- `setBackupReservedBatteryCapacity(int percent)`: Set the reserved battery capacity for backup power.
+- `setBackupReservedBatteryCapacity(PercentType percent)`: Set the reserved battery capacity for backup power.
+
+All methods return a boolean value indicating whether the action was successful.
 
 ### Examples
 
@@ -199,6 +203,8 @@ froniusInverterActions.resetBatteryControl();
 froniusInverterActions.addHoldBatteryChargeSchedule(time.toZDT('18:00'), time.toZDT('22:00'));
 froniusInverterActions.addForcedBatteryChargingSchedule(time.toZDT('22:00'), time.toZDT('23:59'), Quantity('5 kW'));
 froniusInverterActions.addForcedBatteryChargingSchedule(time.toZDT('00:00'), time.toZDT('06:00'), Quantity('5 kW'));
+
+froniusInverterActions.setBackupReservedBatteryCapacity(50);
 ```
 
 ## Full Example
@@ -206,12 +212,14 @@ froniusInverterActions.addForcedBatteryChargingSchedule(time.toZDT('00:00'), tim
 demo.things:
 
 ```java
-Bridge fronius:bridge:mybridge [hostname="192.168.66.148", refreshInterval=5] {
+Bridge fronius:bridge:mybridge [hostname="192.168.66.148", refreshInterval=5, username="customer", password="someSecretPassword"] {
     Thing powerinverter myinverter [deviceId=1]
     Thing meter mymeter [deviceId=0]
     Thing ohmpilot myohmpilot [deviceId=0]
 }
 ```
+
+Please note that `username` and `password` are only required if you want to use battery control Thing actions.
 
 demo.items:
 

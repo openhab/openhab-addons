@@ -13,7 +13,6 @@ The binding supports:
 ![NT4695](doc/BTI_NT4695.jpg)
 ![MyHOME Radio USB Gateway](doc/USB_gateway.jpg)
 
-
 ## Supported Things
 
 In order for this binding to work, a **BTicino/Legrand OpenWebNet gateway** is needed in your home system to talk to devices.
@@ -489,7 +488,6 @@ String              iLR_zone_cv                 "Conditioning valves"         (g
 Number:Temperature  iEXT_temp                   "Temperature [%.1f %unit%]"   (gExternal)       { channel="openwebnet:bus_thermo_sensor:mybridge:EXT_tempsensor:temperature" }
 
 String              iCENPlusProxyItem           "CEN+ Proxy Item"
-
 
 Switch              iLR_IR_sensor               "Sensor"                                        { channel="openwebnet:bus_dry_contact_ir:mybridge:LR_IR_sensor:sensor" }
 

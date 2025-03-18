@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -137,9 +137,9 @@ public class IPClient extends AbstractKNXClient {
         // Calimero service mode, ROUTING for both classic and secure routing
         int serviceMode = CustomKNXNetworkLinkIP.ROUTING;
         if (ipConnectionType == IpConnectionType.TUNNEL) {
-            serviceMode = CustomKNXNetworkLinkIP.TUNNELING;
+            serviceMode = CustomKNXNetworkLinkIP.TunnelingV1;
         } else if (ipConnectionType == IpConnectionType.SECURE_TUNNEL) {
-            serviceMode = CustomKNXNetworkLinkIP.TUNNELINGV2;
+            serviceMode = CustomKNXNetworkLinkIP.TunnelingV2;
         }
 
         // creating the connection here as a workaround for

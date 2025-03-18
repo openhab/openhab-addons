@@ -117,11 +117,20 @@ Enable Pub/Sub events in your SDM project:
     1. Select the "Edit" option
     1. Check the "Enable events" option
     1. Click the "Save" button at the end of the line to update the project
+    1. Make a note of the **Pub/Sub topic** from the SDM configuration page
 
 Lookup your Google Cloud Platform (GCP) Project ID:
 
 1. Open the [IAM & Admin > Settings](https://console.cloud.google.com/iam-admin/settings)
 1. Copy and save the GCP **Project ID** (e.g. `openhab-12345`)
+
+Create a GCP Pub/Sub subscription in your GCP project:
+
+1. Open the [Subscriptions Page > Create](https://console.cloud.google.com/cloudpubsub/subscription/create)
+1. Select a unique name for the **Subscription ID** that uniquely identifies the Pub/Sub subscription used by the binding
+1. Select "Pull" as the Delivery Type
+1. Enter the **topic name** previously noted from the SDM project
+1. Click "Create" to create the subscription
 
 Next an OAuth 2.0 client is created which is used to create a Pub/Sub subscription for listening to SDM events by the binding:
 
@@ -138,7 +147,7 @@ Finally, the existing SDM Account Thing can be updated so it can subscribe to SD
 
 1. Open the configuration details of your existing "Nest SDM Account" Thing in openHAB
 1. Copy/paste the saved GCP **Project ID** to Pub/Sub group parameter (e.g. `openhab-123`)
-1. Enter a name in **Subscription ID** that uniquely identifies the Pub/Sub subscription used by the binding
+1. Enter the name of the previously chosen **Subscription ID** that uniquely identifies the Pub/Sub subscription used by the binding
 
    > Must be 3-255 characters, start with a letter, and contain only the following characters: letters, numbers, dashes (-), periods (.), underscores (_), tildes (~), percents (%) or plus signs (+). Cannot start with  goog.
 1. Copy/paste the saved OAuth 2.0 **Client ID** to Pub/Sub group parameter (e.g. `1046297811237-lg27h26kln6r1nbg54jpg6nfjg6h4b3n.apps.googleusercontent.com`)

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -74,4 +74,9 @@ public class SqueezeBoxBindingConstants {
     public static final String CHANNEL_FAVORITES_PLAY = "playFavorite";
     public static final String CHANNEL_RATE = "rate";
     public static final String CHANNEL_SLEEP = "sleep";
+
+    // List of all properties
+    public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_UID = "uid";
+    public static final String PROPERTY_IP = "ip";
 }

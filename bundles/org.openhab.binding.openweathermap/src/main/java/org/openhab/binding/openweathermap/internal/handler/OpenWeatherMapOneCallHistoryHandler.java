@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,6 @@ import org.openhab.binding.openweathermap.internal.dto.onecall.Precipitation;
 import org.openhab.binding.openweathermap.internal.dto.onecallhist.Hourly;
 import org.openhab.core.i18n.CommunicationException;
 import org.openhab.core.i18n.ConfigurationException;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -62,8 +61,8 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
     // the relative day in history.
     private int day = 0;
 
-    public OpenWeatherMapOneCallHistoryHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider);
+    public OpenWeatherMapOneCallHistoryHandler(Thing thing) {
+        super(thing);
     }
 
     @Override

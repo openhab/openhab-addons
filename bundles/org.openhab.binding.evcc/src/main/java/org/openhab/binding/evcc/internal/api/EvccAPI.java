@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,12 +16,14 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.EVCC_REST_A
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.LONG_CONNECTION_TIMEOUT_MILLISEC;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.evcc.internal.api.dto.Result;
 import org.openhab.binding.evcc.internal.api.dto.Status;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,10 +42,12 @@ import com.google.gson.JsonSyntaxException;
 public class EvccAPI {
     private final Logger logger = LoggerFactory.getLogger(EvccAPI.class);
     private final Gson gson = new Gson();
+    private final TimeZoneProvider timeZoneProvider;
     private String host;
 
-    public EvccAPI(String host) {
+    public EvccAPI(String host, TimeZoneProvider timeZoneProvider) {
         this.host = (host.endsWith("/") ? host.substring(0, host.length() - 1) : host);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     /**
@@ -143,9 +147,12 @@ public class EvccAPI {
         return httpRequest(this.host + EVCC_REST_API + "vehicles/" + vehicleName + "/limitsoc/" + limitSoC, "POST");
     }
 
-    public String setVehiclePlan(String vehicleName, int planSoC, ZonedDateTime planTime) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "vehicles/" + vehicleName + "/plan/soc/" + planSoC + "/"
-                + planTime.toLocalDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "Z", "POST");
+    public String setVehiclePlan(String vehicleName, int planSoC, Instant planTime) throws EvccApiException {
+        ZonedDateTime adjustedTime = planTime.atZone(timeZoneProvider.getTimeZone());
+        String formattedTime = adjustedTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        return httpRequest(
+                this.host + EVCC_REST_API + "vehicles/" + vehicleName + "/plan/soc/" + planSoC + "/" + formattedTime,
+                "POST");
     }
 
     public String removeVehiclePlan(String vehicleName) throws EvccApiException {

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,8 +18,8 @@ import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncRequestV1ManagedDeviceDetails} is the Java class as a DTO to hold login credentials for the Vesync
- * API.
+ * The {@link VeSyncRequestV1ManagedDeviceDetails} is the Java class as a DTO to request the managed device details for
+ * the Vesync API.
  *
  * @author David Goodyear - Initial contribution
  */

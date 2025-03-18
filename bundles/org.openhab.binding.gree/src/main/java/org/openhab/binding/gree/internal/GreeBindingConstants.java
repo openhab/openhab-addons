@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.gree.internal;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -38,6 +42,9 @@ public class GreeBindingConstants {
     // Thing configuration items
     public static final String PROPERTY_IP = "ipAddress";
     public static final String PROPERTY_BROADCAST = "broadcastAddress";
+
+    public static final String PROPERTY_REFRESH_INTERVAL = "refreshInterval";
+    public static final String PROPERTY_ENCRYPTION_TYPE = "encryptionType";
 
     // List of all Channel ids
     public static final String POWER_CHANNEL = "power";
@@ -157,7 +164,6 @@ public class GreeBindingConstants {
     public static final int DATAGRAM_SOCKET_TIMEOUT = 5000; // regular read timeout
     public static final int DISCOVERY_TIMEOUT_MS = 7000; // do not change!!
     public static final int MAX_SCAN_CYCLES = 3;
-    public static final int REFRESH_INTERVAL_SEC = 5;
     public static final int MAX_API_RETRIES = 3;
 
     public static final int DIGITS_TEMP = 1;
@@ -174,4 +180,18 @@ public class GreeBindingConstants {
      *      for more details.
      */
     public static final double INTERNAL_TEMP_SENSOR_OFFSET = -40.0;
+
+    public enum EncryptionTypes {
+        UNKNOWN,
+        ECB,
+        COMBINED,
+        GCM;
+
+        private static final Map<String, EncryptionTypes> MAP = Stream.of(EncryptionTypes.values())
+                .collect(Collectors.toMap(Enum::name, Function.identity()));
+
+        public static EncryptionTypes of(final String name) {
+            return MAP.getOrDefault(name, UNKNOWN);
+        }
+    };
 }

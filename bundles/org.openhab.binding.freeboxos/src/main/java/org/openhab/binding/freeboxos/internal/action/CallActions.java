@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ public class CallActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "clear call queue", description = "Deletes all calls logged in the queue")
+    @RuleAction(label = "@text/action.resetCalls.label", description = "@text/action.resetCalls.description")
     public void resetCalls() {
         logger.debug("Call log clear called");
         CallHandler localHandler = handler;

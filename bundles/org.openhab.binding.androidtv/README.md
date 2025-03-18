@@ -28,7 +28,9 @@ This binding does not require any special configuration files.
 
 This binding does require a PIN login process (documented below) upon first connection.
 
-This binding requires GoogleTV to be installed on the device (https://play.google.com/store/apps/details?id=com.google.android.videos)
+This binding requires [GoogleTV](https://play.google.com/store/apps/details?id=com.google.android.videos) to be installed on the device.
+The binding also requires [Android TV Remote Service](https://play.google.com/store/apps/details?id=com.google.android.tv.remote.service)
+to be installed on the device.
 
 ## Thing Configuration
 
@@ -84,7 +86,6 @@ Thing androidtv:philipstv:bedroom [ ipAddress="192.168.1.4" ]
 | ambilightRightColor  | Color  | Color for right Ambilight Side       |    N/A   |    N/A   |     RW    |
 | ambilightTopColor    | Color  | Color for top Ambilight Side         |    N/A   |    N/A   |     RW    |
 | ambilightBottomColor | Color  | Color for bottom Ambilight Side      |    N/A   |    N/A   |     RW    |
-
 
 ```java
 String ShieldTV_KEYBOARD "KEYBOARD [%s]" { channel = "androidtv:shieldtv:livingroom:keyboard" }
@@ -222,6 +223,13 @@ If you are on a ShieldTV or PhilipsTV you must run that process a second time to
 This completes the PIN process.
 
 Upon reconnection (either from reconfiguration or a restart of OpenHAB), you should now see a message of "Login Successful" in openhab.log
+
+## Troubleshooting
+Some devices come with an outdated version of the "Android TV Remote Service". So in case the PIN Process does not result in a PIN
+shown on the screen, and the openHAB log shows an entry
+```GoogleTV version on device needs to be updated```
+visit the Google Play Store on the device, search for the "Android TV Remote Service", and update the App (Service) manually by pressing
+"Update".
 
 ## Full Example
 

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -82,10 +82,10 @@ public class EkeyHandler extends BaseThingHandler implements EkeyPacketListener 
 
             scheduler.submit(() -> {
                 populateChannels(config.protocol);
-                String readerThreadName = "OH-binding-" + getThing().getUID().getAsString();
 
                 EkeyUdpPacketReceiver localReceiver = receiver = new EkeyUdpPacketReceiver(
-                        Objects.requireNonNullElse(config.natIp, config.ipAddress), config.port, readerThreadName);
+                        Objects.requireNonNullElse(config.natIp, config.ipAddress), config.port,
+                        "OH-binding-" + getThing().getUID());
                 localReceiver.addEkeyPacketListener(this);
                 try {
                     localReceiver.openConnection();

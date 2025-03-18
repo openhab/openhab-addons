@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,6 @@ package org.openhab.binding.lutron.internal.handler;
 
 import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Calendar;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -176,15 +174,13 @@ public class TimeclockHandler extends LutronHandler {
             } else if (parameters.length >= 2 && TimeclockCommand.ACTION_SUNRISE.toString().equals(parameters[0])) {
                 Calendar calendar = parseLutronTime(parameters[1]);
                 if (calendar != null) {
-                    updateState(CHANNEL_SUNRISE,
-                            new DateTimeType(ZonedDateTime.ofInstant(calendar.toInstant(), ZoneId.systemDefault())));
+                    updateState(CHANNEL_SUNRISE, new DateTimeType(calendar.toInstant()));
                 }
 
             } else if (parameters.length >= 2 && TimeclockCommand.ACTION_SUNSET.toString().equals(parameters[0])) {
                 Calendar calendar = parseLutronTime(parameters[1]);
                 if (calendar != null) {
-                    updateState(CHANNEL_SUNSET,
-                            new DateTimeType(ZonedDateTime.ofInstant(calendar.toInstant(), ZoneId.systemDefault())));
+                    updateState(CHANNEL_SUNSET, new DateTimeType(calendar.toInstant()));
                 }
 
             } else if (parameters.length >= 2 && TimeclockCommand.ACTION_EXECEVENT.toString().equals(parameters[0])) {

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,6 +72,7 @@ public class PlugwiseHAControllerRequest<T> {
     private static final String CONTENT_TYPE_TEXT_XML = MimeTypes.Type.TEXT_XML_8859_1.toString();
     private static final long TIMEOUT_SECONDS = 5;
     private static final int REQUEST_MAX_RETRY_COUNT = 3;
+    private static final int RETRY_DELAY_TIMOUT = 3000;
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseHAControllerRequest.class);
     private final XStream xStream;
@@ -246,12 +247,18 @@ public class PlugwiseHAControllerRequest<T> {
         try {
             response = request.send();
         } catch (InterruptedException e) {
-            this.logger.trace("InterruptedException occured {} {}", e.getMessage(), e.getStackTrace());
+            this.logger.trace("InterruptedException occurred {} {}", e.getMessage(), e.getStackTrace());
             Thread.currentThread().interrupt();
             throw new PlugwiseHATimeoutException(e);
         } catch (TimeoutException e) {
             if (retries > 0) {
-                this.logger.debug("TimeoutException occured, remaining retries {}", retries - 1);
+                this.logger.debug("TimeoutException occurred, remaining retries {}", retries - 1);
+                try {
+                    Thread.sleep(RETRY_DELAY_TIMOUT);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new PlugwiseHATimeoutException(ie);
+                }
                 return getContentResponse(retries - 1);
             } else {
                 throw new PlugwiseHATimeoutException(e);

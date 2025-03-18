@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,7 +58,7 @@ public class DynamicChannelHelper {
         }
     };
 
-    private static final Logger logger = LoggerFactory.getLogger(DynamicChannelHelper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamicChannelHelper.class);
 
     public static ThingBuilder updateThingWithConfigurationChannels(Thing thing, ThingBuilder builder) {
         for (ConfigurationChannel channel : CHANNELS) {
@@ -72,7 +72,7 @@ public class DynamicChannelHelper {
             ConfigurationChannel toAdd) {
         ChannelUID channelId = new ChannelUID(originalThing.getUID(), toAdd.id);
         if (originalThing.getChannel(channelId) == null) {
-            logger.debug("Adding dynamic channel {} to {}", toAdd.id, originalThing.getUID());
+            LOGGER.debug("Adding dynamic channel {} to {}", toAdd.id, originalThing.getUID());
             ChannelTypeUID typeId = new ChannelTypeUID(BINDING_ID, toAdd.typeId);
             Channel channel = ChannelBuilder.create(channelId, toAdd.itemType).withType(typeId).build();
             builder.withChannel(channel);

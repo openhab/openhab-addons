@@ -29,11 +29,16 @@
 			<channel id="rainForWeek" typeId="rainForWeek"/>
 			<channel id="rainForMonth" typeId="rainForMonth"/>
 			<channel id="rainForYear" typeId="rainForYear"/>
+			<channel id="rainTotal" typeId="rainTotal"/>
 			<channel id="batteryOutdoor" typeId="system.low-battery"/>
 			<channel id="batteryIndoor" typeId="system.low-battery"/>
 			<channel id="responseTime" typeId="responseTime"/>
 			<channel id="lastUpdatedTime" typeId="lastUpdatedTime"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="address" type="text" required="true">
@@ -230,6 +235,12 @@
 		<item-type>Number:Length</item-type>
 		<label>Rain for Year</label>
 		<description>Total rain since 12:00 on 1st Jan</description>
+		<category>Rain</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="rainTotal">
+		<item-type>Number:Length</item-type>
+		<label>Total Rain</label>
 		<category>Rain</category>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>

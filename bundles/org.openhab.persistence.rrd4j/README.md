@@ -57,7 +57,7 @@ The various datasource property values are explained in the table below.
 
 For example..
 
-```
+```ini
 ctr24h.def=COUNTER,900,0,U,60
 ctr24h.archives=AVERAGE,0.5,1,480:AVERAGE,0.5,10,144
 ctr24h.items=Item1,Item2
@@ -97,7 +97,7 @@ They must be either:
 
 ### `<sampleInterval>` (Sample Interval)
 
-The time interval (seconds) between reading consecutive samples from the OpenHAB core.
+The time interval (seconds) between reading consecutive samples from the openHAB core.
 
 It must be a positive integer value.
 
@@ -148,7 +148,7 @@ The purpose of having several archives is that it allows a different granularity
 
 In the example below..
 
-```
+```ini
 ctr24h.def=COUNTER,900,0,U,60
 ctr24h.archives=AVERAGE,0.5,1,480:AVERAGE,0.5,10,144
 ctr24h.items=Item1,Item2
@@ -170,13 +170,12 @@ The service automatically creates three default datasources with the properties 
 There is no `.items` parameter for the default datasources.
 This means that any Item with an allocated strategy in the `rrd4j.persist` file is persisted using one the default settings, unless the Item is explicitly listed in an `.items` property value of a datasource in the `rrd4j.cfg` file.
 
-
 #### default_numeric
 
 This datasource is used for plain `Number` items.
 It does not build averages over values, so that it is ensured that discrete values are kept when being read (e.g. an Item which has only states 0 and 1 will not be set to 0.5).
 
-```
+```ini
 default_numeric.def=GAUGE,600,U,U,10
 default_numeric.archives=LAST,0.5,1,360:LAST,0.5,6,10080:LAST,0.5,90,36500:LAST,0.5,360,43800:LAST,0.5,8640,3650
 ```
@@ -196,7 +195,7 @@ It defines 5 archives:
 This datasource is used for `Number` items with dimensions - it is therefore assumed that the values are measurement values that exist on a continuum.
 It thus builds averages over values, so that graphs can be smooth, even if there is only a coarse granularity available.
 
-```
+```ini
 default_quantifiable.def=GAUGE,600,U,U,10
 default_quantifiable.archives=AVERAGE,0.5,1,360:AVERAGE,0.5,6,10080:AVERAGE,0.5,90,36500:AVERAGE,0.5,360,43800:AVERAGE,0.5,8640,3650
 ```
@@ -216,7 +215,7 @@ It defines 5 archives:
 This datasource is used for any other items.
 Their values are considered to be discrete, similar to the `default_numeric` datasource, but it keeps the data in more fine-granular archives.
 
-```
+```ini
 default_other.def=GAUGE,3600,U,U,5
 default_other.archives=LAST,0.5,1,720:LAST,0.5,12,10080:LAST,0.5,180,35040:LAST,0.5,2880,21900
 ```
@@ -234,7 +233,7 @@ It defines 4 archives:
 
 ### `rrd4j.cfg` file
 
-```
+```ini
 ctr24h.def=COUNTER,900,0,U,60
 ctr24h.archives=AVERAGE,0.5,1,480:AVERAGE,0.5,10,144
 ctr24h.items=Item1,Item2
@@ -243,7 +242,7 @@ ctr7d.archives=AVERAGE,0.5,1,480:AVERAGE,0.5,10,144:AVERAGE,0.5,60,672
 ctr7d.items=Item3,Item4
 ```
 
-### `rrd4j.persist` file:
+### `rrd4j.persist` Example
 
 ```java
 Strategies {

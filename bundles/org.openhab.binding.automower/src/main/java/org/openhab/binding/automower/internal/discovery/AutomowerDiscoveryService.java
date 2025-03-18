@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,6 +62,17 @@ public class AutomowerDiscoveryService extends AbstractDiscoveryService {
                         mower.getAttributes().getSystem().getSerialNumber());
                 properties.put(AutomowerBindingConstants.AUTOMOWER_MODEL, mower.getAttributes().getSystem().getModel());
                 properties.put(AutomowerBindingConstants.AUTOMOWER_NAME, mower.getAttributes().getSystem().getName());
+
+                properties.put(AutomowerBindingConstants.AUTOMOWER_CAN_CONFIRM_ERROR,
+                        (mower.getAttributes().getCapabilities().canConfirmError() ? "yes" : "no"));
+                properties.put(AutomowerBindingConstants.AUTOMOWER_HAS_HEADLIGHTS,
+                        (mower.getAttributes().getCapabilities().hasHeadlights() ? "yes" : "no"));
+                properties.put(AutomowerBindingConstants.AUTOMOWER_HAS_POSITION,
+                        (mower.getAttributes().getCapabilities().hasPosition() ? "yes" : "no"));
+                properties.put(AutomowerBindingConstants.AUTOMOWER_HAS_STAY_OUT_ZONES,
+                        (mower.getAttributes().getCapabilities().hasStayOutZones() ? "yes" : "no"));
+                properties.put(AutomowerBindingConstants.AUTOMOWER_HAS_WORK_AREAS,
+                        (mower.getAttributes().getCapabilities().hasWorkAreas() ? "yes" : "no"));
 
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(mowerThingUid)
                         .withThingType(thingTypeUID).withProperties(properties).withBridge(bridgeUID)

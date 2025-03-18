@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,7 +52,7 @@ public class MaxCubeActions implements ThingActions {
     }
 
     @RuleAction(label = "backup the Cube data", description = "Creates a backup of the MAX! Cube data.")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean backup() {
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean backup() {
         MaxCubeBridgeHandler actionsHandler = handler;
         if (actionsHandler == null) {
             logger.info("MaxCubeActions: Action service ThingHandler is null!");
@@ -67,7 +67,7 @@ public class MaxCubeActions implements ThingActions {
     }
 
     @RuleAction(label = "reset the Cube configuration", description = "Resets the MAX! Cube room and device information. Devices will need to be included again!")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean resetConfig() {
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean resetConfig() {
         MaxCubeBridgeHandler actionsHandler = handler;
         if (actionsHandler == null) {
             logger.info("MaxCubeActions: Action service ThingHandler is null!");
@@ -82,7 +82,7 @@ public class MaxCubeActions implements ThingActions {
     }
 
     @RuleAction(label = "restart the Cube", description = "Restarts the MAX! Cube.")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean reboot() {
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean reboot() {
         MaxCubeBridgeHandler actionsHandler = handler;
         if (actionsHandler == null) {
             logger.info("MaxCubeActions: Action service ThingHandler is null!");

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="myuplink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="account">
+		<label>myUplink Account</label>
+		<description>Cloud connection to a myUplink account.</description>
+		<config-description-ref uri="thing-type:myuplink:account"/>
+	</bridge-type>
+	<thing-type id="generic-device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>myUplink Generic Device</label>
+		<description>Cloud connection to a myUplink device.</description>
+		<channels>
+			<channel id="command" typeId="rwtype-command">
+				<label>Generic Command</label>
+				<description>Allows to send commands to any channel. Format 'channel:value'</description>
+				<properties>
+					<property name="validationExpression">[0-9]+:-?[0-9,]+</property>
+				</properties>
+			</channel>
+			<channel id="smart-home-mode" typeId="rwtype-mode">
+				<label>Smart Home Mode</label>
+				<description>Controls the smart home mode</description>
+				<properties>
+					<property name="validationExpression">\w+</property>
+				</properties>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:myuplink:generic-device"/>
+	</thing-type>
+</thing:thing-descriptions>

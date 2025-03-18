@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.meteofrance.internal.handler;
 import static org.openhab.binding.meteofrance.internal.MeteoFranceBindingConstants.*;
 import static org.openhab.core.types.TimeSeries.Policy.REPLACE;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -58,15 +57,13 @@ import org.slf4j.LoggerFactory;
 public class RainForecastHandler extends BaseThingHandler implements MeteoFranceChildHandler {
     private final Logger logger = LoggerFactory.getLogger(RainForecastHandler.class);
     private final ChannelUID intensityChannelUID;
-    private final ZoneId systemZoneId;
 
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private Optional<PointType> location = Optional.empty();
 
-    public RainForecastHandler(Thing thing, ZoneId zoneId) {
+    public RainForecastHandler(Thing thing) {
         super(thing);
         this.intensityChannelUID = new ChannelUID(getThing().getUID(), INTENSITY);
-        this.systemZoneId = zoneId;
     }
 
     @Override
@@ -116,9 +113,9 @@ public class RainForecastHandler extends BaseThingHandler implements MeteoFrance
             location.ifPresent(loc -> {
                 RainForecast forecast = handler.getRainForecast(loc);
                 if (forecast != null) {
+                    updateStatus(ThingStatus.ONLINE);
                     setProperties(forecast.properties);
                     updateDate(UPDATE_TIME, forecast.updateTime);
-                    updateStatus(ThingStatus.ONLINE);
                 }
             });
         }, () -> logger.warn("No viable bridge"));
@@ -142,26 +139,34 @@ public class RainForecastHandler extends BaseThingHandler implements MeteoFrance
 
     private void setForecast(List<Forecast> forecast) {
         TimeSeries timeSeries = new TimeSeries(REPLACE);
+        ZonedDateTime now = ZonedDateTime.now();
 
-        forecast.forEach(prevision -> {
+        State currentState = null;
+        long untilNextRun = 0;
+        for (Forecast prevision : forecast) {
             State state = prevision.rainIntensity() != RainIntensity.UNKNOWN
                     ? new DecimalType(prevision.rainIntensity().ordinal())
                     : UnDefType.UNDEF;
+            if (currentState == null) {
+                currentState = state;
+                if (prevision.time().isAfter(now)) {
+                    untilNextRun = now.until(prevision.time(), ChronoUnit.SECONDS);
+                }
+            }
             timeSeries.add(prevision.time().toInstant(), state);
-        });
+        }
+        updateState(intensityChannelUID, currentState == null ? UnDefType.UNDEF : currentState);
         sendTimeSeries(intensityChannelUID, timeSeries);
 
-        Forecast current = forecast.get(0);
-        long until = ZonedDateTime.now().until(current.time(), ChronoUnit.SECONDS);
-        logger.debug("Refresh rain intensity forecast in : {}s", until);
-        refreshJob = Optional.of(scheduler.schedule(this::updateAndPublish, until, TimeUnit.SECONDS));
+        untilNextRun = untilNextRun != 0 ? untilNextRun : 300;
+
+        logger.debug("Refresh rain intensity forecast in: {}s", untilNextRun);
+        refreshJob = Optional.of(scheduler.schedule(this::updateAndPublish, untilNextRun, TimeUnit.SECONDS));
     }
 
     private void updateDate(String channelId, @Nullable ZonedDateTime zonedDateTime) {
         if (isLinked(channelId)) {
-            updateState(channelId,
-                    zonedDateTime != null ? new DateTimeType(zonedDateTime.withZoneSameInstant(systemZoneId))
-                            : UnDefType.NULL);
+            updateState(channelId, zonedDateTime != null ? new DateTimeType(zonedDateTime) : UnDefType.NULL);
         }
     }
 }

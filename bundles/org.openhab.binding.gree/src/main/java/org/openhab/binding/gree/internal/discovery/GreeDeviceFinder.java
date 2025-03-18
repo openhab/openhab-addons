@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,7 +61,8 @@ public class GreeDeviceFinder {
     public GreeDeviceFinder() {
     }
 
-    public void scan(DatagramSocket clientSocket, String broadcastAddress, boolean scanNetwork) throws GreeException {
+    public void scan(DatagramSocket clientSocket, String broadcastAddress, boolean scanNetwork,
+            EncryptionTypes encryptionTypeConfig) throws GreeException {
         InetAddress ipAddress;
         try {
             ipAddress = InetAddress.getByName(broadcastAddress);
@@ -103,7 +104,8 @@ public class GreeDeviceFinder {
                     }
 
                     // Decrypt message - a GreeException is thrown when something went wrong
-                    String decryptedMsg = scanResponseGson.decryptedPack = GreeCryptoUtil.decrypt(scanResponseGson);
+                    String decryptedMsg = scanResponseGson.decryptedPack = GreeCryptoUtil.decrypt(scanResponseGson,
+                            encryptionTypeConfig);
 
                     logger.debug("Response received from address {}: {}", remoteAddress.getHostAddress(), decryptedMsg);
 
@@ -114,7 +116,8 @@ public class GreeDeviceFinder {
                     if ("gree".equalsIgnoreCase(scanResponseGson.packJson.brand)) {
                         // Create a new GreeDevice
                         logger.debug("Discovered device at {}:{}", remoteAddress.getHostAddress(), remotePort);
-                        GreeAirDevice newDevice = new GreeAirDevice(remoteAddress, remotePort, scanResponseGson);
+                        GreeAirDevice newDevice = new GreeAirDevice(remoteAddress, remotePort, scanResponseGson,
+                                encryptionTypeConfig);
                         addDevice(newDevice);
                     } else {
                         logger.debug("Unit discovered, but brand is not GREE");

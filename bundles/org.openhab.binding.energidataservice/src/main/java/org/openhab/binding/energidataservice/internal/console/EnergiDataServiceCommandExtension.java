@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -126,9 +126,9 @@ public class EnergiDataServiceCommandExtension extends AbstractConsoleCommandExt
         LocalDate startDate;
         LocalDate endDate;
 
-        private int ARGUMENT_POSITION_PRICE_COMPONENT = 1;
-        private int ARGUMENT_POSITION_START_DATE = 2;
-        private int ARGUMENT_POSITION_END_DATE = 3;
+        private static final int ARGUMENT_POSITION_PRICE_COMPONENT = 1;
+        private static final int ARGUMENT_POSITION_START_DATE = 2;
+        private static final int ARGUMENT_POSITION_END_DATE = 3;
 
         ParsedUpdateParameters(String[] args) {
             if (args.length < 3 || args.length > 4) {

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,10 +48,10 @@ public class VehicleStateContainerTest {
         VehicleStateContainer vehicleStateContainer = JsonStringDeserializer.getVehicleState(vehicleStateJson);
 
         assertNotNull(vehicleStateContainer);
-        assertEquals("2024-06-01T00:00",
+        assertEquals("2024-06-01T00:00:00Z",
                 ((DateTimeType) VehicleStatusUtils
-                        .getNextServiceDate(vehicleStateContainer.getState().getRequiredServices())).getZonedDateTime()
-                        .toLocalDateTime().toString(),
+                        .getNextServiceDate(vehicleStateContainer.getState().getRequiredServices())).getInstant()
+                        .toString(),
                 "Service Date");
 
         assertEquals("2022-12-21T15:41:23Z", vehicleStateContainer.getState().getLastUpdatedAt(), "Last update time");

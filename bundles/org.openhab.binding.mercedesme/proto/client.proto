@@ -36,6 +36,7 @@ message ClientMessage {
     AppTwinPendingCommandsResponse apptwin_pending_commands_response = 21;
     AcknowledgeVEPUpdatesByVIN acknowledge_vep_updates_by_vin = 22;
     AcknowledgeAssignedVehicles acknowledge_assigned_vehicles = 23;
+    AcknowledgeDataChangeEvent acknowledge_data_change_event = 26;
   }
 }
 

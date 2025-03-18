@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.automower.internal.AutomowerBindingConstants;
 import org.openhab.core.thing.ChannelUID;
 
 /**
@@ -25,12 +26,13 @@ import org.openhab.core.thing.ChannelUID;
  */
 @NonNullByDefault
 public enum AutomowerCommand {
-    START("Start", "mower#start"),
-    RESUME_SCHEDULE("ResumeSchedule", "mower#resume_schedule"),
-    PAUSE("Pause", "mower#pause"),
-    PARK("Park", "mower#park"),
-    PARK_UNTIL_NEXT_SCHEDULE("ParkUntilNextSchedule", "mower#park_until_next_schedule"),
-    PARK_UNTIL_FURTHER_NOTICE("ParkUntilFurtherNotice", "mower#park_until_further_notice");
+    START("Start", AutomowerBindingConstants.CHANNEL_COMMAND_START),
+    RESUME_SCHEDULE("ResumeSchedule", AutomowerBindingConstants.CHANNEL_COMMAND_RESUME_SCHEDULE),
+    PAUSE("Pause", AutomowerBindingConstants.CHANNEL_COMMAND_PAUSE),
+    PARK("Park", AutomowerBindingConstants.CHANNEL_COMMAND_PARK),
+    PARK_UNTIL_NEXT_SCHEDULE("ParkUntilNextSchedule",
+            AutomowerBindingConstants.CHANNEL_COMMAND_PARK_UNTIL_NEXT_SCHEDULE),
+    PARK_UNTIL_FURTHER_NOTICE("ParkUntilFurtherNotice", AutomowerBindingConstants.CHANNEL_COMMAND_PARK_UNTIL_NOTICE);
 
     private static final Map<String, AutomowerCommand> CHANNEL_TO_CMD_MAP = new HashMap<>();
 

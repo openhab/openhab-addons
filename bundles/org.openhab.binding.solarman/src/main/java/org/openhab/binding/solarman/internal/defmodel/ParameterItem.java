@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,13 +46,15 @@ public class ParameterItem {
     private BigDecimal offset;
     @Nullable
     private Boolean isstr;
+    private List<Lookup> lookup = new ArrayList<>();
 
     public ParameterItem() {
     }
 
     public ParameterItem(String name, @Nullable String itemClass, @Nullable String stateClass, @Nullable String uom,
             @Nullable BigDecimal scale, Integer rule, List<Integer> registers, @Nullable String icon,
-            @Nullable Validation validation, @Nullable BigDecimal offset, @Nullable Boolean isstr) {
+            @Nullable Validation validation, @Nullable BigDecimal offset, @Nullable Boolean isstr,
+            @Nullable List<Lookup> lookup) {
         this.name = name;
         this.itemClass = itemClass;
         this.stateClass = stateClass;
@@ -64,6 +66,9 @@ public class ParameterItem {
         this.validation = validation;
         this.offset = offset;
         this.isstr = isstr;
+        if (lookup != null) {
+            this.lookup = lookup;
+        }
     }
 
     public String getName() {
@@ -152,5 +157,17 @@ public class ParameterItem {
 
     public void setItemClass(String itemClass) {
         this.itemClass = itemClass;
+    }
+
+    public List<Lookup> getLookup() {
+        return lookup;
+    }
+
+    public void setLookup(List<Lookup> lookup) {
+        this.lookup = lookup;
+    }
+
+    public Boolean hasLookup() {
+        return !lookup.isEmpty();
     }
 }

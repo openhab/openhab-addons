@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,9 +46,10 @@ import org.openhab.core.types.RefreshType;
  */
 @NonNullByDefault
 public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMB2PBN,
-            THING_TYPE_VMB6PBN, THING_TYPE_VMB8PBU, THING_TYPE_VMBPIRC, THING_TYPE_VMBPIRM, THING_TYPE_VMBRFR8S,
-            THING_TYPE_VMBVP1, THING_TYPE_VMBKP, THING_TYPE_VMBIN, THING_TYPE_VMB4PB, THING_TYPE_VMB6PB_20));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
+            Arrays.asList(THING_TYPE_VMB2PBN, THING_TYPE_VMB6PBN, THING_TYPE_VMB8PBU, THING_TYPE_VMBPIRC,
+                    THING_TYPE_VMBPIRM, THING_TYPE_VMBRFR8S, THING_TYPE_VMBVP1, THING_TYPE_VMBKP, THING_TYPE_VMBIN,
+                    THING_TYPE_VMB4PB, THING_TYPE_VMB6PB_20, THING_TYPE_VMBPIRO_10, THING_TYPE_VMBPIR_20));
     private static final HashMap<ThingTypeUID, Integer> ALARM_CONFIGURATION_MEMORY_ADDRESSES = new HashMap<>();
 
     static {
@@ -95,6 +96,11 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBDALI_20, 0x0513);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBEL4PIR_20, 0x032B);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBGP4PIR_20, 0x032B);
+        ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMB4LEDPWM_20, 0x0043);
+        ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMB8DC_20, 0x0083);
+        ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBPIRO_10, 0x0031);
+        ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBPIR_20, 0x0033);
+        ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMB8IN_20, 0x00A7);
     }
 
     private static final byte ALARM_CONFIGURATION_MEMORY_SIZE = 0x09;

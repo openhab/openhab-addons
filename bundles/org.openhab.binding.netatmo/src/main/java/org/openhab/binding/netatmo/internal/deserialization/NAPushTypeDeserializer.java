@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,7 @@ class NAPushTypeDeserializer implements JsonDeserializer<NAPushType> {
     }
 
     /**
-     * @param apiName : Netatmo Object name (NSD, NACamera...)
+     * @param apiName Netatmo Object name (NSD, NACamera...)
      * @return moduletype value if found, or else Unknown
      */
     public static ModuleType fromNetatmoObject(String apiName) {
@@ -68,7 +68,7 @@ class NAPushTypeDeserializer implements JsonDeserializer<NAPushType> {
     }
 
     /**
-     * @param apiName : Netatmo Event name (hush, off, on ...)
+     * @param apiName Netatmo Event name (hush, off, on ...)
      * @return eventType value if found, or else Unknown
      */
     public static EventType fromEvent(String apiName) {

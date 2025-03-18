@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,6 +76,7 @@ public class HomekitAccessoryFactory {
             put(CARBON_MONOXIDE_SENSOR, new HomekitCharacteristicType[] { CARBON_MONOXIDE_DETECTED_STATE });
             put(CONTACT_SENSOR, new HomekitCharacteristicType[] { CONTACT_SENSOR_STATE });
             put(DOOR, new HomekitCharacteristicType[] { CURRENT_POSITION, TARGET_POSITION, POSITION_STATE });
+            put(DOORBELL, new HomekitCharacteristicType[] { PROGRAMMABLE_SWITCH_EVENT });
             put(FAN, new HomekitCharacteristicType[] { ACTIVE_STATUS });
             put(FAUCET, new HomekitCharacteristicType[] { ACTIVE_STATUS });
             put(FILTER_MAINTENANCE, new HomekitCharacteristicType[] { FILTER_CHANGE_INDICATION });
@@ -123,6 +124,7 @@ public class HomekitAccessoryFactory {
             put(CARBON_MONOXIDE_SENSOR, HomekitCarbonMonoxideSensorImpl.class);
             put(CONTACT_SENSOR, HomekitContactSensorImpl.class);
             put(DOOR, HomekitDoorImpl.class);
+            put(DOORBELL, HomekitDoorbellImpl.class);
             put(FAN, HomekitFanImpl.class);
             put(FAUCET, HomekitFaucetImpl.class);
             put(FILTER_MAINTENANCE, HomekitFilterMaintenanceImpl.class);

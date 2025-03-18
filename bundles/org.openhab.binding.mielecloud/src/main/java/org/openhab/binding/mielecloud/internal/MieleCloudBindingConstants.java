@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -227,6 +227,7 @@ public final class MieleCloudBindingConstants {
         }
 
         public static final String BRIDGE_STATUS_DESCRIPTION_ACCESS_TOKEN_NOT_CONFIGURED = "@text/mielecloud.bridge.status.access.token.not.configured";
+        public static final String BRIDGE_STATUS_DESCRIPTION_EMAIL_NOT_CONFIGURED = "@text/mielecloud.bridge.status.email.not.configured";
         public static final String BRIDGE_STATUS_DESCRIPTION_ACCOUNT_NOT_AUTHORIZED = "@text/mielecloud.bridge.status.account.not.authorized";
         public static final String BRIDGE_STATUS_DESCRIPTION_ACCESS_TOKEN_REFRESH_FAILED = "@text/mielecloud.bridge.status.access.token.refresh.failed";
         public static final String BRIDGE_STATUS_DESCRIPTION_TRANSIENT_HTTP_ERROR = "@text/mielecloud.bridge.status.transient.http.error";

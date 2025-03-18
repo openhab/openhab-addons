@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="huesync"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="device-info-firmware">
+		<item-type>String</item-type>
+		<label>Firmware</label>
+		<description>Installed firmware version</description>
+		<category>text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="device-info-firmware-available">
+		<item-type>String</item-type>
+		<label>Latest Firmware</label>
+		<description>Latest available firmware version</description>
+		<category>text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="connection-name">
+		<item-type>String</item-type>
+		<label>HDMI Name</label>
+		<description>Friendly name of the HDMI connection</description>
+		<category>text</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="connection-status">
+		<item-type>String</item-type>
+		<label>HDMI Status</label>
+		<description>Status of the HDMI input</description>
+		<category>status</category>
+		<state readOnly="true"></state>
+		<command>
+			<options>
+				<option value="unplugged">Unplugged</option>
+				<option value="plugged">Plugged</option>
+				<option value="linked">Linked</option>
+				<option value="unknown">Unknown</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="connection-type">
+		<item-type>String</item-type>
+		<label>HDMI Type</label>
+		<description>Type of the connected HDMI device</description>
+		<category>text</category>
+		<state readOnly="true"></state>
+		<command>
+			<options>
+				<option value="generic">Generic</option>
+				<option value="video">Video</option>
+				<option value="game">Game</option>
+				<option value="music">Music</option>
+				<option value="xbox">XBox</option>
+				<option value="playstation">PlayStation</option>
+				<option value="nintendoswitch">Nintendo Switch</option>
+				<option value="phone">Phone</option>
+				<option value="desktop">Desktop</option>
+				<option value="laptop">Laptop</option>
+				<option value="appletv">Apple TV</option>
+				<option value="roku">Roku</option>
+				<option value="shield">Nvidia Shield</option>
+				<option value="chromecast">Chromecast</option>
+				<option value="firetv">Amazon Fire TV</option>
+				<option value="diskplayer">Disk Player</option>
+				<option value="settopbox">Set-top box</option>
+				<option value="satellite">Satellite</option>
+				<option value="avreceiver">AV receiver</option>
+				<option value="soundbar">Soundbar</option>
+				<option value="hdmiswitch">HDMI switch</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="connection-last-sync-mode">
+		<item-type>String</item-type>
+		<label>Last Mode</label>
+		<description>Last sync mode used for this channel</description>
+		<category>text</category>
+		<state readOnly="true"></state>
+		<command>
+			<options>
+				<option value="video">Video</option>
+				<option value="game">Game</option>
+				<option value="music">Music</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="execution-mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>
+			<![CDATA[
+			<p>
+				<ul>
+				  <li>
+				  	<b>"Video":</b>
+					<p>
+					  Analyzes the on-screen visuals, translating colors and brightness into corresponding light
+					  effects for an immersive movie-watching experience.
+					</p>
+				 </li>
+				 <li>
+				  	<b>"Music":</b>
+					<p>
+					  Analyzes the rhythm and beat of your music, creating
+					  dynamic light along to your tunes.
+					</p>
+				</li>
+				<li>
+				  <b>"Game":</b>
+				  <p>
+				    Reacts to the action on your screen, intensifying the in-game atmosphere
+				    with bursts of light that correspond to explosions, gunfire, and other gameplay events.</p>
+				</li>
+				<li><b>"Passthrough"</b></li>
+				<li><b>"Powersave"</b></li>
+			  </ul>
+			</p>
+			]]>
+		</description>
+		<category>text</category>
+		<command>
+			<options>
+				<option value="powersave">Powersave</option>
+				<option value="passthrough">Passthrough</option>
+				<option value="video">Video</option>
+				<option value="game">Game</option>
+				<option value="music">Music</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="execution-sync-active">
+		<item-type>Switch</item-type>
+		<label>Synchronization Active</label>
+		<description>
+			<![CDATA[
+			  <p>
+			    <b>OFF</b> in case of <i>powersave</i> or <i>passthrough</i> mode, and <b>ON</b> in case of <i>video</i>, <i>game</i> or <i>music</i> mode.
+			  </p>
+			  <p>
+			    When changed from <b>OFF</b> to <b>ON</b>, it will start syncing in last used mode for current source.
+				When changed from <b>ON</b> to <b>OFF</b>, will set <i>passthrough</i> mode.
+			  </p>
+			]]>
+		</description>
+		<category>switch</category>
+	</channel-type>
+
+	<channel-type id="execution-hdmi-active">
+		<item-type>Switch</item-type>
+		<label>HDMI Active</label>
+		<description>
+			<![CDATA[
+			  <p>
+			    <b>OFF</b> in case of <i>powersave</i> mode and <b>ON</b> in case of <i>passthrough</i>, <i>video</i>, <i>game</i> or <i>music</i> mode.
+			  </p>
+			  <p>
+			    When changed from <b>OFF</b> to <b>ON</b>, it will set <i>passthrough</i> mode.
+				When changed from <b>ON</b> to <b>OFF</b>, will set <i>powersave</i> mode.
+			  </p>
+			]]>
+		</description>
+		<category>switch</category>
+	</channel-type>
+
+	<channel-type id="execution-hdmi-source">
+		<item-type>String</item-type>
+		<label>HDMI Input</label>
+		<description>
+			<![CDATA[
+			  <p>
+				<ul>
+				  <li>input1</li>
+				  <li>input2</li>
+				  <li>input3</li>
+				  <li>input4</li>
+				</ul>
+		      </p>
+			]]>
+		</description>
+		<category>receiver</category>
+		<command>
+			<options>
+				<option value="input1"></option>
+				<option value="input2"></option>
+				<option value="input3"></option>
+				<option value="input4"></option>
+			</options>
+		</command>
+	</channel-type>
+
+	<!--
+		brightness:
+		- Get, Put
+		- number, uint
+		- 0 ... 200 (100 = no brightness reduction/boost compared to input, 0 = max reduction, 200 = max boost)
+	-->
+	<channel-type id="execution-brightness">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Brightness</label>
+		<description>
+			<![CDATA[
+			<p>
+			  0 ... 200
+			  <ul>
+			    <li>0 = max reduction</li>
+				<li>100 = no brightness reduction/boost compared to input</li>
+				<li>200 = max boost</li>
+			  </ul>
+			</p>
+			]]>
+		</description>
+		<category>slider</category>
+		<state min="0" max="200" step="1" pattern="%d"/>
+	</channel-type>
+
+</thing:thing-descriptions>

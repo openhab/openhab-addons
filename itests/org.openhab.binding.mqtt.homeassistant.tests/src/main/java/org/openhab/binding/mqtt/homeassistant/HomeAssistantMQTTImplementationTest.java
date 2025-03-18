@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,9 +45,11 @@ import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents.ComponentDiscovered;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelLinkageChecker;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
 import org.openhab.binding.mqtt.homeassistant.internal.component.Switch;
 import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
@@ -75,6 +77,7 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
     private @Nullable Throwable failure;
 
     private @Mock @NonNullByDefault({}) ChannelStateUpdateListener channelStateUpdateListener;
+    private @Mock @NonNullByDefault({}) HomeAssistantChannelLinkageChecker linkageChecker;
     private @Mock @NonNullByDefault({}) AvailabilityTracker availabilityTracker;
 
     /**
@@ -138,26 +141,47 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
                 "Connection " + haConnection.getClientId() + " not retrieving all topics");
     }
 
+    private static class ComponentDiscoveredProxy implements ComponentDiscovered {
+        private final Map<String, AbstractComponent<?>> haComponents;
+        private final CountDownLatch latch;
+
+        public ComponentDiscoveredProxy(Map<String, AbstractComponent<?>> haComponents, CountDownLatch latch) {
+            this.haComponents = haComponents;
+            this.latch = latch;
+        }
+
+        @Override
+        public void componentDiscovered(HaID homeAssistantTopicID, AbstractComponent<?> component) {
+            haComponents.put(component.getComponentId(), component);
+            latch.countDown();
+        }
+
+        @Override
+        public void componentRemoved(HaID homeAssistantTopicID) {
+        }
+    }
+
     @Test
     public void parseHATree() throws Exception {
         MqttChannelTypeProvider channelTypeProvider = mock(MqttChannelTypeProvider.class);
+        UnitProvider unitProvider = mock(UnitProvider.class);
 
         final Map<String, AbstractComponent<?>> haComponents = new HashMap<>();
         Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
         Jinjava jinjava = new Jinjava();
 
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
-        DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.TEST_HOME_ASSISTANT_THING,
-                scheduler, channelStateUpdateListener, availabilityTracker, gson, jinjava, true));
+        DiscoverComponents discover = spy(
+                new DiscoverComponents(ThingChannelConstants.TEST_HOME_ASSISTANT_THING, scheduler,
+                        channelStateUpdateListener, linkageChecker, availabilityTracker, gson, jinjava, unitProvider));
+
+        when(linkageChecker.isChannelLinked(any())).thenReturn(true);
 
         // The DiscoverComponents object calls ComponentDiscovered callbacks.
         // In the following implementation we add the found component to the `haComponents` map
         // and add the types to the channelTypeProvider, like in the real Thing handler.
         final CountDownLatch latch = new CountDownLatch(1);
-        ComponentDiscovered cd = (haID, c) -> {
-            haComponents.put(c.getGroupId(), c);
-            latch.countDown();
-        };
+        ComponentDiscovered cd = new ComponentDiscoveredProxy(haComponents, latch);
 
         // Start the discovery for 2000ms. Forced timeout after 4000ms.
         HaID haID = new HaID(testObjectTopic + "/config");
@@ -174,11 +198,10 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         assertNull(failure);
         assertThat(haComponents.size(), is(1));
 
-        String channelGroupId = "switch_" + ThingChannelConstants.TEST_HOME_ASSISTANT_THING.getId();
+        String componentId = ThingChannelConstants.TEST_HOME_ASSISTANT_THING.getId();
         String channelId = Switch.SWITCH_CHANNEL_ID;
 
-        State value = haComponents.get(channelGroupId).getChannel(channelGroupId).getState().getCache()
-                .getChannelState();
+        State value = haComponents.get(componentId).getChannel(channelId).getState().getCache().getChannelState();
         assertThat(value, is(UnDefType.UNDEF));
 
         haComponents.values().stream().map(e -> e.start(haConnection, scheduler, 100))
@@ -191,7 +214,7 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         verify(channelStateUpdateListener, timeout(4000).times(1)).updateChannelState(any(), any());
 
         // Value should be ON now.
-        value = haComponents.get(channelGroupId).getChannel(channelGroupId).getState().getCache().getChannelState();
+        value = haComponents.get(componentId).getChannel(channelId).getState().getCache().getChannelState();
         assertThat(value, is(OnOffType.ON));
     }
 }

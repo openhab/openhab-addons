@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,9 +26,12 @@ public enum RouterosInterfaceType {
     ETHERNET("ether"),
     BRIDGE("bridge"),
     WLAN("wlan"),
+    WIFI("wifi"),
     CAP("cap"),
     PPP_CLIENT("ppp-out"),
     PPPOE_CLIENT("pppoe-out"),
+    VLAN("vlan"),
+    VETH("veth"), // docker containers create virtual ether ports
     L2TP_SERVER("l2tp-in"),
     L2TP_CLIENT("l2tp-out"),
     LTE("lte");

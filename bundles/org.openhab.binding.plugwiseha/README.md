@@ -34,7 +34,7 @@ The device IDs can be found be enabling TRACE logging in the Karaf console.
 
 You must define a Plugwise Home Automation gateway (Bridge) before defining zones or appliances (Things) for this binding to work.
 
-### Plugwise Home Automation gateway (Bridge):
+### Plugwise Home Automation gateway (Bridge)
 
 | Parameter | Description                                                             | Config   | Default |
 |-----------|-------------------------------------------------------------------------|----------|---------|
@@ -43,33 +43,33 @@ You must define a Plugwise Home Automation gateway (Bridge) before defining zone
 | smileID   | The 8 letter code on the sticker on the back of the Adam boiler gateway | Required | -       |
 | refresh   | The refresh interval in seconds                                         | Optional | 15      |
 
-### Plugwise Home Automation zone (`zone`):
+### Plugwise Home Automation zone (`zone`)
 
 | Parameter | Description               | Config   | Default |
 | --------- | ------------------------- | -------- | ------- |
 | id        | The unique ID of the zone | Required | -       |
 
-### Plugwise Home Automation appliance (`appliance_valve`):
+### Plugwise Home Automation appliance (`appliance_valve`)
 
 | Parameter            | Description                                                                                                        | Config   | Default |
 |----------------------|--------------------------------------------------------------------------------------------------------------------|----------|---------|
 | id                   | The unique ID of the radiator valve appliance                                                                      | Required | -       |
 | lowBatteryPercentage | Battery charge remaining at which to trigger battery low warning. (_Only applicable for battery operated devices_) | Optional | 15      |
 
-### Plugwise Home Automation appliance (`appliance_thermostat`):
+### Plugwise Home Automation appliance (`appliance_thermostat`)
 
 | Parameter            | Description                                                                                                        | Config   | Default |
 |----------------------|--------------------------------------------------------------------------------------------------------------------|----------|---------|
 | id                   | The unique ID of the room thermostat appliance                                                                     | Required | -       |
 | lowBatteryPercentage | Battery charge remaining at which to trigger battery low warning. (_Only applicable for battery operated devices_) | Optional | 15      |
 
-### Plugwise Home Automation appliance (`appliance_pump`):
+### Plugwise Home Automation appliance (`appliance_pump`)
 
 | Parameter | Description                         | Config   | Default |
 | --------- | ----------------------------------- | -------- | ------- |
 | id        | The unique ID of the pump appliance | Required | -       |
 
-### Plugwise Home Automation boiler (`appliance_boiler`):
+### Plugwise Home Automation boiler (`appliance_boiler`)
 
 | Parameter | Description                 | Config   | Default |
 |-----------|-----------------------------|----------|---------|
@@ -77,35 +77,40 @@ You must define a Plugwise Home Automation gateway (Bridge) before defining zone
 
 ## Channels
 
-| channel              | type               | Read-only? | description                                                                                                                                                                                          |
-|----------------------|--------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| temperature          | Number:Temperature | Yes        | The temperature of an appliance that supports the thermostat functionality                                                                                                                           |
-| setpointTemperature  | Number:Temperature | No         | The setpoint temperature (read/write) of an appliance that supports the thermostat functionality                                                                                                     |
-| power                | Switch             | No         | Toggle an appliance ON/OFF that supports the relay functionality                                                                                                                                     |
-| lock                 | Switch             | No         | Toggle an appliance lock ON/OFF that supports the relay functionality.(_When the lock is ON the gateway will not automatically control the corresponding relay switch depending on thermostat mode_) |
-| powerUsage           | Number:Power       | Yes        | The current power usage in Watts of an appliance that supports this                                                                                                                                  |
-| batteryLevel         | Number             | Yes        | The current battery level of an appliance that is battery operated                                                                                                                                   |
-| batteryLevelLow      | Switch             | Yes        | Switches ON when the battery level of an appliance that is battery operated drops below a certain threshold                                                                                          |
-| chState              | Switch             | Yes        | The current central heating state of the boiler                                                                                                                                                      |
-| dhwState             | Switch             | Yes        | The current domestic hot water state of the boiler                                                                                                                                                   |
-| waterPressure        | Number:Pressure    | Yes        | The current water pressure of the boiler                                                                                                                                                             |
-| presetScene          | String             | No         | The current active scene for the zone                                                                                                                                                                |
-| regulationControl    | String             | No         | Toggle current regulation control (Active, Passive, Off) for the zone                                                                                                                                |
-| coolingAllowed       | Switch             | No         | Toggle the cooling allowed of a zone ON/OFF                                                                                                                                                          |
-| valvePosition        | Number             | Yes        | The current position of the valve                                                                                                                                                                    |
-| preHeat              | Switch             | No         | Toggle the pre heating of a zone ON/OFF                                                                                                                                                              |
-| coolingState         | Switch             | Yes        | The current cooling state of the boiler                                                                                                                                                              |
-| intendedBoilerTemp   | Number:Temperature | Yes        | The intended boiler temperature                                                                                                                                                                      |
-| flameState           | Switch             | Yes        | The flame state of the boiler                                                                                                                                                                        |
-| intendedHeatingState | Switch             | Yes        | The intended heating state of the boiler                                                                                                                                                             |
-| modulationLevel      | Number             | Yes        | The current modulation level of the boiler                                                                                                                                                           |
-| otAppFaultCode       | Number             | Yes        | The Opentherm application fault code of the boiler                                                                                                                                                   |
-| dhwTemperature       | Number:Temperature | Yes        | The current central heating state of the boiler                                                                                                                                                      |
-| otOEMFaultCode       | Number             | Yes        | The Opentherm OEM fault code of the boiler                                                                                                                                                           |
-| boilerTemperature    | Number:Temperature | Yes        | The current temperature of the boiler                                                                                                                                                                |
-| dhwSetpoint          | Number:Temperature | Yes        | The domestic hot water setpoint                                                                                                                                                                      |
-| maxBoilerTemperature | Number:Temperature | Yes        | The maximum temperature of the boiler                                                                                                                                                                |
-| dhwComfortMode       | Switch             | Yes        | The domestic hot water confortmode                                                                                                                                                                   |
+| channel               | type                 | Read-only? | description                                                                                                                                                                                          |
+|-----------------------|----------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| temperature           | Number:Temperature   | Yes        | The temperature of an appliance that supports the thermostat functionality                                                                                                                           |
+| setpointTemperature   | Number:Temperature   | No         | The setpoint temperature (read/write) of an appliance that supports the thermostat functionality                                                                                                     |
+| power                 | Switch               | No         | Toggle an appliance ON/OFF that supports the relay functionality                                                                                                                                     |
+| lock                  | Switch               | No         | Toggle an appliance lock ON/OFF that supports the relay functionality.(_When the lock is ON the gateway will not automatically control the corresponding relay switch depending on thermostat mode_) |
+| powerUsage            | Number:Power         | Yes        | The current power usage in Watts of an appliance that supports this                                                                                                                                  |
+| batteryLevel          | Number               | Yes        | The current battery level of an appliance that is battery operated                                                                                                                                   |
+| batteryLevelLow       | Switch               | Yes        | Switches ON when the battery level of an appliance that is battery operated drops below a certain threshold                                                                                          |
+| chState               | Switch               | Yes        | The current central heating state of the boiler                                                                                                                                                      |
+| dhwState              | Switch               | Yes        | The current domestic hot water state of the boiler                                                                                                                                                   |
+| waterPressure         | Number:Pressure      | Yes        | The current water pressure of the boiler                                                                                                                                                             |
+| presetScene           | String               | No         | The current active scene for the zone                                                                                                                                                                |
+| regulationControl     | String               | No         | Toggle current regulation control (Active, Passive, Off) for the zone                                                                                                                                |
+| coolingAllowed        | Switch               | No         | Toggle the cooling allowed of a zone ON/OFF                                                                                                                                                          |
+| valvePosition         | Number:Dimensionless | Yes        | The current position of the valve                                                                                                                                                                    |
+| preHeat               | Switch               | No         | Toggle the pre heating of a zone ON/OFF                                                                                                                                                              |
+| coolingState          | Switch               | Yes        | The current cooling state of the boiler                                                                                                                                                              |
+| intendedBoilerTemp    | Number:Temperature   | Yes        | The intended boiler temperature                                                                                                                                                                      |
+| flameState            | Switch               | Yes        | The flame state of the boiler                                                                                                                                                                        |
+| intendedHeatingState  | Switch               | Yes        | The intended heating state of the boiler                                                                                                                                                             |
+| modulationLevel       | Number:Dimensionless | Yes        | The current modulation level of the boiler                                                                                                                                                           |
+| otAppFaultCode        | Number               | Yes        | The Opentherm application fault code of the boiler                                                                                                                                                   |
+| dhwTemperature        | Number:Temperature   | Yes        | The current central heating state of the boiler                                                                                                                                                      |
+| otOEMFaultCode        | Number               | Yes        | The Opentherm OEM fault code of the boiler                                                                                                                                                           |
+| boilerTemperature     | Number:Temperature   | Yes        | The current temperature of the boiler                                                                                                                                                                |
+| dhwSetpoint           | Number:Temperature   | Yes        | The domestic hot water setpoint                                                                                                                                                                      |
+| maxBoilerTemperature  | Number:Temperature   | Yes        | The maximum temperature of the boiler                                                                                                                                                                |
+| dhwComfortMode        | Switch               | Yes        | The domestic hot water confortmode                                                                                                                                                                   |
+| burnerStartsFailed    | Number               | Yes        | Total count of failed burner starts                                                                                                                                                                  |
+| burnerStarts          | Number               | Yes        | Total count of burner starts                                                                                                                                                                         |
+| burnerIgnitionsFailed | Number               | Yes        | Total count of failed burner ignitions                                                                                                                                                               |
+| burnerOpTime          | Number:Time          | Yes        | Total operation time                                                                                                                                                                                 |
+| burnerDHWOpTime       | Number:Time          | Yes        | Total operation time for domestic hot water                                                                                                                                                          |
 
 ## Full Example
 

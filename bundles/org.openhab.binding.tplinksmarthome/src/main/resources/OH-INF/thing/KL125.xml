@@ -12,10 +12,14 @@
 		<channels>
 			<channel id="color" typeId="system.color"/>
 			<channel id="colorTemperature" typeId="system.color-temperature"/>
-			<channel id="colorTemperatureAbs" typeId="colorTemperatureAbs3"/>
+			<channel id="colorTemperatureAbs" typeId="system.color-temperature-abs"/>
 			<channel id="power" typeId="power"/>
 			<channel id="rssi" typeId="rssi"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>deviceId</representation-property>
 

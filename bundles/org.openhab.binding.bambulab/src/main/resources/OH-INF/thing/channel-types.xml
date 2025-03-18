@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bambulab"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="temperature-measurement">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Temperature</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature-setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>String Channel</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="wifi">
+		<item-type unitHint="dBm">Number:Power</item-type>
+		<label>Wi-Fi Signal Strength</label>
+		<description>Current Wi-Fi signal strength.</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Number Channel</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="percent">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Percent Channel</label>
+		<state readOnly="true" min="0" max="100" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="boolean">
+		<item-type>Switch</item-type>
+		<label>Boolean Channel</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="on-off-command">
+		<item-type>String</item-type>
+		<label>ON/OFF Channel</label>
+		<category>Lightbulb</category>
+		<state>
+			<options>
+				<option value="ON">ON</option>
+				<option value="OFF">OFF</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="ON">ON</option>
+				<option value="OFF">OFF</option>
+			</options>
+		</command>
+	</channel-type>
+</thing:thing-descriptions>

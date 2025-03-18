@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,9 +45,9 @@ public class OnkyoAudioSink extends AudioSinkAsync {
     private static final Set<AudioFormat> SUPPORTED_FORMATS = Set.of(AudioFormat.WAV, AudioFormat.MP3);
     private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = Set.of(AudioStream.class);
 
-    private OnkyoHandler handler;
-    private AudioHTTPServer audioHTTPServer;
-    private @Nullable String callbackUrl;
+    private final OnkyoHandler handler;
+    private final AudioHTTPServer audioHTTPServer;
+    private final @Nullable String callbackUrl;
 
     public OnkyoAudioSink(OnkyoHandler handler, AudioHTTPServer audioHTTPServer, @Nullable String callbackUrl) {
         this.handler = handler;
@@ -106,7 +106,7 @@ public class OnkyoAudioSink extends AudioSinkAsync {
             tryClose(audioStream);
             return;
         }
-        handler.playMedia(url);
+        handler.playMedia(url, audioStream);
     }
 
     private void tryClose(@Nullable InputStream is) {

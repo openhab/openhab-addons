@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import static org.openhab.binding.freecurrency.internal.FreecurrencyBindingConst
 import static org.openhab.binding.freecurrency.internal.FreecurrencyBindingConstants.CHANNEL_TYPE_LAST_UPDATE;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freecurrency.internal.config.FreecurrencyExhangeRateChannelConfig;
@@ -72,7 +72,7 @@ public class FreecurrencyHandler extends BaseThingHandler implements ExchangeRat
             BigDecimal val = freecurrencyProvider.getExchangeRate(config.currency1, config.currency2);
             updateState(channel.getUID(), val != null ? new DecimalType(val) : UnDefType.UNDEF);
         } else if (CHANNEL_TYPE_LAST_UPDATE.equals(channel.getChannelTypeUID())) {
-            ZonedDateTime lastUpdated = freecurrencyProvider.getLastUpdated();
+            Instant lastUpdated = freecurrencyProvider.getLastUpdated();
             updateState(channel.getUID(), lastUpdated == null ? UnDefType.UNDEF : new DateTimeType(lastUpdated));
         }
     }

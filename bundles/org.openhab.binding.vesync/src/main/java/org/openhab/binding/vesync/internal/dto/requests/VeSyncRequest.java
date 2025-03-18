@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.vesync.internal.dto.requests;
 
+import org.eclipse.jetty.http.HttpMethod;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,6 +22,8 @@ import com.google.gson.annotations.SerializedName;
  * @author David Goodyear - Initial contribution
  */
 public class VeSyncRequest {
+
+    public transient HttpMethod httpMethod;
 
     @SerializedName("timeZone")
     public String timeZone = "America/New_York";
@@ -42,7 +46,11 @@ public class VeSyncRequest {
     @SerializedName("method")
     public String method;
 
+    @SerializedName("deviceId")
+    public String deviceId;
+
     public VeSyncRequest() {
         traceId = String.valueOf(System.currentTimeMillis());
+        httpMethod = HttpMethod.POST;
     }
 }

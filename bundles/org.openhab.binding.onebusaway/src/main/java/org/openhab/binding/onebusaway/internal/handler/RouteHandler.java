@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,6 @@ package org.openhab.binding.onebusaway.internal.handler;
 import static org.openhab.binding.onebusaway.internal.OneBusAwayBindingConstants.*;
 
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -168,8 +166,7 @@ public class RouteHandler extends BaseThingHandler implements RouteDataListener 
     private void publishChannel(ChannelUID channelUID, Calendar now, long lastUpdateTime,
             List<ArrivalAndDeparture> arrivalAndDepartures) {
         if (channelUID.getId().equals(CHANNEL_ID_UPDATE)) {
-            updateState(channelUID, new DateTimeType(
-                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastUpdateTime), ZoneId.systemDefault())));
+            updateState(channelUID, new DateTimeType(Instant.ofEpochMilli(lastUpdateTime)));
             return;
         }
 
@@ -201,8 +198,7 @@ public class RouteHandler extends BaseThingHandler implements RouteDataListener 
                 logger.debug("Not notifying {} because it is in the past.", channelUID.getId());
                 continue;
             }
-            updateState(channelUID,
-                    new DateTimeType(ZonedDateTime.ofInstant(time.toInstant(), ZoneId.systemDefault())));
+            updateState(channelUID, new DateTimeType(time.toInstant()));
 
             // Update properties only when we update arrival information. This is not perfect.
             if (channelUID.getId().equals(CHANNEL_ID_ARRIVAL)) {

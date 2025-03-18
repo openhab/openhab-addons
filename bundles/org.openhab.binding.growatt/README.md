@@ -43,96 +43,124 @@ All channels are read-only.
 Depending on the inverter model, and its configuration, not all of the channels will be present.
 The list of all possible channels is as follows:
 
-| Channel                       | Type                      | Description                                          | Advanced |
-|-------------------------------|---------------------------|------------------------------------------------------|----------|
-| system-status                 | Number:Dimensionless      | Inverter status code.                                |          |
-| pv1-voltage                   | Number:ElectricPotential  | DC voltage from solar panel string #1.               | yes      |
-| pv2-voltage                   | Number:ElectricPotential  | DC voltage from solar panel string #2.               | yes      |
-| pv1-current                   | Number:ElectricCurrent    | DC current from solar panel string #1.               | yes      |
-| pv2-current                   | Number:ElectricCurrent    | DC current from solar panel string #2.               | yes      |
-| pv-power                      | Number:Power              | Total DC solar input power.                          |          |
-| pv1-power                     | Number:Power              | DC power from solar panel string #1.                 | yes      |
-| pv2-power                     | Number:Power              | DC power from solar panel string #2.                 | yes      |
-| grid-frequency                | Number:Frequency          | Frequency of the grid.                               | yes      |
-| grid-voltage-r                | Number:ElectricPotential  | Voltage of the grid (phase #R).                      |          |
-| grid-voltage-s                | Number:ElectricPotential  | Voltage of the grid phase #S.                        | yes      |
-| grid-voltage-t                | Number:ElectricPotential  | Voltage of the grid phase #T.                        | yes      |
-| grid-voltage-rs               | Number:ElectricPotential  | Voltage of the grid phases #RS.                      | yes      |
-| grid-voltage-st               | Number:ElectricPotential  | Voltage of the grid phases #ST.                      | yes      |
-| grid-voltage-tr               | Number:ElectricPotential  | Voltage of the grid phases #TR.                      | yes      |
-| inverter-current-r            | Number:ElectricCurrent    | AC current from inverter (phase #R).                 | yes      |
-| inverter-current-s            | Number:ElectricCurrent    | AC current from inverter phase #S.                   | yes      |
-| inverter-current-t            | Number:ElectricCurrent    | AC current from inverter phase #T.                   | yes      |
-| inverter-power                | Number:Power              | Total AC output power from inverter.                 |          |
-| inverter-power-r              | Number:Power              | AC power from inverter (phase #R).                   |          |
-| inverter-power-s              | Number:Power              | AC power from inverter phase #S.                     | yes      |
-| inverter-power-t              | Number:Power              | AC power from inverter phase #T.                     | yes      |
-| inverter-va                   | Number:Power              | AC VA from inverter.                                 | yes      |
-| export-power                  | Number:Power              | Power exported to grid.                              |          |
-| export-power-r                | Number:Power              | Power exported to grid phase #R.                     | yes      |
-| export-power-s                | Number:Power              | Power exported to grid phase #S.                     | yes      |
-| export-power-t                | Number:Power              | Power exported to grid phase #T.                     | yes      |
-| import-power                  | Number:Power              | Power imported from grid.                            |          |
-| import-power-r                | Number:Power              | Power imported from grid phase #R.                   | yes      |
-| import-power-s                | Number:Power              | Power imported from grid phase #S.                   | yes      |
-| import-power-t                | Number:Power              | Power imported from grid phase #T.                   | yes      |
-| load-power                    | Number:Power              | Power supplied to load.                              |          |
-| load-power-r                  | Number:Power              | Power supplied to load phase #R.                     | yes      |
-| load-power-s                  | Number:Power              | Power supplied to load phase #S.                     | yes      |
-| load-power-t                  | Number:Power              | Power supplied to load phase #T.                     | yes      |
-| charge-power                  | Number:Power              | Battery charge power.                                |          |
-| charge-current                | Number:ElectricCurrent    | Battery charge current.                              | yes      |
-| discharge-power               | Number:Power              | Battery discharge power.                             |          |
-| discharge-va                  | Number:Power              | Battery discharge VA.                                | yes      |
-| pv-energy-today               | Number:Energy             | DC energy collected by solar panels today.           |          |
-| pv1-energy-today              | Number:Energy             | DC energy collected by solar panels string #1 today. | yes      |
-| pv2-energy-today              | Number:Energy             | DC energy collected by solar panels string #2 today. | yes      |
-| pv-energy-total               | Number:Energy             | Total DC energy collected by solar panels.           |          |
-| pv1-energy-total              | Number:Energy             | Total DC energy collected by solar panels string #1. | yes      |
-| pv2-energy-total              | Number:Energy             | Total DC energy collected by solar panels string #2. | yes      |
-| inverter-energy-today         | Number:Energy             | AC energy produced by inverter today.                |          |
-| inverter-energy-total         | Number:Energy             | Total AC energy produced by inverter.                |          |
-| export-energy-today           | Number:Energy             | Energy exported today.                               |          |
-| export-energy-total           | Number:Energy             | Total energy exported.                               |          |
-| import-energy-today           | Number:Energy             | Energy imported today.                               |          |
-| import-energy-total           | Number:Energy             | Total energy imported.                               |          |
-| load-energy-today             | Number:Energy             | Energy supplied to load today.                       |          |
-| load-energy-total             | Number:Energy             | Total energy supplied to load.                       |          |
-| import-charge-energy-today    | Number:Energy             | Energy imported to charge battery today.             |          |
-| import-charge-energy-total    | Number:Energy             | Total energy imported to charge battery.             |          |
-| inverter-charge-energy-today  | Number:Energy             | Inverter energy to charge battery today.             |          |
-| inverter-charge-energy-total  | Number:Energy             | Total inverter energy to charge battery.             |          |
-| discharge-energy-today        | Number:Energy             | Energy consumed from battery.                        |          |
-| discharge-energy-total        | Number:Energy             | Total energy consumed from battery.                  |          |
-| total-work-time               | Number:Time               | Total work time of the system.                       | yes      |
-| p-bus-voltage                 | Number:ElectricPotential  | P Bus voltage.                                       | yes      |
-| n-bus-voltage                 | Number:ElectricPotential  | N Bus voltage.                                       | yes      |
-| sp-bus-voltage                | Number:ElectricPotential  | SP Bus voltage.                                      | yes      |
-| pv-temperature                | Number:Temperature        | Temperature of the solar panels (string #1).         | yes      |
-| pv-ipm-temperature            | Number:Temperature        | Temperature of the IPM.                              | yes      |
-| pv-boost-temperature          | Number:Temperature        | Boost temperature.                                   | yes      |
-| temperature-4                 | Number:Temperature        | Temperature #4.                                      | yes      |
-| pv2-temperature               | Number:Temperature        | Temperature of the solar panels (string #2).         | yes      |
-| battery-type                  | Number:Dimensionless      | Type code of the battery.                            | yes      |
-| battery-temperature           | Number:Temperature        | Battery temperature.                                 | yes      |
-| battery-voltage               | Number:ElectricPotential  | Battery voltage.                                     | yes      |
-| battery-display               | Number:Dimensionless      | Battery display code.                                | yes      |
-| battery-soc                   | Number:Dimensionless      | Battery State of Charge percent.                     | yes      |
-| system-fault-0                | Number:Dimensionless      | System fault code #0.                                | yes      |
-| system-fault-1                | Number:Dimensionless      | System fault code #1.                                | yes      |
-| system-fault-2                | Number:Dimensionless      | System fault code #2.                                | yes      |
-| system-fault-3                | Number:Dimensionless      | System fault code #3.                                | yes      |
-| system-fault-4                | Number:Dimensionless      | System fault code #4.                                | yes      |
-| system-fault-5                | Number:Dimensionless      | System fault code #5.                                | yes      |
-| system-fault-6                | Number:Dimensionless      | System fault code #6.                                | yes      |
-| system-fault-7                | Number:Dimensionless      | System fault code #7.                                | yes      |
-| system-work-mode              | Number:Dimensionless      | System work mode code.                               | yes      |
-| sp-display-status             | Number:Dimensionless      | Solar panel display status code.                     | yes      |
-| constant-power-ok             | Number:Dimensionless      | Constant power OK code.                              | yes      |
-| load-percent                  | Number:Dimensionless      | Percent of full load.                                | yes      |
-| rac                           | Number:Power              | Reactive 'power' (var).                              | yes      |
-| erac-today                    | Number:Energy             | Reactive 'energy' today (kvarh).                     | yes      |
-| erac-total                    | Number:Energy             | Total reactive 'energy' (kvarh).                     | yes      |
+| Channel                        | Type                      | Description                                          | Advanced |
+|--------------------------------|---------------------------|------------------------------------------------------|----------|
+| system-status                  | Number:Dimensionless      | Inverter status code.                                |          |
+| pv1-voltage                    | Number:ElectricPotential  | DC voltage from solar panel string #1.               | yes      |
+| pv2-voltage                    | Number:ElectricPotential  | DC voltage from solar panel string #2.               | yes      |
+| pv1-current                    | Number:ElectricCurrent    | DC current from solar panel string #1.               | yes      |
+| pv2-current                    | Number:ElectricCurrent    | DC current from solar panel string #2.               | yes      |
+| pv-power                       | Number:Power              | Total DC solar input power.                          |          |
+| pv1-power                      | Number:Power              | DC power from solar panel string #1.                 | yes      |
+| pv2-power                      | Number:Power              | DC power from solar panel string #2.                 | yes      |
+| grid-frequency                 | Number:Frequency          | Frequency of the grid.                               | yes      |
+| grid-voltage-r                 | Number:ElectricPotential  | Voltage of the grid (phase #R).                      |          |
+| grid-voltage-s                 | Number:ElectricPotential  | Voltage of the grid phase #S.                        | yes      |
+| grid-voltage-t                 | Number:ElectricPotential  | Voltage of the grid phase #T.                        | yes      |
+| grid-voltage-rs                | Number:ElectricPotential  | Voltage of the grid phases #RS.                      | yes      |
+| grid-voltage-st                | Number:ElectricPotential  | Voltage of the grid phases #ST.                      | yes      |
+| grid-voltage-tr                | Number:ElectricPotential  | Voltage of the grid phases #TR.                      | yes      |
+| inverter-current               | Number:ElectricCurrent    | AC current from inverter.                            | yes      |
+| inverter-current-r             | Number:ElectricCurrent    | AC current from inverter (phase #R).                 | yes      |
+| inverter-current-s             | Number:ElectricCurrent    | AC current from inverter phase #S.                   | yes      |
+| inverter-current-t             | Number:ElectricCurrent    | AC current from inverter phase #T.                   | yes      |
+| inverter-power                 | Number:Power              | Total AC output power from inverter.                 |          |
+| inverter-power-r               | Number:Power              | AC power from inverter (phase #R).                   |          |
+| inverter-power-s               | Number:Power              | AC power from inverter phase #S.                     | yes      |
+| inverter-power-t               | Number:Power              | AC power from inverter phase #T.                     | yes      |
+| inverter-va                    | Number:Power              | AC VA from inverter.                                 | yes      |
+| export-power                   | Number:Power              | Power exported to grid.                              |          |
+| export-power-r                 | Number:Power              | Power exported to grid phase #R.                     | yes      |
+| export-power-s                 | Number:Power              | Power exported to grid phase #S.                     | yes      |
+| export-power-t                 | Number:Power              | Power exported to grid phase #T.                     | yes      |
+| import-power                   | Number:Power              | Power imported from grid.                            |          |
+| import-power-r                 | Number:Power              | Power imported from grid phase #R.                   | yes      |
+| import-power-s                 | Number:Power              | Power imported from grid phase #S.                   | yes      |
+| import-power-t                 | Number:Power              | Power imported from grid phase #T.                   | yes      |
+| load-power                     | Number:Power              | Power supplied to load.                              |          |
+| load-power-r                   | Number:Power              | Power supplied to load phase #R.                     | yes      |
+| load-power-s                   | Number:Power              | Power supplied to load phase #S.                     | yes      |
+| load-power-t                   | Number:Power              | Power supplied to load phase #T.                     | yes      |
+| charge-power                   | Number:Power              | Battery charge power.                                |          |
+| charge-current                 | Number:ElectricCurrent    | Battery charge current.                              | yes      |
+| discharge-power                | Number:Power              | Battery discharge power.                             |          |
+| discharge-va                   | Number:Power              | Battery discharge VA.                                | yes      |
+| pv-energy-today                | Number:Energy             | DC energy collected by solar panels today.           |          |
+| pv1-energy-today               | Number:Energy             | DC energy collected by solar panels string #1 today. | yes      |
+| pv2-energy-today               | Number:Energy             | DC energy collected by solar panels string #2 today. | yes      |
+| pv-energy-total                | Number:Energy             | Total DC energy collected by solar panels.           |          |
+| pv1-energy-total               | Number:Energy             | Total DC energy collected by solar panels string #1. | yes      |
+| pv2-energy-total               | Number:Energy             | Total DC energy collected by solar panels string #2. | yes      |
+| inverter-energy-today          | Number:Energy             | AC energy produced by inverter today.                |          |
+| inverter-energy-total          | Number:Energy             | Total AC energy produced by inverter.                |          |
+| export-energy-today            | Number:Energy             | Energy exported today.                               |          |
+| export-energy-total            | Number:Energy             | Total energy exported.                               |          |
+| import-energy-today            | Number:Energy             | Energy imported today.                               |          |
+| import-energy-total            | Number:Energy             | Total energy imported.                               |          |
+| load-energy-today              | Number:Energy             | Energy supplied to load today.                       |          |
+| load-energy-total              | Number:Energy             | Total energy supplied to load.                       |          |
+| import-charge-energy-today     | Number:Energy             | Energy imported to charge battery today.             |          |
+| import-charge-energy-total     | Number:Energy             | Total energy imported to charge battery.             |          |
+| inverter-charge-energy-today   | Number:Energy             | Inverter energy to charge battery today.             |          |
+| inverter-charge-energy-total   | Number:Energy             | Total inverter energy to charge battery.             |          |
+| discharge-energy-today         | Number:Energy             | Energy consumed from battery.                        |          |
+| discharge-energy-total         | Number:Energy             | Total energy consumed from battery.                  |          |
+| total-work-time                | Number:Time               | Total work time of the system.                       | yes      |
+| p-bus-voltage                  | Number:ElectricPotential  | P Bus voltage.                                       | yes      |
+| n-bus-voltage                  | Number:ElectricPotential  | N Bus voltage.                                       | yes      |
+| sp-bus-voltage                 | Number:ElectricPotential  | SP Bus voltage.                                      | yes      |
+| pv-temperature                 | Number:Temperature        | Temperature of the solar panels (string #1).         | yes      |
+| pv-ipm-temperature             | Number:Temperature        | Temperature of the IPM.                              | yes      |
+| pv-boost-temperature           | Number:Temperature        | Boost temperature.                                   | yes      |
+| temperature-4                  | Number:Temperature        | Temperature #4.                                      | yes      |
+| pv2-temperature                | Number:Temperature        | Temperature of the solar panels (string #2).         | yes      |
+| battery-type                   | Number:Dimensionless      | Type code of the battery.                            | yes      |
+| battery-temperature            | Number:Temperature        | Battery temperature.                                 | yes      |
+| battery-voltage                | Number:ElectricPotential  | Battery voltage.                                     | yes      |
+| battery-voltage2               | Number:ElectricPotential  | Battery voltage #2.                                  | yes      |
+| battery-display                | Number:Dimensionless      | Battery display code.                                | yes      |
+| battery-soc                    | Number:Dimensionless      | Battery State of Charge percent.                     | yes      |
+| battery-discharge-va           | Number:Power              | Battery discharging reactive power.                  | yes      |
+| battery-discharge-watt         | Number:Power              | Battery discharging power.                           | yes      |
+| battery-discharge-energy-today | Number:Energy             | Battery discharge energy today.                      | yes      |
+| battery-discharge-energy-total | Number:Energy             | Total battery discharge energy.                      | yes      |
+| system-fault-0                 | Number:Dimensionless      | System fault code #0.                                | yes      |
+| system-fault-1                 | Number:Dimensionless      | System fault code #1.                                | yes      |
+| system-fault-2                 | Number:Dimensionless      | System fault code #2.                                | yes      |
+| system-fault-3                 | Number:Dimensionless      | System fault code #3.                                | yes      |
+| system-fault-4                 | Number:Dimensionless      | System fault code #4.                                | yes      |
+| system-fault-5                 | Number:Dimensionless      | System fault code #5.                                | yes      |
+| system-fault-6                 | Number:Dimensionless      | System fault code #6.                                | yes      |
+| system-fault-7                 | Number:Dimensionless      | System fault code #7.                                | yes      |
+| system-work-mode               | Number:Dimensionless      | System work mode code.                               | yes      |
+| sp-display-status              | Number:Dimensionless      | Solar panel display status code.                     | yes      |
+| constant-power-ok              | Number:Dimensionless      | Constant power OK code.                              | yes      |
+| load-percent                   | Number:Dimensionless      | Percent of full load.                                | yes      |
+| rac                            | Number:Power              | Reactive 'power' (var).                              | yes      |
+| erac-today                     | Number:Energy             | Reactive 'energy' today (kvarh).                     | yes      |
+| erac-total                     | Number:Energy             | Total reactive 'energy' (kvarh).                     | yes      |
+| charge-va                      | Number:Power              | Charging reactive power.                             | yes      |
+| inverter-clock-offset          | Number:Time               | Time offset of inverter clock vs. OH system clock.   | yes      |
+| inverter-fan-speed             | Number:Dimensionless      | Inverter fan speed percent.                          | yes      |
+| pv3-voltage                    | Number:ElectricPotential  | Voltage from solar panel string #3.                  | yes      |
+| pv3-current                    | Number:ElectricCurrent    | Current from solar panel string #3.                  | yes      |
+| pv3-power                      | Number:Power              | Power from solar panel string #3.                    | yes      |
+| pv4-voltage                    | Number:ElectricPotential  | Voltage from solar panel string #4.                  | yes      |
+| pv4-current                    | Number:ElectricCurrent    | Current from solar panel string #4.                  | yes      |
+| pv4-power                      | Number:Power              | Power from solar panel string #4.                    | yes      |
+| pv3-energy-today               | Number:Energy             | Solar DC energy collected by string #3 today.        | yes      |
+| pv3-energy-total               | Number:Energy             | Total solar DC energy collected by string #3.        | yes      |
+| power-factor                   | Number:Percent            | Electrical power factor                              | yes      |
+| eps-voltage-r                  | Number:ElectricPotential  | Emergency Power Supply voltage (phase #R).           | yes      |
+| eps-voltage-s                  | Number:ElectricPotential  | Emergency Power Supply voltage (phase #S).           | yes      |
+| eps-voltage-t                  | Number:ElectricPotential  | Emergency Power Supply voltage (phase #T).           | yes      |
+| eps-current-r                  | Number:ElectricCurrent    | Emergency Power Supply current (phase #R).           | yes      |
+| eps-current-s                  | Number:ElectricCurrent    | Emergency Power Supply current (phase #S).           | yes      |
+| eps-current-t                  | Number:ElectricCurrent    | Emergency Power Supply current (phase #T).           | yes      |
+| eps-power                      | Number:Power              | Total Emergency Power Supply power.                  | yes      |
+| eps-power-r                    | Number:Power              | Emergency Power Supply power (phase #R).             | yes      |
+| eps-power-s                    | Number:Power              | Emergency Power Supply power (phase #S).             | yes      |
+| eps-power-t                    | Number:Power              | Emergency Power Supply power (phase #T).             | yes      |
 
 ## Rule Actions
 

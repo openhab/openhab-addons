@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,8 +41,9 @@ class EmotivaSubscriptionRequestTest extends AbstractDTOTestBase {
     @Test
     void marshalFromChannelUID() {
         EmotivaSubscriptionTags subscriptionChannel = EmotivaSubscriptionTags.fromChannelUID(CHANNEL_TUNER_RDS);
-        EmotivaSubscriptionRequest emotivaSubscriptionRequest = new EmotivaSubscriptionRequest(subscriptionChannel);
+        var emotivaSubscriptionRequest = new EmotivaSubscriptionRequest(subscriptionChannel);
         String xmlString = xmlUtils.marshallJAXBElementObjects(emotivaSubscriptionRequest);
+
         assertThat(xmlString, containsString("<emotivaSubscription protocol=\"2.0\">"));
         assertThat(xmlString, containsString("<tuner_RDS ack=\"yes\" />"));
         assertThat(xmlString, containsString("</emotivaSubscription>"));
@@ -50,11 +51,10 @@ class EmotivaSubscriptionRequestTest extends AbstractDTOTestBase {
 
     @Test
     void marshallWithSubscriptionNoAck() {
-        EmotivaCommandDTO command = new EmotivaCommandDTO(EmotivaControlCommands.volume, "10", "yes");
-
-        EmotivaSubscriptionRequest dto = new EmotivaSubscriptionRequest(command, PROTOCOL_V2.value());
-
+        var command = new EmotivaCommandDTO(EmotivaControlCommands.volume, "10", "yes");
+        var dto = new EmotivaSubscriptionRequest(command, PROTOCOL_V2.value());
         String xmlString = xmlUtils.marshallJAXBElementObjects(dto);
+
         assertThat(xmlString, containsString("<emotivaSubscription protocol=\"2.0\">"));
         assertThat(xmlString, containsString("<volume value=\"10\" ack=\"yes\" />"));
         assertThat(xmlString, containsString("</emotivaSubscription>"));
@@ -64,6 +64,7 @@ class EmotivaSubscriptionRequestTest extends AbstractDTOTestBase {
     @Test
     void unmarshall() throws JAXBException {
         var dto = (EmotivaSubscriptionResponse) xmlUtils.unmarshallToEmotivaDTO(emotivaSubscriptionRequest);
+
         assertThat(dto, is(notNullValue()));
         assertThat(dto.getTags().size(), is(3));
         assertThat(dto.getProperties(), is(nullValue()));

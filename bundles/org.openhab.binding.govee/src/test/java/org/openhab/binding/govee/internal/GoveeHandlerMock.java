@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.govee.internal;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doAnswer;
 
 import java.util.concurrent.ScheduledExecutorService;
@@ -26,14 +25,15 @@ import org.openhab.core.thing.Thing;
 
 /**
  * The {@link GoveeHandlerMock} is responsible for mocking {@link GoveeHandler}
- * 
+ *
  * @author Leo Siepel - Initial contribution
  */
 @NonNullByDefault
 public class GoveeHandlerMock extends GoveeHandler {
 
-    public GoveeHandlerMock(Thing thing, CommunicationManager communicationManager) {
-        super(thing, communicationManager);
+    public GoveeHandlerMock(Thing thing, CommunicationManager communicationManager,
+            GoveeStateDescriptionProvider stateDescriptionProvider) {
+        super(thing, communicationManager, stateDescriptionProvider);
 
         executorService = Mockito.mock(ScheduledExecutorService.class);
         doAnswer((InvocationOnMock invocation) -> {

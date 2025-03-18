@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,7 +81,7 @@ public enum ModuleType {
     PERSON(FeatureArea.SECURITY, "NAPerson", 1, "virtual", HOME,
             Set.of(PersonCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
             new ChannelGroup(PersonChannelHelper.class, GROUP_PERSON),
-            new ChannelGroup(EventPersonChannelHelper.class, GROUP_PERSON_LAST_EVENT)),
+            new ChannelGroup(EventPersonChannelHelper.class, GROUP_SECURITY_EVENT, GROUP_PERSON_LAST_EVENT)),
 
     WELCOME(FeatureArea.SECURITY, "NACamera", 1, "camera", HOME,
             Set.of(CameraCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConsta
 import static org.openhab.binding.tapocontrol.internal.helpers.utils.TypeUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.tapocontrol.internal.TapoStateDescriptionProvider;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoLightDynamicFx;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoBaseDeviceHandler;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
@@ -24,9 +25,12 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -42,20 +46,34 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
     private final Logger logger = LoggerFactory.getLogger(TapoBulbHandler.class);
     private TapoBulbData bulbData = new TapoBulbData();
     private TapoBulbLastStates lastStates = new TapoBulbLastStates();
+    private final TapoStateDescriptionProvider stateDescriptionProvider;
 
     /**
      * Constructor
-     * 
+     *
      * @param thing Thing object representing device
      */
-    public TapoBulbHandler(Thing thing) {
+    public TapoBulbHandler(Thing thing, TapoStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
+        this.stateDescriptionProvider = stateDescriptionProvider;
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        ThingTypeUID typeUID = thing.getThingTypeUID();
+        if (SUPPORTED_COLOR_BULB_UIDS.contains(typeUID)) {
+            ChannelGroupUID groupUID = new ChannelGroupUID(getThingUID(), CHANNEL_GROUP_ACTUATOR);
+            ChannelUID channnelUID = new ChannelUID(groupUID, CHANNEL_COLOR_TEMP);
+            long minKelvin = L630_THING_TYPE.equals(typeUID) ? BULB_MIN_COLORTEMP_EXT : BULB_MIN_COLORTEMP;
+            stateDescriptionProvider.setMinMaxKelvin(channnelUID, minKelvin, BULB_MAX_COLORTEMP);
+        }
     }
 
     /**
      * Function called by {@link org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector} if new data were
      * received
-     * 
+     *
      * @param queryCommand command where new data belong to
      */
     @Override
@@ -74,7 +92,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
 
     /**
      * handle command sent to device
-     * 
+     *
      * @param channelUID channelUID command is sent to
      * @param command command to be sent
      */
@@ -130,8 +148,14 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
     }
 
     private void handleColorTempCommand(Command command) {
-        if (command instanceof DecimalType decimalCommand) {
-            setColorTemp(decimalCommand.intValue());
+        QuantityType<?> kelvinQuantity = null;
+        if (command instanceof QuantityType<?> genericQuantity) {
+            kelvinQuantity = genericQuantity.toInvertibleUnit(Units.KELVIN);
+        } else if (command instanceof DecimalType decimal) {
+            kelvinQuantity = QuantityType.valueOf(decimal.intValue(), Units.KELVIN);
+        }
+        if (kelvinQuantity != null) {
+            setColorTemp(kelvinQuantity.intValue());
         }
     }
 
@@ -149,7 +173,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
 
     /**
      * Switch device On or Off
-     * 
+     *
      * @param on if true device will switch on. Otherwise switch off
      */
     protected void switchOnOff(boolean on) {
@@ -159,7 +183,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
 
     /**
      * Set Britghtness of device
-     * 
+     *
      * @param newBrightness percentage 0-100 of new brightness
      */
     protected void setBrightness(Integer newBrightness) {
@@ -175,7 +199,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
 
     /**
      * Set Color of Device
-     * 
+     *
      * @param command HSBType
      */
     protected void setColor(HSBType command) {
@@ -189,7 +213,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
 
     /**
      * Set ColorTemp
-     * 
+     *
      * @param colorTemp (Integer) in Kelvin
      */
     protected void setColorTemp(Integer colorTemp) {
@@ -201,7 +225,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
 
     /**
      * Set light effect
-     * 
+     *
      * @param fxId (String) id of LightEffect
      */
     protected void setLightEffect(String fxId) {
@@ -216,7 +240,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
 
     /**
      * Set last state by mode
-     * 
+     *
      * @param mode mode to set
      */
     protected void setLastMode(TapoBulbModeEnum mode) {

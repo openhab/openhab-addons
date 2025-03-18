@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import org.openhab.binding.visualcrossing.internal.api.VisualCrossingAuthExcepti
 import org.openhab.binding.visualcrossing.internal.api.VisualCrossingRateException;
 import org.openhab.binding.visualcrossing.internal.api.dto.WeatherResponse;
 import org.openhab.core.automation.annotation.ActionInput;
+import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
@@ -47,8 +48,7 @@ public class WeatherCrossingActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.timeline.label", description = "@text/action.timeline.description")
-    @Nullable
-    public WeatherResponse timeline(
+    public @Nullable @ActionOutput(label = "Result", type = "org.openhab.binding.visualcrossing.internal.api.dto.WeatherResponse") WeatherResponse timeline(
             @ActionInput(name = "location", label = "@text/action.label.location", description = "@text/action.description.location") @Nullable String location,
             @ActionInput(name = "unitGroup", label = "@text/action.label.unitGroup", description = "@text/action.description.unitGroup") @Nullable UnitGroup unitGroup,
             @ActionInput(name = "lang", label = "@text/action.label.lang", description = "@text/action.description.lang") @Nullable String lang,
@@ -62,21 +62,20 @@ public class WeatherCrossingActions implements ThingActions {
         return localHandler.timeline(location, unitGroup, lang, dateFrom, dateTo);
     }
 
-    public static void timeline(@Nullable ThingActions actions, @Nullable String location,
+    public static @Nullable WeatherResponse timeline(@Nullable ThingActions actions, @Nullable String location,
             @Nullable UnitGroup unitGroup, @Nullable String lang, @Nullable String dateFrom, @Nullable String dateTo)
             throws VisualCrossingAuthException, VisualCrossingApiException, VisualCrossingRateException {
-        ((VisualCrossingHandler) requireNonNull(actions)).timeline(location, unitGroup, lang, dateFrom, dateTo);
+        return ((VisualCrossingHandler) requireNonNull(actions)).timeline(location, unitGroup, lang, dateFrom, dateTo);
     }
 
     @RuleAction(label = "@text/action.timeline.label", description = "@text/action.timeline.description")
-    @Nullable
-    public WeatherResponse timeline()
+    public @Nullable @ActionOutput(label = "Result", type = "org.openhab.binding.visualcrossing.internal.api.dto.WeatherResponse") WeatherResponse timeline()
             throws VisualCrossingAuthException, VisualCrossingApiException, VisualCrossingRateException {
         return timeline(null, null, null, null, null);
     }
 
-    public static void timeline(@Nullable ThingActions actions)
+    public static @Nullable WeatherResponse timeline(@Nullable ThingActions actions)
             throws VisualCrossingAuthException, VisualCrossingApiException, VisualCrossingRateException {
-        ((VisualCrossingHandler) requireNonNull(actions)).timeline(null, null, null, null, null);
+        return ((VisualCrossingHandler) requireNonNull(actions)).timeline(null, null, null, null, null);
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.mihome.internal.socket;
+
+import static org.openhab.binding.mihome.internal.XiaomiGatewayBindingConstants.BINDING_ID;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -71,7 +73,7 @@ public abstract class XiaomiSocket {
      */
     public XiaomiSocket(int port, String owner) {
         this.port = port;
-        socketReceiveThread.setName("XiaomiSocketReceiveThread(" + port + ", " + owner + ")");
+        socketReceiveThread.setName("OH-binding-" + BINDING_ID + "-XiaomiSocket(" + port + ", " + owner + ")");
     }
 
     public void initialize() {

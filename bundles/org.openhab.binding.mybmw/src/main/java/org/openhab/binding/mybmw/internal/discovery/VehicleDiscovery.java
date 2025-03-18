@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mybmw.internal.MyBMWConstants;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
@@ -80,28 +79,37 @@ public class VehicleDiscovery extends AbstractThingHandlerDiscoveryService<MyBMW
         myBMWProxy = thingHandler.getMyBmwProxy();
 
         try {
-            Optional<List<@NonNull Vehicle>> vehicleList = myBMWProxy.map(prox -> {
+            Optional<List<Vehicle>> vehicleList = myBMWProxy.map(prox -> {
                 try {
                     return prox.requestVehicles();
                 } catch (NetworkException e) {
-                    throw new IllegalStateException("vehicles could not be discovered: " + e.getMessage(), e);
+                    throw new IllegalStateException(e);
                 }
             });
             vehicleList.ifPresentOrElse(vehicles -> {
-                thingHandler.vehicleDiscoverySuccess();
-                processVehicles(vehicles);
-            }, () -> thingHandler.vehicleDiscoveryError());
+                if (!vehicles.isEmpty()) {
+                    thingHandler.vehicleDiscoverySuccess();
+                    processVehicles(vehicles);
+                } else {
+                    thingHandler.vehicleDiscoveryError(MyBMWConstants.STATUS_NETWORK_ERROR);
+                }
+            }, () -> thingHandler.vehicleDiscoveryError(Constants.EMPTY));
         } catch (IllegalStateException ex) {
-            thingHandler.vehicleDiscoveryError();
+            NetworkException ne = (NetworkException) ex.getCause();
+            if (ne != null && (ne.getStatus() == 403 || ne.getStatus() == 429)) {
+                thingHandler.vehicleQuotaDiscoveryError(myBMWProxy.get().getNextQuota());
+            } else {
+                thingHandler.vehicleDiscoveryError(MyBMWConstants.STATUS_NETWORK_ERROR);
+            }
         }
     }
 
     /**
      * this method is called by the bridgeHandler if the list of vehicles was retrieved successfully
-     * 
+     *
      * it iterates through the list of existing things and checks if the vehicles found via the API
      * call are already known to OH. If not, it creates a new thing and puts it into the inbox
-     * 
+     *
      * @param vehicleList
      */
     private void processVehicles(List<Vehicle> vehicleList) {

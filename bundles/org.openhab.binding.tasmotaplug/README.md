@@ -54,14 +54,14 @@ If the number of channels must be increased, delete the Thing and re-create it w
 
 ## Full Example
 
-tasmotaplug.things:
+### `tasmotaplug.things` Example
 
 ```java
 tasmotaplug:plug:plug1 "Plug 1" [ hostName="192.168.10.1", refresh=30 ]
 tasmotaplug:plug:plug2 "Plug 2" [ hostName="myplug2", refresh=30 ]
 ```
 
-tasmotaplug.items:
+### `tasmotaplug.items` Example
 
 ```java
 Switch Plug1 "Plug 1 Power"                   { channel="tasmotaplug:plug:plug1:power" }
@@ -82,7 +82,7 @@ Switch Plug2c "4ch Power 3" { channel="tasmotaplug:plug:plug2:power3" }
 Switch Plug2d "4ch Power 4" { channel="tasmotaplug:plug:plug2:power4" }
 ```
 
-tasmotaplug.sitemap:
+### `tasmotaplug.sitemap` Example
 
 ```perl
 sitemap tasmotaplug label="My Tasmota Plugs" {

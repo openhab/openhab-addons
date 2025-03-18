@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -86,7 +86,7 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
 
     private void initializeColorChannel() {
         for (int i = 0; i <= 80; i++) {
-            colorChannels[i] = new VelbusColorChannel();
+            colorChannels[i] = new VelbusColorChannel(CURVE_TYPE_EXPONENTIAL);
         }
     }
 
@@ -126,8 +126,9 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
         final ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
-            this.refreshJob = null;
         }
+        this.refreshJob = null;
+        super.dispose();
     }
 
     private void startAutomaticRefresh(int refreshInterval) {
@@ -288,7 +289,7 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
             byte command = packet[4];
             byte setting = packet[6];
 
-            if (command == COMMAND_TEMP_SENSOR_SETTINGS_PART1 && setting == DALI_SETTING_ACTUAL_LEVEL) {
+            if (command == COMMAND_TEMP_SENSOR_SETTINGS_PART1 && setting == SETTING_ACTUAL_LEVEL) {
                 int channel = Byte.toUnsignedInt(packet[5]);
 
                 if (channel >= 1 && channel <= 80) {

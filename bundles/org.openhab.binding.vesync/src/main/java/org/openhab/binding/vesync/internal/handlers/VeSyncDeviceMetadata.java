@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,14 +50,8 @@ public class VeSyncDeviceMetadata {
      */
     public final List<String> nonStandardIds;
 
-    public boolean deviceTypeIdMatches(final String deviceType, final String[] deviceTypeSegments) {
-        if (nonStandardIds.contains(deviceType)) {
-            return true;
-        }
-        if (deviceTypeSegments.length == 3) {
-            return deviceGenerations.contains(deviceTypeSegments[1]);
-        }
-        return false;
+    public boolean deviceTypeIdMatches(final String[] deviceTypeSegments) {
+        return (deviceTypeSegments.length == 3 && deviceGenerations.contains(deviceTypeSegments[1]));
     }
 
     public String getDeviceFamilyName() {

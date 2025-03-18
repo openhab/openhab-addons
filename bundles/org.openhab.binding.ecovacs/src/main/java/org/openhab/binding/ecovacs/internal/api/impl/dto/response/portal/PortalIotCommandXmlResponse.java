@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,8 +21,8 @@ public class PortalIotCommandXmlResponse extends AbstractPortalIotCommandRespons
     @SerializedName("resp")
     private final String responseXml;
 
-    public PortalIotCommandXmlResponse(String result, String responseXml, int errorCode, String errorMessage) {
-        super(result, errorCode, errorMessage);
+    public PortalIotCommandXmlResponse(String result, String responseXml, int errorCode, Object errorObject) {
+        super(result, errorCode, errorObject);
         this.responseXml = responseXml;
     }
 

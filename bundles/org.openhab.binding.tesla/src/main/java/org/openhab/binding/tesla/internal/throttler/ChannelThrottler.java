@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,14 +14,20 @@ package org.openhab.binding.tesla.internal.throttler;
 
 import java.util.concurrent.Future;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link ChannelThrottler} defines the interface for to submit tasks to a
  * throttler
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public interface ChannelThrottler {
+    @Nullable
     Future<?> submit(Runnable task);
 
+    @Nullable
     Future<?> submit(Object channelKey, Runnable task);
 }

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+	https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:broadlink:config">
+		<parameter name="ipAddress" type="text">
+			<context>network-address</context>
+			<label>Network Address</label>
+			<description>IP address or hostname of the device.</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="staticIp" type="boolean">
+			<context>static-ip</context>
+			<label>Static IP</label>
+			<description>Will the device always be given this network address?</description>
+			<required>true</required>
+			<advanced>true</advanced>
+			<default>true</default>
+		</parameter>
+		<parameter name="port" type="integer">
+			<default>80</default>
+			<context>network-port</context>
+			<label>Network Port</label>
+			<description>Network port of the device.</description>
+			<required>true</required>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="macAddress" type="text">
+			<context>mac-address</context>
+			<label>MAC Address</label>
+			<description>MAC address of the device.</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="pollingInterval" type="integer" min="1" step="1">
+			<label>Polling Interval</label>
+			<description>The interval in seconds for polling the status of the device.</description>
+			<required>true</required>
+			<default>30</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

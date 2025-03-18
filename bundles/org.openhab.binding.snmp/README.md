@@ -138,7 +138,6 @@ For commands (i.e. sending), the value is first converted to the configured unit
 | string   | String | a channel with a string value   |
 | switch   | Switch | a channel that has two states   |
 
-
 ### SNMP Exception (Error) Handling
 
 The standard behaviour if an SNMP exception occurs this is to log at `INFO` level and set the channel value to `UNDEF`.
@@ -155,7 +154,7 @@ Valid values are all valid values for that channel (i.e. `ON`/`OFF` for a switch
 
 demo.things:
 
-```
+```java
 Thing snmp:target:router [ hostname="192.168.0.1", protocol="v2c" ] {
     Channels:
         Type number : inBytes [ oid=".1.3.6.1.2.1.31.1.1.1.6.2", mode="READ" ]

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,7 +58,7 @@ import org.openhab.core.types.StateDescription;
 @NonNullByDefault
 public class ComponentChannel {
     private final ChannelState channelState;
-    private final Channel channel;
+    private Channel channel;
     private final @Nullable StateDescription stateDescription;
     private final @Nullable CommandDescription commandDescription;
     private final ChannelStateUpdateListener channelStateUpdateListener;
@@ -75,6 +75,22 @@ public class ComponentChannel {
 
     public Channel getChannel() {
         return channel;
+    }
+
+    public void resetUID(ChannelUID channelUID) {
+        channel = ChannelBuilder.create(channelUID, channel.getAcceptedItemType()).withType(channel.getChannelTypeUID())
+                .withKind(channel.getKind()).withLabel(Objects.requireNonNull(channel.getLabel()))
+                .withConfiguration(channel.getConfiguration()).withAutoUpdatePolicy(channel.getAutoUpdatePolicy())
+                .build();
+        channelState.setChannelUID(channelUID);
+    }
+
+    public void resetConfiguration(Configuration configuration) {
+        channel = ChannelBuilder.create(channel).withConfiguration(configuration).build();
+    }
+
+    public void clearConfiguration() {
+        resetConfiguration(new Configuration());
     }
 
     public ChannelState getState() {
@@ -129,6 +145,8 @@ public class ComponentChannel {
 
         private @Nullable String templateIn;
         private @Nullable String templateOut;
+
+        private @Nullable Configuration configuration;
 
         private String format = "%s";
 
@@ -213,6 +231,23 @@ public class ComponentChannel {
             return this;
         }
 
+        public Builder withConfiguration(Configuration configuration) {
+            this.configuration = configuration;
+            return this;
+        }
+
+        // If the component explicitly specifies optimistic, or it's missing a state topic
+        // put it in optimistic mode (which, in openHAB parlance, means to auto-update the
+        // item).
+        public Builder inferOptimistic(@Nullable Boolean optimistic) {
+            String localStateTopic = stateTopic;
+            if (optimistic == null && (localStateTopic == null || localStateTopic.isBlank())
+                    || optimistic != null && optimistic == true) {
+                this.autoUpdatePolicy = AutoUpdatePolicy.RECOMMEND;
+            }
+            return this;
+        }
+
         public ComponentChannel build() {
             return build(true);
         }
@@ -262,9 +297,12 @@ public class ComponentChannel {
                 commandDescription = valueState.createCommandDescription().build();
             }
 
-            Configuration configuration = new Configuration();
-            configuration.put("config", component.getChannelConfigurationJson());
-            component.getHaID().toConfig(configuration);
+            Configuration configuration = this.configuration;
+            if (configuration == null) {
+                configuration = new Configuration();
+                configuration.put("config", component.getChannelConfigurationJson());
+                component.getHaID().toConfig(configuration);
+            }
 
             channel = ChannelBuilder.create(channelUID, channelState.getItemType()).withType(channelTypeUID)
                     .withKind(kind).withLabel(label).withConfiguration(configuration)

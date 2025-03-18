@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -128,7 +128,7 @@ public final class LifxMessageUtil {
                 temperatureRange.getMaximum() - (temperature.floatValue() * (temperatureRange.getRange() / 100)));
     }
 
-    public static int quantityTypeToKelvin(QuantityType temperature, TemperatureRange temperatureRange) {
+    public static int quantityTypeToKelvin(QuantityType<?> temperature, TemperatureRange temperatureRange) {
         QuantityType<?> asKelvin = temperature.toInvertibleUnit(Units.KELVIN);
         if (asKelvin == null) {
             throw new IllegalStateException(

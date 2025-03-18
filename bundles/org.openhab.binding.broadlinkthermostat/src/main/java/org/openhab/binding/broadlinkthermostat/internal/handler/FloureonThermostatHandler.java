@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.broadlinkthermostat.internal.BroadlinkBindingC
 
 import java.io.IOException;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -212,7 +213,7 @@ public class FloureonThermostatHandler extends BroadlinkBaseHandler {
 
     private void handleSetTimeCommand(ChannelUID channelUID, Command command) {
         if (command instanceof DateTimeType dateTimeCommand) {
-            ZonedDateTime zonedDateTime = dateTimeCommand.getZonedDateTime();
+            ZonedDateTime zonedDateTime = dateTimeCommand.getZonedDateTime(ZoneId.systemDefault());
             try {
                 new SetTimeCommand(tob(zonedDateTime.getHour()), tob(zonedDateTime.getMinute()),
                         tob(zonedDateTime.getSecond()), tob(zonedDateTime.getDayOfWeek().getValue()))

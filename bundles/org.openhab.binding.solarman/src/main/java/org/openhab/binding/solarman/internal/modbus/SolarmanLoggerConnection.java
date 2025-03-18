@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -92,7 +92,7 @@ public class SolarmanLoggerConnection implements AutoCloseable {
         return new byte[0];
     }
 
-    private static String bytesToHex(byte[] bytes) {
+    protected static String bytesToHex(byte[] bytes) {
         return IntStream.range(0, bytes.length).mapToObj(i -> String.format("%02X", bytes[i]))
                 .collect(Collectors.joining());
     }

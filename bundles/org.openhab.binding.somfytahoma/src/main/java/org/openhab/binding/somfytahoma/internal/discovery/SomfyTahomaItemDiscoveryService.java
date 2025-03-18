@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -208,6 +208,9 @@ public class SomfyTahomaItemDiscoveryService extends AbstractThingHandlerDiscove
                 // widget: DynamicVenetianBlind
                 if (hasCommmand(device, "setOrientation")) {
                     deviceDiscovered(device, THING_TYPE_VENETIANBLIND, place);
+                } else if ("UpDownVenetianBlind".equals(widget)) {
+                    // widget: UpDownVenetianBlind
+                    deviceDiscovered(device, THING_TYPE_UPDOWNVENETIANBLIND, place);
                 } else {
                     // simple venetian blind without orientation
                     deviceDiscovered(device, THING_TYPE_SHUTTER, place);

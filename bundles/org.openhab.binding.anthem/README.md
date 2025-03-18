@@ -12,7 +12,6 @@ The following thing type is supported:
 
 Tested models include the AVM-60 11.2-channel preamp/processor.
 
-
 ## Thing Configuration
 
 The following configuration parameters are available on the Anthem thing:
@@ -49,18 +48,17 @@ The Anthem AV processor supports the following channels (some zones/channels are
 | 2#activeInputShortName  | String  | Short friendly name of the active input  |
 | 2#activeInputLongName   | String  | Long friendly name of the active input   |
 
-
 ## Full Example
 
 ### Things
 
-```
+```java
 Thing anthem:anthem:mediaroom "Anthem AVM 60" [ host="192.168.1.100" ]
 ```
 
 ### Items
 
-```
+```java
 String  Anthem_Command                    "Command [%s]"                           { channel="anthem:anthem:mediaroom:general#command" }
 
 Switch  Anthem_Z1_Power                   "Zone 1 Power [%s]"                      { channel="anthem:anthem:mediaroom:1#power" }

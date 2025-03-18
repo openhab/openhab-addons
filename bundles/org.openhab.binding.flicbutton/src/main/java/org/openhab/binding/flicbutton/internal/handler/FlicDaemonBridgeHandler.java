@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -102,7 +102,7 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
                 flicClient.close();
                 logger.debug("Listening to flicd ended");
             } catch (IOException e) {
-                logger.debug("Error occured while listening to flicd", e);
+                logger.debug("Error occurred while listening to flicd", e);
             } finally {
                 if (Thread.currentThread().isInterrupted()) {
                     onClientFailure();

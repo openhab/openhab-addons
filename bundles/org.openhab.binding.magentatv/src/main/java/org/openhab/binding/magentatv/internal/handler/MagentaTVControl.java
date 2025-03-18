@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -289,7 +289,7 @@ public class MagentaTVControl {
      * complete the pairing process. You should see a message like "Connected to
      * openHAB" on your TV screen.
      *
-     * @return true: successful, false: a non-critical error occured, caller handles
+     * @return true: successful, false: a non-critical error occurred, caller handles
      *         this
      * @throws MagentaTVException
      */

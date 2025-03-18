@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class FroniusHttpUtil {
-    private static final Logger logger = LoggerFactory.getLogger(FroniusHttpUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FroniusHttpUtil.class);
 
     /**
      * Issue a HTTP request and retry on failure.
@@ -82,17 +82,17 @@ public class FroniusHttpUtil {
 
                 if (result != null) {
                     if (attemptCount > 1) {
-                        logger.debug("Attempt #{} successful {}", attemptCount, url);
+                        LOGGER.debug("Attempt #{} successful {}", attemptCount, url);
                     }
                     return result;
                 }
 
                 if (attemptCount >= 3) {
-                    logger.debug("Failed connecting to {} after {} attempts.", url, attemptCount, lastException);
+                    LOGGER.debug("Failed connecting to {} after {} attempts.", url, attemptCount, lastException);
                     throw new FroniusCommunicationException("Unable to connect", lastException);
                 }
 
-                logger.debug("HTTP error on attempt #{} {}", attemptCount, url);
+                LOGGER.debug("HTTP error on attempt #{} {}", attemptCount, url);
                 Thread.sleep(500 * attemptCount);
                 attemptCount++;
             }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -716,9 +716,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         Optional<Integer> ambientTemperatureProperty = deviceProperties.stream().map(p -> p.ambientTemperature)
                 .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null)
                 .filter(Objects::nonNull).findFirst();
-        Optional<@Nullable String> demandProperty = deviceProperties.stream().map(p -> p.demand)
-                .filter(Objects::nonNull).findFirst();
-        Optional<@Nullable String> operationModeProperty = deviceProperties.stream().map(p -> p.operationMode)
+        Optional<String> demandProperty = deviceProperties.stream().map(p -> p.demand).filter(Objects::nonNull)
+                .findFirst();
+        Optional<String> operationModeProperty = deviceProperties.stream().map(p -> p.operationMode)
                 .filter(Objects::nonNull).findFirst();
 
         String modeString = deviceProperties.stream().map(p -> p.program).filter(Objects::nonNull).findFirst()

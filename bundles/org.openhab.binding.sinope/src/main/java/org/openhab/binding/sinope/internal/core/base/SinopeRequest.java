@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,8 +32,7 @@ public abstract class SinopeRequest extends SinopeFrame {
     protected static final int HEADER_COMMAND_CRC_SIZE = SinopeFrame.PREAMBLE_SIZE + SinopeFrame.FRAME_CTL_SIZE
             + SinopeFrame.SIZE_SIZE + SinopeFrame.COMMAND_SIZE + SinopeFrame.CRC_SIZE;
 
-    /** The Constant logger. */
-    private static final Logger logger = LoggerFactory.getLogger(SinopeRequest.class);
+    private final Logger logger = LoggerFactory.getLogger(SinopeRequest.class);
 
     /**
      * @see org.openhab.binding.sinope.internal.core.base.SinopeFrame#getPayload()

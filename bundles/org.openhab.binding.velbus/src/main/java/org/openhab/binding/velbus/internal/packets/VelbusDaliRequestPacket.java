@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
  */
 @NonNullByDefault
 public class VelbusDaliRequestPacket extends VelbusPacket {
-    private final byte GATEWAY_CONFIG = (byte) 0x01;
+    private static final byte GATEWAY_CONFIG = (byte) 0x01;
 
     private byte channel = ALL_DALI_CHANNELS;
 
@@ -47,7 +47,7 @@ public class VelbusDaliRequestPacket extends VelbusPacket {
             return new byte[] { COMMAND_TEMP_SENSOR_SETTINGS_REQUEST, this.channel, GATEWAY_CONFIG };
         } else {
             return new byte[] { COMMAND_TEMP_SENSOR_SETTINGS_REQUEST, this.channel, GATEWAY_CONFIG,
-                    DALI_SETTING_ACTUAL_LEVEL };
+                    SETTING_ACTUAL_LEVEL };
         }
     }
 }

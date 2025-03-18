@@ -13,11 +13,12 @@ No autodiscovery available
 
 ## Thing Configuration
 
-| Config   | Description                                                                                                                    | type    | Default   |
-| :------- | :------------                                                                                                                  | :-----  | :-------- |
-| hostname | The hostname or ip through which the inverter can be accessed                                                                  | string  | n/a       |
-| port     | TCP port through which the inverter listens on for incoming connections                                                        | integer | 8899      |
-| serial   | The serial of the wifi module. The Wifi module's SSID contains the number. This is the numerical part only, i.e. without _AP__ | integer | n/a       |
+| Config          | Description                                                                                                                    | type    | Default |
+|:----------------|:-------------------------------------------------------------------------------------------------------------------------------|:--------|:--------|
+| hostname        | The hostname or ip through which the inverter can be accessed                                                                  | string  | n/a     |
+| port            | TCP port through which the inverter listens on for incoming connections                                                        | integer | 8899    |
+| serial          | The serial of the wifi module. The Wifi module's SSID contains the number. This is the numerical part only, i.e. without _AP__ | integer | n/a     |
+| refreshInterval | Interval the device is polled in seconds.                                                                                      | integer | 10      |
 
 ## Channels
 
@@ -49,13 +50,13 @@ No autodiscovery available
 
 ## Full Example
 
-### demo.things
+### `demo.things` Example
 
 ```java
 Thing omnikinverter:omnik:70ecb4f0 "Solar Inverter" [ hostname="igen-wifi.lan",serial=604455290]
 ```
 
-### demo.items
+### `demo.items` Example
 
 ```java
 Number:Power OmnikInverterBindingThing_InstantaneousPower "Solar Power" <sun> {channel="omnikinverter:omnik:70ecb4f0:power"}
@@ -72,7 +73,7 @@ Number:Energy OmnikInverterBindingThing_TotalGeneratedEnergyToday "Solar Energy 
 Number:Energy OmnikInverterBindingThing_TotalGeneratedEnergy "Solar Energy Total" {channel="omnikinverter:omnik:70ecb4f0:energyTotal"}
 ```
 
-### Sitemap
+### `demo.sitemap` Example
 
 ```perl
 Text item=OmnikInverterBindingThing_InstantaneousPower

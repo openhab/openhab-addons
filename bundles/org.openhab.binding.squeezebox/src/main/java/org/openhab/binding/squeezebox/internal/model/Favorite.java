@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.squeezebox.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Attributes of a Squeezebox Server favorite
  *
  * @author Mark Hilbush - Initial contribution
  *
  */
+@NonNullByDefault
 public class Favorite {
     /**
      * Favorite id is of form xxxxxxxx.nn
@@ -32,7 +35,7 @@ public class Favorite {
     /**
      * The name given to the favorite in the Squeezebox Server.
      */
-    public String name;
+    public String name = "";
 
     /**
      * Creates a preset from the given favorite id

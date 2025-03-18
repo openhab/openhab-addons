@@ -175,7 +175,6 @@ Number:Temperature TankTemperature "Solar Tank Temperature [%.1f %unit%]" <tempe
 Number:Intensity Irradiation "Irradiation [%.1f %unit%]" <sun> {channel="resol:device:VBUS:DeltaSol_MX-Controller:irradiation_sensor_16"}
 Number SolarPump "Solar pump [%.0f %%]" {channel="resol:device:VBUS:DeltaSol_MX-Controller:pump_speed_relay_1"}
 
-
 /*************************************************/
 /* Heating circuit                               */
 /*************************************************/
@@ -183,19 +182,16 @@ Number:Temperature FlowSetTemperature "Flow Set Temperature [%.1f %unit%]" <temp
 
 String HeatCircuit_OperatingState "HeatCircuit OperatingState [%s]" {channel="resol:device:VBUS:DeltaSol_MX-Heating_circuit-1:operating_state"}
 
-
 /*************************************************/
 /* Heat quantity meter                           */
 /*************************************************/
 Number:Energy SolarEnergy_today "Solar Energy (today) [%.1f  %unit%]" {channel="resol:device:VBUS:DeltaSol_MX-HQM-1:heat_quantity_today"}
 Number:Power SolarPower "Solar Power [%.0f %unit%]" {channel="resol:device:VBUS:DeltaSol_MX-HQM-1:power"}
 
-
 /*************************************************/
 /* Physical EM Module 1                          */
 /*************************************************/
 Number:Temperature EM_Temperature_1 "Temperature EM sensor 1 [%.1f %unit%]" <temperature> {channel="resol:device:VBUS:DeltaSol_MX-Modules:temperature_module_1_sensor_1"}
-
 
 /*************************************************/
 /* Virtual EM Module 2, simulated by openHAB      */
@@ -206,15 +202,12 @@ Switch Emu_Switch_2 "Virtual switch input 2 on EM2 " {channel="resol:emulatedEM:
 Number:Temperature EM_BAS_Set_Temperature_3 "Set Temperature of virtual room control unit on EM2 sensor 3 [%.1f %unit%]" <temperature> {channel="resol:emulatedEM:VBUS:EM2:bas_temp_adjust_3"}
 Number EM_BAS_Mode "Mode of virtual room control unit on EM2 sensor 3 [%.1f %unit%]" <temperature> {channel="resol:emulatedEM:VBUS:EM2:bas_mode_3"}
 
-
 /*************************************************/
 /* Failure handling                              */
 /*************************************************/
 Number Errormask "Error mask [%.0f]" {channel="resol:device:VBUS:DeltaSol_MX-Controller:error_mask"}
 Number Warningmask "Warning mask [%.0f]" {channel="resol:device:VBUS:DeltaSol_MX-Controller:warning_mask"}
 String BrokenSensor "Broken Sensor [%s]" {channel="resol:device:VBUS:DeltaSol_MX-Controller:error_Sensor_line_broken"}
-
-
 ```
 
 resol.sitemap

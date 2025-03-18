@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,9 +71,9 @@ public class WebhookServlet extends NetatmoServlet {
             logger.info("Setting up WebHook at Netatmo to {}", uri.toString());
             hookSet = securityApi.addwebhook(uri);
         } catch (UriBuilderException e) {
-            logger.info("webhookUrl is not a valid URI '{}' : {}", uri, e.getMessage());
+            logger.info("webhookUrl is not a valid URI '{}': {}", uri, e.getMessage());
         } catch (NetatmoException e) {
-            logger.info("Error setting webhook : {}", e.getMessage());
+            logger.info("Error setting webhook: {}", e.getMessage());
         }
     }
 
@@ -85,7 +85,7 @@ public class WebhookServlet extends NetatmoServlet {
                 securityApi.dropWebhook();
                 hookSet = false;
             } catch (NetatmoException e) {
-                logger.warn("Error releasing webhook : {}", e.getMessage());
+                logger.warn("Error releasing webhook: {}", e.getMessage());
             }
         }
         super.dispose();
@@ -99,12 +99,12 @@ public class WebhookServlet extends NetatmoServlet {
 
     private void processEvent(String data) throws IOException {
         if (!data.isEmpty()) {
-            logger.debug("Event transmitted from restService : {}", data);
+            logger.debug("Event transmitted from restService: {}", data);
             try {
                 WebhookEvent event = deserializer.deserialize(WebhookEvent.class, data);
                 notifyListeners(event);
             } catch (NetatmoException e) {
-                logger.debug("Error deserializing webhook data received : {}. {}", data, e.getMessage());
+                logger.debug("Error deserializing webhook data received: {}. {}", data, e.getMessage());
             }
         }
     }
@@ -123,6 +123,7 @@ public class WebhookServlet extends NetatmoServlet {
         event.getNAObjectList().forEach(id -> {
             Capability module = dataListeners.get(id);
             if (module != null) {
+                logger.trace("Dispatching webhook event to {}", id);
                 module.setNewData(event);
             }
         });

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,23 +24,26 @@ import com.google.gson.GsonBuilder;
  * used across the whole binding.
  *
  * @author David Goodyear - Initial contribution
+ * @author Marcel Goerentz - Add constants for outlets
  */
 @NonNullByDefault
 public class VeSyncConstants {
 
     public static final Gson GSON = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).setPrettyPrinting()
-            .disableHtmlEscaping().serializeNulls().create();
+            .disableHtmlEscaping().create();
 
     private static final String BINDING_ID = "vesync";
 
     public static final long DEFAULT_REFRESH_INTERVAL_DISCOVERED_DEVICES = 3600;
     public static final long DEFAULT_POLL_INTERVAL_AIR_FILTERS_DEVICES = 10;
+    public static final long SECONDS_IN_MONTH = 2592000;
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final ThingTypeUID THING_TYPE_AIR_PURIFIER = new ThingTypeUID(BINDING_ID, "airPurifier");
     public static final ThingTypeUID THING_TYPE_AIR_HUMIDIFIER = new ThingTypeUID(BINDING_ID, "airHumidifier");
+    public static final ThingTypeUID THING_TYPE_OUTLET = new ThingTypeUID(BINDING_ID, "outlet");
 
     // Thing configuration properties
     public static final String DEVICE_MAC_ID = "macAddress";
@@ -65,6 +68,19 @@ public class VeSyncConstants {
     public static final String DEVICE_CHANNEL_AF_CONFIG_AUTO_ROOM_SIZE = "configAutoRoomSize";
     public static final String DEVICE_CHANNEL_AF_SCHEDULES_COUNT = "schedulesCount";
     public static final String DEVICE_CHANNEL_AF_NIGHT_LIGHT = "nightLightMode";
+    public static final String DEVICE_CHANNEL_AF_LIGHT_DETECTION = "lightDetection";
+    public static final String DEVICE_CHANNEL_AF_LIGHT_DETECTED = "lightDetected";
+
+    // Energy Related Channel Names
+    public static final String DEVICE_CHANNEL_CURRENT = "current";
+    public static final String DEVICE_CHANNEL_ENERGY = "energy";
+    public static final String DEVICE_CHANNEL_POWER = "power";
+    public static final String DEVICE_CHANNEL_VOLTAGE = "voltage";
+    public static final String DEVICE_CHANNEL_VOLTAGE_PT_STATUS = "voltagePTStatus";
+    public static final String DEVICE_CHANNEL_HIGHEST_VOLTAGE = "highestVoltage";
+    public static final String DEVICE_CHANNEL_ENERGY_WEEK = "energyWeek";
+    public static final String DEVICE_CHANNEL_ENERGY_MONTH = "energyMonth";
+    public static final String DEVICE_CHANNEL_ENERGY_YEAR = "energyYear";
 
     // Humidity related channels
     public static final String DEVICE_CHANNEL_WATER_LACKS = "waterLacking";

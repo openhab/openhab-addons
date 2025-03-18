@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -663,6 +663,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         private Instant lastKeepAlive;
 
         LxServerThread(int id) {
+            super(String.format("OH-binding-%s-%s", LxBindingConstants.BINDING_ID, "Server"));
             debugId = id;
         }
 

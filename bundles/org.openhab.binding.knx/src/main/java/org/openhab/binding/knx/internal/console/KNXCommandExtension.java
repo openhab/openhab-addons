@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,7 +56,7 @@ public class KNXCommandExtension extends AbstractConsoleCommandExtension impleme
                 console.println("KNX bridge \"" + bridgeHandler.getThing().getLabel()
                         + "\": group address, type, number of bytes, and number of occurrence since last reload of binding:");
                 for (Entry<String, Long> entry : bridgeHandler.getCommandExtensionData().unknownGA().entrySet()) {
-                    console.println(entry.getKey() + " " + entry.getValue());
+                    console.println(entry.getKey() + "  " + entry.getValue());
                 }
             }
             return;

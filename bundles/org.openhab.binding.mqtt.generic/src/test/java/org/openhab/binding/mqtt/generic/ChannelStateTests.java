@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -267,7 +267,7 @@ public class ChannelStateTests {
     @Test
     public void receivePercentageTest() {
         PercentageValue value = new PercentageValue(new BigDecimal(-100), new BigDecimal(100), new BigDecimal(10), null,
-                null);
+                null, null);
         ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
         c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 

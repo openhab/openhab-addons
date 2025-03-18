@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -162,7 +162,6 @@ public class OmnilinkBindingConstants {
     public static final String TRIGGER_CHANNEL_DCM_EVENT = "dcm_event";
     public static final String TRIGGER_CHANNEL_ENERGY_COST_EVENT = "energy_cost_event";
     public static final String TRIGGER_CHANNEL_CAMERA_TRIGGER_EVENT = "camera_trigger_event";
-    public static final String TRIGGER_CHANNEL_ACCESS_CONTROL_READER_EVENT = "access_control_reader_event";
     public static final String TRIGGER_CHANNEL_AREA_ALL_ON_OFF_EVENT = "all_on_off_event";
     public static final String TRIGGER_CHANNEL_SWITCH_PRESS_EVENT = "switch_press_event";
     public static final String TRIGGER_CHANNEL_UPB_LINK_ACTIVATED_EVENT = "upb_link_activated_event";

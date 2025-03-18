@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:wiz:device">
+		<parameter name="macAddress" type="text" required="true">
+			<label>MAC Address</label>
+			<description>MAC address of the device</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="ipAddress" type="text" required="true">
+			<label>IP Address</label>
+			<context>network-address</context>
+			<description>IP address of the device</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="updateInterval" type="integer" min="5">
+			<label>Update Interval</label>
+			<description>Update time interval in seconds to request the status of the device while it is connected to the
+				network.</description>
+			<default>60</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="useHeartBeats" type="boolean" required="false">
+			<label>Use Heartbeats</label>
+			<description>True to request continuous 5s heartbeats from device. Update interval is ignored when using heartbeats.</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+		<parameter name="reconnectInterval" type="integer" min="1">
+			<label>Reconnect Interval</label>
+			<description>Interval in minutes between attempts to reconnect with a device that is no longer responding to status
+				queries. When the device first connects to the network, it should send out a firstBeat message allowing openHAB to
+				immediately detect it. This is only as a back-up to re-find the device.</description>
+			<default>15</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

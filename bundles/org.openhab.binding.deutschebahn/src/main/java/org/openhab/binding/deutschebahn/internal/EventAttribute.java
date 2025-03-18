@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,6 @@ package org.openhab.binding.deutschebahn.internal;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -297,8 +295,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
         if (value == null) {
             return null;
         } else {
-            final ZonedDateTime d = ZonedDateTime.ofInstant(value.toInstant(), ZoneId.systemDefault());
-            return new DateTimeType(d);
+            return new DateTimeType(value.toInstant());
         }
     }
 

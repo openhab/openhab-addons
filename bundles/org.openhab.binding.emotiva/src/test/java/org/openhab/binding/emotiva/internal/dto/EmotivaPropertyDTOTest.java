@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,8 +37,8 @@ class EmotivaPropertyDTOTest extends AbstractDTOTestBase {
 
     @Test
     void unmarshallFromEmotivaNotify() throws JAXBException {
-        EmotivaPropertyDTO commandDTO = (EmotivaPropertyDTO) xmlUtils
-                .unmarshallToEmotivaDTO(emotivaNotifyEmotivaPropertyPower);
+        var commandDTO = (EmotivaPropertyDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaNotifyEmotivaPropertyPower);
+
         assertThat(commandDTO, is(notNullValue()));
         assertThat(commandDTO.getName(), is(EmotivaSubscriptionTags.tuner_channel.name()));
         assertThat(commandDTO.getValue(), is("FM 106.50MHz"));
@@ -48,8 +48,8 @@ class EmotivaPropertyDTOTest extends AbstractDTOTestBase {
 
     @Test
     void unmarshallFromEmotivaUpdate() throws JAXBException {
-        EmotivaPropertyDTO commandDTO = (EmotivaPropertyDTO) xmlUtils
-                .unmarshallToEmotivaDTO(emotivaUpdateEmotivaPropertyPower);
+        var commandDTO = (EmotivaPropertyDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaUpdateEmotivaPropertyPower);
+
         assertThat(commandDTO, is(notNullValue()));
         assertThat(commandDTO.getName(), is(EmotivaControlCommands.power.name()));
         assertThat(commandDTO.getValue(), is("On"));

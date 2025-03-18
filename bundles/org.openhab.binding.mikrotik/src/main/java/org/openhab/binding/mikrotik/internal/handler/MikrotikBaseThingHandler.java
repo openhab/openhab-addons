@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.mikrotik.internal.handler;
 
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
-import static org.openhab.core.thing.ThingStatus.ONLINE;
+import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
@@ -62,8 +61,6 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
     private @Nullable ScheduledFuture<?> refreshJob;
     protected ExpiringCache<Boolean> refreshCache = new ExpiringCache<>(Duration.ofDays(1), () -> false);
     protected Map<String, State> currentState = new HashMap<>();
-
-    // public static boolean supportsThingType(ThingTypeUID thingTypeUID) <- in subclasses
 
     public MikrotikBaseThingHandler(Thing thing) {
         super(thing);

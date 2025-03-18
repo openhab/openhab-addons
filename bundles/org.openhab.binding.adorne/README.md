@@ -73,7 +73,7 @@ Remember that the host and port parameter are not needed in most cases.
 As discussed above care is taken that the brightness channel only allows values from 1 to 100 by specifying a min and max value in the sitemap for the dimmers.
 For this example to run on an openHAB version older than 2.5 Bedroom 1's Slider must be removed in the sitemap since older versions don't support the min/max setting.
 
-## demo.things
+## `demo.things` Example
 
 ```java
 Bridge adorne:hub:home "Adorne Hub" [host="192.160.1.111", port=2113] {
@@ -83,7 +83,7 @@ Bridge adorne:hub:home "Adorne Hub" [host="192.160.1.111", port=2113] {
 }
 ```
 
-## demo.items
+## `demo.items` Example
 
 ```java
 Switch LightBathroom {channel="adorne:switch:home:bathroom:power"}
@@ -93,7 +93,7 @@ Switch LightBedroomSwitch2 {channel="adorne:dimmer:home:bedroom2:power"}
 Dimmer LightBedroomDimmer2 {channel="adorne:dimmer:home:bedroom2:brightness"}
 ```
 
-## demo.sitemap
+## `demo.sitemap` Example
 
 ```perl
 sitemap demo label="Adorne Binding Demo"

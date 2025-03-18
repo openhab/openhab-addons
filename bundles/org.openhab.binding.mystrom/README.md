@@ -81,7 +81,6 @@ Number:Power        PlugPower                       "Power: [%.1f W]"           
 Number:Energy       PlugEnergyConsumedSinceLastCall "Ws: [%.1f Ws]"             {channel="mystrom:mystromplug:d6217a31:energy-consumed-since-last-call"}
 ```
 
-
 ### Sitemap Configuration
 
 ```perl

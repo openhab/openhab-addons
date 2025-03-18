@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -184,6 +184,7 @@ public class LivisiBindingConstants {
     public static final String CHANNEL_DISK = "disk";
     public static final String CHANNEL_MEMORY = "memory";
     public static final String CHANNEL_OPERATION_STATUS = "status";
+    public static final String CHANNEL_RESTART = "restart";
 
     // List of channel parameters
     public static final String INVERT_CHANNEL_PARAMETER = "invert";

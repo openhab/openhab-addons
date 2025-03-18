@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -74,6 +74,7 @@ public class HubCommunicationThread extends Thread {
     private HubCommunicationThreadState currentState = HubCommunicationThreadState.STARTING;
 
     public HubCommunicationThread(HubConnection hubConnection, NoboHubBridgeHandler hubHandler, Duration timeout) {
+        super("OH-binding-" + hubHandler.getThing().getUID());
         this.hubConnection = hubConnection;
         this.hubHandler = hubHandler;
         this.timeout = timeout;

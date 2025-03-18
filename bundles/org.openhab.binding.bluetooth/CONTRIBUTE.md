@@ -36,7 +36,7 @@ Two fundamental communications methods can be employed in Bluetooth: beacons and
 ### Thing Naming
 
 To avoid naming conflicts with different Bluetooth bundles a strict naming policy for things and thing xml files is proposed.
-This should use the bundle name and the thing name, separated with an underscore - e.g. for a Yeelight binding Blue2 thing, the thing type would be `yeelight_blue2`.
+This should use the bundle name and the thing name, separated with a hyphen - e.g. for a Yeelight binding Blue2 thing, the thing type would be `yeelight-blue2`.
 
 ### Connected Mode Implementation
 

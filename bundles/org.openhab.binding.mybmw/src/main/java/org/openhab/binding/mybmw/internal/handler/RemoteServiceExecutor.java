@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,7 +83,7 @@ public class RemoteServiceExecutor {
             serviceExecuting.ifPresentOrElse(service -> {
                 if (counter >= GIVEUP_COUNTER) {
                     logger.warn("Giving up updating state for {} after {} times", service, GIVEUP_COUNTER);
-                    handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null),
+                    handler.updateRemoteExecutionStatus(serviceExecuting.orElse(Constants.EMPTY),
                             ExecutionState.TIMEOUT.name().toLowerCase());
                     reset();
                     // immediately refresh data
@@ -107,7 +107,7 @@ public class RemoteServiceExecutor {
 
     private void handleRemoteServiceException(NetworkException e) {
         synchronized (this) {
-            handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null),
+            handler.updateRemoteExecutionStatus(serviceExecuting.orElse(Constants.EMPTY),
                     ExecutionState.ERROR.name().toLowerCase() + Constants.SPACE + Integer.toString(e.getStatus()));
             reset();
         }
@@ -117,12 +117,12 @@ public class RemoteServiceExecutor {
         if (!executionStatusContainer.getEventId().isEmpty()) {
             // service initiated - store event id for further MyBMW updates
             executingEventId = Optional.of(executionStatusContainer.getEventId());
-            handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null),
+            handler.updateRemoteExecutionStatus(serviceExecuting.orElse(Constants.EMPTY),
                     ExecutionState.INITIATED.name().toLowerCase());
         } else if (!executionStatusContainer.getEventStatus().isEmpty()) {
             // service status updated
             synchronized (this) {
-                handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null),
+                handler.updateRemoteExecutionStatus(serviceExecuting.orElse(Constants.EMPTY),
                         executionStatusContainer.getEventStatus().toLowerCase());
                 if (ExecutionState.EXECUTED.name().equalsIgnoreCase(executionStatusContainer.getEventStatus())
                         || ExecutionState.ERROR.name().equalsIgnoreCase(executionStatusContainer.getEventStatus())) {
