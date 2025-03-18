@@ -89,7 +89,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
         this.batteryChecker = new TadoBatteryChecker(this);
         this.configuration = getConfigAs(TadoHomeConfig.class);
         this.tadoHandlerFactory = tadoHandlerFactory;
-        cachedHomePresence = new HomePresence();
+        this.cachedHomePresence = new HomePresence();
     }
 
     public TemperatureUnit getTemperatureUnit() {
