@@ -179,7 +179,7 @@ class WundergroundUpdateReceiverServletTest {
     }
 
     @Test
-    void OnDisposeAllHandlersAreRemovedAndServletIsInactiveEvenThoughBackgroundDiscoveryIsEnabled()
+    void onDisposeAllHandlersAreRemovedAndServletIsInactiveEvenThoughBackgroundDiscoveryIsEnabled()
             throws ServletException, NamespaceException {
         // Given
         WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
@@ -249,7 +249,7 @@ class WundergroundUpdateReceiverServletTest {
         // Given
         ThingUID testThingUID = new ThingUID(WundergroundUpdateReceiverBindingConstants.THING_TYPE_UPDATE_RECEIVER,
                 "test-receiver");
-        final String queryString = "ID=dfggger&PASSWORD=XXXXXX&tempf=26.1&humidity=74&dewptf=18.9&windchillf=26.1&winddir=14&windspeedmph=1.34&windgustmph=2.46&rainin=0.00&dailyrainin=0.00&weeklyrainin=0.00&monthlyrainin=0.08&yearlyrainin=3.06&solarradiation=42.24&UV=1&indoortempf=69.3&indoorhumidity=32&baromin=30.39&AqNOX=21&lowbatt=1&dateutc=2021-02-07%2014:04:03&softwaretype=WH2600%20V2.2.8&action=updateraw&realtime=1&rtfreq=5";
+        final String queryString = "ID=dfggger&PASSWORD=XXXXXX&tempf=26.1&humidity=74&dewptf=18.9&windchillf=26.1&winddir=14&windspeedmph=1.34&windgustmph=2.46&rainin=0.00&dailyrainin=0.00&weeklyrainin=0.00&monthlyrainin=0.08&yearlyrainin=3.06&solarradiation=42.24&UV=1&indoortempf=69.3&indoorhumidity=32&baromin=30.39&AqNOX=21&lowbatt=1&dateutc=2021-02-07%209:04:03&softwaretype=WH2600%20V2.2.8&action=updateraw&realtime=1&rtfreq=5";
         WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
         List<Channel> channels = List.of(
                 ChannelBuilder
@@ -337,7 +337,7 @@ class WundergroundUpdateReceiverServletTest {
         // Then
         verify(callback).stateUpdated(
                 new ChannelUID(TEST_THING_UID, METADATA_GROUP, WundergroundUpdateReceiverBindingConstants.DATEUTC),
-                StringType.valueOf("2021-02-07 14:04:03"));
+                StringType.valueOf("2021-02-07 9:04:03"));
         verify(callback).stateUpdated(
                 new ChannelUID(TEST_THING_UID, METADATA_GROUP, WundergroundUpdateReceiverBindingConstants.LOW_BATTERY),
                 OnOffType.ON);
@@ -393,7 +393,7 @@ class WundergroundUpdateReceiverServletTest {
         // Given
         ThingUID testThingUID = new ThingUID(WundergroundUpdateReceiverBindingConstants.THING_TYPE_UPDATE_RECEIVER,
                 "test-receiver");
-        final String queryString = "ID=dfggger&PASSWORD=XXXXXX&temp1f=26.1&humidity=74&temp2f=25.1&lowbatt=1&soilmoisture1=78&soilmoisture2=73&dateutc=2021-02-07%2014:04:03&softwaretype=WH2600%20V2.2.8&action=updateraw&realtime=1&rtfreq=5";
+        final String queryString = "ID=dfggger&PASSWORD=XXXXXX&temp1f=26.1&humidity=74&temp2f=25.1&lowbatt=1&soilmoisture1=78&soilmoisture2=73&dateutc=2021-02-07%2004:04:03&softwaretype=WH2600%20V2.2.8&action=updateraw&realtime=1&rtfreq=5";
         WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
         List<Channel> channels = List.of(
                 ChannelBuilder
@@ -451,7 +451,7 @@ class WundergroundUpdateReceiverServletTest {
         // Then
         verify(callback).stateUpdated(
                 new ChannelUID(TEST_THING_UID, METADATA_GROUP, WundergroundUpdateReceiverBindingConstants.DATEUTC),
-                StringType.valueOf("2021-02-07 14:04:03"));
+                StringType.valueOf("2021-02-07 04:04:03"));
         verify(callback).stateUpdated(
                 new ChannelUID(TEST_THING_UID, METADATA_GROUP, WundergroundUpdateReceiverBindingConstants.LOW_BATTERY),
                 OnOffType.ON);
