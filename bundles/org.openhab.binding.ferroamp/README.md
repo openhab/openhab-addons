@@ -16,7 +16,7 @@ This number is to identify the respective Sso Pv-string.
 
 ## Supported Things
 
-The binding retrieves data from the different parts of the Ferroamp EnergyHub such as:
+This binding supports one Thing, the energyhub. This hub allows data to be captured from the different parts of the system such as:
 
 - `ehub`: EnergyHub Wall and EnergyHub XL.
 - `sso` : Solar string optimizer.
@@ -33,9 +33,10 @@ The following configuration parameters are available.
 
 | Name            | Type    | Description                                           | Default | Required | Advanced |
 |-----------------|---------|-------------------------------------------------------|---------|----------|----------|
-| hostName        | text    | Hostname or IP address of the device                  | N/A     | yes      | no       |
-| userName        | text    | Username to access the device                         | N/A     | yes      | no       |
-| password        | text    | Password to access the device                         | N/A     | yes      | no       |
+| hostName        | Text    | Hostname or IP address of the device                  | N/A     | yes      | no       |
+| userName        | Text    | Username to access the device                         | N/A     | yes      | no       |
+| password        | Text    | Password to access the device                         | N/A     | yes      | no       |
+| refreshInterval | Integer | Define polling-interval in seconds                    | 60      | yes      | yes      |
 | hasBattery      | boolean | Has the system a battery connected?                   | N/A     | no       | yes      |
 
 ## Channels

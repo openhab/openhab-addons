@@ -14,7 +14,7 @@
 package org.openhab.binding.ferroamp.dto;
 
 /**
- * The {@link GetGeneralValLx} is responsible for parsing of value parts of received MQTT messages.
+ * The {@link GetGeneralValues} is responsible for parsing value parts of received MQTT messages.
  *
  * @author Örjan Backsell - Initial contribution
  *

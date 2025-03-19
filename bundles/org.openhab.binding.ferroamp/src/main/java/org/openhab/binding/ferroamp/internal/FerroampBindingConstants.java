@@ -19,7 +19,7 @@ import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link FerroampBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * used throughout the binding.
  *
  * @author Örjan Backsell - Initial contribution
  *

@@ -26,7 +26,7 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link FerroampHandlerFactory} is responsible for creating things and thing
+ * The {@link FerroampHandlerFactory} is responsible for creating things handler.
  * handlers.
  *
  * @author Örjan Backsell - Initial contribution

@@ -15,7 +15,7 @@ package org.openhab.binding.ferroamp.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link FerroampConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link FerroampConfiguration} class contains fields that map to configuration parameters.
  *
  * @author Örjan Backsell - Initial contribution
  *
@@ -27,4 +27,5 @@ public class FerroampConfiguration {
     public String userName = "";
     public String password = "";
     public boolean hasBattery = false;
+    public int refreshInterval = 60;
 }

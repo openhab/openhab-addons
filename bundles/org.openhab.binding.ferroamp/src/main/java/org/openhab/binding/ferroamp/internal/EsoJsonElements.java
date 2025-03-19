@@ -18,7 +18,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link EhubParameters1} is responsible for all parameters regarded to EHUB
+ * The {@link EsoJsonElements} is responsible for all parameters related to ESO
  *
  * @author Örjan Backsell - Initial contribution
  *

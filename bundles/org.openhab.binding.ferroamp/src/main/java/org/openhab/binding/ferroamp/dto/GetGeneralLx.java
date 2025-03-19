@@ -14,7 +14,7 @@
 package org.openhab.binding.ferroamp.dto;
 
 /**
- * The {@link GetGeneralLx} is responsible for parsing of Lx parts of received MQTT messages.
+ * The {@link GetGeneralLx} is responsible for parsing Lx parts of received MQTT messages.
  *
  * @author Örjan Backsell - Initial contribution
  *

@@ -14,7 +14,7 @@
 package org.openhab.binding.ferroamp.dto;
 
 /**
- * The {@link GetUdc} is responsible for parsing of Udc part of received MQTT messages.
+ * The {@link GetUdc} is responsible for parsing Udc part of received MQTT messages.
  *
  * @author Örjan Backsell - Initial contribution
  *

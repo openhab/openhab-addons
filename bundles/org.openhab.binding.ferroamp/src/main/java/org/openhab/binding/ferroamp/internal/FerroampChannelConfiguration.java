@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.unit.Units;
 
 /**
- * The {@link FerroampChannelConfiguration} class defines methods, which set up channel configuration for the binding.
+ * The {@link FerroampChannelConfiguration} class defines methods, that set the channel configuration for the binding.
  *
  * @author Örjan Backsell - Initial contribution
  *
