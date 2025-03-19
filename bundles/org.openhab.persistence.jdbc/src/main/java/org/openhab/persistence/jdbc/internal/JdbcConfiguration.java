@@ -13,6 +13,7 @@
 package org.openhab.persistence.jdbc.internal;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
@@ -125,10 +126,23 @@ public class JdbcConfiguration {
         logger.debug("JDBC::updateConfig: password exists? {}", password != null && !password.isBlank());
         logger.debug("JDBC::updateConfig: url={}", url);
 
-        // set database type and database type class
-        setDBDAOClass(Objects.requireNonNull(parsedURL.getProperty("dbShortcut"))); // derby, h2, hsqldb, mariadb,
-                                                                                    // mysql, postgresql, sqlite,
-                                                                                    // timescaledb, oracle
+        final String dbShortcut = Objects.requireNonNull(parsedURL.getProperty("dbShortcut"));
+
+        // set database type and database type class:
+        // derby, h2, hsqldb, mariadb, mysql, postgresql, sqlite, timescaledb, oracle
+        setDBDAOClass(dbShortcut);
+
+        String dq = (String) configuration.get("tableDoubleQuotedTableNames");
+        if (dq != null && !dq.isBlank()) {
+            dBDAO.setTableDoubleQuotedTableNames(Boolean.parseBoolean(dq));
+        } else {
+            // List of databases for which the tableDoubleQuotedTableNames is true for backward compatibility.
+            final String[] postgresLike = { "postgresql", "timescaledb" };
+            dBDAO.setTableDoubleQuotedTableNames(Arrays.stream(postgresLike).anyMatch(dbShortcut::equals));
+        }
+
+        logger.debug("JDBC::updateConfig: tableDoubleQuotedTableNames={}", dBDAO.isTableDoubleQuotedTableNames());
+
         // set user
         if (user != null && !user.isBlank()) {
             dBDAO.databaseProps.setProperty("dataSource.user", user);

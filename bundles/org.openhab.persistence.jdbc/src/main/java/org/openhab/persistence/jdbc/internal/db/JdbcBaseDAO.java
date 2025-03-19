@@ -75,6 +75,7 @@ import org.slf4j.LoggerFactory;
 public class JdbcBaseDAO {
     private final Logger logger = LoggerFactory.getLogger(JdbcBaseDAO.class);
 
+    private boolean tableDoubleQuotedTableNames = false;
     public final Properties databaseProps = new Properties();
     protected String urlSuffix = "";
     public final Map<String, String> sqlTypes = new HashMap<>();
@@ -760,7 +761,19 @@ public class JdbcBaseDAO {
     }
 
     protected String formattedIdentifier(String identifier) {
-        return identifier;
+        if (isTableDoubleQuotedTableNames()) {
+            return "\"" + identifier + "\"";
+        } else {
+            return identifier;
+        }
+    }
+
+    public boolean isTableDoubleQuotedTableNames() {
+        return tableDoubleQuotedTableNames;
+    }
+
+    public void setTableDoubleQuotedTableNames(final boolean tableDoubleQuotedTableNames) {
+        this.tableDoubleQuotedTableNames = tableDoubleQuotedTableNames;
     }
 
     private String getItemType(Item i) {
