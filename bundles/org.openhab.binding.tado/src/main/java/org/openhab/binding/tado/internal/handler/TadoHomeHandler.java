@@ -73,6 +73,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
 
     private final TadoBatteryChecker batteryChecker;
     private final TadoHandlerFactory tadoHandlerFactory;
+    private final HomePresence cachedHomePresence;
 
     private @NonNullByDefault({}) TadoHomeConfig configuration;
     private @NonNullByDefault({}) String confPendingText;
@@ -81,8 +82,6 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
     private @Nullable Long homeId;
     private @Nullable ScheduledFuture<?> initializationFuture;
     private @Nullable OAuthClientService oAuthClientService;
-
-    private HomePresence cachedHomePresence;
 
     public TadoHomeHandler(Bridge bridge, TadoHandlerFactory tadoHandlerFactory, OAuthFactory oAuthFactory) {
         super(bridge);
@@ -248,16 +247,17 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
                     case "ON", "HOME":
                         newHomePresence = new HomePresence();
                         newHomePresence.setHomePresence(PresenceState.HOME);
-                        cachedHomePresence = newHomePresence;
+                        cachedHomePresence.setHomePresence(PresenceState.HOME);
                         break;
                     case "OFF", "AWAY":
                         newHomePresence = new HomePresence();
                         newHomePresence.setHomePresence(PresenceState.AWAY);
-                        cachedHomePresence = newHomePresence;
+                        cachedHomePresence.setHomePresence(PresenceState.AWAY);
                         break;
                     default:
                         return;
                 }
+                break;
 
             default:
                 return;
@@ -265,8 +265,13 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
 
         try {
             api.updatePresenceLock(homeId, newHomePresence);
-        } catch (IOException | ApiException e) {
-            logger.warn("Error setting home presence: {}", e.getMessage(), e);
+        } catch (ApiException | IOException e) {
+            if (e instanceof ApiException && CHANNEL_HOME_GEOFENCING_ENABLED.equals(id) && "ON".equals(commandString)) {
+                updateState(CHANNEL_HOME_GEOFENCING_ENABLED, OnOffType.OFF);
+                logger.warn("Failed to enable geofencing. You need a tado Auto Assist subscription.");
+            } else {
+                logger.warn("Error setting home presence: {}", e.getMessage(), e);
+            }
         }
     }
 
