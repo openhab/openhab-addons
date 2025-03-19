@@ -24,6 +24,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Florian Hotze - Initial contribution
  * @author Luca Arnecke - update to evcc version 0.123.1
+ * @author Daniel Kötting - update to evcc version 0.133.0
  */
 public class Result {
     // Data types from https://github.com/evcc-io/evcc/blob/master/api/api.go

@@ -60,6 +60,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Florian Hotze - Initial contribution
  * @author Luca Arnecke - Update to evcc version 0.123.1
+ * @author Marcel Goerentz - Update to evcc version 0.133.0
  */
 @NonNullByDefault
 public class EvccHandler extends BaseThingHandler {
