@@ -265,13 +265,15 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
 
         try {
             api.updatePresenceLock(homeId, newHomePresence);
-        } catch (ApiException | IOException e) {
-            if (e instanceof ApiException && CHANNEL_HOME_GEOFENCING_ENABLED.equals(id) && "ON".equals(commandString)) {
+        } catch (ApiException e) {
+            if (CHANNEL_HOME_GEOFENCING_ENABLED.equals(id) && "ON".equals(commandString)) {
                 updateState(CHANNEL_HOME_GEOFENCING_ENABLED, OnOffType.OFF);
                 logger.warn("Failed to enable geofencing. You need a tado Auto Assist subscription.");
             } else {
                 logger.warn("Error setting home presence: {}", e.getMessage(), e);
             }
+        } catch (IOException e) {
+            logger.warn("Error setting home presence: {}", e.getMessage(), e);
         }
     }
 
