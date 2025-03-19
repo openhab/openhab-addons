@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.bambulab.internal;
 
+import static java.lang.Integer.parseInt;
+import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.AmsChannel.*;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel.*;
+import static org.openhab.binding.bambulab.internal.TrayHelper.updateTrayLoaded;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.DECIBEL_MILLIWATTS;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
@@ -28,6 +31,8 @@ import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PushingCommand
 import static pl.grzeslowski.jbambuapi.mqtt.PrinterClientConfig.requiredFields;
 
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +40,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bambulab.internal.BambuLabBindingConstants.AmsChannel;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -51,6 +58,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -223,66 +231,270 @@ public class PrinterHandler extends BaseThingHandler
             return;
         }
         // tempers
-        updateCelsiusState(CHANNEL_NOZZLE_TEMPERATURE.getName(), print.nozzleTemper());
-        updateCelsiusState(CHANNEL_NOZZLE_TARGET_TEMPERATURE.getName(), print.nozzleTargetTemper());
-        updateCelsiusState(CHANNEL_BED_TEMPERATURE.getName(), print.bedTemper());
-        updateCelsiusState(CHANNEL_BED_TARGET_TEMPERATURE.getName(), print.bedTargetTemper());
-        updateCelsiusState(CHANNEL_CHAMBER_TEMPERATURE.getName(), print.chamberTemper());
+        updateCelsiusState(CHANNEL_NOZZLE_TEMPERATURE, print.nozzleTemper());
+        updateCelsiusState(CHANNEL_NOZZLE_TARGET_TEMPERATURE, print.nozzleTargetTemper());
+        updateCelsiusState(CHANNEL_BED_TEMPERATURE, print.bedTemper());
+        updateCelsiusState(CHANNEL_BED_TARGET_TEMPERATURE, print.bedTargetTemper());
+        updateCelsiusState(CHANNEL_CHAMBER_TEMPERATURE, print.chamberTemper());
         // string
-        updateStringState(CHANNEL_MC_PRINT_STAGE.getName(), print.mcPrintStage());
-        updateStringState(CHANNEL_BED_TYPE.getName(), print.bedType());
-        updateStringState(CHANNEL_GCODE_FILE.getName(), print.gcodeFile());
-        updateStringState(CHANNEL_GCODE_STATE.getName(), print.gcodeState());
-        updateStringState(CHANNEL_REASON.getName(), print.reason());
-        updateStringState(CHANNEL_RESULT.getName(), print.result());
+        updateStringState(CHANNEL_MC_PRINT_STAGE, print.mcPrintStage());
+        updateStringState(CHANNEL_BED_TYPE, print.bedType());
+        updateStringState(CHANNEL_GCODE_FILE, print.gcodeFile());
+        updateStringState(CHANNEL_GCODE_STATE, print.gcodeState());
+        updateStringState(CHANNEL_REASON, print.reason());
+        updateStringState(CHANNEL_RESULT, print.result());
         // percent
-        updatePercentState(CHANNEL_MC_PERCENT.getName(), print.mcPercent());
-        updatePercentState(CHANNEL_GCODE_FILE_PREPARE_PERCENT.getName(), print.gcodeFilePreparePercent());
+        updatePercentState(CHANNEL_MC_PERCENT, print.mcPercent());
+        updatePercentState(CHANNEL_GCODE_FILE_PREPARE_PERCENT, print.gcodeFilePreparePercent());
         // decimal
-        updateDecimalState(CHANNEL_MC_REMAINING_TIME.getName(), print.mcRemainingTime());
-        updateDecimalState(CHANNEL_BIG_FAN_1_SPEED.getName(), print.bigFan1Speed());
-        updateDecimalState(CHANNEL_BIG_FAN_2_SPEED.getName(), print.bigFan2Speed());
-        updateDecimalState(CHANNEL_HEAT_BREAK_FAN_SPEED.getName(), print.heatbreakFanSpeed());
-        updateDecimalState(CHANNEL_LAYER_NUM.getName(), print.layerNum());
+        updateDecimalState(CHANNEL_MC_REMAINING_TIME, print.mcRemainingTime());
+        updateDecimalState(CHANNEL_BIG_FAN_1_SPEED, print.bigFan1Speed());
+        updateDecimalState(CHANNEL_BIG_FAN_2_SPEED, print.bigFan2Speed());
+        updateDecimalState(CHANNEL_HEAT_BREAK_FAN_SPEED, print.heatbreakFanSpeed());
+        updateDecimalState(CHANNEL_LAYER_NUM, print.layerNum());
         if (print.spdLvl() != null) {
             var speedLevel = PrintSpeedCommand.findByLevel(print.spdLvl());
             updateState(CHANNEL_SPEED_LEVEL.getName(), new StringType(speedLevel.toString()));
         }
         // boolean
-        updateBooleanState(CHANNEL_TIME_LAPS.getName(), print.timelapse());
-        updateBooleanState(CHANNEL_USE_AMS.getName(), print.useAms());
-        updateBooleanState(CHANNEL_VIBRATION_CALIBRATION.getName(), print.vibrationCali());
+        updateBooleanState(CHANNEL_TIME_LAPS, print.timelapse());
+        updateBooleanState(CHANNEL_USE_AMS, print.useAms());
+        updateBooleanState(CHANNEL_VIBRATION_CALIBRATION, print.vibrationCali());
         // lights
         updateLightState("chamber_light", CHANNEL_LED_CHAMBER_LIGHT, print.lightsReport());
         updateLightState("work_light", CHANNEL_LED_WORK_LIGHT, print.lightsReport());
         // other
         if (print.wifiSignal() != null) {
-            updateState(CHANNEL_WIFI_SIGNAL.getName(), parseWifiChannel(print.wifiSignal()));
+            updateState(CHANNEL_WIFI_SIGNAL, parseWifiChannel(print.wifiSignal()));
+        }
+        // ams
+        Optional.of(print)//
+                .map(Report.Print::ams)//
+                .ifPresent(ams -> {
+                    updateState(CHANNEL_AMS_TRAY_NOW, updateTrayLoaded(ams.trayNow()));
+                    updateState(CHANNEL_AMS_TRAY_PREVIOUS, updateTrayLoaded(ams.trayPre()));
+                });
+        Optional.of(print)//
+                .map(Report.Print::ams)//
+                .map(Report.Print.Ams::ams)//
+                .ifPresent(a -> a.forEach(this::updateAms));
+        // vtray
+        Optional.of(print)//
+                .map(Report.Print::vtTray)//
+                .ifPresent(this::updateVtray);
+    }
+
+    private void updateVtray(Report.Print.VtTray vtTray) {
+        Optional.ofNullable(vtTray.trayType())//
+                .map(Object::toString)//
+                .flatMap(TrayType::findTrayType)//
+                .map(Enum::name)//
+                .map(value -> (State) StringType.valueOf(value))//
+                .or(undef())//
+                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_TYPE, trayType));
+        Optional.ofNullable(vtTray.trayColor())//
+                .map(Object::toString)//
+                .filter(value -> value.length() >= 6)//
+                .map(PrinterHandler::parseColor)//
+                .or(undef())//
+                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_COLOR, trayType));
+        parseTemperatureType(vtTray.nozzleTempMax())
+                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_NOZZLE_TEMPERATURE_MAX, trayType));
+        parseTemperatureType(vtTray.nozzleTempMin())
+                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_NOZZLE_TEMPERATURE_MIN, trayType));
+        Optional.ofNullable(vtTray.remain())//
+                .map(Object::toString)//
+                .map(value -> (State) PercentType.valueOf(value))//
+                .or(undef())//
+                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_REMAIN, trayType));
+        parseDecimalType(vtTray.k()).ifPresent(trayType -> updateState(CHANNEL_VTRAY_K, trayType));
+        parseDecimalType(vtTray.n()).ifPresent(trayType -> updateState(CHANNEL_VTRAY_N, trayType));
+        parseStringType(vtTray.tagUid()).ifPresent(trayType -> updateState(CHANNEL_VTRAY_TAG_UUID, trayType));
+        parseStringType(vtTray.trayIdName()).ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_ID_NAME, trayType));
+        parseStringType(vtTray.trayInfoIdx()).ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_INFO_IDX, trayType));
+        parseStringType(vtTray.traySubBrands())
+                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_SUB_BRANDS, trayType));
+        parseDecimalType(vtTray.trayWeight()).ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_WEIGHT, trayType));
+        parseDecimalType(vtTray.trayDiameter())
+                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_DIAMETER, trayType));
+        parseTemperatureType(vtTray.trayTemp())
+                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_TEMPERATURE, trayType));
+        parseDecimalType(vtTray.trayTime()).ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_TIME, trayType));
+        parseStringType(vtTray.bedTempType())
+                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_BED_TEMPERATURE_TYPE, trayType));
+        parseTemperatureType(vtTray.bedTemp())
+                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_BED_TEMPERATURE, trayType));
+    }
+
+    private static State parseColor(String colorHex) {
+        int r = parseInt(colorHex.substring(0, 2), 16);
+        int g = parseInt(colorHex.substring(2, 4), 16);
+        int b = parseInt(colorHex.substring(4, 6), 16);
+        return ColorUtil.rgbToHsb(new int[] { r, g, b });
+    }
+
+    private Optional<State> parseDecimalType(@Nullable Number number) {
+        return Optional.ofNullable(number).map(DecimalType::new);
+    }
+
+    private Optional<State> parseStringType(@Nullable String string) {
+        return Optional.ofNullable(string).map(StringType::valueOf);
+    }
+
+    private void updateAms(Map<String, Object> ams) {
+        var someAmsChannel = Optional.of(ams)//
+                .map(map -> map.get("id"))//
+                .map(Object::toString)//
+                .map(Integer::parseInt)//
+                .filter(id -> id >= MIN_AMS)//
+                .filter(id -> id < MAX_AMS)//
+                .map(AmsChannel::new);
+        if (someAmsChannel.isEmpty()) {
+            return;
+        }
+        var amsChannel = someAmsChannel.get();
+        Optional.of(ams)//
+                .map(map -> map.get("tray"))//
+                .filter(obj -> obj instanceof Collection<?>)//
+                .map(obj -> (Collection<?>) obj)//
+                .stream()//
+                .flatMap(Collection::stream)//
+                .filter(obj -> obj instanceof Map<?, ?>)//
+                .map(obj -> (Map<?, ?>) obj)//
+                .forEach(map -> updateAmsTray(amsChannel, map));
+    }
+
+    private void updateAmsTray(AmsChannel amsChannel, Map<?, ?> map) {
+        var someId = findKey(map, "id")//
+                .map(Object::toString)//
+                .map(Integer::parseInt);
+        if (someId.isEmpty()) {
+            logger.warn("There is no tray ID in {}", map);
+            return;
+        }
+        int trayId = someId.get();
+        if (trayId > MAX_AMS_TRAYS) {
+            logger.warn("Tray ID needs to be lower that {}. Was {}", MAX_AMS_TRAYS, trayId);
+            return;
+        }
+
+        findKey(map, "tray_type")//
+                .map(Object::toString)//
+                .flatMap(TrayType::findTrayType)//
+                .map(Enum::name)//
+                .map(value -> (State) StringType.valueOf(value))//
+                .or(undef())//
+                .ifPresent(trayType -> updateState(amsChannel.getTrayTypeChannel(trayId), trayType));
+        findKey(map, "tray_color")//
+                .map(Object::toString)//
+                .filter(value -> value.length() >= 6)//
+                .map(PrinterHandler::parseColor)//
+                .or(undef())//
+                .ifPresent(trayType -> updateState(amsChannel.getTrayColorChannel(trayId), trayType));
+        parseTemperatureType(map, "nozzle_temp_max")
+                .ifPresent(trayType -> updateState(amsChannel.getNozzleTemperatureMaxChannel(trayId), trayType));
+        parseTemperatureType(map, "nozzle_temp_min")
+                .ifPresent(trayType -> updateState(amsChannel.getNozzleTemperatureMinChannel(trayId), trayType));
+        findKey(map, "remain")//
+                .map(Object::toString)//
+                .map(value -> (State) PercentType.valueOf(value))//
+                .or(undef())//
+                .ifPresent(trayType -> updateState(amsChannel.getRemainChannel(trayId), trayType));
+        parseDecimalType(map, "k").ifPresent(trayType -> updateState(amsChannel.getKChannel(trayId), trayType));
+        parseDecimalType(map, "n").ifPresent(trayType -> updateState(amsChannel.getNChannel(trayId), trayType));
+        parseStringType(map, "tag_uuid")
+                .ifPresent(trayType -> updateState(amsChannel.getTagUuidChannel(trayId), trayType));
+        parseStringType(map, "tray_id_name")
+                .ifPresent(trayType -> updateState(amsChannel.getTrayIdNameChannel(trayId), trayType));
+        parseStringType(map, "tray_info_idx")
+                .ifPresent(trayType -> updateState(amsChannel.getTrayInfoIdxChannel(trayId), trayType));
+        parseStringType(map, "tray_sub_brands")
+                .ifPresent(trayType -> updateState(amsChannel.getTraySubBrandsChannel(trayId), trayType));
+        parseDecimalType(map, "tray_weight")
+                .ifPresent(trayType -> updateState(amsChannel.getTrayWeightChannel(trayId), trayType));
+        parseDecimalType(map, "tray_diameter")
+                .ifPresent(trayType -> updateState(amsChannel.getTrayDiameterChannel(trayId), trayType));
+        parseTemperatureType(map, "tray_temp")
+                .ifPresent(trayType -> updateState(amsChannel.getTrayTemperatureChannel(trayId), trayType));
+        parseDecimalType(map, "tray_time")
+                .ifPresent(trayType -> updateState(amsChannel.getTrayTimeChannel(trayId), trayType));
+        parseStringType(map, "bed_temp_type")
+                .ifPresent(trayType -> updateState(amsChannel.getBedTemperatureTypeChannel(trayId), trayType));
+        parseTemperatureType(map, "bed_temp")
+                .ifPresent(trayType -> updateState(amsChannel.getBedTemperatureChannel(trayId), trayType));
+        parseDecimalType(map, "ctype").ifPresent(trayType -> updateState(amsChannel.getCtypeChannel(trayId), trayType));
+    }
+
+    private Optional<State> parseTemperatureType(Map<?, ?> map, String key) {
+        return findKey(map, key)//
+                .map(Object::toString)//
+                .flatMap(this::parseTemperatureType)//
+                .or(undef());
+    }
+
+    private Optional<State> parseTemperatureType(String value) {
+        try {
+            var d = Double.parseDouble(value);
+            return Optional.of(new QuantityType<>(d, CELSIUS));
+        } catch (NumberFormatException ex) {
+            logger.debug("Cannot parse: {}", value, ex);
+            return Optional.empty();
         }
     }
 
-    private void updateCelsiusState(String channelId, @Nullable Double temperature) {
+    private Optional<State> parseDecimalType(Map<?, ?> map, String key) {
+        return findKey(map, key)//
+                .map(Object::toString)//
+                .flatMap(this::parseDecimalType)//
+                .or(undef());
+    }
+
+    private Optional<State> parseDecimalType(String value) {
+        try {
+            return Optional.of(DecimalType.valueOf(value));
+        } catch (NumberFormatException ex) {
+            logger.debug("Cannot parse {}", value, ex);
+            return Optional.empty();
+        }
+    }
+
+    private Optional<State> parseStringType(Map<?, ?> map, String key) {
+        return findKey(map, key)//
+                .map(Object::toString)//
+                .map(value -> (State) StringType.valueOf(value))//
+                .or(undef());
+    }
+
+    private static Supplier<Optional<? extends State>> undef() {
+        return () -> Optional.of(UNDEF);
+    }
+
+    private static Optional<?> findKey(Map<?, ?> map, String key) {
+        return Optional.of(map).map(m -> m.get(key));
+    }
+
+    private void updateCelsiusState(BambuLabBindingConstants.Channel channelId, @Nullable Double temperature) {
         if (temperature == null) {
             return;
         }
         updateState(channelId, new QuantityType<>(temperature, CELSIUS));
     }
 
-    private void updateStringState(String channelId, @Nullable String string) {
+    private void updateStringState(BambuLabBindingConstants.Channel channelId, @Nullable String string) {
         if (string == null) {
             return;
         }
         updateState(channelId, new StringType(string));
     }
 
-    private void updateDecimalState(String channelId, @Nullable Number number) {
+    private void updateDecimalState(BambuLabBindingConstants.Channel channelId, @Nullable Number number) {
         if (number == null) {
             return;
         }
         updateState(channelId, new DecimalType(number));
     }
 
-    private void updateDecimalState(String channelId, @Nullable String number) {
+    private void updateDecimalState(BambuLabBindingConstants.Channel channelId, @Nullable String number) {
         if (number == null) {
             return;
         }
@@ -295,21 +507,21 @@ public class PrinterHandler extends BaseThingHandler
         }
     }
 
-    private void updateBooleanState(String channelId, @Nullable Boolean bool) {
+    private void updateBooleanState(BambuLabBindingConstants.Channel channelId, @Nullable Boolean bool) {
         if (bool == null) {
             return;
         }
         updateState(channelId, OnOffType.from(bool));
     }
 
-    private void updatePercentState(String channelId, @Nullable Integer integer) {
+    private void updatePercentState(BambuLabBindingConstants.Channel channelId, @Nullable Integer integer) {
         if (integer == null) {
             return;
         }
         updateState(channelId, new PercentType(integer));
     }
 
-    private void updatePercentState(String channelId, @Nullable String integer) {
+    private void updatePercentState(BambuLabBindingConstants.Channel channelId, @Nullable String integer) {
         if (integer == null) {
             return;
         }
@@ -343,7 +555,7 @@ public class PrinterHandler extends BaseThingHandler
 
         var integer = matcher.group(1);
         try {
-            var value = Integer.parseInt(integer);
+            var value = parseInt(integer);
             return new QuantityType<>(value, DECIBEL_MILLIWATTS);
         } catch (NumberFormatException e) {
             logger.debug("Cannot parse integer {} from wifi {}", integer, wifi, e);
@@ -363,6 +575,10 @@ public class PrinterHandler extends BaseThingHandler
         } catch (Exception e) {
             updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
+    }
+
+    private void updateState(BambuLabBindingConstants.Channel channelID, State state) {
+        updateState(channelID.getName(), state);
     }
 
     @Override
