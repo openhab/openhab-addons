@@ -44,6 +44,7 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
@@ -87,6 +88,13 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
         this.httpServlet = new TadoAuthenticationServlet(this);
+    }
+
+    @Deactivate
+    public void deactivate() {
+        if (oAuthClientService != null) {
+            oAuthFactory.ungetOAuthService(THING_TYPE_HOME.toString());
+        }
     }
 
     @Override
@@ -179,7 +187,6 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
     public void unsubscribeOAuthClientService(TadoHomeHandler tadoHomeHandler) {
         if (oAuthClientServiceSubscribers.remove(tadoHomeHandler) && oAuthClientServiceSubscribers.isEmpty()) {
             httpService.unregister(TadoAuthenticationServlet.PATH);
-            oAuthFactory.ungetOAuthService(THING_TYPE_HOME.toString());
         }
     }
 
