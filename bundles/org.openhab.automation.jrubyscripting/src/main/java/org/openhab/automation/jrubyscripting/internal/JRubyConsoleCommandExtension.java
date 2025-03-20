@@ -40,6 +40,7 @@ import org.apache.karaf.shell.api.console.Session;
 import org.apache.karaf.shell.api.console.SessionFactory;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.automation.jrubyscripting.internal.watch.JRubyScriptFileWatcher;
+import org.openhab.core.automation.module.script.ScriptEngineContainer;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
 import org.openhab.core.config.core.ConfigDescription;
 import org.openhab.core.config.core.ConfigDescriptionParameter;
@@ -226,6 +227,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         });
     }
 
+    @SuppressWarnings("unchecked")
     private Map<String, String> getConsoles() {
         return (Map<String, String>) executeWithPlainJRuby(null, engine -> engine.eval(
                 "require '" + DEFAULT_CONSOLE_PATH + "registry'; OpenHAB::Console::REGISTRY.transform_keys(&:to_s)"));
@@ -270,7 +272,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
                             console.println("  " + name + " - " + description);
                         }
                     }
-                    if (!defaultConsoleInRegistry && defaultConsole != null && !defaultConsole.isBlank()) {
+                    if (!defaultConsoleInRegistry && !defaultConsole.isBlank()) {
                         console.println("Default console script: '" + defaultConsole + "'");
                     }
                     return;
@@ -454,7 +456,13 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         final String scriptIdentifier = "jruby-console-" + UUID.randomUUID().toString();
 
         printLoadingMessage(console, true);
-        ScriptEngine engine = scriptEngineManager.createScriptEngine(scriptType, scriptIdentifier).getScriptEngine();
+        ScriptEngineContainer scriptEngineContainer = scriptEngineManager.createScriptEngine(scriptType,
+                scriptIdentifier);
+        if (scriptEngineContainer == null) {
+            console.println("Error: Unable to create JRuby script engine.");
+            return null;
+        }
+        ScriptEngine engine = scriptEngineContainer.getScriptEngine();
         try {
             printLoadingMessage(console, false);
             return process.apply(engine);
