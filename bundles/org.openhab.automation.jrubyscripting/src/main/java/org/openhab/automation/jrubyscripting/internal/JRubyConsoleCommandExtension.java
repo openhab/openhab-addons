@@ -63,10 +63,9 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     private static final String CONSOLE = "console";
     private static final String BUNDLE = "bundle";
     private static final String GEM = "gem";
-    private static final String UPDATE = "update";
     private static final String PRUNE = "prune";
 
-    private static final List<String> SUB_COMMANDS = List.of(INFO, CONSOLE, BUNDLE, GEM, UPDATE, PRUNE);
+    private static final List<String> SUB_COMMANDS = List.of(INFO, CONSOLE, BUNDLE, GEM, PRUNE);
 
     private final ScriptEngineManager scriptEngineManager;
     private final JRubyScriptEngineFactory jRubyScriptEngineFactory;
@@ -102,7 +101,6 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                         "starts an interactive JRuby console"), //
                 buildCommandUsage(BUNDLE + " [arguments]", "runs Ruby bundler in the main Script path"), //
                 buildCommandUsage(GEM + " [arguments]", "manages JRuby Scripting add-on's RubyGems"), //
-                buildCommandUsage(UPDATE, "updates the configured gems"), //
                 buildCommandUsage(PRUNE + " [-f|--force]", "cleans up older versions in the .gem directory") //
         );
     }
