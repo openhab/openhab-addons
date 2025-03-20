@@ -40,6 +40,7 @@ import org.apache.karaf.shell.api.console.Session;
 import org.apache.karaf.shell.api.console.SessionFactory;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.automation.jrubyscripting.internal.watch.JRubyScriptFileWatcher;
+import org.openhab.core.automation.module.script.ScriptEngineContainer;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
 import org.openhab.core.config.core.ConfigDescription;
 import org.openhab.core.config.core.ConfigDescriptionParameter;
@@ -151,9 +152,6 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
                 case GEM:
                     gem(console, Arrays.copyOfRange(args, 1, args.length));
                     break;
-                case UPDATE:
-                    updateGems(console);
-                    break;
                 case PRUNE:
                     if (args.length > 1) {
                         if ("-f".equals(args[1]) || "--force".equals(args[1])) {
@@ -225,7 +223,9 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
             parameters.forEach(parameter -> {
                 console.print("  " + parameter.getName() + ": ");
                 String value = config.get(parameter.getName());
-                if (value.contains("\n")) {
+                if (value == null) {
+                    console.println("not set");
+                } else if (value.contains("\n")) {
                     console.println("  (multiline)");
                     console.println("    " + value.replace("\n", "\n    "));
                 } else {
@@ -236,6 +236,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         });
     }
 
+    @SuppressWarnings("unchecked")
     private Map<String, String> getConsoles() {
         return (Map<String, String>) executeWithPlainJRuby(null, engine -> engine.eval(
                 "require '" + DEFAULT_CONSOLE_PATH + "registry'; OpenHAB::Console::REGISTRY.transform_keys(&:to_s)"));
@@ -265,7 +266,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
                 case "-l":
                     boolean defaultConsoleInRegistry = false;
                     Map<String, String> consoles = (Map<String, String>) getConsoles();
-                    if (consoles == null) {
+                    if (consoles.isEmpty()) {
                         console.println(
                                 "The list of console scripts is not available. Please install/update the JRuby helper library gem.");
                     } else {
@@ -280,7 +281,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
                             console.println("  " + name + " - " + description);
                         }
                     }
-                    if (!defaultConsoleInRegistry && defaultConsole != null && !defaultConsole.isBlank()) {
+                    if (!defaultConsoleInRegistry && !defaultConsole.isBlank()) {
                         console.println("Default console script: '" + defaultConsole + "'");
                     }
                     return;
@@ -324,8 +325,6 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         final String BUNDLER = """
                 require 'jruby'
                 JRuby.runtime.instance_config.update_native_env_enabled = false
-                ENV['BUNDLE_GEMFILE'] = '%s'
-                """.formatted(gemfilePath) + """
 
                 require "bundler"
                 require "bundler/friendly_errors"
@@ -343,6 +342,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
                 """;
 
         executeWithPlainJRuby(console, engine -> {
+            JRubyScriptEngineConfiguration.setEnvironmentVariable(engine, "BUNDLE_GEMFILE", gemfilePath);
             engine.put(ScriptEngine.ARGV, args);
             engine.eval(BUNDLER);
             return null;
@@ -358,14 +358,6 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         executeWithPlainJRuby(console, engine -> {
             engine.put(ScriptEngine.ARGV, args);
             engine.eval(GEM);
-            return null;
-        });
-    }
-
-    private void updateGems(Console console) {
-        console.println("Updating configured gems: " + jRubyScriptEngineFactory.getConfiguration().getGems());
-        executeWithPlainJRuby(console, engine -> {
-            jRubyScriptEngineFactory.updateGems(engine);
             return null;
         });
     }
@@ -468,7 +460,12 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         final String scriptIdentifier = "jruby-console-" + UUID.randomUUID().toString();
 
         printLoadingMessage(console, true);
-        ScriptEngine engine = scriptEngineManager.createScriptEngine(scriptType, scriptIdentifier).getScriptEngine();
+        ScriptEngineContainer container = scriptEngineManager.createScriptEngine(scriptType, scriptIdentifier);
+        if (container == null) {
+            console.println("Error: Unable to create JRuby script engine.");
+            return null;
+        }
+        ScriptEngine engine = container.getScriptEngine();
         try {
             printLoadingMessage(console, false);
             return process.apply(engine);

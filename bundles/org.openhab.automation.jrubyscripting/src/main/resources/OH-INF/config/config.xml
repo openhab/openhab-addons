@@ -7,7 +7,7 @@
 
 		<parameter-group name="gems">
 			<label>Ruby Gems</label>
-			<description>This group defines the list of Ruby Gems to install.</description>
+			<description>This group defines the management of Ruby Gems.</description>
 		</parameter-group>
 
 		<parameter-group name="environment">
@@ -22,12 +22,6 @@
 			<advanced>true</advanced>
 		</parameter-group>
 
-		<parameter-group name="bundler">
-			<label>Bundler</label>
-			<description>This group defines the Bundler settings.</description>
-			<advanced>true</advanced>
-		</parameter-group>
-
 		<parameter-group name="console">
 			<label>JRuby Console</label>
 			<description>This group defines the JRuby console settings.</description>
@@ -37,33 +31,49 @@
 		<parameter name="gems" type="text" required="false" groupName="gems">
 			<label>Ruby Gems</label>
 			<description><![CDATA[A comma separated list of Ruby Gems to install. Versions may be constrained by separating with an
-				<tt>=</tt> and then the standard RubyGems version constraint, such as "<tt>openhab-scripting=~>5.0</tt>".
+				<code>=</code> and then the standard RubyGems version constraint, such as "<code>openhab-scripting=~>5.0</code>".
 				]]></description>
-			<default>openhab-scripting=~>5.0.0</default>
+			<default>openhab-scripting=~&gt;5.0</default>
 		</parameter>
 
-		<parameter name="require" type="text" required="false" groupName="gems">
-			<label>Require Scripts</label>
-			<description>A comma separated list of script names to be required by the JRuby Scripting Engine before running user
-				scripts.</description>
-			<default>openhab/dsl</default>
+		<parameter name="bundle_gemfile" type="text" required="false" groupName="gems">
+			<label>Gemfile Path</label>
+			<description><![CDATA[Path to your own Gemfile relative to <code>OPENHAB_CONF/automation/ruby/</code>.
+				An absolute path can be used.
+			  If this file exists, it will be used instead of the <code>gems</code> setting above,
+				so your Gemfile must include <code>openhab-scripting</code> to use the helper library.
+				]]></description>
+			<default>Gemfile</default>
+			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="check_update" type="boolean" required="true" groupName="gems">
 			<label>Check for Gem Updates</label>
-			<description>Check RubyGems for updates to the above gems when OpenHAB starts or JRuby settings are changed.
-				Otherwise it will try to fulfill the requirements with locally installed gems, and you can manage them yourself with
-				an external Ruby by setting the same GEM_HOME.</description>
+			<description><![CDATA[Check RubyGems for updated gems when OpenHAB starts or JRuby settings are changed.
+				Otherwise it will try to fulfill the requirements with locally installed gems,
+				and you can manage them yourself with either the <code>jrubyscripting gem</code>
+				or <code>jrubyscripting bundle</code> console commands, or
+				an external Ruby by setting the same GEM_HOME.]]></description>
 			<default>true</default>
 			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="require" type="text" required="false" groupName="gems">
+			<label>Require Scripts</label>
+			<description><![CDATA[A comma separated list of script names to be required by the
+			  JRuby Scripting Engine before running user scripts.
+				This can be used to automatically include a common (personal) library
+				without having to add a <code>require</code> line in every script.]]>
+			</description>
+			<default>openhab/dsl</default>
 		</parameter>
 
 		<parameter name="gem_home" type="text" required="false" groupName="environment">
 			<label>GEM_HOME</label>
 			<description><![CDATA[Location Ruby Gems will be installed to and loaded from. Directory will be created if necessary.
-				You can use <tt>{RUBY_ENGINE_VERSION}</tt>, <tt>{RUBY_ENGINE}</tt> and/or <tt>{RUBY_VERSION}</tt> replacements in this value to automatically point to
+				You can use <code>{RUBY_ENGINE_VERSION}</code>, <code>{RUBY_ENGINE}</code> and/or <code>{RUBY_VERSION}</code> replacements in this value to automatically point to
 				a new directory when the addon is updated with a new version of JRuby.
-				Defaults to "<tt>OPENHAB_CONF/automation/ruby/.gem/{RUBY_ENGINE_VERSION}</tt>" when not specified.
+				Defaults to "<code>OPENHAB_CONF/automation/ruby/.gem/{RUBY_ENGINE_VERSION}</code>" when not specified.
 				]]></description>
 			<advanced>true</advanced>
 		</parameter>
@@ -71,7 +81,7 @@
 		<parameter name="rubylib" type="text" required="false" groupName="environment">
 			<label>RUBYLIB</label>
 			<description><![CDATA[Search path for user libraries. Separate each path with a colon (semicolon in Windows). Defaults to
-				"<tt>OPENHAB_CONF/automation/ruby/lib</tt>" when not specified.]]></description>
+				"<code>OPENHAB_CONF/automation/ruby/lib</code>" when not specified.]]></description>
 			<advanced>true</advanced>
 		</parameter>
 
@@ -113,38 +123,10 @@
 			<advanced>true</advanced>
 		</parameter>
 
-		<parameter name="bundle_gemfile_path" type="text" required="false" groupName="bundler">
-			<label>Gemfile Path</label>
-			<description><![CDATA[Path to Gemfile relative to <tt>OPENHAB_CONF/automation/ruby/</tt>.
-				An absolute path can be used.
-			  If this file exists, <tt>require 'bundler/setup'</tt> will be inserted for all scripts.
-				Defaults to "<tt>Gemfile</tt>" when not specified.
-				]]></description>
-			<default>Gemfile</default>
-			<advanced>true</advanced>
-		</parameter>
-
-		<parameter name="bundle_gemfile_content" type="text" multiple="true" required="false" groupName="bundler">
-			<label>Gemfile Content</label>
-			<description><![CDATA[Literal content of bundler's Gemfile.
-				This will be used when the Gemfile doesn't exist in the Gemfile path above.
-				]]></description>
-			<advanced>true</advanced>
-		</parameter>
-
-		<parameter name="bundle_install" type="boolean" required="true" groupName="bundler">
-			<label>Run Bundler Install at Startup</label>
-			<description><![CDATA[Run <tt>bundle install</tt> when the add-on loads or the configuration is changed.
-			  This will install any gems specified in the Gemfile.
-				]]></description>
-			<default>true</default>
-			<advanced>true</advanced>
-		</parameter>
-
 		<parameter name="console" type="text" required="false" groupName="console">
 			<label>Console Script</label>
-			<description><![CDATA[The script file to be required by the <tt>jrubyscripting console</tt>
-			console command. When specified without any path, <tt>openhab/console/</tt> will be prepended.]]></description>
+			<description><![CDATA[The script file to be required by the <code>jrubyscripting console</code>
+			console command. When specified without any path, <code>openhab/console/</code> will be prepended.]]></description>
 			<default>irb</default>
 			<advanced>true</advanced>
 		</parameter>
