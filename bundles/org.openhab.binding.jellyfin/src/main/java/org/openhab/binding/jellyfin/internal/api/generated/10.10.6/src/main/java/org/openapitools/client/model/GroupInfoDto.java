@@ -44,7 +44,7 @@ import org.openapitools.client.ApiClient;
   GroupInfoDto.JSON_PROPERTY_PARTICIPANTS,
   GroupInfoDto.JSON_PROPERTY_LAST_UPDATED_AT
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class GroupInfoDto {
   public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
   @javax.annotation.Nullable

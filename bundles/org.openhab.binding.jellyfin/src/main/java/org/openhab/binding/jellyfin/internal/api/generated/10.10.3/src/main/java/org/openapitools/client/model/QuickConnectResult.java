@@ -43,7 +43,7 @@ import org.openapitools.client.ApiClient;
   QuickConnectResult.JSON_PROPERTY_APP_VERSION,
   QuickConnectResult.JSON_PROPERTY_DATE_ADDED
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:50.987643556Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class QuickConnectResult {
   public static final String JSON_PROPERTY_AUTHENTICATED = "Authenticated";
   @javax.annotation.Nullable

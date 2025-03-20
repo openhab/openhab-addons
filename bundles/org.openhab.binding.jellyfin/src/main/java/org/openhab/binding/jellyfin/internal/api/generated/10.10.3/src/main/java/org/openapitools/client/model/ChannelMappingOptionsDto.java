@@ -47,7 +47,7 @@ import org.openapitools.client.ApiClient;
   ChannelMappingOptionsDto.JSON_PROPERTY_MAPPINGS,
   ChannelMappingOptionsDto.JSON_PROPERTY_PROVIDER_NAME
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:50.987643556Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ChannelMappingOptionsDto {
   public static final String JSON_PROPERTY_TUNER_CHANNELS = "TunerChannels";
   @javax.annotation.Nullable

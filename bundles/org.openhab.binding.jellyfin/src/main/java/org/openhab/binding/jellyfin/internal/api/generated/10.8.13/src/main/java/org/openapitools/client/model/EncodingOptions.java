@@ -78,7 +78,7 @@ import org.openapitools.client.ApiClient;
   EncodingOptions.JSON_PROPERTY_HARDWARE_DECODING_CODECS,
   EncodingOptions.JSON_PROPERTY_ALLOW_ON_DEMAND_METADATA_BASED_KEYFRAME_EXTRACTION_FOR_EXTENSIONS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:31.285278872Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class EncodingOptions {
   public static final String JSON_PROPERTY_ENCODING_THREAD_COUNT = "EncodingThreadCount";
   @javax.annotation.Nullable

@@ -42,7 +42,7 @@ import org.openapitools.client.ApiClient;
   ServerDiscoveryInfo.JSON_PROPERTY_NAME,
   ServerDiscoveryInfo.JSON_PROPERTY_ENDPOINT_ADDRESS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:50.987643556Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ServerDiscoveryInfo {
   public static final String JSON_PROPERTY_ADDRESS = "Address";
   @javax.annotation.Nullable

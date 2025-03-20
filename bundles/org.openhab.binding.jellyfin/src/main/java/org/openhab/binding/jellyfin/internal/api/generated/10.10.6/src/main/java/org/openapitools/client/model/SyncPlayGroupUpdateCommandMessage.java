@@ -44,7 +44,7 @@ import org.openapitools.client.ApiClient;
   SyncPlayGroupUpdateCommandMessage.JSON_PROPERTY_MESSAGE_ID,
   SyncPlayGroupUpdateCommandMessage.JSON_PROPERTY_MESSAGE_TYPE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SyncPlayGroupUpdateCommandMessage {
   public static final String JSON_PROPERTY_DATA = "Data";
   private JsonNullable<GroupUpdate> data = JsonNullable.<GroupUpdate>undefined();

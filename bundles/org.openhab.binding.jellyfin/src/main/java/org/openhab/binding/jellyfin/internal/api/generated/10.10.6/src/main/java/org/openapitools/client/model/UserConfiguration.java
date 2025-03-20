@@ -58,7 +58,7 @@ import org.openapitools.client.ApiClient;
   UserConfiguration.JSON_PROPERTY_ENABLE_NEXT_EPISODE_AUTO_PLAY,
   UserConfiguration.JSON_PROPERTY_CAST_RECEIVER_ID
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class UserConfiguration {
   public static final String JSON_PROPERTY_AUDIO_LANGUAGE_PREFERENCE = "AudioLanguagePreference";
   private JsonNullable<String> audioLanguagePreference = JsonNullable.<String>undefined();

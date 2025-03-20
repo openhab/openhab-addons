@@ -44,7 +44,7 @@ import org.openapitools.client.ApiClient;
   ActivityLogEntryQueryResult.JSON_PROPERTY_TOTAL_RECORD_COUNT,
   ActivityLogEntryQueryResult.JSON_PROPERTY_START_INDEX
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:31.285278872Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ActivityLogEntryQueryResult {
   public static final String JSON_PROPERTY_ITEMS = "Items";
   private JsonNullable<List<ActivityLogEntry>> items = JsonNullable.<List<ActivityLogEntry>>undefined();

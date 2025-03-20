@@ -64,7 +64,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:50.987643556Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 @JsonDeserialize(using = WebSocketMessage.WebSocketMessageDeserializer.class)
 @JsonSerialize(using = WebSocketMessage.WebSocketMessageSerializer.class)
 public class WebSocketMessage extends AbstractOpenApiSchema {

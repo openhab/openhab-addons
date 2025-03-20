@@ -58,7 +58,7 @@ import org.openapitools.client.ApiClient;
   AlbumInfo.JSON_PROPERTY_ARTIST_PROVIDER_IDS,
   AlbumInfo.JSON_PROPERTY_SONG_INFOS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:31.285278872Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class AlbumInfo {
   public static final String JSON_PROPERTY_NAME = "Name";
   private JsonNullable<String> name = JsonNullable.<String>undefined();

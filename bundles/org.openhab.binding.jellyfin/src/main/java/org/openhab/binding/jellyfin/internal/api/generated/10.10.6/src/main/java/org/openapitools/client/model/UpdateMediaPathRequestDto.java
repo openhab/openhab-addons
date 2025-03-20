@@ -37,7 +37,7 @@ import org.openapitools.client.ApiClient;
   UpdateMediaPathRequestDto.JSON_PROPERTY_NAME,
   UpdateMediaPathRequestDto.JSON_PROPERTY_PATH_INFO
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class UpdateMediaPathRequestDto {
   public static final String JSON_PROPERTY_NAME = "Name";
   @javax.annotation.Nonnull

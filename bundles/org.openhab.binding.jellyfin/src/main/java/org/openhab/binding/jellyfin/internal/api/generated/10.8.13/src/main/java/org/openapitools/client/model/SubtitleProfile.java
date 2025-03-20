@@ -44,7 +44,7 @@ import org.openapitools.client.ApiClient;
   SubtitleProfile.JSON_PROPERTY_LANGUAGE,
   SubtitleProfile.JSON_PROPERTY_CONTAINER
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:31.285278872Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class SubtitleProfile {
   public static final String JSON_PROPERTY_FORMAT = "Format";
   private JsonNullable<String> format = JsonNullable.<String>undefined();

@@ -40,7 +40,7 @@ import org.openapitools.client.ApiClient;
   LocalizationOption.JSON_PROPERTY_NAME,
   LocalizationOption.JSON_PROPERTY_VALUE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:50.987643556Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class LocalizationOption {
   public static final String JSON_PROPERTY_NAME = "Name";
   private JsonNullable<String> name = JsonNullable.<String>undefined();

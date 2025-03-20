@@ -49,7 +49,7 @@ import org.openapitools.client.ApiClient;
   CreatePlaylistDto.JSON_PROPERTY_USERS,
   CreatePlaylistDto.JSON_PROPERTY_IS_PUBLIC
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class CreatePlaylistDto {
   public static final String JSON_PROPERTY_NAME = "Name";
   @javax.annotation.Nullable

@@ -57,7 +57,7 @@ import org.openapitools.client.ApiClient;
   LiveTvOptions.JSON_PROPERTY_SAVE_RECORDING_N_F_O,
   LiveTvOptions.JSON_PROPERTY_SAVE_RECORDING_IMAGES
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class LiveTvOptions {
   public static final String JSON_PROPERTY_GUIDE_DAYS = "GuideDays";
   private JsonNullable<Integer> guideDays = JsonNullable.<Integer>undefined();

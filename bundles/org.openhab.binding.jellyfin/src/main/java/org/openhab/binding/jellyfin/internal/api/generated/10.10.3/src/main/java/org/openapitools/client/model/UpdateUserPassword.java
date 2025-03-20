@@ -42,7 +42,7 @@ import org.openapitools.client.ApiClient;
   UpdateUserPassword.JSON_PROPERTY_NEW_PW,
   UpdateUserPassword.JSON_PROPERTY_RESET_PASSWORD
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:50.987643556Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class UpdateUserPassword {
   public static final String JSON_PROPERTY_CURRENT_PASSWORD = "CurrentPassword";
   private JsonNullable<String> currentPassword = JsonNullable.<String>undefined();

@@ -43,7 +43,7 @@ import org.openapitools.client.ApiClient;
   DirectPlayProfile.JSON_PROPERTY_VIDEO_CODEC,
   DirectPlayProfile.JSON_PROPERTY_TYPE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:31.285278872Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class DirectPlayProfile {
   public static final String JSON_PROPERTY_CONTAINER = "Container";
   private JsonNullable<String> container = JsonNullable.<String>undefined();

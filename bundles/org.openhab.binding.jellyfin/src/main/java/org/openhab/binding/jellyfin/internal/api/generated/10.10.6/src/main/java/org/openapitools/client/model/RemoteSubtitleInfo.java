@@ -55,7 +55,7 @@ import org.openapitools.client.ApiClient;
   RemoteSubtitleInfo.JSON_PROPERTY_FORCED,
   RemoteSubtitleInfo.JSON_PROPERTY_HEARING_IMPAIRED
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class RemoteSubtitleInfo {
   public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME = "ThreeLetterISOLanguageName";
   private JsonNullable<String> threeLetterISOLanguageName = JsonNullable.<String>undefined();

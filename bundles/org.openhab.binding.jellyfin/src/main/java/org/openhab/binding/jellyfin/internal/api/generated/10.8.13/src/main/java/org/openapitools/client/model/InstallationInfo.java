@@ -47,7 +47,7 @@ import org.openapitools.client.ApiClient;
   InstallationInfo.JSON_PROPERTY_CHECKSUM,
   InstallationInfo.JSON_PROPERTY_PACKAGE_INFO
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:31.285278872Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class InstallationInfo {
   public static final String JSON_PROPERTY_GUID = "Guid";
   @javax.annotation.Nullable

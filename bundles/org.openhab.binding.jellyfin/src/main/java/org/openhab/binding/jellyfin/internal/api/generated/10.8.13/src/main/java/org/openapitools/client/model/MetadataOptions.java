@@ -47,7 +47,7 @@ import org.openapitools.client.ApiClient;
   MetadataOptions.JSON_PROPERTY_DISABLED_IMAGE_FETCHERS,
   MetadataOptions.JSON_PROPERTY_IMAGE_FETCHER_ORDER
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:31.285278872Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class MetadataOptions {
   public static final String JSON_PROPERTY_ITEM_TYPE = "ItemType";
   private JsonNullable<String> itemType = JsonNullable.<String>undefined();

@@ -43,7 +43,7 @@ import org.openapitools.client.ApiClient;
   LibraryUpdateInfo.JSON_PROPERTY_COLLECTION_FOLDERS,
   LibraryUpdateInfo.JSON_PROPERTY_IS_EMPTY
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:50.987643556Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class LibraryUpdateInfo {
   public static final String JSON_PROPERTY_FOLDERS_ADDED_TO = "FoldersAddedTo";
   @javax.annotation.Nullable

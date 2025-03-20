@@ -49,7 +49,7 @@ import org.openapitools.client.ApiClient;
   ResponseProfile.JSON_PROPERTY_MIME_TYPE,
   ResponseProfile.JSON_PROPERTY_CONDITIONS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:31.285278872Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ResponseProfile {
   public static final String JSON_PROPERTY_CONTAINER = "Container";
   private JsonNullable<String> container = JsonNullable.<String>undefined();

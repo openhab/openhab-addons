@@ -44,7 +44,7 @@ import org.openapitools.client.ApiClient;
   AlbumInfoRemoteSearchQuery.JSON_PROPERTY_SEARCH_PROVIDER_NAME,
   AlbumInfoRemoteSearchQuery.JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class AlbumInfoRemoteSearchQuery {
   public static final String JSON_PROPERTY_SEARCH_INFO = "SearchInfo";
   private JsonNullable<AlbumInfo> searchInfo = JsonNullable.<AlbumInfo>undefined();

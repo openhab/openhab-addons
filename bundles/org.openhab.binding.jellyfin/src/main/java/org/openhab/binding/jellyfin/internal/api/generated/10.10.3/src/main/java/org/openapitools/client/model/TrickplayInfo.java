@@ -41,7 +41,7 @@ import org.openapitools.client.ApiClient;
   TrickplayInfo.JSON_PROPERTY_INTERVAL,
   TrickplayInfo.JSON_PROPERTY_BANDWIDTH
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:50.987643556Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class TrickplayInfo {
   public static final String JSON_PROPERTY_WIDTH = "Width";
   @javax.annotation.Nullable

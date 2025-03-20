@@ -49,7 +49,7 @@ import org.openapitools.client.ApiClient;
   BaseItemDtoImageBlurHashes.JSON_PROPERTY_BOX_REAR,
   BaseItemDtoImageBlurHashes.JSON_PROPERTY_PROFILE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class BaseItemDtoImageBlurHashes {
   public static final String JSON_PROPERTY_PRIMARY = "Primary";
   @javax.annotation.Nullable

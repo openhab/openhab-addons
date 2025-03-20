@@ -40,7 +40,7 @@ import org.openapitools.client.ApiClient;
   RemoveFromPlaylistRequestDto.JSON_PROPERTY_CLEAR_PLAYLIST,
   RemoveFromPlaylistRequestDto.JSON_PROPERTY_CLEAR_PLAYING_ITEM
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class RemoveFromPlaylistRequestDto {
   public static final String JSON_PROPERTY_PLAYLIST_ITEM_IDS = "PlaylistItemIds";
   @javax.annotation.Nullable

@@ -42,7 +42,7 @@ import org.openapitools.client.ApiClient;
   DeviceProfileInfo.JSON_PROPERTY_NAME,
   DeviceProfileInfo.JSON_PROPERTY_TYPE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:31.285278872Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class DeviceProfileInfo {
   public static final String JSON_PROPERTY_ID = "Id";
   private JsonNullable<String> id = JsonNullable.<String>undefined();

@@ -43,7 +43,7 @@ import org.openapitools.client.ApiClient;
   QueryFilters.JSON_PROPERTY_GENRES,
   QueryFilters.JSON_PROPERTY_TAGS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:50.987643556Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class QueryFilters {
   public static final String JSON_PROPERTY_GENRES = "Genres";
   private JsonNullable<List<NameGuidPair>> genres = JsonNullable.<List<NameGuidPair>>undefined();

@@ -70,7 +70,7 @@ import org.openapitools.client.ApiClient;
   LibraryOptions.JSON_PROPERTY_ALLOW_EMBEDDED_SUBTITLES,
   LibraryOptions.JSON_PROPERTY_TYPE_OPTIONS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:31.285278872Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class LibraryOptions {
   public static final String JSON_PROPERTY_ENABLE_PHOTOS = "EnablePhotos";
   @javax.annotation.Nullable

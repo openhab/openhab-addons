@@ -59,7 +59,7 @@ import org.openapitools.client.ApiClient;
   NetworkConfiguration.JSON_PROPERTY_REMOTE_I_P_FILTER,
   NetworkConfiguration.JSON_PROPERTY_IS_REMOTE_I_P_FILTER_BLACKLIST
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:52:19.001411110Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class NetworkConfiguration {
   public static final String JSON_PROPERTY_BASE_URL = "BaseUrl";
   @javax.annotation.Nullable

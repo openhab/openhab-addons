@@ -3,5 +3,6 @@
   "developerOrganization": "openHAB.org",
   "developerOrganizationUrl": "https://www.openhab.org",
   "dateLibrary": "java8",
-  "documentationProvider": "none"
+  "documentationProvider": "none",
+  "hideGenerationTimestamp": true
 }

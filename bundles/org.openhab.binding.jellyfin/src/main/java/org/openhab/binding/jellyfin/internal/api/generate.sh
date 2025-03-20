@@ -1,7 +1,22 @@
 #!/usr/bin/bash
 
-set -e
+# INFO:
+# If you generate the API on a windows system using git bash some additional software is required:
+#
+# > winget install GNU.Wget2 --silent
+# > winget install MikeFarah.yq --silent
+# > winget install jqlang.jq --silent
+
+# improve compatibility with windows systems (using git bash)
+export MSYS_NO_PATHCONV=1
+if ! type wget &>/dev/null; then
+  alias wget=wget2
+fi
+
+
 REQUIRED=("wget" "yq" "docker" "curl" "jq")
+
+
 
 function checkEnvironment() {
     for i in "${REQUIRED[@]}"; do

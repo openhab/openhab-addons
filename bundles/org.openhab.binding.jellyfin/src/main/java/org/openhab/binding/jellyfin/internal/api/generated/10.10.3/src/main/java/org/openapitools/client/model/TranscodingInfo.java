@@ -55,7 +55,7 @@ import org.openapitools.client.ApiClient;
   TranscodingInfo.JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE,
   TranscodingInfo.JSON_PROPERTY_TRANSCODE_REASONS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:50.987643556Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class TranscodingInfo {
   public static final String JSON_PROPERTY_AUDIO_CODEC = "AudioCodec";
   private JsonNullable<String> audioCodec = JsonNullable.<String>undefined();

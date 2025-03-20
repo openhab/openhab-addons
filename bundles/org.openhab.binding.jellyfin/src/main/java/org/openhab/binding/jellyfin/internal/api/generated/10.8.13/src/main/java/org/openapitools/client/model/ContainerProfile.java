@@ -45,7 +45,7 @@ import org.openapitools.client.ApiClient;
   ContainerProfile.JSON_PROPERTY_CONDITIONS,
   ContainerProfile.JSON_PROPERTY_CONTAINER
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:31.285278872Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class ContainerProfile {
   public static final String JSON_PROPERTY_TYPE = "Type";
   @javax.annotation.Nullable

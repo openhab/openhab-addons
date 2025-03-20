@@ -40,7 +40,7 @@ import org.openapitools.client.ApiClient;
   PlayRequestDto.JSON_PROPERTY_PLAYING_ITEM_POSITION,
   PlayRequestDto.JSON_PROPERTY_START_POSITION_TICKS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:50.987643556Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class PlayRequestDto {
   public static final String JSON_PROPERTY_PLAYING_QUEUE = "PlayingQueue";
   @javax.annotation.Nullable

@@ -48,7 +48,7 @@ import org.openapitools.client.ApiClient;
   LyricMetadata.JSON_PROPERTY_VERSION,
   LyricMetadata.JSON_PROPERTY_IS_SYNCED
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:50.987643556Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class LyricMetadata {
   public static final String JSON_PROPERTY_ARTIST = "Artist";
   private JsonNullable<String> artist = JsonNullable.<String>undefined();

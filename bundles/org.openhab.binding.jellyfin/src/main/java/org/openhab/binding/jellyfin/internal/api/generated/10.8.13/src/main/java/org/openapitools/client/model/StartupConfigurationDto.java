@@ -41,7 +41,7 @@ import org.openapitools.client.ApiClient;
   StartupConfigurationDto.JSON_PROPERTY_METADATA_COUNTRY_CODE,
   StartupConfigurationDto.JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-03-16T17:51:31.285278872Z[Etc/UTC]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.12.0")
 public class StartupConfigurationDto {
   public static final String JSON_PROPERTY_UI_CULTURE = "UICulture";
   private JsonNullable<String> uiCulture = JsonNullable.<String>undefined();
