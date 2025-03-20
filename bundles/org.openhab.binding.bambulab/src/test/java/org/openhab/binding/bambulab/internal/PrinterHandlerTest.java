@@ -22,17 +22,23 @@ import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.L
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 
 import pl.grzeslowski.jbambuapi.PrinterClient;
+import pl.grzeslowski.jbambuapi.PrinterClient.Channel.PrintSpeedCommand;
 
 /**
  * @author Martin Grześlowski - Initial contribution
@@ -40,13 +46,19 @@ import pl.grzeslowski.jbambuapi.PrinterClient;
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 class PrinterHandlerTest {
+    @Spy
+    PrinterHandler printerHandler = new PrinterHandler(mock(Thing.class));
+
+    @BeforeEach
+    void setUp() {
+        lenient().doNothing().when(printerHandler).sendCommand(any(PrinterClient.Channel.Command.class));
+    }
+
     @ParameterizedTest(name = "Should handle {0} command for {1} channel and send {2}")
     @MethodSource
     public void testSendLightCommand(OnOffType command, Channel channel, PrinterClient.Channel.Command sendCommand) {
         // Given
-        var printerHandler = spy(new PrinterHandler(mock(Thing.class)));
         var channelUID = new ChannelUID("bambulab:printer:test:" + channel);
-        doNothing().when(printerHandler).sendCommand(any(PrinterClient.Channel.Command.class));
 
         // When
         printerHandler.handleCommand(channelUID, command);
@@ -63,11 +75,41 @@ class PrinterHandlerTest {
                 Arguments.of(OnOffType.OFF, CHANNEL_LED_WORK_LIGHT, off(WORK_LIGHT)));
     }
 
+    @Test
+    @DisplayName("should send gcode command to a printer when command to CHANNEL_GCODE_FILE is sent")
+    void testGCode() {
+        // given
+        var channelUID = new ChannelUID("bambulab:printer:test:" + CHANNEL_GCODE_FILE.getName());
+
+        // when
+        printerHandler.handleCommand(channelUID, new StringType("gcode-file"));
+
+        // then
+        verify(printerHandler).sendCommand(eq(new PrinterClient.Channel.GCodeFileCommand("gcode-file")));
+    }
+
+    @ParameterizedTest(name = "{index}: should accept StringType(\"{0}\") and send {1} command to a printer")
+    @MethodSource
+    void speedLevel(String speedLevel, PrintSpeedCommand command) {
+        // given
+        var channelUID = new ChannelUID("bambulab:printer:test:" + CHANNEL_SPEED_LEVEL.getName());
+
+        // when
+        printerHandler.handleCommand(channelUID, new StringType(speedLevel));
+
+        // then
+        verify(printerHandler).sendCommand(eq(command));
+    }
+
+    static Stream<Arguments> speedLevel() {
+        return stream(PrintSpeedCommand.values())//
+                .map(command -> Arguments.of(command.name(), command));
+    }
+
     @ParameterizedTest(name = "Command to channel {0} should not invoke `client.sendCommand`")
     @MethodSource
     public void notImplementedCommands(Channel channel) {
         // Given
-        var printerHandler = spy(new PrinterHandler(mock(Thing.class)));
         var channelUID = new ChannelUID("bambulab:printer:test:" + channel);
 
         // When
