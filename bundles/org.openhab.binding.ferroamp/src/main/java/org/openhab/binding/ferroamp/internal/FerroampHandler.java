@@ -132,13 +132,10 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
 
     private void startMqttConnection(FerroampConfiguration ferroampConfig) throws InterruptedException {
         MqttBrokerConnection localSubscribeConnection = FerroampHandler.getFerroampConnection();
-
         Objects.requireNonNull(localSubscribeConnection,
                 "MqttBrokerConnection localSubscribeConnection cannot be null");
-
         localSubscribeConnection.start();
         localSubscribeConnection.setCredentials(ferroampConfig.userName, ferroampConfig.password);
-
         ferroampMqttCommunication.getSubscribedTopic(FerroampBindingConstants.EHUB_TOPIC, ferroampConfig);
         ferroampMqttCommunication.getSubscribedTopic(FerroampBindingConstants.SSO_TOPIC, ferroampConfig);
         ferroampMqttCommunication.getSubscribedTopic(FerroampBindingConstants.ESO_TOPIC, ferroampConfig);
