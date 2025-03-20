@@ -31,7 +31,6 @@
 	<channel-type id="string-rw">
 		<item-type>String</item-type>
 		<label>RW String Channel</label>
-		<state/>
 	</channel-type>
 	<channel-type id="wifi">
 		<item-type unitHint="dBm">Number:Power</item-type>
