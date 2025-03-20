@@ -11,7 +11,12 @@
 
 		<channels>
 			<channel typeId="homePresence" id="homePresence"/>
+			<channel typeId="geofencingEnabled" id="geofencingEnabled"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="useRfc8628" type="boolean" required="false">
@@ -136,6 +141,12 @@
 		<item-type>Switch</item-type>
 		<label>At Home</label>
 		<description>ON if at home, OFF if away</description>
+	</channel-type>
+
+	<channel-type id="geofencingEnabled">
+		<item-type>Switch</item-type>
+		<label>Geofencing Enabled</label>
+		<description>Selects if automatic geofencing is enabled or disabled</description>
 	</channel-type>
 
 	<channel-type id="currentTemperature">
