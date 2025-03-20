@@ -35,6 +35,7 @@ import org.openhab.core.config.core.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -46,13 +47,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @NonNullByDefault
 public class JRubyScriptEngineConfiguration {
 
-    public static final String HOME_PATH = Path.of("automation", "ruby").toString();
-    private static final String HOME_PATH_ABS = Path.of(OpenHAB.getConfigFolder(), HOME_PATH).toString();
-    private static final String DEFAULT_GEMFILE = Path.of(HOME_PATH_ABS, "Gemfile").toString();
-    private static final String UI_GEMFILE_PATH = Path
-            .of(OpenHAB.getUserDataFolder(), "tmp", "jrubyscripting", "Gemfile").toString();
+    public static final Path HOME_PATH = Path.of("automation", "ruby");
+    private static final Path HOME_PATH_ABS = Path.of(OpenHAB.getConfigFolder()).resolve(HOME_PATH);
+    private static final Path DEFAULT_GEMFILE_PATH = HOME_PATH_ABS.resolve("Gemfile");
 
-    private final Logger logger = LoggerFactory.getLogger(JRubyScriptEngineConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JRubyScriptEngineConfiguration.class);
 
     private static final String RUBY_ENGINE_REPLACEMENT = "{RUBY_ENGINE}";
     private static final String RUBY_ENGINE_VERSION_REPLACEMENT = "{RUBY_ENGINE_VERSION}";
@@ -62,30 +61,29 @@ public class JRubyScriptEngineConfiguration {
 
     // The variable names must match the configuration keys in config.xml
     public static class JRubyScriptingConfiguration {
+        // Gems
+        public String gems = "openhab-scripting=~>5.0";
+        public String bundle_gemfile = DEFAULT_GEMFILE_PATH.toString();
+        public boolean check_update = true;
+        public String require = "openhab/dsl";
+
         // System Properties
         public String local_context = "singlethread";
         public String local_variable = "transient";
 
         // Ruby Environment
-        public String gem_home = Path.of(HOME_PATH_ABS, ".gem", RUBY_ENGINE_VERSION_REPLACEMENT).toString();
-        public String rubylib = Path.of(HOME_PATH_ABS, "lib").toString();
+        public String gem_home = HOME_PATH_ABS.resolve(Path.of(".gem", RUBY_ENGINE_VERSION_REPLACEMENT)).toString();
+        public String rubylib = HOME_PATH_ABS.resolve("lib").toString();
         public boolean dependency_tracking = true;
-
-        // Gems
-        public String gems = "openhab-scripting=~>5.0";
-        public String require = "openhab/dsl";
-        public boolean check_update = true;
-
-        // Bundler
-        public String bundle_gemfile_path = DEFAULT_GEMFILE;
-        public List<String> bundle_gemfile_content = List.of();
-        public boolean bundle_install = true;
 
         // Console
         public String console = "irb";
     }
 
     private JRubyScriptingConfiguration configuration = new JRubyScriptingConfiguration();
+
+    private String specificGemHome = "";
+    private @Nullable String bundleGemfile = null; // The path to the Gemfile if it exists, otherwise null
 
     /**
      * Update configuration
@@ -94,11 +92,15 @@ public class JRubyScriptEngineConfiguration {
      * @param factory ScriptEngineFactory to configure
      */
     void update(Map<String, Object> config, ScriptEngineFactory factory) {
-        logger.trace("JRuby Script Engine Configuration: {}", config);
+        LOGGER.trace("JRuby Script Engine Configuration: {}", config);
 
         // This converts Map<String, Object> to the configuration class,
         // leaving the default values in place when it's null or not set in the map.
-        this.configuration = new Configuration(config).as(JRubyScriptingConfiguration.class);
+        configuration = new Configuration(config).as(JRubyScriptingConfiguration.class);
+
+        bundleGemfile = getGemfilePath();
+        specificGemHome = resolveSpecificGemHome();
+        ensureGemHomeExists(specificGemHome);
 
         configureSystemProperties();
 
@@ -111,11 +113,16 @@ public class JRubyScriptEngineConfiguration {
         StringWriter errorWriter = new StringWriter();
         context.setWriter(writer);
         context.setErrorWriter(errorWriter);
-        bundlerInstall(engine);
-        configureGems(engine, false);
-        logger.debug("{}", writer);
+        if (bundleGemfile != null) {
+            bundlerInit(engine, configuration.check_update);
+        } else {
+            configureGems(engine);
+        }
+        if (writer.toString().length() > 0) {
+            LOGGER.debug("{}", writer);
+        }
         if (errorWriter.toString().length() > 0) {
-            logger.warn("{}", errorWriter);
+            LOGGER.warn("{}", errorWriter);
         }
     }
 
@@ -125,9 +132,11 @@ public class JRubyScriptEngineConfiguration {
      */
     public Map<String, String> getConfigurations() {
         ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> objectMap = objectMapper.convertValue(configuration, Map.class);
+        Map<String, Object> objectMap = (Map<String, Object>) objectMapper.convertValue(configuration,
+                new TypeReference<Map<String, Object>>() {
+                });
         return objectMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
-            if (entry.getValue() instanceof List listValue) {
+            if (entry.getValue() instanceof List<?> listValue) {
                 return listValue.stream().map(Object::toString).collect(Collectors.joining("\n")).toString();
             }
             return entry.getValue().toString();
@@ -141,12 +150,7 @@ public class JRubyScriptEngineConfiguration {
         return configuration.console;
     }
 
-    /**
-     * Gets the concrete gem home to install gems into for this version of JRuby.
-     *
-     * {RUBY_ENGINE} and {RUBY_VERSION} are replaced with their current actual values.
-     */
-    public String getSpecificGemHome() {
+    public String resolveSpecificGemHome() {
         String gemHome = configuration.gem_home;
         if (gemHome.isEmpty()) {
             return gemHome;
@@ -156,6 +160,15 @@ public class JRubyScriptEngineConfiguration {
         gemHome = gemHome.replace(RUBY_ENGINE_VERSION_REPLACEMENT, Constants.VERSION);
         gemHome = gemHome.replace(RUBY_VERSION_REPLACEMENT, Constants.RUBY_VERSION);
         return new File(gemHome).toString();
+    }
+
+    /**
+     * Gets the concrete gem home to install gems into for this version of JRuby.
+     *
+     * {RUBY_ENGINE} and {RUBY_VERSION} are replaced with their current actual values.
+     */
+    public String getSpecificGemHome() {
+        return specificGemHome;
     }
 
     /**
@@ -183,11 +196,16 @@ public class JRubyScriptEngineConfiguration {
      * Makes Gem home directory if it does not exist
      */
     private boolean ensureGemHomeExists(String gemHome) {
+        if (gemHome.isEmpty()) {
+            LOGGER.warn("Gem install requested with empty gem_home, not installing gems.");
+            return false;
+        }
+
         File gemHomeDirectory = new File(gemHome);
         if (!gemHomeDirectory.exists()) {
-            logger.debug("gem_home directory does not exist, creating");
+            LOGGER.debug("gem_home directory '{}' does not exist, creating", gemHome);
             if (!gemHomeDirectory.mkdirs()) {
-                logger.warn("Error creating gem_home directory");
+                LOGGER.warn("Error creating gem_home directory: {}", gemHome);
                 return false;
             }
         }
@@ -195,30 +213,105 @@ public class JRubyScriptEngineConfiguration {
     }
 
     /**
-     * @return the configured gems
+     * Returns the path to the Gemfile.
+     *
+     * @return the path to the Gemfile or null if no Gemfile is found
      */
-    public String getGems() {
-        return configuration.gems;
+    public @Nullable String getGemfilePath() {
+        Path gemfilePath = Path.of(configuration.bundle_gemfile);
+
+        if (gemfilePath.equals(Path.of(""))) {
+            gemfilePath = DEFAULT_GEMFILE_PATH;
+        } else if (!gemfilePath.isAbsolute()) {
+            gemfilePath = HOME_PATH_ABS.resolve(gemfilePath);
+        }
+
+        if (gemfilePath.toFile().exists()) {
+            return gemfilePath.toString();
+        }
+
+        return null;
+    }
+
+    /**
+     * Run bundle install or update.
+     * 
+     * This is to be called at start up or configuration change,
+     * so that gems are available when user scripts are run.
+     *
+     * @param engine
+     * @param update when true, run Bundler update, otherwise run Bundler install
+     */
+    public void bundlerInit(ScriptEngine engine, boolean update) {
+        if (bundleGemfile == null) {
+            LOGGER.debug("No Gemfile is found or configured. Skipping Bundler initialization.");
+            return;
+        }
+
+        String operation = update ? "update" : "install";
+        String code = """
+                require "jruby"
+                JRuby.runtime.instance_config.update_native_env_enabled = false
+
+                require "bundler"
+                require "bundler/cli"
+
+                Bundler::CLI.start(["%s"])
+                """.formatted(operation);
+
+        try {
+            LOGGER.debug("Running Bundler {} with Gemfile {}", operation, bundleGemfile);
+            LOGGER.trace("Bundler code:\n{}", code);
+            engine.eval(code);
+        } catch (ScriptException e) {
+            LOGGER.error("Error running Bundler {}: {}", operation, unwrap(e).getMessage());
+        }
+    }
+
+    /**
+     * Run Bundler setup to load gems into the environment.
+     *
+     * @param engine
+     */
+    public void bundlerSetup(ScriptEngine engine) {
+        if (bundleGemfile == null) {
+            LOGGER.debug("No Gemfile is found or configured. Skipping Bundler setup.");
+            return;
+        }
+
+        String code = """
+                require "jruby"
+                JRuby.runtime.instance_config.update_native_env_enabled = false
+                require  "bundler"
+
+                Bundler.settings.temporary(auto_install: true) do
+                  require "bundler/setup"
+                  Bundler.require
+                end
+                """;
+
+        try {
+            LOGGER.debug("Running Bundler setup on Gemfile {}", bundleGemfile);
+            LOGGER.trace("Bundler code:\n{}", code);
+            engine.eval(code);
+        } catch (ScriptException e) {
+            LOGGER.error("Error running Bundler setup: {}", unwrap(e).getMessage());
+        }
     }
 
     /**
      * Install a gems in ScriptEngine
-     *
+     * 
      * @param engine Engine to install gems
      */
-    synchronized void configureGems(ScriptEngine engine, boolean force) {
-        String gems = getGems();
+    synchronized void configureGems(ScriptEngine engine) {
+        String gems = configuration.gems;
         if (gems.isEmpty()) {
             return;
         }
 
-        String gemHome = getSpecificGemHome();
-        if (gemHome.isEmpty()) {
-            logger.warn("Gem install requested with empty gem_home, not installing gems.");
-            return;
-        }
-
-        if (!ensureGemHomeExists(gemHome)) {
+        if (specificGemHome.isEmpty()) {
+            LOGGER.warn("Gem install requested with empty gem_home, not installing gems.");
             return;
         }
 
@@ -250,7 +343,6 @@ public class JRubyScriptEngineConfiguration {
             return;
         }
 
-        boolean checkUpdate = force || configuration.check_update;
         // Set update_native_env_enabled to false so that bundler doesn't leak into other script engines
         String gemCommand = """
                 require 'jruby'
@@ -262,135 +354,14 @@ public class JRubyScriptEngineConfiguration {
                   source 'https://rubygems.org/'
                 %s
                 end
-                """.formatted(checkUpdate, gemLines);
+                """.formatted(configuration.check_update, gemLines);
 
         try {
-            logger.debug("Installing Gems");
-            logger.trace("Gem install code:\n{}", gemCommand);
+            LOGGER.debug("Installing Gems");
+            LOGGER.trace("Gem install code:\n{}", gemCommand);
             engine.eval(gemCommand);
         } catch (ScriptException e) {
-            logger.warn("Error installing Gems", unwrap(e));
-        }
-    }
-
-    /**
-     * Returns the path to the Gemfile.
-     * 
-     * If the bundle_gemfile_path points to an existing file, it will be used as the Gemfile for Bundler.
-     * 
-     * If the file does not exist, bundle_gemfile_content config value will be saved as
-     * USERDATA/tmp/jrubyscripting/Gemfile and Bundler will be run with this Gemfile.
-     * 
-     * If the content is empty, Bundler will be skipped.
-     * 
-     * @return the path to the Gemfile or null if no Gemfile is found or configured
-     */
-    public @Nullable String getGemfilePath() {
-        boolean createGemfileFromConfig = false;
-        Path gemfilePath = Path.of(configuration.bundle_gemfile_path);
-
-        if (gemfilePath.equals(Path.of(""))) {
-            gemfilePath = Path.of(DEFAULT_GEMFILE);
-        } else if (!gemfilePath.isAbsolute()) {
-            gemfilePath = Path.of(HOME_PATH_ABS).resolve(gemfilePath);
-        }
-
-        if (gemfilePath.toFile().exists()) {
-            return gemfilePath.toString();
-        }
-
-        String configuredGemfileString = String.join("\n", configuration.bundle_gemfile_content);
-        if (configuredGemfileString.isBlank()) {
-            return null;
-        }
-
-        gemfilePath = Path.of(UI_GEMFILE_PATH);
-        Path gemfileDirectory = gemfilePath.getParent();
-        if (!gemfileDirectory.toFile().exists()) {
-            logger.debug("Creating Gemfile directory {}", gemfileDirectory);
-            gemfileDirectory.toFile().mkdirs();
-        }
-
-        File gemfile = gemfilePath.toFile();
-        try {
-            List<String> headers = List.of( //
-                    "# This Gemfile is auto-generated by the JRuby Scripting add-on", //
-                    "# Do not edit this file directly.", //
-                    "# Edit the JRuby Scripting configuration 'bundle_gemfile_content' instead.", //
-                    "");
-
-            List<String> configuredGemfileContent = new ArrayList<>(headers);
-            configuredGemfileContent.addAll(configuration.bundle_gemfile_content);
-
-            if (gemfile.exists()) {
-                List<String> fileContent = Files.readAllLines(gemfilePath, StandardCharsets.UTF_8);
-                if (fileContent.equals(configuredGemfileContent)) {
-                    logger.debug("Gemfile already exists and is up to date.");
-                    return gemfilePath.toString();
-                }
-            }
-
-            Files.write(gemfilePath, configuredGemfileContent, StandardCharsets.UTF_8);
-            return gemfilePath.toString();
-        } catch (IOException e) {
-            logger.warn("Error creating/writing to Gemfile {}: {}", gemfilePath, e.getMessage());
-        }
-        return null;
-    }
-
-    /**
-     * Require Bundler setup in the ScriptEngine
-     * 
-     * @param engine
-     */
-    public void bundlerSetup(ScriptEngine engine) {
-        String gemfilePath = getGemfilePath();
-        if (gemfilePath == null) {
-            logger.debug("No Gemfile is found or configured. Skipping Bundler setup.");
-            return;
-        }
-
-        String code = """
-                require 'jruby'
-                JRuby.runtime.instance_config.update_native_env_enabled = false
-                ENV['BUNDLE_GEMFILE'] = '%s'
-                require 'bundler/setup'
-                """.formatted(gemfilePath);
-
-        try {
-            logger.debug("Running Bundler on Gemfile {}", gemfilePath);
-            logger.trace("Bundler code:\n{}", code);
-            engine.eval(code);
-        } catch (ScriptException e) {
-            logger.warn("Error running Bundler setup: {}", e.getMessage());
-        }
-    }
-
-    public void bundlerInstall(ScriptEngine engine) {
-        if (!configuration.bundle_install) {
-            return;
-        }
-
-        String gemfilePath = getGemfilePath();
-        if (gemfilePath == null) {
-            logger.debug("No Gemfile is found or configured. Skipping Bundler install.");
-            return;
-        }
-
-        String code = """
-                require 'jruby'
-                JRuby.runtime.instance_config.update_native_env_enabled = false
-                ENV['BUNDLE_GEMFILE'] = '%s'
-                require 'bundler'
-                Bundler::CLI.start(['install'])
-                """.formatted(gemfilePath);
-
-        try {
-            logger.debug("Running Bundler on Gemfile {}", gemfilePath);
-            logger.trace("Bundler code:\n{}", code);
-            engine.eval(code);
-        } catch (ScriptException e) {
-            logger.warn("Error running Bundler install: {}", e.getMessage());
+            LOGGER.warn("Error installing Gems", unwrap(e));
         }
     }
 
@@ -409,12 +380,30 @@ public class JRubyScriptEngineConfiguration {
         Stream.of(requires.split(",")).map(s -> s.trim()).filter(s -> !s.isEmpty()).forEach(script -> {
             final String requireStatement = String.format("require '%s'", script);
             try {
-                logger.trace("Injecting require statement: {}", requireStatement);
+                LOGGER.trace("Injecting require statement: {}", requireStatement);
                 engine.eval(requireStatement);
             } catch (ScriptException e) {
-                logger.warn("Error evaluating `{}`", requireStatement, unwrap(e));
+                LOGGER.warn("Error evaluating `{}`", requireStatement, unwrap(e));
             }
         });
+    }
+
+    public static void setEnvironmentVariable(ScriptEngine engine, String key, @Nullable String value) {
+        if (value == null) {
+            return;
+        }
+        LOGGER.trace("Setting Ruby environment ENV['{}'] = '{}'", key, value);
+        engine.put("__key", key);
+        engine.put("__value", value);
+        try {
+            engine.eval("ENV[__key] = __value");
+        } catch (ScriptException e) {
+            LOGGER.warn("Error setting Ruby environment", unwrap(e));
+        } finally {
+            // clean up our temporary variables
+            engine.getBindings(ScriptContext.ENGINE_SCOPE).remove("__key");
+            engine.getBindings(ScriptContext.ENGINE_SCOPE).remove("__value");
+        }
     }
 
     /**
@@ -423,26 +412,9 @@ public class JRubyScriptEngineConfiguration {
      * @param scriptEngine Engine in which to configure environment
      */
     public void configureRubyEnvironment(ScriptEngine scriptEngine) {
-        Map.of( //
-                "GEM_HOME", getSpecificGemHome(), //
-                "RUBYLIB", configuration.rubylib //
-        ).forEach((key, value) -> {
-            if (!value.isEmpty()) {
-                scriptEngine.put("__key", key);
-                scriptEngine.put("__value", value);
-                logger.trace("Setting Ruby environment ENV['{}''] = '{}'", key, value);
-
-                try {
-                    scriptEngine.eval("ENV[__key] = __value");
-                } catch (ScriptException e) {
-                    logger.warn("Error setting Ruby environment", unwrap(e));
-                } finally {
-                    // clean up our temporary variables
-                    scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE).remove("__key");
-                    scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE).remove("__value");
-                }
-            }
-        });
+        setEnvironmentVariable(scriptEngine, "GEM_HOME", getSpecificGemHome());
+        setEnvironmentVariable(scriptEngine, "RUBYLIB", configuration.rubylib);
+        setEnvironmentVariable(scriptEngine, "BUNDLE_GEMFILE", bundleGemfile);
 
         configureRubyLib(scriptEngine);
         disallowExec(scriptEngine);
@@ -464,7 +436,7 @@ public class JRubyScriptEngineConfiguration {
             try {
                 engine.eval(code);
             } catch (ScriptException exception) {
-                logger.warn("Error setting $LOAD_PATH from RUBYLIB='{}'", rubyLib, unwrap(exception));
+                LOGGER.warn("Error setting $LOAD_PATH from RUBYLIB='{}'", rubyLib, unwrap(exception));
             }
         }
     }
@@ -483,7 +455,7 @@ public class JRubyScriptEngineConfiguration {
                       end
                     """);
         } catch (ScriptException exception) {
-            logger.warn("Error preventing exec", unwrap(exception));
+            LOGGER.warn("Error preventing exec", unwrap(exception)); =
         }
     }
 
@@ -532,7 +504,7 @@ public class JRubyScriptEngineConfiguration {
                 "org.jruby.embed.localvariable.behavior", configuration.local_variable //
         ).forEach((key, value) -> {
             if (value != null) {
-                logger.trace("Setting system property ({}) to ({})", key, value);
+                LOGGER.trace("Setting system property ({}) to ({})", key, value);
                 System.setProperty(key, value);
             }
         });
@@ -544,7 +516,7 @@ public class JRubyScriptEngineConfiguration {
      * Since a user cares about the _Ruby_ stack trace of the throwable, not
      * the details of where openHAB called it.
      */
-    private Throwable unwrap(Throwable e) {
+    private static Throwable unwrap(Throwable e) {
         Throwable cause = e.getCause();
         if (cause != null) {
             return cause;

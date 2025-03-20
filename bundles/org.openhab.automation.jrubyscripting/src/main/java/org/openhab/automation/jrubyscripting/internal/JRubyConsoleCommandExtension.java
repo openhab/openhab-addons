@@ -146,9 +146,6 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 case GEM:
                     gem(console, Arrays.copyOfRange(args, 1, args.length));
                     break;
-                case UPDATE:
-                    updateGems(console);
-                    break;
                 case PRUNE:
                     if (args.length > 1) {
                         if ("-f".equals(args[1]) || "--force".equals(args[1])) {
@@ -218,7 +215,9 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
             parameters.forEach(parameter -> {
                 console.print("  " + parameter.getName() + ": ");
                 String value = config.get(parameter.getName());
-                if (value.contains("\n")) {
+                if (value == null) {
+                    console.println("not set");
+                } else if (value.contains("\n")) {
                     console.println("  (multiline)");
                     console.println("    " + value.replace("\n", "\n    "));
                 } else {
@@ -259,7 +258,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 case "-l":
                     boolean defaultConsoleInRegistry = false;
                     Map<String, String> consoles = (Map<String, String>) getConsoles();
-                    if (consoles == null) {
+                    if (consoles.isEmpty()) {
                         console.println(
                                 "The list of console scripts is not available. Please install/update the JRuby helper library gem.");
                     } else {
@@ -325,8 +324,6 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         final String BUNDLER = """
                 require 'jruby'
                 JRuby.runtime.instance_config.update_native_env_enabled = false
-                ENV['BUNDLE_GEMFILE'] = '%s'
-                """.formatted(gemfilePath) + """
 
                 require "bundler"
                 require "bundler/friendly_errors"
@@ -344,6 +341,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 """;
 
         executeWithPlainJRuby(console, engine -> {
+            JRubyScriptEngineConfiguration.setEnvironmentVariable(engine, "BUNDLE_GEMFILE", gemfilePath);
             engine.put(ScriptEngine.ARGV, args);
             engine.eval(BUNDLER);
             return null;
@@ -362,8 +360,6 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         final String BUNDLER = """
                 require 'jruby'
                 JRuby.runtime.instance_config.update_native_env_enabled = false
-                ENV['BUNDLE_GEMFILE'] = '%s'
-                """.formatted(gemfilePath) + """
 
                 require "bundler"
                 require "bundler/friendly_errors"
@@ -381,6 +377,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 """;
 
         executeWithPlainJRuby(console, engine -> {
+            JRubyScriptEngineConfiguration.setEnvironmentVariable(engine, "BUNDLE_GEMFILE", gemfilePath);
             engine.put(ScriptEngine.ARGV, args);
             engine.eval(BUNDLER);
             return null;
@@ -396,14 +393,6 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         executeWithPlainJRuby(console, engine -> {
             engine.put(ScriptEngine.ARGV, args);
             engine.eval(GEM);
-            return null;
-        });
-    }
-
-    private void updateGems(Console console) {
-        console.println("Updating configured gems: " + jRubyScriptEngineFactory.getConfiguration().getGems());
-        executeWithPlainJRuby(console, engine -> {
-            jRubyScriptEngineFactory.updateGems(engine);
             return null;
         });
     }
@@ -495,13 +484,12 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         final String scriptIdentifier = "jruby-console-" + UUID.randomUUID().toString();
 
         printLoadingMessage(console, true);
-        ScriptEngineContainer scriptEngineContainer = scriptEngineManager.createScriptEngine(scriptType,
-                scriptIdentifier);
-        if (scriptEngineContainer == null) {
+        ScriptEngineContainer container = scriptEngineManager.createScriptEngine(scriptType, scriptIdentifier);
+        if (container == null) {
             console.println("Error: Unable to create JRuby script engine.");
             return null;
         }
-        ScriptEngine engine = scriptEngineContainer.getScriptEngine();
+        ScriptEngine engine = container.getScriptEngine();
         try {
             printLoadingMessage(console, false);
             return process.apply(engine);
