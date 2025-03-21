@@ -350,7 +350,7 @@ public class Security {
                 data = Arrays.copyOfRange(data, 0, data.length - padding);
             }
         } else {
-            logger.warn("MsgType: {}", msgtype.toString());
+            logger.debug("MsgType: {}", msgtype.toString());
             throw new IOException(msgtype.toString() + " response was received");
         }
 
