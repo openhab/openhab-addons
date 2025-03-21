@@ -364,23 +364,30 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         return parseEventHistoryResponse(response);
     }
 
-    private @Nullable JablotronHistoryDataEvent parseEventHistoryResponse(String response) {
-        JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
-        JsonArray edges = jsonObject.getAsJsonObject("data").getAsJsonObject("forEndUser").getAsJsonObject("events")
-                .getAsJsonObject("events").getAsJsonArray("edges");
-
-        JsonObject node = edges.get(0).getAsJsonObject().getAsJsonObject("node").getAsJsonObject();
-
-        JsonObject invoker = node.getAsJsonArray("invokers").get(0).getAsJsonObject();
-        JsonObject subject = node.getAsJsonArray("subjects").get(0).getAsJsonObject();
-
+    private JablotronHistoryDataEvent parseEventHistoryResponse(String response) {
         JablotronHistoryDataEvent event = new JablotronHistoryDataEvent();
-        event.setIconType(node.get("icon").getAsString());
-        event.setEventText(node.getAsJsonObject("name").get("translation").getAsString());
-        event.setDate(node.get("occurredAt").getAsString());
-        event.setSectionName(subject.getAsJsonObject("defaultName").get("translation").getAsString());
-        event.setInvokerName(invoker.getAsJsonObject("defaultName").get("translation").getAsString());
+        JsonObject jsonObject;
 
+        try {
+            jsonObject = JsonParser.parseString(response).getAsJsonObject();
+            JsonArray edges = jsonObject.getAsJsonObject("data").getAsJsonObject("forEndUser").getAsJsonObject("events")
+                    .getAsJsonObject("events").getAsJsonArray("edges");
+
+            JsonObject node = edges.get(0).getAsJsonObject().getAsJsonObject("node").getAsJsonObject();
+
+            JsonObject invoker = node.getAsJsonArray("invokers").get(0).getAsJsonObject();
+            JsonObject subject = node.getAsJsonArray("subjects").get(0).getAsJsonObject();
+
+            event.setIconType(node.get("icon").getAsString());
+            event.setEventText(node.getAsJsonObject("name").get("translation").getAsString());
+            event.setDate(node.get("occurredAt").getAsString());
+            event.setSectionName(subject.getAsJsonObject("defaultName").get("translation").getAsString());
+            event.setInvokerName(invoker.getAsJsonObject("defaultName").get("translation").getAsString());
+        } catch (JsonSyntaxException ex) {
+            logger.debug("Invalid JSON received: {}", response);
+        } catch (NullPointerException ex) {
+            logger.debug("Cannot parse history event: {}", response);
+        }
         return event;
     }
 
