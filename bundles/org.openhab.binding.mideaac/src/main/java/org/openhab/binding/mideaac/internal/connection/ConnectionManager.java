@@ -122,7 +122,7 @@ public class ConnectionManager {
         // If retrying command add delay to avoid connection rejection
         if (!retry) {
             try {
-                Thread.sleep(4000);
+                Thread.sleep(5000);
             } catch (InterruptedException ex) {
                 logger.debug("An interupted error (retry command delay) has occured {}", ex.getMessage());
             }
