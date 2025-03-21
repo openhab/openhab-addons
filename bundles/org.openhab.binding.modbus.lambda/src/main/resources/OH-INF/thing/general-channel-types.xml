@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="ambient-error-number-type">
+		<item-type>Number</item-type>
+		<label>Ambient Error Number</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ambient-operating-state-type">
+		<item-type>Number</item-type>
+		<label>Ambient Operating State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">OFF</option>
+				<option value="1">AUTOMATIC</option>
+				<option value="2">MANUAL</option>
+				<option value="3">ERROR</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="actual-ambient-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Actual Ambient Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+
+	</channel-type>
+
+	<channel-type id="average-ambient-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Average Ambient Temperature 1h</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="calculated-ambient-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Calculated Ambient Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="emanager-error-number-type">
+		<item-type>Number</item-type>
+		<label>E-Manager Error Number</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="emanager-operating-state-type">
+		<item-type>Number</item-type>
+		<label>E-Manager Operating State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">OFF</option>
+				<option value="1">AUTOMATIC</option>
+				<option value="2">MANUAL</option>
+				<option value="3">ERROR</option>
+				<option value="4">OFFLINE</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="actual-power-type">
+		<item-type>Number:Power</item-type>
+		<label>Actual Power (input or excess)</label>
+		<state readOnly="false" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="actual-power-consumption-type">
+		<item-type>Number:Power</item-type>
+		<label>Actual Power Consumption</label>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="power-consumption-setpoint-type">
+		<item-type>Number:Power</item-type>
+		<label>Power consumption setpoint of all Heat Pumps</label>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>
