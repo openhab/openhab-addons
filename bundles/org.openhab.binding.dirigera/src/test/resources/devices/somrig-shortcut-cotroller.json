@@ -1,0 +1,91 @@
+[
+        {
+            "id": "854bdf30-86b8-48f5-b070-16ff5ab12be4_1",
+            "relationId": "854bdf30-86b8-48f5-b070-16ff5ab12be4",
+            "type": "controller",
+            "deviceType": "shortcutController",
+            "createdAt": "2024-10-17T14:23:58.000Z",
+            "isReachable": true,
+            "lastSeen": "2024-10-27T18:11:55.000Z",
+            "attributes": {
+                "customName": "Clicky",
+                "firmwareVersion": "1.0.21",
+                "hardwareVersion": "1",
+                "manufacturer": "IKEA of Sweden",
+                "model": "SOMRIG shortcut button",
+                "productCode": "E2213",
+                "serialNumber": "ECF64CFFFE1EE52F",
+                "batteryPercentage": 89,
+                "switchLabel": "Shortcut 1",
+                "isOn": false,
+                "lightLevel": 1,
+                "permittingJoin": false,
+                "otaPolicy": "autoUpdate",
+                "otaProgress": 0,
+                "otaScheduleEnd": "00:00",
+                "otaScheduleStart": "00:00",
+                "otaState": "readyToCheck",
+                "otaStatus": "upToDate"
+            },
+            "capabilities": {
+                "canSend": [
+                    "singlePress",
+                    "longPress",
+                    "doublePress"
+                ],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+                "name": "Loft",
+                "color": "ikea_green_no_65",
+                "icon": "rooms_sofa"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "854bdf30-86b8-48f5-b070-16ff5ab12be4_2",
+            "relationId": "854bdf30-86b8-48f5-b070-16ff5ab12be4",
+            "type": "controller",
+            "deviceType": "shortcutController",
+            "createdAt": "2024-10-17T14:23:58.000Z",
+            "isReachable": true,
+            "lastSeen": "2024-10-27T18:11:55.000Z",
+            "attributes": {
+                "customName": "",
+                "firmwareVersion": "1.0.21",
+                "hardwareVersion": "1",
+                "manufacturer": "IKEA of Sweden",
+                "model": "SOMRIG shortcut button",
+                "productCode": "E2213",
+                "serialNumber": "ECF64CFFFE1EE52F",
+                "switchLabel": "Shortcut 2",
+                "isOn": false,
+                "lightLevel": 1,
+                "permittingJoin": false,
+                "otaPolicy": "autoUpdate",
+                "otaProgress": 0,
+                "otaScheduleEnd": "00:00",
+                "otaScheduleStart": "00:00",
+                "otaState": "readyToCheck",
+                "otaStatus": "upToDate"
+            },
+            "capabilities": {
+                "canSend": [
+                    "singlePress",
+                    "longPress",
+                    "doublePress"
+                ],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        }
+]
