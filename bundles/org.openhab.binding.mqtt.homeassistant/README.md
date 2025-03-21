@@ -35,10 +35,10 @@ Note also that just because these tables show that a channel may be read/write, 
 
 ### [Button](https://www.home-assistant.io/integrations/button.mqtt/)
 
-| Channel ID      | Type   | R/W | Description                                                                  |
-|-----------------|--------|-----|------------------------------------------------------------------------------|
-| button          | String | WO  | Inspect the state description for the proper string to send (usually PRESS). |
-| json-attributes | String | RO  | Additional attributes, as a serialized JSON string.                          |
+| Channel ID      | Type   | R/W | Description                                         |
+|-----------------|--------|-----|-----------------------------------------------------|
+| button          | String | WO  | Send PRESS to activate the button.                  |
+| json-attributes | String | RO  | Additional attributes, as a serialized JSON string. |
 
 ### [Camera](https://www.home-assistant.io/integrations/camera.mqtt/)<br>
 
@@ -153,10 +153,12 @@ If a device has multiple device triggers for the same subtype (the particular bu
 
 ### [Scene](https://www.home-assistant.io/integrations/scene.mqtt/)
 
-| Channel ID      | Type   | R/W | Description                                                                                               |
-|-----------------|--------|-----|-----------------------------------------------------------------------------------------------------------|
-| scene           | String | WO  | Triggers a scene on the device. Inspect the state description for the proper string to send (usually ON). |
-| json-attributes | String | RO  | Additional attributes, as a serialized JSON string.                                                       |
+If a device has multiple scenes, they will only show up as a single channel. You send the name of a given scene to activate it.
+
+| Channel ID      | Type   | R/W | Description                                                                                    |
+|-----------------|--------|-----|------------------------------------------------------------------------------------------------|
+| scene           | String | WO  | Triggers a scene on the device. Inspect the command description for the proper string to send. |
+| json-attributes | String | RO  | Additional attributes, as a serialized JSON string.                                            |
 
 ### [Select](https://www.home-assistant.io/integrations/select.mqtt/)
 

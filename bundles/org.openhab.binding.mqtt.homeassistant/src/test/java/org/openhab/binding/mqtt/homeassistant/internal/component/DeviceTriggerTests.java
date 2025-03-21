@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -119,11 +120,11 @@ public class DeviceTriggerTests extends AbstractComponentTests {
 
         ComponentChannel channel = Objects.requireNonNull(component1.getChannel("turn_on"));
         TextValue value = (TextValue) channel.getState().getCache();
-        Set<String> payloads = value.getStates();
+        Map<String, String> payloads = value.getStates();
         assertNotNull(payloads);
         assertThat(payloads.size(), is(2));
-        assertThat(payloads.contains("press"), is(true));
-        assertThat(payloads.contains("release"), is(true));
+        assertThat(payloads.containsKey("press"), is(true));
+        assertThat(payloads.containsKey("release"), is(true));
         Configuration channelConfig = channel.getChannel().getConfiguration();
         Object config = channelConfig.get("config");
         assertNotNull(config);
