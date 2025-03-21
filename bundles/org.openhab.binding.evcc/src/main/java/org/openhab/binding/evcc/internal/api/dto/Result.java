@@ -24,6 +24,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Florian Hotze - Initial contribution
  * @author Luca Arnecke - update to evcc version 0.123.1
+ * @author Daniel Kötting - update to evcc version 0.133.0
  */
 public class Result {
     // Data types from https://github.com/evcc-io/evcc/blob/master/api/api.go
@@ -49,14 +50,14 @@ public class Result {
     @SerializedName("batteryMode")
     private String batteryMode;
 
-    @SerializedName("gridCurrents")
-    private float[] gridCurrents;
-
-    @SerializedName("gridEnergy")
-    private float gridEnergy;
-
     @SerializedName("gridPower")
     private Float gridPower;
+
+    @SerializedName("grid")
+    private Grid grid;
+
+    @SerializedName("gridConfigured")
+    private boolean gridConfigured;
 
     @SerializedName("homePower")
     private float homePower;
@@ -165,24 +166,24 @@ public class Result {
     }
 
     /**
-     * @return grid's currents
-     */
-    public float[] getGridCurrents() {
-        return gridCurrents;
-    }
-
-    /**
-     * @return grid's energy
-     */
-    public float getGridEnergy() {
-        return gridEnergy;
-    }
-
-    /**
-     * @return grid's power or {@code null} if not available
+     * @return gridPower (before evcc version 0.133.0)
      */
     public Float getGridPower() {
         return gridPower;
+    }
+
+    /**
+     * @return all grid related values (since evcc version 0.133.0)
+     */
+    public Grid getGrid() {
+        return grid;
+    }
+
+    /**
+     * @return is grid configured (since evcc version 0.133.0)
+     */
+    public boolean getGridConfigured() {
+        return gridConfigured;
     }
 
     /**
