@@ -21,7 +21,7 @@
       !jdk.internal.reflect.*,
       !jdk.vm.ci.services</bnd.importpackage>
 
-    <graalpy.version>24.1.2</graalpy.version>
+    <graalpy.version>24.2.0</graalpy.version>
   </properties>
 
   <dependencies>
@@ -135,6 +135,7 @@
                   <exclude>org.graalvm.sdk:nativeimage</exclude>
                   <exclude>org.graalvm.sdk:word</exclude>
                   <exclude>org.graalvm.shadowed:icu4j</exclude>
+                  <exclude>org.graalvm.shadowed:xz</exclude>
                   <exclude>org.graalvm.truffle:truffle-compiler</exclude>
                   <exclude>org.graalvm.truffle:truffle-runtime</exclude>
                 </excludes>
