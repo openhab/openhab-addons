@@ -26,6 +26,12 @@
       <version>${jruby.version}</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.karaf.shell</groupId>
+      <artifactId>org.apache.karaf.shell.core</artifactId>
+      <version>4.4.7</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
 </project>
