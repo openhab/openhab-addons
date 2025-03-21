@@ -231,6 +231,7 @@
     <module>org.openhab.binding.leapmotion</module>
     <module>org.openhab.binding.lghombot</module>
     <module>org.openhab.binding.lgtvserial</module>
+    <module>org.openhab.binding.lgthinq</module>
     <module>org.openhab.binding.lgwebos</module>
     <module>org.openhab.binding.lifx</module>
     <module>org.openhab.binding.linky</module>
