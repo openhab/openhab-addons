@@ -28,6 +28,10 @@
 		<label>String Channel</label>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="string-rw">
+		<item-type>String</item-type>
+		<label>RW String Channel</label>
+	</channel-type>
 	<channel-type id="wifi">
 		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Wi-Fi Signal Strength</label>
@@ -48,6 +52,28 @@
 		<item-type>Switch</item-type>
 		<label>Boolean Channel</label>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="speed-level">
+		<item-type>String</item-type>
+		<label>Print Speed Level</label>
+		<description>Current speed setting of the print job.</description>
+		<state>
+			<options>
+				<option value="SILENT">Silent</option>
+				<option value="STANDARD">Standard</option>
+				<option value="SPORT">Sport</option>
+				<option value="LUDICROUS">Ludicrous</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="SILENT">Silent</option>
+				<option value="STANDARD">Standard</option>
+				<option value="SPORT">Sport</option>
+				<option value="LUDICROUS">Ludicrous</option>
+			</options>
+		</command>
 	</channel-type>
 
 	<channel-type id="on-off-command">
