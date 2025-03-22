@@ -17,6 +17,7 @@ These are the available configuration parameters:
 - `host` Hostname/IP of the air unit (automatically set by discovery service)
 - `refreshInterval` Time (in seconds) between monitoring requests to the air unit. Smaller values mean more network load, typically set between a few seconds and a minute. Defaults to 10 seconds.
 - `updateUnchangedValuesEveryMillis` Minimum time between state updates sent to the event bus for a particular channel when the state of the channel didn't change. This should avoid spamming the event bus with unnecessary updates. When set to 0, all channel state are updated every time the air unit requests are sent (see refresh interval). When set to a non zero value, unchanged values are only reported after the configured timespan has passed. Changed values are always sent to the event bus. Defaults to 60.000 (one minute), so updates are sent every minute or if the state of the channel changes.
+- `timeZone` Time zone of the air unit. Leave empty for defaulting to openHAB time zone.
 
 ## Channels
 
