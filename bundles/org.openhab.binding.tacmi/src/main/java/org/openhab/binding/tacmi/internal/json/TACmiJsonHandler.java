@@ -55,7 +55,6 @@ public class TACmiJsonHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TACmiJsonHandler.class);
     private HttpClient httpClient;
-    @SuppressWarnings("unused")
     private @Nullable String authHeader;
     private @Nullable String url;
     private @Nullable ScheduledFuture<?> scheduledFuture;
