@@ -21,6 +21,7 @@ import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.danfossairunit.internal.DanfossAirUnit;
 import org.openhab.binding.danfossairunit.internal.DanfossAirUnitCommunicationController;
+import org.openhab.binding.danfossairunit.internal.FixedTimeZoneProvider;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -164,7 +166,7 @@ public class DanfossAirUnitDiscoveryService extends AbstractDiscoveryService {
 
     private @Nullable String getSerialNumber(InetAddress address) {
         var controller = new DanfossAirUnitCommunicationController(address, SOCKET_TIMEOUT_MILLISECONDS);
-        var unit = new DanfossAirUnit(controller);
+        var unit = new DanfossAirUnit(controller, FixedTimeZoneProvider.of(ZoneId.of("UTC")));
         try {
             return unit.getUnitSerialNumber();
         } catch (IOException e) {
