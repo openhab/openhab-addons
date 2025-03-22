@@ -7,17 +7,17 @@
 	<channel-group-type id="linky-local-historical-ejp">
 		<label>Historical EJP</label>
 		<channels>
-			<channel id="ejphn" typeId="consumption-type">
+			<channel id="ejphn" typeId="consumption">
 				<label>EJP Index Standard Hours</label>
 				<description>Index EJP option Standard Hours</description>
 			</channel>
 
-			<channel id="ejphpm" typeId="consumption-type">
+			<channel id="ejphpm" typeId="consumption">
 				<label>EJP Index High Hours</label>
 				<description>Index EJP option High hours</description>
 			</channel>
 
-			<channel id="pejp" typeId="time-type">
+			<channel id="pejp" typeId="time">
 				<label>Advice EJP Start</label>
 				<description>Advice an EJP period start (30 min before)</description>
 			</channel>
