@@ -5,13 +5,14 @@
 
 	<feature name="openhab-automation-jsscripting" description="JavaScript Scripting" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.collections/24.1.2</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.jniutils/24.1.2</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.nativeimage/24.1.2</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.word/24.1.2</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.icu4j/24.1.2</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-compiler/24.1.2</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-runtime/24.1.2</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.collections/24.2.0</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.jniutils/24.2.0</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.nativeimage/24.2.0</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.word/24.2.0</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.icu4j/24.2.0</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.xz/24.2.0</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-compiler/24.2.0</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-runtime/24.2.0</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.automation.jsscripting/${project.version}</bundle>
 	</feature>
 </features>
