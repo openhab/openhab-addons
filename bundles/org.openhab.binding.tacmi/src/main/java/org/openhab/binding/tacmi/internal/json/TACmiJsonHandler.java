@@ -68,7 +68,6 @@ public class TACmiJsonHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-
         final Config config = getConfigAs(Config.class);
 
         if (config.host.isBlank()) {
