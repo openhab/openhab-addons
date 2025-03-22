@@ -153,7 +153,6 @@ public class TACmiJsonHandler extends BaseThingHandler {
                 return;
             }
             if (jsonResponse.statusCode != 0) {
-                logger.error("Response Error: {} ({})", jsonResponse.statusCode, jsonResponse.status);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, jsonResponse.status);
                 return;
             }
