@@ -97,7 +97,7 @@
 		<parameter name="answeroptions" type="text">
 			<advanced>true</advanced>
 			<label>Answer Options</label>
-			<description>specify predefined answer options divided by a pipe character, e.g. Yes|No|Maybe</description>
+			<description>Specify predefined answer options divided by a pipe character, e.g. Yes|No|Maybe</description>
 		</parameter>
 		<parameter name="answerforce" type="boolean">
 			<advanced>true</advanced>
