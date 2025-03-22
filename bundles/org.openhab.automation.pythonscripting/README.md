@@ -179,7 +179,7 @@ print("error message", file=sys.stderr)
 
 ```
 
-2. using the logging module. Here you get a logging object, already initialized with the prefix "org.openhab.core.automation.pythonscripting"
+2. using the logging module. Here you get a logging object, already initialized with the prefix "org.openhab.automation.pythonscripting"
 
 ```python
 from openhab import logging
@@ -189,7 +189,7 @@ logging.info("info message")
 logging.error("error message")
 ```
 
-3. using the rule based logging module. Here you get a logging object, already initialized with the prefix "org.openhab.core.automation.pythonscripting.<RuleClassName>"
+3. using the rule based logging module. Here you get a logging object, already initialized with the prefix "org.openhab.automation.pythonscripting.<RuleClassName>"
 
 ```python
 from openhab import rule
