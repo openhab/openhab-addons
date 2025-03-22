@@ -52,7 +52,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DanfossAirUnitHandler extends BaseThingHandler {
 
-    private static final int TCP_PORT = 30046;
     private static final int POLLING_INTERVAL_SECONDS = 5;
     private final Logger logger = LoggerFactory.getLogger(DanfossAirUnitHandler.class);
     private @NonNullByDefault({}) DanfossAirUnitConfiguration config;
@@ -99,7 +98,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
         valueCache = new ValueCache(config.updateUnchangedValuesEveryMillis);
         try {
             var localCommunicationController = new DanfossAirUnitCommunicationController(
-                    InetAddress.getByName(config.host), TCP_PORT);
+                    InetAddress.getByName(config.host));
             this.communicationController = localCommunicationController;
             this.airUnit = new DanfossAirUnit(localCommunicationController);
             startPolling();
