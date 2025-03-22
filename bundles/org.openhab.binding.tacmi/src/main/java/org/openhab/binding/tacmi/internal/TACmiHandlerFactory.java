@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tacmi.internal.coe.TACmiCoEBridgeHandler;
 import org.openhab.binding.tacmi.internal.coe.TACmiHandler;
+import org.openhab.binding.tacmi.internal.json.TACmiJsonHandler;
 import org.openhab.binding.tacmi.internal.schema.TACmiSchemaHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -47,7 +48,8 @@ import org.osgi.service.component.annotations.Reference;
 public class TACmiHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(THING_TYPE_CMI, THING_TYPE_COE_BRIDGE, THING_TYPE_CMI_SCHEMA).collect(Collectors.toSet()));
+            Stream.of(THING_TYPE_CMI, THING_TYPE_COE_BRIDGE, THING_TYPE_CMI_SCHEMA, THING_TYPE_CMI_JSON)
+                    .collect(Collectors.toSet()));
 
     private final HttpClient httpClient;
     private final TACmiChannelTypeProvider channelTypeProvider;
@@ -74,6 +76,8 @@ public class TACmiHandlerFactory extends BaseThingHandlerFactory {
             return new TACmiCoEBridgeHandler((Bridge) thing);
         } else if (THING_TYPE_CMI_SCHEMA.equals(thingTypeUID)) {
             return new TACmiSchemaHandler(thing, httpClient, channelTypeProvider);
+        } else if (THING_TYPE_CMI_JSON.equals(thingTypeUID)) {
+            return new TACmiJsonHandler(thing, httpClient);
         }
 
         return null;
