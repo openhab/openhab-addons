@@ -28,6 +28,8 @@ import org.openhab.binding.linky.internal.dto.IntervalReading;
 import org.openhab.binding.linky.internal.dto.MeterReading;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.service.ReadyService;
+import org.openhab.core.service.StartLevelService;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -48,6 +50,12 @@ public class ThingLinkyRemoteHandlerTest {
 
     @Mock
     TimeZoneProvider tzProvider;
+
+    @Mock
+    StartLevelService startLevelService;
+
+    @Mock
+    ReadyService readyService;
 
     @Mock
     LinkyConfiguration config;
