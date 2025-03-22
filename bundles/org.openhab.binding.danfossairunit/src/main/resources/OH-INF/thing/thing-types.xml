@@ -16,11 +16,14 @@
 			<channel-group id="recuperator" typeId="recuperator"/>
 			<channel-group id="service" typeId="service"/>
 		</channel-groups>
+
 		<properties>
 			<property name="vendor">Danfoss</property>
 			<property name="thingTypeVersion">2</property>
 		</properties>
-		<representation-property>host</representation-property>
+
+		<representation-property>serialNumber</representation-property>
+
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Host</label>
