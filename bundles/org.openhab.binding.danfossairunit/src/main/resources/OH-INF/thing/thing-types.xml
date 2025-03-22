@@ -19,7 +19,7 @@
 
 		<properties>
 			<property name="vendor">Danfoss</property>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<representation-property>serialNumber</representation-property>
@@ -109,6 +109,7 @@
 				<description>Disables the heat exchange. Useful in summer when room temperature is above target and outside
 					temperature is below target.</description>
 			</channel>
+			<channel id="defrost" typeId="defrost"/>
 			<channel id="supply_temp" typeId="temperature">
 				<label>Supply Air Temperature</label>
 				<description>Temperature of air which is passed to the rooms</description>
@@ -216,6 +217,12 @@
 		<description>Current temperature</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="defrost" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Defrost</label>
+		<description>Defrost status. Active when low outdoor temperatures pose a risk of ice formation in the heat exchanger</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

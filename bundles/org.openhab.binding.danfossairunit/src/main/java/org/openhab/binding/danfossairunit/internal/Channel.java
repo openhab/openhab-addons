@@ -50,6 +50,7 @@ public enum Channel {
 
     // recuperator channels
     CHANNEL_BYPASS("bypass", ChannelGroup.RECUPERATOR, DanfossAirUnit::getBypass, DanfossAirUnit::setBypass),
+    CHANNEL_DEFROST("defrost", ChannelGroup.RECUPERATOR, DanfossAirUnit::getDefrostStatus),
     CHANNEL_SUPPLY_TEMP("supply_temp", ChannelGroup.RECUPERATOR, DanfossAirUnit::getSupplyTemperature),
     CHANNEL_EXTRACT_TEMP("extract_temp", ChannelGroup.RECUPERATOR, DanfossAirUnit::getExtractTemperature),
     CHANNEL_EXHAUST_TEMP("exhaust_temp", ChannelGroup.RECUPERATOR, DanfossAirUnit::getExhaustTemperature),

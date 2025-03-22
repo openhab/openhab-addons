@@ -173,6 +173,10 @@ public class DanfossAirUnit {
         return OnOffType.from(getBoolean(REGISTER_1_READ, NIGHT_COOLING));
     }
 
+    public OnOffType getDefrostStatus() throws IOException {
+        return OnOffType.from(getBoolean(REGISTER_1_READ, DEFROST_STATUS));
+    }
+
     public OnOffType getBypass() throws IOException {
         return OnOffType.from(getBoolean(REGISTER_1_READ, BYPASS));
     }
