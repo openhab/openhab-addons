@@ -164,7 +164,6 @@ public class TACmiJsonHandler extends BaseThingHandler {
             // binding shutdown is in progress
             updateStatus(ThingStatus.OFFLINE);
         } catch (final Exception e) {
-            logger.trace("Exception:\n{}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
