@@ -44,6 +44,11 @@
 					value (received via polling from the air unit) is updated to the event bus, unchanged or not.</description>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="timeZone" type="text" required="false">
+				<label>Time Zone</label>
+				<description>Time zone of the air unit. Leave empty for defaulting to openHAB time zone.</description>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 
