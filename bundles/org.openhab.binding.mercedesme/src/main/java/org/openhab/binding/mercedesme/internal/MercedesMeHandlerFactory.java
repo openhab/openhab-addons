@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,8 +30,6 @@ import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.items.MetadataRegistry;
-import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -39,7 +37,6 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
@@ -48,7 +45,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link MercedesMeHandlerFactory} is responsible for creating thing handlers.
+ * The {@link MercedesMeHandlerFactory} is responsible for creating thing
+ * handlers.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -65,9 +63,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private final MercedesMeDiscoveryService discoveryService;
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
-    private final NetworkAddressService networkService;
     private @Nullable ServiceRegistration<?> discoveryServiceReg;
-    private @Nullable MercedesMeMetadataAdjuster mdAdjuster;
 
     public static String ohVersion = "unknown";
 
@@ -75,11 +71,8 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     public MercedesMeHandlerFactory(@Reference HttpClientFactory hcf, @Reference StorageService storageService,
             final @Reference LocaleProvider lp, final @Reference LocationProvider locationP,
             final @Reference TimeZoneProvider tzp, final @Reference MercedesMeCommandOptionProvider cop,
-            final @Reference MercedesMeStateOptionProvider sop, final @Reference UnitProvider up,
-            final @Reference MetadataRegistry mdr, final @Reference ItemChannelLinkRegistry iclr,
-            final @Reference NetworkAddressService nas) {
+            final @Reference MercedesMeStateOptionProvider sop, final @Reference UnitProvider up) {
         this.storageService = storageService;
-        networkService = nas;
         localeProvider = lp;
         locationProvider = locationP;
         mmcop = cop;
@@ -87,7 +80,6 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
 
         Utils.initialize(tzp, lp);
         Mapper.initialize(up);
-        mdAdjuster = new MercedesMeMetadataAdjuster(mdr, iclr, up);
         httpClient = hcf.getCommonHttpClient();
         discoveryService = new MercedesMeDiscoveryService();
     }
@@ -112,8 +104,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
                 discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                         null);
             }
-            return new AccountHandler((Bridge) thing, discoveryService, httpClient, localeProvider, storageService,
-                    networkService);
+            return new AccountHandler((Bridge) thing, discoveryService, httpClient, localeProvider, storageService);
         } else if (THING_TYPE_BEV.equals(thingTypeUID) || THING_TYPE_COMB.equals(thingTypeUID)
                 || THING_TYPE_HYBRID.equals(thingTypeUID)) {
             return new VehicleHandler(thing, locationProvider, mmcop, mmsop);
@@ -127,9 +118,6 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         if (discoveryServiceReg != null) {
             discoveryServiceReg.unregister();
             discoveryServiceReg = null;
-        }
-        if (mdAdjuster != null) {
-            mdAdjuster = null;
         }
     }
 

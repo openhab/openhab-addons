@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -172,6 +172,10 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
                 logger.warn("Possible bug because a new serial port value was set during opening new port.");
                 errorStatus = DSMRErrorStatus.PORT_INTERNAL_ERROR;
             }
+        } catch (final IllegalStateException ise) {
+            logger.debug("Failed communicating, probably time out", ise);
+
+            errorStatus = DSMRErrorStatus.PORT_PORT_TIMEOUT;
         } catch (final IOException ioe) {
             logger.debug("Failed to get inputstream for serialPort", ioe);
 

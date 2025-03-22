@@ -1,6 +1,6 @@
 # JavaScript Scripting
 
-This add-on provides support for JavaScript (ECMAScript 2022+) that can be used as a scripting language within automation rules.
+This add-on provides support for JavaScript (ECMAScript 2024+) that can be used as a scripting language within automation rules.
 It is based on [GraalJS](https://www.graalvm.org/javascript/) from the [GraalVM project](https://www.graalvm.org/).
 
 Also included is [openhab-js](https://github.com/openhab/openhab-js/), a fairly high-level ES6 library to support automation in openHAB. It provides convenient access
@@ -513,6 +513,7 @@ The `PersistedState` object contains the following properties, representing Item
 The `PersistedItem` object extends `PersistedState` with the following properties, representing Item state and the respective timestamp:
 
 - `timestamp`: Timestamp as [`time.ZonedDateTime`](#time)
+- `instant`: Timestamp as [`time.Instant`](#time)
 
 ```javascript
 var midnight = time.toZDT('00:00');
@@ -799,34 +800,49 @@ actions.notificationBuilder('Hello World!').logOnly().send();
 // Sends a simple log notification with icon and tag
 actions.notificationBuilder('Hello World!').logOnly()
   .withIcon('f7:bell_fill').withTag('important').send();
+
+// Sends a notification about a temperature change ...
+actions.notificationBuilder('new temperature: xyz').withIcon('oh:temperature').withTag('Temperature change').withReferenceId('livingRoom').send();
+// ... and hides it again after 10 minutes
+setTimeout(() => {
+  actions.notificationBuilder().hide().withReferenceId('livingRoom').send();
+}, 10 * 60 * 1000);
 ```
 
 See [openhab-js : actions.NotificationBuilder](https://openhab.github.io/openhab-js/actions.html#.notificationBuilder) for complete documentation.
 
 ### Cache
 
-The cache namespace provides both a private and a shared cache that can be used to set and retrieve objects that will be persisted between subsequent runs of the same or between scripts.
+The cache namespace provides both a private and a shared cache that can be used to set and retrieve data that will be persisted between subsequent runs of the same or between scripts.
 
 The private cache can only be accessed by the same script and is cleared when the script is unloaded.
-You can use it to e.g. store timers or counters between subsequent runs of that script.
+You can use it to store primitives and objects, e.g. store timers or counters between subsequent runs of that script.
 When a script is unloaded and its cache is cleared, all timers (see [`createTimer`](#createtimer)) stored in its private cache are automatically cancelled.
 
 The shared cache is shared across all rules and scripts, it can therefore be accessed from any automation language.
 The access to every key is tracked and the key is removed when all scripts that ever accessed that key are unloaded.
 If that key stored a timer, the timer will be cancelled.
+You can use it to store primitives and **Java** objects, e.g. store timers or counters between multiple scripts.
+
+Due to a multi-threading limitation in GraalJS (the JavaScript engine used by JavaScript Scripting), it is not recommended to store JavaScript objects in the shared cache.
+Multi-threaded access to JavaScript objects will lead to script execution failure!
+You can work-around that limitation by either serialising and deserialising JS objects or by switching to their Java counterparts.
+
+Timers as created by [`createTimer`](#createtimer) can be stored in the shared cache.
+The ids of timers and intervals as created by `setTimeout` and `setInterval` cannot be shared across scripts as these ids are local to the script where they were created.
 
 See [openhab-js : cache](https://openhab.github.io/openhab-js/cache.html) for full API documentation.
 
 - cache : <code>object</code>
   - .private
-    - .get(key, defaultSupplier) ⇒ <code>Object | null</code>
-    - .put(key, value) ⇒ <code>Previous Object | null</code>
-    - .remove(key) ⇒ <code>Previous Object | null</code>
+    - .get(key, defaultSupplier) ⇒ <code>* | null</code>
+    - .put(key, value) ⇒ <code>Previous * | null</code>
+    - .remove(key) ⇒ <code>Previous * | null</code>
     - .exists(key) ⇒ <code>boolean</code>
   - .shared
-    - .get(key, defaultSupplier) ⇒ <code>Object | null</code>
-    - .put(key, value) ⇒ <code>Previous Object | null</code>
-    - .remove(key) ⇒ <code>Previous Object | null</code>
+    - .get(key, defaultSupplier) ⇒ <code>* | null</code>
+    - .put(key, value) ⇒ <code>Previous * | null</code>
+    - .remove(key) ⇒ <code>Previous * | null</code>
     - .exists(key) ⇒ <code>boolean</code>
 
 The `defaultSupplier` provided function will return a default value if a specified key is not already associated with a value.
@@ -834,19 +850,17 @@ The `defaultSupplier` provided function will return a default value if a specifi
 **Example** *(Get a previously set value with a default value (times = 0))*
 
 ```js
-var counter = cache.private.get('counter', () => ({ 'times': 0 }));
-console.log('Count', counter.times++);
+var counter = cache.shared.get('counter', () => 0);
+console.log('Counter: ' + counter);
 ```
 
-**Example** *(Get a previously set object)*
+**Example** *(Get a previously set value, modify and store it)*
 
 ```js
 var counter = cache.private.get('counter');
-if (counter === null) {
-  counter = { times: 0 };
-  cache.private.put('counter', counter);
-}
-console.log('Count', counter.times++);
+counter++;
+console.log('Counter: ' + counter);
+cache.private.put('counter', counter);
 ```
 
 ### Time
@@ -892,11 +906,11 @@ var formatter = time.DateTimeFormatter.ofPattern('dd.MM.yyyy HH:mm').withLocale(
 
 #### `time.javaInstantToJsInstant()`
 
-Converts a [`java.time.Instant`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Instant.html) to a JS-Joda [`Instant`](https://js-joda.github.io/js-joda/manual/Instant.html).
+Converts a [`java.time.Instant`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Instant.html) to a JS-Joda [`Instant`](https://js-joda.github.io/js-joda/manual/Instant.html).
 
 #### `time.javaZDTToJsZDT()`
 
-Converts a [`java.time.ZonedDateTime`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/ZonedDateTime.html) to a JS-Joda [`ZonedDateTime`](https://js-joda.github.io/js-joda/manual/ZonedDateTime.html).
+Converts a [`java.time.ZonedDateTime`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/ZonedDateTime.html) to a JS-Joda [`ZonedDateTime`](https://js-joda.github.io/js-joda/manual/ZonedDateTime.html).
 
 #### `time.toZDT()`
 
@@ -909,7 +923,8 @@ The following rules are used during the conversion:
 | `null` or `undefined`                                                        | `time.ZonedDateTime.now()`                                                                                      | `time.toZDT();`                                                                        |
 | `time.ZonedDateTime`                                                         | passed through unmodified                                                                                       |                                                                                        |
 | `java.time.ZonedDateTime`                                                    | converted to the `time.ZonedDateTime` equivalent                                                                |                                                                                        |
-| JavaScript native `Date`                                                     | converted to the equivalent `time.ZonedDateTime` using `SYSTEM` as the timezone                                 |                                                                                        |
+| `time.Instant`, `java.time.Instant`                                          | converted to the `time.ZonedDateTime` equivalent using `SYSTEM` as the timezone                                 | `time.toZDT(time.toInstant(500));` (epoch milli 500 to ZDT)                            |
+| JavaScript native `Date`                                                     | converted to the `time.ZonedDateTime` equivalent using `SYSTEM` as the timezone                                 |                                                                                        |
 | `number`, `bingint`, `java.lang.Number`, `DecimalType`                       | rounded to the nearest integer and added to `now` as milliseconds                                               | `time.toZDT(1000);`                                                                    |
 | [`Quantity`](#quantity) or `QuantityType`                                    | if the unit is time-compatible, added to `now`                                                                  | `time.toZDT(item.getItem('MyTimeItem').rawState);`, `time.toZDT(Quantity('10 min'));`  |
 | `items.Item` or `org.openhab.core.types.Item`                                | if the state is supported (see the `Type` rules in this table, e.g. `DecimalType`), the state is converted      | `time.toZDT(items.getItem('MyItem'));`                                                 |
@@ -1027,6 +1042,24 @@ var timestamp = time.ZonedDateTime.now().plusMinutes(5);
 console.log(timestamp.getMillisFromNow());
 ```
 
+#### `time.toInstant()`
+
+The following rules are used during the conversion:
+
+| Argument Type                                          | Rule                                                                                    | Examples                                     |
+|--------------------------------------------------------|-----------------------------------------------------------------------------------------|----------------------------------------------|
+| `null` or `undefined`                                  | `time.Instant.now()`                                                                    | `time.toInstant();`                          |
+| `time.Instant`                                         | passed through unmodified                                                               |                                              |
+| `java.time.Instant`                                    | converted to the `time.Instant` equivalent                                              |                                              |
+| `number`, `bingint`, `java.lang.Number`, `DecimalType` | handled as epoch milliseconds and converted to the `time.Instant` equivalent            | `time.toInstant(500);`                       |
+| `java.time.ZonedDateTime`                              | converted to the `time.Instant` equivalent                                              |                                              |
+| JavaScript native `Date`                               | converted to the `time.Instant` equivalent                                              |                                              |
+| `items.Item` or `org.openhab.core.types.Item`          | if the state is supported (see the `*Type` rules in this table), the state is converted | `time.toInstant(items.getItem('MyItem'));`   |
+| `String`, `java.lang.String`, `StringType`             | parsed                                                                                  | `time.toInstant('2019-10-12T07:20:50.52Z');` |
+| `DateTimeType`                                         | converted to the `time.Instant` equivalent                                              |                                              |
+
+When a type or string that cannot be handled is encountered, an error is thrown.
+
 ### Quantity
 
 The `Quantity` class greatly simplifies Quantity handling by providing unit conversion, comparisons and mathematical operations.
@@ -1133,8 +1166,8 @@ See [openhab-js : utils](https://openhab.github.io/openhab-js/utils.html) for fu
 
 ## File Based Rules
 
-The JS Scripting binding will load scripts from `automation/js` in the user configuration directory.
-The system will automatically reload scripts when changes are detected to files.
+The JavaScript Scripting automation add-on will load `.js` scripts from `automation/js` in the user configuration directory.
+The system will automatically reload a script when changes are detected to the script file.
 Local variable state is not persisted among reloads, see using the [cache](#cache) for a convenient way to persist objects.
 
 File based rules can be created in 2 different ways: using [JSRule](#jsrule) or the [Rule Builder](#rule-builder).
@@ -1257,27 +1290,27 @@ See [Examples](#rule-builder-examples) for further patterns.
   - `.cron(cronExpression)`: Specifies a cron schedule for the rule to fire.
   - `.timeOfDay(time)`: Specifies a time of day in `HH:mm` for the rule to fire.
   - `.item(itemName)`: Specifies an Item as the source of changes to trigger a rule.
-    - `.for(duration)`
-    - `.from(state)`
-    - `.fromOn()`
-    - `.fromOff()`
-    - `.to(state)`
-    - `.toOn()`
-    - `.toOff()`
-    - `.receivedCommand()`
-    - `.receivedUpdate()`
-    - `.changed()`
+    - `.receivedCommand()`, `.receivedUpdate()`, `.changed()` allows to define the received command/update, respective new state:
+      - `.of(command)`
+      - `.to(state)`
+      - `.toOn()`
+      - `.toOff()`
+    - `.changed()` allows to define the previous state and a duration for which the Item must have changed:
+      - `.from(state)`
+      - `.fromOn()`
+      - `.fromOff()`
+      - `.for(duration)` where duration is in milliseconds
   - `.memberOf(groupName)`: Specifies a group Item as the source of changes to trigger the rule.
-    - `.for(duration)`
-    - `.from(state)`
-    - `.fromOn()`
-    - `.fromOff()`
-    - `.to(state)`
-    - `.toOn()`
-    - `.toOff()`
-    - `.receivedCommand()`
-    - `.receivedUpdate()`
-    - `.changed()`
+    - `.receivedCommand()`, `.receivedUpdate()`, `.changed()` allows to define the received command/update, respective new state:
+      - `.of(command)`
+      - `.to(state)`
+      - `.toOn()`
+      - `.toOff()`
+    - `.changed()` allows to define the previous state and a duration for which the Item must have changed:
+      - `.from(state)`
+      - `.fromOn()`
+      - `.fromOff()`
+      - `.for(duration)` where duration is in milliseconds
   - `.system()`: Specifies a system event as a source for the rule to fire.
     - `.ruleEngineStarted()`
     - `.rulesLoaded()`
@@ -1287,9 +1320,9 @@ See [Examples](#rule-builder-examples) for further patterns.
     - `.startLevel(level)`
   - `.thing(thingName)`: Specifies a Thing event as a source for the rule to fire.
     - `changed()`
+      - `from(state)`
+      - `to(state)`
     - `updated()`
-    - `from(state)`
-    - `to(state)`
   - `.dateTime(itemName)`: Specifies a DateTime Item whose (optional) date and time schedule the rule to fire.
     - `.timeOnly()`: Only the time of the Item should be compared, the date should be ignored.
     - `.withOffset(offset)`: The offset in seconds to add to the time of the DateTime Item.

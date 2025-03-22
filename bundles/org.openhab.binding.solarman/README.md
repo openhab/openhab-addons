@@ -15,7 +15,7 @@ These data loggers are used by inverters from a lot of manufacturers, just to na
 
 The `solarman:logger` thing supports reading data from a Solarman LSW-3 Stick Logger (it might also work with LSE-3 and maybe others) when connected to a supported inverter.
 
-It was tested on a SUN-12K-SG04LP3-EU only, but because the implementation uses the inverter definitions created as part of Stephan Joubert's Home Assistant plugin it **might** work with the other inverters supported by the plugin.
+It was tested on a SUN-12K-SG04LP3-EU only, with LAN Stick LSE-3 in RAW MODBUS solarmanLoggerMode and Wifi Stick in V5 MODBUS solarmanLoggerMode but because the implementation uses the inverter definitions created as part of Stephan Joubert's Home Assistant plugin it **might** work with the other inverters supported by the plugin.
 
 ## Thing Configuration
 
@@ -25,14 +25,15 @@ The IP address can be obtained from your router and the serial number can either
 
 ### `logger` Thing Configuration
 
-| Name               | Type    | Description                                            | Default | Required | Advanced |
-|--------------------|---------|--------------------------------------------------------|---------|----------|----------|
-| hostname           | text    | Hostname or IP address of the Solarman logger          | N/A     | yes      | no       |
-| serialNumber       | text    | Serial number of the Solarman logger                   | N/A     | yes      | no       |
-| inverterType       | text    | The type of inverter connected to the logger           | N/A     | yes      | no       |
-| port               | integer | Port of the Solarman logger                            | 8899    | no       | yes      |
-| refreshInterval    | integer | Interval the device is polled in sec.                  | 60      | no       | yes      |
-| additionalRequests | text    | Additional requests besides the ones in the definition | N/A     | no       | yes      |
+| Name               | Type    | Description                                                                                                       | Default   | Required | Advanced |
+|--------------------|---------|-------------------------------------------------------------------------------------------------------------------|-----------|----------|----------|
+| hostname           | text    | Hostname or IP address of the Solarman logger                                                                     | N/A       | yes      | no       |
+| serialNumber       | text    | Serial number of the Solarman logger                                                                              | N/A       | yes      | no       |
+| inverterType       | text    | The type of inverter connected to the logger                                                                      | N/A       | yes      | no       |
+| port               | integer | Port of the Solarman logger                                                                                       | 8899      | no       | yes      |
+| refreshInterval    | integer | Interval the device is polled in sec.                                                                             | 60        | no       | yes      |
+| solarmanLoggerMode | option  | RAW Modbus for LAN Stick LSE-3 and V5 MODBUS for most Wifi Sticks. If your Wifi stick uses Raw Modbus choose RAW. | V5 MODBUS | no       | yes      |
+| additionalRequests | text    | Additional requests besides the ones in the definition                                                            | N/A       | no       | yes      |
 
 The `inverterType` parameter governs what registers the binding will read from the logger and what channels it will expose.
 

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -357,7 +358,8 @@ public class LGWebOSHandler extends BaseThingHandler
         if (job == null || job.isCancelled()) {
             logger.debug("Schedule channel subscription job");
             channelSubscriptionJob = scheduler.schedule(
-                    () -> channelHandlers.get(CHANNEL_CHANNEL).refreshSubscription(CHANNEL_CHANNEL, this),
+                    () -> Objects.requireNonNull(channelHandlers.get(CHANNEL_CHANNEL))
+                            .refreshSubscription(CHANNEL_CHANNEL, this),
                     CHANNEL_SUBSCRIPTION_DELAY_SECONDS, TimeUnit.SECONDS);
         }
     }
@@ -405,6 +407,7 @@ public class LGWebOSHandler extends BaseThingHandler
     }
 
     public List<String> reportChannels() {
-        return ((TVControlChannel) channelHandlers.get(CHANNEL_CHANNEL)).reportChannels(getThing().getUID());
+        return ((TVControlChannel) Objects.requireNonNull(channelHandlers.get(CHANNEL_CHANNEL)))
+                .reportChannels(getThing().getUID());
     }
 }

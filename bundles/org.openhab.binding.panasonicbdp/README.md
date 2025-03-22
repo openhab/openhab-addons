@@ -1,27 +1,36 @@
 # Panasonic Blu-ray Player Binding
 
 This binding connects Panasonic Blu-ray players from 2011/2012 and UHD Blu-ray players from 2018 to openHAB.
+
 **Supported Blu-ray models:** DMP-BDT110, DMP-BDT210, DMP-BDT310, DMP-BDT120, DMP-BDT220, DMP-BDT320, DMP-BBT01 & DMP-BDT500.
+
 **Supported UHD models:** DP-UB420/424, DP-UB820/824 & DP-UB9000/9004.
 
 **Please note:** The player must be on the same IP subnet as the openHAB server for this binding to function.
 If the connection to the player originates from a different subnet, 404 response errors are sent in response to all requests.
 
 To enable network remote control of the Blu-ray model players, configure the following settings:
-**Player Settings/Network/Network Settings/Remote Device Settings**
+
+- **Player Settings/Network/Network Settings/Remote Device Settings**
+
 Then make sure you have the following values set:
-**Remote Device Operation: On**
-**Registration Type: Automatic**
+
+- **Remote Device Operation: On**
+- **Registration Type: Automatic**
 
 For the UHD models, Voice Control must be enabled for the player's http interface to be active:
-**Player Settings/Network/Voice Control: On**
+
+- **Player Settings/Network/Voice Control: On**
 
 To enable the binding to control the player while off (network active while off), Quick Start mode must be On as follows:
-**Player Settings/System/Quick Start: On**
+
+- **Player Settings/System/Quick Start: On**
 
 **UHD Model Command Authentication:**
+
 The UHD models require authentication to use the control API.
 A player key must be specified in the thing configuration in order for the `power`, `button` and `control` channels to work.
+
 UHD model players that are patched do not require a player key.
 See the [AVForums discussions](https://www.avforums.com/forums/blu-ray-dvd-player-multiregion-hacks.126/) of the DP-UB420/820/9000 players for more information.
 
@@ -34,7 +43,7 @@ Multiple Things can be added if more than one player is to be controlled.
 ## Discovery
 
 Auto-discovery is supported if the player can be located on the local network using UPnP.
-Otherwise the thing must be manually added.
+Otherwise the Thing must be manually added.
 
 ## Binding Configuration
 
@@ -75,14 +84,14 @@ The following channels are available:
 
 ## Full Example
 
-panasonicbdp.things:
+### `panasonicbdp.things` Example
 
 ```java
 panasonicbdp:bd-player:mybdplayer "My Blu-ray player" [ hostName="192.168.10.1", refresh=5 ]
 panasonicbdp:uhd-player:myuhdplayer "My UHD Blu-ray player" [ hostName="192.168.10.1", refresh=5, playerKey="ABCDEF1234567890abcdef0123456789" ]
 ```
 
-panasonicbdp.items:
+### `panasonicbdp.items` Example
 
 ```java
 // BD Player
@@ -103,7 +112,7 @@ String Player_PlayerStatus     "Status: [%s]"              { channel="panasonicb
 Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="panasonicbdp:uhd-player:myuhdplayer:time-elapsed" }
 ```
 
-panasonicbdp.sitemap:
+### `panasonicbdp.sitemap` Example
 
 ```perl
 sitemap panasonicbdp label="Panasonic Blu-ray" {
@@ -123,7 +132,7 @@ sitemap panasonicbdp label="Panasonic Blu-ray" {
 }
 ```
 
-### Appendix A - 'button' channel command codes:
+### Appendix A - 'button' channel command codes
 
 **List of available button commands for BD players:**
 

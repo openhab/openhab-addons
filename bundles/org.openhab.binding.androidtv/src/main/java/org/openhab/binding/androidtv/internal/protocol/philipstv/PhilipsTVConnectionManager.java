@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -302,13 +302,13 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
                         initPairingCodeRetrieval(target);
                     } catch (IOException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "offline.error-occured-while-presenting-pairing-code");
+                                "offline.error-occurred-while-presenting-pairing-code");
                     }
                 } else {
                     boolean hasFailed = initCredentialsRetrieval(target, command.toString());
                     if (hasFailed) {
                         postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "offline.error-occured-during-retrieval-of-credentials");
+                                "offline.error-occurred-during-retrieval-of-credentials");
                         return;
                     }
                     readConfigs();
@@ -531,10 +531,11 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     public synchronized void postUpdateThing(ThingStatus status, ThingStatusDetail statusDetail, String msg) {
         logger.trace("postUpdateThing {} {} {}", status, statusDetail, msg);
         if (status == ThingStatus.ONLINE) {
-            if (msg.equalsIgnoreCase(STANDBY_MSG)) {
-                handler.updateChannelState(CHANNEL_POWER, OnOffType.OFF);
-            } else {
-                handler.updateChannelState(CHANNEL_POWER, OnOffType.ON);
+            PhilipsTVService powerService = channelServices.get(CHANNEL_POWER);
+            if (powerService != null) {
+                powerService.handleCommand(CHANNEL_POWER, RefreshType.REFRESH);
+            }
+            if (!msg.equalsIgnoreCase(STANDBY_MSG)) {
                 startDeviceHealthJob(5, TimeUnit.SECONDS);
                 pendingPowerOn = false;
             }

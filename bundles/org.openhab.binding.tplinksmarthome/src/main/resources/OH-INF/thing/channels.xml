@@ -19,31 +19,6 @@
 		<category>Switch</category>
 	</channel-type>
 
-	<!-- Absolute Temperature Channel -->
-	<channel-type id="colorTemperatureAbs1" advanced="true">
-		<item-type>Number</item-type>
-		<label>Color Temperature</label>
-		<description>This channel supports adjusting the color temperature from 2700K to 6500K.</description>
-		<category>ColorLight</category>
-		<state min="2700" max="6500" pattern="%d K"/>
-	</channel-type>
-
-	<channel-type id="colorTemperatureAbs2" advanced="true">
-		<item-type>Number</item-type>
-		<label>Color Temperature</label>
-		<description>This channel supports adjusting the color temperature from 2500K to 9000K.</description>
-		<category>ColorLight</category>
-		<state min="2500" max="9000" pattern="%d K"/>
-	</channel-type>
-
-	<channel-type id="colorTemperatureAbs3" advanced="true">
-		<item-type>Number</item-type>
-		<label>Color Temperature</label>
-		<description>This channel supports adjusting the color temperature from 2500K to 6500K.</description>
-		<category>ColorLight</category>
-		<state min="2500" max="6500" pattern="%d K"/>
-	</channel-type>
-
 	<!-- Energy Channel types -->
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
@@ -76,7 +51,7 @@
 
 	<!-- Misc Channel types -->
 	<channel-type id="rssi" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Signal</label>
 		<description>Wi-Fi signal strength indicator.</description>
 		<category>QualityOfService</category>

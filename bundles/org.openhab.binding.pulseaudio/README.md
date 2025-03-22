@@ -39,9 +39,15 @@ binding.pulseaudio:sourceOutput=false
 ## Thing Configuration
 
 The Pulseaudio bridge requires the host (ip address or a hostname) and a port (default: 4712) as a configuration value in order for the binding to know where to access it.
-A Pulseaudio device requires at least an identifier. For sinks and sources, you can use the name or the description. For sink inputs and source outputs, you can use the name or the application name.
+A Pulseaudio device requires at least an identifier.
+For sinks and sources, you can use the name or the description.
+For sink inputs and source outputs, you can use the name or the application name.
 To know without hesitation the correct value to use, you should use the command line utility `pactl`. For example, to find the name of a sink:
+
+```bash
 `pactl -s <ip-address|hostname> list sinks | grep "name:"`
+```
+
 If you need to narrow the identification of a device (in case name or description are not consistent and sufficient), you can use the `additionalFilters` parameter (optional/advanced parameter), in the form of one or several (separator '###') regular expression(s), each one matching a property value of the pulseaudio device. You can use every properties listed with `pactl`.
 
 ## Channels
@@ -65,9 +71,9 @@ This requires the module **module-simple-protocol-tcp** to be present on the ser
 ### Thing Configuration
 
 | Config Name                 | Item Type   | Description                                                                                       |
-|-----------------------------|-----------------------------------------------------------------------------------------------------------------|
+|-----------------------------|-------------|---------------------------------------------------------------------------------------------------|
 | name                        | text        | The name of one specific device. You can also use the description                                 |
-| activateSimpleProtocolSink  | boolean     | Activation of a corresponding sink in OpenHAB                                                     |
+| activateSimpleProtocolSink  | boolean     | Activation of a corresponding sink in openHAB                                                     |
 | additionalFilters           | text        | Additional filters to select the proper device on the pulseaudio server, in case of ambiguity     |
 | simpleProtocolIdleModules   | integer     | Number of Simple Protocol TCP Socket modules to keep loaded in the server                         |
 | simpleProtocolMinPort       | integer     | Min port used by simple protocol module instances created by the binding on the pulseaudio host   |
@@ -84,9 +90,9 @@ This requires the module **module-simple-protocol-tcp** to be present on the tar
 ### Thing Configuration
 
 | Config ID                    | Item Type   | Description                                                                                       |
-|------------------------------|-----------------------------------------------------------------------------------------------------------------|
+|------------------------------|-------------|---------------------------------------------------------------------------------------------------|
 | name                         | text        | The name of one specific device. You can also use the description                                 |
-| activateSimpleProtocolSource | boolean     | Activation of a corresponding sink in OpenHAB                                                     |
+| activateSimpleProtocolSource | boolean     | Activation of a corresponding sink in openHAB                                                     |
 | additionalFilters            | text        | Additional filters to select the proper device on the pulseaudio server, in case of ambiguity     |
 | simpleProtocolIdleModules    | integer     | Number of Simple Protocol TCP Socket modules to keep loaded in the server                         |
 | simpleProtocolMinPort        | integer     | Min port used by simple protocol module instances created by the binding on the pulseaudio host   |
@@ -113,7 +119,9 @@ Bridge pulseaudio:bridge:<bridgname> "<Bridge Label>" @ "<Room>" [ host="<ipAddr
 
 <!--
 ### pulseaudio.items
+
 ```
 
 ```
+
 -->

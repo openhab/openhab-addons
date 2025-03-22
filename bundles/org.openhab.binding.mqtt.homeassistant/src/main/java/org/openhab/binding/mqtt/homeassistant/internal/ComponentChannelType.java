@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,11 +26,15 @@ public enum ComponentChannelType {
     COLOR("ha-color"),
     DIMMER("ha-dimmer"),
     IMAGE("ha-image"),
+    LOCATION("ha-location"),
     NUMBER("ha-number"),
     ROLLERSHUTTER("ha-rollershutter"),
     STRING("ha-string"),
     SWITCH("ha-switch"),
-    TRIGGER("ha-trigger");
+    TRIGGER("ha-trigger"),
+    HUMIDITY("ha-humidity"),
+    GPS_ACCURACY("ha-gps-accuracy"),
+    TEMPERATURE("ha-temperature");
 
     final ChannelTypeUID channelTypeUID;
 

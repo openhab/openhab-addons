@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -230,7 +230,7 @@ public enum EmotivaControlCommands {
         EnumMap<EmotivaControlCommands, String> commands = new EnumMap<>(EmotivaControlCommands.class);
         for (EmotivaControlCommands value : values()) {
             if (value.getCommandType().equals(filter)) {
-                StringBuilder sb = new StringBuilder(value.name());
+                var sb = new StringBuilder(value.name());
                 sb.setCharAt(0, Character.toUpperCase(value.name().charAt(0)));
                 commands.put(value, sb.toString());
             }

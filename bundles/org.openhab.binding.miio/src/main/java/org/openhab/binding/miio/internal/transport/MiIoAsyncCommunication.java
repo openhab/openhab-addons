@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -260,7 +260,7 @@ public class MiIoAsyncCommunication {
         private final String deviceId;
 
         public MessageSenderThread(String deviceId) {
-            super("OH-binding-miio-MessageSenderThread-" + deviceId);
+            super(String.format("OH-binding-%s-%s-%s", MiIoBindingConstants.BINDING_ID, "Sender", deviceId));
             setDaemon(true);
             this.deviceId = deviceId;
         }

@@ -8,7 +8,7 @@
 		<bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/4.5.13</bundle>
 		<bundle dependency="true">mvn:org.openhab.osgiify/com.amazonaws.aws-java-sdk-core/1.12.626</bundle>
 		<bundle dependency="true">mvn:org.openhab.osgiify/com.amazonaws.aws-java-sdk-polly/1.12.626</bundle>
-		<bundle dependency="true">mvn:commons-logging/commons-logging/1.2</bundle>
+		<bundle dependency="true">mvn:commons-logging/commons-logging/1.3.4</bundle>
 		<bundle dependency="true">mvn:joda-time/joda-time/2.8.1</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.voice.pollytts/${project.version}</bundle>
 	</feature>

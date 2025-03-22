@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TooManyListenersException;
 
+import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpBindingConstants;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 import org.openhab.binding.nibeheatpump.internal.config.NibeHeatPumpConfiguration;
 import org.openhab.binding.nibeheatpump.internal.message.MessageFactory;
@@ -165,6 +166,7 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
         final InputStream in;
 
         SerialReader(InputStream in) {
+            super(String.format("OH-binding-%s-%s", NibeHeatPumpBindingConstants.BINDING_ID, "SerialReader"));
             this.in = in;
         }
 

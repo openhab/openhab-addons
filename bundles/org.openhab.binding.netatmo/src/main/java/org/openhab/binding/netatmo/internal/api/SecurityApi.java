@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,8 @@ import java.net.URI;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -70,12 +72,9 @@ public class SecurityApi extends RestManager {
 
     private List<HomeEvent> getEvents(@Nullable Object... params) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GET_EVENTS, params);
-        BodyResponse<Home> body = get(uriBuilder, NAEventsDataResponse.class).getBody();
-        if (body != null) {
-            Home home = body.getElement();
-            if (home != null) {
-                return home.getEvents();
-            }
+        if (get(uriBuilder, NAEventsDataResponse.class).getBody() instanceof BodyResponse<Home> body
+                && body.getElement() instanceof Home home) {
+            return home.getEvents();
         }
         throw new NetatmoException("home should not be null");
     }
@@ -84,17 +83,20 @@ public class SecurityApi extends RestManager {
         List<HomeEvent> events = getEvents(PARAM_HOME_ID, homeId);
 
         // we have to rewind to the latest event just after freshestEventTime
-        if (events.size() > 0) {
+        if (!events.isEmpty()) {
+            String oldestId = "";
             HomeEvent oldestRetrieved = events.get(events.size() - 1);
-            while (oldestRetrieved.getTime().isAfter(freshestEventTime)) {
-                events.addAll(getEvents(PARAM_HOME_ID, homeId, PARAM_EVENT_ID, oldestRetrieved.getId()));
+            while (oldestRetrieved.getTime().isAfter(freshestEventTime) && !oldestId.equals(oldestRetrieved.getId())) {
+                oldestId = oldestRetrieved.getId();
+                events.addAll(getEvents(PARAM_HOME_ID, homeId, PARAM_EVENT_ID, oldestId, PARAM_SIZE, 300));
                 oldestRetrieved = events.get(events.size() - 1);
             }
         }
 
-        // Remove unneeded events being before freshestEventTime
+        // Remove potential duplicates then unneeded events being before freshestEventTime
         return events.stream().filter(event -> event.getTime().isAfter(freshestEventTime))
-                .sorted(Comparator.comparing(HomeEvent::getTime).reversed()).toList();
+                .collect(Collectors.toConcurrentMap(HomeEvent::getId, Function.identity(), (p, q) -> p)).values()
+                .stream().sorted(Comparator.comparing(HomeEvent::getTime).reversed()).toList();
     }
 
     public List<HomeEvent> getPersonEvents(String homeId, String personId) throws NetatmoException {
@@ -110,7 +112,7 @@ public class SecurityApi extends RestManager {
         try {
             return get(uriBuilder, Ping.class).getStatus();
         } catch (NetatmoException e) {
-            logger.debug("Pinging {} failed : {}", vpnUrl, e.getMessage());
+            logger.debug("Pinging {} failed: {}", vpnUrl, e.getMessage());
             return null;
         }
     }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.pushbullet.internal;
+
+import static org.openhab.binding.pushbullet.internal.PushbulletBindingConstants.*;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -49,11 +51,10 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class PushbulletHttpClient {
-    private static final String AGENT = "openHAB/" + OpenHAB.getVersion();
+
+    private static final String USER_AGENT = "openHAB/" + OpenHAB.getVersion();
 
     private static final int TIMEOUT = 30; // in seconds
-
-    private static final String HEADER_RATELIMIT_RESET = "X-Ratelimit-Reset";
 
     private final Logger logger = LoggerFactory.getLogger(PushbulletHttpClient.class);
 
@@ -95,7 +96,7 @@ public class PushbulletHttpClient {
      */
     public <T> T executeRequest(String apiEndpoint, @Nullable Object body, Class<T> responseType)
             throws PushbulletApiException {
-        String url = config.getApiUrlBase() + apiEndpoint;
+        String url = API_BASE_URL + apiEndpoint;
         String accessToken = config.getAccessToken();
 
         Request request = newRequest(url).header("Access-Token", accessToken);
@@ -142,7 +143,7 @@ public class PushbulletHttpClient {
      * @return the new Request object with default parameters
      */
     private Request newRequest(String url) {
-        return httpClient.newRequest(url).agent(AGENT).timeout(TIMEOUT, TimeUnit.SECONDS);
+        return httpClient.newRequest(url).agent(USER_AGENT).timeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
     /**

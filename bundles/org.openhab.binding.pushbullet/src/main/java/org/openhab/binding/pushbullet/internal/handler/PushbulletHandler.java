@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,8 @@ package org.openhab.binding.pushbullet.internal.handler;
 import static org.openhab.binding.pushbullet.internal.PushbulletBindingConstants.*;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -78,12 +78,7 @@ public class PushbulletHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("About to handle {} on {}", command, channelUID);
-
-        // Future improvement: If recipient is already set, send a push on a command channel change
-        // check reconnect channel of the unifi binding for that
-
-        logger.debug("The Pushbullet binding is a read-only binding and cannot handle command '{}'.", command);
+        // do nothing
     }
 
     @Override
@@ -285,11 +280,11 @@ public class PushbulletHandler extends BaseThingHandler {
             return IMAGE_FILE_NAME;
         }
         try {
-            Path fileName = Path.of(content.startsWith("http") ? new URL(content).getPath() : content).getFileName();
+            Path fileName = Path.of(content.startsWith("http") ? new URI(content).getPath() : content).getFileName();
             if (fileName != null) {
                 return fileName.toString();
             }
-        } catch (MalformedURLException e) {
+        } catch (URISyntaxException e) {
             logger.debug("Malformed url content: {}", e.getMessage());
         }
         return null;

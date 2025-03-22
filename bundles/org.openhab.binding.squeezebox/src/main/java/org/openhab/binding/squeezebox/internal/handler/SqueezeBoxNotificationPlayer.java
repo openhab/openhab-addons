@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.squeezebox.internal.handler;
 
 import java.io.Closeable;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.squeezebox.internal.utils.SqueezeBoxTimeoutException;
 import org.openhab.core.library.types.StringType;
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Convert sound notification volume from channel to config parameter
  *
  */
+@NonNullByDefault
 class SqueezeBoxNotificationPlayer implements Closeable {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxNotificationPlayer.class);
 
@@ -61,10 +63,6 @@ class SqueezeBoxNotificationPlayer implements Closeable {
     }
 
     void play() throws InterruptedException, SqueezeBoxTimeoutException {
-        if (squeezeBoxServerHandler == null) {
-            logger.warn("Server handler is null");
-            return;
-        }
         setupPlayerForNotification();
         addNotificationMessageToPlaylist();
         playNotification();

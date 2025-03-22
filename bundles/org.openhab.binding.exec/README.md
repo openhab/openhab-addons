@@ -54,7 +54,7 @@ Please note that if the transformation failed or returned `null`, the original d
 Thing exec:command:uniquename [command="/command/to/execute here", interval=15, timeout=5, autorun=false]
 ```
 
-The `command` itself can be enhanced using the well known syntax of the [Java formatter class syntax](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Formatter.html#syntax).
+The `command` itself can be enhanced using the well known syntax of the [Java formatter class syntax](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Formatter.html#syntax).
 The following parameters are automatically added:
 
 - the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)
@@ -80,7 +80,7 @@ Also note that only commands (e.g. `sendCommand`) to the `input` channel are rec
 
 ## Minimal Example
 
-### demo.things
+### `demo.things` Example
 
 ```java
 Thing exec:command:apc [command="/usr/local/bin/apcaccess status", interval=15, timeout=5]
@@ -100,7 +100,7 @@ DateTime APCLastExecution {channel="exec:command:apc:lastexecution"}
 
 Following is an example how to set up an exec command thing, pass it a parameter, debug it with a rule and set the returned string to a Number Item.
 
-### demo.things
+### `demo.things` Example
 
 ```java
 // "%2$s" will be replace by the input channel command, this makes it possible to use one command line with different arguments.

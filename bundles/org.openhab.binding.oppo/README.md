@@ -118,7 +118,7 @@ The following channels are available:
 
 ## Full Example
 
-oppo.things:
+### `oppo.things` Example
 
 ```java
 // direct IP connection
@@ -132,7 +132,7 @@ oppo:player:myoppo "Oppo Blu-ray" [ host="192.168.0.9", port=4444, model=103, ve
 
 ```
 
-oppo.items:
+### `oppo.items` Example
 
 ```java
 Switch oppo_power "Power" { channel="oppo:player:myoppo:power" }
@@ -163,7 +163,7 @@ String oppo_hdr_mode "HDR Mode [%s]" { channel="oppo:player:myoppo:hdr_mode" }
 String oppo_remote_button "Remote Button [%s]" { channel="oppo:player:myoppo:remote_button" }
 ```
 
-secondsformat.js:
+### `secondsformat.js` Example
 
 ```javascript
 (function(timestamp) {
@@ -190,7 +190,7 @@ secondsformat.js:
 })(input)
 ```
 
-oppo.sitemap:
+### `oppo.sitemap` Example
 
 ```perl
 sitemap oppo label="Oppo Blu-ray" {
@@ -228,7 +228,7 @@ sitemap oppo label="Oppo Blu-ray" {
 }
 ```
 
-### Appendix A - 'remote_button' codes:
+### Appendix A - 'remote_button' codes
 
 | Command | Function                                                                    |
 |---------|-----------------------------------------------------------------------------|
@@ -296,7 +296,7 @@ sitemap oppo label="Oppo Blu-ray" {
 | SEH     | Display the Picture Adjustment menu                                         |
 | DRB     | Display the Darbee Adjustment menu                                          |
 
-#### Extra buttons on UDP models:
+#### Extra buttons on UDP models
 
 | Command | Function                                                                            |
 |---------|-------------------------------------------------------------------------------------|

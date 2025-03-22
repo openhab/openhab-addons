@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,7 +87,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         try (DatagramSocket clientSocket = new DatagramSocket()) {
-            deviceFinder.scan(clientSocket, broadcastAddress, true);
+            deviceFinder.scan(clientSocket, broadcastAddress, true, EncryptionTypes.UNKNOWN);
 
             int count = deviceFinder.getScannedDeviceCount();
             logger.debug("{}", messages.get("discovery.result", count));
@@ -112,6 +112,8 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
             properties.put(Thing.PROPERTY_MAC_ADDRESS, device.getId());
             properties.put(PROPERTY_IP, ipAddress);
             properties.put(PROPERTY_BROADCAST, broadcastAddress);
+            properties.put(PROPERTY_ENCRYPTION_TYPE, device.getEncryptionType());
+            properties.put(PROPERTY_REFRESH_INTERVAL, device.getRefreshInterval());
             ThingUID thingUID = new ThingUID(THING_TYPE_GREEAIRCON, device.getId());
             DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).withLabel(device.getName()).build();

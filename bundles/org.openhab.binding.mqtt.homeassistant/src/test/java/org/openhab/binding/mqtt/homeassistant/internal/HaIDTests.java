@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,7 @@ public class HaIDTests {
         assertThat(subject.objectID, is("name"));
 
         assertThat(subject.component, is("switch"));
+        assertThat(subject.getTopic(), is("switch/name"));
         assertThat(subject.getTopic("suffix"), is("homeassistant/switch/name/suffix"));
 
         Configuration config = new Configuration();
@@ -58,6 +59,7 @@ public class HaIDTests {
         assertThat(subject.objectID, is("name"));
 
         assertThat(subject.component, is("switch"));
+        assertThat(subject.getTopic(), is("switch/node/name"));
         assertThat(subject.getTopic("suffix"), is("homeassistant/switch/node/name/suffix"));
 
         Configuration config = new Configuration();

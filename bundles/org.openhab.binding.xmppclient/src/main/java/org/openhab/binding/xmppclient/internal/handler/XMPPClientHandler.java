@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,8 +95,8 @@ public class XMPPClientHandler extends BaseBridgeHandler implements XMPPClientEv
         }
 
         try {
-            xmppClient.connect(Objects.requireNonNullElse(config.host, ""), config.port, config.username, config.domain,
-                    config.password, SecurityMode.valueOf(config.securityMode));
+            xmppClient.connect(Objects.requireNonNullElse(config.host, ""), config.port, config.username,
+                    config.nickname, config.domain, config.password, SecurityMode.valueOf(config.securityMode));
             updateStatus(ThingStatus.ONLINE);
         } catch (XMPPClientConfigException e) {
             logger.debug("XMPP connection error", e);

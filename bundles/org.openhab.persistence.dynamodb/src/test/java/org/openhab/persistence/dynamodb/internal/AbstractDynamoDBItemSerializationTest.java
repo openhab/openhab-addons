@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Objects;
-import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -148,10 +147,10 @@ public class AbstractDynamoDBItemSerializationTest {
     @CsvSource({ "true", "false" })
     public void testDateTimeTypeWithDateTimeItem(boolean legacy) throws IOException {
         GenericItem item = new DateTimeItem("foo");
-        ZonedDateTime zdt = ZonedDateTime.parse("2016-05-01T13:46:00.050Z");
-        DynamoDBItem<?> dbitem = testSerializationToDTO(legacy, item, new DateTimeType(zdt.toString()),
+        Instant instant = Instant.parse("2016-05-01T13:46:00.050Z");
+        DynamoDBItem<?> dbitem = testSerializationToDTO(legacy, item, new DateTimeType(instant),
                 "2016-05-01T13:46:00.050Z");
-        testAsHistoricGeneric(dbitem, item, new DateTimeType(zdt.withZoneSameInstant(ZoneId.systemDefault())));
+        testAsHistoricGeneric(dbitem, item, new DateTimeType(instant));
     }
 
     @ParameterizedTest
@@ -159,7 +158,7 @@ public class AbstractDynamoDBItemSerializationTest {
     public void testDateTimeTypeWithStringItem(boolean legacy) throws IOException {
         GenericItem item = new StringItem("foo");
         DynamoDBItem<?> dbitem = testSerializationToDTO(legacy, item,
-                new DateTimeType(ZonedDateTime.parse("2016-05-01T13:46:00.050Z")), "2016-05-01T13:46:00.050Z");
+                new DateTimeType(Instant.parse("2016-05-01T13:46:00.050Z")), "2016-05-01T13:46:00.050Z");
         testAsHistoricGeneric(dbitem, item, new StringType("2016-05-01T13:46:00.050Z"));
     }
 
@@ -167,10 +166,10 @@ public class AbstractDynamoDBItemSerializationTest {
     @CsvSource({ "true", "false" })
     public void testDateTimeTypeLocalWithDateTimeItem(boolean legacy) throws IOException {
         GenericItem item = new DateTimeItem("foo");
-        ZonedDateTime expectedZdt = Instant.ofEpochMilli(1468773487050L).atZone(ZoneId.systemDefault());
+        Instant expectedInstant = Instant.ofEpochMilli(1468773487050L);
         DynamoDBItem<?> dbitem = testSerializationToDTO(legacy, item, new DateTimeType("2016-07-17T19:38:07.050+0300"),
                 "2016-07-17T16:38:07.050Z");
-        testAsHistoricGeneric(dbitem, item, new DateTimeType(expectedZdt));
+        testAsHistoricGeneric(dbitem, item, new DateTimeType(expectedInstant));
     }
 
     @ParameterizedTest
@@ -178,8 +177,7 @@ public class AbstractDynamoDBItemSerializationTest {
     public void testDateTimeTypeLocalWithStringItem(boolean legacy) throws IOException {
         GenericItem item = new StringItem("foo");
         Instant instant = Instant.ofEpochMilli(1468773487050L); // GMT: Sun, 17 Jul 2016 16:38:07.050 GMT
-        ZonedDateTime zdt = instant.atZone(TimeZone.getTimeZone("GMT+03:00").toZoneId());
-        DynamoDBItem<?> dbitem = testSerializationToDTO(legacy, item, new DateTimeType(zdt),
+        DynamoDBItem<?> dbitem = testSerializationToDTO(legacy, item, new DateTimeType(instant),
                 "2016-07-17T16:38:07.050Z");
         testAsHistoricGeneric(dbitem, item, new StringType("2016-07-17T16:38:07.050Z"));
     }

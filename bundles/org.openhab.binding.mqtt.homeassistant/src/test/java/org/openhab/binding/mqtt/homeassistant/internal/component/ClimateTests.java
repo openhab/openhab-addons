@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * Tests for {@link Climate}
@@ -37,6 +38,7 @@ import org.openhab.core.library.unit.SIUnits;
 @NonNullByDefault
 public class ClimateTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "climate/0x847127fffe11dd6a_climate_zigbee2mqtt";
+    public static final String TION_CONFIG_TOPIC = "climate/living-room-tion-3s/living-room-tion-3s";
 
     @SuppressWarnings("null")
     @Test
@@ -70,7 +72,7 @@ public class ClimateTests extends AbstractComponentTests {
                          "unique_id": "0x847127fffe11dd6a_climate_zigbee2mqtt"}\
                         """);
 
-        assertThat(component.channels.size(), is(6));
+        assertThat(component.channels.size(), is(7));
         assertThat(component.getName(), is("th1"));
 
         assertChannel(component, Climate.ACTION_CH_ID, "zigbee2mqtt/th1", "", "th1", TextValue.class);
@@ -83,6 +85,10 @@ public class ClimateTests extends AbstractComponentTests {
                 TextValue.class);
         assertChannel(component, Climate.TEMPERATURE_CH_ID, "zigbee2mqtt/th1",
                 "zigbee2mqtt/th1/set/current_heating_setpoint", "th1", NumberValue.class);
+        assertChannel(component, Climate.JSON_ATTRIBUTES_CHANNEL_ID, "zigbee2mqtt/th1", "", "JSON Attributes",
+                TextValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("zigbee2mqtt/th1", """
                 {"running_state": "idle", "away_mode": "ON", \
@@ -139,7 +145,7 @@ public class ClimateTests extends AbstractComponentTests {
                          "unique_id": "0x847127fffe11dd6a_climate_zigbee2mqtt", "send_if_off": "false"}\
                         """);
 
-        assertThat(component.channels.size(), is(7));
+        assertThat(component.channels.size(), is(8));
         assertThat(component.getName(), is("th1"));
 
         assertChannel(component, Climate.ACTION_CH_ID, "zigbee2mqtt/th1", "", "th1", TextValue.class);
@@ -152,6 +158,10 @@ public class ClimateTests extends AbstractComponentTests {
                 TextValue.class);
         assertChannel(component, Climate.TEMPERATURE_CH_ID, "zigbee2mqtt/th1",
                 "zigbee2mqtt/th1/set/current_heating_setpoint", "th1", NumberValue.class);
+        assertChannel(component, Climate.JSON_ATTRIBUTES_CHANNEL_ID, "zigbee2mqtt/th1", "", "JSON Attributes",
+                TextValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("zigbee2mqtt/th1", """
                 {"running_state": "idle", "away_mode": "ON", \
@@ -242,7 +252,7 @@ public class ClimateTests extends AbstractComponentTests {
                  "temp_step": "1", "precision": "0.5", "send_if_off": "false" }\
                 """);
 
-        assertThat(component.channels.size(), is(12));
+        assertThat(component.channels.size(), is(13));
         assertThat(component.getName(), is("MQTT HVAC"));
 
         assertChannel(component, Climate.ACTION_CH_ID, "zigbee2mqtt/th1", "", "MQTT HVAC", TextValue.class);
@@ -267,6 +277,10 @@ public class ClimateTests extends AbstractComponentTests {
         assertChannel(component, Climate.TEMPERATURE_LOW_CH_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/temperature_low",
                 "MQTT HVAC", NumberValue.class);
         assertChannel(component, Climate.POWER_CH_ID, "", "zigbee2mqtt/th1/power", "MQTT HVAC", OnOffValue.class);
+        assertChannel(component, Climate.JSON_ATTRIBUTES_CHANNEL_ID, "zigbee2mqtt/th1", "", "JSON Attributes",
+                TextValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("zigbee2mqtt/th1", """
                 { "action": "fan",  "aux": "ON",  "away_mode": "OFF", \
@@ -309,8 +323,162 @@ public class ClimateTests extends AbstractComponentTests {
         assertPublished("zigbee2mqtt/th1/power", "OFF");
     }
 
+    @SuppressWarnings("null")
+    @Test
+    public void testClimateWithPresetMode() {
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
+                """
+                        {
+                        "action_template": "{% set values = {None:None,'idle':'idle','heat':'heating','cool':'cooling','fan_only':'fan'} %}{{ values[value_json.running_state] }}",
+                        "action_topic": "zigbee2mqtt/th2",
+                        "current_temperature_template": "{{ value_json.local_temperature }}",
+                        "current_temperature_topic": "zigbee2mqtt/th2",
+                        "json_attributes_topic": "zigbee2mqtt/th2",
+                        "max_temp": "35",
+                        "min_temp": "5",
+                        "mode_command_topic": "zigbee2mqtt/th2/set/system_mode",
+                        "mode_state_template": "{{ value_json.system_mode }}",
+                        "mode_state_topic": "zigbee2mqtt/th2",
+                        "modes": ["auto","heat","off"],
+                        "name": "th2",
+                        "preset_mode_command_topic": "zigbee2mqtt/th2/set/preset",
+                        "preset_mode_state_topic": "zigbee2mqtt/th2",
+                        "preset_mode_value_template": "{{ value_json.preset }}",
+                        "preset_modes": ["auto","manual","off","on"],
+                        "temp_step": 0.5,
+                        "temperature_command_topic": "zigbee2mqtt/th2/set/current_heating_setpoint",
+                        "temperature_state_template": "{{ value_json.current_heating_setpoint }}",
+                        "temperature_state_topic": "zigbee2mqtt/th2",
+                        "temperature_unit": "C"
+                        }
+                        """);
+
+        assertThat(component.channels.size(), is(6));
+
+        assertChannel(component, Climate.PRESET_MODE_CH_ID, "zigbee2mqtt/th2", "zigbee2mqtt/th2/set/preset", "th2",
+                TextValue.class);
+
+        linkAllChannels(component);
+
+        publishMessage("zigbee2mqtt/th2", """
+                {"running_state": "heat",
+                "local_temperature": "22.2", "preset": "manual", "system_mode": "heat",
+                "current_heating_setpoint": "24"}
+                """);
+        assertState(component, Climate.MODE_CH_ID, new StringType("heat"));
+        assertState(component, Climate.TEMPERATURE_CH_ID, new QuantityType<>(24, SIUnits.CELSIUS));
+        assertState(component, Climate.PRESET_MODE_CH_ID, new StringType("manual"));
+        component.getChannel(Climate.PRESET_MODE_CH_ID).getState().publishValue(new StringType("on"));
+        assertPublished("zigbee2mqtt/th2/set/preset", "on");
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void testClimateHumidity() {
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
+                {
+                "current_humidity_template": "{{ value_json.humidity }}",
+                "current_humidity_topic": "zigbee2mqtt/th2",
+                "max_humidity": "70",
+                "min_humidity": "30",
+                "target_humidity_command_topic": "zigbee2mqtt/th2/set/humidity_setpoint",
+                "target_humidity_state_template": "{{ value_json.humidity_setpoint }}",
+                "target_humidity_state_topic": "zigbee2mqtt/th2",
+                "name": "th2"
+                }
+                """);
+
+        assertThat(component.channels.size(), is(2));
+
+        assertChannel(component, Climate.CURRENT_HUMIDITY_CH_ID, "zigbee2mqtt/th2", "", "th2", NumberValue.class);
+        assertChannel(component, Climate.TARGET_HUMIDITY_CH_ID, "zigbee2mqtt/th2",
+                "zigbee2mqtt/th2/set/humidity_setpoint", "th2", NumberValue.class);
+
+        linkAllChannels(component);
+
+        publishMessage("zigbee2mqtt/th2", """
+                {"humidity": "55", "humidity_setpoint": "50"}\
+                """);
+        assertState(component, Climate.CURRENT_HUMIDITY_CH_ID, new QuantityType<>(55, Units.PERCENT));
+        assertState(component, Climate.TARGET_HUMIDITY_CH_ID, new QuantityType<>(50, Units.PERCENT));
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void testClimateWithEmptyName() {
+        var component = discoverComponent(configTopicToMqtt(TION_CONFIG_TOPIC), """
+                {
+                  "curr_temp_t": "living-room-tion-3s/climate/living-room-tion-3s/current_temperature/state",
+                  "mode_cmd_t": "living-room-tion-3s/climate/living-room-tion-3s/mode/command",
+                  "mode_stat_t": "living-room-tion-3s/climate/living-room-tion-3s/mode/state",
+                  "modes": [
+                    "off",
+                    "heat",
+                    "fan_only",
+                    "heat_cool"
+                  ],
+                  "temp_cmd_t": "living-room-tion-3s/climate/living-room-tion-3s/target_temperature/command",
+                  "temp_stat_t": "living-room-tion-3s/climate/living-room-tion-3s/target_temperature/state",
+                  "min_temp": 1,
+                  "max_temp": 25,
+                  "temp_step": 1,
+                  "precision": 1,
+                  "temp_unit": "C",
+                  "min_hum": 30,
+                  "max_hum": 99,
+                  "act_t": "living-room-tion-3s/climate/living-room-tion-3s/action/state",
+                  "fan_mode_cmd_t": "living-room-tion-3s/climate/living-room-tion-3s/fan_mode/command",
+                  "fan_mode_stat_t": "living-room-tion-3s/climate/living-room-tion-3s/fan_mode/state",
+                  "fan_modes": [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6"
+                  ],
+                  "name": "",
+                  "ic": "mdi:air-filter",
+                  "avty_t": "living-room-tion-3s/status",
+                  "uniq_id": "ESPclimateliving-room-tion-3s",
+                  "dev": {
+                    "ids": "f09e9e213ab0",
+                    "name": "living-room-tion-3s",
+                    "sw": "2024.8.0 (ESPHome 2024.11.3)",
+                    "mdl": "tion",
+                    "mf": "dentra",
+                    "cns": [
+                      [
+                        "mac",
+                        "f09e9e213ab0"
+                      ]
+                    ]
+                  }
+                }
+                """);
+
+        assertThat(component.channels.size(), is(5));
+        assertThat(component.getName(), is("living-room-tion-3s"));
+
+        assertChannel(component, Climate.ACTION_CH_ID, "living-room-tion-3s/climate/living-room-tion-3s/action/state",
+                "", "living-room-tion-3s", TextValue.class);
+        assertChannel(component, Climate.CURRENT_TEMPERATURE_CH_ID,
+                "living-room-tion-3s/climate/living-room-tion-3s/current_temperature/state", "", "living-room-tion-3s",
+                NumberValue.class);
+        assertChannel(component, Climate.FAN_MODE_CH_ID,
+                "living-room-tion-3s/climate/living-room-tion-3s/fan_mode/state",
+                "living-room-tion-3s/climate/living-room-tion-3s/fan_mode/command", "living-room-tion-3s",
+                TextValue.class);
+        assertChannel(component, Climate.MODE_CH_ID, "living-room-tion-3s/climate/living-room-tion-3s/mode/state",
+                "living-room-tion-3s/climate/living-room-tion-3s/mode/command", "living-room-tion-3s", TextValue.class);
+        assertChannel(component, Climate.TEMPERATURE_CH_ID,
+                "living-room-tion-3s/climate/living-room-tion-3s/target_temperature/state",
+                "living-room-tion-3s/climate/living-room-tion-3s/target_temperature/command", "living-room-tion-3s",
+                NumberValue.class);
+    }
+
     @Override
     protected Set<String> getConfigTopics() {
-        return Set.of(CONFIG_TOPIC);
+        return Set.of(CONFIG_TOPIC, TION_CONFIG_TOPIC);
     }
 }

@@ -16,11 +16,14 @@
 			<channel-group id="recuperator" typeId="recuperator"/>
 			<channel-group id="service" typeId="service"/>
 		</channel-groups>
+
 		<properties>
 			<property name="vendor">Danfoss</property>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
-		<representation-property>host</representation-property>
+
+		<representation-property>serialNumber</representation-property>
+
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Host</label>
@@ -39,6 +42,11 @@
 				<unitLabel>ms</unitLabel>
 				<description>Interval to update unchanged values (to the event bus) in milliseconds. A value of 0 means that every
 					value (received via polling from the air unit) is updated to the event bus, unchanged or not.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="timeZone" type="text" required="false">
+				<label>Time Zone</label>
+				<description>Time zone of the air unit. Leave empty for defaulting to openHAB time zone.</description>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -101,6 +109,7 @@
 				<description>Disables the heat exchange. Useful in summer when room temperature is above target and outside
 					temperature is below target.</description>
 			</channel>
+			<channel id="defrost" typeId="defrost"/>
 			<channel id="supply_temp" typeId="temperature">
 				<label>Supply Air Temperature</label>
 				<description>Temperature of air which is passed to the rooms</description>
@@ -159,14 +168,14 @@
 		<state step="10" min="0" max="100"/>
 	</channel-type>
 	<channel-type id="supplyFanSpeed">
-		<item-type>Number:Frequency</item-type>
+		<item-type unitHint="rpm">Number:Frequency</item-type>
 		<label>Supply Fan Speed</label>
 		<description>Current rotation of the fan supplying air to the rooms</description>
 		<category>Fan</category>
 		<state pattern="%.0f rpm" readOnly="true" min="0"/>
 	</channel-type>
 	<channel-type id="extractFanSpeed">
-		<item-type>Number:Frequency</item-type>
+		<item-type unitHint="rpm">Number:Frequency</item-type>
 		<label>Extract Fan Speed</label>
 		<description>Current rotation of the fan extracting air from the rooms</description>
 		<category>Fan</category>
@@ -208,6 +217,12 @@
 		<description>Current temperature</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="defrost" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Defrost</label>
+		<description>Defrost status. Active when low outdoor temperatures pose a risk of ice formation in the heat exchanger</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

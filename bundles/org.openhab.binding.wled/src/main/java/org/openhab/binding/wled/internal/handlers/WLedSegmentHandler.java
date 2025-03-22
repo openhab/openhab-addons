@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -236,7 +236,7 @@ public class WLedSegmentHandler extends BaseThingHandler {
                     break;
             }
         } catch (ApiException e) {
-            logger.debug("Exception occured:{}", e.getMessage());
+            logger.debug("Exception occurred:{}", e.getMessage());
         }
     }
 

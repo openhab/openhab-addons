@@ -19,6 +19,12 @@
 			</update-channel>
 		</instruction-set>
 
+		<instruction-set targetVersion="3">
+			<add-channel id="defrost" groupIds="recuperator">
+				<type>danfossairunit:defrost</type>
+			</add-channel>
+		</instruction-set>
+
 	</thing-type>
 
 </update:update-descriptions>

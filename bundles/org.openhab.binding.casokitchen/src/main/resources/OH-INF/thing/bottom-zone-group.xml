@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="casokitchen"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="bottom-values">
+		<label>Bottom Zone</label>
+		<channels>
+			<channel id="power" typeId="system.power">
+				<label>Zone is Powered</label>
+				<description>Showing if zone is currently powered</description>
+			</channel>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="set-temperature" typeId="set-temperature"/>
+			<channel id="light-switch" typeId="light-switch"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

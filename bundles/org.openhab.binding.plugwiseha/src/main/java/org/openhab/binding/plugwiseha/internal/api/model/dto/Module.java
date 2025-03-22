@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,6 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("module")
 public class Module extends PlugwiseBaseModel implements PlugwiseComparableDate<Module> {
 
-    @SuppressWarnings("unused")
     @XStreamImplicit(itemFieldName = "service", keyFieldName = "id")
     private Services services;
 

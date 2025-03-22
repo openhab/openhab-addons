@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,8 +43,9 @@ import org.openhab.core.thing.ThingTypeUID;
 public class TPLinkSmartHomeHandlerFactoryTest {
 
     private static final String SMART_HOME_DEVICE_FIELD = "smartHomeDevice";
+    private @Mock TPLinkStateDescriptionProvider stateDescriptionProvider;
 
-    private final TPLinkSmartHomeHandlerFactory factory = new TPLinkSmartHomeHandlerFactory();
+    private final TPLinkSmartHomeHandlerFactory factory = new TPLinkSmartHomeHandlerFactory(stateDescriptionProvider);
 
     // @formatter:off
     private static final List<Object[]> TESTS = Arrays.asList(new Object[][] {

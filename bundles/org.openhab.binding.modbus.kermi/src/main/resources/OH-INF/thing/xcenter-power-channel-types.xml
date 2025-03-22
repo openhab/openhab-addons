@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="cop-channel">
+		<item-type>Number</item-type>
+		<label>Current COP</label>
+		<state pattern="%d"/>
+	</channel-type>
+	<channel-type id="cop-heating-channel">
+		<item-type>Number</item-type>
+		<label>Current COP Heating</label>
+		<state pattern="%d"/>
+	</channel-type>
+	<channel-type id="cop-drinkingwater-channel">
+		<item-type>Number</item-type>
+		<label>Current COP drinking water</label>
+		<state pattern="%d"/>
+	</channel-type>
+	<channel-type id="cop-cooling-channel">
+		<item-type>Number</item-type>
+		<label>Current COP Cooling</label>
+		<state pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="power-channel">
+		<item-type>Number:Power</item-type>
+		<label>Current Power</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="power-heating-channel">
+		<item-type>Number:Power</item-type>
+		<label>Current power heating</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="power-drinkingwater-channel">
+		<item-type>Number:Power</item-type>
+		<label>Current Power Drinking Water</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="power-cooling-channel">
+		<item-type>Number:Power</item-type>
+		<label>Current power cooling</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="electric-power-channel">
+		<item-type>Number:Power</item-type>
+		<label>Current Electric Power</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="electric-power-heating-channel">
+		<item-type>Number:Power</item-type>
+		<label>Current Electric Power Heating</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="electric-power-drinkingwater-channel">
+		<item-type>Number:Power</item-type>
+		<label>Current electric power drinking water</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="electric-power-cooling-channel">
+		<item-type>Number:Power</item-type>
+		<label>Current Electric Power Cooling</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,4 +34,7 @@ public class DanfossAirUnitBindingConstants {
 
     // The thing type as a set
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AIRUNIT);
+
+    // The thing type configuration parameters
+    public static final String PARAMETER_HOST = "host";
 }

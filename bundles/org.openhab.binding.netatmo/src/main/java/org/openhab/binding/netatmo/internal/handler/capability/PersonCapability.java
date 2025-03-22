@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -102,7 +102,7 @@ public class PersonCapability extends HomeSecurityThingCapability {
             return; // ignore incoming events if they are deprecated
         }
         lastEventTime = eventTime;
-        handler.triggerChannel(CHANNEL_HOME_EVENT, Objects.requireNonNull(
+        handler.triggerChannel(GROUP_SECURITY_EVENT, CHANNEL_HOME_EVENT, Objects.requireNonNull(
                 event.getSubTypeDescription().map(EventSubType::name).orElse(event.getEventType().name())));
     }
 

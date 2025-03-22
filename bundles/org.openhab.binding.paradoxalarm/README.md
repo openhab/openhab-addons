@@ -1,4 +1,4 @@
-# Paradox Alarm System binding
+# Paradox Alarm System Binding
 
 This binding is intended to provide basic support for Paradox Alarm system.
 

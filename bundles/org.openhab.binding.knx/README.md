@@ -222,7 +222,6 @@ When a `GroupValueRead` telegram is sent from the KNX bus to a *-control Channel
 | increaseDecrease | Group address for relative movement                                                                                                           | 3.007       |
 | frequency        | Increase/Decrease frequency in milliseconds in case the binding should handle that (0 if the KNX device sends the commands repeatedly itself) | 0           |
 
-
 ##### Channel Type "rollershutter-control"
 
 | Parameter | Description                             | Default DPT |
@@ -648,3 +647,73 @@ Dimmer        demoDimmer         "Dimmer [%d %%]"           <light>          { c
 
 The KNX binding provides additional functionality which can be triggered from the openHAB console.
 Type `openhab:knx` on the openHAB console for further information.
+
+## Troubleshooting
+
+### Extended Logging
+
+Logging can be configured via the UI.
+This affects only the log of the binding and does not include Calimero library used for KNX communication.
+In special cases, it might be useful to set both KNX logging and Calimero logging.
+This can be done in the openHAB console:
+
+```shell
+log:set TRACE org.openhab.binding.knx
+log:set TRACE calimero
+```
+
+Note that this will lead to a few lines in the log for each KNX frame received or sent.
+
+Logging can be set back to normal, similarly using:
+
+```shell
+log:set DEFAULT org.openhab.binding.knx
+log:set DEFAULT calimero
+```
+
+### Serial Devices
+
+In case you experience communication errors like incomplete or dropped frames, BCU reset errors in the log, or similar problems:
+
+- Make sure that no other service accesses the serial port (e.g., `knxd`, `hciuart`, etc.).
+Use `ps aux` and make sure none of those are running in parallel.
+- Increase the log level also for Calimero library, see above.
+- If the problem relates only to KNX data secure, please note that very old KNX devices do not support long frames, which are required for KNX data secure. Check your interface and the couplers (technical reference manual, ETS, or openHAB device info when fetch is enabled).
+
+### kBerry Module for Raspberry Pi
+
+#### Configuration of the kBerry Module
+
+Uploading an application to the module is not necessary for use with openHAB.
+
+#### Configuration of the Serial Port
+
+Configuration of the serial port is necessary.
+This is done by editing text files in the folder `/boot/firmware` on the PI (for older distributions, it is `/boot`).
+This can be done manually or using the tool `raspi-config`.
+
+If something goes wrong, you can also recover using a Windows machine, as this partition is also accessible from Windows when using a micro SD card reader. 
+
+##### config.txt
+
+The serial port (UART) needs to be activated on GPIO pins 14 and 15.
+The configuration options have changed over time, depending on the Linux distribution and the hardware revision of the Raspberry Pi.
+
+The following settings might work for you:
+
+For PI 5, add `dtoverlay=disable-bt` and `dtoverlay=uart0`.
+
+For PI 4, add `dtoverlay=disable-bt`.
+
+For PI 3, add `dtoverlay=pi3-miniuart-bt`.
+
+##### cmdline.txt
+
+Remove the part that refers to the serial port, e.g. `console=serial0,115200`.
+
+Finally, reboot the PI.
+
+#### openHAB Configuration
+
+Add a KNX Thing manually, KNX FT1.2 Interface, select `/dev/ttyAMA0` as port.
+If you use file-based configuration, see the example above.

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -48,7 +49,7 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
     private final Logger logger = LoggerFactory.getLogger(EnergyCapability.class);
     private final NetatmoDescriptionProvider descriptionProvider;
 
-    private int setPointDefaultDuration = -1;
+    private Duration setPointDefaultDuration = Duration.ofMinutes(120);
     private String energyId = "";
 
     EnergyCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
@@ -79,7 +80,7 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
             });
             descriptionProvider.setStateOptions(new ChannelUID(thingUID, GROUP_ENERGY, CHANNEL_PLANNING),
                     energyData.getThermSchedules().stream().map(p -> new StateOption(p.getId(), p.getName())).toList());
-            setPointDefaultDuration = energyData.getThermSetpointDefaultDuration();
+            setPointDefaultDuration = energyData.getSetpointDefaultDuration();
         }
     }
 
@@ -113,7 +114,7 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
                 api.setThermpoint(energyId, roomId, mode, endtime, temp);
                 handler.expireData();
             } catch (NetatmoException e) {
-                logger.warn("Error setting room thermostat mode '{}' : {}", mode, e.getMessage());
+                logger.warn("Error setting room thermostat mode '{}': {}", mode, e.getMessage());
             }
         });
     }
@@ -146,10 +147,14 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
                         }
                         api.setThermMode(energyId, targetMode.apiDescriptor);
                         break;
+                    case CHANNEL_SETPOINT_DURATION:
+                        logger.info("'{}' is a read-only channel that must be updated in the Netatmo App",
+                                CHANNEL_SETPOINT_DURATION);
+                        break;
                 }
                 handler.expireData();
             } catch (NetatmoException e) {
-                logger.warn("Error handling command '{}' : {}", command, e.getMessage());
+                logger.warn("Error handling command '{}': {}", command, e.getMessage());
             } catch (IllegalArgumentException e) {
                 logger.warn("Command '{}' sent to channel '{}' is not a valid setpoint mode.", command, channelName);
             }
@@ -157,6 +162,10 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
     }
 
     private long setpointEndTimeFromNow() {
-        return ZonedDateTime.now().plusMinutes(setPointDefaultDuration).toEpochSecond();
+        return handler.getHomeCapability(HomeCapability.class).map(cap -> {
+            ZonedDateTime now = ZonedDateTime.now().plus(setPointDefaultDuration);
+            now = now.withZoneSameInstant(cap.zoneId);
+            return now.toEpochSecond();
+        }).orElse(-1l);
     }
 }

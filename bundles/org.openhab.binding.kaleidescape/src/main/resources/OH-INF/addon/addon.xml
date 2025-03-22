@@ -10,15 +10,11 @@
 
 	<discovery-methods>
 		<discovery-method>
-			<service-type>upnp</service-type>
+			<service-type>sddp</service-type>
 			<match-properties>
 				<match-property>
 					<name>manufacturer</name>
-					<regex>(?i)Kaleidescape</regex>
-				</match-property>
-				<match-property>
-					<name>deviceType</name>
-					<regex>.*Basic.*</regex>
+					<regex>(?i).*kaleidescape.*</regex>
 				</match-property>
 			</match-properties>
 		</discovery-method>

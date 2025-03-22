@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,7 @@ import org.openhab.core.thing.profiles.ProfileTypeUID;
 import org.openhab.core.thing.profiles.i18n.ProfileTypeI18nLocalizationService;
 import org.openhab.core.transform.TransformationService;
 import org.openhab.core.util.BundleResolver;
+import org.openhab.transform.vat.internal.RateProvider;
 import org.osgi.framework.Bundle;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -52,8 +53,10 @@ import org.osgi.service.component.annotations.Reference;
 public class VATTransformationProfileFactory implements ProfileFactory, ProfileTypeProvider {
 
     private final LocaleProvider localeProvider;
+    private final RateProvider rateProvider = new RateProvider();
     private final ProfileTypeI18nLocalizationService profileTypeI18nLocalizationService;
     private final Map<LocalizedKey, ProfileType> localizedProfileTypeCache = new ConcurrentHashMap<>();
+    @Nullable
     private final Bundle bundle;
 
     private @NonNullByDefault({}) TransformationService transformationService;
@@ -76,7 +79,8 @@ public class VATTransformationProfileFactory implements ProfileFactory, ProfileT
     @Override
     public @Nullable Profile createProfile(ProfileTypeUID profileTypeUID, ProfileCallback callback,
             ProfileContext profileContext) {
-        return new VATTransformationProfile(callback, transformationService, profileContext, localeProvider);
+        return new VATTransformationProfile(callback, transformationService, profileContext, localeProvider,
+                rateProvider);
     }
 
     private ProfileType createLocalizedProfileType(ProfileType profileType, @Nullable Locale locale) {
@@ -101,11 +105,11 @@ public class VATTransformationProfileFactory implements ProfileFactory, ProfileT
     }
 
     @Reference(target = "(openhab.transform=VAT)")
-    public void addTransformationService(TransformationService service) {
-        this.transformationService = service;
+    public void addTransformationService(TransformationService transformationService) {
+        this.transformationService = transformationService;
     }
 
-    public void removeTransformationService(TransformationService service) {
+    public void removeTransformationService(TransformationService transformationService) {
         this.transformationService = null;
     }
 }

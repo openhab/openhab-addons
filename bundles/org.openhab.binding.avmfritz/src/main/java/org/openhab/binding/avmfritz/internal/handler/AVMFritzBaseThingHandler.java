@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,6 @@ import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.toCelsius;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
 
@@ -126,6 +125,7 @@ import org.slf4j.LoggerFactory;
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
  * @author Christoph Sommer - Added support for color temperature
  * @author Tobias Lange - Added abs color temperature and fixed on/off behavior of light blub
+ * @author Fabian Girgert - Fixed incorrect state of dimmable bulb when switched off
  */
 @NonNullByDefault
 public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implements FritzAhaStatusListener {
@@ -207,7 +207,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                     updateColorLight(deviceModel.getColorControlModel(), deviceModel.getLevelControlModel(),
                             deviceModel.getSimpleOnOffUnit());
                 } else if (deviceModel.isDimmableLight() && !deviceModel.isHANFUNBlinds()) {
-                    updateDimmableLight(deviceModel.getLevelControlModel());
+                    updateDimmableLight(deviceModel.getLevelControlModel(), deviceModel.getSimpleOnOffUnit());
                 } else if (deviceModel.isHANFUNUnit() && deviceModel.isHANFUNOnOff()) {
                     updateSimpleOnOffUnit(deviceModel.getSimpleOnOffUnit());
                 }
@@ -255,9 +255,16 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
         }
     }
 
-    private void updateDimmableLight(@Nullable LevelControlModel levelControlModel) {
+    private void updateDimmableLight(@Nullable LevelControlModel levelControlModel,
+            @Nullable SimpleOnOffModel simpleOnOff) {
         if (levelControlModel != null) {
-            updateThingChannelState(CHANNEL_BRIGHTNESS, new PercentType(levelControlModel.getLevelPercentage()));
+            PercentType brightness;
+            if (simpleOnOff == null || simpleOnOff.state) {
+                brightness = new PercentType(levelControlModel.getLevelPercentage());
+            } else {
+                brightness = PercentType.ZERO;
+            }
+            updateThingChannelState(CHANNEL_BRIGHTNESS, brightness);
         }
     }
 
@@ -306,9 +313,8 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             NextChangeModel nextChange = heatingModel.getNextchange();
             if (nextChange != null) {
                 int endPeriod = nextChange.getEndperiod();
-                updateThingChannelState(CHANNEL_NEXT_CHANGE, endPeriod == 0 ? UnDefType.UNDEF
-                        : new DateTimeType(
-                                ZonedDateTime.ofInstant(Instant.ofEpochSecond(endPeriod), ZoneId.systemDefault())));
+                updateThingChannelState(CHANNEL_NEXT_CHANGE,
+                        endPeriod == 0 ? UnDefType.UNDEF : new DateTimeType(Instant.ofEpochSecond(endPeriod)));
                 BigDecimal nextTemperature = nextChange.getTchange();
                 updateThingChannelState(CHANNEL_NEXTTEMP, TEMP_FRITZ_UNDEFINED.equals(nextTemperature) ? UnDefType.UNDEF
                         : new QuantityType<>(toCelsius(nextTemperature), SIUnits.CELSIUS));

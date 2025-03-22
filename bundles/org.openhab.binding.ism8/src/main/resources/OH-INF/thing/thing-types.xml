@@ -43,6 +43,7 @@
 		<item-type>Switch</item-type>
 		<label>Digital Readonly DataPoint</label>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>
@@ -65,6 +66,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Percentage Readonly DataPoint</label>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>
@@ -98,10 +100,32 @@
 		</config-description>
 	</channel-type>
 
+	<channel-type id="number-r">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Numeric Readonly DataPoint</label>
+		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<config-description>
+			<parameter name="id" type="integer" required="true">
+				<label>DP ID</label>
+				<description>Put the number of the DataPoint ID to be mapped from the heating sytem.</description>
+			</parameter>
+			<parameter name="type" type="text" required="true">
+				<label>Type</label>
+				<description>Put the KNX-type of the DataPoint (e.g. DPT_Value_Temp / 9.001)</description>
+				<options>
+					<option value="5.010">DPT_Value_1_Ucount</option>
+					<option value="7.001">DPT_Value_2_Ucount</option>
+				</options>
+			</parameter>
+		</config-description>
+	</channel-type>
+
 	<channel-type id="temperature-r">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Readonly DataPoint</label>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>
@@ -142,6 +166,7 @@
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure Readonly DataPoint</label>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>
@@ -157,10 +182,11 @@
 		</config-description>
 	</channel-type>
 
-	<channel-type id="flowrate-r">
-		<item-type>Number:VolumetricFlowRate</item-type>
-		<label>Flowrate Readonly DataPoint</label>
+	<channel-type id="power-r">
+		<item-type>Number:Power</item-type>
+		<label>Power Readonly DataPoint</label>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>
@@ -170,7 +196,49 @@
 				<label>Type</label>
 				<description>Put the KNX-type of the DataPoint (e.g. DPT_Value_Temp / 9.001)</description>
 				<options>
+					<option value="9.024">DPT_Power</option>
+				</options>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="flowrate-r">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Flowrate Readonly DataPoint</label>
+		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<config-description>
+			<parameter name="id" type="integer" required="true">
+				<label>DP ID</label>
+				<description>Put the number of the DataPoint ID to be mapped from the heating sytem.</description>
+			</parameter>
+			<parameter name="type" type="text" required="true">
+				<label>Type</label>
+				<description>Put the KNX-type of the DataPoint (e.g. DPT_Value_Temp / 9.001)</description>
+				<options>
+					<option value="9.025">DPT_Power</option>
 					<option value="13.002">DPT_FlowRate</option>
+				</options>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="active-energy-r">
+		<item-type>Number:Energy</item-type>
+		<label>Active Energy Readonly DataPoint</label>
+		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<config-description>
+			<parameter name="id" type="integer" required="true">
+				<label>DP ID</label>
+				<description>Put the number of the DataPoint ID to be mapped from the heating sytem.</description>
+			</parameter>
+			<parameter name="type" type="text" required="true">
+				<label>Type</label>
+				<description>Put the KNX-type of the DataPoint (e.g. DPT_Value_Temp / 9.001)</description>
+				<options>
+					<option value="13.010">DPT_ActiveEnergy</option>
+					<option value="13.013">DPT_ActiveEnergy_kWh</option>
 				</options>
 			</parameter>
 		</config-description>
@@ -179,6 +247,8 @@
 	<channel-type id="mode-r">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Mode Readonly DataPoint</label>
+		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>

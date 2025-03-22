@@ -262,7 +262,7 @@ Defining more than one step in `fadeString` is supported.
 
 This example defines a sACN/E1.31 bridge in unicast mode which transmits universe 2 and three things: a three channel dimmer used to control a RGB light, which takes 1s to fade from one color to another and 10s from 0-100% on incremental dim commands, a single channel dimmer which will turn on only to 90% if it receives an ON command and does not fully switch off (to 10%) if it receives an OFF command and chaser which changes the colors like a traffic light.
 
-### demo.things:
+### `demo.things` Example
 
 ```java
 Bridge dmx:sacn-bridge:mybridge [ mode="unicast", address="192.168.0.60", universe=2 ] {
@@ -272,7 +272,7 @@ Bridge dmx:sacn-bridge:mybridge [ mode="unicast", address="192.168.0.60", univer
 }
 ```
 
-### demo.items:
+### `demo.items` Example
 
 ```java
 Color MyColorItem "My Color Item" { channel="dmx:color:mybridge:rgb:color" }
@@ -280,7 +280,7 @@ Dimmer MyDimmerItem "My Dimmer Item" { channel="dmx:dimmer:mybridge:single:brigh
 Switch MyChaserItem "My Chaser Item" { channel="dmx:chaser:mybridge:ampel:switch" }
 ```
 
-### demo.sitemap:
+### `demo.sitemap` Example
 
 ```perl
 sitemap demo label="Main Menu"

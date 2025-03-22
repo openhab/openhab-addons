@@ -234,7 +234,7 @@ Currently the miio binding supports more than 360 different models.
 | Mi IH Pressure Rice Cooker         | miio:unsupported | chunmi.cooker.press1   | No           |            |
 | Mi IH Pressure Rice Cooker         | miio:unsupported | chunmi.cooker.press2   | No           |            |
 | Gosund Smart Plug                  | miio:basic       | [cuco.plug.cp1](#cuco-plug-cp1) | Yes          |            |
-| Xiaomi Smart Plug 2 (Wi-Fi)        | miio:basic       | [cuco.plug.v2eur](#cuco-plug-v2eur) | Yes          |            |
+| Xiaomi Smart Plug 2 (Wi-Fi)        | miio:basic       | [cuco.plug.v2eur](#cuco-plug-v2eur) | Yes          | Device only works with cloud connection (stays offline with direct connection). Select in your thing configuration Communication Method 'Cloud' |
 | Mi Smart Antibacterial Humidifier  | miio:basic       | [deerma.humidifier.jsq](#deerma-humidifier-jsq) | Yes          |            |
 | Mi S Smart Humidifer               | miio:basic       | [deerma.humidifier.jsq1](#deerma-humidifier-jsq1) | Yes          |            |
 | Xiaomi Smart Humidifier 2          | miio:basic       | [deerma.humidifier.jsq2w](#deerma-humidifier-jsq2w) | Yes          |            |
@@ -461,6 +461,7 @@ Currently the miio binding supports more than 360 different models.
 | Mi Smart Ultra Electricity Saving Air Conditioner (1HP/Inverter/New China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.mt7](#xiaomi-aircondition-mt7) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Smart Ultra Electricity Saving Air Conditioner (1.5HP/Inverter/New China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.mt8](#xiaomi-aircondition-mt8) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Wi-Fi Repeater 2                | miio:unsupported | xiaomi.repeater.v2     | No           |            |
+| Xiaomi Robot Vacuum X20+           | miio:basic       | [xiaomi.vacuum.c102gl](#xiaomi-vacuum-c102gl) | Yes          |            |
 | Mi Network Speaker                 | miio:unsupported | xiaomi.wifispeaker.v1  | No           |            |
 | Uclean Smart Toilet Seat           | miio:basic       | [xjx.toilet.pro](#xjx-toilet-pro) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Uclean Smart Toilet pure           | miio:basic       | [xjx.toilet.pure](#xjx-toilet-pure) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -558,6 +559,7 @@ Currently the miio binding supports more than 360 different models.
 | Xiaomi Smart Air Purifier 4 Compact | miio:basic       | [zhimi.airp.cpa4](#zhimi-airp-cpa4) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Air Purifier 3C                 | miio:basic       | [zhimi.airp.mb4a](#zhimi-airp-mb4a) | Yes          |            |
 | Xiaomi Smart Air Purifier 4        | miio:basic       | [zhimi.airp.mb5](#zhimi-airp-mb5) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Air Purifier 4 Lite   | miio:basic       | [zhimi.airp.rmb1](#zhimi-airp-rmb1) | Experimental | This device may not work with direct connection hence require cloud connection<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Air Purifier 4 Pro    | miio:basic       | [zhimi.airp.vb4](#zhimi-airp-vb4) | Yes          |            |
 | Mi Air Purifier 2 (mini)           | miio:basic       | [zhimi.airpurifier.m1](#zhimi-airpurifier-m1) | Yes          |            |
 | Mi Air Purifier 2                  | miio:basic       | [zhimi.airpurifier.m2](#zhimi-airpurifier-m2) | Yes          |            |
@@ -1681,7 +1683,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| actions                    | String               | Actions                                  |            |
+| actions                    | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Vacuum Start Sweep","vacuum-stop-sweeping"="Vacuum Stop Sweeping","vacuum-start-room-sweep"="Vacuum Start Room Sweep","battery-start-charge"="Battery Start Charge","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","filter-reset-filter-life"="Filter Reset Filter Life","vacuum-extend-start-clean"="Vacuum Extend Start Clean","vacuum-extend-stop-clean"="Vacuum Extend Stop Clean","map-map-req"="Map Map Req","map-update-map"="Map Update Map","audio-position"="Audio Position","audio-play-sound"="Audio Play Sound","time-delete-timer"="Time Delete Timer","collect-dust-start-collect"="Collect Dust Start Collect"]` |
 | status                     | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping","11"="Building","13"="Charging Completed"]` |
 | fault                      | Number               | Robot Cleaner - Device Fault             |            |
 | mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Silent","1"="Basic","2"="Strong","3"="Full Speed"]` |
@@ -3905,6 +3907,59 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | fan-percent                | Number:Dimentionless | Fan Speed %                              |            |
 | timer                      | String               | Enhance - Timer                          |            |
 
+### Xiaomi Robot Vacuum X20+ (<a name="xiaomi-vacuum-c102gl">xiaomi.vacuum.c102gl</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Vacuum Start Sweep","vacuum-stop-sweeping"="Vacuum Stop Sweeping","vacuum-start-room-sweep"="Vacuum Start Room Sweep","vacuum-start-dust-arrest"="Vacuum Start Dust Arrest","vacuum-start-mop-wash"="Vacuum Start Mop Wash","vacuum-start-dry"="Vacuum Start Dry","vacuum-stop-dry"="Vacuum Stop Dry","vacuum-start-eject"="Vacuum Start Eject","battery-start-charge"="Battery Start Charge","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","filter-reset-filter-life"="Filter Reset Filter Life","mop-reset-mop-life"="Mop Reset Mop Life","vacuum-extend-start-clean"="Vacuum Extend Start Clean","vacuum-extend-stop-clean"="Vacuum Extend Stop Clean","map-map-req"="Map Map Req","map-update-map"="Map Update Map","audio-position"="Audio Position","audio-play-sound"="Audio Play Sound","time-delete-timer"="Time Delete Timer"]` |
+| status                     | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping","8"="Drying","9"="Washing","10"="Go Washing","11"="Building","12"="Sweeping And Mopping","13"="Charging Completed","14"="Upgrading","19"="WaterInspecting","21"="WashingMopPause","22"="DustCollecting","23"="RemoteClean"]` |
+| fault                      | Number               | Robot Cleaner - Device Fault             |            |
+| mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Silent","1"="Basic","2"="Strong","3"="Full Speed"]` |
+| dry_left_time              | Number:Time          | Robot Cleaner - Dry Left Time            |            |
+| battery_level              | Number:Dimensionless | Battery - Battery Level                  |            |
+| charging_state             | Number               | Battery - Charging State                 | Value mapping `["1"="Charging","2"="Not Charging","5"="Go Charging"]` |
+| brush_left_time            | Number:Time          | Main Cleaning Brush - Brush Left Time    |            |
+| brush_life_level           | Number:Dimensionless | Main Cleaning Brush - Brush Life Level   |            |
+| brush_left_time1           | Number:Time          | Side Cleaning Brush - Brush Left Time    |            |
+| brush_life_level1          | Number:Dimensionless | Side Cleaning Brush - Brush Life Level   |            |
+| filter_life_level          | Number:Dimensionless | Filter - Filter Life Level               |            |
+| filter_left_time           | Number:Time          | Filter - Filter Left Time                |            |
+| mop_life_level             | Number:Dimensionless | Mop - Mop Life Level                     |            |
+| mop_left_time              | Number:Time          | Mop - Mop Left Time                      |            |
+| work_mode                  | Number               | Vacuum Extend - Work Mode                |            |
+| cleaning_time              | Number:Time          | Vacuum Extend - Cleaning Time            |            |
+| cleaning_area              | Number               | Vacuum Extend - Cleaning Area            |            |
+| cleaning_mode              | Number               | Vacuum Extend - Cleaning Mode            | Value mapping `["0"="Quiet","1"="Standard","2"="Medium","3"="Strong"]` |
+| mop_mode                   | Number               | Vacuum Extend - Mop Mode                 | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| waterbox_status            | Number               | Vacuum Extend - Waterbox Status          | Value mapping `["0"="No","1"="Yes"]` |
+| task_status                | Number               | Vacuum Extend - Task Status              |            |
+| clean_extend_data          | String               | Vacuum Extend - Clean Extend Data        |            |
+| break_point_restart        | Number               | Vacuum Extend - Break Point Restart      | Value mapping `["0"="Close","1"="Open"]` |
+| carpet_press               | Number               | Vacuum Extend - Carpet Press             | Value mapping `["0"="Close","1"="Open"]` |
+| serial_number              | String               | Vacuum Extend - Serial Number            |            |
+| remote_state               | String               | Vacuum Extend - Remote State             |            |
+| clean_rags_tip             | Number:Time          | Vacuum Extend - Clean Rags Tip           |            |
+| keep_sweeper_time          | Number:Time          | Vacuum Extend - Keep Sweeper Time        |            |
+| faults                     | String               | Vacuum Extend - Faults                   |            |
+| nation_matched             | String               | Vacuum Extend - Nation Matched           |            |
+| relocation_status          | Number               | Vacuum Extend - Relocation Status        |            |
+| wash_station               | Number               | Vacuum Extend - Wash Station             |            |
+| child_lock                 | Number               | Vacuum Extend - Child Lock               | Value mapping `["0"="Close","1"="Open"]` |
+| clean_cancel               | Number               | Vacuum Extend - Clean Cancel             |            |
+| enable                     | Switch               | Do Not Disturb - Enable                  |            |
+| start_time                 | String               | Do Not Disturb - Start Time              |            |
+| end_time                   | String               | Do Not Disturb - End Time                |            |
+| volume                     | Number               | Audio - Volume                           |            |
+| voice_packet_id            | String               | Audio - Voice Packet Id                  |            |
+| voice_change_state         | String               | Audio - Voice Change State               |            |
+| set_voice                  | String               | Audio - Set Voice                        |            |
+| time_zone                  | String               | Time - Time Zone                         |            |
+| timer_clean                | String               | Time - Timer Clean                       |            |
+| first_clean_time           | Number               | Clean Logs - First Clean Time            |            |
+| total_clean_time           | Number:Time          | Clean Logs - Total Clean Time            |            |
+| total_clean_times          | Number               | Clean Logs - Total Clean Times           |            |
+| total_clean_area           | Number               | Clean Logs - Total Clean Area            |            |
+
 ### Uclean Smart Toilet Seat (<a name="xjx-toilet-pro">xjx.toilet.pro</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
@@ -5405,6 +5460,29 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | average_aqi                | Number               | Aqi - Average Aqi                        |            |
 | aqi_state                  | Number               | Aqi - Aqi State                          | Value mapping `["0"="AQI-GOOD-L","1"="AQI-GOOD-H","2"="AQI-MID-L","3"="AQI-MID-H","4"="AQI-BAD-L","5"="AQI-BAD-H"]` |
 
+### Xiaomi Smart Air Purifier 4 Lite (<a name="zhimi-airp-rmb1">zhimi.airp.rmb1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["air-purifier-toggle"="Air Purifier Toggle","filter-reset-filter-life"="Filter Reset Filter Life","custom-service-toggle-mode"="Custom Service Toggle Mode"]` |
+| on                         | Switch               | Air Purifier - Switch Status             |            |
+| fault                      | Number               | Air Purifier - Device Fault              | Value mapping `["0"="No Faults","2"="Motor Stop","3"="Sensor Lost"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Auto","1"="Sleep","2"="Favorite"]` |
+| relative_humidity          | Number:Dimensionless | Environment - Relative Humidity          |            |
+| pm2_5_density              | Number               | Environment - PM2 5 Density              |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| filter_life_level          | Number:Dimensionless | Filter - Filter Life Level               |            |
+| filter_used_time           | Number:Time          | Filter - Filter Used Time                |            |
+| filter_left_time           | Number:Time          | Filter - Filter Left Time                |            |
+| alarm                      | Switch               | Alarm - Alarm                            |            |
+| physical_controls_locked   | Switch               | Physical Control Locked - Physical Control Locked |            |
+| brightness                 | Number               | Screen - Brightness                      | Value mapping `["0"="Close","1"="Bright","2"="Brightest"]` |
+| temperature_display_unit   | Number               | Device Display Unit - Temperature Display Unit | Value mapping `["1"="Celsius","2"="Fahrenheit"]` |
+| moto_speed_rpm             | Number               | Custom Service - Moto Speed Rpm          |            |
+| country_code               | Number               | Custom Service - Country Code            | Value mapping `["2"="EU","1"="US","82"="KR","886"="TW","66"="TH","44"="UK","91"="IN"]` |
+| favorite_level             | Number               | Custom Service - Favorite Level          |            |
+| aqi_updata_heartbeat       | Number               | Aqi - Aqi Updata Heartbeat               |            |
+
 ### Xiaomi Smart Air Purifier 4 Pro (<a name="zhimi-airp-vb4">zhimi.airp.vb4</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
@@ -6365,8 +6443,6 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | lp_autooff                 | Number               | Low Power Auto Off                       |            |
 | lp_autooff_delay           | Number               | Low Power Limit Time                     |            |
 | lp_threshold               | Number               | Low Power Threshold                      |            |
-
-
 
 ## Example item file Rockrobo vacuum
 
@@ -10178,6 +10254,62 @@ Number:Dimentionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:b
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
+### Xiaomi Robot Vacuum X20+ (xiaomi.vacuum.c102gl) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_vacuum "Xiaomi Robot Vacuum X20+" <status>
+String actions "Actions" (G_vacuum) {channel="miio:basic:vacuum:actions"}
+Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number mode "Robot Cleaner - Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number:Time dry_left_time "Robot Cleaner - Dry Left Time" (G_vacuum) {channel="miio:basic:vacuum:dry_left_time"}
+Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery_level"}
+Number charging_state "Battery - Charging State" (G_vacuum) {channel="miio:basic:vacuum:charging_state"}
+Number:Time brush_left_time "Main Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time"}
+Number:Dimensionless brush_life_level "Main Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush_life_level"}
+Number:Time brush_left_time1 "Side Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time1"}
+Number:Dimensionless brush_life_level1 "Side Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush_life_level1"}
+Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:filter_life_level"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter_left_time"}
+Number:Dimensionless mop_life_level "Mop - Mop Life Level" (G_vacuum) {channel="miio:basic:vacuum:mop_life_level"}
+Number:Time mop_left_time "Mop - Mop Left Time" (G_vacuum) {channel="miio:basic:vacuum:mop_left_time"}
+Number work_mode "Vacuum Extend - Work Mode" (G_vacuum) {channel="miio:basic:vacuum:work_mode"}
+Number:Time cleaning_time "Vacuum Extend - Cleaning Time" (G_vacuum) {channel="miio:basic:vacuum:cleaning_time"}
+Number cleaning_area "Vacuum Extend - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning_area"}
+Number cleaning_mode "Vacuum Extend - Cleaning Mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning_mode"}
+Number mop_mode "Vacuum Extend - Mop Mode" (G_vacuum) {channel="miio:basic:vacuum:mop_mode"}
+Number waterbox_status "Vacuum Extend - Waterbox Status" (G_vacuum) {channel="miio:basic:vacuum:waterbox_status"}
+Number task_status "Vacuum Extend - Task Status" (G_vacuum) {channel="miio:basic:vacuum:task_status"}
+String clean_extend_data "Vacuum Extend - Clean Extend Data" (G_vacuum) {channel="miio:basic:vacuum:clean_extend_data"}
+Number break_point_restart "Vacuum Extend - Break Point Restart" (G_vacuum) {channel="miio:basic:vacuum:break_point_restart"}
+Number carpet_press "Vacuum Extend - Carpet Press" (G_vacuum) {channel="miio:basic:vacuum:carpet_press"}
+String serial_number "Vacuum Extend - Serial Number" (G_vacuum) {channel="miio:basic:vacuum:serial_number"}
+String remote_state "Vacuum Extend - Remote State" (G_vacuum) {channel="miio:basic:vacuum:remote_state"}
+Number:Time clean_rags_tip "Vacuum Extend - Clean Rags Tip" (G_vacuum) {channel="miio:basic:vacuum:clean_rags_tip"}
+Number:Time keep_sweeper_time "Vacuum Extend - Keep Sweeper Time" (G_vacuum) {channel="miio:basic:vacuum:keep_sweeper_time"}
+String faults "Vacuum Extend - Faults" (G_vacuum) {channel="miio:basic:vacuum:faults"}
+String nation_matched "Vacuum Extend - Nation Matched" (G_vacuum) {channel="miio:basic:vacuum:nation_matched"}
+Number relocation_status "Vacuum Extend - Relocation Status" (G_vacuum) {channel="miio:basic:vacuum:relocation_status"}
+Number wash_station "Vacuum Extend - Wash Station" (G_vacuum) {channel="miio:basic:vacuum:wash_station"}
+Number child_lock "Vacuum Extend - Child Lock" (G_vacuum) {channel="miio:basic:vacuum:child_lock"}
+Number clean_cancel "Vacuum Extend - Clean Cancel" (G_vacuum) {channel="miio:basic:vacuum:clean_cancel"}
+Switch enable "Do Not Disturb - Enable" (G_vacuum) {channel="miio:basic:vacuum:enable"}
+String start_time "Do Not Disturb - Start Time" (G_vacuum) {channel="miio:basic:vacuum:start_time"}
+String end_time "Do Not Disturb - End Time" (G_vacuum) {channel="miio:basic:vacuum:end_time"}
+Number volume "Audio - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+String voice_packet_id "Audio - Voice Packet Id" (G_vacuum) {channel="miio:basic:vacuum:voice_packet_id"}
+String voice_change_state "Audio - Voice Change State" (G_vacuum) {channel="miio:basic:vacuum:voice_change_state"}
+String set_voice "Audio - Set Voice" (G_vacuum) {channel="miio:basic:vacuum:set_voice"}
+String time_zone "Time - Time Zone" (G_vacuum) {channel="miio:basic:vacuum:time_zone"}
+String timer_clean "Time - Timer Clean" (G_vacuum) {channel="miio:basic:vacuum:timer_clean"}
+Number first_clean_time "Clean Logs - First Clean Time" (G_vacuum) {channel="miio:basic:vacuum:first_clean_time"}
+Number:Time total_clean_time "Clean Logs - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total_clean_time"}
+Number total_clean_times "Clean Logs - Total Clean Times" (G_vacuum) {channel="miio:basic:vacuum:total_clean_times"}
+Number total_clean_area "Clean Logs - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total_clean_area"}
+```
+
 ### Uclean Smart Toilet Seat (xjx.toilet.pro) item file lines
 
 note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -11960,6 +12092,32 @@ Number average_aqi "Aqi - Average Aqi" (G_airp) {channel="miio:basic:airp:averag
 Number aqi_state "Aqi - Aqi State" (G_airp) {channel="miio:basic:airp:aqi_state"}
 ```
 
+### Xiaomi Smart Air Purifier 4 Lite (zhimi.airp.rmb1) item file lines
+
+note: Autogenerated example. Replace the id (airp) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_airp "Xiaomi Smart Air Purifier 4 Lite" <status>
+String actions "Actions" (G_airp) {channel="miio:basic:airp:actions"}
+Switch on "Air Purifier - Switch Status" (G_airp) {channel="miio:basic:airp:on"}
+Number fault "Air Purifier - Device Fault" (G_airp) {channel="miio:basic:airp:fault"}
+Number mode "Mode" (G_airp) {channel="miio:basic:airp:mode"}
+Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_airp) {channel="miio:basic:airp:relative_humidity"}
+Number pm2_5_density "Environment - PM2 5 Density" (G_airp) {channel="miio:basic:airp:pm2_5_density"}
+Number:Temperature temperature "Temperature" (G_airp) {channel="miio:basic:airp:temperature"}
+Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_airp) {channel="miio:basic:airp:filter_life_level"}
+Number:Time filter_used_time "Filter - Filter Used Time" (G_airp) {channel="miio:basic:airp:filter_used_time"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_airp) {channel="miio:basic:airp:filter_left_time"}
+Switch alarm "Alarm - Alarm" (G_airp) {channel="miio:basic:airp:alarm"}
+Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_airp) {channel="miio:basic:airp:physical_controls_locked"}
+Number brightness "Screen - Brightness" (G_airp) {channel="miio:basic:airp:brightness"}
+Number temperature_display_unit "Device Display Unit - Temperature Display Unit" (G_airp) {channel="miio:basic:airp:temperature_display_unit"}
+Number moto_speed_rpm "Custom Service - Moto Speed Rpm" (G_airp) {channel="miio:basic:airp:moto_speed_rpm"}
+Number country_code "Custom Service - Country Code" (G_airp) {channel="miio:basic:airp:country_code"}
+Number favorite_level "Custom Service - Favorite Level" (G_airp) {channel="miio:basic:airp:favorite_level"}
+Number aqi_updata_heartbeat "Aqi - Aqi Updata Heartbeat" (G_airp) {channel="miio:basic:airp:aqi_updata_heartbeat"}
+```
+
 ### Xiaomi Smart Air Purifier 4 Pro (zhimi.airp.vb4) item file lines
 
 note: Autogenerated example. Replace the id (airp) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -13049,7 +13207,6 @@ Number lp_autooff "Low Power Auto Off" (G_powerstrip) {channel="miio:basic:power
 Number lp_autooff_delay "Low Power Limit Time" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff_delay"}
 Number lp_threshold "Low Power Threshold" (G_powerstrip) {channel="miio:basic:powerstrip:lp_threshold"}
 ```
-
 
 
 ### Country Servers

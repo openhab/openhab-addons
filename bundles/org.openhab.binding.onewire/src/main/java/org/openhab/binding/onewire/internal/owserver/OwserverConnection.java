@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -415,7 +415,7 @@ public class OwserverConnection {
     }
 
     /**
-     * close the connection to the owserver instance after an error occured.
+     * close the connection to the owserver instance after an error occurred.
      * if {@link #CONNECTION_MAX_RETRY} is exceeded, {@link #owserverConnectionState} is set to FAILED
      * and state is reported to callback.
      */
