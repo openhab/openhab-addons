@@ -13,9 +13,9 @@
 package org.openhab.binding.bambulab.internal;
 
 import static java.lang.Integer.parseInt;
-import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.AmsChannel.*;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.AmsChannel.*;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel.*;
 import static org.openhab.binding.bambulab.internal.TrayHelper.updateTrayLoaded;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
@@ -31,8 +31,6 @@ import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PushingCommand
 import static pl.grzeslowski.jbambuapi.mqtt.PrinterClientConfig.requiredFields;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collection;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
