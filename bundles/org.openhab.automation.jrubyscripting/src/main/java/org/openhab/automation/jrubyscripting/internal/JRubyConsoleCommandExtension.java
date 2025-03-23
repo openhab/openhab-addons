@@ -14,7 +14,6 @@ package org.openhab.automation.jrubyscripting.internal;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,31 +24,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
-import org.apache.felix.service.command.Process;
-import org.apache.karaf.shell.api.console.Command;
-import org.apache.karaf.shell.api.console.CommandLine;
-import org.apache.karaf.shell.api.console.Completer;
-import org.apache.karaf.shell.api.console.Parser;
-import org.apache.karaf.shell.api.console.Session;
-import org.apache.karaf.shell.api.console.SessionFactory;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.automation.jrubyscripting.internal.watch.JRubyScriptFileWatcher;
 import org.openhab.core.automation.module.script.ScriptEngineContainer;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
 import org.openhab.core.config.core.ConfigDescription;
-import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.ConfigDescriptionRegistry;
 import org.openhab.core.io.console.Console;
+import org.openhab.core.io.console.ConsoleCommandCompleter;
 import org.openhab.core.io.console.StringsCompleter;
+import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
+import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,10 +52,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jimmy Tanagra - Initial contribution
  */
-@Component(immediate = true)
-// @NonNullByDefault cannot be applied to classes that implement Command
-// This is implemented directly using the Command interface in order to access Karaf's Session
-public class JRubyConsoleCommandExtension implements Command, Completer {
+@NonNullByDefault
+@Component(service = ConsoleCommandExtension.class)
+public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
     private final Logger logger = LoggerFactory.getLogger(JRubyConsoleCommandExtension.class);
 
     private final String DEFAULT_CONSOLE_PATH = "openhab/console/";
@@ -81,8 +73,6 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     private final JRubyScriptFileWatcher scriptFileWatcher;
     private final ConfigDescriptionRegistry configDescriptionRegistry;
 
-    private final SessionFactory sessionFactory;
-
     private final String scriptType;
 
     @Activate
@@ -90,53 +80,57 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
             @Reference ScriptEngineManager scriptEngineManager, //
             @Reference JRubyScriptEngineFactory jRubyScriptEngineFactory, //
             @Reference JRubyScriptFileWatcher scriptFileWatcher, //
-            @Reference ConfigDescriptionRegistry configDescriptionRegistry, //
-            @Reference SessionFactory sessionFactory) {
+            @Reference ConfigDescriptionRegistry configDescriptionRegistry) {
+        super("jrubyscripting", "JRuby Scripting console utilities.");
         this.scriptEngineManager = scriptEngineManager;
         this.jRubyScriptEngineFactory = jRubyScriptEngineFactory;
         this.scriptFileWatcher = scriptFileWatcher;
         this.scriptType = jRubyScriptEngineFactory.getScriptTypes().getFirst();
         this.configDescriptionRegistry = configDescriptionRegistry;
-        this.sessionFactory = sessionFactory;
-        sessionFactory.getRegistry().register(this);
-    }
-
-    @Deactivate
-    protected void deactivate() {
-        sessionFactory.getRegistry().unregister(this);
     }
 
     @Override
-    public @Nullable Completer getCompleter(boolean scoped) {
+    public @Nullable ConsoleCommandCompleter getCompleter() {
         return this;
     }
 
     @Override
-    public String getDescription() {
-        return "JRuby Scripting console utilities.";
+    public List<String> getUsages() {
+        return Arrays.asList( //
+                buildCommandUsage(INFO, "displays information about JRuby Scripting add-on"), //
+                buildCommandUsage(CONSOLE + " [--list|-l|--help|-h] | [script] [options]",
+                        "starts an interactive JRuby console"), //
+                buildCommandUsage(BUNDLE + " [arguments]", "runs Ruby bundler in the main Script path"), //
+                buildCommandUsage(GEM + " [arguments]", "manages JRuby Scripting add-on's RubyGems"), //
+                buildCommandUsage(UPDATE, "updates the configured gems"), //
+                buildCommandUsage(PRUNE + " [-f|--force]", "cleans up older versions in the .gem directory") //
+        );
     }
 
     @Override
-    public String getName() {
-        return "jrubyscripting";
+    public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
+        StringsCompleter completer = new StringsCompleter();
+        SortedSet<String> strings = completer.getStrings();
+        if (cursorArgumentIndex == 0) {
+            strings.addAll(SUB_COMMANDS);
+        } else if (cursorArgumentIndex == 1) {
+            if (CONSOLE.equals(args[0])) {
+                Map<String, String> consoles = (Map<String, String>) getConsoles();
+                if (consoles != null) {
+                    strings.addAll(consoles.keySet());
+                }
+            }
+        }
+
+        if (!strings.isEmpty()) {
+            return completer.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+        }
+
+        return false;
     }
 
     @Override
-    public Parser getParser() {
-        return null;
-    }
-
-    @Override
-    public String getScope() {
-        return "openhab";
-    }
-
-    @Override
-    public Object execute(Session session, List<Object> argList) throws Exception {
-        String[] args = argList.stream().map(Object::toString).toArray(String[]::new);
-        PrintStream out = Process.Utils.current().out();
-        final Console console = new JRubyConsole(getScope(), out);
-
+    public void execute(String[] args, Console console) {
         if (args.length > 0) {
             String command = args[0];
             switch (command) {
@@ -144,7 +138,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
                     info(console);
                     break;
                 case CONSOLE:
-                    startConsole(console, session, Arrays.copyOfRange(args, 1, args.length));
+                    startConsole(console, Arrays.copyOfRange(args, 1, args.length));
                     break;
                 case BUNDLE:
                     bundler(console, Arrays.copyOfRange(args, 1, args.length));
@@ -158,12 +152,12 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
                 case PRUNE:
                     if (args.length > 1) {
                         if ("-f".equals(args[1]) || "--force".equals(args[1])) {
-                            cleanupOtherGemHomes(console, session, true);
+                            cleanupOtherGemHomes(console, true);
                         } else {
                             console.println("Use -f or --force to skip confirmation.");
                         }
                     } else {
-                        cleanupOtherGemHomes(console, session, false);
+                        cleanupOtherGemHomes(console, false);
                     }
                     break;
                 case "--help":
@@ -178,7 +172,6 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         } else {
             printUsage(console);
         }
-        return null;
     }
 
     private void info(Console console) {
@@ -206,34 +199,35 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         }
 
         Map<String, String> config = jRubyScriptEngineFactory.getConfiguration().getConfigurations();
-        Map<String, List<ConfigDescriptionParameter>> paramsByGroup = configDescription.getParameters().stream()
-                .collect(Collectors.groupingBy(ConfigDescriptionParameter::getGroupName));
-
-        configDescription.getParameterGroups().forEach(group -> {
-            List<ConfigDescriptionParameter> parameters = paramsByGroup.get(group.getName());
-            if (parameters == null) {
-                return;
+        // The JRubyScripting Add-on configuration doesn't have group-less parameters,
+        // but in case they exist in the future, print them out
+        configDescription.getParameters().forEach(parameter -> {
+            if (parameter.getGroupName() == null) {
+                console.println(parameter.getName() + ": " + config.get(parameter.getName()));
             }
-
+        });
+        configDescription.getParameterGroups().forEach(group -> {
             String groupLabel = group.getLabel();
             if (groupLabel == null) {
                 groupLabel = group.getName();
             }
             console.println(groupLabel);
-            parameters.forEach(parameter -> {
-                console.println("  " + parameter.getName() + ": " + config.get(parameter.getName()));
+            configDescription.getParameters().forEach(parameter -> {
+                if (group.getName().equals(parameter.getGroupName())) {
+                    console.println("  " + parameter.getName() + ": " + config.get(parameter.getName()));
+                }
             });
             console.println("");
         });
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, String> getConsoles() {
+    private @Nullable Map<String, String> getConsoles() {
         return (Map<String, String>) executeWithPlainJRuby(null, engine -> engine.eval(
                 "require '" + DEFAULT_CONSOLE_PATH + "registry'; OpenHAB::Console::REGISTRY.transform_keys(&:to_s)"));
     }
 
-    private void startConsole(Console console, Session session, String[] args) {
+    private void startConsole(Console console, String[] args) {
         final String defaultConsole = jRubyScriptEngineFactory.getConfiguration().getConsole();
         String script = defaultConsole;
 
@@ -294,14 +288,21 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         final String consoleScript = script.contains("/") ? script : DEFAULT_CONSOLE_PATH + script;
         final String[] argv = args;
 
-        logger.debug("Starting JRuby console with script: {}", consoleScript);
+        // Use full class name here to avoid ambiguity against other OSGiConsole implementations
+        if (console instanceof org.openhab.core.io.console.karaf.OSGiConsole) {
+            logger.debug("Starting JRuby console with script: {}", consoleScript);
 
-        executeWithFullJRuby(console, engine -> {
-            engine.put("$terminal", session.getTerminal());
-            engine.put(ScriptEngine.ARGV, argv);
-            engine.eval(String.format("require '%s'", consoleScript));
-            return null;
-        });
+            executeWithFullJRuby(console, engine -> {
+                // Resolve console.getSession().getTerminal() in Ruby to avoid having to add
+                // org.apache.karaf.shell.core as a dependency in pom.xml
+                engine.put("$console", console);
+                engine.put(ScriptEngine.ARGV, argv);
+                engine.eval(String.format("$terminal = $console.session.terminal; require '%s'", consoleScript));
+                return null;
+            });
+        } else {
+            console.println("JRuby Console is not supported in this environment.");
+        }
     }
 
     synchronized private void bundler(Console console, String[] args) {
@@ -363,7 +364,7 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
      * This is to prevent the accumulation of old gem homes that are no longer needed.
      * The user is prompted to confirm the deletion when force is false.
      */
-    private void cleanupOtherGemHomes(Console console, Session session, boolean force) {
+    private void cleanupOtherGemHomes(Console console, boolean force) {
         Path gemHomeBase = Path.of(jRubyScriptEngineFactory.getConfiguration().getGemHomeBase());
         Path specificGemHome = Path.of(jRubyScriptEngineFactory.getConfiguration().getSpecificGemHome());
 
@@ -402,25 +403,14 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
                         .map(Path::toFile) //
                         .forEach(file -> console.println("  " + file + (file.isDirectory() ? "/" : "")));
 
-                // Prevent readLine() from logging a warning
-                // see:
-                // https://github.com/apache/karaf/blob/ad427cd12543dc78e095bbaa4608d7ca3d5ea4d8/shell/core/src/main/java/org/apache/karaf/shell/impl/console/ConsoleSessionImpl.java#L549
-                // https://github.com/jline/jline3/blob/ee4886bf24f40288a4044f9b4b74917b58103e49/reader/src/main/java/org/jline/reader/LineReaderBuilder.java#L90
-                String previousSetting = System.setProperty("org.jline.reader.support.parsedline", "true");
                 try {
-                    session.readLine("\nPress Enter to delete them or Ctrl+C to cancel.", null);
+                    console.readLine("\nPress Enter to delete them or Ctrl+C to cancel.", null);
                     console.println("");
                 } catch (RuntimeException e) {
                     // Ctrl+C was pressed
                     // We can't use a more specific exception type without adding org.jline as bundle dependency
                     console.println("Operation cancelled.");
                     return;
-                } finally {
-                    if (previousSetting != null) {
-                        System.setProperty("org.jline.reader.support.parsedline", previousSetting);
-                    } else {
-                        System.clearProperty("org.jline.reader.support.parsedline");
-                    }
                 }
             }
 
@@ -480,6 +470,9 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
     private @Nullable Object executeWithPlainJRuby(@Nullable Console console, EngineEvalFunction process) {
         ScriptEngine engine = jRubyScriptEngineFactory.createScriptEngine(scriptType);
         try {
+            if (engine == null) {
+                throw new ScriptException("Unable to create JRuby script engine.");
+            }
             return process.apply(engine);
         } catch (ScriptException e) {
             if (console != null) {
@@ -491,96 +484,9 @@ public class JRubyConsoleCommandExtension implements Command, Completer {
         }
     }
 
-    private List<String> getUsages() {
-        return Arrays.asList( //
-                buildCommandUsage(INFO, "displays information about JRuby Scripting add-on"), //
-                buildCommandUsage(CONSOLE + " [--list|-l|--help|-h] | [script] [options]",
-                        "starts an interactive JRuby console"), //
-                buildCommandUsage(BUNDLE + " [arguments]", "runs Ruby bundler in the main Script path"), //
-                buildCommandUsage(GEM + " [arguments]", "manages JRuby Scripting add-on's RubyGems"), //
-                buildCommandUsage(UPDATE, "updates the configured gems"), //
-                buildCommandUsage(PRUNE + " [-f|--force]", "cleans up older versions in the .gem directory") //
-        );
-    }
-
-    private String buildCommandUsage(final String syntax, final String description) {
-        return String.format("%s %s - %s", getName(), syntax, description);
-    }
-
-    private void printUsage(Console console) {
-        for (final String usage : getUsages()) {
-            console.printUsage(usage);
-        }
-    }
-
-    @Override
-    public int complete(Session session, CommandLine commandLine, List<String> candidates) {
-        String globalCommand = getScope() + ":" + getName();
-        String command = getName();
-        String[] args = commandLine.getArguments();
-        int cursorPosition = commandLine.getArgumentPosition();
-        int cursorArgumentIndex = commandLine.getCursorArgumentIndex();
-
-        if (args.length > 1 && !command.equals(args[0]) && !globalCommand.equals(args[0])) {
-            return -1;
-        }
-
-        StringsCompleter completer = new StringsCompleter();
-        SortedSet<String> strings = completer.getStrings();
-        if (cursorArgumentIndex == 0) {
-            strings.add(command);
-            strings.add(globalCommand);
-        } else if (cursorArgumentIndex == 1) {
-            strings.addAll(SUB_COMMANDS);
-        } else if (cursorArgumentIndex == 2) {
-            if (CONSOLE.equals(args[1])) {
-                Map<String, String> consoles = (Map<String, String>) getConsoles();
-                if (consoles != null) {
-                    strings.addAll(consoles.keySet());
-                }
-            }
-        }
-
-        if (!strings.isEmpty() && completer.complete(args, cursorArgumentIndex, cursorPosition, candidates)) {
-            return commandLine.getBufferPosition() - cursorPosition;
-        }
-
-        return -1;
-    }
-
     @FunctionalInterface
     public interface EngineEvalFunction {
         @Nullable
         Object apply(ScriptEngine e) throws ScriptException;
-    }
-
-    public class JRubyConsole implements Console {
-        private final String scope;
-        private final PrintStream out;
-
-        public JRubyConsole(final String scope, PrintStream out) {
-            this.scope = scope;
-            this.out = out;
-        }
-
-        @Override
-        public void printf(String format, Object... args) {
-            out.printf(format, args);
-        }
-
-        @Override
-        public void print(final String s) {
-            out.print(s);
-        }
-
-        @Override
-        public void println(final String s) {
-            out.println(s);
-        }
-
-        @Override
-        public void printUsage(final String s) {
-            out.println(String.format("Usage: %s:%s", scope, s));
-        }
     }
 }
