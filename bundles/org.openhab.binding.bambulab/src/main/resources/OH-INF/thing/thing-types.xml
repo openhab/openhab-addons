@@ -122,8 +122,8 @@
 			</channel>
 
 			<!-- AMS 🟨1x1 -->
-			<channel id="ams-tray-type-id-1x1" typeId="ams-tray-type"/>
-			<channel id="ams-tray-color-id-1x1" typeId="ams-tray-color"/>
+			<channel id="ams-tray-type-id-1x1" typeId="tray-type"/>
+			<channel id="ams-tray-color-id-1x1" typeId="tray-color"/>
 			<channel id="ams-nozzle-temperature-max-id-1x1" typeId="temperature-setpoint">
 				<label>Nozzle Temperature Max</label>
 				<description>Maximum nozzle temperature for tray.</description>
@@ -176,8 +176,8 @@
 				<label>ctype</label>
 			</channel>
 			<!-- AMS 🟨1x2 -->
-			<channel id="ams-tray-type-id-1x2" typeId="ams-tray-type"/>
-			<channel id="ams-tray-color-id-1x2" typeId="ams-tray-color"/>
+			<channel id="ams-tray-type-id-1x2" typeId="tray-type"/>
+			<channel id="ams-tray-color-id-1x2" typeId="tray-color"/>
 			<channel id="ams-nozzle-temperature-max-id-1x2" typeId="temperature-setpoint">
 				<label>Nozzle Temperature Max</label>
 				<description>Maximum nozzle temperature for tray.</description>
@@ -230,8 +230,8 @@
 				<label>ctype</label>
 			</channel>
 			<!-- AMS 🟨1x3 -->
-			<channel id="ams-tray-type-id-1x3" typeId="ams-tray-type"/>
-			<channel id="ams-tray-color-id-1x3" typeId="ams-tray-color"/>
+			<channel id="ams-tray-type-id-1x3" typeId="tray-type"/>
+			<channel id="ams-tray-color-id-1x3" typeId="tray-color"/>
 			<channel id="ams-nozzle-temperature-max-id-1x3" typeId="temperature-setpoint">
 				<label>Nozzle Temperature Max</label>
 				<description>Maximum nozzle temperature for tray.</description>
@@ -284,8 +284,8 @@
 				<label>ctype</label>
 			</channel>
 			<!-- AMS 🟨1x4 -->
-			<channel id="ams-tray-type-id-1x4" typeId="ams-tray-type"/>
-			<channel id="ams-tray-color-id-1x4" typeId="ams-tray-color"/>
+			<channel id="ams-tray-type-id-1x4" typeId="tray-type"/>
+			<channel id="ams-tray-color-id-1x4" typeId="tray-color"/>
 			<channel id="ams-nozzle-temperature-max-id-1x4" typeId="temperature-setpoint">
 				<label>Nozzle Temperature Max</label>
 				<description>Maximum nozzle temperature for tray.</description>
@@ -338,8 +338,8 @@
 				<label>ctype</label>
 			</channel>
 			<!-- AMS 🟨2x1 -->
-			<channel id="ams-tray-type-id-2x1" typeId="ams-tray-type"/>
-			<channel id="ams-tray-color-id-2x1" typeId="ams-tray-color"/>
+			<channel id="ams-tray-type-id-2x1" typeId="tray-type"/>
+			<channel id="ams-tray-color-id-2x1" typeId="tray-color"/>
 			<channel id="ams-nozzle-temperature-max-id-2x1" typeId="temperature-setpoint">
 				<label>Nozzle Temperature Max</label>
 				<description>Maximum nozzle temperature for tray.</description>
@@ -392,8 +392,8 @@
 				<label>ctype</label>
 			</channel>
 			<!-- AMS 🟨2x2 -->
-			<channel id="ams-tray-type-id-2x2" typeId="ams-tray-type"/>
-			<channel id="ams-tray-color-id-2x2" typeId="ams-tray-color"/>
+			<channel id="ams-tray-type-id-2x2" typeId="tray-type"/>
+			<channel id="ams-tray-color-id-2x2" typeId="tray-color"/>
 			<channel id="ams-nozzle-temperature-max-id-2x2" typeId="temperature-setpoint">
 				<label>Nozzle Temperature Max</label>
 				<description>Maximum nozzle temperature for tray.</description>
@@ -446,8 +446,8 @@
 				<label>ctype</label>
 			</channel>
 			<!-- AMS 🟨2x3 -->
-			<channel id="ams-tray-type-id-2x3" typeId="ams-tray-type"/>
-			<channel id="ams-tray-color-id-2x3" typeId="ams-tray-color"/>
+			<channel id="ams-tray-type-id-2x3" typeId="tray-type"/>
+			<channel id="ams-tray-color-id-2x3" typeId="tray-color"/>
 			<channel id="ams-nozzle-temperature-max-id-2x3" typeId="temperature-setpoint">
 				<label>Nozzle Temperature Max</label>
 				<description>Maximum nozzle temperature for tray.</description>
@@ -500,8 +500,8 @@
 				<label>ctype</label>
 			</channel>
 			<!-- AMS 🟨2x4 -->
-			<channel id="ams-tray-type-id-2x4" typeId="ams-tray-type"/>
-			<channel id="ams-tray-color-id-2x4" typeId="ams-tray-color"/>
+			<channel id="ams-tray-type-id-2x4" typeId="tray-type"/>
+			<channel id="ams-tray-color-id-2x4" typeId="tray-color"/>
 			<channel id="ams-nozzle-temperature-max-id-2x4" typeId="temperature-setpoint">
 				<label>Nozzle Temperature Max</label>
 				<description>Maximum nozzle temperature for tray.</description>
@@ -554,8 +554,8 @@
 				<label>ctype</label>
 			</channel>
 			<!-- AMS 🟨3x1 -->
-			<channel id="ams-tray-type-id-3x1" typeId="ams-tray-type"/>
-			<channel id="ams-tray-color-id-3x1" typeId="ams-tray-color"/>
+			<channel id="ams-tray-type-id-3x1" typeId="tray-type"/>
+			<channel id="ams-tray-color-id-3x1" typeId="tray-color"/>
 			<channel id="ams-nozzle-temperature-max-id-3x1" typeId="temperature-setpoint">
 				<label>Nozzle Temperature Max</label>
 				<description>Maximum nozzle temperature for tray.</description>
@@ -608,8 +608,8 @@
 				<label>ctype</label>
 			</channel>
 			<!-- AMS 🟨3x2 -->
-			<channel id="ams-tray-type-id-3x2" typeId="ams-tray-type"/>
-			<channel id="ams-tray-color-id-3x2" typeId="ams-tray-color"/>
+			<channel id="ams-tray-type-id-3x2" typeId="tray-type"/>
+			<channel id="ams-tray-color-id-3x2" typeId="tray-color"/>
 			<channel id="ams-nozzle-temperature-max-id-3x2" typeId="temperature-setpoint">
 				<label>Nozzle Temperature Max</label>
 				<description>Maximum nozzle temperature for tray.</description>
@@ -662,8 +662,8 @@
 				<label>ctype</label>
 			</channel>
 			<!-- AMS 🟨3x3 -->
-			<channel id="ams-tray-type-id-3x3" typeId="ams-tray-type"/>
-			<channel id="ams-tray-color-id-3x3" typeId="ams-tray-color"/>
+			<channel id="ams-tray-type-id-3x3" typeId="tray-type"/>
+			<channel id="ams-tray-color-id-3x3" typeId="tray-color"/>
 			<channel id="ams-nozzle-temperature-max-id-3x3" typeId="temperature-setpoint">
 				<label>Nozzle Temperature Max</label>
 				<description>Maximum nozzle temperature for tray.</description>
@@ -716,8 +716,8 @@
 				<label>ctype</label>
 			</channel>
 			<!-- AMS 🟨3x4 -->
-			<channel id="ams-tray-type-id-3x4" typeId="ams-tray-type"/>
-			<channel id="ams-tray-color-id-3x4" typeId="ams-tray-color"/>
+			<channel id="ams-tray-type-id-3x4" typeId="tray-type"/>
+			<channel id="ams-tray-color-id-3x4" typeId="tray-color"/>
 			<channel id="ams-nozzle-temperature-max-id-3x4" typeId="temperature-setpoint">
 				<label>Nozzle Temperature Max</label>
 				<description>Maximum nozzle temperature for tray.</description>
@@ -770,8 +770,8 @@
 				<label>ctype</label>
 			</channel>
 			<!-- AMS 🟨4x1 -->
-			<channel id="ams-tray-type-id-4x1" typeId="ams-tray-type"/>
-			<channel id="ams-tray-color-id-4x1" typeId="ams-tray-color"/>
+			<channel id="ams-tray-type-id-4x1" typeId="tray-type"/>
+			<channel id="ams-tray-color-id-4x1" typeId="tray-color"/>
 			<channel id="ams-nozzle-temperature-max-id-4x1" typeId="temperature-setpoint">
 				<label>Nozzle Temperature Max</label>
 				<description>Maximum nozzle temperature for tray.</description>
@@ -824,8 +824,8 @@
 				<label>ctype</label>
 			</channel>
 			<!-- AMS 🟨4x2 -->
-			<channel id="ams-tray-type-id-4x2" typeId="ams-tray-type"/>
-			<channel id="ams-tray-color-id-4x2" typeId="ams-tray-color"/>
+			<channel id="ams-tray-type-id-4x2" typeId="tray-type"/>
+			<channel id="ams-tray-color-id-4x2" typeId="tray-color"/>
 			<channel id="ams-nozzle-temperature-max-id-4x2" typeId="temperature-setpoint">
 				<label>Nozzle Temperature Max</label>
 				<description>Maximum nozzle temperature for tray.</description>
@@ -878,8 +878,8 @@
 				<label>ctype</label>
 			</channel>
 			<!-- AMS 🟨4x3 -->
-			<channel id="ams-tray-type-id-4x3" typeId="ams-tray-type"/>
-			<channel id="ams-tray-color-id-4x3" typeId="ams-tray-color"/>
+			<channel id="ams-tray-type-id-4x3" typeId="tray-type"/>
+			<channel id="ams-tray-color-id-4x3" typeId="tray-color"/>
 			<channel id="ams-nozzle-temperature-max-id-4x3" typeId="temperature-setpoint">
 				<label>Nozzle Temperature Max</label>
 				<description>Maximum nozzle temperature for tray.</description>
@@ -932,8 +932,8 @@
 				<label>ctype</label>
 			</channel>
 			<!-- AMS 🟨4x4 -->
-			<channel id="ams-tray-type-id-4x4" typeId="ams-tray-type"/>
-			<channel id="ams-tray-color-id-4x4" typeId="ams-tray-color"/>
+			<channel id="ams-tray-type-id-4x4" typeId="tray-type"/>
+			<channel id="ams-tray-color-id-4x4" typeId="tray-color"/>
 			<channel id="ams-nozzle-temperature-max-id-4x4" typeId="temperature-setpoint">
 				<label>Nozzle Temperature Max</label>
 				<description>Maximum nozzle temperature for tray.</description>
