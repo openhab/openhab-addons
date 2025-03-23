@@ -7,8 +7,8 @@
 	<channel-group-type id="linky-local-standard-base">
 		<label>Standard Base</label>
 		<channels>
-			<channel id="adsc" typeId="string">
-				<label>Adsc</label>
+			<channel id="adsc" typeId="info">
+				<label>Secondary Address</label>
 				<description>Secondary meter adress</description>
 			</channel>
 
@@ -22,12 +22,12 @@
 				<description>Date and Time</description>
 			</channel>
 
-			<channel id="ngtf" typeId="string">
+			<channel id="ngtf" typeId="info">
 				<label>Ngtf</label>
 				<description>Provider schedule name</description>
 			</channel>
 
-			<channel id="ltarf" typeId="string">
+			<channel id="ltarf" typeId="info">
 				<label>Ltarf</label>
 				<description>Current pricing label</description>
 			</channel>
@@ -182,12 +182,12 @@
 				<description>Timestamp of UMOY1 value</description>
 			</channel>
 
-			<channel id="stge" typeId="string">
+			<channel id="stge" typeId="info">
 				<label>Stge</label>
 				<description>Status registry</description>
 			</channel>
 
-			<channel id="dpm1" typeId="string">
+			<channel id="dpm1" typeId="info">
 				<label>Dpm1</label>
 				<description>Start of mobile peak period 1</description>
 			</channel>
@@ -197,7 +197,7 @@
 				<description>Date of DPM1</description>
 			</channel>
 
-			<channel id="fpm1" typeId="string">
+			<channel id="fpm1" typeId="info">
 				<label>Fpm1</label>
 				<description>End of mobile peak period 1</description>
 			</channel>
@@ -207,7 +207,7 @@
 				<description>Date of FPM1</description>
 			</channel>
 
-			<channel id="dpm2" typeId="string">
+			<channel id="dpm2" typeId="info">
 				<label>Dpm2</label>
 				<description>Start of mobile peak period 2</description>
 			</channel>
@@ -217,7 +217,7 @@
 				<description>Date of DPM2</description>
 			</channel>
 
-			<channel id="fpm2" typeId="string">
+			<channel id="fpm2" typeId="info">
 				<label>Fpm2</label>
 				<description>End of mobile peak period 2</description>
 			</channel>
@@ -227,7 +227,7 @@
 				<description>Date of FPM2</description>
 			</channel>
 
-			<channel id="dpm3" typeId="string">
+			<channel id="dpm3" typeId="info">
 				<label>Dpm3</label>
 				<description>Start of mobile peak period 3</description>
 			</channel>
@@ -237,7 +237,7 @@
 				<description>Date of DPM3</description>
 			</channel>
 
-			<channel id="fpm3" typeId="string">
+			<channel id="fpm3" typeId="info">
 				<label>Fpm3</label>
 				<description>End of mobile peak period 3</description>
 			</channel>
@@ -247,17 +247,17 @@
 				<description>Date of FPM3</description>
 			</channel>
 
-			<channel id="msg1" typeId="string">
+			<channel id="msg1" typeId="info">
 				<label>Msg 1</label>
 				<description>Short message</description>
 			</channel>
 
-			<channel id="msg2" typeId="string">
+			<channel id="msg2" typeId="info">
 				<label>Msg 2</label>
 				<description>Very short message</description>
 			</channel>
 
-			<channel id="prm" typeId="string">
+			<channel id="prm" typeId="info">
 				<label>Prm</label>
 				<description>The Meter Id (PRM)</description>
 			</channel>
@@ -266,27 +266,27 @@
 				<label>Relais</label>
 			</channel>
 
-			<channel id="ntarf" typeId="string">
+			<channel id="ntarf" typeId="info">
 				<label>Ntarf</label>
 				<description>Index of current pricing</description>
 			</channel>
 
-			<channel id="njourf" typeId="string">
+			<channel id="njourf" typeId="info">
 				<label>Njourf</label>
 				<description>Number of current provider schedule</description>
 			</channel>
 
-			<channel id="njourf-plus1" typeId="string">
+			<channel id="njourf-plus1" typeId="info">
 				<label>Njourf +1</label>
 				<description>Number of next day provider schedule</description>
 			</channel>
 
-			<channel id="pjourf-plus1" typeId="string">
+			<channel id="pjourf-plus1" typeId="info">
 				<label>Pjourf +1</label>
 				<description>Profile of next day provider schedule</description>
 			</channel>
 
-			<channel id="ppointe" typeId="string">
+			<channel id="ppointe" typeId="info">
 				<label>ppointe</label>
 				<description>Profile of next rush day</description>
 			</channel>

@@ -7,12 +7,12 @@
 	<channel-group-type id="linky-local-historical-base">
 		<label>Historical Base</label>
 		<channels>
-			<channel id="adco" typeId="string">
+			<channel id="adco" typeId="info">
 				<label>Adco</label>
 				<description>Secondary meter adresse</description>
 			</channel>
 
-			<channel id="optarif" typeId="string">
+			<channel id="optarif" typeId="info">
 				<label>Tarif Option</label>
 				<description>Tarif options in place</description>
 			</channel>
@@ -58,7 +58,7 @@
 			</channel>
 
 			<channel id="motdetat" typeId="info">
-				<label>Status word</label>
+				<label>Status Word</label>
 				<description>Status word of the meter</description>
 			</channel>
 		</channels>

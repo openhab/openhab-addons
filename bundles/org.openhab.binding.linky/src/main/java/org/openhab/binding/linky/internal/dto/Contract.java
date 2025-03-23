@@ -15,7 +15,7 @@ package org.openhab.binding.linky.internal.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link Contact} holds informations about the supplier contract
+ * The {@link Contract} holds informations about the supplier contract
  *
  * @author Laurent Arnal - Initial contribution
  */

@@ -24,7 +24,7 @@
 				<limitToOptions>false</limitToOptions>
 			</parameter>
 			<parameter name="ticMode" type="text" required="true">
-				<label>TIC mode</label>
+				<label>TIC Mode</label>
 				<description>TIC Mode of the telemeter (Standard TIC mode is only available on Linky telemeters)</description>
 				<default>HISTORICAL</default>
 				<options>
@@ -40,7 +40,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="autoRepairInvalidADPSgroupLine" type="boolean" required="false">
-				<label>Auto Repair Malformed ADPS Data</label>
+				<label>Auto Repair Adps</label>
 				<description>Try to auto repair malformed ADPS data from hardware issues (e.g: "ADPS032" instead of "ADPS 032"
 					expected/well-formed data)</description>
 				<default>true</default>

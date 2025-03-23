@@ -31,7 +31,7 @@
 		<config-description>
 			<parameter name="power" type="integer" min="3" max="36">
 				<default>6</default>
-				<label>Power output</label>
+				<label>Power Output</label>
 				<description>PDL power output (in kVA)</description>
 			</parameter>
 		</config-description>

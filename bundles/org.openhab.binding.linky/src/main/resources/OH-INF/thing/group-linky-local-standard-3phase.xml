@@ -78,27 +78,27 @@
 			</channel>
 
 			<channel id="smaxsn1-minus1-date" typeId="datetime">
-				<label>max Sn1 -1 Timestamp</label>
+				<label>Max Sn1 -1 Timestamp</label>
 				<description>Timestamp of SMAXSN1-1 value</description>
 			</channel>
 
 			<channel id="smaxsn2-minus1" typeId="power">
-				<label>max Sn2 -1</label>
+				<label>Max Sn2 -1</label>
 				<description>Maximum withdrawn apparent power of the previous day on phase 2</description>
 			</channel>
 
 			<channel id="smaxsn2-minus1-date" typeId="datetime">
-				<label>max Sn2 -1 Timestamp</label>
+				<label>Max Sn2 -1 Timestamp</label>
 				<description>Timestamp of SMAXSN2-1 value</description>
 			</channel>
 
 			<channel id="smaxsn3-minus1" typeId="power">
-				<label>max Sn3 -1</label>
+				<label>Max Sn3 -1</label>
 				<description>Maximum withdrawn apparent power of the previous day on phase 3</description>
 			</channel>
 
 			<channel id="smaxsn3-minus1-date" typeId="datetime">
-				<label>max Sn3 -1 Timestamp</label>
+				<label>Max Sn3 -1 Timestamp</label>
 				<description>Timestamp of SMAXSN3-1 value</description>
 			</channel>
 

@@ -24,5 +24,11 @@ import org.openhab.binding.linky.internal.handler.BridgeLocalBaseHandler;
  */
 @NonNullByDefault
 public interface LinkyListener {
+    /**
+     * Procedure to receive a frame from ther meter
+     *
+     * @param frame
+     *            the frame received
+     */
     void onFrameReceived(final LinkyFrame frame);
 }

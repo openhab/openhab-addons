@@ -43,17 +43,17 @@
 			</channel>
 
 			<channel id="adir1" typeId="current">
-				<label>Over Intensity Warning Ph1</label>
+				<label>Over Intensity Ph1</label>
 				<description>Over intensity warning for Phase 1</description>
 			</channel>
 
 			<channel id="adir2" typeId="current">
-				<label>Over Intensity Warning Ph2</label>
+				<label>Over Intensity Ph2</label>
 				<description>Over intensity warning for Phase 2</description>
 			</channel>
 
 			<channel id="adir3" typeId="current">
-				<label>Over Intensity Warning Ph3</label>
+				<label>Over Intensity Ph3</label>
 				<description>Over intensity warning for Phase 3</description>
 			</channel>
 		</channels>

@@ -61,7 +61,7 @@
 
 
 			<channel id="contact-sec" typeId="contact">
-				<label>Dry contact</label>
+				<label>Dry Contact</label>
 				<description>State of main relay</description>
 			</channel>
 
@@ -107,7 +107,7 @@
 			</channel>
 
 			<channel id="clock" typeId="clock-state">
-				<label>Clock state</label>
+				<label>Clock State</label>
 				<description>State Of Clock</description>
 			</channel>
 
@@ -151,82 +151,82 @@
 				<description>State of moving tips</description>
 			</channel>
 
-			<channel id="pjourf1-plus1" typeId="string">
+			<channel id="pjourf1-plus1" typeId="info">
 				<label>Pjour f1 +1</label>
 				<description>Profile of next day provider schedule</description>
 			</channel>
 
-			<channel id="ppointe1" typeId="string">
+			<channel id="ppointe1" typeId="info">
 				<label>Ppointe 1</label>
 				<description>Profile of next rush day</description>
 			</channel>
 
-			<channel id="pjourf2-plus1" typeId="string">
+			<channel id="pjourf2-plus1" typeId="info">
 				<label>Pjour f2 +1</label>
 				<description>Profile of next day provider schedule</description>
 			</channel>
 
-			<channel id="ppointe2" typeId="string">
+			<channel id="ppointe2" typeId="info">
 				<label>Ppointe 2</label>
 				<description>Profile of next rush day</description>
 			</channel>
 
-			<channel id="pjourf3-plus1" typeId="string">
+			<channel id="pjourf3-plus1" typeId="info">
 				<label>Pjour f3 +1</label>
 				<description>Profile of next day provider schedule</description>
 			</channel>
 
-			<channel id="ppointe3" typeId="string">
+			<channel id="ppointe3" typeId="info">
 				<label>Ppointe 3</label>
 				<description>Profile of next rush day</description>
 			</channel>
 
-			<channel id="pjourf4-plus1" typeId="string">
+			<channel id="pjourf4-plus1" typeId="info">
 				<label>Pjour f4 +1</label>
 				<description>Profile of next day provider schedule</description>
 			</channel>
 
-			<channel id="ppointe4" typeId="string">
+			<channel id="ppointe4" typeId="info">
 				<label>Ppointe 4</label>
 				<description>Profile of next rush day</description>
 			</channel>
 
-			<channel id="pjourf5-plus1" typeId="string">
+			<channel id="pjourf5-plus1" typeId="info">
 				<label>Pjour f5 +1</label>
 				<description>Profile of next day provider schedule</description>
 			</channel>
 
-			<channel id="ppointe5" typeId="string">
+			<channel id="ppointe5" typeId="info">
 				<label>Ppointe 5</label>
 				<description>Profile of next rush day</description>
 			</channel>
 
-			<channel id="pjourf6-plus1" typeId="string">
+			<channel id="pjourf6-plus1" typeId="info">
 				<label>Pjour f6 +1</label>
 				<description>Profile of next day provider schedule</description>
 			</channel>
 
-			<channel id="ppointe6" typeId="string">
+			<channel id="ppointe6" typeId="info">
 				<label>Ppointe 6</label>
 				<description>Profile of next rush day</description>
 			</channel>
 
-			<channel id="pjourf7-plus1" typeId="string">
+			<channel id="pjourf7-plus1" typeId="info">
 				<label>Pjour f7 +1</label>
 				<description>Profile of next day provider schedule</description>
 			</channel>
 
-			<channel id="ppointe7" typeId="string">
+			<channel id="ppointe7" typeId="info">
 				<label>Ppointe 7</label>
 				<description>Profile of next rush day</description>
 			</channel>
 
-			<channel id="pjourf8-plus1" typeId="string">
+			<channel id="pjourf8-plus1" typeId="info">
 				<label>Pjour f8 +1</label>
 				<description>Profile of next day provider schedule</description>
 			</channel>
 
-			<channel id="ppointe8" typeId="string">
+			<channel id="ppointe8" typeId="info">
 				<label>Ppointe 8</label>
 				<description>Profile of next rush day</description>
 			</channel>
