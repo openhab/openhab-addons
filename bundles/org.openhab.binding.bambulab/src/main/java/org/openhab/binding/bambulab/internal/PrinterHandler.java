@@ -89,7 +89,7 @@ public class PrinterHandler extends BaseThingHandler
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (CHANNEL_LED_CHAMBER_LIGHT.is(channelUID) || CHANNEL_LED_WORK_LIGHT.is(channelUID)) {
-            var ledNode = CHANNEL_LED_CHAMBER_LIGHT.getName().equals(channelUID.getId()) ? CHAMBER_LIGHT : WORK_LIGHT;
+            var ledNode = CHANNEL_LED_CHAMBER_LIGHT.is(channelUID) ? CHAMBER_LIGHT : WORK_LIGHT;
             var bambuCommand = "ON".equals(command.toFullString()) ? on(ledNode) : off(ledNode);
             sendCommand(bambuCommand);
         } else if (CHANNEL_GCODE_FILE.is(channelUID)) {
@@ -124,8 +124,8 @@ public class PrinterHandler extends BaseThingHandler
 
         // always turn off camera recording when starting thing
         camera = new Camera(config, this);
-        updateState(CHANNEL_CAMERA_RECORD.getName(), OnOffType.OFF);
-        updateState(CHANNEL_CAMERA_IMAGE.getName(), UNDEF);
+        updateState(CHANNEL_CAMERA_RECORD, OnOffType.OFF);
+        updateState(CHANNEL_CAMERA_IMAGE, UNDEF);
 
         var localClient = client = buildLocalClient(uri, config);
 
@@ -252,7 +252,7 @@ public class PrinterHandler extends BaseThingHandler
         updateDecimalState(CHANNEL_LAYER_NUM, print.layerNum());
         if (print.spdLvl() != null) {
             var speedLevel = PrintSpeedCommand.findByLevel(print.spdLvl());
-            updateState(CHANNEL_SPEED_LEVEL.getName(), new StringType(speedLevel.toString()));
+            updateState(CHANNEL_SPEED_LEVEL, new StringType(speedLevel.toString()));
         }
         // boolean
         updateBooleanState(CHANNEL_TIME_LAPS, print.timelapse());
@@ -542,7 +542,7 @@ public class PrinterHandler extends BaseThingHandler
                 .filter(Objects::nonNull)//
                 .map(OnOffType::from)//
                 .findAny()//
-                .ifPresent(command -> updateState(channel.getName(), command));
+                .ifPresent(command -> updateState(channel, command));
     }
 
     private State parseWifiChannel(String wifi) {
