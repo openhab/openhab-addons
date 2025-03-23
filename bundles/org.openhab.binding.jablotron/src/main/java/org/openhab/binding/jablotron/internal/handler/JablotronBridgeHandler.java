@@ -365,22 +365,65 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
     }
 
     private @Nullable JablotronHistoryDataEvent parseEventHistoryResponse(String response) {
-        JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
-        JsonArray edges = jsonObject.getAsJsonObject("data").getAsJsonObject("forEndUser").getAsJsonObject("events")
-                .getAsJsonObject("events").getAsJsonArray("edges");
-
-        JsonObject node = edges.get(0).getAsJsonObject().getAsJsonObject("node").getAsJsonObject();
-
-        JsonObject invoker = node.getAsJsonArray("invokers").get(0).getAsJsonObject();
-        JsonObject subject = node.getAsJsonArray("subjects").get(0).getAsJsonObject();
-
         JablotronHistoryDataEvent event = new JablotronHistoryDataEvent();
-        event.setIconType(node.get("icon").getAsString());
-        event.setEventText(node.getAsJsonObject("name").get("translation").getAsString());
-        event.setDate(node.get("occurredAt").getAsString());
-        event.setSectionName(subject.getAsJsonObject("defaultName").get("translation").getAsString());
-        event.setInvokerName(invoker.getAsJsonObject("defaultName").get("translation").getAsString());
+        JsonObject jsonObject;
 
+        try {
+            jsonObject = JsonParser.parseString(response).getAsJsonObject();
+        } catch (JsonSyntaxException ex) {
+            logger.debug("Invalid JSON received: {}", response);
+            return null;
+        }
+
+        JsonObject data = jsonObject.has("data") ? jsonObject.getAsJsonObject("data") : null;
+        JsonObject forEndUser = (data != null && data.has("forEndUser")) ? data.getAsJsonObject("forEndUser") : null;
+        JsonObject events = (forEndUser != null && forEndUser.has("events")) ? forEndUser.getAsJsonObject("events")
+                : null;
+        JsonObject eventsInner = (events != null && events.has("events")) ? events.getAsJsonObject("events") : null;
+        JsonArray edges = (eventsInner != null && eventsInner.has("edges")) ? eventsInner.getAsJsonArray("edges")
+                : null;
+
+        if (edges != null && !edges.isEmpty()) {
+            JsonObject node = edges.get(0).isJsonNull() ? null : edges.get(0).getAsJsonObject();
+
+            if (node != null) {
+                JsonArray invokers = node.has("invokers") ? node.getAsJsonArray("invokers") : null;
+                JsonArray subjects = node.has("subjects") ? node.getAsJsonArray("subjects") : null;
+
+                JsonObject invoker = (invokers != null && !invokers.isEmpty() && !invokers.get(0).isJsonNull())
+                        ? invokers.get(0).getAsJsonObject()
+                        : null;
+                JsonObject subject = (subjects != null && !subjects.isEmpty() && !subjects.get(0).isJsonNull())
+                        ? subjects.get(0).getAsJsonObject()
+                        : null;
+
+                event.setIconType(
+                        node.has("icon") && !node.get("icon").isJsonNull() ? node.get("icon").getAsString() : "");
+                event.setEventText(node.has("name") && node.getAsJsonObject("name").has("translation")
+                        && !node.getAsJsonObject("name").get("translation").isJsonNull()
+                                ? node.getAsJsonObject("name").get("translation").getAsString()
+                                : "");
+                event.setDate(node.has("occurredAt") && !node.get("occurredAt").isJsonNull()
+                        ? node.get("occurredAt").getAsString()
+                        : "");
+
+                if (subject != null && subject.has("defaultName")
+                        && subject.getAsJsonObject("defaultName").has("translation")) {
+                    event.setSectionName(!subject.getAsJsonObject("defaultName").get("translation").isJsonNull()
+                            ? subject.getAsJsonObject("defaultName").get("translation").getAsString()
+                            : "");
+                }
+
+                if (invoker != null && invoker.has("defaultName")
+                        && invoker.getAsJsonObject("defaultName").has("translation")) {
+                    event.setInvokerName(!invoker.getAsJsonObject("defaultName").get("translation").isJsonNull()
+                            ? invoker.getAsJsonObject("defaultName").get("translation").getAsString()
+                            : "");
+                }
+            }
+        } else {
+            logger.debug("JSON edges member is null or empty");
+        }
         return event;
     }
 
