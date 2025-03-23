@@ -22,7 +22,8 @@ Once the Air Conditioner is on the network (WiFi active) activating an Inbox sca
 Every responding unit gets added to the Inbox. When adding each thing, the required parameters of ipAddress, ipPort, deviceId, pollingTime,
 timeout, promptTone and version will be populated with either discovered values or the default settings. A V.2 device will be Online.
 A V.3 device will require you to enter the cloud provider, token and key before becoming Online. The token and key can be discovered by entering
-your email and password for your cloud account. The email and password are stored securely, but can be deleted after the token and key are entered.
+your email and password for your cloud account. The email and password are stored securely, but can be deleted after the token and key are entered,
+unless key and token update is activated.
 
 ## Binding Configuration
 
@@ -30,20 +31,21 @@ No binding configuration is required.
 
 ## Thing Configuration
 
-| Parameter   | Required ?  | Comment                                                           | Default |
-|--:----------|--:----------|--:----------------------------------------------------------------|---------|
-| ipAddress   | Yes         | IP Address of the device.                                         |         |
-| ipPort      | Yes         | IP port of the device                                             | 6444    |
-| deviceId    | Yes         | ID of the device. Leave 0 to do ID discovery (length 6 bytes).    | 0       |
-| cloud       | Yes for V.3 | Cloud Provider name for email and password                        |         |
-| email       | No          | Email for cloud account chosen in Cloud Provider.                 |         |
-| password    | No          | Password for cloud account chosen in Cloud Provider.              |         |
-| token       | Yes for V.3 | Secret Token (length 128 HEX)                                     |         |
-| key         | Yes for V.3 | Secret Key (length 64 HEX)                                        |         |
-| pollingTime | Yes         | Polling time in seconds. Minimum time is 30 seconds.              | 60      |
-| timeout     | Yes         | Connecting timeout. Minimum time is 2 second, maximum 10 seconds. | 4       |
-| promptTone  | Yes         | "Ding" tone when command is received and executed.                | False   |
-| version     | Yes         | Version 3 has token, key and cloud requirements.                  | 0       |
+| Parameter     | Required ?  | Comment                                                           | Default |
+|--:------------|--:----------|--:----------------------------------------------------------------|---------|
+| ipAddress     | Yes         | IP Address of the device.                                         |         |
+| ipPort        | Yes         | IP port of the device                                             | 6444    |
+| deviceId      | Yes         | ID of the device. Leave 0 to do ID discovery (length 6 bytes).    | 0       |
+| cloud         | Yes for V.3 | Cloud Provider name for email and password                        |         |
+| email         | No          | Email for cloud account chosen in Cloud Provider.                 |         |
+| password      | No          | Password for cloud account chosen in Cloud Provider.              |         |
+| token         | Yes for V.3 | Secret Token (length 128 HEX)                                     |         |
+| key           | Yes for V.3 | Secret Key (length 64 HEX)                                        |         |
+| pollingTime   | Yes         | Polling time in seconds. Minimum time is 30 seconds.              | 60      |
+| keyTokenUpdate| No          | Frequency to update key and Token in days (disable = 0)           | 0       |
+| timeout       | Yes         | Connecting timeout. Minimum time is 2 second, maximum 10 seconds. | 4       |
+| promptTone    | Yes         | "Ding" tone when command is received and executed.                | False   |
+| version       | Yes         | Version 3 has token, key and cloud requirements.                  | 0       |
 
 ## Channels
 
@@ -75,13 +77,13 @@ Following channels are available:
 ### `demo.things` Example
 
 ```java
-Thing mideaac:ac:mideaac "myAC" @ "Room" [ ipAddress="192.168.1.200", ipPort="6444", deviceId="deviceId", cloud="your cloud (e.g NetHome Plus)", email="yourclouduser@email.com", password="yourcloudpassword", token="token", key ="key", pollingTime = 60, timeout=4, promptTone="false", version="3"] 
+Thing mideaac:ac:mideaac "myAC" @ "Room" [ ipAddress="192.168.1.200", ipPort="6444", deviceId="deviceId", cloud="your cloud (e.g NetHome Plus)", email="yourclouduser@email.com", password="yourcloudpassword", token="token", key ="key", pollingTime = 60, keyTokenUpdate = 0, timeout=4, promptTone="false", version="3"] 
 ```
 
 Option to use the built-in binding discovery of ipPort, deviceId, token and key.
 
 ```java
-Thing mideaac:ac:mideaac "myAC" @ "Room" [ ipAddress="192.168.1.200", ipPort="", deviceId="", cloud="your cloud (e.g NetHome Plus)", email="yourclouduser@email.com", password="yourcloudpassword", token="", key ="", pollingTime = 60, timeout=4, promptTone="false", version="3"] 
+Thing mideaac:ac:mideaac "myAC" @ "Room" [ ipAddress="192.168.1.200", ipPort="", deviceId="", cloud="your cloud (e.g NetHome Plus)", email="yourclouduser@email.com", password="yourcloudpassword", token="", key ="", pollingTime = 60, keyTokenUpdate = 0, timeout=4, promptTone="false", version="3"] 
 ```
 
 ### `demo.items` Example

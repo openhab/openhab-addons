@@ -94,6 +94,12 @@
 				<description>Polling time in seconds. Minimum time is 30 seconds, default 60 seconds.</description>
 				<default>60</default>
 			</parameter>
+			<parameter name="keyTokenUpdate" type="decimal" required="false" min="0" unit="d">
+				<context>keyTokenUpdate</context>
+				<label>Key Token Update</label>
+				<description>Frequency to update the Key and Token in Days, default 0 to disable.</description>
+				<default>0</default>
+			</parameter>
 			<parameter name="timeout" type="decimal" required="true" min="2" max="10" unit="s">
 				<context>timeout</context>
 				<label>Timeout</label>
