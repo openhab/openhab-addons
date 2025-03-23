@@ -69,6 +69,11 @@ public class MideaACConfiguration {
     public int pollingTime = 60;
 
     /**
+     * Key and Token Update Frequency
+     */
+    public int keyTokenUpdate = 0;
+
+    /**
      * Socket Timeout
      */
     public int timeout = 4;
