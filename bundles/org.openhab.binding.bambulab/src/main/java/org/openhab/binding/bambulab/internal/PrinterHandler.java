@@ -275,7 +275,9 @@ public class PrinterHandler extends BaseThingHandler
         Optional.of(print)//
                 .map(Report.Print::ams)//
                 .map(Report.Print.Ams::ams)//
-                .ifPresent(a -> a.forEach(this::updateAms));
+                .stream()//
+                .flatMap(Collection::stream)//
+                .forEach(this::updateAms);
         // vtray
         Optional.of(print)//
                 .map(Report.Print::vtTray)//
