@@ -14,6 +14,7 @@ package org.openhab.automation.pythonscripting.internal.scriptengine.helper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -23,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Holger Hees - Initial contribution
  */
 @NonNullByDefault
-public class LifecycleTracker {
+public class ScriptUnloadTracker {
     List<Runnable> disposables = new ArrayList<>();
 
     public void addDisposeHook(Runnable disposable) {
@@ -31,8 +32,10 @@ public class LifecycleTracker {
     }
 
     public void dispose() {
-        for (Runnable disposable : disposables) {
-            disposable.run();
+        ListIterator<Runnable> iter = disposables.listIterator();
+        while (iter.hasNext()) {
+            iter.next().run();
+            iter.remove();
         }
     }
 }
