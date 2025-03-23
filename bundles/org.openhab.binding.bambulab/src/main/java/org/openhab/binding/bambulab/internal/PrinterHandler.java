@@ -12,37 +12,6 @@
  */
 package org.openhab.binding.bambulab.internal;
 
-import static java.lang.Integer.parseInt;
-import static java.util.Objects.requireNonNull;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.AmsChannel.*;
-import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel.*;
-import static org.openhab.binding.bambulab.internal.TrayHelper.updateTrayLoaded;
-import static org.openhab.core.library.unit.SIUnits.CELSIUS;
-import static org.openhab.core.library.unit.Units.DECIBEL_MILLIWATTS;
-import static org.openhab.core.thing.ThingStatus.*;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
-import static org.openhab.core.thing.ThingStatus.ONLINE;
-import static org.openhab.core.thing.ThingStatus.UNKNOWN;
-import static org.openhab.core.thing.ThingStatusDetail.*;
-import static org.openhab.core.types.UnDefType.UNDEF;
-import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.*;
-import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.LedNode.*;
-import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PushingCommand.defaultPushingCommand;
-import static pl.grzeslowski.jbambuapi.mqtt.PrinterClientConfig.requiredFields;
-
-import java.net.URI;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
-import java.util.regex.Pattern;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bambulab.internal.BambuLabBindingConstants.AmsChannel;
@@ -61,13 +30,45 @@ import org.openhab.core.types.State;
 import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pl.grzeslowski.jbambuapi.mqtt.ConnectionCallback;
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient;
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.GCodeFileCommand;
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand;
 import pl.grzeslowski.jbambuapi.mqtt.PrinterWatcher;
 import pl.grzeslowski.jbambuapi.mqtt.Report;
+
+import java.net.URI;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
+import java.util.regex.Pattern;
+
+import static java.lang.Integer.parseInt;
+import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.AmsChannel.*;
+import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel.*;
+import static org.openhab.binding.bambulab.internal.TrayHelper.updateTrayLoaded;
+import static org.openhab.core.library.unit.SIUnits.CELSIUS;
+import static org.openhab.core.library.unit.Units.DECIBEL_MILLIWATTS;
+import static org.openhab.core.thing.ThingStatus.*;
+import static org.openhab.core.thing.ThingStatus.OFFLINE;
+import static org.openhab.core.thing.ThingStatus.ONLINE;
+import static org.openhab.core.thing.ThingStatus.UNKNOWN;
+import static org.openhab.core.thing.ThingStatusDetail.*;
+import static org.openhab.core.types.UnDefType.UNDEF;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.LedNode.*;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.*;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PushingCommand.defaultPushingCommand;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClientConfig.requiredFields;
 
 /**
  * The {@link PrinterHandler} is responsible for handling commands, which are
@@ -84,6 +85,7 @@ public class PrinterHandler extends BaseThingHandler
     private @Nullable PrinterClient client;
     private @Nullable Camera camera;
     private final AtomicInteger reconnectTimes = new AtomicInteger();
+    private final AtomicReference<@Nullable ScheduledFuture<?>> reconnectSchedule = new AtomicReference<>();
 
     public PrinterHandler(Thing thing) {
         super(thing);
@@ -176,6 +178,10 @@ public class PrinterHandler extends BaseThingHandler
     }
 
     private void reconnect(@Nullable PrinterConfiguration config) {
+        if (reconnectSchedule.get() != null) {
+            logger.warn("Already reconnecting!");
+            return;
+        }
         var configNotNull = Optional.ofNullable(config)//
                 .orElseGet(() -> getConfigAs(PrinterConfiguration.class));
         var reconnectTime = configNotNull.reconnectTime;
@@ -185,10 +191,13 @@ public class PrinterHandler extends BaseThingHandler
             logger.warn("Do not reconnecting any more, because max reconnections was reach!");
             return;
         }
-        scheduler.schedule(() -> {
-            dispose();
-            initialize();
-        }, reconnectTime, SECONDS);
+        reconnectSchedule.set(//
+                scheduler.schedule(() -> {
+                    logger.debug("Reconnecting...");
+                    reconnectSchedule.set(null);
+                    dispose();
+                    initialize();
+                }, reconnectTime, SECONDS));
     }
 
     private PrinterClient buildLocalClient(URI uri, PrinterConfiguration config) throws InitializationException {
@@ -221,6 +230,11 @@ public class PrinterHandler extends BaseThingHandler
             camera = null;
             if (localCamera != null) {
                 localCamera.close();
+            }
+            var localReconnectSchedule = reconnectSchedule.get();
+            reconnectSchedule.set(null);
+            if (localReconnectSchedule != null) {
+                localReconnectSchedule.cancel(true);
             }
         } finally {
             logger = LoggerFactory.getLogger(PrinterHandler.class);
@@ -347,7 +361,7 @@ public class PrinterHandler extends BaseThingHandler
         int r = parseInt(colorHex.substring(0, 2), 16);
         int g = parseInt(colorHex.substring(2, 4), 16);
         int b = parseInt(colorHex.substring(4, 6), 16);
-        return ColorUtil.rgbToHsb(new int[] { r, g, b });
+        return ColorUtil.rgbToHsb(new int[]{r, g, b});
     }
 
     private Optional<State> parseDecimalType(@Nullable Number number) {
@@ -552,7 +566,7 @@ public class PrinterHandler extends BaseThingHandler
     }
 
     private void updateLightState(String lightName, BambuLabBindingConstants.Channel channel,
-            @Nullable List<Map<String, String>> lights) {
+                                  @Nullable List<Map<String, String>> lights) {
         Optional.ofNullable(lights)//
                 .stream()//
                 .flatMap(Collection::stream)//
