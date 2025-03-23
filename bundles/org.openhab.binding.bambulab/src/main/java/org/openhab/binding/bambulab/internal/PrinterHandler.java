@@ -300,8 +300,10 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
     }
 
     private void updateLightState(String lightName, BambuLabBindingConstants.Channel channel,
-            List<Map<String, String>> lights) {
-        lights.stream()//
+            @Nullable List<Map<String, String>> lights) {
+        Optional.ofNullable(lights)//
+                .stream()//
+                .flatMap(Collection::stream)//
                 .filter(map -> lightName.equalsIgnoreCase(map.get("node")))//
                 .map(map -> map.get("mode"))//
                 .filter(Objects::nonNull)//
