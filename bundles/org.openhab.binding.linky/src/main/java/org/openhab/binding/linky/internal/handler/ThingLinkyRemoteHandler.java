@@ -29,6 +29,9 @@ import java.util.Random;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Quantity;
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
@@ -49,7 +52,6 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
@@ -421,10 +423,14 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             updateState(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_3,
                     new DateTimeType(values.baseValue[dSize - 3].date.atZone(zoneId)));
 
-            updatePowerTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_MAX_POWER, values.baseValue);
-            updatePowerTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_MAX_POWER, values.weekValue);
-            updatePowerTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MAX_POWER, values.monthValue);
-            updatePowerTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_MAX_POWER, values.yearValue);
+            updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_MAX_POWER, values.baseValue,
+                    MetricPrefix.KILO(Units.VOLT_AMPERE));
+            updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_MAX_POWER, values.weekValue,
+                    MetricPrefix.KILO(Units.VOLT_AMPERE));
+            updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MAX_POWER, values.monthValue,
+                    MetricPrefix.KILO(Units.VOLT_AMPERE));
+            updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_MAX_POWER, values.yearValue,
+                    MetricPrefix.KILO(Units.VOLT_AMPERE));
 
         }, () -> {
             updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_1, Double.NaN);
@@ -478,10 +484,10 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                         values.yearValue[idxCurrentYear - 2].value);
             }
 
-            updateConsumptionTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION, values.baseValue);
-            updateConsumptionTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_CONSUMPTION, values.weekValue);
-            updateConsumptionTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_CONSUMPTION, values.monthValue);
-            updateConsumptionTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_CONSUMPTION, values.yearValue);
+            updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION, values.baseValue, Units.KILOWATT_HOUR);
+            updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_CONSUMPTION, values.weekValue, Units.KILOWATT_HOUR);
+            updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_CONSUMPTION, values.monthValue, Units.KILOWATT_HOUR);
+            updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_CONSUMPTION, values.yearValue, Units.KILOWATT_HOUR);
         }, () -> {
             updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_1, Double.NaN);
             updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_2, Double.NaN);
@@ -506,12 +512,14 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
      */
     private synchronized void updateLoadCurveData() {
         loadCurveConsumption.getValue().ifPresentOrElse(values -> {
-            updatePowerTimeSeries(LINKY_REMOTE_LOAD_CURVE_GROUP, CHANNEL_POWER, values.baseValue);
+            updateTimeSeries(LINKY_REMOTE_LOAD_CURVE_GROUP, CHANNEL_POWER, values.baseValue,
+                    MetricPrefix.KILO(Units.VOLT_AMPERE));
         }, () -> {
         });
     }
 
-    private synchronized void updatePowerTimeSeries(String groupId, String channelId, IntervalReading[] iv) {
+    private synchronized <T extends Quantity<T>> void updateTimeSeries(String groupId, String channelId,
+            IntervalReading[] iv, Unit<T> unit) {
         TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
 
         for (int i = 0; i < iv.length; i++) {
@@ -525,7 +533,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 if (Double.isNaN(iv[i].value)) {
                     continue;
                 }
-                timeSeries.add(timestamp, new DecimalType(iv[i].value));
+                timeSeries.add(timestamp, new QuantityType<>(iv[i].value, unit));
             } catch (Exception ex) {
                 logger.error("error occurs durring updatePowerTimeSeries for {} : {}", config.prmId, ex.getMessage(),
                         ex);
@@ -533,26 +541,14 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             }
         }
 
+        logger.debug("Send timeseries channel ({}) {} {} with {}", config.prmId, groupId, channelId, timeSeries);
         sendTimeSeries(groupId, channelId, timeSeries);
+        // updateChannel(groupId, channelId, iv[iv.length - 1].value, unit);
     }
 
-    private synchronized void updateConsumptionTimeSeries(String groupId, String channelId, IntervalReading[] iv) {
-        TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
-
-        for (int i = 0; i < iv.length; i++) {
-            if (iv[i].date == null) {
-                continue;
-            }
-
-            Instant timestamp = iv[i].date.atZone(zoneId).toInstant();
-
-            if (Double.isNaN(iv[i].value)) {
-                continue;
-            }
-            timeSeries.add(timestamp, new DecimalType(iv[i].value));
-        }
-
-        sendTimeSeries(groupId, channelId, timeSeries);
+    private <T extends Quantity<T>> void updateChannel(String groupId, String channelId, double value, Unit<T> unit) {
+        logger.debug("Update channel ({}) {} with {}", config.prmId, channelId, value);
+        updateState(groupId, channelId, Double.isNaN(value) ? UnDefType.UNDEF : new QuantityType<>(value, unit));
     }
 
     private void updateKwhChannel(String groupId, String channelId, double consumption) {
@@ -790,7 +786,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
                     if (idxYear < yearsNum) {
                         meterReading.yearValue[idxYear].value += value;
-
                         if (meterReading.yearValue[idxYear].date == null) {
                             meterReading.yearValue[idxYear].date = LocalDateTime.of(dt.getYear(), 1, 1, 0, 0);
                         }
