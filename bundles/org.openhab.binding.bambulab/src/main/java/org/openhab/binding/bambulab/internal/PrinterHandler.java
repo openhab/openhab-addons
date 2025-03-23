@@ -13,6 +13,7 @@
 package org.openhab.binding.bambulab.internal;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel.*;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.DECIBEL_MILLIWATTS;
@@ -34,6 +35,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -53,6 +55,7 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.grzeslowski.jbambuapi.mqtt.ConnectionCallback;
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient;
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.GCodeFileCommand;
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand;
@@ -66,7 +69,8 @@ import pl.grzeslowski.jbambuapi.mqtt.Report;
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.StateSubscriber, BambuHandler {
+public class PrinterHandler extends BaseThingHandler
+        implements PrinterWatcher.StateSubscriber, BambuHandler, ConnectionCallback {
     private static final Pattern DBM_PATTERN = Pattern.compile("^(-?\\d+)dBm$");
     private Logger logger = LoggerFactory.getLogger(PrinterHandler.class);
 
@@ -133,17 +137,35 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
     private void initMqtt(PrinterClient client) {
         try {
             logger.debug("Trying to connect to the printer broker");
-            client.connect();
+            client.connect(this);
             var printerWatcher = new PrinterWatcher();
             client.subscribe(printerWatcher);
             printerWatcher.subscribe(this);
-            // send request to update all channels
-            refreshChannels();
-            updateStatus(ONLINE);
+            // update to online done in `connectComplete`
         } catch (Exception e) {
             logger.debug("Cannot connect to MQTT client", e);
             updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
+    }
+
+    @Override
+    public void connectComplete(boolean reconnect) {
+        logger.debug("connectComplete({})", reconnect);
+        // send request to update all channels
+        scheduler.schedule(this::refreshChannels, 1, SECONDS);
+        updateStatus(ONLINE);
+    }
+
+    @Override
+    public void connectionLost(@Nullable Throwable throwable) {
+        logger.debug("Connection lost. Restarting thing", throwable);
+        var message = throwable != null ? throwable.getLocalizedMessage() : "<no message>";
+        var description = "@text/printer.handler.init.connectionLost [\"%s\"]".formatted(message);
+        updateStatus(OFFLINE, COMMUNICATION_ERROR, description);
+
+        // try to restart thing
+        dispose();
+        initialize();
     }
 
     private PrinterClient buildLocalClient(URI uri, PrinterConfiguration config) throws InitializationException {

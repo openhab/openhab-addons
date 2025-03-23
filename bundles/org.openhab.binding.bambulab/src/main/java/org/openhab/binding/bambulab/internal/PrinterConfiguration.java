@@ -82,7 +82,7 @@ public class PrinterConfiguration {
             return new URI(rawUri);
         } catch (URISyntaxException e) {
             throw new InitializationException(CONFIGURATION_ERROR,
-                    "@text/printer.handler.init.invalidHostname[\"%s\"]".formatted(rawUri), e);
+                    "@text/printer.handler.init.invalidHostname [\"%s\"]".formatted(rawUri), e);
         }
     }
 
