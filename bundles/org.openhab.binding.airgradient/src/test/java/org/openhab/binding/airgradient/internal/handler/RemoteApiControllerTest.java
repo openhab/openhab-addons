@@ -66,6 +66,10 @@ public class RemoteApiControllerTest {
             [{"locationId":654321,"locationName":"xxxx","pm01":0,"pm02":1,"pm10":1,"pm003Count":null,"atmp":24.2,"rhum":18,"rco2":519,"tvoc":50.793266,"wifi":-62,"timestamp":"2024-02-01T19:15:37.000Z","ledMode":"co2","ledCo2Threshold1":1000,"ledCo2Threshold2":2000,"ledCo2ThresholdEnd":4000,"serialno":"ecda3b1a2a50","firmwareVersion":null,"tvocIndex":52,"noxIndex":1},{"locationId":123456,"locationName":"yyyy","pm01":0,"pm02":0,"pm10":0,"pm003Count":105,"atmp":22.33,"rhum":24,"rco2":468,"tvoc":130.95694,"wifi":-50,"timestamp":"2024-02-01T19:15:34.000Z","ledMode":"co2","ledCo2Threshold1":1000,"ledCo2Threshold2":2000,"ledCo2ThresholdEnd":4000,"serialno":"84fce612e644","firmwareVersion":null,"tvocIndex":137,"noxIndex":1}]
             """;
 
+    private static final String VERSION_3_1_21 = """
+            {"pm01":0.17,"pm02":0.67,"pm10":0.67,"pm01Standard":0.17,"pm02Standard":0.67,"pm10Standard":0.67,"pm003Count":241,"pm005Count":62,"pm01Count":3.33,"pm02Count":0,"pm50Count":0,"pm10Count":0,"atmp":22.79,"atmpCompensated":22.79,"rhum":22.49,"rhumCompensated":22.49,"pm02Compensated":0.67,"rco2":575,"tvocIndex":200,"tvocRaw":33438.75,"noxIndex":1,"noxRaw":16564.42,"boot":4738,"bootCount":4738,"wifi":-63,"ledMode":"co2","serialno":"serial","firmware":"3.1.21","model":"I-9PSL"}
+            """;
+
     private static final String PROMETHEUS_CONTENT = """
             # HELP pm02 Particulate Matter PM2.5 value
             # TYPE pm02 gauge
@@ -184,6 +188,49 @@ public class RemoteApiControllerTest {
         assertThat(res, is(not(empty())));
         assertThat(res.size(), is(1));
         assertThat(res.get(0).locationName, is("Some other name"));
+    }
+
+    @Test
+    public void testGetMeasuresVersion_3_1_21() throws Exception {
+        ContentResponse response = Mockito.mock(ContentResponse.class);
+        Mockito.when(httpClientMock.newRequest(anyString())).thenReturn(requestMock);
+        Mockito.when(requestMock.send()).thenReturn(response);
+        Mockito.when(response.getStatus()).thenReturn(200);
+        Mockito.when(response.getMediaType()).thenReturn("application/json");
+        Mockito.when(response.getContentAsString()).thenReturn(VERSION_3_1_21);
+
+        var res = sut.getMeasures();
+        assertThat(res, is(not(empty())));
+        assertThat(res.size(), is(1));
+        assertThat(res.get(0).pm01, closeTo(0.17, 0.1));
+        assertThat(res.get(0).pm02, closeTo(0.67, 0.1));
+        assertThat(res.get(0).pm10, closeTo(0.67, 0.1));
+        assertThat(res.get(0).pm01Standard, closeTo(0.17, 0.1));
+        assertThat(res.get(0).pm02Standard, closeTo(0.67, 0.1));
+        assertThat(res.get(0).pm10Standard, closeTo(0.67, 0.1));
+        assertThat(res.get(0).pm003Count, closeTo(241, 0.1));
+        assertThat(res.get(0).pm005Count, closeTo(62, 0.1));
+        assertThat(res.get(0).pm01Count, closeTo(3.33, 0.1));
+        assertThat(res.get(0).pm02Count, closeTo(0, 0.1));
+        assertThat(res.get(0).pm50Count, closeTo(0, 0.1));
+        assertThat(res.get(0).pm10Count, closeTo(0, 0.1));
+        assertThat(res.get(0).atmp, closeTo(22.79, 0.1));
+        assertThat(res.get(0).atmpCompensated, closeTo(22.79, 0.1));
+        assertThat(res.get(0).rhum, closeTo(22.49, 0.1));
+        assertThat(res.get(0).rhumCompensated, closeTo(22.49, 0.1));
+        assertThat(res.get(0).pm02Compensated, closeTo(0.67, 0.1));
+        assertThat(res.get(0).rco2, closeTo(575, 0.1));
+        assertThat(res.get(0).tvocIndex, closeTo(200, 0.1));
+        assertThat(res.get(0).tvocRaw, closeTo(33438.75, 0.1));
+        assertThat(res.get(0).noxIndex, closeTo(1, 0.1));
+        assertThat(res.get(0).noxRaw, closeTo(16564.42, 0.1));
+        assertThat(res.get(0).boot, is(4738L));
+        assertThat(res.get(0).bootCount, is(4738L));
+        assertThat(res.get(0).wifi, closeTo(-63, 0.1));
+        assertThat(res.get(0).ledMode, is("co2"));
+        assertThat(res.get(0).serialno, is("serial"));
+        assertThat(res.get(0).firmware, is("3.1.21"));
+        assertThat(res.get(0).model, is("I-9PSL"));
     }
 
     @Test
