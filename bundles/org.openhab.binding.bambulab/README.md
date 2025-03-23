@@ -114,7 +114,7 @@ Thing bambulab:printer:myprinter "My BambuLab Printer" @ "3D Printing Area" [
 ]
 ```
 
-### `bambulab.items` Exmaple
+### `bambulab.items` Example
 
 ```java
 Number:Temperature NozzleTemperature "Nozzle Temperature [%.1f °C]" { channel="bambulab:printer:myprinter:nozzle-temperature" }
