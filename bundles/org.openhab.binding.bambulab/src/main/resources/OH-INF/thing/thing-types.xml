@@ -49,7 +49,7 @@
 				<label>Bed Type</label>
 				<description>Type of the printer's heated bed.</description>
 			</channel>
-			<channel id="gcode-file" typeId="string">
+			<channel id="gcode-file" typeId="string-rw">
 				<label>G-code File</label>
 				<description>Name of the currently loaded G-code file.</description>
 			</channel>
@@ -85,10 +85,7 @@
 				<label>Current Layer Number</label>
 				<description>Current layer being printed.</description>
 			</channel>
-			<channel id="speed-level" typeId="number">
-				<label>Print Speed Level</label>
-				<description>Current speed setting of the print job.</description>
-			</channel>
+			<channel id="speed-level" typeId="speed-level"/>
 			<channel id="time-laps" typeId="boolean">
 				<label>time-lapse Enabled</label>
 				<description>Indicates whether time-lapse recording is enabled.</description>
