@@ -5,6 +5,6 @@
 
 	<type>binding</type>
 	<name>FreeAtHome Binding</name>
-	<description>This is the binding for free@home system.</description>
+	<description>This is the binding for Busch Jaeger (alternativ Vendor ABB) free@home system.</description>
 	<connection>local</connection>
 </addon:addon>

@@ -39,7 +39,7 @@
 			<parameter name="sendKeepAliveMessage" type="boolean" required="false" groupName="identification">
 				<label>Send keep-alive message to SysAp</label>
 				<context>password</context>
-				<description>Older SysAp might need a regular keep-alive message over socket</description>
+				<description>Older SysAp might require a keep-alive message over the socket instead of a ping message.</description>
 				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
