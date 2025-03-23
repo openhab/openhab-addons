@@ -65,21 +65,21 @@
 				<channel id="display-brightness" typeId="display-brightness"/>
 				<channel id="model" typeId="model"/>
 				<channel id="led-bar-test" typeId="led-bar-test"/>
-                                <channel id="pm01-standard" typeId="pm1"/>
-                                <channel id="pm02-standard" typeId="pm2"/>
-                                <channel id="pm10-standard" typeId="pm10"/>
-                                <channel id="pm005-count" typeId="particle-count"/>
-                                <channel id="pm01-count" typeId="particle-count"/>
-                                <channel id="pm02-count" typeId="particle-count"/>
-                                <channel id="pm50-count" typeId="particle-count"/>
-                                <channel id="pm10-count" typeId="particle-count"/>
-                                <channel id="pm02-compensated" typeId="pm2"/>
-                                <channel id="atmp-compensated" typeId="system.outdoor-temperature"/>
-                                <channel id="rhum-compensated" typeId="system.atmospheric-humidity"/>
-                                <channel id="tvoc-index" typeId="tvoc"/>
-                                <channel id="tvoc-raw" typeId="tvoc"/>
-                                <channel id="nox-index" typeId="nox"/>
-                                <channel id="nox-raw" typeId="nox"/>
+				<channel id="pm01-standard" typeId="pm1"/>
+				<channel id="pm02-standard" typeId="pm2"/>
+				<channel id="pm10-standard" typeId="pm10"/>
+				<channel id="pm005-count" typeId="particle-count"/>
+				<channel id="pm01-count" typeId="particle-count"/>
+				<channel id="pm02-count" typeId="particle-count"/>
+				<channel id="pm50-count" typeId="particle-count"/>
+				<channel id="pm10-count" typeId="particle-count"/>
+				<channel id="pm02-compensated" typeId="pm2"/>
+				<channel id="atmp-compensated" typeId="system.outdoor-temperature"/>
+				<channel id="rhum-compensated" typeId="system.atmospheric-humidity"/>
+				<channel id="tvoc-index" typeId="tvoc"/>
+				<channel id="tvoc-raw" typeId="tvoc"/>
+				<channel id="nox-index" typeId="nox"/>
+				<channel id="nox-raw" typeId="nox"/>
 			-->
 		</channels>
 
