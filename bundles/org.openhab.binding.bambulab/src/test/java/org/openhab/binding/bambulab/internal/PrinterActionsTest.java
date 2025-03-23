@@ -15,8 +15,8 @@ package org.openhab.binding.bambulab.internal;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
-import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.LedMode.*;
-import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.LedNode.*;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.LedMode.*;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.LedNode.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,18 +35,18 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import pl.grzeslowski.jbambuapi.PrinterClient;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.AmsControlCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.AmsFilamentSettingCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.AmsUserSettingCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.ChangeFilamentCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.Command;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.InfoCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.IpCamRecordCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.PrintSpeedCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.PushingCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.SystemCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.AmsControlCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.AmsFilamentSettingCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.AmsUserSettingCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.ChangeFilamentCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.Command;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.InfoCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.IpCamRecordCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PushingCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.SystemCommand;
 
 /**
  * @author Martin Grzeslowski - Initial contribution

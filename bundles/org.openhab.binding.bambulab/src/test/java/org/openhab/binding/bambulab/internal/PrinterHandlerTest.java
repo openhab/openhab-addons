@@ -16,8 +16,8 @@ import static java.util.Arrays.stream;
 import static java.util.function.Predicate.not;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel.*;
-import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.*;
-import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.LedNode.*;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.*;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.LedNode.*;
 
 import java.util.stream.Stream;
 
@@ -37,8 +37,8 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 
-import pl.grzeslowski.jbambuapi.PrinterClient;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.PrintSpeedCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand;
 
 /**
  * @author Martin Grześlowski - Initial contribution

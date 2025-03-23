@@ -17,7 +17,7 @@ import static java.lang.Integer.parseInt;
 import static java.util.Arrays.copyOfRange;
 import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.BINDING_ID;
-import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.LedMode.FLASHING;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.LedMode.FLASHING;
 
 import java.util.Arrays;
 
@@ -29,24 +29,24 @@ import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
 
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.AmsControlCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.AmsFilamentSettingCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.AmsUserSettingCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.ChangeFilamentCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.Command;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.GCodeFileCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.GCodeLineCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.InfoCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.IpCamRecordCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.IpCamTimelapsCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.LedMode;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.LedNode;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.PrintCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.PrintSpeedCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.PushingCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.SystemCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.XCamControlCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.AmsControlCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.AmsFilamentSettingCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.AmsUserSettingCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.ChangeFilamentCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.Command;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.GCodeFileCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.GCodeLineCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.InfoCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.IpCamRecordCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.IpCamTimelapsCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.LedMode;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.LedNode;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PushingCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.SystemCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.XCamControlCommand;
 
 /**
  * @author Martin Grzeslowski - Initial contribution

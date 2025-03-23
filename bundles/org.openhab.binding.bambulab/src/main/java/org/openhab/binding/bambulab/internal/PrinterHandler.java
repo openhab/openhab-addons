@@ -12,23 +12,28 @@
  */
 package org.openhab.binding.bambulab.internal;
 
+import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel.*;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.DECIBEL_MILLIWATTS;
-import static org.openhab.core.thing.ThingStatus.*;
-import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.openhab.core.thing.ThingStatus.OFFLINE;
+import static org.openhab.core.thing.ThingStatus.ONLINE;
+import static org.openhab.core.thing.ThingStatus.UNKNOWN;
+import static org.openhab.core.thing.ThingStatusDetail.*;
 import static org.openhab.core.types.UnDefType.UNDEF;
-import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.*;
-import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.LedNode.*;
-import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.PushingCommand.defaultPushingCommand;
-import static pl.grzeslowski.jbambuapi.PrinterClientConfig.requiredFields;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.*;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.LedNode.*;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PushingCommand.defaultPushingCommand;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClientConfig.requiredFields;
 
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,6 +45,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
@@ -47,12 +53,11 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pl.grzeslowski.jbambuapi.PrinterClient;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.GCodeFileCommand;
-import pl.grzeslowski.jbambuapi.PrinterClient.Channel.PrintSpeedCommand;
-import pl.grzeslowski.jbambuapi.PrinterClientConfig;
-import pl.grzeslowski.jbambuapi.PrinterWatcher;
-import pl.grzeslowski.jbambuapi.Report;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.GCodeFileCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterWatcher;
+import pl.grzeslowski.jbambuapi.mqtt.Report;
 
 /**
  * The {@link PrinterHandler} is responsible for handling commands, which are
@@ -61,11 +66,12 @@ import pl.grzeslowski.jbambuapi.Report;
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.StateSubscriber {
+public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.StateSubscriber, BambuHandler {
     private static final Pattern DBM_PATTERN = Pattern.compile("^(-?\\d+)dBm$");
     private Logger logger = LoggerFactory.getLogger(PrinterHandler.class);
 
     private @Nullable PrinterClient client;
+    private @Nullable Camera camera;
 
     public PrinterHandler(Thing thing) {
         super(thing);
@@ -83,75 +89,70 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
         } else if (CHANNEL_SPEED_LEVEL.is(channelUID)) {
             var bambuCommand = PrintSpeedCommand.valueOf(command.toString());
             sendCommand(bambuCommand);
+        } else if (CHANNEL_CAMERA_RECORD.is(channelUID) && command instanceof OnOffType onOffCommand) {
+            requireNonNull(camera).handleCommand(onOffCommand);
         }
     }
 
     @Override
     public void initialize() {
-        var config = getConfigAs(PrinterConfiguration.class);
-
-        if (config.serial.isBlank()) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/printer.handler.init.noSerial");
-            return;
+        try {
+            internalInitialize();
+        } catch (InitializationException e) {
+            updateStatus(OFFLINE, e.getThingStatusDetail(), e.getDescription());
         }
+    }
+
+    private void internalInitialize() throws InitializationException {
+        PrinterConfiguration config = getConfigAs(PrinterConfiguration.class);
+
+        config.validateSerial();
         logger = LoggerFactory.getLogger(PrinterHandler.class.getName() + "." + config.serial);
+        config.validateHostname();
+        config.validateAccessCode();
+        config.validateUsername();
+        var uri = config.buildUri();
 
-        if (config.hostname.isBlank()) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/printer.handler.init.noHostname");
-            return;
-        }
+        // always turn off camera recording when starting thing
+        camera = new Camera(config, this);
+        updateState(CHANNEL_CAMERA_RECORD.getName(), OnOffType.OFF);
+        updateState(CHANNEL_CAMERA_IMAGE.getName(), UNDEF);
 
-        var scheme = config.scheme;
-        var port = config.port;
-        var rawUri = "%s%s:%d".formatted(scheme, config.hostname, port);
-        URI uri;
-        try {
-            uri = new URI(rawUri);
-        } catch (URISyntaxException e) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                    "@text/printer.handler.init.invalidHostname[\"%s\"]".formatted(rawUri));
-            return;
-        }
+        var localClient = client = buildLocalClient(uri, config);
 
-        if (config.accessCode.isBlank()) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/printer.handler.init.noAccessCode");
-            return;
-        }
-
-        if (config.username.isBlank()) {
-            config.username = PrinterClientConfig.LOCAL_USERNAME;
-        }
-
+        // the status will be unknown until the first message form MQTT arrives
         updateStatus(UNKNOWN);
-
-        PrinterClient localClient;
         try {
-            localClient = client = new PrinterClient(
+            scheduler.execute(() -> initMqtt(localClient));
+        } catch (RejectedExecutionException ex) {
+            logger.debug("Task was rejected", ex);
+            throw new InitializationException(CONFIGURATION_ERROR, ex);
+        }
+    }
+
+    private void initMqtt(PrinterClient client) {
+        try {
+            logger.debug("Trying to connect to the printer broker");
+            client.connect();
+            var printerWatcher = new PrinterWatcher();
+            client.subscribe(printerWatcher);
+            printerWatcher.subscribe(this);
+            // send request to update all channels
+            refreshChannels();
+            updateStatus(ONLINE);
+        } catch (Exception e) {
+            logger.debug("Cannot connect to MQTT client", e);
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
+        }
+    }
+
+    private PrinterClient buildLocalClient(URI uri, PrinterConfiguration config) throws InitializationException {
+        try {
+            return new PrinterClient(
                     requiredFields(uri, config.username, config.serial, config.accessCode.toCharArray()));
         } catch (Exception e) {
             logger.debug("Cannot create MQTT client", e);
-            updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-            return;
-        }
-        try {
-            scheduler.execute(() -> {
-                try {
-                    logger.debug("Trying to connect to the printer broker");
-                    localClient.connect();
-                    var printerWatcher = new PrinterWatcher();
-                    localClient.subscribe(printerWatcher);
-                    printerWatcher.subscribe(this);
-                    // send request to update all channels
-                    refreshChannels();
-                    updateStatus(ONLINE);
-                } catch (Exception e) {
-                    logger.debug("Cannot connect to MQTT client", e);
-                    updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-                }
-            });
-        } catch (RejectedExecutionException ex) {
-            logger.debug("Task was rejected", ex);
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, ex.getLocalizedMessage());
+            throw new InitializationException(COMMUNICATION_ERROR, e);
         }
     }
 
@@ -161,17 +162,24 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
 
     @Override
     public void dispose() {
-        var localClient = client;
-        client = null;
-        if (localClient != null) {
-            try {
-                localClient.close();
-            } catch (Exception e) {
-                logger.warn("Could not correctly dispose PrinterClient", e);
+        try {
+            var localClient = client;
+            client = null;
+            if (localClient != null) {
+                try {
+                    localClient.close();
+                } catch (Exception e) {
+                    logger.warn("Could not correctly dispose PrinterClient", e);
+                }
             }
+            var localCamera = camera;
+            camera = null;
+            if (localCamera != null) {
+                localCamera.close();
+            }
+        } finally {
+            logger = LoggerFactory.getLogger(PrinterHandler.class);
         }
-        logger = LoggerFactory.getLogger(PrinterHandler.class);
-        super.dispose();
     }
 
     @Override
@@ -294,8 +302,10 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
     }
 
     private void updateLightState(String lightName, BambuLabBindingConstants.Channel channel,
-            List<Map<String, String>> lights) {
-        lights.stream()//
+            @Nullable List<Map<String, String>> lights) {
+        Optional.ofNullable(lights)//
+                .stream()//
+                .flatMap(Collection::stream)//
                 .filter(map -> lightName.equalsIgnoreCase(map.get("node")))//
                 .map(map -> map.get("mode"))//
                 .filter(Objects::nonNull)//
@@ -330,7 +340,32 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
         try {
             localClient.getChannel().sendCommand(command);
         } catch (Exception e) {
-            updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
+    }
+
+    @Override
+    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(status, statusDetail, description);
+    }
+
+    @Override
+    public void updateState(String channelUID, State state) {
+        super.updateState(channelUID, state);
+    }
+
+    @Override
+    public void updateStatus(ThingStatus status) {
+        super.updateStatus(status);
+    }
+
+    @Override
+    public ScheduledExecutorService getScheduler() {
+        return scheduler;
+    }
+
+    @Override
+    public Logger getLogger() {
+        return logger;
     }
 }
