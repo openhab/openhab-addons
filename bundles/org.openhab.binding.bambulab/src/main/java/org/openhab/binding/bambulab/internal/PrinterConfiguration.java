@@ -19,17 +19,8 @@ import static pl.grzeslowski.jbambuapi.mqtt.PrinterClientConfig.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
-import static pl.grzeslowski.jbambuapi.camera.CameraConfig.BAMBU_CERTIFICATE;
-import static pl.grzeslowski.jbambuapi.mqtt.PrinterClientConfig.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-
-import pl.grzeslowski.jbambuapi.camera.CameraConfig;
 
 import pl.grzeslowski.jbambuapi.camera.CameraConfig;
 
