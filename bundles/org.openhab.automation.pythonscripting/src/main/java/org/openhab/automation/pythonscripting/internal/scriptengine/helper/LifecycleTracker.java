@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Holger Hees - Initial contribution
  */
 @NonNullByDefault
-public class ScriptUnloadTracker {
+public class LifecycleTracker {
     List<Runnable> disposables = new ArrayList<>();
 
     public void addDisposeHook(Runnable disposable) {
