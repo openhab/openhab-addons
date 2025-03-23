@@ -27,9 +27,11 @@ import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PushingCommand
 import static pl.grzeslowski.jbambuapi.mqtt.PrinterClientConfig.requiredFields;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Pattern;

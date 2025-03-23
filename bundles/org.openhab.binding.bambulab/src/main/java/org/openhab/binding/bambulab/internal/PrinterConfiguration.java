@@ -13,8 +13,8 @@
 package org.openhab.binding.bambulab.internal;
 
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
-import static pl.grzeslowski.jbambuapi.CameraConfig.BAMBU_CERTIFICATE;
-import static pl.grzeslowski.jbambuapi.PrinterClientConfig.*;
+import static pl.grzeslowski.jbambuapi.camera.CameraConfig.BAMBU_CERTIFICATE;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClientConfig.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import pl.grzeslowski.jbambuapi.CameraConfig;
+import pl.grzeslowski.jbambuapi.camera.CameraConfig;
 
 /**
  * The {@link PrinterConfiguration} class contains fields mapping thing configuration parameters.
