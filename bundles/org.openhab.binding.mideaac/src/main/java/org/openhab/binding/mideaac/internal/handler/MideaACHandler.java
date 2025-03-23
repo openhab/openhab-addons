@@ -78,14 +78,16 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     private final Clouds clouds;
     private final boolean imperialUnits;
     private boolean isPollRunning = false;
+    private boolean isKeyTokenUpdateRunning = false;
     private final HttpClient httpClient;
 
     private MideaACConfiguration config = new MideaACConfiguration();
     private Map<String, String> properties = new HashMap<>();
     // Default parameters are the same as in the MideaACConfiguration class
     private ConnectionManager connectionManager = new ConnectionManager("", 6444, 4, "", "", "", "", "", "", 0, false);
-    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
     private @Nullable ScheduledFuture<?> scheduledTask;
+    private @Nullable ScheduledFuture<?> scheduledKeyTokenUpdate;
 
     private Callback callbackLambda = (response) -> {
         this.updateChannels(response);
@@ -189,6 +191,10 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         if (isPollRunning) {
             stopScheduler();
         }
+        if (isKeyTokenUpdateRunning) {
+            stopTokenKeyUpdate();
+        }
+
         config = getConfigAs(MideaACConfiguration.class);
 
         if (!config.isValid()) {
@@ -236,23 +242,24 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                 config.ipPort, config.timeout, config.key, config.token, config.cloud, config.email, config.password,
                 config.deviceId, config.version, config.promptTone);
 
-        startScheduler(2, config.pollingTime, TimeUnit.SECONDS);
-    }
-
-    /**
-     * Starts the Scheduler for the Polling
-     * 
-     * @param initialDelay Seconds before first Poll
-     * @param delay Seconds between Polls
-     * @param unit Seconds
-     */
-    private void startScheduler(long initialDelay, long delay, TimeUnit unit) {
         if (scheduledTask == null) {
             isPollRunning = true;
-            scheduledTask = scheduler.scheduleWithFixedDelay(this::pollJob, initialDelay, delay, unit);
-            logger.debug("Scheduled task started");
+            scheduledTask = scheduler.scheduleWithFixedDelay(this::pollJob, 2, config.pollingTime, TimeUnit.SECONDS);
+            logger.debug("Scheduled task started, Poll Time {} seconds", config.pollingTime);
         } else {
             logger.debug("Scheduler already running");
+        }
+
+        if (config.keyTokenUpdate != 0) {
+            if (scheduledKeyTokenUpdate == null) {
+                isKeyTokenUpdateRunning = true;
+                scheduledKeyTokenUpdate = scheduler.scheduleWithFixedDelay(
+                        () -> getTokenKeyCloud(CloudProvider.getCloudProvider(config.cloud)), config.keyTokenUpdate,
+                        config.keyTokenUpdate, TimeUnit.DAYS);
+                logger.debug("Token Key Update Scheduler started, update interval {} days", config.keyTokenUpdate);
+            } else {
+                logger.debug("Token Key Update Scheduler already running");
+            }
         }
     }
 
@@ -361,6 +368,9 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * @param cloudProvider Cloud Provider account
      */
     public void getTokenKeyCloud(CloudProvider cloudProvider) {
+        if (isPollRunning) {
+            stopScheduler();
+        }
         logger.debug("Retrieving Token and/or Key from cloud");
         Cloud cloud = getClouds().get(config.email, config.password, cloudProvider);
         if (cloud != null) {
@@ -395,9 +405,21 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         }
     }
 
+    private void stopTokenKeyUpdate() {
+        ScheduledFuture<?> localScheduledTask = this.scheduledKeyTokenUpdate;
+
+        if (localScheduledTask != null && !localScheduledTask.isCancelled()) {
+            localScheduledTask.cancel(true);
+            logger.debug("Scheduled Key Token Update cancelled.");
+            isKeyTokenUpdateRunning = false;
+            scheduledKeyTokenUpdate = null;
+        }
+    }
+
     @Override
     public void dispose() {
         stopScheduler();
+        stopTokenKeyUpdate();
         connectionManager.dispose(true);
     }
 }

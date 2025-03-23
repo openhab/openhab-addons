@@ -83,6 +83,7 @@ public class MideaACBindingConstants {
     public static final String CONFIG_TOKEN = "token";
     public static final String CONFIG_KEY = "key";
     public static final String CONFIG_POLLING_TIME = "pollingTime";
+    public static final String CONFIG_KEY_TOKEN_UPDATE = "keyTokenUpdate";
     public static final String CONFIG_CONNECTING_TIMEOUT = "timeout";
     public static final String CONFIG_PROMPT_TONE = "promptTone";
     public static final String CONFIG_VERSION = "version";
