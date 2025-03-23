@@ -36,6 +36,8 @@ public class PrinterConfiguration {
     public String hostname = "";
     public String accessCode = "";
     public String username = LOCAL_USERNAME;
+    public int reconnectTime = 600;
+    public int reconnectMax = 5;
     // MQTT
     public String scheme = SCHEME;
     public int port = DEFAULT_PORT;

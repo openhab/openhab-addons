@@ -20,6 +20,7 @@ import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Cha
 import static org.openhab.binding.bambulab.internal.TrayHelper.updateTrayLoaded;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.DECIBEL_MILLIWATTS;
+import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatus.UNKNOWN;
@@ -38,6 +39,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
@@ -81,6 +83,7 @@ public class PrinterHandler extends BaseThingHandler
 
     private @Nullable PrinterClient client;
     private @Nullable Camera camera;
+    private final AtomicInteger reconnectTimes = new AtomicInteger();
 
     public PrinterHandler(Thing thing) {
         super(thing);
@@ -113,7 +116,7 @@ public class PrinterHandler extends BaseThingHandler
     }
 
     private void internalInitialize() throws InitializationException {
-        PrinterConfiguration config = getConfigAs(PrinterConfiguration.class);
+        var config = getConfigAs(PrinterConfiguration.class);
 
         config.validateSerial();
         logger = LoggerFactory.getLogger(PrinterHandler.class.getName() + "." + config.serial);
@@ -132,14 +135,14 @@ public class PrinterHandler extends BaseThingHandler
         // the status will be unknown until the first message form MQTT arrives
         updateStatus(UNKNOWN);
         try {
-            scheduler.execute(() -> initMqtt(localClient));
+            scheduler.execute(() -> initMqtt(localClient, config));
         } catch (RejectedExecutionException ex) {
             logger.debug("Task was rejected", ex);
             throw new InitializationException(CONFIGURATION_ERROR, ex);
         }
     }
 
-    private void initMqtt(PrinterClient client) {
+    private void initMqtt(PrinterClient client, PrinterConfiguration config) {
         try {
             logger.debug("Trying to connect to the printer broker");
             client.connect(this);
@@ -150,6 +153,7 @@ public class PrinterHandler extends BaseThingHandler
         } catch (Exception e) {
             logger.debug("Cannot connect to MQTT client", e);
             updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
+            reconnect(config);
         }
     }
 
@@ -158,6 +162,7 @@ public class PrinterHandler extends BaseThingHandler
         logger.debug("connectComplete({})", reconnect);
         // send request to update all channels
         scheduler.schedule(this::refreshChannels, 1, SECONDS);
+        reconnectTimes.set(0);
         updateStatus(ONLINE);
     }
 
@@ -167,10 +172,23 @@ public class PrinterHandler extends BaseThingHandler
         var message = throwable != null ? throwable.getLocalizedMessage() : "<no message>";
         var description = "@text/printer.handler.init.connectionLost [\"%s\"]".formatted(message);
         updateStatus(OFFLINE, COMMUNICATION_ERROR, description);
+        reconnect(null);
+    }
 
-        // try to restart thing
-        dispose();
-        initialize();
+    private void reconnect(@Nullable PrinterConfiguration config) {
+        var configNotNull = Optional.ofNullable(config)//
+                .orElseGet(() -> getConfigAs(PrinterConfiguration.class));
+        var reconnectTime = configNotNull.reconnectTime;
+        var reconnectMax = configNotNull.reconnectMax;
+        var currentReconnections = reconnectTimes.getAndAdd(1);
+        if (currentReconnections >= reconnectMax) {
+            logger.warn("Do not reconnecting any more, because max reconnections was reach!");
+            return;
+        }
+        scheduler.schedule(() -> {
+            dispose();
+            initialize();
+        }, reconnectTime, SECONDS);
     }
 
     private PrinterClient buildLocalClient(URI uri, PrinterConfiguration config) throws InitializationException {

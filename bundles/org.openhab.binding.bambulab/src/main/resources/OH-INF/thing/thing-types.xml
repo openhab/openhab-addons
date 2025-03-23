@@ -1082,6 +1082,23 @@
 				<description>`bblp` for local mode or your Bambu Lab user (starts with `u_`).</description>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>`bblp` for local mode or your Bambu Lab user (starts with `u_`).</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="reconnectTime" type="text" min="1">
+				<label>Reconnect Time</label>
+				<description>Time in seconds to wait before reconnect.</description>
+				<default>600</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="reconnectMax" type="text" min="0">
+				<label>Max Reconnections</label>
+				<description>Max times to try reconnections.</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
 			<!-- 🟥Common -->
 			<!-- 🟩MQTT -->
 			<parameter name="scheme" type="text" required="false" groupName="mqtt">
