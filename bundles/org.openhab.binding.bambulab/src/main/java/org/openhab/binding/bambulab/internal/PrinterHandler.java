@@ -303,8 +303,7 @@ public class PrinterHandler extends BaseThingHandler
         parseTemperatureType(vtTray.nozzleTempMin())
                 .ifPresent(trayType -> updateState(CHANNEL_VTRAY_NOZZLE_TEMPERATURE_MIN, trayType));
         Optional.ofNullable(vtTray.remain())//
-                .map(Object::toString)//
-                .map(value -> (State) PercentType.valueOf(value))//
+                .map(value -> (State) new PercentType(value))//
                 .or(undef())//
                 .ifPresent(trayType -> updateState(CHANNEL_VTRAY_REMAIN, trayType));
         parseDecimalType(vtTray.k()).ifPresent(trayType -> updateState(CHANNEL_VTRAY_K, trayType));
