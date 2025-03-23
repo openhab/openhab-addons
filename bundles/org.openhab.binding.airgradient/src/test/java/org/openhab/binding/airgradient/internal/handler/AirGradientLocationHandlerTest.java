@@ -71,6 +71,38 @@ public class AirGradientLocationHandlerTest {
         }
     };
 
+    private static final Measure TEST_MEASURE_V3_1_21 = new Measure() {
+        {
+            locationId = "12345";
+            locationName = "Location name";
+            pm01 = 2d;
+            pm02 = 3d;
+            pm10 = 4d;
+            pm003Count = 636d;
+            atmp = 19.63;
+            rhum = null;
+            rco2 = 455d;
+            tvoc = 51.644928;
+            wifi = -59d;
+            timestamp = "2024-01-07T11:28:56.000Z";
+            serialno = "ecda3b1a2a50";
+            firmware = "12345";
+            tvocIndex = 1d;
+            tvocRaw = 1.5d;
+            noxIndex = 2d;
+            noxRaw = 2.5d;
+            pm01Standard = 3d;
+            pm02Standard = 4d;
+            pm10Standard = 5d;
+            pm005Count = 6d;
+            pm01Count = 7d;
+            pm02Count = 8d;
+            pm50Count = 9d;
+            pm10Count = 10d;
+            pm02Compensated = 11d;
+        }
+    };
+
     @Nullable
     private AirGradientLocationHandler sut;
 
@@ -128,5 +160,51 @@ public class AirGradientLocationHandlerTest {
                 new QuantityType<>("36 %"));
         verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_UPLOADS_SINCE_BOOT),
                 new QuantityType<>("16"));
+    }
+
+    // Firmware Version 3.1.21 has many new fields
+    @Test
+    public void testSetMeasureVersion3_1_21() {
+        sut.setCallback(callbackMock);
+        sut.setMeasurment(TEST_MEASURE_V3_1_21);
+
+        verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_TVOC_INDEX),
+                new QuantityType<>("1"));
+
+        verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_TVOC_RAW),
+                new QuantityType<>("1.5"));
+
+        verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_NOX_INDEX),
+                new QuantityType<>("2"));
+
+        verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_NOX_RAW),
+                new QuantityType<>("2.5"));
+
+        verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_PM01_STANDARD),
+                new QuantityType<>("3 µg/m³"));
+
+        verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_PM02_STANDARD),
+                new QuantityType<>("4 µg/m³"));
+
+        verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_PM10_STANDARD),
+                new QuantityType<>("5 µg/m³"));
+
+        verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_PM005_COUNT),
+                new QuantityType<>("6"));
+
+        verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_PM01_COUNT),
+                new QuantityType<>("7"));
+
+        verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_PM02_COUNT),
+                new QuantityType<>("8"));
+
+        verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_PM50_COUNT),
+                new QuantityType<>("9"));
+
+        verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_PM10_COUNT),
+                new QuantityType<>("10"));
+
+        verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_PM02_COMPENSATED),
+                new QuantityType<>("11 µg/m³"));
     }
 }
