@@ -53,6 +53,16 @@
 		<label>Boolean Channel</label>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="boolean-rw">
+		<item-type>Switch</item-type>
+		<label>Boolean Channel</label>
+	</channel-type>
+	<channel-type id="camera-image">
+		<item-type>Image</item-type>
+		<label>Camera Image</label>
+		<description>Current image from the printer's camera.</description>
+		<state readOnly="true"/>
+	</channel-type>
 
 	<channel-type id="speed-level">
 		<item-type>String</item-type>

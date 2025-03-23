@@ -98,6 +98,11 @@
 				<label>Vibration Calibration</label>
 				<description>Indicates whether vibration calibration has been performed.</description>
 			</channel>
+			<channel id="camera-record" typeId="boolean-rw">
+				<label>Camera Record</label>
+				<description>Turns on/off openHAB's capability of recording.</description>
+			</channel>
+			<channel id="camera-image" typeId="camera-image"/>
 
 			<!-- command channels -->
 			<channel id="led-chamber" typeId="on-off-command">
@@ -112,41 +117,75 @@
 
 		<representation-property>serial</representation-property>
 		<config-description>
+			<!-- 🟩Groups -->
+			<parameter-group name="mqtt">
+				<label>MQTT</label>
+				<description>Properties for MQTT.</description>
+			</parameter-group>
+			<parameter-group name="camera">
+				<label>Camera</label>
+				<description>Properties for camera. Note: only A and P series are supported.</description>
+			</parameter-group>
+			<!-- 🟥Groups -->
+			<!-- 🟩Common -->
+			<parameter name="series" type="text" required="true">
+				<label>Series</label>
+				<description>Select the printer series</description>
+				<options>
+					<option value="A">A Series</option>
+					<option value="P">P Series</option>
+					<option value="X">X Series</option>
+				</options>
+			</parameter>
 			<parameter name="serial" type="text" required="true">
 				<label>Serial Number</label>
 				<description>Unique serial number of the printer.</description>
 			</parameter>
-
-			<parameter name="scheme" type="text" required="false">
-				<label>Scheme</label>
-				<description>URI scheme.</description>
-				<advanced>true</advanced>
-			</parameter>
-
 			<parameter name="hostname" type="text" required="true">
 				<label>Hostname</label>
 				<description>IP address of the printer or `us.mqtt.bambulab.com` for cloud mode.</description>
 				<context>network-address</context>
 			</parameter>
-
-			<parameter name="port" type="integer" required="false">
-				<label>Port</label>
-				<description>URI port.</description>
-				<advanced>true</advanced>
-			</parameter>
-
-			<parameter name="username" type="text">
-				<label>Username</label>
-				<description>`bblp` for local mode or your Bambu Lab user (starts with `u_`).</description>
-				<advanced>true</advanced>
-			</parameter>
-
 			<parameter name="accessCode" type="text" required="true">
 				<label>Access Code</label>
 				<description>Access code of the printer. The method of obtaining it differs for local and cloud modes.
 				</description>
 				<context>password</context>
 			</parameter>
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>`bblp` for local mode or your Bambu Lab user (starts with `u_`).</description>
+				<advanced>true</advanced>
+			</parameter>
+			<!-- 🟥Common -->
+			<!-- 🟩MQTT -->
+			<parameter name="scheme" type="text" required="false" groupName="mqtt">
+				<label>Scheme</label>
+				<description>URI scheme.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="port" type="integer" max="65535" min="1" required="false" groupName="mqtt">
+				<label>Port</label>
+				<description>URI port.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<!-- 🟥MQTT -->
+			<!-- 🟩CAMERA -->
+			<parameter name="cameraPort" type="integer" required="false" max="65535" min="1" groupName="camera">
+				<label>Camera Port</label>
+				<description>Defaults to 6000 for A and P series.</description>
+				<advanced>true</advanced>
+				<default>6000</default>
+			</parameter>
+			<parameter name="cameraCertificate" type="text" multiple="true" required="false" groupName="camera">
+				<label>TLS Certificate</label>
+				<description><![CDATA[
+					To disable the use of your own certificate, enter <b>none</b>.
+					If providing your own certificate, ensure it includes the header <i>-----BEGIN CERTIFICATE-----</i> at the beginning and <i>-----END CERTIFICATE-----</i> at the end.
+				]]></description>
+				<advanced>true</advanced>
+			</parameter>
+			<!-- 🟥CAMERA -->
 		</config-description>
 	</thing-type>
 

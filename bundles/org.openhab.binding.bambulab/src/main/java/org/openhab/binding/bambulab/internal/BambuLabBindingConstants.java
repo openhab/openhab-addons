@@ -27,6 +27,9 @@ public class BambuLabBindingConstants {
 
     public static final String BINDING_ID = "bambulab";
 
+    // misc consts
+    public static String NO_CAMERA_CERT = "none";
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID PRINTER_THING_TYPE = new ThingTypeUID(BINDING_ID, "printer");
 
@@ -55,6 +58,8 @@ public class BambuLabBindingConstants {
         CHANNEL_TIME_LAPS("time-laps"),
         CHANNEL_USE_AMS("use-ams"),
         CHANNEL_VIBRATION_CALIBRATION("vibration-calibration"),
+        CHANNEL_CAMERA_RECORD("camera-record", true),
+        CHANNEL_CAMERA_IMAGE("camera-image"),
         CHANNEL_LED_CHAMBER_LIGHT("led-chamber", true),
         CHANNEL_LED_WORK_LIGHT("led-work", true);
 
