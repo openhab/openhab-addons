@@ -21,6 +21,12 @@
 				<type>roku:progress</type>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="3">
+			<update-channel id="activeApp">
+				<type>roku:activeApp</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="roku:roku_tv">
@@ -46,6 +52,15 @@
 			<add-channel id="progress">
 				<type>roku:progress</type>
 			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="3">
+			<update-channel id="activeApp">
+				<type>roku:activeApp</type>
+			</update-channel>
+			<update-channel id="activeChannel">
+				<type>roku:activeChannel</type>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 

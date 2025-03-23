@@ -30,7 +30,7 @@
 			<property name="Serial Number">unknown</property>
 			<property name="Device Id">unknown</property>
 			<property name="Software Version">unknown</property>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<representation-property>uuid</representation-property>
@@ -73,7 +73,7 @@
 			<property name="Serial Number">unknown</property>
 			<property name="Device Id">unknown</property>
 			<property name="Software Version">unknown</property>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<representation-property>uuid</representation-property>
@@ -159,6 +159,10 @@
 		<item-type>String</item-type>
 		<label>Active App</label>
 		<description>The Currently Running App on the Roku</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>App</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="activeAppName">
@@ -211,6 +215,10 @@
 		<item-type>String</item-type>
 		<label>Active Channel</label>
 		<description>The TV Channel Currently Selected on the Roku TV</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="signalMode">
