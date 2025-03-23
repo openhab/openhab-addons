@@ -13,6 +13,7 @@
 package org.openhab.binding.bambulab.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -41,7 +42,7 @@ public class BambuLabBindingConstants {
         CHANNEL_MC_REMAINING_TIME("mc-remaining-time"),
         CHANNEL_WIFI_SIGNAL("wifi-signal"),
         CHANNEL_BED_TYPE("bed-type"),
-        CHANNEL_GCODE_FILE("gcode-file"),
+        CHANNEL_GCODE_FILE("gcode-file", true),
         CHANNEL_GCODE_STATE("gcode-state"),
         CHANNEL_REASON("reason"),
         CHANNEL_RESULT("result"),
@@ -50,7 +51,7 @@ public class BambuLabBindingConstants {
         CHANNEL_BIG_FAN_2_SPEED("big-fan2-speed"),
         CHANNEL_HEAT_BREAK_FAN_SPEED("heat-break-fan-speed"),
         CHANNEL_LAYER_NUM("layer-num"),
-        CHANNEL_SPEED_LEVEL("speed-level"),
+        CHANNEL_SPEED_LEVEL("speed-level", true),
         CHANNEL_TIME_LAPS("time-laps"),
         CHANNEL_USE_AMS("use-ams"),
         CHANNEL_VIBRATION_CALIBRATION("vibration-calibration"),
@@ -80,6 +81,10 @@ public class BambuLabBindingConstants {
         @Override
         public String toString() {
             return name;
+        }
+
+        public boolean is(ChannelUID channelUID) {
+            return name.equals(channelUID.getId());
         }
     }
 }

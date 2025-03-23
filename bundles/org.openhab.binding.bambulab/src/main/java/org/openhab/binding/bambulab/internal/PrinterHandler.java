@@ -48,6 +48,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pl.grzeslowski.jbambuapi.PrinterClient;
+import pl.grzeslowski.jbambuapi.PrinterClient.Channel.GCodeFileCommand;
+import pl.grzeslowski.jbambuapi.PrinterClient.Channel.PrintSpeedCommand;
 import pl.grzeslowski.jbambuapi.PrinterClientConfig;
 import pl.grzeslowski.jbambuapi.PrinterWatcher;
 import pl.grzeslowski.jbambuapi.Report;
@@ -71,13 +73,17 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (!CHANNEL_LED_CHAMBER_LIGHT.getName().equals(channelUID.getId())
-                && !CHANNEL_LED_WORK_LIGHT.getName().equals(channelUID.getId())) {
-            return;
+        if (CHANNEL_LED_CHAMBER_LIGHT.is(channelUID) || CHANNEL_LED_WORK_LIGHT.is(channelUID)) {
+            var ledNode = CHANNEL_LED_CHAMBER_LIGHT.getName().equals(channelUID.getId()) ? CHAMBER_LIGHT : WORK_LIGHT;
+            var bambuCommand = "ON".equals(command.toFullString()) ? on(ledNode) : off(ledNode);
+            sendCommand(bambuCommand);
+        } else if (CHANNEL_GCODE_FILE.is(channelUID)) {
+            var bambuCommand = new GCodeFileCommand(command.toString());
+            sendCommand(bambuCommand);
+        } else if (CHANNEL_SPEED_LEVEL.is(channelUID)) {
+            var bambuCommand = PrintSpeedCommand.valueOf(command.toString());
+            sendCommand(bambuCommand);
         }
-        var ledNode = CHANNEL_LED_CHAMBER_LIGHT.getName().equals(channelUID.getId()) ? CHAMBER_LIGHT : WORK_LIGHT;
-        var bambuCommand = "ON".equals(command.toFullString()) ? on(ledNode) : off(ledNode);
-        sendCommand(bambuCommand);
     }
 
     @Override
@@ -209,7 +215,10 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.S
         updateDecimalState(CHANNEL_BIG_FAN_2_SPEED.getName(), print.bigFan2Speed());
         updateDecimalState(CHANNEL_HEAT_BREAK_FAN_SPEED.getName(), print.heatbreakFanSpeed());
         updateDecimalState(CHANNEL_LAYER_NUM.getName(), print.layerNum());
-        updateDecimalState(CHANNEL_SPEED_LEVEL.getName(), print.spdLvl());
+        if (print.spdLvl() != null) {
+            var speedLevel = PrintSpeedCommand.findByLevel(print.spdLvl());
+            updateState(CHANNEL_SPEED_LEVEL.getName(), new StringType(speedLevel.toString()));
+        }
         // boolean
         updateBooleanState(CHANNEL_TIME_LAPS.getName(), print.timelapse());
         updateBooleanState(CHANNEL_USE_AMS.getName(), print.useAms());
