@@ -100,7 +100,7 @@
 			</channel>
 			<channel id="camera-record" typeId="boolean-rw">
 				<label>Camera Record</label>
-				<description>Turns on/off OpenHAB's capability of recording.</description>
+				<description>Turns on/off openHAB's capability of recording.</description>
 			</channel>
 			<channel id="camera-image" typeId="camera-image"/>
 
