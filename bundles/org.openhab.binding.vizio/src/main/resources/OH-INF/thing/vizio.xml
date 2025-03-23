@@ -23,6 +23,7 @@
 
 		<properties>
 			<property name="modelId">unknown</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>uuid</representation-property>
@@ -65,6 +66,10 @@
 		<item-type>String</item-type>
 		<label>Active App</label>
 		<description>The currently running App on the TV</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>App</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="control">
