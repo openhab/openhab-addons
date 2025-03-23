@@ -87,6 +87,7 @@ public class PrinterHandler extends BaseThingHandler
     private @Nullable Camera camera;
     private final AtomicInteger reconnectTimes = new AtomicInteger();
     private final AtomicReference<@Nullable ScheduledFuture<?>> reconnectSchedule = new AtomicReference<>();
+    private final PrinterWatcher printerWatcher = new PrinterWatcher();
 
     public PrinterHandler(Thing thing) {
         super(thing);
@@ -149,7 +150,6 @@ public class PrinterHandler extends BaseThingHandler
         try {
             logger.debug("Trying to connect to the printer broker");
             client.connect(this);
-            var printerWatcher = new PrinterWatcher();
             client.subscribe(printerWatcher);
             printerWatcher.subscribe(this);
             // update to online done in `connectComplete`
@@ -216,6 +216,8 @@ public class PrinterHandler extends BaseThingHandler
     @Override
     public void dispose() {
         try {
+            printerWatcher.close();
+
             var localClient = client;
             client = null;
             if (localClient != null) {
