@@ -51,6 +51,9 @@ public class ChargeState {
     @SerializedName("charge_port_latch")
     public String chargePortLatch = "";
 
+    @SerializedName("charge_amps")
+    public float chargeAmps;
+
     @SerializedName("charge_rate")
     public float chargeRate;
 

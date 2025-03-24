@@ -30,6 +30,8 @@ public class VehicleState {
     @SerializedName("sentry_mode")
     public boolean sentryMode;
 
+    public double odometer;
+
     @SerializedName("valet_mode")
     public int valetMode;
 

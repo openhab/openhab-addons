@@ -185,8 +185,6 @@ public class TeslascopeHandler extends BaseThingHandler {
             updateState(TeslascopeBindingConstants.CHANNEL_VIN, new StringType(detailedInformation.vin));
             updateState(TeslascopeBindingConstants.CHANNEL_VEHICLE_NAME, new StringType(detailedInformation.name));
             updateState(TeslascopeBindingConstants.CHANNEL_VEHICLE_STATE, new StringType(detailedInformation.state));
-            updateState(TeslascopeBindingConstants.CHANNEL_ODOMETER,
-                    new QuantityType<>(detailedInformation.odometer, ImperialUnits.MILE));
 
             // charge state
             updateState(TeslascopeBindingConstants.CHANNEL_BATTERY_LEVEL,
@@ -286,6 +284,8 @@ public class TeslascopeHandler extends BaseThingHandler {
             // vehicle state
             updateState(TeslascopeBindingConstants.CHANNEL_DOOR_LOCK,
                     OnOffType.from(detailedInformation.vehicleState.locked));
+            updateState(TeslascopeBindingConstants.CHANNEL_ODOMETER,
+                    new QuantityType<>(detailedInformation.vehicleState.odometer, ImperialUnits.MILE));
             updateState(TeslascopeBindingConstants.CHANNEL_SENTRY_MODE,
                     OnOffType.from(detailedInformation.vehicleState.sentryMode));
             updateState(TeslascopeBindingConstants.CHANNEL_VALET_MODE,
