@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.RollershutterValue;
@@ -41,6 +44,16 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
     public static final String COVER_CHANNEL_ID = "cover";
     public static final String STATE_CHANNEL_ID = "state";
 
+    public static final String PAYLOAD_OPEN = "OPEN";
+    public static final String PAYLOAD_CLOSE = "CLOSE";
+    public static final String PAYLOAD_STOP = "STOP";
+
+    public static final String STATE_CLOSED = "closed";
+    public static final String STATE_CLOSING = "closing";
+    public static final String STATE_OPEN = "open";
+    public static final String STATE_OPENING = "opening";
+    public static final String STATE_STOPPED = "stopped";
+
     /**
      * Configuration class for MQTT component
      */
@@ -56,11 +69,11 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
         @SerializedName("command_topic")
         protected @Nullable String commandTopic;
         @SerializedName("payload_open")
-        protected String payloadOpen = "OPEN";
+        protected String payloadOpen = PAYLOAD_OPEN;
         @SerializedName("payload_close")
-        protected String payloadClose = "CLOSE";
+        protected String payloadClose = PAYLOAD_CLOSE;
         @SerializedName("payload_stop")
-        protected String payloadStop = "STOP";
+        protected String payloadStop = PAYLOAD_STOP;
         @SerializedName("position_closed")
         protected int positionClosed = 0;
         @SerializedName("position_open")
@@ -74,15 +87,15 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
         @SerializedName("set_position_topic")
         protected @Nullable String setPositionTopic;
         @SerializedName("state_closed")
-        protected String stateClosed = "closed";
+        protected String stateClosed = STATE_CLOSED;
         @SerializedName("state_closing")
-        protected String stateClosing = "closing";
+        protected String stateClosing = STATE_CLOSING;
         @SerializedName("state_open")
-        protected String stateOpen = "open";
+        protected String stateOpen = STATE_OPEN;
         @SerializedName("state_opening")
-        protected String stateOpening = "opening";
+        protected String stateOpening = STATE_OPENING;
         @SerializedName("state_stopped")
-        protected String stateStopped = "stopped";
+        protected String stateStopped = STATE_STOPPED;
     }
 
     @Nullable
@@ -102,9 +115,13 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
         // State can indicate additional information than just
         // the current position, so expose it as a separate channel
         if (stateTopic != null) {
-            TextValue value = new TextValue(new String[] { channelConfiguration.stateClosed,
-                    channelConfiguration.stateClosing, channelConfiguration.stateOpen,
-                    channelConfiguration.stateOpening, channelConfiguration.stateStopped });
+            Map<String, String> states = new LinkedHashMap<>();
+            states.put(channelConfiguration.stateClosed, STATE_CLOSED);
+            states.put(channelConfiguration.stateClosing, STATE_CLOSING);
+            states.put(channelConfiguration.stateOpen, STATE_OPEN);
+            states.put(channelConfiguration.stateOpening, STATE_OPENING);
+            states.put(channelConfiguration.stateStopped, STATE_STOPPED);
+            TextValue value = new TextValue(states, Map.of());
             buildChannel(STATE_CHANNEL_ID, ComponentChannelType.STRING, value, "State",
                     componentConfiguration.getUpdateListener()).stateTopic(stateTopic).isAdvanced(true).build();
         }
