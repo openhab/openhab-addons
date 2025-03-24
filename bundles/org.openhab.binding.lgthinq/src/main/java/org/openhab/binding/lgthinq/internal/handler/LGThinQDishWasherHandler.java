@@ -111,7 +111,7 @@ public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishW
 
     @Override
     protected void updateDeviceChannels(DishWasherSnapshot shot) {
-        updateState("dashboard#" + CHANNEL_AC_POWER_ID,
+        updateState(CHANNEL_DASHBOARD_GRP_WITH_SEP + CHANNEL_AC_POWER_ID,
                 OnOffType.from(DevicePowerState.DV_POWER_ON.equals(shot.getPowerStatus())));
         updateState(stateChannelUID, new StringType(shot.getState()));
         updateState(processStateChannelUID, new StringType(shot.getProcessState()));

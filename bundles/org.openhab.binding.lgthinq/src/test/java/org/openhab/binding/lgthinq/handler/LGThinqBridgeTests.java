@@ -103,6 +103,18 @@ class LGThinqBridgeTests {
         }
     }
 
+    static class LGThinQBridgeHandlerTest extends LGThinQBridgeHandler {
+
+        public LGThinQBridgeHandlerTest(Bridge bridge, HttpClientFactory httpClientFactory) {
+            super(bridge, httpClientFactory);
+        }
+
+        @Override
+        public <T> T getConfigAs(Class<T> configurationClass) {
+            return super.getConfigAs(configurationClass);
+        }
+    }
+
     private void setupAuthenticationMock() throws Exception {
         stubFor(get(LG_API_GATEWAY_SERVICE_PATH_V2).willReturn(ok(gtwResponse)));
         String preLoginPwd = RestUtils.getPreLoginEncPwd(fakePassword);
@@ -135,8 +147,8 @@ class LGThinqBridgeTests {
         String tempDir = System.getProperty("java.io.tmpdir");
         System.setProperty("THINQ_CONNECTION_DATA_FILE", tempDir + File.separator + "token.json");
         System.setProperty("BASE_CAP_CONFIG_DATA_FILE", tempDir + File.separator + "thinq-cap.json");
-        LGThinQBridgeHandler b = new LGThinQBridgeHandler(fakeThing, mock(HttpClientFactory.class));
-        LGThinQBridgeHandler spyBridge = spy(b);
+        LGThinQBridgeHandlerTest b = new LGThinQBridgeHandlerTest(fakeThing, mock(HttpClientFactory.class));
+        LGThinQBridgeHandlerTest spyBridge = spy(b);
         doReturn(new LGThinQBridgeConfiguration(fakeUserName, fakePassword, fakeCountry, fakeLanguage, 60,
                 "http://localhost:8880")).when(spyBridge).getConfigAs(any(Class.class));
         spyBridge.initialize();

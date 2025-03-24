@@ -32,6 +32,7 @@ import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeCanonicalSnapshot;
 import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeCapability;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -146,7 +147,7 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
                 // force update states after first snapshot fetched to fit changes in temperature unit
                 updateChannelDynStateDescription();
             } catch (Exception ex) {
-                logger.error("Unexpected error updating dynamic state description.", ex);
+                logger.warn("Unexpected error updating dynamic state description.", ex);
             }
         }
     }
@@ -263,12 +264,13 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
     @Override
     public void updateChannelDynStateDescription() throws LGThinqApiException {
         FridgeCapability cap = getCapabilities();
-        manageDynChannel(icePlusChannelUID, CHANNEL_FR_ICE_PLUS, ItemTypes.SWITCH, !cap.getIcePlusMap().isEmpty());
-        manageDynChannel(expressFreezeModeChannelUID, CHANNEL_FR_EXPRESS_FREEZE_MODE, ItemTypes.STRING,
+        manageDynChannel(icePlusChannelUID, CHANNEL_FR_ICE_PLUS, CoreItemFactory.SWITCH,
+                !cap.getIcePlusMap().isEmpty());
+        manageDynChannel(expressFreezeModeChannelUID, CHANNEL_FR_EXPRESS_FREEZE_MODE, CoreItemFactory.STRING,
                 !cap.getExpressFreezeModeMap().isEmpty());
-        manageDynChannel(expressCoolModeChannelUID, CHANNEL_FR_EXPRESS_COOL_MODE, ItemTypes.SWITCH,
+        manageDynChannel(expressCoolModeChannelUID, CHANNEL_FR_EXPRESS_COOL_MODE, CoreItemFactory.SWITCH,
                 cap.isExpressCoolModePresent());
-        manageDynChannel(vacationModeChannelUID, CHANNEL_FR_VACATION_MODE, ItemTypes.SWITCH,
+        manageDynChannel(vacationModeChannelUID, CHANNEL_FR_VACATION_MODE, CoreItemFactory.SWITCH,
                 cap.isEcoFriendlyModePresent());
 
         Unit<Temperature> unTemp = getTemperatureUnit(getLastShot());

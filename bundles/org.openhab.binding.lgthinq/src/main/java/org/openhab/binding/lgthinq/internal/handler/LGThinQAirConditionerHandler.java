@@ -35,6 +35,7 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCapability;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACTargetTmp;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ExtendedDeviceInfo;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -207,16 +208,18 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     @Override
     public void updateChannelDynStateDescription() throws LGThinqApiException {
         ACCapability acCap = getCapabilities();
-        manageDynChannel(jetModeChannelUID, CHANNEL_AC_COOL_JET_ID, ItemTypes.SWITCH, acCap.isJetModeAvailable());
-        manageDynChannel(autoDryChannelUID, CHANNEL_AC_AUTO_DRY_ID, ItemTypes.SWITCH, acCap.isAutoDryModeAvailable());
-        manageDynChannel(airCleanChannelUID, CHANNEL_AC_AIR_CLEAN_ID, ItemTypes.SWITCH, acCap.isAirCleanAvailable());
-        manageDynChannel(energySavingChannelUID, CHANNEL_AC_ENERGY_SAVING_ID, ItemTypes.SWITCH,
+        manageDynChannel(jetModeChannelUID, CHANNEL_AC_COOL_JET_ID, CoreItemFactory.SWITCH, acCap.isJetModeAvailable());
+        manageDynChannel(autoDryChannelUID, CHANNEL_AC_AUTO_DRY_ID, CoreItemFactory.SWITCH,
+                acCap.isAutoDryModeAvailable());
+        manageDynChannel(airCleanChannelUID, CHANNEL_AC_AIR_CLEAN_ID, CoreItemFactory.SWITCH,
+                acCap.isAirCleanAvailable());
+        manageDynChannel(energySavingChannelUID, CHANNEL_AC_ENERGY_SAVING_ID, CoreItemFactory.SWITCH,
                 acCap.isEnergySavingAvailable());
-        manageDynChannel(stepUpDownChannelUID, CHANNEL_AC_STEP_UP_DOWN_ID, ItemTypes.SWITCH,
+        manageDynChannel(stepUpDownChannelUID, CHANNEL_AC_STEP_UP_DOWN_ID, CoreItemFactory.SWITCH,
                 acCap.isStepUpDownAvailable());
-        manageDynChannel(stepLeftRightChannelUID, CHANNEL_AC_STEP_LEFT_RIGHT_ID, ItemTypes.SWITCH,
+        manageDynChannel(stepLeftRightChannelUID, CHANNEL_AC_STEP_LEFT_RIGHT_ID, CoreItemFactory.SWITCH,
                 acCap.isStepLeftRightAvailable());
-        manageDynChannel(stepLeftRightChannelUID, CHANNEL_AC_STEP_LEFT_RIGHT_ID, ItemTypes.SWITCH,
+        manageDynChannel(stepLeftRightChannelUID, CHANNEL_AC_STEP_LEFT_RIGHT_ID, CoreItemFactory.SWITCH,
                 acCap.isStepLeftRightAvailable());
 
         if (!acCap.getFanSpeed().isEmpty()) {

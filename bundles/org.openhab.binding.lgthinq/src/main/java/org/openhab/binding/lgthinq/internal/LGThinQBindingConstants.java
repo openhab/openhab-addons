@@ -33,24 +33,6 @@ public class LGThinQBindingConstants extends LGServicesConstants {
 
     public static final String BINDING_ID = "lgthinq";
 
-    // =============== General Constants ================
-    public enum ItemTypes {
-        SWITCH("Switch"),
-        STRING("String"),
-        DIMMER("Dimmer"),
-        Number("Number");
-
-        private final String value;
-
-        ItemTypes(String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
-    }
-
     // =============== Thing Configuration Constants ===========
     public static final String CFG_POLLING_PERIOD_POWER_ON_SEC = "pollingPeriodPowerOnSeconds";
     public static final String CFG_POLLING_PERIOD_POWER_OFF_SEC = "pollingPeriodPowerOffSeconds";
@@ -80,6 +62,7 @@ public class LGThinQBindingConstants extends LGServicesConstants {
             THING_TYPE_FRIDGE, THING_TYPE_BRIDGE, THING_TYPE_HEAT_PUMP, THING_TYPE_DISHWASHER);
     // ======== Common Channels & Constants ========
     public static final String CHANNEL_DASHBOARD_GRP_ID = "dashboard";
+    public static final String CHANNEL_DASHBOARD_GRP_WITH_SEP = "dashboard#";
     public static final String CHANNEL_EXTENDED_INFO_GRP_ID = "extended-information";
     public static final String CHANNEL_EXTENDED_INFO_COLLECTOR_ID = "extra-info-collector";
     // Max number of retries trying to get the monitor (V1) until consider ERROR in the connection

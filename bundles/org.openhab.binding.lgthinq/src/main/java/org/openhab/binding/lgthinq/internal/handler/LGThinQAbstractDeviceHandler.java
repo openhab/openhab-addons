@@ -359,7 +359,8 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             this.account = bridgeHandler;
             this.bridgeId = bridge.getUID().getId();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge not set");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/error.communication-error.no-bridge-set");
             return;
         }
 
@@ -383,7 +384,8 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             }
             // registry this thing to the bridge
             if (account == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Account not set");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/error.communication-error.no-bridge-set");
             } else {
                 getAccountBridgeHandler().registryListenerThing(this);
                 if (bridgeStatus == null) {
@@ -656,7 +658,8 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
 
     protected String getBridgeId() {
         if (bridgeId.isBlank() && getBridge() == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.communication-error.no-bridge-set");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/error.communication-error.no-bridge-set");
             return "UNKNOWN";
         } else if (bridgeId.isBlank() && getBridge() != null) {
             bridgeId = Objects.requireNonNull(getBridge()).getUID().getId();
@@ -770,11 +773,11 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         }
     }
 
-    protected void manageDynChannel(ChannelUID channelUid, String channelName, ItemTypes itemType,
+    protected void manageDynChannel(ChannelUID channelUid, String channelName, String itemType,
             boolean isFeatureAvailable) {
         Channel chan = getThing().getChannel(channelUid);
         if (chan == null && isFeatureAvailable) {
-            createDynChannel(channelName, channelUid, itemType.getValue());
+            createDynChannel(channelName, channelUid, itemType);
         } else if (chan != null && (!isFeatureAvailable)) {
             updateThing(editThing().withoutChannel(chan.getUID()).build());
         }

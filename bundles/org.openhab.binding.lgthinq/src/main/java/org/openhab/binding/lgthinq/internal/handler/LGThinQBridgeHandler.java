@@ -148,7 +148,6 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
     }
 
     @Override
-
     public void handleRemoval() {
         ScheduledFuture<?> devicePollingJob = this.devicePollingJob;
         if (devicePollingJob != null) {
@@ -160,18 +159,12 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
     }
 
     @Override
-
     public void dispose() {
         ScheduledFuture<?> devicePollingJob = this.devicePollingJob;
         if (devicePollingJob != null) {
             devicePollingJob.cancel(true);
             this.devicePollingJob = null;
         }
-    }
-
-    @Override
-    public <T> T getConfigAs(Class<T> configurationClass) {
-        return super.getConfigAs(configurationClass);
     }
 
     @Override
@@ -208,22 +201,21 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
         if (devicePollingJob != null && !devicePollingJob.isDone()) {
             devicePollingJob.cancel(true);
         }
-        long poolingInterval;
+        long pollingInterval;
         int configPollingInterval = lgthinqConfig.getPollingIntervalSec();
         // It's not recommended to polling for resources in LG API short intervals to do not enter in BlackList
-        if (configPollingInterval < 300 && configPollingInterval != 0) {
-            poolingInterval = TimeUnit.SECONDS.toSeconds(300);
-            logger.info("Wrong configuration value for pooling interval. Using default value: {}s", poolingInterval);
-        } else {
-            if (configPollingInterval == 0) {
-                logger.info("LG's discovery pooling disabled (configured as zero)");
-                return;
-            }
-            poolingInterval = configPollingInterval;
+        if (configPollingInterval == 0) {
+            logger.debug("LG's discovery polling disabled");
+            return;
+        } else if (configPollingInterval < 300) {
+            configPollingInterval = 300;
+            logger.warn("Wrong configuration value for polling interval. Using default value: {}s",
+                    configPollingInterval);
         }
+        pollingInterval = configPollingInterval;
         // submit instantlly and schedule for the next polling interval.
         runDiscovery();
-        this.devicePollingJob = scheduler.scheduleWithFixedDelay(lgDevicePollingRunnable, 2, poolingInterval,
+        this.devicePollingJob = scheduler.scheduleWithFixedDelay(lgDevicePollingRunnable, 2, pollingInterval,
                 TimeUnit.SECONDS);
     }
 
@@ -361,7 +353,6 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
                     discoveryService.removeLgDeviceDiscovery(device);
                 }
             });
-
             lGDeviceRegister.values().forEach(LGThinQAbstractDeviceHandler::refreshStatus);
         }
     }

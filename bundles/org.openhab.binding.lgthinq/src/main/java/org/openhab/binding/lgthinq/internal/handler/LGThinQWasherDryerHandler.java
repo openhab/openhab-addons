@@ -185,7 +185,7 @@ public class LGThinQWasherDryerHandler
 
     @Override
     protected void updateDeviceChannels(WasherDryerSnapshot shot) throws LGThinqApiException {
-        updateState("dashboard#" + CHANNEL_AC_POWER_ID,
+        updateState(CHANNEL_DASHBOARD_GRP_WITH_SEP + CHANNEL_AC_POWER_ID,
                 OnOffType.from(DevicePowerState.DV_POWER_ON == shot.getPowerStatus()));
         updateState(stateChannelUID, new StringType(shot.getState()));
         updateState(processStateChannelUID, new StringType(shot.getProcessState()));
