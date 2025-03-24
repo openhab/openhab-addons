@@ -84,7 +84,7 @@
             </goals>
             <phase>generate-resources</phase>
             <configuration>
-              <connectionUrl>scm:git:https://github.com/HolgerHees/openhab-python</connectionUrl>
+              <connectionUrl>scm:git:https://github.com/openhab/openhab-python</connectionUrl>
               <checkoutDirectory>${project.build.directory}/python</checkoutDirectory>
               <scmVersion>main</scmVersion>
               <scmVersionType>branch</scmVersionType>
