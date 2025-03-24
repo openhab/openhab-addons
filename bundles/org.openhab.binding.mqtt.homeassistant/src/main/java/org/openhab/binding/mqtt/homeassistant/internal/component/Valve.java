@@ -14,14 +14,11 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -61,6 +58,15 @@ public class Valve extends AbstractComponent<Valve.ChannelConfiguration> impleme
     private static final String POSITION_KEY = "position";
     private static final String STATE_KEY = "state";
 
+    public static final String PAYLOAD_OPEN = "OPEN";
+    public static final String PAYLOAD_CLOSE = "CLOSE";
+    public static final String PAYLOAD_STOP = "STOP";
+
+    public static final String STATE_OPEN = "open";
+    public static final String STATE_OPENING = "opening";
+    public static final String STATE_CLOSED = "closed";
+    public static final String STATE_CLOSING = "closing";
+
     private static final String FORMAT_INTEGER = "%.0f";
 
     private final Logger logger = LoggerFactory.getLogger(Valve.class);
@@ -83,9 +89,9 @@ public class Valve extends AbstractComponent<Valve.ChannelConfiguration> impleme
         protected String commandTopic = "";
 
         @SerializedName("payload_close")
-        protected @Nullable String payloadClose = "CLOSE";
+        protected @Nullable String payloadClose = PAYLOAD_CLOSE;
         @SerializedName("payload_open")
-        protected @Nullable String payloadOpen = "OPEN";
+        protected @Nullable String payloadOpen = PAYLOAD_OPEN;
         @SerializedName("payload_stop")
         protected @Nullable String payloadStop;
         @SerializedName("position_closed")
@@ -95,13 +101,13 @@ public class Valve extends AbstractComponent<Valve.ChannelConfiguration> impleme
         @SerializedName("reports_position")
         protected boolean reportsPosition = false;
         @SerializedName("state_closed")
-        protected @Nullable String stateClosed = "closed";
+        protected @Nullable String stateClosed = STATE_CLOSED;
         @SerializedName("state_closing")
-        protected @Nullable String stateClosing = "closing";
+        protected @Nullable String stateClosing = STATE_CLOSING;
         @SerializedName("state_open")
-        protected @Nullable String stateOpen = "open";
+        protected @Nullable String stateOpen = STATE_OPEN;
         @SerializedName("state_opening")
-        protected @Nullable String stateOpening = "opening";
+        protected @Nullable String stateOpening = STATE_OPENING;
     }
 
     private final OnOffValue onOffValue;
@@ -137,17 +143,17 @@ public class Valve extends AbstractComponent<Valve.ChannelConfiguration> impleme
                     .withAutoUpdatePolicy(autoUpdatePolicy).build();
         }
 
-        List<String> commandValues = new ArrayList<>();
-        addCommandValue(commandValues, channelConfiguration.payloadOpen);
-        addCommandValue(commandValues, channelConfiguration.payloadClose);
-        addCommandValue(commandValues, channelConfiguration.payloadStop);
+        Map<String, String> commandValues = new HashMap<>();
+        addCommandValue(commandValues, PAYLOAD_OPEN, channelConfiguration.payloadOpen);
+        addCommandValue(commandValues, PAYLOAD_CLOSE, channelConfiguration.payloadClose);
+        addCommandValue(commandValues, PAYLOAD_STOP, channelConfiguration.payloadStop);
 
-        List<String> stateValues = new ArrayList<>();
-        addCommandValue(stateValues, channelConfiguration.stateOpen);
-        addCommandValue(stateValues, channelConfiguration.stateOpening);
-        addCommandValue(stateValues, channelConfiguration.stateClosed);
-        addCommandValue(stateValues, channelConfiguration.stateClosing);
-        stateValue = new TextValue(stateValues.toArray(new String[0]), commandValues.toArray(new String[0]));
+        Map<String, String> stateValues = new HashMap<>();
+        addCommandValue(stateValues, channelConfiguration.stateOpen, STATE_OPEN);
+        addCommandValue(stateValues, channelConfiguration.stateOpening, STATE_OPENING);
+        addCommandValue(stateValues, channelConfiguration.stateClosed, STATE_CLOSED);
+        addCommandValue(stateValues, channelConfiguration.stateClosing, STATE_CLOSING);
+        stateValue = new TextValue(stateValues, commandValues);
 
         final var rawStateChannel = buildChannel(RAW_STATE_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(),
                 "State", this).stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
@@ -178,9 +184,9 @@ public class Valve extends AbstractComponent<Valve.ChannelConfiguration> impleme
         finalizeChannels();
     }
 
-    private void addCommandValue(List<String> commandValues, @Nullable String command) {
-        if (command != null) {
-            commandValues.add(command);
+    private void addCommandValue(Map<String, String> commandValues, @Nullable String key, @Nullable String value) {
+        if (key != null && value != null) {
+            commandValues.put(key, value);
         }
     }
 
@@ -192,7 +198,7 @@ public class Valve extends AbstractComponent<Valve.ChannelConfiguration> impleme
     // then the state gets inferred from the position if it's fully open or fully closed.
     @Override
     public void updateChannelState(ChannelUID channel, State state) {
-        Set<String> states = stateValue.getStates();
+        Map<String, String> states = stateValue.getStates();
 
         @Nullable
         String statePayload = state.toString();
@@ -215,9 +221,12 @@ public class Valve extends AbstractComponent<Valve.ChannelConfiguration> impleme
             // We have both state and position; no need to guess anything
             if (channelConfiguration.reportsPosition) {
                 if (statePayload != null) {
-                    if (states != null && !states.contains(statePayload)) {
+                    if (states != null && !states.containsKey(statePayload)) {
                         logger.warn("Invalid state '{}' for {}", statePayload, getHaID().toShortTopic());
                     } else {
+                        if (states != null) {
+                            statePayload = Objects.requireNonNull(states.get(statePayload));
+                        }
                         stateValue.update(new StringType(statePayload));
                         channelStateUpdateListener.updateChannelState(buildChannelUID(STATE_CHANNEL_ID),
                                 stateValue.getChannelState());
@@ -241,7 +250,7 @@ public class Valve extends AbstractComponent<Valve.ChannelConfiguration> impleme
         }
 
         statePayload = Objects.requireNonNull(statePayload);
-        if (states != null && states.contains(statePayload)) {
+        if (states != null && states.containsKey(statePayload)) {
             if (channelConfiguration.reportsPosition) {
                 if (statePayload.equals(channelConfiguration.stateClosed)) {
                     positionValue.update(PercentType.ZERO);

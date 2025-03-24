@@ -13,8 +13,9 @@
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -48,6 +49,13 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
     public static final String FEATURE_CLEAN_SPOT = "clean_spot"; // Initialize a spot cleaning cycle
     public static final String FEATURE_FAN_SPEED = "fan_speed";
     public static final String FEATURE_SEND_COMMAND = "send_command";
+
+    public static final String PAYLOAD_CLEAN_SPOT = "clean_spot";
+    public static final String PAYLOAD_LOCATE = "locate";
+    public static final String PAYLOAD_PAUSE = "pause";
+    public static final String PAYLOAD_RETURN_TO_BASE = "return_to_base";
+    public static final String PAYLOAD_START = "start";
+    public static final String PAYLOAD_STOP = "stop";
 
     public static final String STATE_CLEANING = "cleaning";
     public static final String STATE_DOCKED = "docked";
@@ -87,17 +95,17 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
         protected @Nullable String fanSpeedTopic;
 
         @SerializedName("payload_clean_spot")
-        protected String payloadCleanSpot = "clean_spot";
+        protected String payloadCleanSpot = PAYLOAD_CLEAN_SPOT;
         @SerializedName("payload_locate")
-        protected String payloadLocate = "locate";
+        protected String payloadLocate = PAYLOAD_LOCATE;
         @SerializedName("payload_pause")
-        protected String payloadPause = "pause";
+        protected String payloadPause = PAYLOAD_PAUSE;
         @SerializedName("payload_return_to_base")
-        protected String payloadReturnToBase = "return_to_base";
+        protected String payloadReturnToBase = PAYLOAD_RETURN_TO_BASE;
         @SerializedName("payload_start")
-        protected String payloadStart = "start";
+        protected String payloadStart = PAYLOAD_START;
         @SerializedName("payload_stop")
-        protected String payloadStop = "stop";
+        protected String payloadStop = PAYLOAD_STOP;
 
         @SerializedName("send_command_topic")
         protected @Nullable String sendCommandTopic;
@@ -124,15 +132,18 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
 
         final var supportedFeatures = channelConfiguration.supportedFeatures;
 
-        final List<String> commands = new ArrayList<>();
-        addPayloadToList(supportedFeatures, FEATURE_CLEAN_SPOT, channelConfiguration.payloadCleanSpot, commands);
-        addPayloadToList(supportedFeatures, FEATURE_LOCATE, channelConfiguration.payloadLocate, commands);
-        addPayloadToList(supportedFeatures, FEATURE_RETURN_HOME, channelConfiguration.payloadReturnToBase, commands);
-        addPayloadToList(supportedFeatures, FEATURE_START, channelConfiguration.payloadStart, commands);
-        addPayloadToList(supportedFeatures, FEATURE_STOP, channelConfiguration.payloadStop, commands);
-        addPayloadToList(supportedFeatures, FEATURE_PAUSE, channelConfiguration.payloadPause, commands);
+        final Map<String, String> commands = new LinkedHashMap<>();
+        addPayloadToList(supportedFeatures, FEATURE_CLEAN_SPOT, PAYLOAD_CLEAN_SPOT,
+                channelConfiguration.payloadCleanSpot, commands);
+        addPayloadToList(supportedFeatures, FEATURE_LOCATE, PAYLOAD_LOCATE, channelConfiguration.payloadLocate,
+                commands);
+        addPayloadToList(supportedFeatures, FEATURE_RETURN_HOME, PAYLOAD_RETURN_TO_BASE,
+                channelConfiguration.payloadReturnToBase, commands);
+        addPayloadToList(supportedFeatures, FEATURE_START, PAYLOAD_START, channelConfiguration.payloadStart, commands);
+        addPayloadToList(supportedFeatures, FEATURE_STOP, PAYLOAD_STOP, channelConfiguration.payloadStop, commands);
+        addPayloadToList(supportedFeatures, FEATURE_PAUSE, PAYLOAD_PAUSE, channelConfiguration.payloadPause, commands);
 
-        buildOptionalChannel(COMMAND_CH_ID, ComponentChannelType.STRING, new TextValue(commands.toArray(new String[0])),
+        buildOptionalChannel(COMMAND_CH_ID, ComponentChannelType.STRING, new TextValue(Map.of(), commands),
                 updateListener, null, channelConfiguration.commandTopic, null, null, "Command");
 
         final var fanSpeedList = channelConfiguration.fanSpeedList;
@@ -188,9 +199,10 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
         return null;
     }
 
-    private void addPayloadToList(List<String> supportedFeatures, String feature, String payload, List<String> list) {
+    private void addPayloadToList(List<String> supportedFeatures, String feature, String command, String payload,
+            Map<String, String> commands) {
         if (supportedFeatures.contains(feature) && !payload.isEmpty()) {
-            list.add(payload);
+            commands.put(command, payload);
         }
     }
 }

@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,6 +47,14 @@ public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.Chann
     public static final String FEATURE_ARM_CUSTOM_BYPASS = "arm_custom_bypass";
     public static final String FEATURE_TRIGGER = "trigger";
 
+    public static final String PAYLOAD_ARM_HOME = "ARM_HOME";
+    public static final String PAYLOAD_ARM_AWAY = "ARM_AWAY";
+    public static final String PAYLOAD_ARM_NIGHT = "ARM_NIGHT";
+    public static final String PAYLOAD_ARM_VACATION = "ARM_VACATION";
+    public static final String PAYLOAD_ARM_CUSTOM_BYPASS = "ARM_CUSTOM_BYPASS";
+    public static final String PAYLOAD_DISARM = "DISARM";
+    public static final String PAYLOAD_TRIGGER = "TRIGGER";
+
     public static final String STATE_ARMED_AWAY = "armed_away";
     public static final String STATE_ARMED_CUSTOM_BYPASS = "armed_custom_bypass";
     public static final String STATE_ARMED_HOME = "armed_home";
@@ -73,19 +82,19 @@ public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.Chann
         @SerializedName("command_topic")
         protected @Nullable String commandTopic;
         @SerializedName("payload_arm_away")
-        protected String payloadArmAway = "ARM_AWAY";
+        protected String payloadArmAway = PAYLOAD_ARM_AWAY;
         @SerializedName("payload_arm_home")
-        protected String payloadArmHome = "ARM_HOME";
+        protected String payloadArmHome = PAYLOAD_ARM_HOME;
         @SerializedName("payload_arm_night")
-        protected String payloadArmNight = "ARM_NIGHT";
+        protected String payloadArmNight = PAYLOAD_ARM_NIGHT;
         @SerializedName("payload_arm_vacation")
-        protected String payloadArmVacation = "ARM_VACATION";
+        protected String payloadArmVacation = PAYLOAD_ARM_VACATION;
         @SerializedName("payload_arm_custom_bypass")
-        protected String payloadArmCustomBypass = "ARM_CUSTOM_BYPASS";
+        protected String payloadArmCustomBypass = PAYLOAD_ARM_CUSTOM_BYPASS;
         @SerializedName("payload_disarm")
-        protected String payloadDisarm = "DISARM";
+        protected String payloadDisarm = PAYLOAD_DISARM;
         @SerializedName("payload_trigger")
-        protected String payloadTrigger = "TRIGGER";
+        protected String payloadTrigger = PAYLOAD_TRIGGER;
 
         @SerializedName("supported_features")
         protected List<String> supportedFeatures = List.of(FEATURE_ARM_HOME, FEATURE_ARM_AWAY, FEATURE_ARM_NIGHT,
@@ -95,37 +104,43 @@ public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.Chann
     public AlarmControlPanel(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
-        List<String> stateEnum = new ArrayList(List.of(STATE_DISARMED, STATE_TRIGGERED, STATE_ARMING, STATE_DISARMING,
-                STATE_PENDING, STATE_TRIGGERED));
-        List<String> commandEnum = new ArrayList(List.of(channelConfiguration.payloadDisarm));
-        if (channelConfiguration.supportedFeatures.contains(FEATURE_ARM_HOME)) {
-            stateEnum.add(STATE_ARMED_HOME);
-            commandEnum.add(channelConfiguration.payloadArmHome);
-        }
-        if (channelConfiguration.supportedFeatures.contains(FEATURE_ARM_AWAY)) {
-            stateEnum.add(STATE_ARMED_AWAY);
-            commandEnum.add(channelConfiguration.payloadArmAway);
-        }
-        if (channelConfiguration.supportedFeatures.contains(FEATURE_ARM_NIGHT)) {
-            stateEnum.add(STATE_ARMED_NIGHT);
-            commandEnum.add(channelConfiguration.payloadArmNight);
-        }
-        if (channelConfiguration.supportedFeatures.contains(FEATURE_ARM_VACATION)) {
-            stateEnum.add(STATE_ARMED_VACATION);
-            commandEnum.add(channelConfiguration.payloadArmVacation);
-        }
-        if (channelConfiguration.supportedFeatures.contains(FEATURE_ARM_CUSTOM_BYPASS)) {
-            stateEnum.add(STATE_ARMED_CUSTOM_BYPASS);
-            commandEnum.add(channelConfiguration.payloadArmCustomBypass);
-        }
-        if (channelConfiguration.supportedFeatures.contains(FEATURE_TRIGGER)) {
-            commandEnum.add(channelConfiguration.payloadTrigger);
-        }
+        Map<String, String> stateEnum = new LinkedHashMap<>();
+        stateEnum.put(STATE_DISARMED, STATE_DISARMED);
+        stateEnum.put(STATE_TRIGGERED, STATE_TRIGGERED);
+        stateEnum.put(STATE_ARMING, STATE_ARMING);
+        stateEnum.put(STATE_DISARMING, STATE_DISARMING);
+        stateEnum.put(STATE_PENDING, STATE_PENDING);
 
         String commandTopic = channelConfiguration.commandTopic;
-        TextValue value = (commandTopic != null)
-                ? new TextValue(stateEnum.toArray(new String[0]), commandEnum.toArray(new String[0]))
-                : new TextValue(stateEnum.toArray(new String[0]));
+        Map<String, String> commandEnum = new LinkedHashMap<>();
+        if (commandTopic != null) {
+            commandEnum.put(PAYLOAD_DISARM, channelConfiguration.payloadDisarm);
+        }
+        if (channelConfiguration.supportedFeatures.contains(FEATURE_ARM_HOME)) {
+            stateEnum.put(STATE_ARMED_HOME, STATE_ARMED_HOME);
+            commandEnum.put(PAYLOAD_ARM_HOME, channelConfiguration.payloadArmHome);
+        }
+        if (channelConfiguration.supportedFeatures.contains(FEATURE_ARM_AWAY)) {
+            stateEnum.put(STATE_ARMED_AWAY, STATE_ARMED_AWAY);
+            commandEnum.put(PAYLOAD_ARM_AWAY, channelConfiguration.payloadArmAway);
+        }
+        if (channelConfiguration.supportedFeatures.contains(FEATURE_ARM_NIGHT)) {
+            stateEnum.put(STATE_ARMED_NIGHT, STATE_ARMED_NIGHT);
+            commandEnum.put(PAYLOAD_ARM_NIGHT, channelConfiguration.payloadArmNight);
+        }
+        if (channelConfiguration.supportedFeatures.contains(FEATURE_ARM_VACATION)) {
+            stateEnum.put(STATE_ARMED_VACATION, STATE_ARMED_VACATION);
+            commandEnum.put(PAYLOAD_ARM_VACATION, channelConfiguration.payloadArmVacation);
+        }
+        if (channelConfiguration.supportedFeatures.contains(FEATURE_ARM_CUSTOM_BYPASS)) {
+            stateEnum.put(STATE_ARMED_CUSTOM_BYPASS, STATE_ARMED_CUSTOM_BYPASS);
+            commandEnum.put(PAYLOAD_ARM_CUSTOM_BYPASS, channelConfiguration.payloadArmCustomBypass);
+        }
+        if (channelConfiguration.supportedFeatures.contains(FEATURE_TRIGGER)) {
+            commandEnum.put(PAYLOAD_TRIGGER, channelConfiguration.payloadTrigger);
+        }
+
+        TextValue value = new TextValue(stateEnum, commandEnum);
         var builder = buildChannel(STATE_CHANNEL_ID, ComponentChannelType.STRING, value, getName(),
                 componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate());

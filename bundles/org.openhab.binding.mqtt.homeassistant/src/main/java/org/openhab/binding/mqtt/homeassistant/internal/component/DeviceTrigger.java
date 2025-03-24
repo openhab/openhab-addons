@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -121,7 +121,7 @@ public class DeviceTrigger extends AbstractComponent<DeviceTrigger.ChannelConfig
         Configuration newConfiguration = mergeChannelConfiguration(channel, newTrigger);
 
         TextValue value = (TextValue) channel.getState().getCache();
-        Set<String> payloads = value.getStates();
+        Map<String, String> payloads = value.getStates();
 
         // Append payload to allowed values
         String otherPayload = newTrigger.getChannelConfiguration().payload;
@@ -129,7 +129,7 @@ public class DeviceTrigger extends AbstractComponent<DeviceTrigger.ChannelConfig
             // Need to accept anything
             value = new TextValue();
         } else {
-            String[] newValues = Stream.concat(payloads.stream(), Stream.of(otherPayload)).distinct()
+            String[] newValues = Stream.concat(payloads.keySet().stream(), Stream.of(otherPayload)).distinct()
                     .toArray(String[]::new);
             value = new TextValue(newValues);
         }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.TextValue;
@@ -30,6 +32,8 @@ import com.google.gson.annotations.SerializedName;
 public class Button extends AbstractComponent<Button.ChannelConfiguration> {
     public static final String BUTTON_CHANNEL_ID = "button";
 
+    public static final String PAYLOAD_PRESS = "PRESS";
+
     /**
      * Configuration class for MQTT component
      */
@@ -44,13 +48,13 @@ public class Button extends AbstractComponent<Button.ChannelConfiguration> {
         protected @Nullable String commandTopic;
 
         @SerializedName("payload_press")
-        protected String payloadPress = "PRESS";
+        protected String payloadPress = PAYLOAD_PRESS;
     }
 
     public Button(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
-        TextValue value = new TextValue(new String[] { channelConfiguration.payloadPress });
+        TextValue value = new TextValue(Map.of(), Map.of(PAYLOAD_PRESS, channelConfiguration.payloadPress));
 
         buildChannel(BUTTON_CHANNEL_ID, ComponentChannelType.STRING, value, getName(),
                 componentConfiguration.getUpdateListener())
