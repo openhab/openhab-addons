@@ -14,6 +14,7 @@ package org.openhab.binding.bambulab.internal;
 
 import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.AmsChannel.MAX_AMS_TRAYS;
+import static org.openhab.binding.bambulab.internal.StateParserHelper.*;
 import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.ThingStatusDetail.BRIDGE_UNINITIALIZED;
 
@@ -25,7 +26,6 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bambulab.internal.BambuLabBindingConstants.AmsChannel;
-import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -141,7 +141,7 @@ public class AmsDeviceHandlerFactory extends BaseThingHandler {
                 .ifPresent(value -> updateState(AmsChannel.getNozzleTemperatureMinChannel(trayId), value));
         findKey(map, "remain")//
                 .map(Object::toString)//
-                .map(value -> (State) PercentType.valueOf(value))//
+                .flatMap(StateParserHelper::parsePercentType)//
                 .or(StateParserHelper::undef)//
                 .ifPresent(value -> updateState(AmsChannel.getRemainChannel(trayId), value));
         findKey(map, "k")//

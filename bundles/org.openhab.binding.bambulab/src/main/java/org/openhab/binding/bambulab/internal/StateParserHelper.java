@@ -16,6 +16,7 @@ import static java.lang.Integer.parseInt;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.DECIBEL_MILLIWATTS;
 import static org.openhab.core.types.UnDefType.UNDEF;
+import static tech.units.indriya.unit.Units.PERCENT;
 
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -57,6 +58,21 @@ public class StateParserHelper {
         } catch (NumberFormatException ex) {
             logger.debug("Cannot parse {}", value, ex);
             return Optional.empty();
+        }
+    }
+
+    public static Optional<State> parsePercentType(@Nullable Number percent) {
+        return Optional.ofNullable(percent).map(d -> new QuantityType<>(d, PERCENT));
+    }
+
+    public static Optional<State> parsePercentType(@Nullable String percent) {
+        try {
+            return Optional.ofNullable(percent)//
+                    .map(Double::parseDouble)//
+                    .map(d -> new QuantityType<>(d, PERCENT));
+        } catch (NumberFormatException ex) {
+            logger.debug("Cannot parse {}", percent, ex);
+            return Optional.of(UNDEF);
         }
     }
 

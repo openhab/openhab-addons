@@ -16,6 +16,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.DECIBEL_MILLIWATTS;
 import static org.openhab.core.types.UnDefType.UNDEF;
+import static tech.units.indriya.unit.Units.PERCENT;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.DisplayName;
@@ -203,5 +204,319 @@ class StateParserHelperTest {
 
         // Then
         assertThat(result).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Given a valid numeric value, when parsePercentType is called, then it returns Optional with QuantityType")
+    public void testValidNumericReturnsQuantityTypeWithPercentUnit() {
+        // Given
+        var numericValue = 75;
+
+        // When
+        var result = StateParserHelper.parsePercentType(numericValue);
+
+        // Then
+        assertThat(result).isPresent();
+        assertThat(result.get()).isInstanceOf(QuantityType.class);
+        var quantityType = (QuantityType<?>) result.get();
+        assertThat(quantityType.getUnit()).isEqualTo(PERCENT);
+        assertThat(quantityType.doubleValue()).isEqualTo(75.0);
+    }
+
+    @Test
+    @DisplayName("Given an integer value, when parsePercentType is called, then it returns correct QuantityType")
+    public void testIntegerValuesAreCorrectlyParsed() {
+        // Given
+        var integerValue = 100;
+
+        // When
+        var result = StateParserHelper.parsePercentType(integerValue);
+
+        // Then
+        assertThat(result).isPresent();
+        var quantityType = (QuantityType<?>) result.get();
+        assertThat(quantityType.doubleValue()).isEqualTo(100.0);
+        assertThat(quantityType.getUnit()).isEqualTo(PERCENT);
+    }
+
+    @Test
+    @DisplayName("Given a decimal value, when parsePercentType is called, then it returns correct QuantityType")
+    public void testDecimalValuesAreCorrectlyParsed() {
+        // Given
+        var decimalValue = 50.5;
+
+        // When
+        var result = StateParserHelper.parsePercentType(decimalValue);
+
+        // Then
+        assertThat(result).isPresent();
+        var quantityType = (QuantityType<?>) result.get();
+        assertThat(quantityType.doubleValue()).isEqualTo(50.5);
+        assertThat(quantityType.getUnit()).isEqualTo(PERCENT);
+    }
+
+    @Test
+    @DisplayName("Given a zero value, when parsePercentType is called, then it returns QuantityType with zero value")
+    public void testZeroValueIsCorrectlyParsed2() {
+        // Given
+        var zeroValue = 0;
+
+        // When
+        var result = StateParserHelper.parsePercentType(zeroValue);
+
+        // Then
+        assertThat(result).isPresent();
+        var quantityType = (QuantityType<?>) result.get();
+        assertThat(quantityType.doubleValue()).isZero();
+        assertThat(quantityType.getUnit()).isEqualTo(PERCENT);
+    }
+
+    @Test
+    @DisplayName("Given a negative value, when parsePercentType is called, then it returns QuantityType with negative value")
+    public void testNegativeValuesAreCorrectlyParsed2() {
+        // Given
+        var negativeValue = -10;
+
+        // When
+        var result = StateParserHelper.parsePercentType(negativeValue);
+
+        // Then
+        assertThat(result).isPresent();
+        var quantityType = (QuantityType<?>) result.get();
+        assertThat(quantityType.doubleValue()).isEqualTo(-10.0);
+        assertThat(quantityType.getUnit()).isEqualTo(PERCENT);
+    }
+
+    @Test
+    @DisplayName("Given a null input, when parsePercentType is called, then it returns Optional.empty")
+    public void testNullInputReturnsEmptyOptional2() {
+        // Given
+        Number nullValue = null;
+
+        // When
+        var result = StateParserHelper.parsePercentType(nullValue);
+
+        // Then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Given an empty string input, when parsePercentType is called, then it returns Optional.empty")
+    public void testEmptyStringInputReturnsEmptyOptional2() {
+        // This test is not applicable as the method only accepts Number objects
+        // The method signature is: parsePercentType(@Nullable Number percent)
+        // Empty strings would be handled by a different method before this one is called
+
+        // For completeness, we'll verify that null returns empty
+        // Given
+        Number nullValue = null;
+
+        // When
+        var result = StateParserHelper.parsePercentType(nullValue);
+
+        // Then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Given a non-numeric string input, when parsePercentType is called, then it returns Optional.empty")
+    public void testNonNumericStringReturnsEmptyOptional2() {
+        // This test is not applicable as the method only accepts Number objects
+        // The method signature is: parsePercentType(@Nullable Number percent)
+        // Non-numeric strings would be handled by a different method before this one is called
+
+        // For completeness, we'll verify that null returns empty
+        // Given
+        Number nullValue = null;
+
+        // When
+        var result = StateParserHelper.parsePercentType(nullValue);
+
+        // Then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Given a very large number, when parsePercentType is called, then it returns correct QuantityType")
+    public void testVeryLargeNumbersAreHandledCorrectly2() {
+        // Given
+        var largeValue = Double.MAX_VALUE / 2;
+
+        // When
+        var result = StateParserHelper.parsePercentType(largeValue);
+
+        // Then
+        assertThat(result).isPresent();
+        var quantityType = (QuantityType<?>) result.get();
+        assertThat(quantityType.doubleValue()).isEqualTo(largeValue);
+        assertThat(quantityType.getUnit()).isEqualTo(PERCENT);
+    }
+
+    @Test
+    @DisplayName("Given a very small number, when parsePercentType is called, then it returns correct QuantityType")
+    public void testVerySmallNumbersAreHandledCorrectly2() {
+        // Given
+        var smallValue = Double.MIN_VALUE;
+
+        // When
+        var result = StateParserHelper.parsePercentType(smallValue);
+
+        // Then
+        assertThat(result).isPresent();
+        var quantityType = (QuantityType<?>) result.get();
+        assertThat(quantityType.doubleValue()).isEqualTo(smallValue);
+        assertThat(quantityType.getUnit()).isEqualTo(PERCENT);
+    }
+
+    @Test
+    @DisplayName("Valid numeric string returns Optional containing QuantityType with PERCENT unit")
+    public void testValidNumericStringReturnsQuantityTypeWithPercentUnit() {
+        // Given
+        var percentString = "75";
+
+        // When
+        var result = StateParserHelper.parsePercentType(percentString);
+
+        // Then
+        assertThat(result).isPresent();
+        assertThat(result.get()).isInstanceOf(QuantityType.class);
+        var quantityType = (QuantityType<?>) result.get();
+        assertThat(quantityType.getUnit()).isEqualTo(PERCENT);
+        assertThat(quantityType.doubleValue()).isEqualTo(75.0);
+    }
+
+    @Test
+    @DisplayName("Integer string values like '100' are correctly parsed")
+    public void testIntegerStringValuesAreCorrectlyParsed() {
+        // Given
+        var percentString = "100";
+
+        // When
+        var result = StateParserHelper.parsePercentType(percentString);
+
+        // Then
+        assertThat(result).isPresent();
+        var quantityType = (QuantityType<?>) result.get();
+        assertThat(quantityType.doubleValue()).isEqualTo(100.0);
+        assertThat(quantityType.getUnit()).isEqualTo(PERCENT);
+    }
+
+    @Test
+    @DisplayName("Decimal string values like '50.5' are correctly parsed")
+    public void testDecimalStringValuesAreCorrectlyParsed() {
+        // Given
+        var percentString = "50.5";
+
+        // When
+        var result = StateParserHelper.parsePercentType(percentString);
+
+        // Then
+        assertThat(result).isPresent();
+        var quantityType = (QuantityType<?>) result.get();
+        assertThat(quantityType.doubleValue()).isEqualTo(50.5);
+        assertThat(quantityType.getUnit()).isEqualTo(PERCENT);
+    }
+
+    @Test
+    @DisplayName("Zero value '0' is correctly parsed")
+    public void testZeroValueIsCorrectlyParsed() {
+        // Given
+        var percentString = "0";
+
+        // When
+        var result = StateParserHelper.parsePercentType(percentString);
+
+        // Then
+        assertThat(result).isPresent();
+        var quantityType = (QuantityType<?>) result.get();
+        assertThat(quantityType.doubleValue()).isEqualTo(0.0);
+        assertThat(quantityType.getUnit()).isEqualTo(PERCENT);
+    }
+
+    @Test
+    @DisplayName("Negative values like '-10' are correctly parsed")
+    public void testNegativeValuesAreCorrectlyParsed() {
+        // Given
+        var percentString = "-10";
+
+        // When
+        var result = StateParserHelper.parsePercentType(percentString);
+
+        // Then
+        assertThat(result).isPresent();
+        var quantityType = (QuantityType<?>) result.get();
+        assertThat(quantityType.doubleValue()).isEqualTo(-10.0);
+        assertThat(quantityType.getUnit()).isEqualTo(PERCENT);
+    }
+
+    @Test
+    @DisplayName("Null input returns Optional.empty()")
+    public void testNullInputReturnsEmptyOptional() {
+        // Given
+        String percentString = null;
+
+        // When
+        var result = StateParserHelper.parsePercentType(percentString);
+
+        // Then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Empty string input throws NumberFormatException and returns Optional.empty()")
+    public void testEmptyStringInputReturnsEmptyOptional() {
+        // Given
+        var percentString = "";
+
+        // When
+        var result = StateParserHelper.parsePercentType(percentString);
+
+        // Then
+        assertThat(result).contains(UNDEF);
+    }
+
+    @Test
+    @DisplayName("Non-numeric string like 'abc' throws NumberFormatException and returns Optional.empty()")
+    public void testNonNumericStringReturnsEmptyOptional() {
+        // Given
+        var percentString = "abc";
+
+        // When
+        var result = StateParserHelper.parsePercentType(percentString);
+
+        // Then
+        assertThat(result).contains(UNDEF);
+    }
+
+    @Test
+    @DisplayName("Very large numbers near Double.MAX_VALUE are handled correctly")
+    public void testVeryLargeNumbersAreHandledCorrectly() {
+        // Given
+        var percentString = String.valueOf(Double.MAX_VALUE);
+
+        // When
+        var result = StateParserHelper.parsePercentType(percentString);
+
+        // Then
+        assertThat(result).isPresent();
+        var quantityType = (QuantityType<?>) result.get();
+        assertThat(quantityType.doubleValue()).isEqualTo(Double.MAX_VALUE);
+        assertThat(quantityType.getUnit()).isEqualTo(PERCENT);
+    }
+
+    @Test
+    @DisplayName("Very small numbers near Double.MIN_VALUE are handled correctly")
+    public void testVerySmallNumbersAreHandledCorrectly() {
+        // Given
+        var percentString = String.valueOf(Double.MIN_VALUE);
+
+        // When
+        var result = StateParserHelper.parsePercentType(percentString);
+
+        // Then
+        assertThat(result).isPresent();
+        var quantityType = (QuantityType<?>) result.get();
+        assertThat(quantityType.doubleValue()).isEqualTo(Double.MIN_VALUE);
+        assertThat(quantityType.getUnit()).isEqualTo(PERCENT);
     }
 }

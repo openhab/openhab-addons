@@ -461,23 +461,11 @@ public class PrinterHandler extends BaseBridgeHandler
     }
 
     private void updatePercentState(BambuLabBindingConstants.Channel channelId, @Nullable Integer integer) {
-        if (integer == null) {
-            return;
-        }
-        updateState(channelId, new PercentType(integer));
+        parsePercentType(integer).ifPresent(state -> updateState(channelId, state));
     }
 
     private void updatePercentState(BambuLabBindingConstants.Channel channelId, @Nullable String integer) {
-        if (integer == null) {
-            return;
-        }
-        try {
-            var state = new PercentType(integer);
-            updateState(channelId, state);
-        } catch (NumberFormatException e) {
-            logger.debug("Cannot parse percent number {}", integer, e);
-            updateState(channelId, UNDEF);
-        }
+        parsePercentType(integer).ifPresent(state -> updateState(channelId, state));
     }
 
     private void updateLightState(String lightName, BambuLabBindingConstants.Channel channel,
