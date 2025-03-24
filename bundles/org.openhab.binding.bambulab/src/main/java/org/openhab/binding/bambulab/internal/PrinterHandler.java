@@ -195,13 +195,18 @@ public class PrinterHandler extends BaseBridgeHandler
             return;
         }
         logger.debug("Will reconnect in {} seconds...", configNotNull.reconnectTime);
-        reconnectSchedule.set(//
-                scheduler.schedule(() -> {
-                    logger.debug("Reconnecting...");
-                    reconnectSchedule.set(null);
-                    dispose();
-                    initialize();
-                }, configNotNull.reconnectTime, SECONDS));
+        try {
+            reconnectSchedule.set(//
+                    scheduler.schedule(() -> {
+                        logger.debug("Reconnecting...");
+                        reconnectSchedule.set(null);
+                        dispose();
+                        initialize();
+                    }, configNotNull.reconnectTime, SECONDS));
+        } catch (RejectedExecutionException ex) {
+            logger.debug("Task was rejected", ex);
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, ex.getLocalizedMessage());
+        }
     }
 
     private PrinterClient buildLocalClient(URI uri, PrinterConfiguration config) throws InitializationException {
