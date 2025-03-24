@@ -44,7 +44,7 @@ public class StateParserHelper {
             return Optional.ofNullable(value).map(Double::parseDouble).map(d -> new QuantityType<>(d, CELSIUS));
         } catch (NumberFormatException ex) {
             logger.debug("Cannot parse: {}", value, ex);
-            return Optional.empty();
+            return Optional.of(UNDEF);
         }
     }
 
@@ -57,7 +57,7 @@ public class StateParserHelper {
             return Optional.ofNullable(value).map(DecimalType::new);
         } catch (NumberFormatException ex) {
             logger.debug("Cannot parse {}", value, ex);
-            return Optional.empty();
+            return Optional.of(UNDEF);
         }
     }
 
