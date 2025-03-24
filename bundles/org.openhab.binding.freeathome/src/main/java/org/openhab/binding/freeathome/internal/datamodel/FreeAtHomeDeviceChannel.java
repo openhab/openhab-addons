@@ -84,7 +84,7 @@ public class FreeAtHomeDeviceChannel {
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1, channelId, channelObject);
 
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -97,12 +97,12 @@ public class FreeAtHomeDeviceChannel {
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 17, channelId, channelObject);
 
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1, channelId, channelObject);
 
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -116,7 +116,7 @@ public class FreeAtHomeDeviceChannel {
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 256, channelId, channelObject);
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT, 1, channelId, channelObject);
 
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -129,23 +129,23 @@ public class FreeAtHomeDeviceChannel {
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 6, channelId, channelObject);
 
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 7, channelId, channelObject);
 
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1027, channelId, channelObject);
 
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT_AS_OUTPUT, 256, channelId,
                         channelObject);
 
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -161,40 +161,40 @@ public class FreeAtHomeDeviceChannel {
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 304, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 333, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 331, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 54, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 51, channelId, channelObject);
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT, 320, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 68, channelId, channelObject);
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT, 58, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 56, channelId, channelObject);
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT, 66, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 // Additional channel for RTC device
                 if (Integer.parseInt(channelFunctionID, 16) == FID_ROOM_TEMPERATURE_CONTROLLER_MASTER_WITHOUT_FAN) {
                     newDatapointGroup = new FreeAtHomeDatapointGroup();
                     newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 48, channelId, channelObject);
-                    AddDatapointGroup(newDatapointGroup);
+                    addDatapointGroup(newDatapointGroup);
                 }
 
                 break;
@@ -208,12 +208,12 @@ public class FreeAtHomeDeviceChannel {
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 // 53 AL_WINDOW_DOOR Window/Door Open = 1 / closed = 0
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 53, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 // 41 AL_WINDOW_DOOR_POSITION Window/Door position Delivers position for Window/Door(Open/Tilted/Closed)
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 41, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -225,7 +225,7 @@ public class FreeAtHomeDeviceChannel {
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 4, channelId, channelObject);
 
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -238,7 +238,7 @@ public class FreeAtHomeDeviceChannel {
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 61698, channelId, channelObject);
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT, 61697, channelId, channelObject);
 
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -251,7 +251,7 @@ public class FreeAtHomeDeviceChannel {
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 256, channelId, channelObject);
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT, 2, channelId, channelObject);
 
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -264,7 +264,7 @@ public class FreeAtHomeDeviceChannel {
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 2, channelId, channelObject);
 
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -277,7 +277,7 @@ public class FreeAtHomeDeviceChannel {
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 256, channelId, channelObject);
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT, 2, channelId, channelObject);
 
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -291,13 +291,13 @@ public class FreeAtHomeDeviceChannel {
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 272, channelId, channelObject);
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT, 17, channelId, channelObject);
 
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 256, channelId, channelObject);
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT, 1, channelId, channelObject);
 
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -317,13 +317,13 @@ public class FreeAtHomeDeviceChannel {
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 17, channelId, channelObject);
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT, 272, channelId, channelObject);
 
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1, channelId, channelObject);
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT, 256, channelId, channelObject);
 
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -339,17 +339,17 @@ public class FreeAtHomeDeviceChannel {
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT, 32, channelId, channelObject);
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 288, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT, 33, channelId, channelObject);
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 288, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 289, channelId, channelObject);
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT, 35, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 /*
                  * 290 AL_CURRENT_ABSOLUTE_POSITION_SLATS_PERCENTAGE Current Absolute Position Slats Percentage Indicate
@@ -360,7 +360,7 @@ public class FreeAtHomeDeviceChannel {
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 290, channelId, channelObject);
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT, 36, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -378,11 +378,11 @@ public class FreeAtHomeDeviceChannel {
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1026, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1027, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -393,15 +393,15 @@ public class FreeAtHomeDeviceChannel {
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 39, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1029, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1030, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -412,17 +412,17 @@ public class FreeAtHomeDeviceChannel {
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 if (newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 38, channelId, channelObject)) {
-                    AddDatapointGroup(newDatapointGroup);
+                    addDatapointGroup(newDatapointGroup);
                 }
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 if (newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1024, channelId, channelObject)) {
-                    AddDatapointGroup(newDatapointGroup);
+                    addDatapointGroup(newDatapointGroup);
                 }
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 if (newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 304, channelId, channelObject)) {
-                    AddDatapointGroup(newDatapointGroup);
+                    addDatapointGroup(newDatapointGroup);
                 }
 
                 break;
@@ -434,15 +434,15 @@ public class FreeAtHomeDeviceChannel {
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 37, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1025, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1028, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -453,7 +453,7 @@ public class FreeAtHomeDeviceChannel {
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1564, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -464,7 +464,7 @@ public class FreeAtHomeDeviceChannel {
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1563, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -475,7 +475,7 @@ public class FreeAtHomeDeviceChannel {
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 337, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -486,7 +486,7 @@ public class FreeAtHomeDeviceChannel {
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1562, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -497,7 +497,7 @@ public class FreeAtHomeDeviceChannel {
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1565, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -508,7 +508,7 @@ public class FreeAtHomeDeviceChannel {
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1566, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -519,7 +519,7 @@ public class FreeAtHomeDeviceChannel {
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1567, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -530,7 +530,7 @@ public class FreeAtHomeDeviceChannel {
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1569, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -541,7 +541,7 @@ public class FreeAtHomeDeviceChannel {
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 1568, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -550,7 +550,7 @@ public class FreeAtHomeDeviceChannel {
                 logger.debug("Wind Alarm channel - Channel FID: 0x{}", channelFunctionID);
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 37, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
             }
@@ -559,7 +559,7 @@ public class FreeAtHomeDeviceChannel {
                 logger.debug("Rain Alarm channel - Channel FID: 0x{}", channelFunctionID);
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 39, channelId, channelObject);
-                AddDatapointGroup(newDatapointGroup);
+                addDatapointGroup(newDatapointGroup);
 
                 break;
 
@@ -618,7 +618,7 @@ public class FreeAtHomeDeviceChannel {
         }
     }
 
-    private void AddDatapointGroup(FreeAtHomeDatapointGroup DatapointGroup) {
+    private void addDatapointGroup(FreeAtHomeDatapointGroup DatapointGroup) {
         if (DatapointGroup.isValid()) {
             logger.debug("Datapoint group is added");
             datapointGroups.add(DatapointGroup);

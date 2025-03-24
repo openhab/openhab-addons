@@ -994,7 +994,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
             lock.lock();
             try {
                 if (websocketSession == null) {
-               	    boolean established = websocketSessionEstablished.await(BRIDGE_WEBSOCKET_TIMEOUT, TimeUnit.SECONDS);
+                    boolean established = websocketSessionEstablished.await(BRIDGE_WEBSOCKET_TIMEOUT, TimeUnit.SECONDS);
                     if (!established || websocketSession == null) {
                         logger.debug("WebSocket connection timed out or failed during establishment");
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -1080,7 +1080,13 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
         if (localSession != null) {
             websocketSession = localSession;
-            localSession.setIdleTimeout(2 * BRIDGE_WEBSOCKET_KEEPALIVE * 1000);
+            localSession.setIdleTimeout(2 * BRIDGE_WEBSOCKET_KEEPALIVE * 1000); // Unit is milliseconds,
+                                                                                // sendWebsocketPing() and
+                                                                                // sendWebsocketKeepAliveMessage() are
+                                                                                // called every
+                                                                                // BRIDGE_WEBSOCKET_KEEPALIVE, so the
+                                                                                // timeout should be at least 2 times
+                                                                                // that
             logger.debug("WebSocket connection to SysAP established successfully, timeout: {} ms",
                     localSession.getIdleTimeout());
 
