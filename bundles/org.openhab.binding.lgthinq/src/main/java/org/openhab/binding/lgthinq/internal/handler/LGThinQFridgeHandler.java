@@ -127,11 +127,10 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
             updateState(expressFreezeModeChannelUID, new StringType(shot.getExpressMode()));
         }
         if (isLinked(expressCoolModeChannelUID)) {
-            updateState(expressCoolModeChannelUID,
-                    "ON".equals(shot.getExpressCoolMode()) ? OnOffType.ON : OnOffType.OFF);
+            updateState(expressCoolModeChannelUID, OnOffType.from(shot.getExpressCoolMode()));
         }
         if (isLinked(vacationModeChannelUID)) {
-            updateState(vacationModeChannelUID, "ON".equals(shot.getEcoFriendlyMode()) ? OnOffType.ON : OnOffType.OFF);
+            updateState(vacationModeChannelUID, OnOffType.from(shot.getEcoFriendlyMode()));
         }
         if (isLinked(freshAirFilterChannelUID)) {
             updateState(freshAirFilterChannelUID, new StringType(shot.getFreshAirFilterState()));
@@ -264,12 +263,13 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
     @Override
     public void updateChannelDynStateDescription() throws LGThinqApiException {
         FridgeCapability cap = getCapabilities();
-        manageDynChannel(icePlusChannelUID, CHANNEL_FR_ICE_PLUS, "Switch", !cap.getIcePlusMap().isEmpty());
-        manageDynChannel(expressFreezeModeChannelUID, CHANNEL_FR_EXPRESS_FREEZE_MODE, "String",
+        manageDynChannel(icePlusChannelUID, CHANNEL_FR_ICE_PLUS, ItemTypes.SWITCH, !cap.getIcePlusMap().isEmpty());
+        manageDynChannel(expressFreezeModeChannelUID, CHANNEL_FR_EXPRESS_FREEZE_MODE, ItemTypes.STRING,
                 !cap.getExpressFreezeModeMap().isEmpty());
-        manageDynChannel(expressCoolModeChannelUID, CHANNEL_FR_EXPRESS_COOL_MODE, "Switch",
+        manageDynChannel(expressCoolModeChannelUID, CHANNEL_FR_EXPRESS_COOL_MODE, ItemTypes.SWITCH,
                 cap.isExpressCoolModePresent());
-        manageDynChannel(vacationModeChannelUID, CHANNEL_FR_VACATION_MODE, "Switch", cap.isEcoFriendlyModePresent());
+        manageDynChannel(vacationModeChannelUID, CHANNEL_FR_VACATION_MODE, ItemTypes.SWITCH,
+                cap.isEcoFriendlyModePresent());
 
         Unit<Temperature> unTemp = getTemperatureUnit(getLastShot());
         if (SIUnits.CELSIUS.equals(unTemp)) {

@@ -33,6 +33,24 @@ public class LGThinQBindingConstants extends LGServicesConstants {
 
     public static final String BINDING_ID = "lgthinq";
 
+    // =============== General Constants ================
+    public enum ItemTypes {
+        SWITCH("Switch"),
+        STRING("String"),
+        DIMMER("Dimmer"),
+        Number("Number");
+
+        private final String value;
+
+        ItemTypes(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
     // =============== Thing Configuration Constants ===========
     public static final String CFG_POLLING_PERIOD_POWER_ON_SEC = "pollingPeriodPowerOnSeconds";
     public static final String CFG_POLLING_PERIOD_POWER_OFF_SEC = "pollingPeriodPowerOffSeconds";

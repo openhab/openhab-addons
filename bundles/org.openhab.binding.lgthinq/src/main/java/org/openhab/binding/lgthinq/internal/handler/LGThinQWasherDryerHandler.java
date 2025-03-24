@@ -186,7 +186,7 @@ public class LGThinQWasherDryerHandler
     @Override
     protected void updateDeviceChannels(WasherDryerSnapshot shot) throws LGThinqApiException {
         updateState("dashboard#" + CHANNEL_AC_POWER_ID,
-                (DevicePowerState.DV_POWER_ON.equals(shot.getPowerStatus()) ? OnOffType.ON : OnOffType.OFF));
+                OnOffType.from(DevicePowerState.DV_POWER_ON == shot.getPowerStatus()));
         updateState(stateChannelUID, new StringType(shot.getState()));
         updateState(processStateChannelUID, new StringType(shot.getProcessState()));
         updateState(dryLevelChannelUID, new StringType(shot.getDryLevel()));
@@ -196,8 +196,8 @@ public class LGThinQWasherDryerHandler
         updateState(doorLockChannelUID, new StringType(shot.getDoorLock()));
         updateState(remainTimeChannelUID, new StringType(shot.getRemainingTime()));
         updateState(delayTimeChannelUID, new StringType(shot.getReserveTime()));
-        updateState(standByModeChannelUID, shot.isStandBy() ? OnOffType.ON : OnOffType.OFF);
-        updateState(remoteStartFlagChannelUID, shot.isRemoteStartEnabled() ? OnOffType.ON : OnOffType.OFF);
+        updateState(standByModeChannelUID, OnOffType.from(shot.isStandBy()));
+        updateState(remoteStartFlagChannelUID, OnOffType.from(shot.isRemoteStartEnabled()));
         updateState(spinChannelUID, new StringType(shot.getSpin()));
         updateState(rinseChannelUID, new StringType(shot.getRinse()));
         Channel rsStartStopChannel = getThing().getChannel(remoteStartStopChannelUID);

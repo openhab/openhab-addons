@@ -82,7 +82,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
     private final Map<String, LGDevice> lastDevicesDiscovered = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(LGThinQBridgeHandler.class);
     private final TokenManager tokenManager;
-    private final @Nullable LGThinQGeneralApiClientService lgApiClient;
+    private final LGThinQGeneralApiClientService lgApiClient;
     private final HttpClientFactory httpClientFactory;
     private final LGDevicePollingRunnable lgDevicePollingRunnable;
     private LGThinQBridgeConfiguration lgthinqConfig = new LGThinQBridgeConfiguration();
@@ -125,26 +125,22 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
         lGDeviceRegister.remove(thing.getDeviceId());
     }
 
-    private LGThinQGeneralApiClientService getLgApiClient() {
-        return Objects.requireNonNull(lgApiClient, "Not expected lgApiClient null. It is most likely a bug");
-    }
-
     @Override
     public Collection<ConfigStatusMessage> getConfigStatus() {
         List<ConfigStatusMessage> resultList = new ArrayList<>();
-        if (lgthinqConfig.username.isEmpty()) {
+        if (lgthinqConfig.username.isBlank()) {
             resultList.add(ConfigStatusMessage.Builder.error("USERNAME").withMessageKeySuffix("missing field")
                     .withArguments("username").build());
         }
-        if (lgthinqConfig.password.isEmpty()) {
+        if (lgthinqConfig.password.isBlank()) {
             resultList.add(ConfigStatusMessage.Builder.error("PASSWORD").withMessageKeySuffix("missing field")
                     .withArguments("password").build());
         }
-        if (lgthinqConfig.language.isEmpty()) {
+        if (lgthinqConfig.language.isBlank()) {
             resultList.add(ConfigStatusMessage.Builder.error("LANGUAGE").withMessageKeySuffix("missing field")
                     .withArguments("language").build());
         }
-        if (lgthinqConfig.country.isEmpty()) {
+        if (lgthinqConfig.country.isBlank()) {
             resultList.add(ConfigStatusMessage.Builder.error("COUNTRY").withMessageKeySuffix("missing field")
                     .withArguments("country").build());
         }
@@ -183,8 +179,8 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
         logger.debug("Initializing LGThinq bridge handler.");
         lgthinqConfig = getConfigAs(LGThinQBridgeConfiguration.class);
         lgDevicePollingRunnable.lgthinqConfig = lgthinqConfig;
-        if (lgthinqConfig.username.isEmpty() || lgthinqConfig.password.isEmpty() || lgthinqConfig.language.isEmpty()
-                || lgthinqConfig.country.isEmpty()) {
+        if (lgthinqConfig.username.isBlank() || lgthinqConfig.password.isBlank() || lgthinqConfig.language.isBlank()
+                || lgthinqConfig.country.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/error.mandotory-fields-missing");
         } else {
@@ -333,7 +329,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
         @Override
         protected void doConnectedRun() throws LGThinqException {
             Map<String, LGDevice> lastDevicesDiscoveredCopy = new HashMap<>(lastDevicesDiscovered);
-            List<LGDevice> devices = getLgApiClient().listAccountDevices(bridgeName);
+            List<LGDevice> devices = lgApiClient.listAccountDevices(bridgeName);
             // if not registered yet, and not discovered before, then add to discovery list.
             devices.forEach(device -> {
                 String deviceId = device.getDeviceId();

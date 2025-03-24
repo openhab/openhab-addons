@@ -51,6 +51,7 @@ import org.openhab.binding.lgthinq.lgservices.model.FeatureDataType;
 import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
 import org.openhab.binding.lgthinq.lgservices.model.SnapshotDefinition;
 import org.openhab.core.items.Item;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -75,7 +76,6 @@ import org.slf4j.Logger;
 @NonNullByDefault
 public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends CapabilityDefinition, @NonNull S extends SnapshotDefinition>
         extends BaseThingWithExtraInfoHandler {
-    // Bridges status that this thing must top scanning for state change
     private static final Set<ThingStatusDetail> BRIDGE_STATUS_DETAIL_ERROR = Set.of(ThingStatusDetail.BRIDGE_OFFLINE,
             ThingStatusDetail.BRIDGE_UNINITIALIZED, ThingStatusDetail.COMMUNICATION_ERROR,
             ThingStatusDetail.CONFIGURATION_ERROR);
@@ -298,7 +298,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                     getLogger().trace("{}", message);
                 }
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Device Command Queue is Busy");
+                        "@text/error.handler.device-cmd-queue-busy");
             }
         }
     }
@@ -489,7 +489,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             Map<String, Object> extraInfoCollected = collectExtraInfoState();
             updateExtraInfoStateChannels(extraInfoCollected);
         } catch (LGThinqException ex) {
-            getLogger().error(
+            getLogger().warn(
                     "Error getting energy state and update the correlated channels. DeviceName: {}, DeviceId: {}. Error: {}",
                     getDeviceAlias(), getDeviceId(), ex.getMessage(), ex);
         }
@@ -593,9 +593,9 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
 
     protected String translateFeatureToItemType(FeatureDataType dataType) {
         return switch (dataType) {
-            case UNDEF, ENUM -> "String";
-            case RANGE -> "Dimmer";
-            case BOOLEAN -> "Switch";
+            case UNDEF, ENUM -> CoreItemFactory.STRING;
+            case RANGE -> CoreItemFactory.DIMMER;
+            case BOOLEAN -> CoreItemFactory.SWITCH;
             default -> throw new IllegalStateException(
                     String.format("Feature DataType %s not supported for this ThingHandler", dataType));
         };
@@ -656,8 +656,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
 
     protected String getBridgeId() {
         if (bridgeId.isBlank() && getBridge() == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-            getLogger().error("Configuration error um Thinq Thing - No Bridge defined for the thing.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.communication-error.no-bridge-set");
             return "UNKNOWN";
         } else if (bridgeId.isBlank() && getBridge() != null) {
             bridgeId = Objects.requireNonNull(getBridge()).getUID().getId();
@@ -771,11 +770,11 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         }
     }
 
-    protected void manageDynChannel(ChannelUID channelUid, String channelName, String itemType,
+    protected void manageDynChannel(ChannelUID channelUid, String channelName, ItemTypes itemType,
             boolean isFeatureAvailable) {
         Channel chan = getThing().getChannel(channelUid);
         if (chan == null && isFeatureAvailable) {
-            createDynChannel(channelName, channelUid, itemType);
+            createDynChannel(channelName, channelUid, itemType.getValue());
         } else if (chan != null && (!isFeatureAvailable)) {
             updateThing(editThing().withoutChannel(chan.getUID()).build());
         }
