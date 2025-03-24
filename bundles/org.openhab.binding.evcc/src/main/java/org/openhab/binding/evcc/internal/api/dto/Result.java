@@ -24,6 +24,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Florian Hotze - Initial contribution
  * @author Luca Arnecke - update to evcc version 0.123.1
+ * @author Daniel Kötting - update to evcc version 0.133.0
  * @author Marcel Goerentz - Replace invalid chars with hyphens in vehicles map
  */
 public class Result {
