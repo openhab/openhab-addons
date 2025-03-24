@@ -148,7 +148,6 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
     }
 
     @Override
-
     public void handleRemoval() {
         ScheduledFuture<?> devicePollingJob = this.devicePollingJob;
         if (devicePollingJob != null) {
