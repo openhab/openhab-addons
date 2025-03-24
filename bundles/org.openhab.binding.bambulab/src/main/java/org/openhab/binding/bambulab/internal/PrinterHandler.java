@@ -12,15 +12,16 @@
  */
 package org.openhab.binding.bambulab.internal;
 
-import static java.lang.Integer.parseInt;
+import static java.util.Arrays.stream;
+import static java.util.Collections.synchronizedList;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.function.Function.identity;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.AmsChannel.*;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel.*;
+import static org.openhab.binding.bambulab.internal.StateParserHelper.*;
 import static org.openhab.binding.bambulab.internal.TrayHelper.updateTrayLoaded;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
-import static org.openhab.core.library.unit.Units.DECIBEL_MILLIWATTS;
-import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatus.UNKNOWN;
@@ -32,6 +33,7 @@ import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PushingCommand
 import static pl.grzeslowski.jbambuapi.mqtt.PrinterClientConfig.requiredFields;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -42,25 +44,23 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
-import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bambulab.internal.BambuLabBindingConstants.AmsChannel;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +68,7 @@ import pl.grzeslowski.jbambuapi.mqtt.ConnectionCallback;
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient;
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.GCodeFileCommand;
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClientConfig;
 import pl.grzeslowski.jbambuapi.mqtt.PrinterWatcher;
 import pl.grzeslowski.jbambuapi.mqtt.Report;
 
@@ -78,9 +79,8 @@ import pl.grzeslowski.jbambuapi.mqtt.Report;
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public class PrinterHandler extends BaseThingHandler
+public class PrinterHandler extends BaseBridgeHandler
         implements PrinterWatcher.StateSubscriber, BambuHandler, ConnectionCallback {
-    private static final Pattern DBM_PATTERN = Pattern.compile("^(-?\\d+)dBm$");
     private Logger logger = LoggerFactory.getLogger(PrinterHandler.class);
 
     private @Nullable PrinterClient client;
@@ -88,9 +88,11 @@ public class PrinterHandler extends BaseThingHandler
     private final AtomicInteger reconnectTimes = new AtomicInteger();
     private final AtomicReference<@Nullable ScheduledFuture<?>> reconnectSchedule = new AtomicReference<>();
     private final PrinterWatcher printerWatcher = new PrinterWatcher();
+    private @Nullable PrinterClientConfig config;
+    private final Collection<AmsDeviceHandlerFactory> amses = synchronizedList(new ArrayList<>());
 
-    public PrinterHandler(Thing thing) {
-        super(thing);
+    public PrinterHandler(Bridge bridge) {
+        super(bridge);
     }
 
     @Override
@@ -102,9 +104,11 @@ public class PrinterHandler extends BaseThingHandler
         } else if (CHANNEL_GCODE_FILE.is(channelUID)) {
             var bambuCommand = new GCodeFileCommand(command.toString());
             sendCommand(bambuCommand);
-        } else if (CHANNEL_SPEED_LEVEL.is(channelUID)) {
-            var bambuCommand = PrintSpeedCommand.valueOf(command.toString());
-            sendCommand(bambuCommand);
+        } else if (CHANNEL_SPEED_LEVEL.is(channelUID) && command instanceof StringType) {
+            stream(PrintSpeedCommand.values())//
+                    .filter(type -> type.name().equalsIgnoreCase(command.toString()))//
+                    .findAny()//
+                    .ifPresent(this::sendCommand);
         } else if (CHANNEL_CAMERA_RECORD.is(channelUID) && command instanceof OnOffType onOffCommand) {
             requireNonNull(camera).handleCommand(onOffCommand);
         }
@@ -190,6 +194,7 @@ public class PrinterHandler extends BaseThingHandler
             logger.warn("Do not reconnecting any more, because max reconnections was reach!");
             return;
         }
+        logger.debug("Will reconnect in {} seconds...", configNotNull.reconnectTime);
         reconnectSchedule.set(//
                 scheduler.schedule(() -> {
                     logger.debug("Reconnecting...");
@@ -201,8 +206,9 @@ public class PrinterHandler extends BaseThingHandler
 
     private PrinterClient buildLocalClient(URI uri, PrinterConfiguration config) throws InitializationException {
         try {
-            return new PrinterClient(
-                    requiredFields(uri, config.username, config.serial, config.accessCode.toCharArray()));
+            var localConfig = this.config = requiredFields(uri, config.username, config.serial,
+                    config.accessCode.toCharArray());
+            return new PrinterClient(localConfig);
         } catch (Exception e) {
             logger.debug("Cannot create MQTT client", e);
             throw new InitializationException(COMMUNICATION_ERROR, e);
@@ -217,28 +223,49 @@ public class PrinterHandler extends BaseThingHandler
     public void dispose() {
         try {
             printerWatcher.close();
-
-            var localClient = client;
-            client = null;
-            if (localClient != null) {
-                try {
-                    localClient.close();
-                } catch (Exception e) {
-                    logger.warn("Could not correctly dispose PrinterClient", e);
-                }
-            }
-            var localCamera = camera;
-            camera = null;
-            if (localCamera != null) {
-                localCamera.close();
-            }
-            var localReconnectSchedule = reconnectSchedule.get();
-            reconnectSchedule.set(null);
-            if (localReconnectSchedule != null) {
-                localReconnectSchedule.cancel(true);
-            }
+            amses.clear();
+            closeConfig();
+            closeReconnectSchedule();
+            closeCamera();
+            closeClient();
         } finally {
             logger = LoggerFactory.getLogger(PrinterHandler.class);
+        }
+    }
+
+    private void closeConfig() {
+        var localConfig = config;
+        config = null;
+        if (localConfig != null) {
+            localConfig.close();
+        }
+    }
+
+    private void closeClient() {
+        var localClient = client;
+        client = null;
+        if (localClient != null) {
+            try {
+                localClient.close();
+            } catch (Exception e) {
+                logger.warn("Could not correctly dispose PrinterClient", e);
+            }
+        }
+    }
+
+    private void closeCamera() {
+        var localCamera = camera;
+        camera = null;
+        if (localCamera != null) {
+            localCamera.close();
+        }
+    }
+
+    private void closeReconnectSchedule() {
+        var localReconnectSchedule = reconnectSchedule.get();
+        reconnectSchedule.set(null);
+        if (localReconnectSchedule != null) {
+            localReconnectSchedule.cancel(true);
         }
     }
 
@@ -322,187 +349,74 @@ public class PrinterHandler extends BaseThingHandler
                 .map(Object::toString)//
                 .flatMap(TrayType::findTrayType)//
                 .map(Enum::name)//
-                .map(value -> (State) StringType.valueOf(value))//
-                .or(undef())//
+                .flatMap(StateParserHelper::parseStringType)//
+                .or(StateParserHelper::undef)//
                 .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_TYPE, trayType));
         Optional.ofNullable(vtTray.trayColor())//
                 .map(Object::toString)//
-                .filter(value -> value.length() >= 6)//
-                .map(PrinterHandler::parseColor)//
-                .or(undef())//
+                .map(StateParserHelper::parseColor)//
+                .or(StateParserHelper::undef)//
                 .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_COLOR, trayType));
-        parseTemperatureType(vtTray.nozzleTempMax())
+        parseTemperatureType(vtTray.nozzleTempMax())//
+                .or(StateParserHelper::undef)//
                 .ifPresent(trayType -> updateState(CHANNEL_VTRAY_NOZZLE_TEMPERATURE_MAX, trayType));
-        parseTemperatureType(vtTray.nozzleTempMin())
+        parseTemperatureType(vtTray.nozzleTempMin())//
+                .or(StateParserHelper::undef)//
                 .ifPresent(trayType -> updateState(CHANNEL_VTRAY_NOZZLE_TEMPERATURE_MIN, trayType));
         Optional.ofNullable(vtTray.remain())//
                 .map(value -> (State) new PercentType(value))//
-                .or(undef())//
+                .or(StateParserHelper::undef)//
                 .ifPresent(trayType -> updateState(CHANNEL_VTRAY_REMAIN, trayType));
-        parseDecimalType(vtTray.k()).ifPresent(trayType -> updateState(CHANNEL_VTRAY_K, trayType));
-        parseDecimalType(vtTray.n()).ifPresent(trayType -> updateState(CHANNEL_VTRAY_N, trayType));
-        parseStringType(vtTray.tagUid()).ifPresent(trayType -> updateState(CHANNEL_VTRAY_TAG_UUID, trayType));
-        parseStringType(vtTray.trayIdName()).ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_ID_NAME, trayType));
-        parseStringType(vtTray.trayInfoIdx()).ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_INFO_IDX, trayType));
+        parseDecimalType(vtTray.k())//
+                .or(StateParserHelper::undef)//
+                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_K, trayType));
+        parseDecimalType(vtTray.n())//
+                .or(StateParserHelper::undef)//
+                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_N, trayType));
+        parseStringType(vtTray.tagUid())//
+                .or(StateParserHelper::undef)//
+                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TAG_UUID, trayType));
+        parseStringType(vtTray.trayIdName())//
+                .or(StateParserHelper::undef)//
+                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_ID_NAME, trayType));
+        parseStringType(vtTray.trayInfoIdx())//
+                .or(StateParserHelper::undef)//
+                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_INFO_IDX, trayType));
         parseStringType(vtTray.traySubBrands())
                 .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_SUB_BRANDS, trayType));
-        parseDecimalType(vtTray.trayWeight()).ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_WEIGHT, trayType));
-        parseDecimalType(vtTray.trayDiameter())
+        parseDecimalType(vtTray.trayWeight())//
+                .or(StateParserHelper::undef)//
+                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_WEIGHT, trayType));
+        parseDecimalType(vtTray.trayDiameter())//
+                .or(StateParserHelper::undef)//
                 .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_DIAMETER, trayType));
-        parseTemperatureType(vtTray.trayTemp())
+        parseTemperatureType(vtTray.trayTemp())//
+                .or(StateParserHelper::undef)//
                 .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_TEMPERATURE, trayType));
-        parseDecimalType(vtTray.trayTime()).ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_TIME, trayType));
-        parseStringType(vtTray.bedTempType())
+        parseDecimalType(vtTray.trayTime())//
+                .or(StateParserHelper::undef)//
+                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_TIME, trayType));
+        parseStringType(vtTray.bedTempType())//
+                .or(StateParserHelper::undef)//
                 .ifPresent(trayType -> updateState(CHANNEL_VTRAY_BED_TEMPERATURE_TYPE, trayType));
-        parseTemperatureType(vtTray.bedTemp())
+        parseTemperatureType(vtTray.bedTemp())//
+                .or(StateParserHelper::undef)//
                 .ifPresent(trayType -> updateState(CHANNEL_VTRAY_BED_TEMPERATURE, trayType));
     }
 
-    private static State parseColor(String colorHex) {
-        int r = parseInt(colorHex.substring(0, 2), 16);
-        int g = parseInt(colorHex.substring(2, 4), 16);
-        int b = parseInt(colorHex.substring(4, 6), 16);
-        return ColorUtil.rgbToHsb(new int[] { r, g, b });
-    }
-
-    private Optional<State> parseDecimalType(@Nullable Number number) {
-        return Optional.ofNullable(number).map(DecimalType::new);
-    }
-
-    private Optional<State> parseStringType(@Nullable String string) {
-        return Optional.ofNullable(string).map(StringType::valueOf);
-    }
-
-    private void updateAms(Map<String, Object> ams) {
-        var someAmsChannel = Optional.of(ams)//
+    private void updateAms(Map<String, Object> amsMap) {
+        Optional.of(amsMap)//
                 .map(map -> map.get("id"))//
                 .map(Object::toString)//
                 .map(Integer::parseInt)//
+                // in code, we are using 1-4 ordering; in API 0-3 ordering is used
+                .map(id -> id + 1) //
                 .filter(id -> id >= MIN_AMS)//
-                .filter(id -> id < MAX_AMS)//
-                .map(AmsChannel::new);
-        if (someAmsChannel.isEmpty()) {
-            return;
-        }
-        var amsChannel = someAmsChannel.get();
-        Optional.of(ams)//
-                .map(map -> map.get("tray"))//
-                .filter(obj -> obj instanceof Collection<?>)//
-                .map(obj -> (Collection<?>) obj)//
+                .filter(id -> id <= MAX_AMS)//
+                .map(id -> amses.stream().filter(ams -> ams.getAmsNumber() == id))//
                 .stream()//
-                .flatMap(Collection::stream)//
-                .filter(obj -> obj instanceof Map<?, ?>)//
-                .map(obj -> (Map<?, ?>) obj)//
-                .forEach(map -> updateAmsTray(amsChannel, map));
-    }
-
-    private void updateAmsTray(AmsChannel amsChannel, Map<?, ?> map) {
-        var someId = findKey(map, "id")//
-                .map(Object::toString)//
-                .map(Integer::parseInt);
-        if (someId.isEmpty()) {
-            logger.warn("There is no tray ID in {}", map);
-            return;
-        }
-        int trayId = someId.get();
-        if (trayId > MAX_AMS_TRAYS) {
-            logger.warn("Tray ID needs to be lower that {}. Was {}", MAX_AMS_TRAYS, trayId);
-            return;
-        }
-
-        findKey(map, "tray_type")//
-                .map(Object::toString)//
-                .flatMap(TrayType::findTrayType)//
-                .map(Enum::name)//
-                .map(value -> (State) StringType.valueOf(value))//
-                .or(undef())//
-                .ifPresent(trayType -> updateState(amsChannel.getTrayTypeChannel(trayId), trayType));
-        findKey(map, "tray_color")//
-                .map(Object::toString)//
-                .filter(value -> value.length() >= 6)//
-                .map(PrinterHandler::parseColor)//
-                .or(undef())//
-                .ifPresent(trayType -> updateState(amsChannel.getTrayColorChannel(trayId), trayType));
-        parseTemperatureType(map, "nozzle_temp_max")
-                .ifPresent(trayType -> updateState(amsChannel.getNozzleTemperatureMaxChannel(trayId), trayType));
-        parseTemperatureType(map, "nozzle_temp_min")
-                .ifPresent(trayType -> updateState(amsChannel.getNozzleTemperatureMinChannel(trayId), trayType));
-        findKey(map, "remain")//
-                .map(Object::toString)//
-                .map(value -> (State) PercentType.valueOf(value))//
-                .or(undef())//
-                .ifPresent(trayType -> updateState(amsChannel.getRemainChannel(trayId), trayType));
-        parseDecimalType(map, "k").ifPresent(trayType -> updateState(amsChannel.getKChannel(trayId), trayType));
-        parseDecimalType(map, "n").ifPresent(trayType -> updateState(amsChannel.getNChannel(trayId), trayType));
-        parseStringType(map, "tag_uuid")
-                .ifPresent(trayType -> updateState(amsChannel.getTagUuidChannel(trayId), trayType));
-        parseStringType(map, "tray_id_name")
-                .ifPresent(trayType -> updateState(amsChannel.getTrayIdNameChannel(trayId), trayType));
-        parseStringType(map, "tray_info_idx")
-                .ifPresent(trayType -> updateState(amsChannel.getTrayInfoIdxChannel(trayId), trayType));
-        parseStringType(map, "tray_sub_brands")
-                .ifPresent(trayType -> updateState(amsChannel.getTraySubBrandsChannel(trayId), trayType));
-        parseDecimalType(map, "tray_weight")
-                .ifPresent(trayType -> updateState(amsChannel.getTrayWeightChannel(trayId), trayType));
-        parseDecimalType(map, "tray_diameter")
-                .ifPresent(trayType -> updateState(amsChannel.getTrayDiameterChannel(trayId), trayType));
-        parseTemperatureType(map, "tray_temp")
-                .ifPresent(trayType -> updateState(amsChannel.getTrayTemperatureChannel(trayId), trayType));
-        parseDecimalType(map, "tray_time")
-                .ifPresent(trayType -> updateState(amsChannel.getTrayTimeChannel(trayId), trayType));
-        parseStringType(map, "bed_temp_type")
-                .ifPresent(trayType -> updateState(amsChannel.getBedTemperatureTypeChannel(trayId), trayType));
-        parseTemperatureType(map, "bed_temp")
-                .ifPresent(trayType -> updateState(amsChannel.getBedTemperatureChannel(trayId), trayType));
-        parseDecimalType(map, "ctype").ifPresent(trayType -> updateState(amsChannel.getCtypeChannel(trayId), trayType));
-    }
-
-    private Optional<State> parseTemperatureType(Map<?, ?> map, String key) {
-        return findKey(map, key)//
-                .map(Object::toString)//
-                .flatMap(this::parseTemperatureType)//
-                .or(undef());
-    }
-
-    private Optional<State> parseTemperatureType(String value) {
-        try {
-            var d = Double.parseDouble(value);
-            return Optional.of(new QuantityType<>(d, CELSIUS));
-        } catch (NumberFormatException ex) {
-            logger.debug("Cannot parse: {}", value, ex);
-            return Optional.empty();
-        }
-    }
-
-    private Optional<State> parseDecimalType(Map<?, ?> map, String key) {
-        return findKey(map, key)//
-                .map(Object::toString)//
-                .flatMap(this::parseDecimalType)//
-                .or(undef());
-    }
-
-    private Optional<State> parseDecimalType(String value) {
-        try {
-            return Optional.of(DecimalType.valueOf(value));
-        } catch (NumberFormatException ex) {
-            logger.debug("Cannot parse {}", value, ex);
-            return Optional.empty();
-        }
-    }
-
-    private Optional<State> parseStringType(Map<?, ?> map, String key) {
-        return findKey(map, key)//
-                .map(Object::toString)//
-                .map(value -> (State) StringType.valueOf(value))//
-                .or(undef());
-    }
-
-    private static Supplier<Optional<? extends State>> undef() {
-        return () -> Optional.of(UNDEF);
-    }
-
-    private static Optional<?> findKey(Map<?, ?> map, String key) {
-        return Optional.of(map).map(m -> m.get(key));
+                .flatMap(identity())//
+                .forEach(ams -> ams.updateAms(amsMap));
     }
 
     private void updateCelsiusState(BambuLabBindingConstants.Channel channelId, @Nullable Double temperature) {
@@ -579,22 +493,6 @@ public class PrinterHandler extends BaseThingHandler
                 .ifPresent(command -> updateState(channel, command));
     }
 
-    private State parseWifiChannel(String wifi) {
-        var matcher = DBM_PATTERN.matcher(wifi);
-        if (!matcher.matches()) {
-            return UNDEF;
-        }
-
-        var integer = matcher.group(1);
-        try {
-            var value = parseInt(integer);
-            return new QuantityType<>(value, DECIBEL_MILLIWATTS);
-        } catch (NumberFormatException e) {
-            logger.debug("Cannot parse integer {} from wifi {}", integer, wifi, e);
-            return UNDEF;
-        }
-    }
-
     public void sendCommand(PrinterClient.Channel.Command command) {
         logger.debug("Sending command {}", command);
         var localClient = client;
@@ -636,5 +534,24 @@ public class PrinterHandler extends BaseThingHandler
     @Override
     public Logger getLogger() {
         return logger;
+    }
+
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        if (!(childHandler instanceof AmsDeviceHandlerFactory ams)) {
+            return;
+        }
+        amses.add(ams);
+    }
+
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        if (!(childHandler instanceof AmsDeviceHandlerFactory ams)) {
+            return;
+        }
+        var removed = amses.remove(ams);
+        if (!removed) {
+            logger.warn("Did not remove ams handler {}", ams);
+        }
     }
 }

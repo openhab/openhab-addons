@@ -34,8 +34,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient;
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand;
@@ -47,7 +47,7 @@ import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand;
 @NonNullByDefault
 class PrinterHandlerTest {
     @Spy
-    PrinterHandler printerHandler = new PrinterHandler(mock(Thing.class));
+    PrinterHandler printerHandler = new PrinterHandler(mock(Bridge.class));
 
     @BeforeEach
     void setUp() {

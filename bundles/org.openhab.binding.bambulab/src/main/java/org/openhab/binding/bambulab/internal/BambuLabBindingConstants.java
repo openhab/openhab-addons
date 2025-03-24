@@ -38,6 +38,7 @@ public class BambuLabBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID PRINTER_THING_TYPE = new ThingTypeUID(BINDING_ID, "printer");
+    public static final ThingTypeUID AMS_THING_TYPE = new ThingTypeUID(BINDING_ID, "ams-device");
 
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     public enum Channel {
@@ -122,7 +123,7 @@ public class BambuLabBindingConstants {
     }
 
     public static class AmsChannel {
-        public static final int MIN_AMS = 0;
+        public static final int MIN_AMS = 1;
         /**
          * According to Bambu Lab documentation, you can attach up to 4 AMS
          */
@@ -131,97 +132,88 @@ public class BambuLabBindingConstants {
          * Each AMS device has 4 trays
          */
         public static final int MAX_AMS_TRAYS = 4;
-        private final int id;
 
-        public AmsChannel(int id) {
-            if (id < MIN_AMS || id >= MAX_AMS) {
-                throw new IllegalArgumentException(
-                        "Invalid channel ID: %d. Allowed range: %d to %d.".formatted(id, MIN_AMS, MAX_AMS));
-            }
-            this.id = id;
+        public static String getTrayTypeChannel(int trayId) {
+            return prefix(trayId) + "ams-tray-type";
         }
 
-        public String getTrayTypeChannel(int trayId) {
-            return "ams-tray-type" + suffix(trayId);
+        public static String getTrayColorChannel(int trayId) {
+            return prefix(trayId) + "ams-tray-color";
         }
 
-        public String getTrayColorChannel(int trayId) {
-            return "ams-tray-color" + suffix(trayId);
+        public static String getNozzleTemperatureMaxChannel(int trayId) {
+            return prefix(trayId) + "ams-nozzle-temperature-max";
         }
 
-        public String getNozzleTemperatureMaxChannel(int trayId) {
-            return "ams-nozzle-temperature-max" + suffix(trayId);
+        public static String getNozzleTemperatureMinChannel(int trayId) {
+            return prefix(trayId) + "ams-nozzle-temperature-min";
         }
 
-        public String getNozzleTemperatureMinChannel(int trayId) {
-            return "ams-nozzle-temperature-min" + suffix(trayId);
+        public static String getRemainChannel(int trayId) {
+            return prefix(trayId) + "ams-remain";
         }
 
-        public String getRemainChannel(int trayId) {
-            return "ams-remain" + suffix(trayId);
+        public static String getKChannel(int trayId) {
+            return prefix(trayId) + "ams-k";
         }
 
-        public String getKChannel(int trayId) {
-            return "ams-k" + suffix(trayId);
+        public static String getNChannel(int trayId) {
+            return prefix(trayId) + "ams-n";
         }
 
-        public String getNChannel(int trayId) {
-            return "ams-n" + suffix(trayId);
+        public static String getTagUuidChannel(int trayId) {
+            return prefix(trayId) + "ams-tag-uuid";
         }
 
-        public String getTagUuidChannel(int trayId) {
-            return "ams-tag-uuid" + suffix(trayId);
+        public static String getTrayIdNameChannel(int trayId) {
+            return prefix(trayId) + "ams-tray-id-name";
         }
 
-        public String getTrayIdNameChannel(int trayId) {
-            return "ams-tray-id-name" + suffix(trayId);
+        public static String getTrayInfoIdxChannel(int trayId) {
+            return prefix(trayId) + "ams-tray-info-idx";
         }
 
-        public String getTrayInfoIdxChannel(int trayId) {
-            return "ams-tray-info-idx" + suffix(trayId);
+        public static String getTraySubBrandsChannel(int trayId) {
+            return prefix(trayId) + "ams-tray-sub-brands";
         }
 
-        public String getTraySubBrandsChannel(int trayId) {
-            return "ams-tray-sub-brands" + suffix(trayId);
+        public static String getTrayWeightChannel(int trayId) {
+            return prefix(trayId) + "ams-tray-weight";
         }
 
-        public String getTrayWeightChannel(int trayId) {
-            return "ams-tray-weight" + suffix(trayId);
+        public static String getTrayDiameterChannel(int trayId) {
+            return prefix(trayId) + "ams-tray-diameter";
         }
 
-        public String getTrayDiameterChannel(int trayId) {
-            return "ams-tray-diameter" + suffix(trayId);
+        public static String getTrayTemperatureChannel(int trayId) {
+            return prefix(trayId) + "ams-tray-temperature";
         }
 
-        public String getTrayTemperatureChannel(int trayId) {
-            return "ams-tray-temperature" + suffix(trayId);
+        public static String getTrayTimeChannel(int trayId) {
+            return prefix(trayId) + "ams-tray-time";
         }
 
-        public String getTrayTimeChannel(int trayId) {
-            return "ams-tray-time" + suffix(trayId);
+        public static String getBedTemperatureTypeChannel(int trayId) {
+            return prefix(trayId) + "ams-bed-temp-type";
         }
 
-        public String getBedTemperatureTypeChannel(int trayId) {
-            return "ams-bed-temp-type" + suffix(trayId);
+        public static String getBedTemperatureChannel(int trayId) {
+            return prefix(trayId) + "ams-bed-temperature";
         }
 
-        public String getBedTemperatureChannel(int trayId) {
-            return "ams-bed-temperature" + suffix(trayId);
+        public static String getCtypeChannel(int trayId) {
+            return prefix(trayId) + "ams-ctype";
         }
 
-        public String getCtypeChannel(int trayId) {
-            return "ams-ctype" + suffix(trayId);
-        }
-
-        private String suffix(int trayId) {
+        private static String prefix(int trayId) {
             checkTrayId(trayId);
-            return "-id-%sx%s".formatted(id + 1, trayId + 1);
+            return "ams-tray-%s#".formatted(trayId + 1);
         }
 
-        private void checkTrayId(int trayId) {
-            if (trayId < 0 || trayId >= MAX_AMS_TRAYS) {
+        private static void checkTrayId(int trayId) {
+            if (trayId <= 0 || trayId > MAX_AMS_TRAYS) {
                 throw new IllegalArgumentException(
-                        "Invalid tray ID: %d. Allowed range: 0 to %d.".formatted(trayId, MAX_AMS_TRAYS - 1));
+                        "Invalid tray ID: %d. Allowed range: 1 to %d.".formatted(trayId, MAX_AMS_TRAYS));
             }
         }
 
