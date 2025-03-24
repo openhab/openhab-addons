@@ -26,6 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Luca Calcaterra - Initial contribution
  * @author Wietse van Buitenen - Added heatpump device
+ * @author Alessio Galliazzo - Added heatpump functionalities for flow temperature and temperature control
  */
 @NonNullByDefault
 public class MelCloudBindingConstants {
@@ -51,12 +52,19 @@ public class MelCloudBindingConstants {
     public static final String CHANNEL_FORCED_HOTWATERMODE = "forcedHotWaterMode";
     public static final String CHANNEL_TANKWATERTEMPERATURE = "tankWaterTemperature";
 
+    public static final String CHANNEL_HEAT_TEMPERATURE_MODE_ZONE1 = "heatTemperatureModeZone1";
+    public static final String CHANNEL_HEAT_FLOW_TEMPERATURE_ZONE1 = "heatFlowTemperatureZone1";
+    public static final String CHANNEL_HEAT_TEMPERATURE_MODE_ZONE2 = "heatTemperatureModeZone2";
+    public static final String CHANNEL_HEAT_FLOW_TEMPERATURE_ZONE2 = "heatFlowTemperatureZone2";
+    public static final String CHANNEL_UNIT_STATUS = "unitStatus";
+
     // Read Only Channels
     public static final String CHANNEL_ROOM_TEMPERATURE = "roomTemperature";
     public static final String CHANNEL_LAST_COMMUNICATION = "lastCommunication";
     public static final String CHANNEL_NEXT_COMMUNICATION = "nextCommunication";
     public static final String CHANNEL_HAS_PENDING_COMMAND = "hasPendingCommand";
     public static final String CHANNEL_OFFLINE = "offline";
+    public static final String CHANNEL_RETURN_TEMPERATURE_ZONE1 = "returnTemperatureZone2";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_MELCLOUD_ACCOUNT, THING_TYPE_ACDEVICE, THING_TYPE_HEATPUMPDEVICE)

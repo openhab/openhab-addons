@@ -199,4 +199,66 @@
 		<state min="10" max="30" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
+	<channel-type id="heatFlowTemperatureZone1-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Heat flow temperature for zone 1</label>
+		<description>Set temperature for water flow for zone 1</description>
+		<state min="10" max="65" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="heatFlowTemperatureZone2-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Heat flow temperature for zone 2</label>
+		<description>Set temperature for water flow for zone 2</description>
+		<state min="10" max="65" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="heatTemperatureModeZone1-channel">
+		<item-type>String</item-type>
+		<label>Flow mode zone 1</label>
+		<description>Set flow mode for zone 1</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Heat thermostat</option>
+				<option value="1">Heat flow</option>
+				<option value="2">Heat curve</option>
+				<option value="3">Cool thermostat</option>
+				<option value="4">Cool flow</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heatTemperatureModeZone2-channel">
+		<item-type>String</item-type>
+		<label>Flow mode zone 2</label>
+		<description>Set flow mode for zone 2</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Heat thermostat</option>
+				<option value="1">Heat flow</option>
+				<option value="2">Heat curve</option>
+				<option value="3">Cool thermostat</option>
+				<option value="4">Cool flow</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="unitStatus-channel">
+		<item-type>String</item-type>
+		<label>Unit status</label>
+		<description>Unit status</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Idle</option>
+				<option value="1">Heat water</option>
+				<option value="2">Heat zones</option>
+				<option value="3">Cooling</option>
+				<option value="4">Defrost</option>
+				<option value="5">Stand-by</option>
+				<option value="6">Legionella</option>
+			</options>
+		</state>
+	</channel-type>
+
+
 </thing:thing-descriptions>
