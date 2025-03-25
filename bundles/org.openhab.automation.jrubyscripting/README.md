@@ -71,6 +71,7 @@ Additional [example rules are available](https://openhab.github.io/openhab-jruby
     - [Linked Things](#linked-things)
     - [Item Builder](#item-builder)
   - [Things](#things)
+    - [Thing Builder](#thing-builder)
   - [Actions](#actions)
   - [Logging](#logging)
   - [Timers](#timers)
@@ -78,7 +79,7 @@ Additional [example rules are available](https://openhab.github.io/openhab-jruby
   - [Time](#time)
   - [Ephemeris](#ephemeris)
   - [Rules, Scripts, and Scenes](#rules-scripts-and-scenes)
-  - [Gems](#gems)
+  - [Gems with Inline Bundler](#gems-with-inline-bundler)
   - [Shared Code](#shared-code)
   - [Transformations](#transformations)
   - [Profile](#profile)
@@ -94,6 +95,7 @@ Additional [example rules are available](https://openhab.github.io/openhab-jruby
     - [openHAB System Started](#openhab-system-started)
     - [Cron Trigger](#cron-trigger)
     - [DateTimeItem Trigger](#datetimeitem-trigger)
+    - [File and Directory Change Trigger](#file-and-directory-change-trigger)
     - [Other Triggers](#other-triggers)
     - [Combining Multiple Triggers](#combining-multiple-triggers)
     - [Combining Multiple Conditions](#combining-multiple-conditions)
@@ -154,7 +156,7 @@ Simply change the `gems` and `require` configuration settings.
 
 | Parameter             | Description                                                                                                |
 | --------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `gem_home`            | The path to store Ruby Gems. <br/><br/>Default: `$OPENHAB_CONF/automation/ruby/.gem/RUBY_ENGINE_VERSION`   |
+| `gem_home`            | The path to store Ruby Gems. <br/><br/>Default: `$OPENHAB_CONF/automation/ruby/.gem/{RUBY_ENGINE_VERSION}` |
 | `gems`                | A list of gems to install. <br/><br/>Default: `openhab-scripting=~>5.0`                                    |
 | `check_update`        | Check for updated version of `gems` on start up or settings change. <br/><br/>Default: `true`              |
 | `require`             | List of scripts to be required automatically. <br/><br/>Default: `openhab/dsl`                             |
@@ -174,7 +176,7 @@ org.openhab.automation.jrubyscripting:require=openhab/dsl
 
 Path to where Ruby Gems will be installed to and loaded from.
 The directory will be created if necessary.
-You can use `RUBY_ENGINE_VERSION`, `RUBY_ENGINE` and/or `RUBY_VERSION` replacements in this value to automatically point to a new directory when the addon is updated with a new version of JRuby.
+You can use `{RUBY_ENGINE_VERSION}`, `{RUBY_ENGINE}` and/or `{RUBY_VERSION}` replacements in this value to automatically point to a new directory when the addon is updated with a new version of JRuby.
 
 ### gems
 
@@ -276,8 +278,8 @@ Theoretically you could even use a system start trigger with a UI rule, and then
 
 ### File Based Scripts
 
-The JRuby Scripting addon will load scripts from `automation/ruby` in the user configuration directory.
-The system will automatically reload scripts when changes are detected to files.
+The JRuby Scripting addon will load Ruby script files with `.rb` extension from `automation/ruby` in the user configuration directory.
+The system will automatically reload scripts when changes to files are detected.
 Local variable state is not persisted among reloads, see using the [cache](#cache) for a convenient way to persist objects.
 See [File Based Rules](#file-based-rules) for examples of creating rules within your scripts.
 
@@ -289,7 +291,7 @@ This tables gives an overview of the `event` object for most common trigger type
 For full details, explore [OpenHAB::Core::Events](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Events.html).
 
 | Property Name | Type                                                                                         | Trigger Types                                                                                        | Description                                          | Rules DSL Equivalent   |
-| ------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ---------------------- |
+|---------------|----------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|------------------------------------------------------|------------------------|
 | `state`       | [State](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Types/State.html) or `nil` | `[item] changed`, `[item] was updated`                                                               | State that triggered event                           | `triggeringItem.state` |
 | `was`         | [State](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Types/State.html) or `nil` | `[item] changed`                                                                                     | Previous state of Item or Group that triggered event | `previousState`        |
 | `command`     | [Command](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Types/Command.html)      | `[item] received a command`                                                                          | Command that triggered event                         | `receivedCommand`      |
@@ -751,6 +753,29 @@ model_id = things["fronius:meter:mybridge:mymeter"].properties["modelId"]
 logger.info "Fronius Smart Meter model: #{model_id}"
 ```
 
+#### Thing Builder
+
+New Things can be created via [things.build](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Things/Registry.html#build-instance_method).
+
+```ruby
+thing_config = {
+  availabilityTopic: "my-switch/status",
+  payloadAvailable: "online",
+  payloadNotAvailable: "offline"
+}
+things.build do
+  # Use an existing bridge "mqtt:broker:mosquitto"
+  thing "mqtt:topic:my-switch", "My Switch", bridge: "mqtt:broker:mosquitto", config: thing_config do
+    channel "switch1", "switch", config: {
+      stateTopic: "stat/my-switch/switch1/state", commandTopic: "cmnd/my-switch/switch1/command"
+    }
+    channel "button1", "string", config: {
+      stateTopic: "stat/my-switch/button1/state", commandTopic: "cmnd/my-switch/button1/command"
+    }
+  end
+end
+```
+
 ### Actions
 
 [openHAB built-in actions](https://www.openhab.org/docs/configuration/actions.html) are available as children of the [Actions](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Actions.html) module.
@@ -1134,7 +1159,22 @@ Time.at(1669684403)
 # Convert Epoch second to ZonedDateTime
 Time.at(1669684403).to_zoned_date_time
 # or
-java.time.Instant.of_epoch_second(1669684403).at_zone(ZoneId.system_default)
+Instant.of_epoch_second(1669684403).at_zone(ZoneId.system_default)
+```
+
+##### Time-based QuantityType
+
+QuantityType objects with time dimension work like a Duration in arithmetic operations.
+They can be compared, added, and subtracted against Duration objects, and added/subtracted from Ruby and Java Date/Time-like objects.
+
+```java
+Number:Time Pump_Total_Runtime "Total Pump runtime today"
+```
+
+```ruby
+if Pump_Total_Runtime.state >= 8.hours
+  logger.info "The Pump has been running for 8 hours or more today"
+end
 ```
 
 #### Ranges
@@ -1282,7 +1322,7 @@ The above script can be executed, passing it the `maxTemperature` argument from 
 rules["check_temp"].trigger(maxTemperature: 80 | "°C")
 ```
 
-### Gems
+### Gems with Inline Bundler
 
 [Bundler](https://bundler.io/) is integrated, enabling any [Ruby gem](https://rubygems.org/) compatible with JRuby to be used within rules.
 This permits easy access to the vast ecosystem of libraries within the Ruby community.
@@ -1341,10 +1381,6 @@ This add-on also provides the necessary infrastructure to use Ruby for writing [
 
 The main value to be transformed is given to the script in a variable called `input`.
 Note that the values are passed to the transformation as Strings even for numeric items and data types.
-
-**Note**: In openHAB 3.4, due to an [issue](https://github.com/jruby/jruby/issues/5876) in the current version of JRuby, you will need to begin your script with `input ||= nil` (and `a ||= nil` etc. for additional query variables) so that JRuby will recognize the variables as variables--rather than method calls--when it's parsing the script.
-Otherwise you will get errors like `(NameError) undefined local variable or method 'input' for main:Object`.
-This is not necessary in openHAB 4.0+.
 
 #### File Based Transformations
 
@@ -1611,6 +1647,20 @@ rule "TimeOnly Trigger" do
   every :day, at: My_DateTimeItem
   run do |event|
     logger.info "Triggered by #{event.item} at #{event.item.state}"
+  end
+end
+```
+
+#### File and Directory Change Trigger
+
+To trigger a rule when a file or directory was created, modified, or deleted, use [watch path](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Rules/BuilderDSL.html#watch-instance_method).
+
+```ruby
+rule "Send notification when a new image was created" do
+  watch OpenHAB::Core.config_folder / "html/snapshots/*.jpg", for: :created
+  run do |event|
+    Snapshot_Image_Item.update_from_file(event.path)
+    Notification.send "A new snapshot was created!", title: "New Snapshot!", attachment: Snapshot_Image_Item
   end
 end
 ```
