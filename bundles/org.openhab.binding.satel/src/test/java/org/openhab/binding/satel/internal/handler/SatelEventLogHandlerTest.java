@@ -145,8 +145,4 @@ class SatelEventLogHandlerTest {
         assertEquals(1, result.size());
         assertTrue(result.contains(SatelEventLogActions.class));
     }
-
-    @Test
-    void readEvent() {
-    }
 }
