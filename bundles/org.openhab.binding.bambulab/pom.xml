@@ -18,7 +18,7 @@
     <dependency>
       <groupId>pl.grzeslowski</groupId>
       <artifactId>JBambuAPI</artifactId>
-      <version>1.2.0-SNAPSHOT</version>
+      <version>1.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.paho</groupId>
