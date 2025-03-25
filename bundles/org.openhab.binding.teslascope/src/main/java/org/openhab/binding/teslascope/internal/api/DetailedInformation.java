@@ -28,7 +28,6 @@ public class DetailedInformation {
     public String vin = "";
     public String name = "";
     public String state = "";
-    public double odometer;
 
     @SerializedName("vehicle_state")
     public @NonNullByDefault({}) VehicleState vehicleState;
