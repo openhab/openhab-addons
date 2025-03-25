@@ -369,7 +369,7 @@ public class PrinterHandler extends BaseBridgeHandler
                 .or(StateParserHelper::undef)//
                 .ifPresent(trayType -> updateState(CHANNEL_VTRAY_NOZZLE_TEMPERATURE_MIN, trayType));
         Optional.ofNullable(vtTray.remain())//
-                .map(value -> (State) new PercentType(value))//
+                .flatMap(StateParserHelper::parsePercentType)//
                 .or(StateParserHelper::undef)//
                 .ifPresent(trayType -> updateState(CHANNEL_VTRAY_REMAIN, trayType));
         parseDecimalType(vtTray.k())//
