@@ -62,10 +62,17 @@ public class Valve extends AbstractComponent<Valve.ChannelConfiguration> impleme
     public static final String PAYLOAD_CLOSE = "CLOSE";
     public static final String PAYLOAD_STOP = "STOP";
 
+    private static final Map<String, String> COMMAND_LABELS = Map.of(PAYLOAD_OPEN, "@text/command.valve.open",
+            PAYLOAD_CLOSE, "@text/command.valve.close", PAYLOAD_STOP, "@text/command.valve.stop");
+
     public static final String STATE_OPEN = "open";
     public static final String STATE_OPENING = "opening";
     public static final String STATE_CLOSED = "closed";
     public static final String STATE_CLOSING = "closing";
+
+    private static final Map<String, String> STATE_LABELS = Map.of(STATE_OPEN, "@text/state.valve.open", STATE_OPENING,
+            "@text/state.valve.opening", STATE_CLOSED, "@text/state.valve.closed", STATE_CLOSING,
+            "@text/state.valve.closing");
 
     private static final String FORMAT_INTEGER = "%.0f";
 

@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantJinjaFunctionLibrary;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantStateDescriptionProvider;
 import org.openhab.binding.mqtt.homeassistant.internal.handler.HomeAssistantThingHandler;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.thing.Thing;
@@ -55,7 +56,7 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public MqttThingHandlerFactory(final @Reference MqttChannelTypeProvider typeProvider,
-            final @Reference MqttChannelStateDescriptionProvider stateDescriptionProvider,
+            final @Reference HomeAssistantStateDescriptionProvider stateDescriptionProvider,
             final @Reference ChannelTypeRegistry channelTypeRegistry, final @Reference UnitProvider unitProvider) {
         this.typeProvider = typeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;

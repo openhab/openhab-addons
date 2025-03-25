@@ -34,6 +34,8 @@ public class Button extends AbstractComponent<Button.ChannelConfiguration> {
 
     public static final String PAYLOAD_PRESS = "PRESS";
 
+    private static final Map<String, String> COMMAND_LABELS = Map.of(PAYLOAD_PRESS, "@text/command.button.press");
+
     /**
      * Configuration class for MQTT component
      */
@@ -54,7 +56,8 @@ public class Button extends AbstractComponent<Button.ChannelConfiguration> {
     public Button(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
-        TextValue value = new TextValue(Map.of(), Map.of(PAYLOAD_PRESS, channelConfiguration.payloadPress));
+        TextValue value = new TextValue(Map.of(), Map.of(PAYLOAD_PRESS, channelConfiguration.payloadPress), Map.of(),
+                COMMAND_LABELS);
 
         buildChannel(BUTTON_CHANNEL_ID, ComponentChannelType.STRING, value, getName(),
                 componentConfiguration.getUpdateListener())

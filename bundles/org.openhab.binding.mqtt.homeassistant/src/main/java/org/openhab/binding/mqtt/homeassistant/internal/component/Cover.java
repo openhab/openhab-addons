@@ -54,6 +54,10 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
     public static final String STATE_OPENING = "opening";
     public static final String STATE_STOPPED = "stopped";
 
+    private static final Map<String, String> STATE_LABELS = Map.of(STATE_CLOSED, "@text/state.cover.closed",
+            STATE_CLOSING, "@text/state.cover.closing", STATE_OPEN, "@text/state.cover.open", STATE_OPENING,
+            "@text/state.cover.opening", STATE_STOPPED, "@text/state.cover.stopped");
+
     /**
      * Configuration class for MQTT component
      */
@@ -121,7 +125,7 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
             states.put(channelConfiguration.stateOpen, STATE_OPEN);
             states.put(channelConfiguration.stateOpening, STATE_OPENING);
             states.put(channelConfiguration.stateStopped, STATE_STOPPED);
-            TextValue value = new TextValue(states, Map.of());
+            TextValue value = new TextValue(states, Map.of(), STATE_LABELS, Map.of());
             buildChannel(STATE_CHANNEL_ID, ComponentChannelType.STRING, value, "State",
                     componentConfiguration.getUpdateListener()).stateTopic(stateTopic).isAdvanced(true).build();
         }

@@ -57,12 +57,22 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
     public static final String PAYLOAD_START = "start";
     public static final String PAYLOAD_STOP = "stop";
 
+    private static final Map<String, String> COMMAND_LABELS = Map.of(PAYLOAD_CLEAN_SPOT,
+            "@text/command.vacuum.clean-spot", PAYLOAD_LOCATE, "@text/command.vacuum.locate", PAYLOAD_PAUSE,
+            "@text/command.vacuum.pause", PAYLOAD_RETURN_TO_BASE, "@text/command.vacuum.return-to-base", PAYLOAD_START,
+            "@text/command.vacuum.start", PAYLOAD_STOP, "@text/command.vacuum.stop");
+
     public static final String STATE_CLEANING = "cleaning";
     public static final String STATE_DOCKED = "docked";
     public static final String STATE_PAUSED = "paused";
     public static final String STATE_IDLE = "idle";
     public static final String STATE_RETURNING = "returning";
     public static final String STATE_ERROR = "error";
+
+    private static final Map<String, String> STATE_LABELS = Map.of(STATE_CLEANING, "@text/state.vacuum.cleaning",
+            STATE_DOCKED, "@text/state.vacuum.docked", STATE_PAUSED, "@text/state.vacuum.paused", STATE_IDLE,
+            "@text/state.vacuum.idle", STATE_RETURNING, "@text/state.vacuum.returning", STATE_ERROR,
+            "@text/state.vacuum.error");
 
     public static final String COMMAND_CH_ID = "command";
     public static final String FAN_SPEED_CH_ID = "fan-speed";
@@ -143,8 +153,9 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
         addPayloadToList(supportedFeatures, FEATURE_STOP, PAYLOAD_STOP, channelConfiguration.payloadStop, commands);
         addPayloadToList(supportedFeatures, FEATURE_PAUSE, PAYLOAD_PAUSE, channelConfiguration.payloadPause, commands);
 
-        buildOptionalChannel(COMMAND_CH_ID, ComponentChannelType.STRING, new TextValue(Map.of(), commands),
-                updateListener, null, channelConfiguration.commandTopic, null, null, "Command");
+        buildOptionalChannel(COMMAND_CH_ID, ComponentChannelType.STRING,
+                new TextValue(Map.of(), commands, Map.of(), COMMAND_LABELS), updateListener, null,
+                channelConfiguration.commandTopic, null, null, "Command");
 
         final var fanSpeedList = channelConfiguration.fanSpeedList;
         if (supportedFeatures.contains(FEATURE_FAN_SPEED) && fanSpeedList != null && !fanSpeedList.isEmpty()) {
@@ -170,10 +181,11 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
 
         if (supportedFeatures.contains(FEATURE_STATUS)) {
             // state key is mandatory
-            buildOptionalChannel(STATE_CH_ID, ComponentChannelType.STRING,
-                    new TextValue(new String[] { STATE_CLEANING, STATE_DOCKED, STATE_PAUSED, STATE_IDLE,
-                            STATE_RETURNING, STATE_ERROR }),
-                    updateListener, null, null, STATE_TEMPLATE, channelConfiguration.stateTopic, "State");
+            buildOptionalChannel(STATE_CH_ID, ComponentChannelType.STRING, new TextValue(
+                    Map.of(STATE_CLEANING, STATE_CLEANING, STATE_DOCKED, STATE_DOCKED, STATE_PAUSED, STATE_PAUSED,
+                            STATE_IDLE, STATE_IDLE, STATE_RETURNING, STATE_RETURNING, STATE_ERROR, STATE_ERROR),
+                    Map.of(), STATE_LABELS, Map.of()), updateListener, null, null, STATE_TEMPLATE,
+                    channelConfiguration.stateTopic, "State");
             if (supportedFeatures.contains(FEATURE_BATTERY)) {
                 buildOptionalChannel(BATTERY_LEVEL_CH_ID, ComponentChannelType.DIMMER,
                         new PercentageValue(BigDecimal.ZERO, BigDecimal.valueOf(100), BigDecimal.ONE, null, null, null),
