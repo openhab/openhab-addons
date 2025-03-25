@@ -39,6 +39,7 @@
 /bundles/org.openhab.binding.automower/ @maxpg
 /bundles/org.openhab.binding.avmfritz/ @cweitkamp
 /bundles/org.openhab.binding.awattar/ @Wolfgang1966
+/bundles/org.openhab.binding.bambulab/ @magx2
 /bundles/org.openhab.binding.benqprojector/ @mlobstein
 /bundles/org.openhab.binding.bigassfan/ @mhilbush
 /bundles/org.openhab.binding.bluetooth/ @cdjackson @cpmeister
@@ -66,6 +67,7 @@
 /bundles/org.openhab.binding.bticinosmarther/ @MrRonfo
 /bundles/org.openhab.binding.buienradar/ @gedejong
 /bundles/org.openhab.binding.caddx/ @jossuar
+/bundles/org.openhab.binding.casokitchen/ @weymann
 /bundles/org.openhab.binding.cbus/ @jpharvey
 /bundles/org.openhab.binding.chatgpt/ @kaikreuzer
 /bundles/org.openhab.binding.chromecast/ @kaikreuzer
@@ -131,7 +133,7 @@
 /bundles/org.openhab.binding.freeboxos/ @clinique
 /bundles/org.openhab.binding.freecurrency/ @J-N-K
 /bundles/org.openhab.binding.frenchgovtenergydata/ @clinique
-/bundles/org.openhab.binding.fronius/ @trokohl
+/bundles/org.openhab.binding.fronius/ @trokohl @florian-h05
 /bundles/org.openhab.binding.fsinternetradio/ @paphko
 /bundles/org.openhab.binding.ftpupload/ @paulianttila
 /bundles/org.openhab.binding.gardena/ @gerrieg @andrewfg
@@ -244,6 +246,7 @@
 /bundles/org.openhab.binding.monopriceaudio/ @mlobstein
 /bundles/org.openhab.binding.mpd/ @stefanroellin
 /bundles/org.openhab.binding.mqtt/ @ccutrer
+/bundles/org.openhab.binding.mqtt.awtrixlight/ @DrRSatzteil
 /bundles/org.openhab.binding.mqtt.espmilighthub/ @Skinah
 /bundles/org.openhab.binding.mqtt.fpp/ @computergeek1507
 /bundles/org.openhab.binding.mqtt.generic/ @ccutrer
@@ -337,6 +340,7 @@
 /bundles/org.openhab.binding.senechome/ @vctender @KorbinianP @eguib
 /bundles/org.openhab.binding.seneye/ @nikotanghe
 /bundles/org.openhab.binding.sensebox/ @hakan42
+/bundles/org.openhab.binding.senseenergy/ @jsjames
 /bundles/org.openhab.binding.sensibo/ @seime
 /bundles/org.openhab.binding.sensorcommunity/ @weymann
 /bundles/org.openhab.binding.serial/ @MikeJMajor
@@ -395,6 +399,7 @@
 /bundles/org.openhab.binding.tplinksmarthome/ @Hilbrand
 /bundles/org.openhab.binding.tr064/ @J-N-K
 /bundles/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
+/bundles/org.openhab.binding.tuya/ @J-N-K
 /bundles/org.openhab.binding.unifi/ @mgbowman @Hilbrand
 /bundles/org.openhab.binding.unifiedremote/ @GiviMAD
 /bundles/org.openhab.binding.upb/ @marcusb

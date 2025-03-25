@@ -46,6 +46,7 @@ public class Commands {
     public static final byte[] BYPASS_DEACTIVATION = { 0x14, 0x63 };
     public static final byte[] BOOST = { 0x15, 0x30 };
     public static final byte[] NIGHT_COOLING = { 0x15, 0x71 };
+    public static final byte[] DEFROST_STATUS = { 0x15, (byte) 0xf1 };
     public static final byte[] AUTOMATIC_BYPASS = { 0x17, 0x06 };
     public static final byte[] AUTOMATIC_RUSH_AIRING = { 0x17, 0x02 };
     public static final byte[] HUMIDITY = { 0x14, 0x70 };

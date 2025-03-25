@@ -150,7 +150,7 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
 
         try {
             BufferedImage chart = createChart(null, null, timeBegin, timeEnd, height, width, req.getParameter("items"),
-                    req.getParameter("groups"), null, null);
+                    req.getParameter("groups"), null, null, null);
             // Set the content type to that provided by the chart provider
             res.setContentType("image/" + getChartType());
             ImageIO.write(chart, getChartType().toString(), res.getOutputStream());
@@ -246,7 +246,8 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
     @Override
     public BufferedImage createChart(@Nullable String service, @Nullable String theme, ZonedDateTime startTime,
             ZonedDateTime endTime, int height, int width, @Nullable String items, @Nullable String groups,
-            @Nullable Integer dpi, @Nullable Boolean legend) throws ItemNotFoundException {
+            @Nullable Integer dpi, @Nullable String interpolation, @Nullable Boolean legend)
+            throws ItemNotFoundException {
         RrdGraphDef graphDef = new RrdGraphDef(startTime.toEpochSecond(), endTime.toEpochSecond());
         graphDef.setWidth(width);
         graphDef.setHeight(height);

@@ -14,15 +14,22 @@
 		</channels>
 
 		<config-description>
-			<parameter name="username" type="text" required="true">
-				<label>User Name</label>
-				<description>User name of tado login used for API access</description>
+			<parameter name="useRfc8628" type="boolean" required="false">
+				<label>Use oAuth RFC-8628</label>
+				<description>Determines if the binding shall use oAuth RFC-8628 authentication</description>
 			</parameter>
 
-			<parameter name="password" type="text" required="true">
+			<parameter name="username" type="text" required="false">
+				<label>User Name</label>
+				<description>User name of tado login used for API access</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="password" type="text" required="false">
 				<label>Password</label>
 				<description>Password of tado login used for API access</description>
 				<context>password</context>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>
