@@ -216,11 +216,6 @@
 				<description>`bblp` for local mode or your Bambu Lab user (starts with `u_`).</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="username" type="text">
-				<label>Username</label>
-				<description>`bblp` for local mode or your Bambu Lab user (starts with `u_`).</description>
-				<advanced>true</advanced>
-			</parameter>
 			<parameter name="reconnectTime" type="text" min="1">
 				<label>Reconnect Time</label>
 				<description>Time in seconds to wait before reconnect.</description>
