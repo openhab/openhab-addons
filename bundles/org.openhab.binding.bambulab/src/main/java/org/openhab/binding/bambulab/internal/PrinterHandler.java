@@ -547,4 +547,8 @@ public class PrinterHandler extends BaseBridgeHandler
             logger.warn("Did not remove ams handler {}", ams);
         }
     }
+
+    public String getSerialNumber() {
+        return requireNonNull(config).serial();
+    }
 }

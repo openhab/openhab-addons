@@ -14,7 +14,6 @@ package org.openhab.binding.bambulab.internal;
 
 import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.AmsChannel.MAX_AMS_TRAYS;
-import static org.openhab.binding.bambulab.internal.StateParserHelper.*;
 import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.ThingStatusDetail.BRIDGE_UNINITIALIZED;
 
@@ -58,23 +57,25 @@ public class AmsDeviceHandlerFactory extends BaseThingHandler {
     }
 
     private void internalInitialize() throws InitializationException {
-        validateBridge();
+        var printer = validateBridge();
         var config = this.config = getConfigAs(AmsDeviceConfiguration.class);
         config.validateNumber();
-        logger = LoggerFactory.getLogger(AmsDeviceHandlerFactory.class.getName() + "." + config.number);
+        logger = LoggerFactory.getLogger("%s.%s.%d".formatted(AmsDeviceHandlerFactory.class.getName(),
+                printer.getSerialNumber(), config.number));
         updateStatus(ONLINE);
     }
 
-    private void validateBridge() throws InitializationException {
+    private PrinterHandler validateBridge() throws InitializationException {
         var bridge = getBridge();
         if (bridge == null) {
             throw new InitializationException(BRIDGE_UNINITIALIZED,
                     "@text/thing-type.config.bambulab.ams-device.init.no-bridge");
         }
-        if (!(bridge.getHandler() instanceof PrinterHandler)) {
+        if (!(bridge.getHandler() instanceof PrinterHandler printer)) {
             throw new InitializationException(BRIDGE_UNINITIALIZED,
                     "@text/thing-type.config.bambulab.ams-device.init.bridge-wrong-type");
         }
+        return printer;
     }
 
     @Override
