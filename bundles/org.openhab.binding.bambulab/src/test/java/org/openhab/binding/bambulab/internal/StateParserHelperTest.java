@@ -151,7 +151,7 @@ class StateParserHelperTest {
         var result = StateParserHelper.parseTemperatureType(temperatureString);
 
         // Then
-        assertThat(result).isEmpty();
+        assertThat(result).contains(UNDEF);
     }
 
     @Test
@@ -190,7 +190,7 @@ class StateParserHelperTest {
         var result = StateParserHelper.parseDecimalType(decimalString);
 
         // Then
-        assertThat(result).isEmpty();
+        assertThat(result).contains(UNDEF);
     }
 
     @Test
