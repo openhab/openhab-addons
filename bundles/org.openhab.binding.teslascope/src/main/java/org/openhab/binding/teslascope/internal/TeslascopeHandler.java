@@ -185,8 +185,6 @@ public class TeslascopeHandler extends BaseThingHandler {
             updateState(TeslascopeBindingConstants.CHANNEL_VIN, new StringType(detailedInformation.vin));
             updateState(TeslascopeBindingConstants.CHANNEL_VEHICLE_NAME, new StringType(detailedInformation.name));
             updateState(TeslascopeBindingConstants.CHANNEL_VEHICLE_STATE, new StringType(detailedInformation.state));
-            updateState(TeslascopeBindingConstants.CHANNEL_ODOMETER,
-                    new QuantityType<>(detailedInformation.odometer, ImperialUnits.MILE));
 
             // charge state
             updateState(TeslascopeBindingConstants.CHANNEL_BATTERY_LEVEL,
@@ -198,14 +196,16 @@ public class TeslascopeHandler extends BaseThingHandler {
             updateState(TeslascopeBindingConstants.CHANNEL_ESTIMATED_BATTERY_RANGE,
                     new QuantityType<>(detailedInformation.chargeState.estBatteryRange, ImperialUnits.MILE));
             // charge_enable_request isn't the right flag to determine if car is charging or not
-            updateState(TeslascopeBindingConstants.CHANNEL_CHARGE,
-                    OnOffType.from("Charging".equals(detailedInformation.chargeState.chargingState)));
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGE, OnOffType
+                    .from("DetailedChargeStateCharging".equals(detailedInformation.chargeState.detailedChargeState)));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_ENERGY_ADDED,
                     new QuantityType<>(detailedInformation.chargeState.chargeEnergyAdded, Units.KILOWATT_HOUR));
             updateState(CHANNEL_CHARGE_LIMIT_SOC_STANDARD,
                     new DecimalType(detailedInformation.chargeState.chargeLimitSoc / 100));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_PORT,
                     OnOffType.from(1 == detailedInformation.chargeState.chargePortDoorOpen));
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_PORT_LATCH,
+                    OnOffType.from("Engaged".equals(detailedInformation.chargeState.chargePortLatch)));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_RATE,
                     new QuantityType<>(detailedInformation.chargeState.chargeRate, ImperialUnits.MILES_PER_HOUR));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGER_POWER,
@@ -214,8 +214,8 @@ public class TeslascopeHandler extends BaseThingHandler {
                     new QuantityType<>(detailedInformation.chargeState.chargerVoltage, Units.VOLT));
             updateState(TeslascopeBindingConstants.CHANNEL_TIME_TO_FULL_CHARGE,
                     new QuantityType<>(detailedInformation.chargeState.timeToFullCharge, Units.HOUR));
-            updateState(TeslascopeBindingConstants.CHANNEL_CHARGING_STATE,
-                    new StringType(detailedInformation.chargeState.chargingState));
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGING_STATE, new StringType(
+                    detailedInformation.chargeState.detailedChargeState.replace("DetailedChargeState", "")));
             updateState(TeslascopeBindingConstants.CHANNEL_SCHEDULED_CHARGING_PENDING,
                     OnOffType.from(1 == detailedInformation.chargeState.scheduledChargingPending));
             updateState(TeslascopeBindingConstants.CHANNEL_SCHEDULED_CHARGING_START,
@@ -283,9 +283,11 @@ public class TeslascopeHandler extends BaseThingHandler {
 
             // vehicle state
             updateState(TeslascopeBindingConstants.CHANNEL_DOOR_LOCK,
-                    OnOffType.from(1 == detailedInformation.vehicleState.locked));
+                    OnOffType.from(detailedInformation.vehicleState.locked));
+            updateState(TeslascopeBindingConstants.CHANNEL_ODOMETER,
+                    new QuantityType<>(detailedInformation.vehicleState.odometer, ImperialUnits.MILE));
             updateState(TeslascopeBindingConstants.CHANNEL_SENTRY_MODE,
-                    OnOffType.from(1 == detailedInformation.vehicleState.sentryMode));
+                    OnOffType.from(detailedInformation.vehicleState.sentryMode));
             updateState(TeslascopeBindingConstants.CHANNEL_VALET_MODE,
                     OnOffType.from(1 == detailedInformation.vehicleState.valetMode));
             updateState(TeslascopeBindingConstants.CHANNEL_SOFTWARE_UPDATE_AVAILABLE,

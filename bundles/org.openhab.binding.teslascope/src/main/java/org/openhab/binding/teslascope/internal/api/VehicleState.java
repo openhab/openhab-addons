@@ -25,10 +25,12 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VehicleState {
     // vehicle_state
-    public int locked;
+    public boolean locked;
 
     @SerializedName("sentry_mode")
-    public int sentryMode;
+    public boolean sentryMode;
+
+    public double odometer;
 
     @SerializedName("valet_mode")
     public int valetMode;
