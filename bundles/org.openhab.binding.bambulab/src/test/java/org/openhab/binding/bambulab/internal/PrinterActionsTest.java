@@ -34,6 +34,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.reflections.Reflections;
 
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient;
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.AmsControlCommand;
@@ -172,5 +173,33 @@ class PrinterActionsTest {
     @SafeVarargs
     static <T> Stream<T> stream(T... values) {
         return Stream.of(values);
+    }
+
+    @ParameterizedTest(name = "{index}: should support command {0}")
+    @MethodSource
+    void shouldSupportCommand(String command) {
+        // when
+        ThrowableAssert.ThrowingCallable when = () -> printerActions.sendCommand(command);
+
+        // then
+        assertThatThrownBy(when)//
+                .message()//
+                // if an error message starts with "Unknown..." it means that the giant if statement did not cover
+                // command.
+                //
+                // it might happen if JBambuApi library adds a new subclass of Command and addon developers would not
+                // add it to PrinterActions.
+                //
+                // it might happen that there will be some other IllegalArgumentException (like not enough params) would
+                // be thrown, but none of them starts with "Unknown...".
+                .doesNotStartWith("Unknown command name: " + command);
+    }
+
+    static Stream<Arguments> shouldSupportCommand() {
+        return new Reflections(Command.class)//
+                .getSubTypesOf(Command.class)//
+                .stream()//
+                .map(Class::getSimpleName)//
+                .map(command -> command.replace("Command", "")).map(Arguments::of);
     }
 }
