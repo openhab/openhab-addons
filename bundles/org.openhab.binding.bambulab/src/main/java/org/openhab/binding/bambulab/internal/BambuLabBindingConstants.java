@@ -42,6 +42,7 @@ public class BambuLabBindingConstants {
 
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     public enum Channel {
+        CHANNEL_COMMAND("command", true),
         CHANNEL_NOZZLE_TEMPERATURE("nozzle-temperature"),
         CHANNEL_NOZZLE_TARGET_TEMPERATURE("nozzle-target-temperature"),
         CHANNEL_BED_TEMPERATURE("bed-temperature"),

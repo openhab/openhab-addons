@@ -38,6 +38,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.Command;
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand;
 
 /**
@@ -51,12 +52,12 @@ class PrinterHandlerTest {
 
     @BeforeEach
     void setUp() {
-        lenient().doNothing().when(printerHandler).sendCommand(any(PrinterClient.Channel.Command.class));
+        lenient().doNothing().when(printerHandler).sendCommand(any(Command.class));
     }
 
     @ParameterizedTest(name = "Should handle {0} command for {1} channel and send {2}")
     @MethodSource
-    public void testSendLightCommand(OnOffType command, Channel channel, PrinterClient.Channel.Command sendCommand) {
+    public void testSendLightCommand(OnOffType command, Channel channel, Command sendCommand) {
         // Given
         var channelUID = new ChannelUID("bambulab:printer:test:" + channel);
 
@@ -116,7 +117,8 @@ class PrinterHandlerTest {
         printerHandler.handleCommand(channelUID, OnOffType.ON);
 
         // Then
-        verify(printerHandler, never()).sendCommand(any());
+        verify(printerHandler, never()).sendCommand(any(Command.class));
+        verify(printerHandler, never()).sendCommand(anyString());
     }
 
     static Stream<Arguments> notImplementedCommands() {

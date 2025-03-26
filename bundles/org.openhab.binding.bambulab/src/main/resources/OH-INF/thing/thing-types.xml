@@ -9,6 +9,12 @@
 		<description>Represents a Bambu Lab 3D printer connected via MQTT</description>
 
 		<channels>
+			<channel id="command" typeId="string-rw">
+				<label>Command</label>
+				<description><![CDATA[
+					Send command to run. See <a href="https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.bambulab#sendcommand">Actions > sendCommand</a>
+				]]></description>
+			</channel>
 			<channel id="nozzle-temperature" typeId="temperature-measurement">
 				<label>Nozzle Temperature</label>
 				<description>Current temperature of the nozzle.</description>

@@ -80,6 +80,7 @@ import pl.grzeslowski.jbambuapi.mqtt.Report;
 @NonNullByDefault
 public class PrinterHandler extends BaseBridgeHandler
         implements PrinterWatcher.StateSubscriber, BambuHandler, ConnectionCallback {
+    private static final String INTERNAL_COMMAND_PREFIX = ">";
     private Logger logger = LoggerFactory.getLogger(PrinterHandler.class);
 
     private @Nullable PrinterClient client;
@@ -110,6 +111,20 @@ public class PrinterHandler extends BaseBridgeHandler
                     .ifPresent(this::sendCommand);
         } else if (CHANNEL_CAMERA_RECORD.is(channelUID) && command instanceof OnOffType onOffCommand) {
             requireNonNull(camera).handleCommand(onOffCommand);
+        } else if (CHANNEL_COMMAND.is(channelUID) && command instanceof StringType) {
+            var commandString = command.toString();
+            if (commandString.startsWith(INTERNAL_COMMAND_PREFIX)) {
+                logger.debug("Command {} updates just the state, ignoring...", commandString);
+                return;
+            }
+            String result;
+            try {
+                sendCommand(commandString);
+                result = INTERNAL_COMMAND_PREFIX + " SUCCESS: " + commandString;
+            } catch (Exception ex) {
+                result = INTERNAL_COMMAND_PREFIX + " ERROR: " + ex.getLocalizedMessage();
+            }
+            updateState(channelUID, StringType.valueOf(result));
         }
     }
 
@@ -136,6 +151,9 @@ public class PrinterHandler extends BaseBridgeHandler
         camera = new Camera(config, this);
         updateState(CHANNEL_CAMERA_RECORD, OnOffType.OFF);
         updateState(CHANNEL_CAMERA_IMAGE, UNDEF);
+
+        // turn off the command channel
+        updateState(CHANNEL_COMMAND, UNDEF);
 
         var localClient = client = buildLocalClient(uri, config);
 
@@ -175,7 +193,7 @@ public class PrinterHandler extends BaseBridgeHandler
     @Override
     public void connectionLost(@Nullable Throwable throwable) {
         logger.debug("Connection lost. Restarting thing", throwable);
-        var message = throwable != null ? throwable.getLocalizedMessage() : "<no message>";
+        var message = throwable != null ? throwable.getLocalizedMessage() : "<no message" + INTERNAL_COMMAND_PREFIX;
         var description = "@text/printer.handler.init.connectionLost [\"%s\"]".formatted(message);
         updateStatus(OFFLINE, COMMUNICATION_ERROR, description);
         reconnect(null);
@@ -483,6 +501,10 @@ public class PrinterHandler extends BaseBridgeHandler
                 .map(OnOffType::from)//
                 .findAny()//
                 .ifPresent(command -> updateState(channel, command));
+    }
+
+    public void sendCommand(String command) {
+        sendCommand(CommandParser.parseCommand(command));
     }
 
     public void sendCommand(PrinterClient.Channel.Command command) {
