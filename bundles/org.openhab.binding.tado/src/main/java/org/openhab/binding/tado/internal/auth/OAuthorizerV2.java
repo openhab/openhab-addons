@@ -13,7 +13,9 @@
 package org.openhab.binding.tado.internal.auth;
 
 import java.io.IOException;
+import java.time.Instant;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
@@ -39,21 +41,37 @@ public class OAuthorizerV2 implements Authorizer {
 
     private final OAuthClientService oAuthService;
 
+    private @Nullable AccessTokenResponse cachedAccessTokenResponse;
+
     public OAuthorizerV2(OAuthClientService oAuthService) {
         this.oAuthService = oAuthService;
     }
 
     @Override
     public void addAuthorization(Request request) {
-        try {
-            AccessTokenResponse token = oAuthService.getAccessTokenResponse();
-            if (token != null) {
-                request.header(HttpHeader.AUTHORIZATION,
-                        String.format("%s %s", token.getTokenType(), token.getAccessToken()));
-                return;
-            }
-        } catch (OAuthException | IOException | OAuthResponseException e) {
-            logger.debug("addAuthorization() => getAccessTokenResponse() error: {}", e.getMessage(), e);
+        AccessTokenResponse token = getCachedAccessTokenResponse();
+        if (token != null) {
+            request.header(HttpHeader.AUTHORIZATION,
+                    String.format("%s %s", token.getTokenType(), token.getAccessToken()));
         }
+    }
+
+    /**
+     * Use the cached {@link AccessTokenResponse} if available and not close to expiring. Otherwise fetch the
+     * token from the OAUTH service. The method is synchronized to prevent multiple concurrent HTTP token
+     * refresh calls.
+     */
+    private synchronized @Nullable AccessTokenResponse getCachedAccessTokenResponse() {
+        AccessTokenResponse token = this.cachedAccessTokenResponse;
+        if (token == null || token.isExpired(Instant.now(), 5)) {
+            try {
+                token = oAuthService.getAccessTokenResponse();
+                this.cachedAccessTokenResponse = token;
+            } catch (OAuthException | IOException | OAuthResponseException e) {
+                logger.debug("getAccessTokenResponse() error: {}", e.getMessage(), e);
+                this.cachedAccessTokenResponse = null;
+            }
+        }
+        return token;
     }
 }
