@@ -301,6 +301,7 @@ public class JRubyScriptEngineConfiguration {
 
         configureRubyLib(scriptEngine);
         disallowExec(scriptEngine);
+        configureOpenHABGem(scriptEngine);
     }
 
     /**
@@ -338,6 +339,30 @@ public class JRubyScriptEngineConfiguration {
                     """);
         } catch (ScriptException exception) {
             logger.warn("Error preventing exec", unwrap(exception));
+        }
+    }
+
+    private void configureOpenHABGem(ScriptEngine engine) {
+        try {
+            engine.eval("""
+                    openhab_spec = Gem::Specification.new do |s|
+                      s.name    = "openhab"
+                      s.version = org.openhab.core.OpenHAB.version.freeze
+
+                      def s.deleted_gem?
+                        false
+                      end
+
+                      def s.installation_missing?
+                        false
+                      end
+                    end
+
+                    Gem::Specification.add_spec(openhab_spec)
+                    Gem.post_reset { Gem::Specification.add_spec(openhab_spec) }
+                    """);
+        } catch (ScriptException exception) {
+            logger.warn("Error creating openHAB gem", unwrap(exception));
         }
     }
 
