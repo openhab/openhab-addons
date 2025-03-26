@@ -23,6 +23,8 @@ jobs:
         os: [ 'ubuntu-24.04' ]
     name: Build (Java ${{ matrix.java }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    # typical duration is ~70min, set twice the amount as limit (default is 6h)
+    timeout-minutes: 140
     steps:
       - name: Checkout
         if: github.head_ref == ''
@@ -50,8 +52,9 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ matrix.java }}
 
+      # pinning to SHA to mitigate possible supply chain attacks
       - name: Set up Maven ${{ matrix.maven }}
-        uses: stCarolas/setup-maven@v5
+        uses: stCarolas/setup-maven@d6af6abeda15e98926a57b5aa970a96bb37f97d1 # v5
         with:
           maven-version: ${{ matrix.maven }}
 
@@ -61,10 +64,11 @@ jobs:
         run: |
           echo "::add-matcher::.github/openhab-compile-problems.json"
 
+      # pinning to SHA to mitigate possible supply chain attacks
       - name: Get Changed Files
         if: github.head_ref != ''
         id: files
-        uses: Ana06/get-changed-files@v2.3.0
+        uses: Ana06/get-changed-files@25f79e676e7ea1868813e21465014798211fad8c # v2.3.0
         with:
           format: 'csv'
 
@@ -101,6 +105,8 @@ jobs:
           path: '**/checkstyle-result.xml'
           mode: inline
 
+      # this will identify modifications to files under source control during the workflow run;
+      # untracked files will be included as well!
       - name: Verify Changed Files
         id: verify-changed-files
         run: |
