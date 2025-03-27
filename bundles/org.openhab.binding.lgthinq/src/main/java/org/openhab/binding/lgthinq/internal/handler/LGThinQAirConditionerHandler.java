@@ -423,10 +423,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     @Override
     protected boolean isExtraInfoCollectorEnabled() {
         String value = getItemLinkedValue(extendedInfoCollectorChannelUID);
-        if (value == null) {
-            return false;
-        }
-        return OnOffType.from(value) == OnOffType.ON;
+        return value != null && OnOffType.from(value) == OnOffType.ON;
     }
 
     @Override
