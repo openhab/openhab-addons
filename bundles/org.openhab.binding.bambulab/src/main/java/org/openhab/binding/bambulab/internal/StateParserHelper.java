@@ -14,7 +14,7 @@ package org.openhab.binding.bambulab.internal;
 
 import static java.lang.Integer.parseInt;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
-import static org.openhab.core.library.unit.Units.DECIBEL_MILLIWATTS;
+import static org.openhab.core.library.unit.Units.*;
 import static org.openhab.core.types.UnDefType.UNDEF;
 import static tech.units.indriya.unit.Units.PERCENT;
 
@@ -38,6 +38,11 @@ import org.slf4j.LoggerFactory;
 public class StateParserHelper {
     private static final Pattern DBM_PATTERN = Pattern.compile("^(-?\\d+)dBm$");
     private static final Logger logger = LoggerFactory.getLogger(StateParserHelper.class);
+
+    public static Optional<State> parseTimeMinutes(@Nullable Integer integer) {
+        return Optional.ofNullable(integer)//
+                .map(time -> new QuantityType<>(time, MINUTE));
+    }
 
     public static Optional<State> parseTemperatureType(@Nullable String value) {
         try {

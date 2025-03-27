@@ -43,7 +43,7 @@
 				<label>Print Progress</label>
 				<description>Percentage of the print completed.</description>
 			</channel>
-			<channel id="mc-remaining-time" typeId="number">
+			<channel id="mc-remaining-time" typeId="time-min">
 				<label>Remaining Print Time</label>
 				<description>Estimated time remaining for the print in seconds.</description>
 			</channel>

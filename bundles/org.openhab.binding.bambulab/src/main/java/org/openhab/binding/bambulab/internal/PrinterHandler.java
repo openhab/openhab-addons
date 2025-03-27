@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bambulab.internal;
 
+import static java.lang.Integer.parseInt;
 import static java.util.Arrays.stream;
 import static java.util.Collections.synchronizedList;
 import static java.util.Objects.requireNonNull;
@@ -90,6 +91,7 @@ public class PrinterHandler extends BaseBridgeHandler
     private final PrinterWatcher printerWatcher = new PrinterWatcher();
     private @Nullable PrinterClientConfig config;
     private final Collection<AmsDeviceHandlerFactory> amses = synchronizedList(new ArrayList<>());
+    private final AtomicReference<@Nullable Report> latestPrinterState = new AtomicReference<>();
 
     public PrinterHandler(Bridge bridge) {
         super(bridge);
@@ -153,7 +155,7 @@ public class PrinterHandler extends BaseBridgeHandler
         updateState(CHANNEL_CAMERA_IMAGE, UNDEF);
 
         // turn off the command channel
-        updateState(CHANNEL_COMMAND, UNDEF);
+        updateState(CHANNEL_COMMAND, StringType.valueOf(INTERNAL_COMMAND_PREFIX + " Ready to accept commands"));
 
         var localClient = client = buildLocalClient(uri, config);
 
@@ -244,6 +246,7 @@ public class PrinterHandler extends BaseBridgeHandler
     @Override
     public void dispose() {
         try {
+            latestPrinterState.set(null);
             printerWatcher.close();
             amses.clear();
             closeConfig();
@@ -294,6 +297,9 @@ public class PrinterHandler extends BaseBridgeHandler
     @Override
     public void newState(@Nullable Report delta, @Nullable Report fullState) {
         logger.trace("New Printer state from delta {}", delta);
+        if (fullState != null) {
+            latestPrinterState.set(fullState);
+        }
         // only need to update channels from delta
         // do not need to use full state, because at some point in past channels was already updated with its values
         if (delta == null) {
@@ -327,7 +333,8 @@ public class PrinterHandler extends BaseBridgeHandler
         updatePercentState(CHANNEL_MC_PERCENT, print.mcPercent());
         updatePercentState(CHANNEL_GCODE_FILE_PREPARE_PERCENT, print.gcodeFilePreparePercent());
         // decimal
-        updateDecimalState(CHANNEL_MC_REMAINING_TIME, print.mcRemainingTime());
+        parseTimeMinutes(print.mcRemainingTime())//
+                .ifPresent(time -> updateState(CHANNEL_MC_REMAINING_TIME, time));
         updateDecimalState(CHANNEL_BIG_FAN_1_SPEED, print.bigFan1Speed());
         updateDecimalState(CHANNEL_BIG_FAN_2_SPEED, print.bigFan2Speed());
         updateDecimalState(CHANNEL_HEAT_BREAK_FAN_SPEED, print.heatbreakFanSpeed());
@@ -556,6 +563,17 @@ public class PrinterHandler extends BaseBridgeHandler
             return;
         }
         amses.add(ams);
+        Optional.of(latestPrinterState)//
+                .map(AtomicReference::get)//
+                .map(Report::print).map(Report.Print::ams)//
+                .map(Report.Print.Ams::ams)//
+                .stream()//
+                .flatMap(Collection::stream)//
+                .filter(map -> map.containsKey("id"))//
+                .filter(map -> map.get("id") != null)//
+                // in code, we are using 1-4 ordering; in API 0-3 ordering is used
+                .filter(map -> parseInt(map.get("id").toString()) + 1 == ams.getAmsNumber())//
+                .forEach(ams::updateAms);
     }
 
     @Override
