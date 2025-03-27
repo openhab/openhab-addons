@@ -177,7 +177,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/error.mandotory-fields-missing");
         } else {
-            // updateStatus(ThingStatus.UNKNOWN);
+            updateStatus(ThingStatus.UNKNOWN);
             startLGThinqDevicePolling();
         }
     }
