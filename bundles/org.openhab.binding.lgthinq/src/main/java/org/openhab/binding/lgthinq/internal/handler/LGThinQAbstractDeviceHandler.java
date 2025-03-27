@@ -297,7 +297,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                     }
                     getLogger().trace("{}", message);
                 }
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/error.handler.device-cmd-queue-busy");
             }
         }
