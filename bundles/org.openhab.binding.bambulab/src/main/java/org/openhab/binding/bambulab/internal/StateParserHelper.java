@@ -18,18 +18,27 @@ import static org.openhab.core.library.unit.Units.*;
 import static org.openhab.core.types.UnDefType.UNDEF;
 import static tech.units.indriya.unit.Units.PERCENT;
 
+import java.time.ZonedDateTime;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand;
 
 /**
  * @author Martin Grześlowski - Initial contribution
@@ -44,9 +53,15 @@ public class StateParserHelper {
                 .map(time -> new QuantityType<>(time, MINUTE));
     }
 
+    public static Optional<State> parseTemperatureType(@Nullable Number value) {
+        return Optional.ofNullable(value).map(d -> new QuantityType<>(d, CELSIUS));
+    }
+
     public static Optional<State> parseTemperatureType(@Nullable String value) {
         try {
-            return Optional.ofNullable(value).map(Double::parseDouble).map(d -> new QuantityType<>(d, CELSIUS));
+            return Optional.ofNullable(value)//
+                    .map(Double::parseDouble)//
+                    .flatMap(StateParserHelper::parseTemperatureType);
         } catch (NumberFormatException ex) {
             logger.debug("Cannot parse: {}", value, ex);
             return Optional.of(UNDEF);
@@ -85,20 +100,23 @@ public class StateParserHelper {
         return Optional.ofNullable(string).map(StringType::new);
     }
 
-    public static State parseWifiChannel(String wifi) {
+    public static Optional<State> parseWifiChannel(@Nullable String wifi) {
+        if (wifi == null) {
+            return Optional.empty();
+        }
         var matcher = DBM_PATTERN.matcher(wifi);
         if (!matcher.matches()) {
             logger.debug("Cannot match {} to {}", wifi, DBM_PATTERN);
-            return UNDEF;
+            return Optional.of(UNDEF);
         }
 
         var integer = matcher.group(1);
         try {
             var value = parseInt(integer);
-            return new QuantityType<>(value, DECIBEL_MILLIWATTS);
+            return Optional.of(new QuantityType<>(value, DECIBEL_MILLIWATTS));
         } catch (NumberFormatException e) {
             logger.debug("Cannot parse integer {} from wifi {}", integer, wifi, e);
-            return UNDEF;
+            return Optional.of(UNDEF);
         }
     }
 
@@ -114,5 +132,47 @@ public class StateParserHelper {
 
     public static Optional<State> undef() {
         return Optional.of(UNDEF);
+    }
+
+    public static Optional<State> parseOnOffType(@Nullable Boolean bool) {
+        return Optional.ofNullable(bool).map(OnOffType::from);
+    }
+
+    public static Optional<State> parseSpeedLevel(@Nullable Integer speedLvl) {
+        return Optional.ofNullable(speedLvl)//
+                .map(PrintSpeedCommand::findByLevel)//
+                .map(Object::toString)//
+                .flatMap(StateParserHelper::parseStringType);
+    }
+
+    public static Optional<State> parseTrayType(@Nullable String trayType) {
+        return Optional.ofNullable(trayType).map(Object::toString)//
+                .flatMap(BambuLabBindingConstants.AmsChannel.TrayType::findTrayType)//
+                .map(Enum::name)//
+                .flatMap(StateParserHelper::parseStringType);
+    }
+
+    public static Optional<State> parseChamberLightType(@Nullable List<Map<String, String>> lights) {
+        return parseLightType("chamber_light", lights);
+    }
+
+    public static Optional<State> parseWorkLightType(@Nullable List<Map<String, String>> lights) {
+        return parseLightType("work_light", lights);
+    }
+
+    private static Optional<State> parseLightType(String lightName, @Nullable List<Map<String, String>> lights) {
+        return Optional.ofNullable(lights)//
+                .stream()//
+                .flatMap(Collection::stream)//
+                .filter(map -> lightName.equalsIgnoreCase(map.get("node")))//
+                .map(map -> map.get("mode"))//
+                .filter(Objects::nonNull)//
+                .map(OnOffType::from)//
+                .map(state -> (State) state)//
+                .findAny();
+    }
+
+    public static State parseDateTimeType(ZonedDateTime dateTime) {
+        return new DateTimeType(dateTime);
     }
 }

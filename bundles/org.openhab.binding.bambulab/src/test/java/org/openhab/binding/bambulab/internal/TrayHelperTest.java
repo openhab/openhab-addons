@@ -28,6 +28,7 @@ import org.openhab.core.library.types.StringType;
 /**
  * @author Martin Grześlowski - Initial contribution
  */
+@SuppressWarnings("OptionalGetWithoutIsPresent")
 @NonNullByDefault
 class TrayHelperTest {
 
@@ -38,7 +39,7 @@ class TrayHelperTest {
         var tray = "255";
 
         // When
-        var result = TrayHelper.updateTrayLoaded(tray);
+        var result = TrayHelper.findStateForTrayLoaded(tray).get();
 
         // Then
         assertThat(result).isInstanceOf(StringType.class);
@@ -52,7 +53,7 @@ class TrayHelperTest {
         var tray = "254";
 
         // When
-        var result = TrayHelper.updateTrayLoaded(tray);
+        var result = TrayHelper.findStateForTrayLoaded(tray).get();
 
         // Then
         assertThat(result).isInstanceOf(StringType.class);
@@ -63,7 +64,7 @@ class TrayHelperTest {
     @MethodSource
     public void happyPath(int tray, String expected) {
         // When
-        var result = TrayHelper.updateTrayLoaded(tray + "");
+        var result = TrayHelper.findStateForTrayLoaded(tray + "").get();
 
         // Then
         assertThat(result.toString()).isEqualTo(expected);
@@ -100,10 +101,10 @@ class TrayHelperTest {
         String tray = null;
 
         // When
-        var result = TrayHelper.updateTrayLoaded(tray);
+        var result = TrayHelper.findStateForTrayLoaded(tray);
 
         // Then
-        assertThat(result).isEqualTo(UNDEF);
+        assertThat(result).isEmpty();
     }
 
     @Test
@@ -113,7 +114,7 @@ class TrayHelperTest {
         var tray = "not-a-number";
 
         // When
-        var result = TrayHelper.updateTrayLoaded(tray);
+        var result = TrayHelper.findStateForTrayLoaded(tray).get();
 
         // Then
         assertThat(result).isEqualTo(UNDEF);
@@ -126,7 +127,7 @@ class TrayHelperTest {
         var tray = "";
 
         // When
-        var result = TrayHelper.updateTrayLoaded(tray);
+        var result = TrayHelper.findStateForTrayLoaded(tray).get();
 
         // Then
         assertThat(result).isEqualTo(UNDEF);
@@ -139,7 +140,7 @@ class TrayHelperTest {
         var tray = "-5";
 
         // When
-        var result = TrayHelper.updateTrayLoaded(tray);
+        var result = TrayHelper.findStateForTrayLoaded(tray).get();
 
         // Then
         assertThat(result).isEqualTo(UNDEF);
@@ -152,7 +153,7 @@ class TrayHelperTest {
         var tray = (TrayHelper.MAX_TRAY_VALUE + 1) + "";
 
         // When
-        var result = TrayHelper.updateTrayLoaded(tray);
+        var result = TrayHelper.findStateForTrayLoaded(tray).get();
 
         // Then
         assertThat(result).isEqualTo(UNDEF);
@@ -165,7 +166,7 @@ class TrayHelperTest {
         var tray = TrayHelper.MAX_TRAY_VALUE + "";
 
         // When
-        var result = TrayHelper.updateTrayLoaded(tray);
+        var result = TrayHelper.findStateForTrayLoaded(tray).get();
 
         // Then
         assertThat(result.toString()).isEqualTo("AMS_4_4");

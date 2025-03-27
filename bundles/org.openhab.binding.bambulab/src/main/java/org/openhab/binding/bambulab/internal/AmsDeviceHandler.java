@@ -38,11 +38,11 @@ import org.slf4j.LoggerFactory;
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public class AmsDeviceHandlerFactory extends BaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(AmsDeviceHandlerFactory.class);
+public class AmsDeviceHandler extends BaseThingHandler {
+    private Logger logger = LoggerFactory.getLogger(AmsDeviceHandler.class);
     private @Nullable AmsDeviceConfiguration config;
 
-    public AmsDeviceHandlerFactory(Thing thing) {
+    public AmsDeviceHandler(Thing thing) {
         super(thing);
     }
 
@@ -60,8 +60,8 @@ public class AmsDeviceHandlerFactory extends BaseThingHandler {
         var printer = validateBridge();
         var config = this.config = getConfigAs(AmsDeviceConfiguration.class);
         config.validateNumber();
-        logger = LoggerFactory.getLogger("%s.%s.%d".formatted(AmsDeviceHandlerFactory.class.getName(),
-                printer.getSerialNumber(), config.number));
+        logger = LoggerFactory.getLogger(
+                "%s.%s.%d".formatted(AmsDeviceHandler.class.getName(), printer.getSerialNumber(), config.number));
         updateStatus(ONLINE);
     }
 
@@ -223,6 +223,6 @@ public class AmsDeviceHandlerFactory extends BaseThingHandler {
     @Override
     public void dispose() {
         config = null;
-        logger = LoggerFactory.getLogger(AmsDeviceHandlerFactory.class);
+        logger = LoggerFactory.getLogger(AmsDeviceHandler.class);
     }
 }
