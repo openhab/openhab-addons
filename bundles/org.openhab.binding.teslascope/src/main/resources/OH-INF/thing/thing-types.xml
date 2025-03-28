@@ -107,7 +107,7 @@
 				<label>Vehicle Public ID</label>
 				<description>Vehicle public ID listed in Teslascope</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="60">
+			<parameter name="refreshInterval" type="integer" unit="s" min="10">
 				<label>Refresh Interval</label>
 				<description>Interval the API is polled in sec.</description>
 				<default>60</default>
