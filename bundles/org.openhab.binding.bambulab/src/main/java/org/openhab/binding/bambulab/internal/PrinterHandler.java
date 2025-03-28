@@ -524,7 +524,11 @@ public class PrinterHandler extends BaseBridgeHandler
             return;
         }
         amses.add(ams);
-        Optional.of(latestPrinterState)//
+        findLatestAms(ams.getAmsNumber()).ifPresent(ams::updateAms);
+    }
+
+    public Optional<Map<String, Object>> findLatestAms(int amsNumber) {
+        return Optional.of(latestPrinterState)//
                 .map(AtomicReference::get)//
                 .map(Report::print).map(Report.Print::ams)//
                 .map(Report.Print.Ams::ams)//
@@ -533,8 +537,7 @@ public class PrinterHandler extends BaseBridgeHandler
                 .filter(map -> map.containsKey("id"))//
                 .filter(map -> map.get("id") != null)//
                 // in code, we are using 1-4 ordering; in API 0-3 ordering is used
-                .filter(map -> parseInt(map.get("id").toString()) + 1 == ams.getAmsNumber())//
-                .forEach(ams::updateAms);
+                .filter(map -> parseInt(map.get("id").toString()) + 1 == amsNumber).findAny();
     }
 
     @Override
