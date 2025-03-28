@@ -80,7 +80,9 @@ public class TeslascopeHandler extends BaseThingHandler {
                     }
                     break;
                 case TeslascopeBindingConstants.CHANNEL_CHARGE_LIMIT_SOC:
-                    // setChargeLimit(command);
+                    if (command instanceof QuantityType quantityCommand) {
+                        setChargeLimit(quantityCommand);
+                    }
                     break;
                 case TeslascopeBindingConstants.CHANNEL_CHARGE_PORT:
                     if (command instanceof OnOffType onOffCommand) {
@@ -361,15 +363,15 @@ public class TeslascopeHandler extends BaseThingHandler {
 
     protected void setAutoConditioning(boolean b)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        webTargets.sendCommand(config.publicID, config.apiKey, b ? "startAC" : "stopAC");
+        webTargets.sendCommand(config.publicID, config.apiKey, b ? "startAC" : "stopAC", "");
     }
 
     protected void charge(boolean b) throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        webTargets.sendCommand(config.publicID, config.apiKey, b ? "startCharging" : "stopCharging");
+        webTargets.sendCommand(config.publicID, config.apiKey, b ? "startCharging" : "stopCharging", "");
     }
 
     protected void chargeDoor(boolean b) throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        webTargets.sendCommand(config.publicID, config.apiKey, b ? "openChargeDoor" : "closeChargeDoor");
+        webTargets.sendCommand(config.publicID, config.apiKey, b ? "openChargeDoor" : "closeChargeDoor", "");
     }
 
     protected void flashLights() throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
@@ -398,9 +400,9 @@ public class TeslascopeHandler extends BaseThingHandler {
         webTargets.sendCommand(config.publicID, config.apiKey, b ? "enableSentryMode" : "disableSentryMode");
     }
 
-    protected void setChargeLimit(Command chargeLimit)
+    protected void setChargeLimit(QuantityType chargeLimit)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        webTargets.sendCommand(config.publicID, config.apiKey,
-                "setChargeLimit?limit=" + chargeLimit.toString().replace(" %", ""));
+        webTargets.sendCommand(config.publicID, config.apiKey, "setChargeLimit",
+                "&limit=" + chargeLimit.toString().replace(" %", ""));
     }
 }
