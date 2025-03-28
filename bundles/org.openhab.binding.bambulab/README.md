@@ -65,6 +65,8 @@ Use `us.mqtt.bambulab.com` as the hostname.
 | `hostname`          | N/A    | Text    | Yes      | IP address of the printer or `us.mqtt.bambulab.com` for cloud mode.                                                                                                                                                                             |
 | `accessCode`        | N/A    | Text    | Yes      | Access code for the printer. The method of obtaining this varies between local and cloud modes.                                                                                                                                                 |
 | `username`          | N/A    | Text    | No       | `bblp` for local mode or your Bambu Lab user (starting with `u_`). (Advanced)                                                                                                                                                                   |
+| `reconnectTime`     | MQTT   | Integer | No       | Time in seconds to wait before reconnect. (Advanced)                                                                                                                                                                                            |
+| `reconnectMax`      | MQTT   | Integer | No       | Max times to try reconnections. (Advanced)                                                                                                                                                                                                      |
 | `scheme`            | MQTT   | Text    | No       | URI scheme. (Advanced)                                                                                                                                                                                                                          |
 | `port`              | MQTT   | Integer | No       | URI port. (Advanced)                                                                                                                                                                                                                            |
 | `cameraPort`        | Camera | Integer | No       | Camera server port. (Advanced)                                                                                                                                                                                                                  |
@@ -72,35 +74,36 @@ Use `us.mqtt.bambulab.com` as the hostname.
 
 ## Channels
 
-| Channel ID                   | Type                | Description                                                      |
-|------------------------------|---------------------|------------------------------------------------------------------|
-| `nozzle-temperature`         | Temperature Channel | Current temperature of the nozzle.                               |
-| `nozzle-target-temperature`  | Temperature Channel | Target temperature of the nozzle.                                |
-| `bed-temperature`            | Temperature Channel | Current temperature of the heated bed.                           |
-| `bed-target-temperature`     | Temperature Channel | Target temperature of the heated bed.                            |
-| `chamber-temperature`        | Temperature Channel | Current temperature inside the printer chamber.                  |
-| `mc-print-stage`             | String Channel      | Current stage of the print process.                              |
-| `mc-percent`                 | Percent Channel     | Percentage of the print completed.                               |
-| `mc-remaining-time`          | Number Channel      | Estimated time remaining for the print (in seconds).             |
-| `wifi-signal`                | WiFi Channel        | Current WiFi signal strength.                                    |
-| `bed-type`                   | String Channel      | Type of the printer's heated bed.                                |
-| `gcode-file`                 | String Channel      | Name of the currently loaded G-code file.                        |
-| `gcode-state`                | String Channel      | Current state of the G-code execution.                           |
-| `reason`                     | String Channel      | Reason for pausing or stopping the print.                        |
-| `result`                     | String Channel      | Final result or status of the print job.                         |
-| `gcode-file-prepare-percent` | Percent Channel     | Percentage of G-code file preparation completed.                 |
-| `big-fan1-speed`             | Number Channel      | Speed of the first large cooling fan (RPM).                      |
-| `big-fan2-speed`             | Number Channel      | Speed of the second large cooling fan (RPM).                     |
-| `heat-break-fan-speed`       | Number Channel      | Speed of the heat break cooling fan (RPM).                       |
-| `layer-num`                  | Number Channel      | Current layer being printed.                                     |
-| `speed-level`                | Number Channel      | Current speed setting of the print job.                          |
-| `time-laps`                  | Boolean Channel     | Indicates whether time-lapse recording is enabled.               |
-| `use-ams`                    | Boolean Channel     | Indicates whether the Automatic Material System (AMS) is active. |
-| `vibration-calibration`      | Boolean Channel     | Indicates whether vibration calibration has been performed.      |
-| `led-chamber`                | On/Off Command      | Controls the LED lighting inside the printer chamber.            |
-| `led-work`                   | On/Off Command      | Controls the LED lighting for the work area.                     |
-| `camera-record`              | Boolean RW Command  | Turns on/off OpenHAB's capability of recording.                  |
-| `camera-image`               | Image               | Current image from the printer's camera.                         |
+| Channel ID                   | Type                | Description                                                                                                                        |
+|------------------------------|---------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| `command`                    | String RW Channel   | Send yor commands to this channel so they will be send to the printer. Check `Actions` > `sendCommand` for detailed documentation. |
+| `nozzle-temperature`         | Temperature Channel | Current temperature of the nozzle.                                                                                                 |
+| `nozzle-target-temperature`  | Temperature Channel | Target temperature of the nozzle.                                                                                                  |
+| `bed-temperature`            | Temperature Channel | Current temperature of the heated bed.                                                                                             |
+| `bed-target-temperature`     | Temperature Channel | Target temperature of the heated bed.                                                                                              |
+| `chamber-temperature`        | Temperature Channel | Current temperature inside the printer chamber.                                                                                    |
+| `mc-print-stage`             | String Channel      | Current stage of the print process.                                                                                                |
+| `mc-percent`                 | Percent Channel     | Percentage of the print completed.                                                                                                 |
+| `mc-remaining-time`          | Number Channel      | Estimated time remaining for the print (in seconds).                                                                               |
+| `wifi-signal`                | WiFi Channel        | Current WiFi signal strength.                                                                                                      |
+| `bed-type`                   | String Channel      | Type of the printer's heated bed.                                                                                                  |
+| `gcode-file`                 | String Channel      | Name of the currently loaded G-code file.                                                                                          |
+| `gcode-state`                | String Channel      | Current state of the G-code execution.                                                                                             |
+| `reason`                     | String Channel      | Reason for pausing or stopping the print.                                                                                          |
+| `result`                     | String Channel      | Final result or status of the print job.                                                                                           |
+| `gcode-file-prepare-percent` | Percent Channel     | Percentage of G-code file preparation completed.                                                                                   |
+| `big-fan1-speed`             | Number Channel      | Speed of the first large cooling fan (RPM).                                                                                        |
+| `big-fan2-speed`             | Number Channel      | Speed of the second large cooling fan (RPM).                                                                                       |
+| `heat-break-fan-speed`       | Number Channel      | Speed of the heat break cooling fan (RPM).                                                                                         |
+| `layer-num`                  | Number Channel      | Current layer being printed.                                                                                                       |
+| `speed-level`                | Number Channel      | Current speed setting of the print job.                                                                                            |
+| `time-laps`                  | Boolean Channel     | Indicates whether time-lapse recording is enabled.                                                                                 |
+| `use-ams`                    | Boolean Channel     | Indicates whether the Automatic Material System (AMS) is active.                                                                   |
+| `vibration-calibration`      | Boolean Channel     | Indicates whether vibration calibration has been performed.                                                                        |
+| `led-chamber`                | On/Off Command      | Controls the LED lighting inside the printer chamber.                                                                              |
+| `led-work`                   | On/Off Command      | Controls the LED lighting for the work area.                                                                                       |
+| `camera-record`              | Boolean RW Command  | Turns on/off OpenHAB's capability of recording.                                                                                    |
+| `camera-image`               | Image               | Current image from the printer's camera.                                                                                           |
 
 ## Full Example
 
@@ -165,7 +168,7 @@ CommandType:Parameter1:Parameter2:...
 | `ChangeFilament`     | `target(int)`,`currentTemperature(int))`,`targetTemperature(int)`                                                                        | Changes filament using.                                       |
 | `AmsUserSetting`     | `amsId(int)`,`startupReadOption(boolean)`,`trayReadOption(boolean)`                                                                      | Sets AMS user settings.                                       |
 | `AmsFilamentSetting` | `amsId(int)`,`trayId(int)`,`trayInfoIdx(string)`,`trayColor(string)`,`nozzleTempMin(int)`,`nozzleTempMax(int)`,`trayType(string)`        | Configures filament settings.                                 |
-| `AmsControl`         | ` RESUME` / `RESET` / `PAUSE`                                                                                                            | Sends an AMS control command.                                 |
+| `AmsControl`         | `RESUME` / `RESET` / `PAUSE`                                                                                                             | Sends an AMS control command.                                 |
 | `PrintSpeed`         | `SILENT` / `STANDARD` / `SPORT` / `LUDICROUS`                                                                                            | Adjusts print speed.                                          |
 | `GCodeFile`          | `filename(string)`                                                                                                                       | Loads a G-code file.                                          |
 | `GCodeLine`          | `userId(string)\nlines(string...)`                                                                                                       | Sends multiple G-code lines. Lines are enter (`\n`) separated |

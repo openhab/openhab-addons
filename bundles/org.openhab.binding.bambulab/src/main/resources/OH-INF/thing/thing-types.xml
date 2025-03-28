@@ -4,11 +4,17 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="printer">
+	<bridge-type id="printer">
 		<label>Bambu Lab Printer</label>
 		<description>Represents a Bambu Lab 3D printer connected via MQTT</description>
 
 		<channels>
+			<channel id="command" typeId="string-rw">
+				<label>Command</label>
+				<description><![CDATA[
+					Send command to run. See <a href="https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.bambulab#sendcommand">Actions > sendCommand</a>
+				]]></description>
+			</channel>
 			<channel id="nozzle-temperature" typeId="temperature-measurement">
 				<label>Nozzle Temperature</label>
 				<description>Current temperature of the nozzle.</description>
@@ -37,7 +43,7 @@
 				<label>Print Progress</label>
 				<description>Percentage of the print completed.</description>
 			</channel>
-			<channel id="mc-remaining-time" typeId="number">
+			<channel id="mc-remaining-time" typeId="time-min">
 				<label>Remaining Print Time</label>
 				<description>Estimated time remaining for the print in seconds.</description>
 			</channel>
@@ -105,14 +111,73 @@
 			<channel id="camera-image" typeId="camera-image"/>
 
 			<!-- command channels -->
-			<channel id="led-chamber" typeId="on-off-command">
+			<channel id="led-chamber" typeId="boolean-rw">
 				<label>Chamber LED</label>
 				<description>Controls the LED lighting inside the printer chamber.</description>
 			</channel>
-			<channel id="led-work" typeId="on-off-command">
+			<channel id="led-work" typeId="boolean-rw">
 				<label>Work Area LED</label>
 				<description>Controls the LED lighting for the work area.</description>
 			</channel>
+
+			<!-- 🟩 AMS -->
+			<channel id="ams-tray-now" typeId="tray-loaded"/>
+			<channel id="ams-tray-previous" typeId="tray-loaded">
+				<label>Previously Loaded Tray</label>
+			</channel>
+			<!-- 🟥 AMS -->
+			<!-- 🟩 VTray -->
+			<channel id="vtray-tray-type" typeId="tray-type"/>
+			<channel id="vtray-tray-color" typeId="tray-color"/>
+			<channel id="vtray-nozzle-temperature-max" typeId="temperature-setpoint">
+				<label>Nozzle Temperature Max</label>
+				<description>Maximum nozzle temperature for tray.</description>
+			</channel>
+			<channel id="vtray-nozzle-temperature-min" typeId="temperature-setpoint">
+				<label>Nozzle Temperature Min</label>
+				<description>Minimum nozzle temperature for tray.</description>
+			</channel>
+			<channel id="vtray-remain" typeId="percent">
+				<label>Remain</label>
+				<description>Amount of remaining filament.</description>
+			</channel>
+			<channel id="vtray-k" typeId="number-advanced">
+				<label>k</label>
+			</channel>
+			<channel id="vtray-n" typeId="number-advanced">
+				<label>n</label>
+			</channel>
+			<channel id="vtray-tag-uuid" typeId="string-advanced">
+				<label>Tag UUID</label>
+			</channel>
+			<channel id="vtray-tray-id-name" typeId="string-advanced">
+				<label>Tray ID Name</label>
+			</channel>
+			<channel id="vtray-tray-info-idx" typeId="string-advanced">
+				<label>Tray Info IDX Name</label>
+			</channel>
+			<channel id="vtray-tray-sub-brands" typeId="string-advanced">
+				<label>Tray Sub Brands</label>
+			</channel>
+			<channel id="vtray-tray-weight" typeId="number-advanced">
+				<label>Tray Weight</label>
+			</channel>
+			<channel id="vtray-tray-diameter" typeId="number-advanced">
+				<label>Tray Diameter</label>
+			</channel>
+			<channel id="vtray-tray-temperature" typeId="temperature-measurement-advanced">
+				<label>Tray Temperature</label>
+			</channel>
+			<channel id="vtray-tray-time" typeId="number-advanced">
+				<label>Tray Time</label>
+			</channel>
+			<channel id="vtray-bed-temp-type" typeId="string-advanced">
+				<label>Bed Temperature Type</label>
+			</channel>
+			<channel id="vtray-bed-temperature" typeId="temperature-measurement-advanced">
+				<label>Bed Temperature</label>
+			</channel>
+			<!-- 🟥 VTray -->
 		</channels>
 
 		<representation-property>serial</representation-property>
@@ -157,6 +222,18 @@
 				<description>`bblp` for local mode or your Bambu Lab user (starts with `u_`).</description>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="reconnectTime" type="text" min="1">
+				<label>Reconnect Time</label>
+				<description>Time in seconds to wait before reconnect.</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="reconnectMax" type="text" min="0">
+				<label>Max Reconnections</label>
+				<description>Max times to try reconnections.</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
 			<!-- 🟥Common -->
 			<!-- 🟩MQTT -->
 			<parameter name="scheme" type="text" required="false" groupName="mqtt">
@@ -187,6 +264,6 @@
 			</parameter>
 			<!-- 🟥CAMERA -->
 		</config-description>
-	</thing-type>
+	</bridge-type>
 
 </thing:thing-descriptions>

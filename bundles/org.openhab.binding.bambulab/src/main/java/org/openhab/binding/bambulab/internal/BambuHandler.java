@@ -59,7 +59,7 @@ public interface BambuHandler {
 
     /**
      * Returns current scheduler
-     * 
+     *
      * @return scheduler
      */
     ScheduledExecutorService getScheduler();

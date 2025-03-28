@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.bambulab.internal;
 
-import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PRINTER_THING_TYPE;
+import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.*;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -35,7 +36,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.bambulab", service = ThingHandlerFactory.class)
 public class BambuLabHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(PRINTER_THING_TYPE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(PRINTER_THING_TYPE, AMS_THING_TYPE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,8 +47,12 @@ public class BambuLabHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (PRINTER_THING_TYPE.equals(thingTypeUID)) {
-            return new PrinterHandler(thing);
+        if (PRINTER_THING_TYPE.equals(thingTypeUID) && thing instanceof Bridge bridge) {
+            return new PrinterHandler(bridge);
+        }
+
+        if (AMS_THING_TYPE.equals(thingTypeUID)) {
+            return new AmsDeviceHandlerFactory(thing);
         }
 
         return null;

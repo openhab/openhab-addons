@@ -11,7 +11,17 @@
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature-measurement-advanced" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Temperature</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="temperature-setpoint">
 		<item-type>Number:Temperature</item-type>
@@ -21,7 +31,7 @@
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="string">
 		<item-type>String</item-type>
@@ -31,6 +41,11 @@
 	<channel-type id="string-rw">
 		<item-type>String</item-type>
 		<label>RW String Channel</label>
+	</channel-type>
+	<channel-type id="string-advanced" advanced="true">
+		<item-type>String</item-type>
+		<label>Advanced String Channel</label>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="wifi">
 		<item-type unitHint="dBm">Number:Power</item-type>
@@ -43,10 +58,20 @@
 		<label>Number Channel</label>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="time-min">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Time (min)</label>
+		<state readOnly="true" pattern="%1$tHh:%1$tMm"/>
+	</channel-type>
+	<channel-type id="number-advanced" advanced="true">
+		<item-type>Number</item-type>
+		<label>Advanced Number Channel</label>
+		<state readOnly="true"/>
+	</channel-type>
 	<channel-type id="percent">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Percent Channel</label>
-		<state readOnly="true" min="0" max="100" pattern="%.2f %unit%"/>
+		<state readOnly="true" min="0" max="100"/>
 	</channel-type>
 	<channel-type id="boolean">
 		<item-type>Switch</item-type>
@@ -86,21 +111,58 @@
 		</command>
 	</channel-type>
 
-	<channel-type id="on-off-command">
+	<!-- tray -->
+	<channel-type id="tray-type">
 		<item-type>String</item-type>
-		<label>ON/OFF Channel</label>
-		<category>Lightbulb</category>
-		<state>
+		<label>Tray Type</label>
+		<state readOnly="true">
 			<options>
-				<option value="ON">ON</option>
-				<option value="OFF">OFF</option>
+				<option value="PLA">PLA</option>
+				<option value="PETG">PETG</option>
+				<option value="ABS">ABS</option>
+				<option value="TPU">TPU</option>
+				<option value="ASA">ASA</option>
+				<option value="PA">PA</option>
+				<option value="PC">PC</option>
+				<option value="PVA">PVA</option>
+				<option value="HIPS">HIPS</option>
 			</options>
 		</state>
-		<command>
-			<options>
-				<option value="ON">ON</option>
-				<option value="OFF">OFF</option>
-			</options>
-		</command>
 	</channel-type>
+	<channel-type id="tray-color">
+		<item-type>Color</item-type>
+		<label>Tray Color</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="tray-loaded">
+		<item-type>String</item-type>
+		<label>Currently Loaded Tray</label>
+		<state readOnly="true">
+			<options>
+				<option value="EMPTY">No tray loaded</option>
+				<option value="VTRAY">External Spool</option>
+				<!-- AMS 1 -->
+				<option value="AMS_1_1">AMS #1 / Tray 1</option>
+				<option value="AMS_1_2">AMS #1 / Tray 2</option>
+				<option value="AMS_1_3">AMS #1 / Tray 3</option>
+				<option value="AMS_1_4">AMS #1 / Tray 4</option>
+				<!-- AMS 2 -->
+				<option value="AMS_2_1">AMS #2 / Tray 1</option>
+				<option value="AMS_2_2">AMS #2 / Tray 2</option>
+				<option value="AMS_2_3">AMS #2 / Tray 3</option>
+				<option value="AMS_2_4">AMS #2 / Tray 4</option>
+				<!-- AMS 3 -->
+				<option value="AMS_3_1">AMS #3 / Tray 1</option>
+				<option value="AMS_3_2">AMS #3 / Tray 2</option>
+				<option value="AMS_3_3">AMS #3 / Tray 3</option>
+				<option value="AMS_3_4">AMS #3 / Tray 4</option>
+				<!-- AMS 4 -->
+				<option value="AMS_4_1">AMS #4 / Tray 1</option>
+				<option value="AMS_4_2">AMS #4 / Tray 2</option>
+				<option value="AMS_4_3">AMS #4 / Tray 3</option>
+				<option value="AMS_4_4">AMS #4 / Tray 4</option>
+			</options>
+		</state>
+	</channel-type>
+
 </thing:thing-descriptions>
