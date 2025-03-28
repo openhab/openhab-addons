@@ -106,13 +106,7 @@ public class ThingTempoCalendarHandler extends ThingBaseRemoteHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        if (config.seemsValid()) {
-            bridgeHandler.registerNewPrmId(config.prmId);
-            pollingJob = scheduler.schedule(this::pollingCode, 5, TimeUnit.SECONDS);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-mandatory-settings");
-        }
+        pollingJob = scheduler.schedule(this::pollingCode, 5, TimeUnit.SECONDS);
     }
 
     @Override
