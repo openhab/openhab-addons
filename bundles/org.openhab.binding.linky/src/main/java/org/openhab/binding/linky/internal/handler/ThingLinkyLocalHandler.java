@@ -106,7 +106,6 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
         } else {
             idd2l = -1;
         }
-        saveConfiguration(thingConfig);
 
         // reread config to update timezone field
         config = getConfigAs(LinkyThingLocalConfiguration.class);
@@ -558,9 +557,5 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
 
     public @Nullable LinkyThingLocalConfiguration getLinkyConfig() {
         return config;
-    }
-
-    public void saveConfiguration(Configuration config) {
-        updateConfiguration(config);
     }
 }
