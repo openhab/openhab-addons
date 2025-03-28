@@ -197,13 +197,6 @@ public class MBWebsocket {
 
     @OnWebSocketMessage
     public void onByteStream(InputStream is) {
-        /**
-         * receiving byte array
-         * public void onByteArray(byte buf[], int offset, int length) {
-         * int dataSize = buf.length - offset;
-         * byte[] dataArray = new byte[dataSize];
-         * System.arraycopy(buf, offset, dataArray, 0, dataSize);
-         **/
         try {
             PushMessage pm = VehicleEvents.PushMessage.parseFrom(is);
             logger.trace("WebSocket - Message {}", pm.getMsgCase());
@@ -212,10 +205,10 @@ public class MBWebsocket {
              * https://community.openhab.org/t/mercedes-me/136866/12
              * Release Websocket thread as early as possible to avoid execeptions
              *
-             * 1. Websocket thread responsible for reading stream in bytes and enqueue for
+             * 1. Websocket thread responsible for reading stream into PushMessage and enqueue for
              * AccountHandler.
-             * 2. AccountHamdler thread responsible for encoding proto message. In case of
-             * update enqueue proto message
+             * 2. AccountHamdler thread responsible for handling PushMessage. In case of
+             * update enqueue PushMessage
              * at VehicleHandöer
              * 3. VehicleHandler responsible to update channels
              */
