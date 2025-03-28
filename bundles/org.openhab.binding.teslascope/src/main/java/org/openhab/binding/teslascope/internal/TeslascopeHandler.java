@@ -79,6 +79,9 @@ public class TeslascopeHandler extends BaseThingHandler {
                         charge(onOffCommand == OnOffType.ON);
                     }
                     break;
+                case TeslascopeBindingConstants.CHANNEL_CHARGE_LIMIT_SOC:
+                    // setChargeLimit(command);
+                    break;
                 case TeslascopeBindingConstants.CHANNEL_CHARGE_PORT:
                     if (command instanceof OnOffType onOffCommand) {
                         chargeDoor(onOffCommand == OnOffType.ON);
@@ -185,6 +188,12 @@ public class TeslascopeHandler extends BaseThingHandler {
             updateState(TeslascopeBindingConstants.CHANNEL_VIN, new StringType(detailedInformation.vin));
             updateState(TeslascopeBindingConstants.CHANNEL_VEHICLE_NAME, new StringType(detailedInformation.name));
             updateState(TeslascopeBindingConstants.CHANNEL_VEHICLE_STATE, new StringType(detailedInformation.state));
+            updateState(TeslascopeBindingConstants.CHANNEL_LOCATED_AT_HOME,
+                    OnOffType.from(1 == detailedInformation.locatedAtHome));
+            updateState(TeslascopeBindingConstants.CHANNEL_LOCATED_AT_WORK,
+                    OnOffType.from(1 == detailedInformation.locatedAtWork));
+            updateState(TeslascopeBindingConstants.CHANNEL_LOCATED_AT_FAVORITE,
+                    OnOffType.from(1 == detailedInformation.locatedAtFavorite));
 
             // charge state
             updateState(TeslascopeBindingConstants.CHANNEL_BATTERY_LEVEL,
@@ -200,8 +209,13 @@ public class TeslascopeHandler extends BaseThingHandler {
                     .from("DetailedChargeStateCharging".equals(detailedInformation.chargeState.detailedChargeState)));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_ENERGY_ADDED,
                     new QuantityType<>(detailedInformation.chargeState.chargeEnergyAdded, Units.KILOWATT_HOUR));
+            updateState(CHANNEL_CHARGE_LIMIT_SOC, new DecimalType(detailedInformation.chargeState.chargeLimitSoc));
+            updateState(CHANNEL_CHARGE_LIMIT_SOC_MIN,
+                    new DecimalType(detailedInformation.chargeState.chargeLimitSocMin));
+            updateState(CHANNEL_CHARGE_LIMIT_SOC_MAX,
+                    new DecimalType(detailedInformation.chargeState.chargeLimitSocMax));
             updateState(CHANNEL_CHARGE_LIMIT_SOC_STANDARD,
-                    new DecimalType(detailedInformation.chargeState.chargeLimitSoc / 100));
+                    new DecimalType(detailedInformation.chargeState.chargeLimitSocStd));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_PORT,
                     OnOffType.from(1 == detailedInformation.chargeState.chargePortDoorOpen));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_PORT_LATCH,
@@ -220,6 +234,12 @@ public class TeslascopeHandler extends BaseThingHandler {
                     OnOffType.from(1 == detailedInformation.chargeState.scheduledChargingPending));
             updateState(TeslascopeBindingConstants.CHANNEL_SCHEDULED_CHARGING_START,
                     new StringType(detailedInformation.chargeState.scheduledChargingStartTime));
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_AMPS,
+                    new DecimalType(detailedInformation.chargeState.chargeAmps));
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_CURRENT_REQUEST,
+                    new DecimalType(detailedInformation.chargeState.chargeCurrentRequest));
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_CURRENT_REQUEST_MAX,
+                    new DecimalType(detailedInformation.chargeState.chargeCurrentRequestMax));
 
             // climate state
             updateState(TeslascopeBindingConstants.CHANNEL_AUTOCONDITIONING,
@@ -282,6 +302,8 @@ public class TeslascopeHandler extends BaseThingHandler {
                     new QuantityType<>(detailedInformation.driveState.speed, ImperialUnits.MILES_PER_HOUR));
 
             // vehicle state
+            updateState(TeslascopeBindingConstants.CHANNEL_CAR_VERSION,
+                    new StringType(detailedInformation.vehicleState.carVersion));
             updateState(TeslascopeBindingConstants.CHANNEL_DOOR_LOCK,
                     OnOffType.from(detailedInformation.vehicleState.locked));
             updateState(TeslascopeBindingConstants.CHANNEL_ODOMETER,
@@ -374,5 +396,11 @@ public class TeslascopeHandler extends BaseThingHandler {
 
     protected void sentry(boolean b) throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         webTargets.sendCommand(config.publicID, config.apiKey, b ? "enableSentryMode" : "disableSentryMode");
+    }
+
+    protected void setChargeLimit(Command chargeLimit)
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
+        webTargets.sendCommand(config.publicID, config.apiKey,
+                "setChargeLimit?limit=" + chargeLimit.toString().replace(" %", ""));
     }
 }
