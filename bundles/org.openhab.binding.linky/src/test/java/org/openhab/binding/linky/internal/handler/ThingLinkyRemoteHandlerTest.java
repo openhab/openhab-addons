@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openhab.binding.linky.internal.config.LinkyConfiguration;
+import org.openhab.binding.linky.internal.config.LinkyThingConfiguration;
 import org.openhab.binding.linky.internal.dto.IntervalReading;
 import org.openhab.binding.linky.internal.dto.MeterReading;
 import org.openhab.core.i18n.LocaleProvider;
@@ -50,11 +50,11 @@ public class ThingLinkyRemoteHandlerTest {
     TimeZoneProvider tzProvider;
 
     @Mock
-    LinkyConfiguration config;
+    LinkyThingConfiguration config;
 
     @BeforeEach
     public void setUp() {
-        when(thing.getConfiguration()).thenReturn(new LinkyConfiguration());
+        when(thing.getConfiguration()).thenReturn(new LinkyThingConfiguration());
     }
     /*
      * @AfterAll

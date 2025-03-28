@@ -394,14 +394,6 @@ public class LinkyBindingConstants {
     public static final String CHANNEL_BLUE_HP_HT = "blue-hp-ht";
     public static final String CHANNEL_BLUE_HP_TTC = "blue-hp-ttc";
 
-    //
-
-    public static final String CHANNEL_METER_MANUFACTURER = "meter-manufacturer";
-    public static final String CHANNEL_METER_TYPE = "meter-type";
-    public static final String CHANNEL_METER_CATEGORY = "meter-category";
-    public static final String CHANNEL_METER_MATRICULE = "meter-matricule";
-    public static final String CHANNEL_METER_MANUFACTURE_YEAR = "meter-manufacture-year";
-
     public static final Currency CURRENCY_EUR = Currency.getInstance("EUR");
 
     public static final String NOT_A_CHANNEL = "";
@@ -409,6 +401,11 @@ public class LinkyBindingConstants {
     public static final String THING_SERIAL_CONTROLLER_CHANNEL_INVALID_FRAME_COUNTER = "invalidFrameCounter";
 
     public static final String THING_ELECTRICITY_METER_PROPERTY_ADCO = "adco";
+    public static final String THING_ELECTRICITY_METER_PROPERTY_MANUFACTURER = "meter-manufacturer";
+    public static final String THING_ELECTRICITY_METER_PROPERTY_TYPE = "meter-type";
+    public static final String THING_ELECTRICITY_METER_PROPERTY_CATEGORY = "meter-category";
+    public static final String THING_ELECTRICITY_METER_PROPERTY_MATRICULE = "meter-matricule";
+    public static final String THING_ELECTRICITY_METER_PROPERTY_MANUFACTURE_YEAR = "meter-manufacture-year";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SERIAL_CONTROLLER = new ThingTypeUID(BINDING_ID, "serialcontroller");

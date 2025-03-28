@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServlet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.linky.internal.config.LinkyBridgeApiConfiguration;
 import org.openhab.binding.linky.internal.constants.LinkyBindingConstants;
 import org.openhab.binding.linky.internal.helpers.LinkyAuthServlet;
 import org.openhab.binding.linky.internal.types.LinkyException;
@@ -71,6 +72,8 @@ public abstract class BridgeRemoteApiHandler extends BridgeRemoteBaseHandler {
 
     @Override
     public void initialize() {
+        config = getConfigAs(LinkyBridgeApiConfiguration.class);
+
         super.initialize();
 
         this.oAuthService = oAuthFactory.createOAuthClientService(LinkyBindingConstants.BINDING_ID, tokenUrl,

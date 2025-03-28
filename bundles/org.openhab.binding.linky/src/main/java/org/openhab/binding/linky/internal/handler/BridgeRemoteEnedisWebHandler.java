@@ -34,7 +34,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.openhab.binding.linky.internal.config.LinkyConfiguration;
+import org.openhab.binding.linky.internal.config.LinkyBridgeWebConfiguration;
 import org.openhab.binding.linky.internal.dto.AuthData;
 import org.openhab.binding.linky.internal.dto.AuthResult;
 import org.openhab.binding.linky.internal.types.LinkyException;
@@ -97,6 +97,12 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
             final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
         super(bridge, httpClientFactory, oAuthFactory, httpService, thingRegistry, componentContext, gson);
+    }
+
+    @Override
+    public void initialize() {
+        config = getConfigAs(LinkyBridgeWebConfiguration.class);
+        super.initialize();
     }
 
     @Override
@@ -166,7 +172,7 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
 
     @Override
     public synchronized void connectionInit() throws LinkyException {
-        LinkyConfiguration lcConfig = config;
+        LinkyBridgeWebConfiguration lcConfig = (LinkyBridgeWebConfiguration) config;
         if (lcConfig == null) {
             return;
         }
@@ -177,7 +183,7 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
             // has we reconnect, remove all previous cookie to start from fresh session
             enedisApi.removeAllCookie();
 
-            enedisApi.addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, lcConfig.internalAuthId);
+            enedisApi.addCookie(LinkyBridgeWebConfiguration.INTERNAL_AUTH_ID, lcConfig.internalAuthId);
             logger.debug("Step 1: getting authentification");
             String data = enedisApi.getContent(URL_ENEDIS_AUTHENTICATE);
 

@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.linky.internal.types;
 
+import java.util.EnumSet;
+import java.util.Hashtable;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Define the evolution option values
@@ -134,11 +139,32 @@ public enum Manufacturer {
     NotAttrib098(0x62, "Non attribué"),
     NotAttrib099(0x63, "Non attribué");
 
+    private static Map<Integer, Manufacturer> idToValue = new Hashtable<Integer, Manufacturer>();
+
+    static {
+        for (Manufacturer manufacturer : EnumSet.allOf(Manufacturer.class)) {
+            // Yes, use some appropriate locale in production code :)
+            idToValue.put(manufacturer.id, manufacturer);
+        }
+    }
+
     private final int id;
     private final String label;
 
     Manufacturer(int id, String label) {
         this.id = id;
         this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public static @Nullable Manufacturer getManufacturerForId(int id) {
+        if (idToValue.containsKey(id)) {
+            return idToValue.get(id);
+        }
+
+        return null;
     }
 }

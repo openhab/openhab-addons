@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
-import org.openhab.binding.linky.internal.config.LinkyConfiguration;
+import org.openhab.binding.linky.internal.config.LinkyBridgeConfiguration;
 import org.openhab.binding.linky.internal.constants.LinkyBindingConstants;
 import org.openhab.binding.linky.internal.types.LinkyException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -65,7 +65,7 @@ public abstract class BridgeRemoteBaseHandler extends BaseBridgeHandler {
 
     protected final Gson gson;
 
-    protected @Nullable LinkyConfiguration config;
+    protected @Nullable LinkyBridgeConfiguration config;
     protected boolean connected = false;
 
     private static final int REQUEST_BUFFER_SIZE = 8000;
@@ -117,9 +117,7 @@ public abstract class BridgeRemoteBaseHandler extends BaseBridgeHandler {
 
     @Override
     public synchronized void initialize() {
-        logger.debug("Initializing Linky API bridge handler.");
-
-        config = getConfigAs(LinkyConfiguration.class);
+        logger.debug("Initializing Linky Remote bridge handler.");
 
         updateStatus(ThingStatus.UNKNOWN);
 

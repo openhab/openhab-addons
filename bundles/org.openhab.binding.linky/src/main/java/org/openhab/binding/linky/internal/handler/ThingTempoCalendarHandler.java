@@ -29,7 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.binding.linky.internal.api.ExpiringDayCache;
-import org.openhab.binding.linky.internal.config.LinkyConfiguration;
+import org.openhab.binding.linky.internal.config.LinkyThingConfiguration;
 import org.openhab.binding.linky.internal.dto.ResponseTempo;
 import org.openhab.binding.linky.internal.types.LinkyException;
 import org.openhab.core.library.types.DecimalType;
@@ -67,7 +67,7 @@ public class ThingTempoCalendarHandler extends ThingBaseRemoteHandler {
     private final ExpiringDayCache<ResponseTempo> tempoInformation;
 
     private @Nullable ScheduledFuture<?> refreshJob;
-    private LinkyConfiguration config;
+    private LinkyThingConfiguration config;
     private @Nullable EnedisHttpApi enedisApi;
 
     public String userId = "";
@@ -77,7 +77,7 @@ public class ThingTempoCalendarHandler extends ThingBaseRemoteHandler {
     public ThingTempoCalendarHandler(Thing thing) {
         super(thing);
 
-        config = getConfigAs(LinkyConfiguration.class);
+        config = getConfigAs(LinkyThingConfiguration.class);
 
         // Read Tempo Information
         this.tempoInformation = new ExpiringDayCache<>("tempoInformation", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
@@ -180,7 +180,7 @@ public class ThingTempoCalendarHandler extends ThingBaseRemoteHandler {
     }
 
     @Override
-    public @Nullable LinkyConfiguration getLinkyConfig() {
+    public @Nullable LinkyThingConfiguration getLinkyConfig() {
         return config;
     }
 

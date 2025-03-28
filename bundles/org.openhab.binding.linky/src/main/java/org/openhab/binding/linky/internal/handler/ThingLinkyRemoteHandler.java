@@ -36,7 +36,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.binding.linky.internal.api.ExpiringDayCache;
-import org.openhab.binding.linky.internal.config.LinkyConfiguration;
+import org.openhab.binding.linky.internal.config.LinkyThingConfiguration;
 import org.openhab.binding.linky.internal.dto.Contact;
 import org.openhab.binding.linky.internal.dto.Contract;
 import org.openhab.binding.linky.internal.dto.Identity;
@@ -180,7 +180,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         saveConfiguration(thingConfig);
 
         // reread config to update timezone field
-        config = getConfigAs(LinkyConfiguration.class);
+        config = getConfigAs(LinkyThingConfiguration.class);
 
         Bridge bridge = getBridge();
         if (bridge == null) {
@@ -543,12 +543,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
         logger.debug("Send timeseries channel ({}) {} {} with {}", config.prmId, groupId, channelId, timeSeries);
         sendTimeSeries(groupId, channelId, timeSeries);
-        // updateChannel(groupId, channelId, iv[iv.length - 1].value, unit);
-    }
-
-    private <T extends Quantity<T>> void updateChannel(String groupId, String channelId, double value, Unit<T> unit) {
-        logger.debug("Update channel ({}) {} with {}", config.prmId, channelId, value);
-        updateState(groupId, channelId, Double.isNaN(value) ? UnDefType.UNDEF : new QuantityType<>(value, unit));
     }
 
     private void updateKwhChannel(String groupId, String channelId, double consumption) {

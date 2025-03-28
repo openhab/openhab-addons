@@ -19,8 +19,6 @@
 		<channel-groups>
 			<channel-group typeId="linky-local-d2l" id="linky-local-d2l"/>
 
-			<channel-group typeId="linky-local-meter-base" id="linky-local-meter-base"/>
-
 			<channel-group typeId="linky-local-standard-base" id="linky-local-standard-base"/>
 			<channel-group typeId="linky-local-standard-3phase" id="linky-local-standard-3phase"/>
 			<channel-group typeId="linky-local-standard-producer" id="linky-local-standard-producer"/>

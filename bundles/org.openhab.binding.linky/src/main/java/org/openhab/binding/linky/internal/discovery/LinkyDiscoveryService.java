@@ -94,7 +94,7 @@ public class LinkyDiscoveryService extends AbstractThingHandlerDiscoveryService<
     @Override
     protected synchronized void stopScan() {
         logger.debug("Linky discovery: Stop {}", thingHandler.getThing().getUID());
-        // thingHandler.removeListener(this);
+        thingHandler.removeListener(this);
         super.stopScan();
     }
 
@@ -118,9 +118,6 @@ public class LinkyDiscoveryService extends AbstractThingHandlerDiscoveryService<
         if (adco != null && prmId != null) {
 
             ThingUID thingUID = new ThingUID(tpUid, adco, thingHandler.getThing().getUID().getId());
-
-            // ThingUID thingUID = new ThingUID(getThingTypeUID(frameSample), adco,
-            // thingHandler.getThing().getUID().getId());
 
             Map<String, Object> properties = new HashMap<>();
             properties.put(THING_ELECTRICITY_METER_PROPERTY_ADCO, adco);

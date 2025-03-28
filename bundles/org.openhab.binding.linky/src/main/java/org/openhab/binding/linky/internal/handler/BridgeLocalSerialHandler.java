@@ -15,6 +15,8 @@ package org.openhab.binding.linky.internal.handler;
 import static org.openhab.binding.linky.internal.constants.LinkyBindingConstants.*;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -114,8 +116,15 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
 
             serialPort.removeEventListener();
             try {
-                serialPort.getInputStream().close();
-                serialPort.getOutputStream().close();
+                InputStream inputStream = serialPort.getInputStream();
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+
+                OutputStream outputStream = serialPort.getOutputStream();
+                if (outputStream != null) {
+                    outputStream.close();
+                }
             } catch (IOException ex) {
 
             }

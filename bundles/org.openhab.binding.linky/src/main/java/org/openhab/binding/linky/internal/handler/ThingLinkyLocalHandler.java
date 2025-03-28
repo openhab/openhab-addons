@@ -23,16 +23,18 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linky.internal.config.LinkyConfiguration;
+import org.openhab.binding.linky.internal.config.LinkyThingConfiguration;
 import org.openhab.binding.linky.internal.constants.LinkyBindingConstants;
 import org.openhab.binding.linky.internal.helpers.LinkyFrame;
 import org.openhab.binding.linky.internal.types.InvalidFrameException;
 import org.openhab.binding.linky.internal.types.LinkyChannel;
 import org.openhab.binding.linky.internal.types.LinkyTicMode;
+import org.openhab.binding.linky.internal.types.Manufacturer;
 import org.openhab.binding.linky.internal.types.Meter;
 import org.openhab.binding.linky.internal.types.Phase;
 import org.openhab.binding.linky.internal.types.ValueType;
@@ -75,7 +77,7 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ThingLinkyLocalHandler.class);
 
-    private LinkyConfiguration config;
+    private LinkyThingConfiguration config;
 
     public String userId = "";
 
@@ -91,7 +93,7 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
     public ThingLinkyLocalHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider) {
         super(thing);
 
-        config = getConfigAs(LinkyConfiguration.class);
+        config = getConfigAs(LinkyThingConfiguration.class);
         this.timeZoneProvider = timeZoneProvider;
     }
 
@@ -122,7 +124,7 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
         saveConfiguration(thingConfig);
 
         // reread config to update timezone field
-        config = getConfigAs(LinkyConfiguration.class);
+        config = getConfigAs(LinkyThingConfiguration.class);
 
         Bridge bridge = getBridge();
         if (bridge == null) {
@@ -291,25 +293,31 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
                         String adco = frame.get(LinkyChannel.ADCO) != null ? frame.get(LinkyChannel.ADCO)
                                 : frame.get(LinkyChannel.ADSC);
 
-                        if (adco.length() != 12) {
+                        if (adco.length() == 12) {
+                            String oldMatricule = getThing().getProperties()
+                                    .get(THING_ELECTRICITY_METER_PROPERTY_MATRICULE);
 
-                        } else {
-                            String manufacturer = adco.substring(0, 2);
-                            String year = adco.substring(2, 4);
-                            String type = adco.substring(4, 6);
-                            String matricule = adco.substring(6, 12);
+                            if (oldMatricule == null || oldMatricule.isBlank()) {
+                                String manufacturerSt = adco.substring(0, 2);
+                                String year = adco.substring(2, 4);
+                                String type = adco.substring(4, 6);
+                                String matricule = adco.substring(6, 12);
 
-                            Meter cpt = Meter.getCompteurForId(Integer.parseInt(type));
+                                Meter meter = Meter.getCompteurForId(Integer.parseInt(type));
+                                Manufacturer manufacturer = Manufacturer
+                                        .getManufacturerForId(Integer.parseInt(manufacturerSt));
 
-                            updateState(LINKY_LOCAL_METER_BASE_GROUP, CHANNEL_METER_MANUFACTURER,
-                                    new DecimalType(manufacturer));
-                            updateState(LINKY_LOCAL_METER_BASE_GROUP, CHANNEL_METER_TYPE, new DecimalType(type));
-                            updateState(LINKY_LOCAL_METER_BASE_GROUP, CHANNEL_METER_MATRICULE,
-                                    new StringType(matricule));
-                            updateState(LINKY_LOCAL_METER_BASE_GROUP, CHANNEL_METER_CATEGORY,
-                                    new DecimalType(cpt.getCompteurType().getId()));
-                            updateState(LINKY_LOCAL_METER_BASE_GROUP, CHANNEL_METER_MANUFACTURE_YEAR,
-                                    new StringType("" + (Integer.parseInt(year) + 2000)));
+                                Map<String, String> props = this.editProperties();
+                                props.put(THING_ELECTRICITY_METER_PROPERTY_MANUFACTURER, manufacturer.getLabel());
+                                props.put(THING_ELECTRICITY_METER_PROPERTY_TYPE, meter.getLabel());
+                                props.put(THING_ELECTRICITY_METER_PROPERTY_MATRICULE, matricule);
+                                props.put(THING_ELECTRICITY_METER_PROPERTY_CATEGORY,
+                                        meter.getCompteurType().getLabel());
+                                props.put(THING_ELECTRICITY_METER_PROPERTY_MANUFACTURE_YEAR,
+                                        "" + ((Integer.parseInt(year) + 2000)));
+
+                                this.updateProperties(props);
+                            }
                         }
                     } else if (channel == LinkyChannel.RELAIS) {
                         handleRelaisPayload(value);
@@ -567,7 +575,7 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
         super.updateState(groupId + "#" + channelID, state);
     }
 
-    public @Nullable LinkyConfiguration getLinkyConfig() {
+    public @Nullable LinkyThingConfiguration getLinkyConfig() {
         return config;
     }
 

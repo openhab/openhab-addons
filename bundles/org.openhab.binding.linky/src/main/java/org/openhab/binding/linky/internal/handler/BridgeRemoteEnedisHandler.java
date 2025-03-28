@@ -15,7 +15,7 @@ package org.openhab.binding.linky.internal.handler;
 import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.linky.internal.config.LinkyConfiguration;
+import org.openhab.binding.linky.internal.config.LinkyBridgeApiConfiguration;
 import org.openhab.binding.linky.internal.types.LinkyException;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -87,7 +87,7 @@ public class BridgeRemoteEnedisHandler extends BridgeRemoteApiHandler {
 
     @Override
     public String getClientId() {
-        LinkyConfiguration lcConfig = config;
+        LinkyBridgeApiConfiguration lcConfig = (LinkyBridgeApiConfiguration) config;
         if (lcConfig != null) {
             return lcConfig.clientId;
         }
@@ -96,7 +96,7 @@ public class BridgeRemoteEnedisHandler extends BridgeRemoteApiHandler {
 
     @Override
     public String getClientSecret() {
-        LinkyConfiguration lcConfig = config;
+        LinkyBridgeApiConfiguration lcConfig = (LinkyBridgeApiConfiguration) config;
         if (lcConfig != null) {
             return lcConfig.clientSecret;
         }
@@ -105,7 +105,7 @@ public class BridgeRemoteEnedisHandler extends BridgeRemoteApiHandler {
 
     @Override
     public boolean getIsSandbox() {
-        LinkyConfiguration lcConfig = config;
+        LinkyBridgeApiConfiguration lcConfig = (LinkyBridgeApiConfiguration) config;
         return (lcConfig != null) ? lcConfig.isSandbox : false;
     }
 
