@@ -366,5 +366,4 @@ public enum Meter {
     public String getLabel() {
         return label;
     }
-
 }
