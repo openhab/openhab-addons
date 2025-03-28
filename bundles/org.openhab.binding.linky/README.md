@@ -228,7 +228,7 @@ The retrieved information is available in multiple groups.
 
 ### Full Example
 
-#### Remote Enedis Web connection
+#### Remote Enedis Web Connection
 
 ```java
 Bridge linky:enedis-web:local "EnedisWebBridge" [ username="example@domaine.fr", password="******", internalAuthId="******" ]
@@ -246,7 +246,7 @@ Number:Energy ConsoAnneeEnCours "Conso cette année [%.0f %unit%]" <energy> { ch
 Number:Energy ConsoAnneeDerniere "Conso année dernière [%.0f %unit%]" <energy> { channel="linky:enedis-web:local:yearly#lastYear" }
 ```
 
-### Displaying information / Graph
+### Displaying Information Graph
 
 Using the timeseries channel, you will be able to easily create a calendar graph to display the Tempo calendar.
 To do this, you need to enable a timeseries persistence framework.
@@ -486,7 +486,7 @@ For direct serial-connected meters, no further action is required.
 
 #### Historical TIC mode
 
-##### Common channels
+##### Common Channels
 
 | Channel                              | Type                      | Description                                              | Connection   | Mode  |
 |--------------------------------------|---------------------------|----------------------------------------------------------|--------------|-------|
@@ -501,7 +501,7 @@ For direct serial-connected meters, no further action is required.
 | linky-local-historical-base#papp     | power                     | Maximum consumed electric power on all phases            | All          | All   |
 | linky-local-historical-base#modetat  | info                      | Etat                                                     | All          | All   |
 
-##### 3 Phase channels
+##### 3 Phase Channels
 
 | Channel                              | Type                      | Description                                              | Connection   | Mode  |
 |--------------------------------------|---------------------------|----------------------------------------------------------|--------------|-------|
@@ -516,7 +516,7 @@ For direct serial-connected meters, no further action is required.
 | linky-local-historical-3phase#adir3  | current                   | Excess electric current on phase 3 warning               | Three-phase  | All   |
 | linky-local-historical-3phase#ppot   | info                      | Electrical potential presence                            | Three-phase  | All   |
 
-##### HpHc channels
+##### HpHc Channels
 
 | Channel                              | Type                      | Description                                              | Connection   | Mode  |
 |--------------------------------------|---------------------------|----------------------------------------------------------|--------------|-------|
@@ -524,7 +524,7 @@ For direct serial-connected meters, no further action is required.
 | linky-local-historical-hphc#hchc     | consumption               | Total consumed energy at low rate pricing                | All          | HCHP  |
 | linky-local-historical-hphc#hchp     | consumption               | Total consumed energy at high rate pricing               | All          | HCHP  |
 
-##### EJP channels
+##### EJP Channels
 
 | Channel                              | Type                      | Description                                              | Connection   | Mode  |
 |--------------------------------------|---------------------------|----------------------------------------------------------|--------------|-------|
@@ -532,7 +532,7 @@ For direct serial-connected meters, no further action is required.
 | linky-local-historical-ejp#ejphpm    | consumption               | Total consumed energy at high rate pricing               | All          | EJP   |
 | linky-local-historical-tempo#pejp    | time      	               | Prior notice to EJP start                                | All          | EJP   |
 
-##### Tempo channels
+##### Tempo Channels
 
 | Channel                              | Type                      | Description                                              | Connection   | Mode  |
 |--------------------------------------|---------------------------|----------------------------------------------------------|--------------|-------|
@@ -546,7 +546,7 @@ For direct serial-connected meters, no further action is required.
 
 #### Standard TIC mode
 
-##### Common channels
+##### Common Channels
 
 
 | Channel                                         | Type                      | Description                                                                       |
@@ -589,7 +589,7 @@ For direct serial-connected meters, no further action is required.
 | linky-local-standard-base#ppointe               | string                    | Profile of next rush day                                                          |
 | linky-local-standard-base#relaisX               | switch-rtpe               | state of relais X, X in {1,...,8}                                                 |
 
-##### Three phase only channels
+##### Three Phase only Channels
 
 
 
@@ -605,7 +605,7 @@ For direct serial-connected meters, no further action is required.
 | linky-local-standard-3phase#smaxsX-date         | datetime                  | Timestamp of SMAXSNX value, X in {1,2,3}                                          |
 | linky-local-standard-3phase#smaxsnX-minus1-date | datetime                  | Timestamp of SMAXSNX-1 value, X in {1,2,3}                                        |
 
-##### Producer only channels
+##### Producer only Channels
 
 
 
@@ -623,7 +623,7 @@ For direct serial-connected meters, no further action is required.
 | linky-local-standard-producer#ccain-date         | datetime                 | Timestamp of CCAIN value                                                          |
 | linky-local-standard-producer#ccain-minus1-date  | datetime                 | Timestamp of CCAIN-1 value                                                        |
 
-#### Calculated channels
+#### Calculated Channels
 
 The binding also offer a number of "calculated" channels.
 
@@ -709,7 +709,7 @@ Number
 
 ### Full Example
 
-#### Direct local connection, Historical TicMode 
+#### Direct Local Connection, Historical TicMode 
 
 The following `things` file declare a serial USB controller on `/dev/ttyUSB1` with ticMode set to Historical and prmId = 2145499xxx :
 
@@ -937,7 +937,7 @@ Number:EnergyPrice Prix_Heure_Creuse {channel="linky:hphc:local:hc-ttc"}
   | linky-tempo-calendar#tempo-info-tomorrow                       | tempo-value       | The tempo color for the tomorrow                                              |
   | linky-tempo-calendar#tempo-info-timeseries                     | tempo-value       | A timeseries channel that will expose full tempo information for one year     |
 
-### Displaying Information / Graph
+### Displaying Tempo Graph
 
 Using the timeseries channel, you will be able to esealy create a calendar graph to show the tempo calendar.
 You will need for this to enable a timeseries persistence framework.
