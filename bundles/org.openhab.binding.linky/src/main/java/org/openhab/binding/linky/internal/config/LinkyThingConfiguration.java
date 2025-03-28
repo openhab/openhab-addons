@@ -23,10 +23,8 @@ import org.openhab.core.config.core.Configuration;
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 @NonNullByDefault
-public class LinkyThingConfiguration extends Configuration {
+public abstract class LinkyThingConfiguration extends Configuration {
     public String prmId = "";
-    public String token = "";
-    public String timezone = "";
 
     public boolean seemsValid() {
         return !prmId.isBlank();

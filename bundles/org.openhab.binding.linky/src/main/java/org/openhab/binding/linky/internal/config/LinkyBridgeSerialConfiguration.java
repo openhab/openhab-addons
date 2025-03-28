@@ -15,22 +15,21 @@ package org.openhab.binding.linky.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link LinkyBridgeWebConfiguration} is the class used to match the
- * thing configuration.
+ * The {@link LinkyBridgeSerialConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author Gaël L'hopital - Initial contribution
- * @author Laurent Arnal - Rewrite addon to use official dataconect API
+ * @author Nicolas SIBERIL - Initial contribution
+ * @author Laurent Arnal - Refactor to integrate into Linky Binding
  */
 @NonNullByDefault
-public class LinkyBridgeWebConfiguration extends LinkyBridgeConfiguration {
-    public static final String INTERNAL_AUTH_ID = "internalAuthId";
+public class LinkyBridgeSerialConfiguration extends LinkyBridgeConfiguration {
 
-    public String username = "";
-    public String password = "";
-    public String internalAuthId = "";
+    public String serialport = "";
+    public String ticMode = "";
+    public boolean verifyChecksum = true;
+    public boolean autoRepairInvalidADPSgroupLine = true;
 
     @Override
     public boolean seemsValid() {
-        return !username.isBlank() && !password.isBlank() && !internalAuthId.isBlank();
+        return !serialport.isBlank() && !ticMode.isBlank();
     }
 }

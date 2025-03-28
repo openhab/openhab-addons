@@ -23,6 +23,8 @@ import org.openhab.core.config.core.Configuration;
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 @NonNullByDefault
-public class LinkyBridgeConfiguration extends Configuration {
+public abstract class LinkyBridgeConfiguration extends Configuration {
     public static final String INTERNAL_AUTH_ID = "internalAuthId";
+
+    public abstract boolean seemsValid();
 }

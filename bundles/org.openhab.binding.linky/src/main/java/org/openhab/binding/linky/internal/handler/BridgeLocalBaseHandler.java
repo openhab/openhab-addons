@@ -87,12 +87,8 @@ public class BridgeLocalBaseHandler extends BaseBridgeHandler {
         List<Thing> lThing = getThing().getThings();
 
         for (Thing th : lThing) {
-            ThingLinkyLocalHandler handler = (ThingLinkyLocalHandler) th.getHandler();
-
-            if (handler != null) {
-                long thingIdd2l = handler.getIdd2l();
-
-                if (idd2l == thingIdd2l) {
+            if (th.getHandler() instanceof ThingLinkyLocalHandler handler) {
+                if (idd2l == handler.getIdd2l()) {
                     return handler;
                 }
             }
@@ -105,12 +101,8 @@ public class BridgeLocalBaseHandler extends BaseBridgeHandler {
         List<Thing> lThing = getThing().getThings();
 
         for (Thing th : lThing) {
-            ThingLinkyLocalHandler handler = (ThingLinkyLocalHandler) th.getHandler();
-
-            if (handler != null) {
-                String thingPrmId = handler.getPrmId();
-
-                if (prmId.equals(thingPrmId)) {
+            if (th.getHandler() instanceof ThingLinkyLocalHandler handler) {
+                if (prmId.equals(handler.getPrmId())) {
                     return handler;
                 }
             }

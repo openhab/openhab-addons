@@ -17,7 +17,7 @@ import java.util.Collection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
-import org.openhab.binding.linky.internal.config.LinkyThingConfiguration;
+import org.openhab.binding.linky.internal.config.LinkyThingRemoteConfiguration;
 import org.openhab.binding.linky.internal.constants.LinkyBindingConstants;
 import org.openhab.binding.linky.internal.types.LinkyException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -152,11 +152,10 @@ public class BridgeRemoteMyElectricalDataHandler extends BridgeRemoteApiHandler 
 
     @Override
     public String getToken(ThingBaseRemoteHandler handler) throws LinkyException {
-        LinkyThingConfiguration config = handler.getLinkyConfig();
-        if (config == null) {
-            return "";
+        if (handler.getLinkyConfig() instanceof LinkyThingRemoteConfiguration config) {
+            return config.token;
         }
-        return config.token;
+        return "";
     }
 
     @Override

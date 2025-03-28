@@ -36,7 +36,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.binding.linky.internal.api.ExpiringDayCache;
-import org.openhab.binding.linky.internal.config.LinkyThingConfiguration;
+import org.openhab.binding.linky.internal.config.LinkyThingRemoteConfiguration;
 import org.openhab.binding.linky.internal.dto.Contact;
 import org.openhab.binding.linky.internal.dto.Contract;
 import org.openhab.binding.linky.internal.dto.Identity;
@@ -79,7 +79,6 @@ import org.slf4j.LoggerFactory;
  */
 
 @NonNullByDefault
-@SuppressWarnings("null")
 public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     private final TimeZoneProvider timeZoneProvider;
     private ZoneId zoneId = ZoneId.systemDefault();
@@ -169,39 +168,36 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         // update the timezone if not set to default to openhab default timezone
         Configuration thingConfig = getConfig();
 
-        Object val = thingConfig.get("timezone");
-        if (val == null || "".equals(val)) {
+        if ("".equals(config.timezone)) {
             zoneId = this.timeZoneProvider.getTimeZone();
             thingConfig.put("timezone", zoneId.getId());
         } else {
-            zoneId = ZoneId.of((String) val);
+            zoneId = ZoneId.of(config.timezone);
         }
 
         saveConfiguration(thingConfig);
 
         // reread config to update timezone field
-        config = getConfigAs(LinkyThingConfiguration.class);
+        config = getConfigAs(LinkyThingRemoteConfiguration.class);
 
         Bridge bridge = getBridge();
         if (bridge == null) {
             return;
         }
 
-        BridgeRemoteBaseHandler bridgeHandler = (BridgeRemoteBaseHandler) bridge.getHandler();
-        if (bridgeHandler == null) {
-            return;
-        }
-        enedisApi = bridgeHandler.getEnedisApi();
-        divider = bridgeHandler.getDivider();
+        if (bridge.getHandler() instanceof BridgeRemoteBaseHandler bridgeHandler) {
+            enedisApi = bridgeHandler.getEnedisApi();
+            divider = bridgeHandler.getDivider();
 
-        updateStatus(ThingStatus.UNKNOWN);
+            updateStatus(ThingStatus.UNKNOWN);
 
-        if (config.seemsValid()) {
-            bridgeHandler.registerNewPrmId(config.prmId);
-            pollingJob = scheduler.schedule(this::pollingCode, 5, TimeUnit.SECONDS);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-mandatory-settings");
+            if (config.seemsValid()) {
+                bridgeHandler.registerNewPrmId(config.prmId);
+                pollingJob = scheduler.schedule(this::pollingCode, 5, TimeUnit.SECONDS);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.config-error-mandatory-settings");
+            }
         }
     }
 
@@ -216,12 +212,11 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             throw new LinkyException("Unable to get bridge in supportNewApiFormat()");
         }
 
-        BridgeRemoteBaseHandler bridgeHandler = (BridgeRemoteBaseHandler) bridge.getHandler();
-        if (bridgeHandler == null) {
+        if (bridge.getHandler() instanceof BridgeRemoteBaseHandler bridgeHandler) {
+            return bridgeHandler.supportNewApiFormat();
+        } else {
             throw new LinkyException("Unable to get bridgeHandler in supportNewApiFormat()");
         }
-
-        return bridgeHandler.supportNewApiFormat();
     }
 
     private void pollingCode() {
@@ -319,7 +314,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             updateProperties(Map.of(USER_ID, userId, PUISSANCE, values.contract.subscribedPower + " kVA", PRM_ID,
                     values.usagePoint.usagePointId));
         }, () -> {
-
             updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_IDENTITY, UnDefType.UNDEF);
 
             updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTRACT_SEGMENT, UnDefType.UNDEF);
@@ -345,7 +339,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
             updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTACT_MAIL, UnDefType.UNDEF);
             updateState(LINKY_REMOTE_MAIN_GROUP, CHANNEL_CONTACT_PHONE, UnDefType.UNDEF);
-
         });
     }
 
@@ -372,7 +365,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             }
             return result;
         } catch (LinkyException e) {
-            logger.error("Exception occurs during data update for {} : {}", config.prmId, e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
@@ -384,23 +376,19 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
      */
     private synchronized void updateData() {
         // If one of the cache is expired, force also a metaData refresh to prevent 500 error from Enedis servers !
-        logger.info("updateData() called");
-        logger.info("Cache state {} {} {}", dailyConsumption.isPresent(), dailyConsumptionMaxPower.isPresent(),
+        logger.debug("updateData() called");
+        logger.debug("Cache state {} {} {}", dailyConsumption.isPresent(), dailyConsumptionMaxPower.isPresent(),
                 loadCurveConsumption.isPresent());
 
         if (!dailyConsumption.isPresent() || !dailyConsumptionMaxPower.isPresent()
                 || !loadCurveConsumption.isPresent()) {
-            logger.info("invalidate metaData cache to force refresh");
+            logger.debug("invalidate metaData cache to force refresh");
             metaData.invalidate();
         }
 
-        logger.info("updateMetaData() called");
         updateMetaData();
-        logger.info("updateEnergyData() called");
         updateEnergyData();
-        logger.info("updatePowerData() called");
         updatePowerData();
-        logger.info("updateLoadCurveData() called");
         updateLoadCurveData();
     }
 
@@ -431,7 +419,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                     MetricPrefix.KILO(Units.VOLT_AMPERE));
             updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_MAX_POWER, values.yearValue,
                     MetricPrefix.KILO(Units.VOLT_AMPERE));
-
         }, () -> {
             updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_1, Double.NaN);
             updateState(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_1, UnDefType.UNDEF);
@@ -537,22 +524,18 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             } catch (Exception ex) {
                 logger.error("error occurs durring updatePowerTimeSeries for {} : {}", config.prmId, ex.getMessage(),
                         ex);
-                ;
             }
         }
 
-        logger.debug("Send timeseries channel ({}) {} {} with {}", config.prmId, groupId, channelId, timeSeries);
         sendTimeSeries(groupId, channelId, timeSeries);
     }
 
     private void updateKwhChannel(String groupId, String channelId, double consumption) {
-        logger.debug("Update channel ({}) {} with {}", config.prmId, channelId, consumption);
         updateState(groupId, channelId,
                 Double.isNaN(consumption) ? UnDefType.UNDEF : new QuantityType<>(consumption, Units.KILOWATT_HOUR));
     }
 
     private void updatekVAChannel(String groupId, String channelId, double power) {
-        logger.debug("Update channel ({}) {} with {}", config.prmId, channelId, power);
         updateState(groupId, channelId, Double.isNaN(power) ? UnDefType.UNDEF
                 : new QuantityType<>(power, MetricPrefix.KILO(Units.VOLT_AMPERE)));
     }
@@ -576,8 +559,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
      */
 
     public synchronized List<String> reportValues(LocalDate startDay, LocalDate endDay, @Nullable String separator) {
-        List<String> report = buildReport(startDay, endDay, separator);
-        return report;
+        return buildReport(startDay, endDay, separator);
     }
 
     private List<String> buildReport(LocalDate startDay, LocalDate endDay, @Nullable String separator) {
@@ -632,8 +614,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                MeterReading meterReading = api.getEnergyData(this, this.userId, config.prmId, from, to);
-                return meterReading;
+                return api.getEnergyData(this, this.userId, config.prmId, from, to);
             } catch (LinkyException e) {
                 logger.debug("Exception when getting consumption data for {} : {}", config.prmId, e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
@@ -650,8 +631,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                MeterReading meterReading = api.getLoadCurveData(this, this.userId, config.prmId, from, to);
-                return meterReading;
+                return api.getLoadCurveData(this, this.userId, config.prmId, from, to);
             } catch (LinkyException e) {
                 logger.debug("Exception when getting consumption data: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
@@ -668,8 +648,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                MeterReading meterReading = api.getPowerData(this, this.userId, config.prmId, from, to);
-                return meterReading;
+                return api.getPowerData(this, this.userId, config.prmId, from, to);
             } catch (LinkyException e) {
                 logger.debug("Exception when getting power data: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
@@ -802,10 +781,14 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     }
 
     private boolean isDataLastDayAvailable(@Nullable MeterReading meterReading) {
-        IntervalReading[] iv = meterReading.baseValue;
+        if (meterReading != null) {
+            IntervalReading[] iv = meterReading.baseValue;
 
-        logData(iv, "Last day", DateTimeFormatter.ISO_LOCAL_DATE, Target.LAST);
-        return iv != null && iv.length != 0 && !iv[iv.length - 1].value.isNaN();
+            logData(iv, "Last day", DateTimeFormatter.ISO_LOCAL_DATE, Target.LAST);
+            return iv.length != 0 && !iv[iv.length - 1].value.isNaN();
+        }
+
+        return false;
     }
 
     private void logData(IntervalReading[] ivArray, String title, DateTimeFormatter dateTimeFormatter, Target target) {

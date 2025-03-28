@@ -151,7 +151,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
             ThingLinkyRemoteHandler handler = new ThingLinkyRemoteHandler(thing, localeProvider, timeZoneProvider);
             return handler;
         } else if (THING_TYPE_LINKY_LOCAL.equals(thing.getThingTypeUID())) {
-            ThingLinkyLocalHandler handler = new ThingLinkyLocalHandler(thing, localeProvider, timeZoneProvider);
+            ThingLinkyLocalHandler handler = new ThingLinkyLocalHandler(thing, localeProvider);
             return handler;
         } else if (THING_TYPE_BASE.equals(thing.getThingTypeUID())) {
             ThingHandler handler = new ThingTariffBaseHandler(thing);

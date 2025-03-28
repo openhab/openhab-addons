@@ -163,12 +163,6 @@ public class BridgeLocalD2LHandler extends BridgeLocalBaseHandler {
                                     client.close();
                                 }
                             }
-
-                            // do something with your data
-
-                            // send ACK
-                            // ByteBuffer sendAck = ByteBuffer.wrap(ackByte);
-                            // client.write(sendAck);
                         } catch (SocketException ex) {
                             logger.debug("Error during reading socket, retry ", ex);
                         } catch (Exception ex) {
@@ -203,7 +197,7 @@ public class BridgeLocalD2LHandler extends BridgeLocalBaseHandler {
                     selector.close();
                 }
             } catch (IOException ex) {
-                //
+                logger.debug("IO Exception occured during socket closing", ex);
             }
         }
 
@@ -247,12 +241,8 @@ public class BridgeLocalD2LHandler extends BridgeLocalBaseHandler {
 
                 ByteBuffer byteBufferDecode = ByteBuffer.wrap(plainText);
                 byteBufferDecode.order(ByteOrder.LITTLE_ENDIAN);
-                // int crc16 = byteBufferDecode.getShort(16);
                 int payloadLength = byteBufferDecode.getShort(18);
                 int payloadType = byteBufferDecode.get(20) & 0x7f;
-                // int requestType = byteBufferDecode.get(20) & 0x80;
-                // int nextQuery = byteBufferDecode.get(21) & 0x7f;
-                // int isErrorOrSuccess = byteBufferDecode.get(21) & 0x80;
 
                 String st1 = new String(plainText, 22, payloadLength);
                 logger.info("frame with payload: {}", payloadType);
@@ -283,14 +273,6 @@ public class BridgeLocalD2LHandler extends BridgeLocalBaseHandler {
                         handler.handleFrame(frame);
                         res = true;
                     }
-                } else if (payloadType == 0x01) {
-                    // UPDATE_REQUEST request
-                    logger.info("Update request !");
-                } else if (payloadType == 0x05) {
-                    // GET_HORLOGE request
-                    logger.info("Get Horloge request !");
-                } else {
-                    logger.info("Unknown request !");
                 }
             } catch (Exception ex) {
                 logger.debug("ex: {}", ex.toString(), ex);

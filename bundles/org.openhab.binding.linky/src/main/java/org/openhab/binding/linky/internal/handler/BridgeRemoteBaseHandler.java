@@ -100,15 +100,7 @@ public abstract class BridgeRemoteBaseHandler extends BaseBridgeHandler {
         this.httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
         this.httpClient.setResponseBufferSize(RESPONSE_BUFFER_SIZE);
 
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            logger.warn("Unable to start Jetty HttpClient {}", e.getMessage());
-        }
-
         this.enedisApi = new EnedisHttpApi(this, gson, this.httpClient);
-
-        updateStatus(ThingStatus.UNKNOWN);
     }
 
     public BundleContext getBundleContext() {
@@ -123,9 +115,16 @@ public abstract class BridgeRemoteBaseHandler extends BaseBridgeHandler {
 
         scheduler.submit(() -> {
             try {
-                connectionInit();
-                updateStatus(ThingStatus.ONLINE);
-            } catch (LinkyException e) {
+                httpClient.start();
+
+                try {
+                    connectionInit();
+                    updateStatus(ThingStatus.ONLINE);
+                } catch (LinkyException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                }
+            } catch (Exception e) {
+                logger.warn("Unable to start Jetty HttpClient {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         });

@@ -15,22 +15,15 @@ package org.openhab.binding.linky.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link LinkyBridgeWebConfiguration} is the class used to match the
+ * The {@link LinkyThingLocalConfiguration} is the class used to match the
  * thing configuration.
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 @NonNullByDefault
-public class LinkyBridgeWebConfiguration extends LinkyBridgeConfiguration {
-    public static final String INTERNAL_AUTH_ID = "internalAuthId";
-
-    public String username = "";
-    public String password = "";
-    public String internalAuthId = "";
-
-    @Override
-    public boolean seemsValid() {
-        return !username.isBlank() && !password.isBlank() && !internalAuthId.isBlank();
-    }
+public class LinkyThingLocalConfiguration extends LinkyThingConfiguration {
+    public String appKey = "";
+    public String ivKey = "";
+    public String id = "";
 }

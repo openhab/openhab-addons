@@ -33,6 +33,7 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
@@ -72,14 +73,19 @@ public abstract class BridgeRemoteApiHandler extends BridgeRemoteBaseHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(LinkyBridgeApiConfiguration.class);
-
         super.initialize();
 
-        this.oAuthService = oAuthFactory.createOAuthClientService(LinkyBindingConstants.BINDING_ID, tokenUrl,
-                authorizeUrl, getClientId(), getClientSecret(), LinkyBindingConstants.LINKY_SCOPES, true);
+        config = getConfigAs(LinkyBridgeApiConfiguration.class);
 
-        registerServlet();
+        if (config.seemsValid()) {
+            this.oAuthService = oAuthFactory.createOAuthClientService(LinkyBindingConstants.BINDING_ID, tokenUrl,
+                    authorizeUrl, getClientId(), getClientSecret(), LinkyBindingConstants.LINKY_SCOPES, true);
+
+            registerServlet();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.config-error-mandatory-settings");
+        }
     }
 
     public abstract String getClientId();

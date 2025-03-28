@@ -15,16 +15,14 @@ package org.openhab.binding.linky.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link LinkySerialConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link LinkyThingRemoteConfiguration} is the class used to match the
+ * thing configuration.
  *
- * @author Nicolas SIBERIL - Initial contribution
- * @author Laurent Arnal - Refactor to integrate into Linky Binding
+ * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 @NonNullByDefault
-public class LinkySerialConfiguration {
-
-    public String serialport = "";
-    public String ticMode = "";
-    public boolean verifyChecksum = true;
-    public boolean autoRepairInvalidADPSgroupLine = true;
+public class LinkyThingRemoteConfiguration extends LinkyThingConfiguration {
+    public String token = "";
+    public String timezone = "";
 }

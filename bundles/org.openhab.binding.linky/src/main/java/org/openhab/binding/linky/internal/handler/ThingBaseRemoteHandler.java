@@ -14,7 +14,7 @@ package org.openhab.binding.linky.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linky.internal.config.LinkyThingConfiguration;
+import org.openhab.binding.linky.internal.config.LinkyThingRemoteConfiguration;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
@@ -29,15 +29,14 @@ import org.openhab.core.types.Command;
  */
 
 @NonNullByDefault
-@SuppressWarnings("null")
 public class ThingBaseRemoteHandler extends BaseThingHandler {
 
-    protected LinkyThingConfiguration config;
+    protected LinkyThingRemoteConfiguration config;
 
     public ThingBaseRemoteHandler(Thing thing) {
         super(thing);
 
-        config = getConfigAs(LinkyThingConfiguration.class);
+        config = getConfigAs(LinkyThingRemoteConfiguration.class);
     }
 
     @Override
@@ -48,7 +47,7 @@ public class ThingBaseRemoteHandler extends BaseThingHandler {
     public synchronized void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    public @Nullable LinkyThingConfiguration getLinkyConfig() {
+    public @Nullable LinkyThingRemoteConfiguration getLinkyConfig() {
         return config;
     }
 }

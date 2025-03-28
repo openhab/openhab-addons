@@ -27,6 +27,7 @@ public class LinkyBridgeApiConfiguration extends LinkyBridgeConfiguration {
     public String clientSecret = "";
     public boolean isSandbox = false;
 
+    @Override
     public boolean seemsValid() {
         return !clientId.isBlank() && !clientSecret.isBlank();
     }

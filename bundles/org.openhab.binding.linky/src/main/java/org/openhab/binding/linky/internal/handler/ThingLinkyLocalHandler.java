@@ -18,7 +18,6 @@ import java.math.BigInteger;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -28,7 +27,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linky.internal.config.LinkyThingConfiguration;
+import org.openhab.binding.linky.internal.config.LinkyThingLocalConfiguration;
 import org.openhab.binding.linky.internal.constants.LinkyBindingConstants;
 import org.openhab.binding.linky.internal.helpers.LinkyFrame;
 import org.openhab.binding.linky.internal.types.InvalidFrameException;
@@ -40,7 +39,6 @@ import org.openhab.binding.linky.internal.types.Phase;
 import org.openhab.binding.linky.internal.types.ValueType;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -72,12 +70,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @SuppressWarnings("null")
 public class ThingLinkyLocalHandler extends BaseThingHandler {
-    private final TimeZoneProvider timeZoneProvider;
-    private ZoneId zoneId = ZoneId.systemDefault();
-
     private final Logger logger = LoggerFactory.getLogger(ThingLinkyLocalHandler.class);
 
-    private LinkyThingConfiguration config;
+    private LinkyThingLocalConfiguration config;
 
     public String userId = "";
 
@@ -90,11 +85,10 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
 
     private int frameCount = 0;
 
-    public ThingLinkyLocalHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider) {
+    public ThingLinkyLocalHandler(Thing thing, LocaleProvider localeProvider) {
         super(thing);
 
-        config = getConfigAs(LinkyThingConfiguration.class);
-        this.timeZoneProvider = timeZoneProvider;
+        config = getConfigAs(LinkyThingLocalConfiguration.class);
     }
 
     @Override
@@ -102,21 +96,12 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
         prmId = config.prmId;
         logger.debug("Initializing Linky handler for {}", prmId);
 
-        // update the timezone if not set to default to openhab default timezone
         Configuration thingConfig = getConfig();
 
-        Object val = thingConfig.get("timezone");
-        if (val == null || "".equals(val)) {
-            zoneId = this.timeZoneProvider.getTimeZone();
-            thingConfig.put("timezone", zoneId.getId());
-        } else {
-            zoneId = ZoneId.of((String) val);
-        }
-
-        appKey = (String) thingConfig.get("appKey");
-        ivKey = (String) thingConfig.get("ivKey");
-        String idd2lSt = (String) thingConfig.get("id");
-        if (idd2lSt != null) {
+        appKey = config.appKey;
+        ivKey = config.ivKey;
+        String idd2lSt = config.id;
+        if (!idd2lSt.isBlank()) {
             idd2l = Long.parseLong(idd2lSt);
         } else {
             idd2l = -1;
@@ -124,22 +109,19 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
         saveConfiguration(thingConfig);
 
         // reread config to update timezone field
-        config = getConfigAs(LinkyThingConfiguration.class);
+        config = getConfigAs(LinkyThingLocalConfiguration.class);
 
         Bridge bridge = getBridge();
         if (bridge == null) {
             return;
         }
 
-        BridgeLocalBaseHandler bridgeHandler = (BridgeLocalBaseHandler) bridge.getHandler();
-        if (bridgeHandler == null) {
-            return;
-        }
-
         updateStatus(ThingStatus.UNKNOWN);
 
-        bridgeHandler.registerNewPrmId(config.prmId);
-        updateStatus(ThingStatus.ONLINE);
+        if (bridge.getHandler() instanceof BridgeLocalBaseHandler bridgeHandler) {
+            bridgeHandler.registerNewPrmId(config.prmId);
+            updateStatus(ThingStatus.ONLINE);
+        }
     }
 
     public void udpateGroupVisibility(LinkyFrame frame) {
@@ -205,8 +187,7 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
             logger.debug("Refreshing channel {} {}", config.prmId, channelUID.getId());
         } else {
             if (channelUID.getId().indexOf("cosphi") >= 0) {
-                if (command instanceof DecimalType) {
-                    DecimalType dc = (DecimalType) command;
+                if (command instanceof DecimalType dc) {
                     cosphi = dc.doubleValue();
                 }
             } else {
@@ -575,7 +556,7 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
         super.updateState(groupId + "#" + channelID, state);
     }
 
-    public @Nullable LinkyThingConfiguration getLinkyConfig() {
+    public @Nullable LinkyThingLocalConfiguration getLinkyConfig() {
         return config;
     }
 

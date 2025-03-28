@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linky.internal.config.LinkySerialConfiguration;
+import org.openhab.binding.linky.internal.config.LinkyBridgeSerialConfiguration;
 import org.openhab.binding.linky.internal.helpers.LinkyFrame;
 import org.openhab.binding.linky.internal.helpers.LinkySerialInputStream;
 import org.openhab.binding.linky.internal.types.InvalidFrameException;
@@ -60,10 +60,12 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
     private SerialPortManager serialPortManager;
     private @Nullable ScheduledFuture<?> pollingJob;
     private long invalidFrameCounter = 0;
+    private LinkyBridgeSerialConfiguration config;
 
     public BridgeLocalSerialHandler(Bridge bridge, SerialPortManager serialPortManager, Gson gson) {
         super(bridge, gson);
         this.serialPortManager = serialPortManager;
+        config = getConfigAs(LinkyBridgeSerialConfiguration.class);
     }
 
     @Override
@@ -73,11 +75,17 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
         logger.debug("isInitialized() = {}", isInitialized());
 
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
-        pollingJob = scheduler.schedule(this::pollingCode, 3, TimeUnit.SECONDS);
+
+        if (config.seemsValid()) {
+            pollingJob = scheduler.schedule(this::pollingCode, 3, TimeUnit.SECONDS);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.config-error-mandatory-settings");
+        }
     }
 
     public void pollingCode() {
-        LinkySerialConfiguration config = getConfigAs(LinkySerialConfiguration.class);
+        LinkyBridgeSerialConfiguration config = getConfigAs(LinkyBridgeSerialConfiguration.class);
         LinkyTicMode ticMode = LinkyTicMode.valueOf(config.ticMode);
         boolean autoRepair = config.autoRepairInvalidADPSgroupLine;
         boolean verifyChecksum = config.verifyChecksum;
@@ -102,9 +110,7 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
                         logger.warn("Got invalid frame. Detail: \"{}\"", e.getLocalizedMessage());
                         onInvalidFrameReceived(e);
                     } catch (IOException e) {
-                        // logger.warn("Got I/O exception. Detail: \"{}\"", e.getLocalizedMessage(), e);
-                        // onSerialPortInputStreamIOException(e);
-                        // break;
+                        logger.warn("Got I/O exception. Detail: \"{}\"", e.getLocalizedMessage(), e);
                     } catch (IllegalStateException e) {
                         logger.warn("Got illegal state exception", e);
                     }
@@ -126,7 +132,7 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
                     outputStream.close();
                 }
             } catch (IOException ex) {
-
+                logger.warn("An error occurred during serial port closing", ex);
             }
             serialPort.close();
         }
@@ -150,7 +156,7 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
 
     public void onFrameReceived(LinkyFrame frame) {
         updateStatus(ThingStatus.ONLINE);
-        logger.info("frame received!!");
+        logger.trace("frame received!!");
 
         String prmId = frame.get(LinkyChannel.PRM);
         if (prmId != null) {
@@ -171,13 +177,6 @@ public class BridgeLocalSerialHandler extends BridgeLocalBaseHandler {
     }
 
     private @Nullable SerialPort openSerialPortAndStartReceiving() {
-        LinkySerialConfiguration config = getConfigAs(LinkySerialConfiguration.class);
-
-        if (config.serialport.trim().isEmpty()) {
-            logger.warn("Linky gateway port is not set.");
-            return null;
-        }
-
         logger.debug("Connecting to serial port '{}'...", config.serialport);
         String currentOwner = null;
         try {
