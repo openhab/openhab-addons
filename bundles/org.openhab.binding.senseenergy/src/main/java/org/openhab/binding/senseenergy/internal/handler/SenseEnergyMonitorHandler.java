@@ -204,7 +204,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         ThingStatus thingStatus = getThing().getStatus();
 
         if (thingStatus == ThingStatus.OFFLINE
-                && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR) {
+                && getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR) {
             goOnline(); // only attempt to goOnline if not a configuration error
             return;
         }
@@ -237,7 +237,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
                     : ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR;
         } else {
             logger.debug("Unhandled Exception", e);
-            statusDetail = ThingStatusDetail.OFFLINE.NONE;
+            statusDetail = ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR;
         }
 
         updateStatus(ThingStatus.OFFLINE, statusDetail, e.getLocalizedMessage());
