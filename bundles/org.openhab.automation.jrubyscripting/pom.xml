@@ -26,6 +26,12 @@
       <version>${jruby.version}</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.openhab.core.bundles</groupId>
+      <artifactId>org.openhab.core.io.console.karaf</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
 </project>
