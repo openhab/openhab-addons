@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="ambient-type">
+		<label>General Ambient</label>
+		<channels>
+			<channel id="ambient-error-number" typeId="ambient-error-number-type"/>
+			<channel id="ambient-operating-state" typeId="ambient-operating-state-type"/>
+			<channel id="actual-ambient-temperature" typeId="actual-ambient-temperature-type"/>
+			<channel id="average-ambient-temperature" typeId="average-ambient-temperature-type"/>
+			<channel id="calculated-ambient-temperature" typeId="calculated-ambient-temperature-type"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="emanager-type">
+		<label>General E-Manager</label>
+		<channels>
+			<channel id="emanager-error-number" typeId="emanager-error-number-type"/>
+			<channel id="emanager-operating-state" typeId="emanager-operating-state-type"/>
+			<channel id="actual-power" typeId="actual-power-type"/>
+			<channel id="actual-power-consumption" typeId="actual-power-consumption-type"/>
+			<channel id="power-consumption-setpoint" typeId="power-consumption-setpoint-type"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
