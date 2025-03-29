@@ -35,6 +35,7 @@ import org.openhab.automation.jrubyscripting.internal.watch.JRubyScriptFileWatch
 import org.openhab.core.automation.module.script.ScriptEngineContainer;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
 import org.openhab.core.config.core.ConfigDescription;
+import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.ConfigDescriptionRegistry;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.ConsoleCommandCompleter;
@@ -63,10 +64,9 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     private static final String CONSOLE = "console";
     private static final String BUNDLE = "bundle";
     private static final String GEM = "gem";
-    private static final String UPDATE = "update";
     private static final String PRUNE = "prune";
 
-    private static final List<String> SUB_COMMANDS = List.of(INFO, CONSOLE, BUNDLE, GEM, UPDATE, PRUNE);
+    private static final List<String> SUB_COMMANDS = List.of(INFO, CONSOLE, BUNDLE, GEM, PRUNE);
 
     private final ScriptEngineManager scriptEngineManager;
     private final JRubyScriptEngineFactory jRubyScriptEngineFactory;
@@ -102,7 +102,6 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                         "starts an interactive JRuby console"), //
                 buildCommandUsage(BUNDLE + " [arguments]", "runs Ruby bundler in the main Script path"), //
                 buildCommandUsage(GEM + " [arguments]", "manages JRuby Scripting add-on's RubyGems"), //
-                buildCommandUsage(UPDATE, "updates the configured gems"), //
                 buildCommandUsage(PRUNE + " [-f|--force]", "cleans up older versions in the .gem directory") //
         );
     }
@@ -146,9 +145,6 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 case GEM:
                     gem(console, Arrays.copyOfRange(args, 1, args.length));
                     break;
-                case UPDATE:
-                    updateGems(console);
-                    break;
                 case PRUNE:
                     if (args.length > 1) {
                         if ("-f".equals(args[1]) || "--force".equals(args[1])) {
@@ -175,14 +171,17 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     }
 
     private void info(Console console) {
+        String gemfile = jRubyScriptEngineFactory.getConfiguration().getGemfilePath();
         final String PRINT_VERSION_NUMBERS = """
                 library_version = defined?(OpenHAB::DSL::VERSION) && OpenHAB::DSL::VERSION
 
                 puts "JRuby #{JRUBY_VERSION}"
                 puts "JRuby Scripting Library #{library_version || 'is not installed'}"
-                puts "GEM_HOME: #{ENV['GEM_HOME']}"
-                puts "RUBYLIB: #{ENV['RUBYLIB']}"
-                    """;
+                puts "ENV['GEM_HOME']: #{ENV['GEM_HOME']}"
+                puts "ENV['RUBYLIB']: #{ENV['RUBYLIB']}"
+                    """ + (gemfile == null ? "" : """
+                puts "ENV['BUNDLE_GEMFILE']: #{ENV['BUNDLE_GEMFILE']}"
+                    """);
 
         executeWithFullJRuby(console, engine -> engine.eval(PRINT_VERSION_NUMBERS));
         console.println("Script path: " + scriptFileWatcher.getWatchPath());
@@ -198,6 +197,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
             return;
         }
 
+        List<ConfigDescriptionParameter> parameters = configDescription.getParameters();
         Map<String, String> config = jRubyScriptEngineFactory.getConfiguration().getConfigurations();
         // The JRubyScripting Add-on configuration doesn't have group-less parameters,
         // but in case they exist in the future, print them out
@@ -212,9 +212,16 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 groupLabel = group.getName();
             }
             console.println(groupLabel);
-            configDescription.getParameters().forEach(parameter -> {
-                if (group.getName().equals(parameter.getGroupName())) {
-                    console.println("  " + parameter.getName() + ": " + config.get(parameter.getName()));
+            parameters.forEach(parameter -> {
+                console.print("  " + parameter.getName() + ": ");
+                String value = config.get(parameter.getName());
+                if (value == null) {
+                    console.println("not set");
+                } else if (value.contains("\n")) {
+                    console.println("  (multiline)");
+                    console.println("    " + value.replace("\n", "\n    "));
+                } else {
+                    console.println(value);
                 }
             });
             console.println("");
@@ -251,7 +258,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 case "-l":
                     boolean defaultConsoleInRegistry = false;
                     Map<String, String> consoles = (Map<String, String>) getConsoles();
-                    if (consoles == null) {
+                    if (consoles.isEmpty()) {
                         console.println(
                                 "The list of console scripts is not available. Please install/update the JRuby helper library gem.");
                     } else {
@@ -306,7 +313,18 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     }
 
     synchronized private void bundler(Console console, String[] args) {
+        final String gemfilePath = jRubyScriptEngineFactory.getConfiguration().getGemfilePath();
+        if (gemfilePath == null) {
+            console.println(
+                    "No Gemfile configured. Please set the 'bundle_gemfile_path' or 'bundle_gemfile_content' property in the add-on configuration.");
+            return;
+        }
+
+        // we have to split this because we dont want to format the string with ruby '%w' in it
         final String BUNDLER = """
+                require 'jruby'
+                JRuby.runtime.instance_config.update_native_env_enabled = false
+
                 require "bundler"
                 require "bundler/friendly_errors"
 
@@ -322,20 +340,12 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 end
                 """;
 
-        String originalDir = System.setProperty("user.dir", scriptFileWatcher.getWatchPath().toString());
-        try {
-            executeWithPlainJRuby(console, engine -> {
-                engine.put(ScriptEngine.ARGV, args);
-                engine.eval(BUNDLER);
-                return null;
-            });
-        } finally {
-            if (originalDir == null) {
-                System.clearProperty("user.dir");
-            } else {
-                System.setProperty("user.dir", originalDir);
-            }
-        }
+        executeWithPlainJRuby(console, engine -> {
+            JRubyScriptEngineConfiguration.setEnvironmentVariable(engine, "BUNDLE_GEMFILE", gemfilePath);
+            engine.put(ScriptEngine.ARGV, args);
+            engine.eval(BUNDLER);
+            return null;
+        });
     }
 
     synchronized private void gem(Console console, String[] args) {
@@ -347,14 +357,6 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         executeWithPlainJRuby(console, engine -> {
             engine.put(ScriptEngine.ARGV, args);
             engine.eval(GEM);
-            return null;
-        });
-    }
-
-    private void updateGems(Console console) {
-        console.println("Updating configured gems: " + jRubyScriptEngineFactory.getConfiguration().getGems());
-        executeWithPlainJRuby(console, engine -> {
-            jRubyScriptEngineFactory.updateGems(engine);
             return null;
         });
     }
@@ -446,13 +448,12 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         final String scriptIdentifier = "jruby-console-" + UUID.randomUUID().toString();
 
         printLoadingMessage(console, true);
-        ScriptEngineContainer scriptEngineContainer = scriptEngineManager.createScriptEngine(scriptType,
-                scriptIdentifier);
-        if (scriptEngineContainer == null) {
+        ScriptEngineContainer container = scriptEngineManager.createScriptEngine(scriptType, scriptIdentifier);
+        if (container == null) {
             console.println("Error: Unable to create JRuby script engine.");
             return null;
         }
-        ScriptEngine engine = scriptEngineContainer.getScriptEngine();
+        ScriptEngine engine = container.getScriptEngine();
         try {
             printLoadingMessage(console, false);
             return process.apply(engine);
