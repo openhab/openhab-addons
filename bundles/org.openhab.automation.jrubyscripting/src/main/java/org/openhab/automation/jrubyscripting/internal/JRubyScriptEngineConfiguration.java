@@ -14,11 +14,10 @@ package org.openhab.automation.jrubyscripting.internal;
 
 import java.io.File;
 import java.io.StringWriter;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -455,7 +454,7 @@ public class JRubyScriptEngineConfiguration {
                       end
                     """);
         } catch (ScriptException exception) {
-            LOGGER.warn("Error preventing exec", unwrap(exception)); =
+            LOGGER.warn("Error preventing exec", unwrap(exception));
         }
     }
 
@@ -479,7 +478,7 @@ public class JRubyScriptEngineConfiguration {
                     Gem.post_reset { Gem::Specification.add_spec(openhab_spec) }
                     """);
         } catch (ScriptException exception) {
-            logger.warn("Error creating openHAB gem", unwrap(exception));
+            LOGGER.warn("Error creating openHAB gem", unwrap(exception));
         }
     }
 

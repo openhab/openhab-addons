@@ -35,6 +35,7 @@ import org.openhab.automation.jrubyscripting.internal.watch.JRubyScriptFileWatch
 import org.openhab.core.automation.module.script.ScriptEngineContainer;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
 import org.openhab.core.config.core.ConfigDescription;
+import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.ConfigDescriptionRegistry;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.ConsoleCommandCompleter;
@@ -196,6 +197,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
             return;
         }
 
+        List<ConfigDescriptionParameter> parameters = configDescription.getParameters();
         Map<String, String> config = jRubyScriptEngineFactory.getConfiguration().getConfigurations();
         // The JRubyScripting Add-on configuration doesn't have group-less parameters,
         // but in case they exist in the future, print them out
@@ -308,42 +310,6 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         } else {
             console.println("JRuby Console is not supported in this environment.");
         }
-    }
-
-    synchronized private void bundler(Console console, String[] args) {
-        final String gemfilePath = jRubyScriptEngineFactory.getConfiguration().getGemfilePath();
-        if (gemfilePath == null) {
-            console.println(
-                    "No Gemfile configured. Please set the 'bundle_gemfile_path' or 'bundle_gemfile_content' property in the add-on configuration.");
-            return;
-        }
-
-        // we have to split this because we dont want to format the string with ruby '%w' in it
-        final String BUNDLER = """
-                require 'jruby'
-                JRuby.runtime.instance_config.update_native_env_enabled = false
-
-                require "bundler"
-                require "bundler/friendly_errors"
-
-                Bundler.with_friendly_errors do
-                  require "bundler/cli"
-
-                  # Allow any command to use --help flag to show help for that command
-                  help_flags = %w[--help -h]
-                  help_flag_used = ARGV.any? { |a| help_flags.include? a }
-                  args = help_flag_used ? Bundler::CLI.reformatted_help_args(ARGV) : ARGV
-
-                  Bundler::CLI.start(args, debug: true)
-                end
-                """;
-
-        executeWithPlainJRuby(console, engine -> {
-            JRubyScriptEngineConfiguration.setEnvironmentVariable(engine, "BUNDLE_GEMFILE", gemfilePath);
-            engine.put(ScriptEngine.ARGV, args);
-            engine.eval(BUNDLER);
-            return null;
-        });
     }
 
     synchronized private void bundler(Console console, String[] args) {
