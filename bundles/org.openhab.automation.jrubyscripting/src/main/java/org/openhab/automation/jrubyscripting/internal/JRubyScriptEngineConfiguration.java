@@ -97,7 +97,7 @@ public class JRubyScriptEngineConfiguration {
         // leaving the default values in place when it's null or not set in the map.
         configuration = new Configuration(config).as(JRubyScriptingConfiguration.class);
 
-        bundleGemfile = getGemfilePath();
+        bundleGemfile = resolveGemfilePath();
         specificGemHome = resolveSpecificGemHome();
         ensureGemHomeExists(specificGemHome);
 
@@ -211,12 +211,7 @@ public class JRubyScriptEngineConfiguration {
         return true;
     }
 
-    /**
-     * Returns the path to the Gemfile.
-     *
-     * @return the path to the Gemfile or null if no Gemfile is found
-     */
-    public @Nullable String getGemfilePath() {
+    private @Nullable String resolveGemfilePath() {
         Path gemfilePath = Path.of(configuration.bundle_gemfile);
 
         if (gemfilePath.equals(Path.of(""))) {
@@ -230,6 +225,15 @@ public class JRubyScriptEngineConfiguration {
         }
 
         return null;
+    }
+
+    /**
+     * Returns the absolute path to the Gemfile.
+     *
+     * @return the path to the Gemfile or null if no actual Gemfile is found.
+     */
+    public @Nullable String getGemfilePath() {
+        return bundleGemfile;
     }
 
     /**

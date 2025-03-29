@@ -162,7 +162,6 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
             return null;
         }
         ScriptEngine engine = factory.getScriptEngine();
-        logger.debug("Creating JRuby engine {}", engine);
         configuration.configureRubyEnvironment(engine);
         return new JRubyEngineWrapper((org.jruby.embed.jsr223.JRubyEngine) engine);
     }

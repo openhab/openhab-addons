@@ -40,7 +40,7 @@
 			<label>Gemfile Path</label>
 			<description><![CDATA[Path to your own Gemfile relative to <code>OPENHAB_CONF/automation/ruby/</code>.
 				An absolute path can be used.
-			  If this file exists, it will be used instead of the <code>gems</code> setting above,
+			    If this file exists, the <code>gems</code> setting above will be ignored,
 				so your Gemfile must include <code>openhab-scripting</code> to use the helper library.
 				]]></description>
 			<default>Gemfile</default>
