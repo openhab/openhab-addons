@@ -82,7 +82,7 @@ public class ChargeState {
     public String scheduledChargingStartTime = " ";
 
     @SerializedName("charge_amps")
-    public int chargeAmps;
+    public float chargeAmps;
 
     @SerializedName("charge_current_request")
     public int chargeCurrentRequest;
