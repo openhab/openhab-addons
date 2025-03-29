@@ -298,10 +298,10 @@ public class WledApiV084 implements WledApi {
         }
         HSBType tempHSB = WLedHelper.parseToHSBType(state.stateResponse.seg[segmentIndex].col[0].toString());
         handler.update(segmentIndex, CHANNEL_PRIMARY_COLOR, tempHSB);
-        handler.update(segmentIndex, CHANNEL_SECONDARY_COLOR, WLedHelper.parseToHSBType(
-                state.stateResponse.seg[segmentIndex].col[1].toString()));
-        handler.update(segmentIndex, CHANNEL_THIRD_COLOR, WLedHelper.parseToHSBType(
-                state.stateResponse.seg[segmentIndex].col[2].toString()));
+        handler.update(segmentIndex, CHANNEL_SECONDARY_COLOR,
+                WLedHelper.parseToHSBType(state.stateResponse.seg[segmentIndex].col[1].toString()));
+        handler.update(segmentIndex, CHANNEL_THIRD_COLOR,
+                WLedHelper.parseToHSBType(state.stateResponse.seg[segmentIndex].col[2].toString()));
         if (state.ledInfo.rgbw) {
             handler.update(segmentIndex, CHANNEL_PRIMARY_WHITE,
                     WLedHelper.parseWhitePercent(state.stateResponse.seg[segmentIndex].col[0].toString()));
