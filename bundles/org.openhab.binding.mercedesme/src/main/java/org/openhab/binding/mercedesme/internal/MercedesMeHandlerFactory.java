@@ -18,7 +18,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryService;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandler;
 import org.openhab.binding.mercedesme.internal.handler.VehicleHandler;
@@ -56,7 +55,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BEV, THING_TYPE_COMB,
             THING_TYPE_HYBRID, THING_TYPE_ACCOUNT);
 
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
     private final LocaleProvider localeProvider;
     private final LocationProvider locationProvider;
     private final StorageService storageService;
@@ -80,7 +79,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
 
         Utils.initialize(tzp, lp);
         Mapper.initialize(up);
-        httpClient = hcf.getCommonHttpClient();
+        httpClientFactory = hcf;
         discoveryService = new MercedesMeDiscoveryService();
     }
 
@@ -104,7 +103,8 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
                 discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                         null);
             }
-            return new AccountHandler((Bridge) thing, discoveryService, httpClient, localeProvider, storageService);
+            return new AccountHandler((Bridge) thing, discoveryService, httpClientFactory.getCommonHttpClient(),
+                    localeProvider, storageService);
         } else if (THING_TYPE_BEV.equals(thingTypeUID) || THING_TYPE_COMB.equals(thingTypeUID)
                 || THING_TYPE_HYBRID.equals(thingTypeUID)) {
             return new VehicleHandler(thing, locationProvider, mmcop, mmsop);
