@@ -14,8 +14,8 @@ package org.openhab.binding.bambulab.internal;
 
 import static java.lang.Thread.interrupted;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel.*;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.NO_CAMERA_CERT;
+import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PrinterChannel.*;
 import static org.openhab.binding.bambulab.internal.PrinterConfiguration.Series.X;
 import static org.openhab.core.library.types.OnOffType.*;
 import static org.openhab.core.thing.ThingStatus.*;

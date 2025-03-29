@@ -52,7 +52,7 @@ public class BambuLabHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (AMS_THING_TYPE.equals(thingTypeUID)) {
-            return new AmsDeviceHandlerFactory(thing);
+            return new AmsDeviceHandler(thing);
         }
 
         return null;

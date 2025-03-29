@@ -63,6 +63,12 @@
 		<label>Time (min)</label>
 		<state readOnly="true" pattern="%1$tHh:%1$tMm"/>
 	</channel-type>
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Time Stamp</label>
+		<category>time</category>
+		<state readOnly="true"/>
+	</channel-type>
 	<channel-type id="number-advanced" advanced="true">
 		<item-type>Number</item-type>
 		<label>Advanced Number Channel</label>

@@ -30,6 +30,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,11 +39,12 @@ import org.slf4j.LoggerFactory;
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public class AmsDeviceHandlerFactory extends BaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(AmsDeviceHandlerFactory.class);
+public class AmsDeviceHandler extends BaseThingHandler {
+    private Logger logger = LoggerFactory.getLogger(AmsDeviceHandler.class);
     private @Nullable AmsDeviceConfiguration config;
+    private @Nullable PrinterHandler printer;
 
-    public AmsDeviceHandlerFactory(Thing thing) {
+    public AmsDeviceHandler(Thing thing) {
         super(thing);
     }
 
@@ -57,11 +59,11 @@ public class AmsDeviceHandlerFactory extends BaseThingHandler {
     }
 
     private void internalInitialize() throws InitializationException {
-        var printer = validateBridge();
+        printer = validateBridge();
         var config = this.config = getConfigAs(AmsDeviceConfiguration.class);
         config.validateNumber();
-        logger = LoggerFactory.getLogger("%s.%s.%d".formatted(AmsDeviceHandlerFactory.class.getName(),
-                printer.getSerialNumber(), config.number));
+        logger = LoggerFactory.getLogger(
+                "%s.%s.%d".formatted(AmsDeviceHandler.class.getName(), printer.getSerialNumber(), config.number));
         updateStatus(ONLINE);
     }
 
@@ -80,7 +82,11 @@ public class AmsDeviceHandlerFactory extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // no commands to handle
+        if (command == RefreshType.REFRESH) {
+            Optional.ofNullable(printer)//
+                    .flatMap(p -> p.findLatestAms(getAmsNumber()))//
+                    .ifPresent(this::updateAms);
+        }
     }
 
     public void updateAms(Map<String, Object> ams) {
@@ -222,7 +228,8 @@ public class AmsDeviceHandlerFactory extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        printer = null;
         config = null;
-        logger = LoggerFactory.getLogger(AmsDeviceHandlerFactory.class);
+        logger = LoggerFactory.getLogger(AmsDeviceHandler.class);
     }
 }

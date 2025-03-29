@@ -41,7 +41,7 @@ public class BambuLabBindingConstants {
     public static final ThingTypeUID AMS_THING_TYPE = new ThingTypeUID(BINDING_ID, "ams-device");
 
     @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
-    public enum Channel {
+    public enum PrinterChannel {
         CHANNEL_COMMAND("command", true),
         CHANNEL_NOZZLE_TEMPERATURE("nozzle-temperature"),
         CHANNEL_NOZZLE_TARGET_TEMPERATURE("nozzle-target-temperature"),
@@ -51,6 +51,7 @@ public class BambuLabBindingConstants {
         CHANNEL_MC_PRINT_STAGE("mc-print-stage"),
         CHANNEL_MC_PERCENT("mc-percent"),
         CHANNEL_MC_REMAINING_TIME("mc-remaining-time"),
+        CHANNEL_END_DATE("end-date"),
         CHANNEL_WIFI_SIGNAL("wifi-signal"),
         CHANNEL_BED_TYPE("bed-type"),
         CHANNEL_GCODE_FILE("gcode-file", true),
@@ -96,12 +97,12 @@ public class BambuLabBindingConstants {
         private final String name;
         private final boolean supportCommand;
 
-        Channel(String name, boolean supportCommand) {
+        PrinterChannel(String name, boolean supportCommand) {
             this.name = name;
             this.supportCommand = supportCommand;
         }
 
-        private Channel(String name) {
+        private PrinterChannel(String name) {
             this(name, false);
         }
 
@@ -120,6 +121,12 @@ public class BambuLabBindingConstants {
 
         public boolean is(ChannelUID channelUID) {
             return name.equals(channelUID.getId());
+        }
+
+        public static Optional<PrinterChannel> findChannel(ChannelUID channel) {
+            return stream(values())//
+                    .filter(c -> c.is(channel))//
+                    .findAny();
         }
     }
 
