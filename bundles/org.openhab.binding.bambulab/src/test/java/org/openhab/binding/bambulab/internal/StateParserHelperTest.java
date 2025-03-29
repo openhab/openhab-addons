@@ -100,9 +100,11 @@ class StateParserHelperTest {
         var wifiString = "-75dBm";
 
         // When
-        var result = StateParserHelper.parseWifiChannel(wifiString);
+        var someResult = StateParserHelper.parseWifiChannel(wifiString);
 
         // Then
+        assertThat(someResult).isNotEmpty();
+        var result = someResult.get();
         assertThat(result).isInstanceOf(QuantityType.class);
         var quantityType = (QuantityType<?>) result;
         assertThat(quantityType.intValue()).isEqualTo(-75);

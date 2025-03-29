@@ -47,6 +47,10 @@
 				<label>Remaining Print Time</label>
 				<description>Estimated time remaining for the print in seconds.</description>
 			</channel>
+			<channel id="end-date" typeId="timestamp">
+				<label>End Time of the Print</label>
+				<description>Estimated end date of the print.</description>
+			</channel>
 			<channel id="wifi-signal" typeId="wifi">
 				<label>WiFi Signal Strength</label>
 				<description>Current WiFi signal strength.</description>

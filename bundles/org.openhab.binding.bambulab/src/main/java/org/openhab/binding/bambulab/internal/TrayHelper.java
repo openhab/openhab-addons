@@ -16,6 +16,8 @@ import static java.lang.Integer.parseInt;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.AmsChannel.*;
 import static org.openhab.core.types.UnDefType.UNDEF;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.StringType;
@@ -31,20 +33,20 @@ class TrayHelper {
     static final int MAX_TRAY_VALUE = MAX_AMS * MAX_AMS_TRAYS - 1;
     private static final Logger logger = LoggerFactory.getLogger(TrayHelper.class);
 
-    static State updateTrayLoaded(@Nullable String tray) {
+    static Optional<State> findStateForTrayLoaded(@Nullable String tray) {
         if (tray == null) {
-            return UNDEF;
+            return Optional.empty();
         }
         try {
             var integer = parseInt(tray);
-            return findStateForTrayLoaded(integer);
+            return Optional.of(parseTrayLoaded(integer));
         } catch (NumberFormatException e) {
             logger.debug("Cannot parse: {}", tray, e);
-            return UNDEF;
+            return Optional.of(UNDEF);
         }
     }
 
-    private static State findStateForTrayLoaded(int tray) {
+    private static State parseTrayLoaded(int tray) {
         if (tray < 0) {
             return UNDEF;
         }

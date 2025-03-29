@@ -19,10 +19,8 @@ import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.function.Function.identity;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.AmsChannel.*;
-import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel.*;
+import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PrinterChannel.*;
 import static org.openhab.binding.bambulab.internal.StateParserHelper.*;
-import static org.openhab.binding.bambulab.internal.TrayHelper.updateTrayLoaded;
-import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatus.UNKNOWN;
@@ -34,11 +32,10 @@ import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PushingCommand
 import static pl.grzeslowski.jbambuapi.mqtt.PrinterClientConfig.requiredFields;
 
 import java.net.URI;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -48,9 +45,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PrinterChannel;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -60,6 +56,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +87,7 @@ public class PrinterHandler extends BaseBridgeHandler
     private final AtomicReference<@Nullable ScheduledFuture<?>> reconnectSchedule = new AtomicReference<>();
     private final PrinterWatcher printerWatcher = new PrinterWatcher();
     private @Nullable PrinterClientConfig config;
-    private final Collection<AmsDeviceHandlerFactory> amses = synchronizedList(new ArrayList<>());
+    private final Collection<AmsDeviceHandler> amses = synchronizedList(new ArrayList<>());
     private final AtomicReference<@Nullable Report> latestPrinterState = new AtomicReference<>();
 
     public PrinterHandler(Bridge bridge) {
@@ -99,7 +96,12 @@ public class PrinterHandler extends BaseBridgeHandler
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_LED_CHAMBER_LIGHT.is(channelUID) || CHANNEL_LED_WORK_LIGHT.is(channelUID)) {
+        if (command instanceof RefreshType) {
+            Optional.of(latestPrinterState)//
+                    .map(AtomicReference::get)//
+                    .map(Report::print)//
+                    .ifPresent(printer -> updateState(channelUID, printer));
+        } else if (CHANNEL_LED_CHAMBER_LIGHT.is(channelUID) || CHANNEL_LED_WORK_LIGHT.is(channelUID)) {
             var ledNode = CHANNEL_LED_CHAMBER_LIGHT.is(channelUID) ? CHAMBER_LIGHT : WORK_LIGHT;
             var bambuCommand = "ON".equals(command.toFullString()) ? on(ledNode) : off(ledNode);
             sendCommand(bambuCommand);
@@ -128,6 +130,16 @@ public class PrinterHandler extends BaseBridgeHandler
             }
             updateState(channelUID, StringType.valueOf(result));
         }
+    }
+
+    private void updateState(ChannelUID channelUid, Report.Print print) {
+        var someChannel = findChannel(channelUid);
+        if (someChannel.isEmpty()) {
+            logger.warn("Cannot find channel for {}", channelUid);
+            return;
+        }
+        var channel = someChannel.get();
+        updateState(channel, print);
     }
 
     @Override
@@ -305,132 +317,143 @@ public class PrinterHandler extends BaseBridgeHandler
         if (delta == null) {
             return;
         }
-        updatePrinterChannels(delta);
+        var print = delta.print();
+        if (print == null) {
+            return;
+        }
+        stream(PrinterChannel.values()).forEach(channel -> updateState(channel, print));
+
         // if got new Printer state (and not failed) then make sure that thing status in ONLINE
         updateStatus(ONLINE);
     }
 
-    private void updatePrinterChannels(Report state) {
-        // Print
-        var print = state.print();
-        if (print == null) {
-            return;
-        }
-        // tempers
-        updateCelsiusState(CHANNEL_NOZZLE_TEMPERATURE, print.nozzleTemper());
-        updateCelsiusState(CHANNEL_NOZZLE_TARGET_TEMPERATURE, print.nozzleTargetTemper());
-        updateCelsiusState(CHANNEL_BED_TEMPERATURE, print.bedTemper());
-        updateCelsiusState(CHANNEL_BED_TARGET_TEMPERATURE, print.bedTargetTemper());
-        updateCelsiusState(CHANNEL_CHAMBER_TEMPERATURE, print.chamberTemper());
-        // string
-        updateStringState(CHANNEL_MC_PRINT_STAGE, print.mcPrintStage());
-        updateStringState(CHANNEL_BED_TYPE, print.bedType());
-        updateStringState(CHANNEL_GCODE_FILE, print.gcodeFile());
-        updateStringState(CHANNEL_GCODE_STATE, print.gcodeState());
-        updateStringState(CHANNEL_REASON, print.reason());
-        updateStringState(CHANNEL_RESULT, print.result());
-        // percent
-        updatePercentState(CHANNEL_MC_PERCENT, print.mcPercent());
-        updatePercentState(CHANNEL_GCODE_FILE_PREPARE_PERCENT, print.gcodeFilePreparePercent());
-        // decimal
-        parseTimeMinutes(print.mcRemainingTime())//
-                .ifPresent(time -> updateState(CHANNEL_MC_REMAINING_TIME, time));
-        updateDecimalState(CHANNEL_BIG_FAN_1_SPEED, print.bigFan1Speed());
-        updateDecimalState(CHANNEL_BIG_FAN_2_SPEED, print.bigFan2Speed());
-        updateDecimalState(CHANNEL_HEAT_BREAK_FAN_SPEED, print.heatbreakFanSpeed());
-        updateDecimalState(CHANNEL_LAYER_NUM, print.layerNum());
-        if (print.spdLvl() != null) {
-            var speedLevel = PrintSpeedCommand.findByLevel(print.spdLvl());
-            updateState(CHANNEL_SPEED_LEVEL, new StringType(speedLevel.toString()));
-        }
-        // boolean
-        updateBooleanState(CHANNEL_TIME_LAPS, print.timelapse());
-        updateBooleanState(CHANNEL_USE_AMS, print.useAms());
-        updateBooleanState(CHANNEL_VIBRATION_CALIBRATION, print.vibrationCali());
-        // lights
-        updateLightState("chamber_light", CHANNEL_LED_CHAMBER_LIGHT, print.lightsReport());
-        updateLightState("work_light", CHANNEL_LED_WORK_LIGHT, print.lightsReport());
-        // other
-        if (print.wifiSignal() != null) {
-            updateState(CHANNEL_WIFI_SIGNAL, parseWifiChannel(print.wifiSignal()));
-        }
-        // ams
-        Optional.of(print)//
-                .map(Report.Print::ams)//
-                .ifPresent(ams -> {
-                    updateState(CHANNEL_AMS_TRAY_NOW, updateTrayLoaded(ams.trayNow()));
-                    updateState(CHANNEL_AMS_TRAY_PREVIOUS, updateTrayLoaded(ams.trayPre()));
-                });
-        Optional.of(print)//
-                .map(Report.Print::ams)//
-                .map(Report.Print.Ams::ams)//
-                .stream()//
-                .flatMap(Collection::stream)//
-                .forEach(this::updateAms);
-        // vtray
-        Optional.of(print)//
-                .map(Report.Print::vtTray)//
-                .ifPresent(this::updateVtray);
-    }
-
-    private void updateVtray(Report.Print.VtTray vtTray) {
-        Optional.ofNullable(vtTray.trayType())//
-                .map(Object::toString)//
-                .flatMap(TrayType::findTrayType)//
-                .map(Enum::name)//
-                .flatMap(StateParserHelper::parseStringType)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_TYPE, trayType));
-        Optional.ofNullable(vtTray.trayColor())//
-                .map(Object::toString)//
-                .map(StateParserHelper::parseColor)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_COLOR, trayType));
-        parseTemperatureType(vtTray.nozzleTempMax())//
-                .or(StateParserHelper::undef)//
-                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_NOZZLE_TEMPERATURE_MAX, trayType));
-        parseTemperatureType(vtTray.nozzleTempMin())//
-                .or(StateParserHelper::undef)//
-                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_NOZZLE_TEMPERATURE_MIN, trayType));
-        Optional.ofNullable(vtTray.remain())//
-                .flatMap(StateParserHelper::parsePercentType)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_REMAIN, trayType));
-        parseDecimalType(vtTray.k())//
-                .or(StateParserHelper::undef)//
-                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_K, trayType));
-        parseDecimalType(vtTray.n())//
-                .or(StateParserHelper::undef)//
-                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_N, trayType));
-        parseStringType(vtTray.tagUid())//
-                .or(StateParserHelper::undef)//
-                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TAG_UUID, trayType));
-        parseStringType(vtTray.trayIdName())//
-                .or(StateParserHelper::undef)//
-                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_ID_NAME, trayType));
-        parseStringType(vtTray.trayInfoIdx())//
-                .or(StateParserHelper::undef)//
-                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_INFO_IDX, trayType));
-        parseStringType(vtTray.traySubBrands())
-                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_SUB_BRANDS, trayType));
-        parseDecimalType(vtTray.trayWeight())//
-                .or(StateParserHelper::undef)//
-                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_WEIGHT, trayType));
-        parseDecimalType(vtTray.trayDiameter())//
-                .or(StateParserHelper::undef)//
-                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_DIAMETER, trayType));
-        parseTemperatureType(vtTray.trayTemp())//
-                .or(StateParserHelper::undef)//
-                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_TEMPERATURE, trayType));
-        parseDecimalType(vtTray.trayTime())//
-                .or(StateParserHelper::undef)//
-                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_TRAY_TIME, trayType));
-        parseStringType(vtTray.bedTempType())//
-                .or(StateParserHelper::undef)//
-                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_BED_TEMPERATURE_TYPE, trayType));
-        parseTemperatureType(vtTray.bedTemp())//
-                .or(StateParserHelper::undef)//
-                .ifPresent(trayType -> updateState(CHANNEL_VTRAY_BED_TEMPERATURE, trayType));
+    private void updateState(PrinterChannel channel, Report.Print print) {
+        var vtray = Optional.of(print).map(Report.Print::vtTray);
+        Optional<State> state = switch (channel) {
+            // temper
+            case CHANNEL_NOZZLE_TEMPERATURE -> parseTemperatureType(print.nozzleTemper());
+            case CHANNEL_NOZZLE_TARGET_TEMPERATURE -> parseTemperatureType(print.nozzleTargetTemper());
+            case CHANNEL_BED_TEMPERATURE -> parseTemperatureType(print.bedTemper());
+            case CHANNEL_BED_TARGET_TEMPERATURE -> parseTemperatureType(print.bedTargetTemper());
+            case CHANNEL_CHAMBER_TEMPERATURE -> parseTemperatureType(print.chamberTemper());
+            // string
+            case CHANNEL_MC_PRINT_STAGE -> parseStringType(print.mcPrintStage());
+            case CHANNEL_BED_TYPE -> parseStringType(print.bedType());
+            case CHANNEL_GCODE_FILE -> parseStringType(print.gcodeFile());
+            case CHANNEL_GCODE_STATE -> parseStringType(print.gcodeState());
+            case CHANNEL_REASON -> parseStringType(print.reason());
+            case CHANNEL_RESULT -> parseStringType(print.result());
+            // percents
+            case CHANNEL_MC_PERCENT -> parsePercentType(print.mcPercent());
+            case CHANNEL_GCODE_FILE_PREPARE_PERCENT -> parsePercentType(print.gcodeFilePreparePercent());
+            // time
+            case CHANNEL_MC_REMAINING_TIME -> parseTimeMinutes(print.mcRemainingTime());
+            // wifi
+            case CHANNEL_WIFI_SIGNAL -> parseWifiChannel(print.wifiSignal());
+            // decimal
+            case CHANNEL_BIG_FAN_1_SPEED -> parseDecimalType(print.bigFan1Speed());
+            case CHANNEL_BIG_FAN_2_SPEED -> parseDecimalType(print.bigFan2Speed());
+            case CHANNEL_HEAT_BREAK_FAN_SPEED -> parseDecimalType(print.heatbreakFanSpeed());
+            case CHANNEL_LAYER_NUM -> parseDecimalType(print.layerNum());
+            // boolean
+            case CHANNEL_TIME_LAPS -> parseOnOffType(print.timelapse());
+            case CHANNEL_USE_AMS -> parseOnOffType(print.useAms());
+            case CHANNEL_VIBRATION_CALIBRATION -> parseOnOffType(print.vibrationCali());
+            // lights
+            case CHANNEL_LED_CHAMBER_LIGHT -> parseChamberLightType(print.lightsReport());
+            case CHANNEL_LED_WORK_LIGHT -> parseWorkLightType(print.lightsReport());
+            // vtray
+            case CHANNEL_VTRAY_TRAY_TYPE -> //
+                vtray.map(Report.Print.VtTray::trayType)//
+                        .flatMap(StateParserHelper::parseTrayType)//
+                        .or(StateParserHelper::undef);
+            case CHANNEL_VTRAY_TRAY_COLOR -> //
+                vtray.map(Report.Print.VtTray::trayColor)//
+                        .map(StateParserHelper::parseColor)//
+                        .or(StateParserHelper::undef);
+            case CHANNEL_VTRAY_NOZZLE_TEMPERATURE_MAX -> //
+                vtray.map(Report.Print.VtTray::nozzleTempMax)//
+                        .flatMap(StateParserHelper::parseTemperatureType)//
+                        .or(StateParserHelper::undef);
+            case CHANNEL_VTRAY_NOZZLE_TEMPERATURE_MIN -> //
+                vtray.map(Report.Print.VtTray::nozzleTempMin)//
+                        .flatMap(StateParserHelper::parseTemperatureType)//
+                        .or(StateParserHelper::undef);
+            case CHANNEL_VTRAY_REMAIN -> //
+                vtray.map(Report.Print.VtTray::remain)//
+                        .flatMap(StateParserHelper::parsePercentType)//
+                        .or(StateParserHelper::undef);
+            case CHANNEL_VTRAY_K -> //
+                vtray.map(Report.Print.VtTray::k)//
+                        .flatMap(StateParserHelper::parseDecimalType)//
+                        .or(StateParserHelper::undef);
+            case CHANNEL_VTRAY_N -> //
+                vtray.map(Report.Print.VtTray::n)//
+                        .flatMap(StateParserHelper::parseDecimalType)//
+                        .or(StateParserHelper::undef);
+            case CHANNEL_VTRAY_TAG_UUID -> //
+                vtray.map(Report.Print.VtTray::trayUuid)//
+                        .flatMap(StateParserHelper::parseStringType)//
+                        .or(StateParserHelper::undef);
+            case CHANNEL_VTRAY_TRAY_ID_NAME -> //
+                vtray.map(Report.Print.VtTray::trayIdName)//
+                        .flatMap(StateParserHelper::parseStringType)//
+                        .or(StateParserHelper::undef);
+            case CHANNEL_VTRAY_TRAY_INFO_IDX -> //
+                vtray.map(Report.Print.VtTray::trayInfoIdx)//
+                        .flatMap(StateParserHelper::parseStringType)//
+                        .or(StateParserHelper::undef);
+            case CHANNEL_VTRAY_TRAY_SUB_BRANDS -> //
+                vtray.map(Report.Print.VtTray::traySubBrands)//
+                        .flatMap(StateParserHelper::parseStringType)//
+                        .or(StateParserHelper::undef);
+            case CHANNEL_VTRAY_TRAY_WEIGHT -> //
+                vtray.map(Report.Print.VtTray::trayWeight)//
+                        .flatMap(StateParserHelper::parseDecimalType)//
+                        .or(StateParserHelper::undef);
+            case CHANNEL_VTRAY_TRAY_DIAMETER -> //
+                vtray.map(Report.Print.VtTray::trayDiameter)//
+                        .flatMap(StateParserHelper::parseDecimalType)//
+                        .or(StateParserHelper::undef);
+            case CHANNEL_VTRAY_TRAY_TEMPERATURE -> //
+                vtray.map(Report.Print.VtTray::trayTemp)//
+                        .flatMap(StateParserHelper::parseTemperatureType)//
+                        .or(StateParserHelper::undef);
+            case CHANNEL_VTRAY_TRAY_TIME -> //
+                vtray.map(Report.Print.VtTray::trayTime)//
+                        .flatMap(StateParserHelper::parseDecimalType)//
+                        .or(StateParserHelper::undef);
+            case CHANNEL_VTRAY_BED_TEMPERATURE_TYPE -> //
+                vtray.map(Report.Print.VtTray::bedTempType)//
+                        .flatMap(StateParserHelper::parseStringType)//
+                        .or(StateParserHelper::undef);
+            case CHANNEL_VTRAY_BED_TEMPERATURE -> //
+                vtray.map(Report.Print.VtTray::bedTemp)//
+                        .flatMap(StateParserHelper::parseTemperatureType)//
+                        .or(StateParserHelper::undef);
+            // ams
+            case CHANNEL_AMS_TRAY_NOW -> //
+                Optional.of(print)//
+                        .map(Report.Print::ams)//
+                        .map(Report.Print.Ams::trayNow)//
+                        .flatMap(TrayHelper::findStateForTrayLoaded);
+            case CHANNEL_AMS_TRAY_PREVIOUS -> //
+                Optional.of(print)//
+                        .map(Report.Print::ams)//
+                        .map(Report.Print.Ams::trayPre)//
+                        .flatMap(TrayHelper::findStateForTrayLoaded);
+            // misc
+            case CHANNEL_SPEED_LEVEL -> parseSpeedLevel(print.spdLvl());
+            case CHANNEL_END_DATE -> //
+                Optional.ofNullable(print.mcRemainingTime())//
+                        .map(time -> ZonedDateTime.now().plusMinutes(time))//
+                        .map(StateParserHelper::parseDateTimeType);
+            // surrogate channels
+            case CHANNEL_COMMAND -> Optional.empty();
+            case CHANNEL_CAMERA_IMAGE -> Optional.empty();
+            case CHANNEL_CAMERA_RECORD -> Optional.empty();
+        };
+        state.ifPresent(s -> updateState(channel, s));
     }
 
     private void updateAms(Map<String, Object> amsMap) {
@@ -446,68 +469,6 @@ public class PrinterHandler extends BaseBridgeHandler
                 .stream()//
                 .flatMap(identity())//
                 .forEach(ams -> ams.updateAms(amsMap));
-    }
-
-    private void updateCelsiusState(BambuLabBindingConstants.Channel channelId, @Nullable Double temperature) {
-        if (temperature == null) {
-            return;
-        }
-        updateState(channelId, new QuantityType<>(temperature, CELSIUS));
-    }
-
-    private void updateStringState(BambuLabBindingConstants.Channel channelId, @Nullable String string) {
-        if (string == null) {
-            return;
-        }
-        updateState(channelId, new StringType(string));
-    }
-
-    private void updateDecimalState(BambuLabBindingConstants.Channel channelId, @Nullable Number number) {
-        if (number == null) {
-            return;
-        }
-        updateState(channelId, new DecimalType(number));
-    }
-
-    private void updateDecimalState(BambuLabBindingConstants.Channel channelId, @Nullable String number) {
-        if (number == null) {
-            return;
-        }
-        try {
-            var state = new DecimalType(Double.parseDouble(number));
-            updateState(channelId, state);
-        } catch (NumberFormatException e) {
-            logger.debug("Cannot parse decimal number {}", number, e);
-            updateState(channelId, UNDEF);
-        }
-    }
-
-    private void updateBooleanState(BambuLabBindingConstants.Channel channelId, @Nullable Boolean bool) {
-        if (bool == null) {
-            return;
-        }
-        updateState(channelId, OnOffType.from(bool));
-    }
-
-    private void updatePercentState(BambuLabBindingConstants.Channel channelId, @Nullable Integer integer) {
-        parsePercentType(integer).ifPresent(state -> updateState(channelId, state));
-    }
-
-    private void updatePercentState(BambuLabBindingConstants.Channel channelId, @Nullable String integer) {
-        parsePercentType(integer).ifPresent(state -> updateState(channelId, state));
-    }
-
-    private void updateLightState(String lightName, BambuLabBindingConstants.Channel channel,
-            @Nullable List<Map<String, String>> lights) {
-        Optional.ofNullable(lights)//
-                .stream()//
-                .flatMap(Collection::stream)//
-                .filter(map -> lightName.equalsIgnoreCase(map.get("node")))//
-                .map(map -> map.get("mode"))//
-                .filter(Objects::nonNull)//
-                .map(OnOffType::from)//
-                .findAny()//
-                .ifPresent(command -> updateState(channel, command));
     }
 
     public void sendCommand(String command) {
@@ -528,7 +489,7 @@ public class PrinterHandler extends BaseBridgeHandler
         }
     }
 
-    private void updateState(BambuLabBindingConstants.Channel channelID, State state) {
+    private void updateState(PrinterChannel channelID, State state) {
         updateState(channelID.getName(), state);
     }
 
@@ -559,11 +520,15 @@ public class PrinterHandler extends BaseBridgeHandler
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (!(childHandler instanceof AmsDeviceHandlerFactory ams)) {
+        if (!(childHandler instanceof AmsDeviceHandler ams)) {
             return;
         }
         amses.add(ams);
-        Optional.of(latestPrinterState)//
+        findLatestAms(ams.getAmsNumber()).ifPresent(ams::updateAms);
+    }
+
+    public Optional<Map<String, Object>> findLatestAms(int amsNumber) {
+        return Optional.of(latestPrinterState)//
                 .map(AtomicReference::get)//
                 .map(Report::print).map(Report.Print::ams)//
                 .map(Report.Print.Ams::ams)//
@@ -572,13 +537,12 @@ public class PrinterHandler extends BaseBridgeHandler
                 .filter(map -> map.containsKey("id"))//
                 .filter(map -> map.get("id") != null)//
                 // in code, we are using 1-4 ordering; in API 0-3 ordering is used
-                .filter(map -> parseInt(map.get("id").toString()) + 1 == ams.getAmsNumber())//
-                .forEach(ams::updateAms);
+                .filter(map -> parseInt(map.get("id").toString()) + 1 == amsNumber).findAny();
     }
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        if (!(childHandler instanceof AmsDeviceHandlerFactory ams)) {
+        if (!(childHandler instanceof AmsDeviceHandler ams)) {
             return;
         }
         var removed = amses.remove(ams);
