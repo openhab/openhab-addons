@@ -182,6 +182,14 @@ public class PushsaferAccountHandler extends BaseThingHandler {
         if (DEFAULT_ANSWER != config.answer) {
             builder.withAnswer(config.answer);
         }
+        // add answeroptions if defined
+        if (DEFAULT_ANSWEROPTIONS != config.answeroptions) {
+            builder.withAnswerOptions(config.answeroptions);
+        }
+        // add answerforce if defined
+        if (DEFAULT_ANSWERFORCE != config.answerforce) {
+            builder.withAnswerForce(config.answerforce);
+        }
         // add time2live if defined
         if (DEFAULT_TIME2LIVE != config.time2live) {
             builder.withTime2live(config.time2live);
