@@ -10,24 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.linky.internal;
+package org.openhab.binding.linky.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link LinkyConfiguration} is the class used to match the
+ * The {@link LinkyBridgeWebConfiguration} is the class used to match the
  * thing configuration.
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 @NonNullByDefault
-public class LinkyConfiguration {
+public class LinkyBridgeWebConfiguration extends LinkyBridgeConfiguration {
     public static final String INTERNAL_AUTH_ID = "internalAuthId";
+
     public String username = "";
     public String password = "";
     public String internalAuthId = "";
-    public String timezone = "";
 
+    @Override
     public boolean seemsValid() {
         return !username.isBlank() && !password.isBlank() && !internalAuthId.isBlank();
     }
