@@ -207,8 +207,11 @@ public class TeslascopeHandler extends BaseThingHandler {
             updateState(TeslascopeBindingConstants.CHANNEL_ESTIMATED_BATTERY_RANGE,
                     new QuantityType<>(detailedInformation.chargeState.estBatteryRange, ImperialUnits.MILE));
             // charge_enable_request isn't the right flag to determine if car is charging or not
-            updateState(TeslascopeBindingConstants.CHANNEL_CHARGE, OnOffType
-                    .from("DetailedChargeStateCharging".equals(detailedInformation.chargeState.detailedChargeState)));
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGE,
+                    OnOffType.from(
+                            ("DetailedChargeStateCharging".equals(detailedInformation.chargeState.detailedChargeState))
+                                    || "DetailedChargeStateStarting"
+                                            .equals(detailedInformation.chargeState.detailedChargeState)));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_ENERGY_ADDED,
                     new QuantityType<>(detailedInformation.chargeState.chargeEnergyAdded, Units.KILOWATT_HOUR));
             updateState(CHANNEL_CHARGE_LIMIT_SOC, new DecimalType(detailedInformation.chargeState.chargeLimitSoc));
