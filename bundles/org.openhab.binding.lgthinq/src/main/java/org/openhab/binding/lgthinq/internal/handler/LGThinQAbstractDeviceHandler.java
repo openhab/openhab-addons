@@ -107,7 +107,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     private String bridgeId = "";
     private ThingStatus lastThingStatus = ThingStatus.UNKNOWN;
     private final Runnable queuedCommandExecutor = () -> {
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
             AsyncCommandParams params;
             try {
                 params = commandBlockQueue.take();
@@ -121,7 +121,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 String channelUid = getSimpleChannelUID(params.channelUID);
                 if (CHANNEL_AC_POWER_ID.equals(channelUid)) {
                     // if processed command come from POWER channel, then force updateDeviceChannels immediatly
-                    // this is importante to analise if the poolings need to be changed in time.
+                    // this is important to analise if the polling needs to be changed in time.
                     updateThingStateFromLG();
                 } else if (CHANNEL_EXTENDED_INFO_COLLECTOR_ID.equals(channelUid)) {
                     if (OnOffType.ON.equals(params.command)) {
@@ -147,6 +147,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                         params.command, params.channelUID, e);
             }
         }
+        getLogger().debug("Finishing QueueCommandExecutor thread...");
     };
 
     public LGThinQAbstractDeviceHandler(Thing thing, LGThinQStateDescriptionProvider stateDescriptionProvider,
@@ -178,10 +179,6 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             throw new IllegalStateException("Snapshot class has no parameterized type. It is most likely a bug!");
         }
         return (Class<S>) genSupClass.getActualTypeArguments()[1];
-    }
-
-    private LGThinQBridgeHandler getAccountBridgeHandler() {
-        return Objects.requireNonNull(this.account, "BridgeHandler not initialized. It is most likely a bug");
     }
 
     private void normalizeConfigurationsAndProperties() {
@@ -383,11 +380,12 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                         e);
             }
             // registry this thing to the bridge
+            var account = this.account;
             if (account == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/error.communication-error.no-bridge-set");
             } else {
-                getAccountBridgeHandler().registryListenerThing(this);
+                account.registryListenerThing(this);
                 if (bridgeStatus == null) {
                     updateStatus(ThingStatus.UNINITIALIZED);
                 } else {
@@ -604,22 +602,31 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     }
 
     protected void stopThingStatePolling() {
-        ScheduledFuture<?> thingStatePollingJob = this.thingStatePollingJob;
-        if (!(thingStatePollingJob == null || thingStatePollingJob.isDone())) {
-            getLogger().debug("Stopping LG thinq polling for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
-            thingStatePollingJob.cancel(true);
+        try {
+            ScheduledFuture<?> thingStatePollingJob = this.thingStatePollingJob;
+
+            if (!(thingStatePollingJob == null || thingStatePollingJob.isDone())) {
+                getLogger().debug("Stopping LG thinq polling for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
+                thingStatePollingJob.cancel(true);
+            }
+            this.thingStatePollingJob = null;
+        } catch (Exception ex) {
+            getLogger().warn("Unexpected error trying to cancel state polling job.");
         }
-        this.thingStatePollingJob = null;
     }
 
     private void stopExtraInfoCollectorPolling() {
-        ScheduledFuture<?> extraInfoCollectorPollingJob = this.extraInfoCollectorPollingJob;
-        if (extraInfoCollectorPollingJob != null && !extraInfoCollectorPollingJob.isDone()) {
-            getLogger().debug("Stopping Energy Collector for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
-            extraInfoCollectorPollingJob.cancel(true);
+        try {
+            ScheduledFuture<?> extraInfoCollectorPollingJob = this.extraInfoCollectorPollingJob;
+            if (extraInfoCollectorPollingJob != null && !extraInfoCollectorPollingJob.isDone()) {
+                getLogger().debug("Stopping Energy Collector for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
+                extraInfoCollectorPollingJob.cancel(true);
+            }
+            resetExtraInfoChannels();
+            this.extraInfoCollectorPollingJob = null;
+        } catch (Exception ex) {
+            getLogger().warn("Unexpected error trying to cancel extra info polling job.");
         }
-        resetExtraInfoChannels();
-        this.extraInfoCollectorPollingJob = null;
     }
 
     protected void startThingStatePolling() {
@@ -732,9 +739,9 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     @Override
     public void dispose() {
         getLogger().debug("Disposing Thinq Thing {}", getDeviceId());
-
+        var account = this.account;
         if (account != null) {
-            getAccountBridgeHandler().unRegistryListenerThing(this);
+            account.unRegistryListenerThing(this);
         }
 
         stopThingStatePolling();
