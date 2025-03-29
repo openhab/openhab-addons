@@ -30,7 +30,7 @@ import org.openhab.core.library.types.PercentType;
  */
 @NonNullByDefault
 public class WLedHelper {
-    public static HSBType parseToHSBType(String message, int brightness) {
+    public static HSBType parseToHSBType(String message) {
         // example message rgb in array brackets [255.0, 255.0, 255.0]
         List<String> colors = Arrays.asList(message.replaceAll("\\[|\\]", "").split("\\s*,\\s*"));
         try {
