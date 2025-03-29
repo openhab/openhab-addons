@@ -28,7 +28,7 @@
 			<property name="deviceOSReleaseVersion"/>
 			<property name="thingTypeVersion">1</property>
 		</properties>
-		<representation-property>deviceId</representation-property>
+		<representation-property>host</representation-property>
 
 
 		<config-description-ref uri="thing-type:lgwebos:WebOSTV"/>
