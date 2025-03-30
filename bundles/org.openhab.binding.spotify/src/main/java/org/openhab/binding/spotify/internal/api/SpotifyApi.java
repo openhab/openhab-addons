@@ -47,6 +47,9 @@ import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.media.MediaService;
+import org.openhab.core.media.model.MediaPlayList;
+import org.openhab.core.media.model.MediaPlayLists;
+import org.openhab.core.media.model.MediaSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -227,10 +230,17 @@ public class SpotifyApi {
         final Playlists playlists = request(GET, SPOTIFY_API_URL + "/playlists?offset" + offset + "&limit=" + limit, "",
                 Playlists.class);
 
+        MediaSource mediaSource = new MediaSource("Spotify");
+        mediaService.registerMediaEntry(mediaSource);
+
+        MediaPlayLists mediaPlayLists = new MediaPlayLists();
+        mediaSource.addChild("Playlists", mediaPlayLists);
+
         if (playlists != null && playlists.getItems() != null) {
             List<Playlist> list = playlists.getItems();
             for (Playlist pl : list) {
-                mediaService.registerPlayList(pl.getName());
+                MediaPlayList mediaPlayList = new MediaPlayList(pl.getName());
+                mediaPlayLists.addChild(mediaPlayList.getName(), mediaPlayList);
             }
         }
         return playlists == null || playlists.getItems() == null ? Collections.emptyList() : playlists.getItems();
