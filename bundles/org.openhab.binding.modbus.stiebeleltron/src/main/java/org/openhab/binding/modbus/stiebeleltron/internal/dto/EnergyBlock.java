@@ -16,6 +16,7 @@ package org.openhab.binding.modbus.stiebeleltron.internal.dto;
  * Dto class for the Energy Block
  *
  * @author Paul Frank - Initial contribution
+ * @author Thomas Burri - Extending by values for NHZ of a WPM3 compatible heat pump
  *
  */
 public class EnergyBlock {
@@ -33,4 +34,10 @@ public class EnergyBlock {
     public int consumptionWaterToday;
     public int consumptionWaterTotalLow;
     public int consumptionWaterTotalHigh;
+
+    public int productionNhzHeatingTotalLow;
+    public int productionNhzHeatingTotalHigh;
+
+    public int productionNhzHotwaterTotalLow;
+    public int productionNhzHotwaterTotalHigh;
 }
