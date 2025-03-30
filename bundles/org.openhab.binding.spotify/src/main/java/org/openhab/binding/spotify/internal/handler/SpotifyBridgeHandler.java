@@ -60,6 +60,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.media.MediaService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -117,6 +118,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     private final SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider;
     private final ChannelUID devicesChannelUID;
     private final ChannelUID playlistsChannelUID;
+    private final MediaService mediaService;
 
     // Field members assigned in initialize method
     private @NonNullByDefault({}) Future<?> pollingFuture;
@@ -139,11 +141,12 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     private int imageChannelAlbumImageUrlIndex;
 
     public SpotifyBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient,
-            SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider) {
+            SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider, MediaService mediaService) {
         super(bridge);
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClient;
         this.spotifyDynamicStateDescriptionProvider = spotifyDynamicStateDescriptionProvider;
+        this.mediaService = mediaService;
         devicesChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_DEVICES);
         playlistsChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_PLAYLISTS);
     }
@@ -315,7 +318,9 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         playingContextCache = new ExpiringCache<>(expiringPeriod, spotifyApi::getPlayerInfo);
         final int offset = getIntChannelParameter(CHANNEL_PLAYLISTS, CHANNEL_PLAYLISTS_OFFSET, 0);
         final int limit = getIntChannelParameter(CHANNEL_PLAYLISTS, CHANNEL_PLAYLISTS_LIMIT, 20);
-        playlistCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getPlaylists(offset, limit));
+
+        playlistCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS,
+                () -> spotifyApi.getPlaylists(mediaService, offset, limit));
         devicesCache = new ExpiringCache<>(expiringPeriod, spotifyApi::getDevices);
 
         // Start with update status by calling Spotify. If no credentials available no polling should be started.

@@ -12,11 +12,8 @@
  */
 package org.openhab.binding.spotify.internal.api;
 
-import static org.eclipse.jetty.http.HttpMethod.GET;
-import static org.eclipse.jetty.http.HttpMethod.POST;
-import static org.eclipse.jetty.http.HttpMethod.PUT;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.SPOTIFY_API_PLAYER_URL;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.SPOTIFY_API_URL;
+import static org.eclipse.jetty.http.HttpMethod.*;
+import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -49,6 +46,7 @@ import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.media.MediaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -225,10 +223,16 @@ public class SpotifyApi {
     /**
      * @return Returns the playlists of the user.
      */
-    public List<Playlist> getPlaylists(int offset, int limit) {
+    public List<Playlist> getPlaylists(MediaService mediaService, int offset, int limit) {
         final Playlists playlists = request(GET, SPOTIFY_API_URL + "/playlists?offset" + offset + "&limit=" + limit, "",
                 Playlists.class);
 
+        if (playlists != null && playlists.getItems() != null) {
+            List<Playlist> list = playlists.getItems();
+            for (Playlist pl : list) {
+                mediaService.registerPlayList(pl.getName());
+            }
+        }
         return playlists == null || playlists.getItems() == null ? Collections.emptyList() : playlists.getItems();
     }
 
