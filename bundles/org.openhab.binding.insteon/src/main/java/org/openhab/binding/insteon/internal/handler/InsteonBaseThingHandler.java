@@ -317,6 +317,11 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
                 .forEach(this::channelLinked);
     }
 
+    protected void unlinkChannels() {
+        getThing().getChannels().stream().map(Channel::getUID).filter(channelHandlers::containsKey)
+                .forEach(this::channelUnlinked);
+    }
+
     @Override
     public void refresh() {
         InsteonModem modem = getModem();
