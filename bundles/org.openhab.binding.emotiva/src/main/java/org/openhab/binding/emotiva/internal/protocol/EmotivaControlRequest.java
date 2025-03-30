@@ -16,9 +16,8 @@ import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.*;
 import static org.openhab.binding.emotiva.internal.EmotivaCommandHelper.clamp;
 import static org.openhab.binding.emotiva.internal.EmotivaCommandHelper.volumePercentageToDecibel;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaCommandType.*;
+import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands.none;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaDataType.FREQUENCY_HERTZ;
-
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.emotiva.internal.EmotivaProcessorState;
@@ -168,16 +167,16 @@ public class EmotivaControlRequest {
             case NONE -> {
                 switch (channel) {
                     case CHANNEL_TUNER_BAND -> {
-                        return matchToCommandMap(ohCommand, MAP_TUNER_BANDS);
+                        return getDTOFromCommandInMap(ohCommand, MAP_TUNER_BANDS);
                     }
                     case CHANNEL_TUNER_CHANNEL_SELECT -> {
-                        return matchToCommandMap(ohCommand, MAP_TUNER_CHANNELS);
+                        return getDTOFromCommandInMap(ohCommand, MAP_TUNER_CHANNELS);
                     }
                     case CHANNEL_SOURCE -> {
-                        return matchToCommandMap(ohCommand, MAP_SOURCES_MAIN_ZONE);
+                        return getDTOFromCommandInMap(ohCommand, MAP_SOURCES_MAIN_ZONE);
                     }
                     case CHANNEL_ZONE2_SOURCE -> {
-                        return matchToCommandMap(ohCommand, MAP_SOURCES_ZONE_2);
+                        return getDTOFromCommandInMap(ohCommand, MAP_SOURCES_ZONE_2);
                     }
                     default -> {
                         logger.debug(
@@ -325,21 +324,19 @@ public class EmotivaControlRequest {
         }
     }
 
-    private EmotivaControlDTO matchToCommandMap(Command ohCommand, String mapName) {
-        if (ohCommand instanceof StringType value) {
-            Map<EmotivaControlCommands, String> commandMap = state.getCommandMap(mapName);
-            for (EmotivaControlCommands command : commandMap.keySet()) {
-                String map = commandMap.get(command);
-                if (map != null && map.equals(value.toString())) {
-                    return EmotivaControlDTO.create(EmotivaControlCommands.matchToInput(command.toString()));
-                } else if (command.name().equalsIgnoreCase(value.toString())) {
-                    return EmotivaControlDTO.create(command);
-                }
+    public EmotivaControlDTO getDTOFromCommandInMap(Command ohCommand, String mapName) {
+        if (ohCommand instanceof StringType ohCommandValue) {
+            EmotivaControlCommands command = EmotivaControlCommands.matchFromSourceInput(ohCommandValue.toString(),
+                    state.getCommandMap(mapName));
+            if (command.equals(none)) {
+                logger.debug("Could not match OH command {}:{} with value '{}' to '{}' map, no matching command",
+                        channel, ohCommand.getClass().getSimpleName(), ohCommand.toFullString(), mapName);
             }
+            return EmotivaControlDTO.create(command);
+        } else {
+            logger.debug("Could not match OH command {}:{} with value '{}' to '{}' map , not a OH StringType", channel,
+                    ohCommand.getClass().getSimpleName(), ohCommand.toFullString(), mapName);
         }
-        logger.debug(
-                "OH command {}:{} mapped to Emotiva Command type {} could not be matched to a Emotiva control command, not a OH String type",
-                channel, ohCommand.getClass().getSimpleName(), NONE);
         return EmotivaControlDTO.create(EmotivaControlCommands.none);
     }
 
@@ -514,7 +511,6 @@ public class EmotivaControlRequest {
         return "EmotivaControlRequest{" + "name='" + name + '\'' + ", dataType=" + dataType + ", channel='" + channel
                 + '\'' + ", defaultCommand=" + defaultCommand + ", setCommand=" + setCommand + ", onCommand="
                 + onCommand + ", offCommand=" + offCommand + ", upCommand=" + upCommand + ", downCommand=" + downCommand
-                + ", maxValue=" + maxValue + ", minValue=" + minValue + ", state=" + state + ", protocolVersion="
-                + protocolVersion + '}';
+                + ", maxValue=" + maxValue + ", minValue=" + minValue + ", protocolVersion=" + protocolVersion + '}';
     }
 }

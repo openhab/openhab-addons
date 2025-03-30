@@ -24,11 +24,14 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands;
+import org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTagGroup;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags;
 import org.openhab.core.types.State;
 
@@ -44,6 +47,7 @@ public class EmotivaProcessorState {
 
     private EnumMap<EmotivaControlCommands, String> sourcesMainZone;
     private EnumMap<EmotivaControlCommands, String> sourcesZone2;
+    private final Set<EmotivaSubscriptionTagGroup> subscriptions = new HashSet<>();
     private final EnumMap<EmotivaSubscriptionTags, String> modes;
     private Instant lastSeen = Instant.EPOCH;
 
@@ -137,8 +141,8 @@ public class EmotivaProcessorState {
         channelStateMap.put(channel, state);
     }
 
-    public void updateSourcesMainZone(EmotivaControlCommands command, String value) {
-        sourcesMainZone.put(command, value);
+    public void updateSourcesMainZone(EmotivaControlCommands command, String label) {
+        sourcesMainZone.put(command, label.trim());
     }
 
     public void updateModes(EmotivaSubscriptionTags tag, String value) {
@@ -155,5 +159,17 @@ public class EmotivaProcessorState {
 
     public Instant getLastSeen() {
         return lastSeen;
+    }
+
+    public Set<EmotivaSubscriptionTagGroup> getSubscriptionsTagGroups() {
+        return subscriptions;
+    }
+
+    public void updateSubscribedTagGroups(Set<EmotivaSubscriptionTagGroup> toAddSubscriptions) {
+        subscriptions.addAll(toAddSubscriptions);
+    }
+
+    public void updateUnsubscribedTagGroups(Set<EmotivaSubscriptionTagGroup> toRemoveSubscriptions) {
+        subscriptions.removeAll(toRemoveSubscriptions);
     }
 }

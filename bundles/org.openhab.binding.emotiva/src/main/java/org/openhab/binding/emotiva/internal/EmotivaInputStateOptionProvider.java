@@ -28,13 +28,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags;
+import org.openhab.core.events.EventPublisher;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateOption;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,12 +51,23 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Initial contribution
  * @author Espen Fossen - Adapted to Emotiva binding
  */
+@Component(service = { DynamicStateDescriptionProvider.class, EmotivaInputStateOptionProvider.class })
 @NonNullByDefault
-public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvider implements ThingHandlerService {
+public class EmotivaInputStateOptionProvider extends BaseDynamicStateDescriptionProvider
+        implements ThingHandlerService {
 
-    private final Logger logger = LoggerFactory.getLogger(InputStateOptionProvider.class);
+    private final Logger logger = LoggerFactory.getLogger(EmotivaInputStateOptionProvider.class);
 
     private @Nullable EmotivaProcessorHandler handler;
+
+    @Activate
+    public EmotivaInputStateOptionProvider(final @Reference EventPublisher eventPublisher,
+            final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry,
+            final @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+        this.eventPublisher = eventPublisher;
+        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
+        this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
+    }
 
     @Override
     public void setThingHandler(ThingHandler handler) {
@@ -73,9 +91,9 @@ public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvide
         EmotivaProcessorHandler localHandler = handler;
         if (localHandler != null) {
             if (channel.getUID().getId().equals(CHANNEL_SOURCE)) {
-                setStateOptionsForSource(channel, options, localHandler.getSourcesMainZone());
+                options.addAll(gatherStateOptionsForSource(channel, localHandler.getSourcesMainZone()));
             } else if (channel.getUID().getId().equals(CHANNEL_ZONE2_SOURCE)) {
-                setStateOptionsForSource(channel, options, localHandler.getSourcesZone2());
+                options.addAll(gatherStateOptionsForSource(channel, localHandler.getSourcesZone2()));
             } else if (channel.getUID().getId().equals(CHANNEL_MODE)) {
                 EnumMap<EmotivaSubscriptionTags, String> modes = localHandler.getModes();
                 Collection<EmotivaSubscriptionTags> modeKeys = modes.keySet();
@@ -83,24 +101,26 @@ public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvide
                     options.add(new StateOption(modeKey.name(), modes.get(modeKey)));
                 }
                 logger.trace("Updating OH channel '{}' with state options '{}'", CHANNEL_MODE, options);
-                setStateOptions(channel.getUID(), options);
             }
+            setStateOptions(channel.getUID(), options);
         }
-
         return super.getStateDescription(channel, original, locale);
     }
 
-    private void setStateOptionsForSource(Channel channel, List<StateOption> options,
-            EnumMap<EmotivaControlCommands, String> sources) {
-        Collection<EmotivaControlCommands> sourceKeys = sources.keySet();
-        for (EmotivaControlCommands sourceKey : sourceKeys) {
-            if (sourceKey.name().startsWith(EMOTIVA_SOURCE_COMMAND_PREFIX)) {
-                options.add(new StateOption(sourceKey.name(), sources.get(sourceKey)));
+    List<StateOption> gatherStateOptionsForSource(Channel channel,
+            EnumMap<EmotivaControlCommands, String> sourcesWithUserLabels) {
+        List<StateOption> options = new ArrayList<>();
+        Collection<EmotivaControlCommands> sourceCommands = sourcesWithUserLabels.keySet();
+        for (EmotivaControlCommands command : sourceCommands) {
+            // If command name starts with prefix "source_", add the user provided label, else use default label from
+            // command.
+            if (command.name().startsWith(EMOTIVA_SOURCE_COMMAND_PREFIX)) {
+                options.add(new StateOption(command.name(), sourcesWithUserLabels.get(command)));
             } else {
-                options.add(new StateOption(sourceKey.name(), sourceKey.getLabel()));
+                options.add(new StateOption(command.name(), command.getLabel()));
             }
         }
         logger.trace("Updating OH channel '{}' with state options '{}'", channel.getUID().getId(), options);
-        setStateOptions(channel.getUID(), options);
+        return options;
     }
 }

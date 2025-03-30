@@ -45,6 +45,27 @@
 			<default>7100</default>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="activateFrontBar" type="boolean" required="false">
+			<context>feature</context>
+			<label>Enable Front Bar Channels</label>
+			<description>Subscribe to notification related to front bar</description>
+			<default>false</default>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="activateOSDMenu" type="boolean" required="false">
+			<context>feature</context>
+			<label>Enable Menu Channels</label>
+			<description>Subscribe to notification related to OSD menu</description>
+			<default>false</default>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="activateZone2" type="boolean" required="false">
+			<context>feature</context>
+			<label>Enable Zone 2 Channels</label>
+			<description>Subscribe to notification related to zone 2</description>
+			<default>false</default>
+			<advanced>false</advanced>
+		</parameter>
 		<parameter name="protocolVersion" type="text" required="false">
 			<context>protocol-revision</context>
 			<label>Protocol Version</label>
