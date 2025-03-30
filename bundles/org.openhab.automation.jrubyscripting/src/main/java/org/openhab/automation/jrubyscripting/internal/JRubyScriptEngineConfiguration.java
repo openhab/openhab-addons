@@ -220,7 +220,14 @@ public class JRubyScriptEngineConfiguration {
             gemfilePath = HOME_PATH_ABS.resolve(gemfilePath);
         }
 
-        return gemfilePath.toFile();
+        File gemfile = gemfilePath.toFile();
+        if (gemfile.isDirectory()) {
+            gemfile = gemfilePath.resolve("Gemfile").toFile();
+            LOGGER.warn(
+                    "The Gemfile setting is set to '{}' which is a directory. It should be set to a file. Setting it to '{}'",
+                    gemfilePath, gemfile);
+        }
+        return gemfile;
     }
 
     /**

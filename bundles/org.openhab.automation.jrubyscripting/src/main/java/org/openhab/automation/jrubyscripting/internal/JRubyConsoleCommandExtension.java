@@ -354,7 +354,8 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 end
                 """;
 
-        // We need to set user.dir because bundle init creates the Gemfile there (the current directory)
+        // We need to set user.dir because bundle init creates the Gemfile there
+        // and ignores BUNDLE_GEMFILE environment variable
         String gemfileDir = gemfile.getParent();
         if (gemfileDir == null) {
             console.println("Error: Unable to determine Gemfile directory.");
