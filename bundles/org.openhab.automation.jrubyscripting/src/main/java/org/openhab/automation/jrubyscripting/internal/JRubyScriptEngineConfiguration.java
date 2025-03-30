@@ -47,7 +47,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class JRubyScriptEngineConfiguration {
 
     public static final Path HOME_PATH = Path.of("automation", "ruby");
-    private static final Path HOME_PATH_ABS = Path.of(OpenHAB.getConfigFolder()).resolve(HOME_PATH);
+    public static final Path HOME_PATH_ABS = Path.of(OpenHAB.getConfigFolder()).resolve(HOME_PATH);
     private static final Path DEFAULT_GEMFILE_PATH = HOME_PATH_ABS.resolve("Gemfile");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JRubyScriptEngineConfiguration.class);
@@ -82,7 +82,7 @@ public class JRubyScriptEngineConfiguration {
     private JRubyScriptingConfiguration configuration = new JRubyScriptingConfiguration();
 
     private String specificGemHome = "";
-    private @Nullable String bundleGemfile = null; // The path to the Gemfile if it exists, otherwise null
+    private File bundleGemfile = DEFAULT_GEMFILE_PATH.toFile();
 
     /**
      * Update configuration
@@ -97,7 +97,7 @@ public class JRubyScriptEngineConfiguration {
         // leaving the default values in place when it's null or not set in the map.
         configuration = new Configuration(config).as(JRubyScriptingConfiguration.class);
 
-        bundleGemfile = resolveGemfilePath();
+        bundleGemfile = resolveGemfile();
         specificGemHome = resolveSpecificGemHome();
         ensureGemHomeExists(specificGemHome);
 
@@ -112,7 +112,7 @@ public class JRubyScriptEngineConfiguration {
         StringWriter errorWriter = new StringWriter();
         context.setWriter(writer);
         context.setErrorWriter(errorWriter);
-        if (bundleGemfile != null) {
+        if (bundleGemfile.exists()) {
             bundlerInit(engine, configuration.check_update);
         } else {
             configureGems(engine, configuration.check_update);
@@ -211,7 +211,7 @@ public class JRubyScriptEngineConfiguration {
         return true;
     }
 
-    private @Nullable String resolveGemfilePath() {
+    private File resolveGemfile() {
         Path gemfilePath = Path.of(configuration.bundle_gemfile);
 
         if (gemfilePath.equals(Path.of(""))) {
@@ -220,19 +220,15 @@ public class JRubyScriptEngineConfiguration {
             gemfilePath = HOME_PATH_ABS.resolve(gemfilePath);
         }
 
-        if (gemfilePath.toFile().exists()) {
-            return gemfilePath.toString();
-        }
-
-        return null;
+        return gemfilePath.toFile();
     }
 
     /**
      * Returns the absolute path to the Gemfile.
      *
-     * @return the path to the Gemfile or null if no actual Gemfile is found.
+     * @return the path to the Gemfile.
      */
-    public @Nullable String getGemfilePath() {
+    public File getGemfile() {
         return bundleGemfile;
     }
 
@@ -272,7 +268,7 @@ public class JRubyScriptEngineConfiguration {
      * @param engine
      */
     public void bundlerSetup(ScriptEngine engine) {
-        if (bundleGemfile == null) {
+        if (!bundleGemfile.exists()) {
             LOGGER.debug("No Gemfile is found or configured. Skipping Bundler setup.");
             return;
         }
@@ -412,7 +408,9 @@ public class JRubyScriptEngineConfiguration {
     public void configureRubyEnvironment(ScriptEngine scriptEngine) {
         setEnvironmentVariable(scriptEngine, "GEM_HOME", getSpecificGemHome());
         setEnvironmentVariable(scriptEngine, "RUBYLIB", configuration.rubylib);
-        setEnvironmentVariable(scriptEngine, "BUNDLE_GEMFILE", bundleGemfile);
+        if (bundleGemfile.exists()) {
+            setEnvironmentVariable(scriptEngine, "BUNDLE_GEMFILE", bundleGemfile.toString());
+        }
 
         configureRubyLib(scriptEngine);
         disallowExec(scriptEngine);

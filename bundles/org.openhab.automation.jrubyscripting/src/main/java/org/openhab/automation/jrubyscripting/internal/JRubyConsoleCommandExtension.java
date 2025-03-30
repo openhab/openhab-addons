@@ -59,6 +59,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     private final Logger logger = LoggerFactory.getLogger(JRubyConsoleCommandExtension.class);
 
     private final String DEFAULT_CONSOLE_PATH = "openhab/console/";
+    private final String OPENHAB_SCRIPTING_GEM = "gem \"openhab-scripting\", \"~> 5.0\"";
 
     private static final String INFO = "info";
     private static final String CONSOLE = "console";
@@ -171,7 +172,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     }
 
     private void info(Console console) {
-        String gemfile = jRubyScriptEngineFactory.getConfiguration().getGemfilePath();
+        File gemfile = jRubyScriptEngineFactory.getConfiguration().getGemfile();
         final String PRINT_VERSION_NUMBERS = """
                 library_version = defined?(OpenHAB::DSL::VERSION) && OpenHAB::DSL::VERSION
 
@@ -179,7 +180,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 puts "JRuby Scripting Library #{library_version || 'is not installed'}"
                 puts "ENV['GEM_HOME']: #{ENV['GEM_HOME']}"
                 puts "ENV['RUBYLIB']: #{ENV['RUBYLIB']}"
-                    """ + (gemfile == null ? "" : """
+                    """ + (!gemfile.exists() ? "" : """
                 puts "ENV['BUNDLE_GEMFILE']: #{ENV['BUNDLE_GEMFILE']}"
                     """);
 
@@ -213,6 +214,9 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
             }
             console.println(groupLabel);
             parameters.forEach(parameter -> {
+                if (!group.getName().equals(parameter.getGroupName())) {
+                    return;
+                }
                 console.print("  " + parameter.getName() + ": ");
                 String value = config.get(parameter.getName());
                 if (value == null) {
@@ -313,16 +317,26 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     }
 
     synchronized private void bundler(Console console, String[] args) {
-        final String gemfilePath = jRubyScriptEngineFactory.getConfiguration().getGemfilePath();
-        if (gemfilePath == null) {
-            console.println(
-                    "No Gemfile configured. Please set the 'bundle_gemfile' setting in the add-on configuration, and ensure that the Gemfile exists.");
+        final File gemfile = jRubyScriptEngineFactory.getConfiguration().getGemfile();
+        boolean bundle_init = args.length >= 1 && "init".equals(args[0]);
+
+        if (bundle_init && gemfile.exists()) {
+            console.printf("Gemfile '%s' already exists.\n", gemfile.toString());
+            return;
+        } else if (!bundle_init && !gemfile.exists()) {
+            console.printf("""
+                    No Gemfile found. Please ensure the 'bundle_gemfile' setting is correct and the Gemfile exists.
+
+                    To create a new Gemfile '%s', run the command:
+                      jrubyscripting bundle init
+
+                    This will create a Gemfile that includes the openhab helper library in the current directory.
+                    """, gemfile.toString());
             return;
         }
 
-        // we have to split this because we dont want to format the string with ruby '%w' in it
         final String BUNDLER = """
-                require 'jruby'
+                require "jruby"
                 JRuby.runtime.instance_config.update_native_env_enabled = false
 
                 require "bundler"
@@ -340,12 +354,62 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 end
                 """;
 
-        executeWithPlainJRuby(console, engine -> {
-            JRubyScriptEngineConfiguration.setEnvironmentVariable(engine, "BUNDLE_GEMFILE", gemfilePath);
-            engine.put(ScriptEngine.ARGV, args);
-            engine.eval(BUNDLER);
-            return null;
-        });
+        // We need to set user.dir because bundle init creates the Gemfile there (the current directory)
+        String gemfileDir = gemfile.getParent();
+        if (gemfileDir == null) {
+            console.println("Error: Unable to determine Gemfile directory.");
+            console.println("Please check the 'bundle_gemfile' setting in the add-on configuration.");
+            console.println("Current setting: " + gemfile.toString());
+            return;
+        }
+        String originalDir = System.setProperty("user.dir", gemfileDir);
+        try {
+            Object result = executeWithPlainJRuby(console, engine -> {
+                engine.put(ScriptEngine.ARGV, args);
+                return engine.eval(BUNDLER);
+            });
+            logger.debug("Bundler result: {}", result);
+            // A null result indicates a successful creation of Gemfile.
+            // Otherwise, if a Gemfile already exists, it will return `1`
+            if (bundle_init && result == null) {
+                try {
+                    // bundler init always creates a file called "Gemfile".
+                    // if our setting points to any file other than "Gemfile",
+                    // we need to rename the new Gemfile to it
+                    Path newGemfile = Path.of(gemfileDir, "Gemfile");
+                    Path gemfilePath = gemfile.toPath();
+                    if (!newGemfile.equals(gemfilePath)) {
+                        Files.move(newGemfile, gemfilePath);
+                        console.printf("Renamed %s to %s\n", newGemfile.toString(), gemfilePath.toString());
+                    }
+                    if (gemfile.exists()) {
+                        insertHelperLibraryGem(console, gemfile.toPath());
+                    } else {
+                        console.println("Gemfile creation failed.");
+                    }
+                } catch (IOException e) {
+                    console.println("Error: " + e.getMessage());
+                    return;
+                }
+            }
+        } finally {
+            if (originalDir == null) {
+                System.clearProperty("user.dir");
+            } else {
+                System.setProperty("user.dir", originalDir);
+            }
+        }
+    }
+
+    private void insertHelperLibraryGem(Console console, Path gemfilePath) throws IOException {
+        List<String> originalGemfile = Files.readAllLines(gemfilePath);
+        // The Gemfile generated by bundler init contains `# gem "rails"` -> remove it
+        // and add the openHAB scripting gem
+        List<String> outputGemfile = Stream.concat( //
+                originalGemfile.stream().filter(line -> !line.trim().startsWith("# gem ")), //
+                Stream.of(OPENHAB_SCRIPTING_GEM) //
+        ).toList();
+        Files.write(gemfilePath, outputGemfile);
     }
 
     synchronized private void gem(Console console, String[] args) {
