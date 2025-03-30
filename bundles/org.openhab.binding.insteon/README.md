@@ -115,7 +115,7 @@ Likewise, for a device that wasn't accessible during the binding initialization 
 
 | Parameter | Required | Description                                                                                                                |
 | --------- | :------: | -------------------------------------------------------------------------------------------------------------------------- |
-| group     |   Yes    | Insteon scene group number between 2 and 254. It can be found in the scene detailed information in the Insteon mobile app. |
+| group     |   Yes    | Insteon scene group number between 0 and 255. It can be found in the scene detailed information in the Insteon mobile app. |
 
 ### `x10`
 

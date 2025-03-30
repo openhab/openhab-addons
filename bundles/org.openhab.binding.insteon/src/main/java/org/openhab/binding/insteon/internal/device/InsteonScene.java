@@ -33,11 +33,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class InsteonScene implements Scene {
-    public static final int GROUP_MIN = 2;
-    public static final int GROUP_MAX = 254;
+    public static final int GROUP_MIN = 0;
+    public static final int GROUP_MAX = 255;
     // limit new scene group minimum to 25 matching the current Insteon app behavior
     public static final int GROUP_NEW_MIN = 25;
-    public static final int GROUP_NEW_MAX = 254;
+    public static final int GROUP_NEW_MAX = 255;
 
     private final Logger logger = LoggerFactory.getLogger(InsteonScene.class);
 
