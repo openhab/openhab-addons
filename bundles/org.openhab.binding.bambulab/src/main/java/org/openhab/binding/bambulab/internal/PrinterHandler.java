@@ -323,6 +323,13 @@ public class PrinterHandler extends BaseBridgeHandler
         }
         stream(PrinterChannel.values()).forEach(channel -> updateState(channel, print));
 
+        Optional.of(print)//
+                .map(Report.Print::ams)//
+                .map(Report.Print.Ams::ams)//
+                .stream()//
+                .flatMap(Collection::stream)//
+                .forEach(this::updateAms);
+
         // if got new Printer state (and not failed) then make sure that thing status in ONLINE
         updateStatus(ONLINE);
     }
@@ -454,12 +461,6 @@ public class PrinterHandler extends BaseBridgeHandler
             case CHANNEL_CAMERA_RECORD -> Optional.empty();
         };
         state.ifPresent(s -> updateState(channel, s));
-        Optional.of(print)//
-                .map(Report.Print::ams)//
-                .map(Report.Print.Ams::ams)//
-                .stream()//
-                .flatMap(Collection::stream)//
-                .forEach(this::updateAms);
     }
 
     private void updateAms(Map<String, Object> amsMap) {

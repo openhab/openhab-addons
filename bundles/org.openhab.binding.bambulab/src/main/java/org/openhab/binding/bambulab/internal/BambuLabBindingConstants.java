@@ -130,87 +130,51 @@ public class BambuLabBindingConstants {
         }
     }
 
-    public static class AmsChannel {
+    public enum AmsChannel {
+        CHANNEL_TRAY_TYPE("ams-tray-type", "tray_type"),
+        CHANNEL_TRAY_COLOR("ams-tray-color", "tray_color"),
+        CHANNEL_NOZZLE_TEMPERATURE_MAX("ams-nozzle-temperature-max", "nozzle_temp_max"),
+        CHANNEL_NOZZLE_TEMPERATURE_MIN("ams-nozzle-temperature-min", "nozzle_temp_min"),
+        CHANNEL_REMAIN("ams-remain", "remain"),
+        CHANNEL_K("ams-k", "k"),
+        CHANNEL_N("ams-n", "n"),
+        CHANNEL_TAG_UUID("ams-tag-uuid", "tag_uuid"),
+        CHANNEL_TRAY_ID_NAME("ams-tray-id-name", "tray_id_name"),
+        CHANNEL_TRAY_INFO_IDX("ams-tray-info-idx", "tray_info_idx"),
+        CHANNEL_TRAY_SUB_BRANDS("ams-tray-sub-brands", "tray_sub_brands"),
+        CHANNEL_TRAY_WEIGHT("ams-tray-weight", "tray_weight"),
+        CHANNEL_TRAY_DIAMETER("ams-tray-diameter", "tray_diameter"),
+        CHANNEL_TRAY_TEMPERATURE("ams-tray-temperature", "tray_temp"),
+        CHANNEL_TRAY_TIME("ams-tray-time", "tray_time"),
+        CHANNEL_BED_TEMPERATURE_TYPE("ams-bed-temp-type", "bed_temp_type"),
+        CHANNEL_BED_TEMPERATURE("ams-bed-temperature", "bed_temp"),
+        CHANNEL_CTYPE("ams-ctype", "ctype");
+
         public static final int MIN_AMS = 1;
         /**
          * According to Bambu Lab documentation, you can attach up to 4 AMS
          */
         public static final int MAX_AMS = 4;
+        private final String group;
+        private final String jsonKey;
 
-        public static String getTrayTypeChannel(TrayId trayId) {
-            return prefix(trayId) + "ams-tray-type";
+        AmsChannel(String group, String jsonKey) {
+            this.group = group;
+            this.jsonKey = jsonKey;
         }
 
-        public static String getTrayColorChannel(TrayId trayId) {
-            return prefix(trayId) + "ams-tray-color";
+        public String getJsonKey() {
+            return jsonKey;
         }
 
-        public static String getNozzleTemperatureMaxChannel(TrayId trayId) {
-            return prefix(trayId) + "ams-nozzle-temperature-max";
+        public String findType(TrayId trayId) {
+            return "ams-tray-%s#%s".formatted(trayId.getIdx(), group);
         }
 
-        public static String getNozzleTemperatureMinChannel(TrayId trayId) {
-            return prefix(trayId) + "ams-nozzle-temperature-min";
-        }
-
-        public static String getRemainChannel(TrayId trayId) {
-            return prefix(trayId) + "ams-remain";
-        }
-
-        public static String getKChannel(TrayId trayId) {
-            return prefix(trayId) + "ams-k";
-        }
-
-        public static String getNChannel(TrayId trayId) {
-            return prefix(trayId) + "ams-n";
-        }
-
-        public static String getTagUuidChannel(TrayId trayId) {
-            return prefix(trayId) + "ams-tag-uuid";
-        }
-
-        public static String getTrayIdNameChannel(TrayId trayId) {
-            return prefix(trayId) + "ams-tray-id-name";
-        }
-
-        public static String getTrayInfoIdxChannel(TrayId trayId) {
-            return prefix(trayId) + "ams-tray-info-idx";
-        }
-
-        public static String getTraySubBrandsChannel(TrayId trayId) {
-            return prefix(trayId) + "ams-tray-sub-brands";
-        }
-
-        public static String getTrayWeightChannel(TrayId trayId) {
-            return prefix(trayId) + "ams-tray-weight";
-        }
-
-        public static String getTrayDiameterChannel(TrayId trayId) {
-            return prefix(trayId) + "ams-tray-diameter";
-        }
-
-        public static String getTrayTemperatureChannel(TrayId trayId) {
-            return prefix(trayId) + "ams-tray-temperature";
-        }
-
-        public static String getTrayTimeChannel(TrayId trayId) {
-            return prefix(trayId) + "ams-tray-time";
-        }
-
-        public static String getBedTemperatureTypeChannel(TrayId trayId) {
-            return prefix(trayId) + "ams-bed-temp-type";
-        }
-
-        public static String getBedTemperatureChannel(TrayId trayId) {
-            return prefix(trayId) + "ams-bed-temperature";
-        }
-
-        public static String getCtypeChannel(TrayId trayId) {
-            return prefix(trayId) + "ams-ctype";
-        }
-
-        private static String prefix(TrayId trayId) {
-            return "ams-tray-%s#".formatted(trayId.getIdx());
+        public static Optional<AmsChannel> findAmsChannel(ChannelUID channel) {
+            return Optional.of(channel)//
+                    .map(ChannelUID::getGroupId)//
+                    .flatMap(group -> stream(values()).filter(c -> c.group.equals(group)).findAny());
         }
 
         public static enum TrayId {
