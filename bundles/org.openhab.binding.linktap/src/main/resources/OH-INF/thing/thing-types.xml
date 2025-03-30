@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linktap"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="gateway">
+		<label>LinkTap Gateway</label>
+		<description>This represents a LinkTap gateway</description>
+
+		<properties>
+			<property name="gatewayId"/>
+			<property name="hardwareModel"/>
+			<property name="version"/>
+			<property name="macAddress"/>
+			<property name="httpApiEnabled"/>
+			<property name="httpApiCallback"/>
+			<property name="volumeUnit"/>
+			<property name="utcOffset"/>
+		</properties>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname / IP</label>
+				<description>The hostname / IP address of the gateway device</description>
+			</parameter>
+			<parameter name="username" type="text" required="false">
+				<label>Device Username</label>
+				<description>The username if set for the gateway device</description>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<context>password</context>
+				<label>Device Password</label>
+				<description>The password if set for the gateway device</description>
+			</parameter>
+			<parameter name="enableMDNS" type="boolean">
+				<label>Enable mDNS Responder</label>
+				<description>On connection whether the mDNS responder should be enabled on the gateway device</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="enableJSONComms" type="boolean">
+				<label>Enable non HTML responses</label>
+				<description>Enable only if openHAB is directly using the Gateway, to allow more efficient communications</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="enforceProtocolLimits" type="boolean">
+				<label>Enforce protocol limits</label>
+				<description>If parameters outside the limits acceptable to the device's are sent they will be blocked and logged</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="device">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>LinkTap Binding Thing</label>
+		<description>LinkTap Binding Device</description>
+
+		<channels>
+			<channel id="mode" typeId="mode-type"/>
+			<channel id="manual-watering" typeId="man-mode-type"/>
+			<channel id="watering" typeId="watering-type"/>
+			<channel id="rf-linked" typeId="rf-linked-type"/>
+			<channel id="flm-linked" typeId="flm-linked-type"/>
+			<channel id="water-cut" typeId="water-cut-type"/>
+			<channel id="fall-status" typeId="fall-status-type"/>
+			<channel id="shutdown-failure" typeId="fail-status-type"/>
+			<channel id="high-flow" typeId="is-leak-type"/>
+			<channel id="low-flow" typeId="is-clog-type"/>
+			<channel id="eco-final" typeId="final-segment-type"/>
+			<channel id="signal" typeId="signal-level-type"/>
+			<channel id="battery" typeId="battery-level-type"/>
+			<channel id="child-lock" typeId="child-lock-type"/>
+			<channel id="flow-rate" typeId="flow-rate-type"/>
+			<channel id="volume" typeId="volume-type"/>
+			<channel id="duration" typeId="total-duration-type"/>
+			<channel id="remaining" typeId="remaining-duration-type"/>
+			<channel id="dur-limit" typeId="failsafe-duration-type"/>
+			<channel id="vol-limit" typeId="volume-limit-type"/>
+			<channel id="oh-dur-limit" typeId="instant-duration-type"/>
+			<channel id="oh-vol-limit" typeId="instant-limit-type"/>
+			<channel id="plan-pause-enable" typeId="pause-enable-type"/>
+			<channel id="plan-resume-time" typeId="pause-until-type"/>
+			<channel id="watering-plan-id" typeId="plan-id-type"/>
+		</channels>
+
+		<properties>
+			<property name="deviceId">Device Id</property>
+			<property name="deviceName">Device Name</property>
+		</properties>
+		<representation-property>deviceId</representation-property>
+
+		<config-description>
+			<parameter name="id" type="text" required="false">
+				<label>Device Id</label>
+				<description>The Device Id for the device under the gateway</description>
+			</parameter>
+			<parameter name="name" type="text" required="false">
+				<label>Device Name</label>
+				<description>The name allocated to the device by the app. (Must be unique if used)</description>
+			</parameter>
+			<parameter name="enableAlerts" type="boolean" required="false">
+				<label>Auto Enable Alerts</label>
+				<description>If enabled, during device initialisation all alerts are enabled</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>

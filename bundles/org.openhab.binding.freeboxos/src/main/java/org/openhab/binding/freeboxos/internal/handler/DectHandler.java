@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,19 @@ public class DectHandler extends FxsHandler {
 
     public DectHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    protected void internalPoll() throws FreeboxException {
+        if (isLinked(TELEPHONY_SERVICE) || isLinked(DECT_ACTIVE) || isLinked(ALTERNATE_RING)) {
+            Config config = getManager(PhoneManager.class).getConfig();
+            updateConfigChannels(config);
+        }
+
+        if (isLinked(ONHOOK) || isLinked(RINGING) || isLinked(HARDWARE_STATUS) || isLinked(GAIN_RX)
+                || isLinked(GAIN_TX)) {
+            getManager(PhoneManager.class).getStatus(getClientId()).ifPresent(this::updateStatusChannels);
+        }
     }
 
     @Override

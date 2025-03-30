@@ -67,7 +67,7 @@
 	</channel-type>
 
 	<channel-type id="rssi" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>RSSI</label>
 		<description>Received Signal Strength Indicator</description>
 		<category>QualityOfService</category>

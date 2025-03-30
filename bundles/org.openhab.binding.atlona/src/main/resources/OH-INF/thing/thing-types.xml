@@ -492,11 +492,13 @@
 		<item-type>String</item-type>
 		<label>Preset Command</label>
 		<description>Send a preset command ("saveX", "recallX", "clearX")</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="matrixcmd" advanced="true">
 		<item-type>String</item-type>
 		<label>Matrix Command</label>
 		<description>Send a matrix command ("resetmatrix", "resetports", "allportsX")</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="portpower" advanced="true">
 		<item-type>Switch</item-type>

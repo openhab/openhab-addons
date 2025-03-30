@@ -13,7 +13,7 @@
 		<parameter name="timeout" type="integer" required="false" min="1" unit="s">
 			<label>Timeout</label>
 			<description>The timeout for reading from the API in seconds.</description>
-			<default>8</default>
+			<default>10</default>
 		</parameter>
 		<parameter name="callbackUrl" type="text" required="false">
 			<label>Callback URL</label>

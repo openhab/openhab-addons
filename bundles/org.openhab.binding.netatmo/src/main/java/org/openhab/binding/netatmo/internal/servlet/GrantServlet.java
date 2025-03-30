@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,7 +93,7 @@ public class GrantServlet extends NetatmoServlet {
             resp.getWriter().append(replaceKeysFromMap(accountTemplate, replaceMap));
             resp.getWriter().close();
         } else {
-            logger.warn("Unexpected : requestUrl is null");
+            logger.warn("Unexpected: requestUrl is null");
         }
     }
 

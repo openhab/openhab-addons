@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,19 +12,25 @@
  */
 package org.openhab.binding.smartmeter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link SmartMeterConfiguration} is the class used to match the
  * thing configuration.
  *
  * @author Matthias Steigenberger - Initial contribution
  */
+@NonNullByDefault
 public class SmartMeterConfiguration {
 
+    @Nullable
     public String port;
-    public Integer refresh;
-    public Integer baudrateChangeDelay;
+    public Integer refresh = 10;
+    public Integer baudrateChangeDelay = 0;
+    @Nullable
     public String initMessage;
-    public String baudrate;
-    public String mode;
-    public String conformity;
+    public String baudrate = "AUTO";
+    public String mode = "SML";
+    public String conformity = "NONE";
 }

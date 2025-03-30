@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -84,6 +84,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     private final List<NhcService2> services = new CopyOnWriteArrayList<>();
 
     private volatile String profile = "";
+
+    private String rawDevicesListResponse = "";
 
     private volatile @Nullable NhcSystemInfo2 nhcSystemInfo;
     private volatile @Nullable NhcTimeInfo2 nhcTimeInfo;
@@ -270,6 +272,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     }
 
     private void devicesListRsp(String response) {
+        rawDevicesListResponse = response;
         Type messageType = new TypeToken<NhcMessage2>() {
         }.getType();
         List<NhcDevice2> deviceList = null;
@@ -382,7 +385,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             addVideoDevice(device);
         } else if ("accesscontrol".equals(device.model) || "bellbutton".equals(device.model)) {
             addAccessDevice(device, location);
-        } else if ("alarms".equals(device.model)) {
+        } else if ("alarms".equals(device.model) && (device.properties != null)
+                && (device.properties.stream().anyMatch(p -> (p.alarmActive != null)))) {
             addAlarmDevice(device, location);
         } else if ("action".equals(device.type) || "virtual".equals(device.type)) {
             addActionDevice(device, location);
@@ -403,6 +407,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             case "pir":
             case "simulation":
             case "comfort":
+            case "alarms":
             case "alloff":
             case "overallcomfort":
             case "garagedoor":
@@ -711,9 +716,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         Optional<Integer> ambientTemperatureProperty = deviceProperties.stream().map(p -> p.ambientTemperature)
                 .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null)
                 .filter(Objects::nonNull).findFirst();
-        Optional<@Nullable String> demandProperty = deviceProperties.stream().map(p -> p.demand)
-                .filter(Objects::nonNull).findFirst();
-        Optional<@Nullable String> operationModeProperty = deviceProperties.stream().map(p -> p.operationMode)
+        Optional<String> demandProperty = deviceProperties.stream().map(p -> p.demand).filter(Objects::nonNull)
+                .findFirst();
+        Optional<String> operationModeProperty = deviceProperties.stream().map(p -> p.operationMode)
                 .filter(Objects::nonNull).findFirst();
 
         String modeString = deviceProperties.stream().map(p -> p.program).filter(Objects::nonNull).findFirst()
@@ -1274,6 +1279,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
      */
     public String getServices() {
         return services.stream().map(NhcService2::name).collect(Collectors.joining(", "));
+    }
+
+    public String getRawDevicesListResponse() {
+        return rawDevicesListResponse;
     }
 
     @Override

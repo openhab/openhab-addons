@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,8 @@ import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingC
 /**
  * The band state for DAB tuners.
  *
- * @author Tomasz Maruszak - [yamaha] Tuner band selection and preset feature for dual band models (RX-S601D)
+ * @author Tomasz Maruszak - Initial contribution, [yamaha] Tuner band selection and preset feature for dual band models
+ *         (RX-S601D)
  */
 public class DabBandState implements Invalidateable {
 

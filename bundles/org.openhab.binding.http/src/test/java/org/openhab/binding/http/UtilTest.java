@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,9 +69,9 @@ public class UtilTest {
 
     @Test
     public void uriAlreadyPartlyEscapedTest() throws MalformedURLException, URISyntaxException {
-        String s = "https://foo.bar/zzl.html?p=field%2Bvalue&foostatus=This is a test String&date=2024-  07-01";
+        String s = "https://foo.bar/zzl.html?p=field%%2Bvalue&foostatus=This is a test String&date=2024-  07-01";
         assertEquals(
-                "https://foo.bar/zzl.html?p=field%252Bvalue&foostatus=This%20is%20a%20test%20String&date=2024-%20%2007-01",
+                "https://foo.bar/zzl.html?p=field%2Bvalue&foostatus=This%20is%20a%20test%20String&date=2024-%20%2007-01",
                 Util.uriFromString(s).toString());
     }
 

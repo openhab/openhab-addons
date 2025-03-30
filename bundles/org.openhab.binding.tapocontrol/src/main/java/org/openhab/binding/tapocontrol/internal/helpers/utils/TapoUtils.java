@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -172,7 +172,7 @@ public class TapoUtils {
                 deviceLabel = DEVICE_DESCRIPTION_SMART_CONTACT;
             } else if (SUPPORTED_MOTION_SENSORS.contains(deviceUID)) {
                 deviceLabel = DEVICE_DESCRIPTION_MOTION_SENSOR;
-            } else if (SUPPORTED_WHEATHER_SENSORS.contains(deviceUID)) {
+            } else if (SUPPORTED_WEATHER_SENSORS.contains(deviceUID)) {
                 deviceLabel = DEVICE_DESCRIPTION_TEMP_SENSOR;
             }
             if (alias.length() > 0) {

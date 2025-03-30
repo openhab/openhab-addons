@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,8 +22,8 @@ import org.eclipse.jetty.client.HttpClient;
  * Class representing an internet radio based on the frontier silicon chipset. Tested with "hama IR110" and Medion
  * MD87180" internet radios.
  *
- * @author Rainer Ostendorf
- * @author Patrick Koenemann
+ * @author Rainer Ostendorf - Initial contribution
+ * @author Patrick Koenemann - improvements
  * @author Mihaela Memova - removed duplicated check for the percent value range
  */
 public class FrontierSiliconRadio {

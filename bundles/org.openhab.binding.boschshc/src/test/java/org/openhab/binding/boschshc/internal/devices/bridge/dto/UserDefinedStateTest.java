@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,7 +53,7 @@ public class UserDefinedStateTest {
     @Test
     void testToString() {
         assertEquals(
-                String.format("UserDefinedState{id='%s', name='test user state', state=true, type='UserDefinedState'}",
+                String.format("UserDefinedState{id='%s', name='test user state', state=true, type='userDefinedState'}",
                         testId),
                 fixture.toString());
     }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,13 +42,20 @@ public class PhoneConfigurationBuilder {
     }
 
     public DiscoveryResultBuilder configure(ThingUID bridgeUID, Status config) {
-        ThingUID thingUID = new ThingUID(Type.DECT.equals(config.type()) ? THING_TYPE_DECT : THING_TYPE_FXS, bridgeUID,
-                Integer.toString(config.id()));
+        ThingUID thingUID;
+        String label;
+        if (Type.DECT.equals(config.type())) {
+            thingUID = new ThingUID(THING_TYPE_DECT, bridgeUID, Integer.toString(config.id()));
+            label = "@text/discovery.dect.label";
+        } else {
+            thingUID = new ThingUID(THING_TYPE_FXS, bridgeUID, Integer.toString(config.id()));
+            label = "@text/discovery.fxs.label";
+        }
 
         logger.debug("Adding new Freebox Phone {} to inbox", thingUID);
 
         return DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                .withProperty(ClientConfiguration.ID, config.id()).withLabel(config.type().name())
+                .withProperty(ClientConfiguration.ID, config.id()).withLabel(label)
                 .withRepresentationProperty(ClientConfiguration.ID);
     }
 }

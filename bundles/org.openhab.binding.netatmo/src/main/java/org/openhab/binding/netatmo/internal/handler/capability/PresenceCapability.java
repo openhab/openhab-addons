@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
-import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SirenStatus;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
@@ -53,13 +52,12 @@ public class PresenceCapability extends CameraCapability {
                 try {
                     changeFloodlightMode(FloodLightMode.valueOf(command.toString()));
                 } catch (IllegalArgumentException e) {
-                    logger.info("Incorrect command '{}' received for channel '{}'", command, channelName);
+                    logger.warn("Incorrect command '{}' received for channel '{}'", command, channelName);
                 }
                 return;
             }
-        } else if (CHANNEL_SIREN.equals(channelName) && command instanceof OnOffType) {
-            getSecurityCapability().ifPresent(cap -> cap.changeSirenStatus(handler.getId(),
-                    command == OnOffType.ON ? SirenStatus.SOUND : SirenStatus.NO_SOUND));
+        } else if (CHANNEL_SIREN.equals(channelName)) {
+            logger.info("Channel '{}' is read-only", channelName);
             return;
         }
         super.handleCommand(channelName, command);

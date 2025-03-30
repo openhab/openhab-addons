@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,17 +36,19 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents.ComponentDiscovered;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelLinkageChecker;
 import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.test.java.JavaOSGiTest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.hubspot.jinjava.Jinjava;
 
 /**
  * Tests the {@link DiscoverComponents} class.
@@ -60,8 +62,8 @@ public class DiscoverComponentsTest extends JavaOSGiTest {
 
     private @Mock @NonNullByDefault({}) MqttBrokerConnection connection;
     private @Mock @NonNullByDefault({}) ComponentDiscovered discovered;
-    private @Mock @NonNullByDefault({}) TransformationServiceProvider transformationServiceProvider;
     private @Mock @NonNullByDefault({}) ChannelStateUpdateListener channelStateUpdateListener;
+    private @Mock @NonNullByDefault({}) HomeAssistantChannelLinkageChecker linkageChecker;
     private @Mock @NonNullByDefault({}) AvailabilityTracker availabilityTracker;
 
     @BeforeEach
@@ -73,7 +75,6 @@ public class DiscoverComponentsTest extends JavaOSGiTest {
         doReturn(CompletableFuture.completedFuture(true)).when(connection).unsubscribe(any(), any());
         doReturn(CompletableFuture.completedFuture(true)).when(connection).publish(any(), any(), anyInt(),
                 anyBoolean());
-        doReturn(null).when(transformationServiceProvider).getTransformationService(any());
     }
 
     @Test
@@ -82,9 +83,12 @@ public class DiscoverComponentsTest extends JavaOSGiTest {
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
 
         Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
+        Jinjava jinjava = new Jinjava();
+        UnitProvider unitProvider = mock(UnitProvider.class);
 
-        DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.TEST_HOME_ASSISTANT_THING,
-                scheduler, channelStateUpdateListener, availabilityTracker, gson, transformationServiceProvider));
+        DiscoverComponents discover = spy(
+                new DiscoverComponents(ThingChannelConstants.TEST_HOME_ASSISTANT_THING, scheduler,
+                        channelStateUpdateListener, linkageChecker, availabilityTracker, gson, jinjava, unitProvider));
 
         HandlerConfiguration config = new HandlerConfiguration("homeassistant", List.of("switch/object"));
 

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -411,7 +411,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         synchronized (this) {
             if (socket != null && !socket.isClosing()) {
                 // close socket, if still open
-                logger.info("Restarting GardenaSmart Webservice ({})", socket.getSocketID());
+                logger.debug("Restarting GardenaSmart Webservice ({})", socket.getSocketID());
                 socket.stop();
             } else {
                 // if socket is already closing, exit function and do not restart socket

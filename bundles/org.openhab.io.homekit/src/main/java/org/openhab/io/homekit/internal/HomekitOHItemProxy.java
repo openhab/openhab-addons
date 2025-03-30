@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -97,7 +97,7 @@ public class HomekitOHItemProxy {
         final PercentType brightness = (PercentType) commandCache.remove(BRIGHTNESS_COMMAND);
         final DecimalType hue = (DecimalType) commandCache.remove(HUE_COMMAND);
         final PercentType saturation = (PercentType) commandCache.remove(SATURATION_COMMAND);
-        final @Nullable OnOffType currentOnState = ((DimmerItem) item).getStateAs(OnOffType.class);
+        final @Nullable OnOffType currentOnState = item.getStateAs(OnOffType.class);
         if (on != null) {
             // always sends OFF.
             // sends ON only if

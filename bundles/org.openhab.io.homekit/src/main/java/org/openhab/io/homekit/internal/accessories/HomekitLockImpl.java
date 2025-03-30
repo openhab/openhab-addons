@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,8 +36,8 @@ import io.github.hapjava.services.impl.LockMechanismService;
  *
  */
 public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements LockMechanismAccessory {
-    final Map<LockCurrentStateEnum, String> currentStateMapping;
-    final Map<LockTargetStateEnum, String> targetStateMapping;
+    final Map<LockCurrentStateEnum, Object> currentStateMapping;
+    final Map<LockTargetStateEnum, Object> targetStateMapping;
 
     public HomekitLockImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,

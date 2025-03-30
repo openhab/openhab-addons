@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,21 +17,11 @@ import java.util.List;
 /**
  * @author James Melville - Initial contribution
  */
-public class LocationDTO {
+public record LocationDTO
 
-    private int id;
-    private String name;
-    private List<RoomDTO> rooms;
+(int id, String name, List<RoomDTO> rooms) {
 
     public String getId() {
         return String.valueOf(id);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public List<RoomDTO> getRooms() {
-        return rooms;
     }
 }

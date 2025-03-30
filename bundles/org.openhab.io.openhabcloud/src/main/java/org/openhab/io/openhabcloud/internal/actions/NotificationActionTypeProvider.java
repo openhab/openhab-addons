@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,7 @@ public class NotificationActionTypeProvider implements ModuleTypeProvider {
             null, Visibility.VISIBLE, null, null);
 
     private static final ModuleType SEND_BROADCAST_NOTIFICATION_ACTION = new ActionType(
-            SendBroadcastNotificationActionHandler.TYPE_ID, getNotificationConfig(ConfigType.NOT_EXTENDED, true, null),
+            SendBroadcastNotificationActionHandler.TYPE_ID, getNotificationConfig(ConfigType.NOT_EXTENDED, false, null),
             "broadcast a notification", "Sends a notification to all devices of all users.", null, Visibility.VISIBLE,
             null, null);
 
@@ -171,6 +171,9 @@ public class NotificationActionTypeProvider implements ModuleTypeProvider {
                     .build());
         }
         switch (type) {
+            case NOT_EXTENDED:
+                params.add(getMessageConfigParameter(locale));
+                break;
             case EXTENDED:
                 params.add(getMessageConfigParameter(locale));
                 params.add(getIconConfigParameter(locale));

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.gree.internal.gson;
 
 /**
  *
- * The GreeExecResponsePack4Gson class is used by Gson to hold values returned from
+ * The GreeExecResponsePackDTO class is used by Gson to hold values returned from
  * the Air Conditioner during requests for Execution of Commands to the
  * Air Conditioner.
  *

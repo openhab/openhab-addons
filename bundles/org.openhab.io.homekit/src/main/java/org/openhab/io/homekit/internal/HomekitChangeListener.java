@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -483,7 +483,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
             knownAccessories.put(taggedItem.getName(), accessory.toJson());
             accessoryRegistry.addRootAccessory(taggedItem.getName(), accessory);
         } catch (HomekitException e) {
-            logger.warn("Cannot create accessory {}", taggedItem);
+            logger.warn("Cannot create accessory {}: {}", taggedItem, e.getMessage());
         }
     }
 

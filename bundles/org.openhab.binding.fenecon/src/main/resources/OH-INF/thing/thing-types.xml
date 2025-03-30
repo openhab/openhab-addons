@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="fenecon"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="home-device">
+
+		<label>FENECON Home</label>
+		<description>Thing for FENECON Home Device</description>
+		<category>Solarplant</category>
+
+		<channels>
+			<channel id="state" typeId="state"/>
+			<channel id="last-update" typeId="last-update"/>
+			<channel id="ess-soc" typeId="ess-soc"/>
+			<channel id="charger-power" typeId="charger-power"/>
+			<channel id="discharger-power" typeId="discharger-power"/>
+			<channel id="emergency-power-mode" typeId="emergency-power-mode"/>
+			<channel id="consumption-active-power" typeId="consumption-active-power"/>
+			<channel id="consumption-active-power-l1" typeId="consumption-active-power-phase"/>
+			<channel id="consumption-active-power-l2" typeId="consumption-active-power-phase"/>
+			<channel id="consumption-active-power-l3" typeId="consumption-active-power-phase"/>
+			<channel id="consumption-max-active-power" typeId="consumption-max-active-power"/>
+			<channel id="production-max-active-power" typeId="production-max-active-power"/>
+			<channel id="production-active-power" typeId="production-active-power"/>
+			<channel id="export-to-grid-power" typeId="export-to-grid-power"/>
+			<channel id="exported-to-grid-energy" typeId="exported-to-grid-energy"/>
+			<channel id="import-from-grid-power" typeId="import-from-grid-power"/>
+			<channel id="imported-from-grid-energy" typeId="imported-from-grid-energy"/>
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the FENECON device, e.g. 192.168.1.11</description>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Password</label>
+				<default>user</default>
+				<description>Password to access the device. The password for guest access is set by default.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="port" type="integer" min="1">
+				<context>network-address</context>
+				<label>Port</label>
+				<description>Port of the FENECON device</description>
+				<default>8084</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel Types -->
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>System State</label>
+		<description>FENECON system state</description>
+		<category>Text</category>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="OK">Ok</option>
+				<option value="INFO">Info</option>
+				<option value="WARN">Warning</option>
+				<option value="FAULT">Fault</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="last-update">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>Last successful update via REST-API from the FENECON system</description>
+		<category>Time</category>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ess-soc">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery State</label>
+		<description>Battery state of charge in percent</description>
+		<category>BatteryLevel</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="charger-power">
+		<item-type>Number:Power</item-type>
+		<label>Charger Power</label>
+		<description>Current charger power of energy storage system in watt.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="discharger-power">
+		<item-type>Number:Power</item-type>
+		<label>Discharger Power</label>
+		<description>Current discharger power of energy storage system in watt.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="emergency-power-mode">
+		<item-type>Switch</item-type>
+		<label>Emergency Power Mode</label>
+		<description>Indicates if there is no power from the grid and the emergency power mode is on.</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="production-active-power">
+		<item-type>Number:Power</item-type>
+		<label>Producer Power</label>
+		<description>Current active power producer load in watt.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="export-to-grid-power">
+		<item-type>Number:Power</item-type>
+		<label>Export Grid Power</label>
+		<description>Current export power to grid in watt.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="exported-to-grid-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Exported Grid Energy</label>
+		<description>Total energy exported to the grid in watt per hour.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="consumption-active-power">
+		<item-type>Number:Power</item-type>
+		<label>Consumer Power</label>
+		<description>Current active power consumer load in watt.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="consumption-active-power-phase">
+		<item-type>Number:Power</item-type>
+		<label>Consumer Power Phase</label>
+		<description>Current active power consumer load in watt on the corresponding phase.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="consumption-max-active-power">
+		<item-type>Number:Power</item-type>
+		<label>Consumer Max Power</label>
+		<description>Maximum active consumption power in watt that was measured.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="production-max-active-power">
+		<item-type>Number:Power</item-type>
+		<label>Producer Max Power</label>
+		<description>Maximum active production power in watt that was measured.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="import-from-grid-power">
+		<item-type>Number:Power</item-type>
+		<label>Import Grid Power</label>
+		<description>Current import power from grid in watt.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="imported-from-grid-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Imported Grid Energy</label>
+		<description>Total energy imported from the grid in watt per hour.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>

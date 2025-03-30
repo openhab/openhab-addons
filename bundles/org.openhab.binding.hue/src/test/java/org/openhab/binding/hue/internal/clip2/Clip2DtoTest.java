@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,11 +20,9 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -125,8 +123,7 @@ class Clip2DtoTest {
         assertNotNull(button);
         assertEquals(new DecimalType(2003),
                 item.getButtonEventState(Map.of("00000000-0000-0000-0000-000000000001", 2)));
-        assertEquals(new DateTimeType("2023-09-17T18:51:36.959+0000"),
-                item.getButtonLastUpdatedState(ZoneId.of("UTC")));
+        assertEquals(new DateTimeType("2023-09-17T18:51:36.959+0000"), item.getButtonLastUpdatedState());
     }
 
     @Test
@@ -347,8 +344,7 @@ class Clip2DtoTest {
         assertNotNull(enabled);
         assertTrue(enabled);
         assertEquals(QuantityType.valueOf("1.2792921774337476 lx"), item.getLightLevelState());
-        assertEquals(new DateTimeType("2023-09-11T19:20:02.958+0000"),
-                item.getLightLevelLastUpdatedState(ZoneId.of("UTC")));
+        assertEquals(new DateTimeType("2023-09-11T19:20:02.958+0000"), item.getLightLevelLastUpdatedState());
     }
 
     @Test
@@ -522,9 +518,9 @@ class Clip2DtoTest {
         ResourceType type = group.getType();
         assertNotNull(type);
         assertEquals(ResourceType.ROOM, type);
-        Optional<Boolean> state = item.getSmartSceneActive();
-        assertTrue(state.isPresent());
-        assertFalse(state.get());
+        Boolean state = item.getSmartSceneActive();
+        assertNotNull(state);
+        assertFalse(state);
     }
 
     @Test
@@ -541,8 +537,7 @@ class Clip2DtoTest {
         assertNotNull(enabled);
         assertTrue(enabled);
         assertEquals(OnOffType.ON, item.getMotionState());
-        assertEquals(new DateTimeType("2023-09-04T20:04:30.395+0000"),
-                item.getMotionLastUpdatedState(ZoneId.of("UTC")));
+        assertEquals(new DateTimeType("2023-09-04T20:04:30.395+0000"), item.getMotionLastUpdatedState());
     }
 
     @Test
@@ -613,9 +608,9 @@ class Clip2DtoTest {
         assertNotNull(active);
         assertTrue(active.isJsonPrimitive());
         assertEquals("inactive", active.getAsString());
-        Optional<Boolean> isActive = resource.getSceneActive();
-        assertTrue(isActive.isPresent());
-        assertEquals(Boolean.FALSE, isActive.get());
+        Boolean isActive = resource.getSceneActive();
+        assertNotNull(isActive);
+        assertEquals(Boolean.FALSE, isActive);
     }
 
     @Test
@@ -632,8 +627,7 @@ class Clip2DtoTest {
         assertNotNull(enabled);
         assertTrue(enabled);
         assertEquals(QuantityType.valueOf("23.34 °C"), item.getTemperatureState());
-        assertEquals(new DateTimeType("2023-09-06T18:22:07.016+0000"),
-                item.getTemperatureLastUpdatedState(ZoneId.of("UTC")));
+        assertEquals(new DateTimeType("2023-09-06T18:22:07.016+0000"), item.getTemperatureLastUpdatedState());
     }
 
     @Test
@@ -722,12 +716,11 @@ class Clip2DtoTest {
         assertEquals(ResourceType.CONTACT, resource.getType());
 
         assertEquals(OpenClosedType.CLOSED, resource.getContactState());
-        assertEquals(new DateTimeType("2023-10-10T19:10:55.919Z"),
-                resource.getContactLastUpdatedState(ZoneId.of("UTC")));
+        assertEquals(new DateTimeType("2023-10-10T19:10:55.919Z"), resource.getContactLastUpdatedState());
 
         resource.setContactReport(new ContactReport().setLastChanged(Instant.now()).setContactState("no_contact"));
         assertEquals(OpenClosedType.OPEN, resource.getContactState());
-        assertTrue(resource.getContactLastUpdatedState(ZoneId.of("UTC")) instanceof DateTimeType);
+        assertTrue(resource.getContactLastUpdatedState() instanceof DateTimeType);
     }
 
     @Test
@@ -742,8 +735,7 @@ class Clip2DtoTest {
         assertEquals(ResourceType.TAMPER, resource.getType());
 
         assertEquals(OpenClosedType.CLOSED, resource.getTamperState());
-        assertEquals(new DateTimeType("2023-01-01T00:00:00.001Z"),
-                resource.getTamperLastUpdatedState(ZoneId.of("UTC")));
+        assertEquals(new DateTimeType("2023-01-01T00:00:00.001Z"), resource.getTamperLastUpdatedState());
 
         Instant start = Instant.now();
         List<TamperReport> tamperReports;
@@ -753,7 +745,7 @@ class Clip2DtoTest {
         tamperReports.add(new TamperReport().setTamperState("not_tampered").setLastChanged(start));
         resource.setTamperReports(tamperReports);
         assertEquals(OpenClosedType.CLOSED, resource.getTamperState());
-        state = resource.getTamperLastUpdatedState(ZoneId.of("UTC"));
+        state = resource.getTamperLastUpdatedState();
         assertTrue(state instanceof DateTimeType);
         assertEquals(start, ((DateTimeType) state).getInstant());
 
@@ -762,7 +754,7 @@ class Clip2DtoTest {
         tamperReports.add(new TamperReport().setTamperState("tampered").setLastChanged(start.plusSeconds(1)));
         resource.setTamperReports(tamperReports);
         assertEquals(OpenClosedType.OPEN, resource.getTamperState());
-        state = resource.getTamperLastUpdatedState(ZoneId.of("UTC"));
+        state = resource.getTamperLastUpdatedState();
         assertTrue(state instanceof DateTimeType);
         assertEquals(start.plusSeconds(1), ((DateTimeType) state).getInstant());
 
@@ -772,7 +764,7 @@ class Clip2DtoTest {
         tamperReports.add(new TamperReport().setTamperState("not_tampered").setLastChanged(start.plusSeconds(2)));
         resource.setTamperReports(tamperReports);
         assertEquals(OpenClosedType.CLOSED, resource.getTamperState());
-        state = resource.getTamperLastUpdatedState(ZoneId.of("UTC"));
+        state = resource.getTamperLastUpdatedState();
         assertTrue(state instanceof DateTimeType);
         assertEquals(start.plusSeconds(2), ((DateTimeType) state).getInstant());
     }
@@ -792,8 +784,7 @@ class Clip2DtoTest {
         assertNotNull(enabled);
         assertTrue(enabled);
         assertEquals(OnOffType.ON, resource.getMotionState());
-        assertEquals(new DateTimeType("2020-04-01T20:04:30.395Z"),
-                resource.getMotionLastUpdatedState(ZoneId.of("UTC")));
+        assertEquals(new DateTimeType("2020-04-01T20:04:30.395Z"), resource.getMotionLastUpdatedState());
     }
 
     void testFixedEffectSetter() {
@@ -904,5 +895,32 @@ class Clip2DtoTest {
         assertNotNull(resultEffect);
         assertTrue(resultEffect instanceof TimedEffects);
         assertEquals(Duration.ofMillis(44), ((TimedEffects) resultEffect).getDuration());
+    }
+
+    @Test
+    void testBehaviorInstance() {
+        String json = load(ResourceType.BEHAVIOR_INSTANCE.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(2, list.size());
+    }
+
+    @Test
+    void testGroupedMotion() {
+        String json = load(ResourceType.GROUPED_MOTION.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.GROUPED_MOTION, item.getType());
+        Boolean enabled = item.getEnabled();
+        assertNotNull(enabled);
+        assertTrue(enabled);
+        assertEquals(OnOffType.ON, item.getMotionState());
+        assertEquals(new DateTimeType("2024-12-13T11:01:25.156Z"), item.getMotionLastUpdatedState());
     }
 }

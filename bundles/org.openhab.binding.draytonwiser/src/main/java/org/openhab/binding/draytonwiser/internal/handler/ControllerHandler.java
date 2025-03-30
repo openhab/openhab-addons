@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -112,7 +112,7 @@ public class ControllerHandler extends DraytonWiserThingHandler<ControllerData> 
     }
 
     private State getHeatChannel1Demand() {
-        return getData().heatingChannels.size() >= 1
+        return !getData().heatingChannels.isEmpty()
                 ? new QuantityType<>(getData().heatingChannels.get(0).getPercentageDemand(), Units.PERCENT)
                 : UnDefType.UNDEF;
     }
@@ -124,7 +124,7 @@ public class ControllerHandler extends DraytonWiserThingHandler<ControllerData> 
     }
 
     private State getHeatChannel1DemandState() {
-        return OnOffType.from(getData().heatingChannels.size() >= 1
+        return OnOffType.from(!getData().heatingChannels.isEmpty()
                 && "ON".equalsIgnoreCase(getData().heatingChannels.get(0).getHeatingRelayState()));
     }
 

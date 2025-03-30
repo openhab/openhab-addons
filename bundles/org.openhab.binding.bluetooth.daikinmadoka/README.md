@@ -42,7 +42,7 @@ _Note that it is planned to generate some part of this based on the XML files wi
 | outdoorTemperature  | Number:Temperature | R | Outdoor temperature from the external unit. Not always supported/reported.
 | commCtrlVersion  | String | R | Communication Controller Firmware Version
 | remoteCtrlVersion  | String | R | Remote Controller Firmware Version
-| operationMode  | String | R/W | The operation mode of the AC unit. Currently supported values: HEAT, COOL.  
+| operationMode  | String | R/W | The operation mode of the AC unit. Currently supported values: HEAT, COOL.
 | fanSpeed  | Number | R/W | This is a "virtual channel" : its value is calculated depending on current operation mode. It is the channel to be used to change the fan speed, whatever the current mode is. Fan speed are from 1 to 5. On BRC1H, the device supports 3 speeds: LOW (1), MEDIUM (2-4), MAX (5). Some BRC1H also support an AUTO (0) mode - but not all of them support it (depending on internal unit).
 | setpoint  | Number:Temperature | R/W | This is a "virtual channel" : its value is calculated depending on current operation mode. It is the channel to be used to change the setpoint, whatever the current mode is.
 | homekitCurrentHeatingCoolingMode  | String | R | This channel is a "virtual channel" to be used with the HomeKit add-on to implement Thermostat thing. Values supported are the HomeKit addon ones: Off, CoolOn, HeatOn, Auto.
@@ -56,7 +56,7 @@ _Note that it is planned to generate some part of this based on the XML files wi
 
 ## Full Example
 
-### daikinmadoka.things:
+### `daikinmadoka.things` Example
 
 ```java
 Bridge bluetooth:dbusbluez:hci0 [ address="00:1A:7D:DA:71:13" ]
@@ -65,7 +65,7 @@ Thing bluetooth:brc1h:hci0:salon (bluetooth:dbusbluez:hci0)     [ address="00:CC
 
 ```
 
-### daikinmadoka.items:
+### `daikinmadoka.items` Example
 
 ```java
 Group g_climSalon "Salon" [ "Thermostat" ]

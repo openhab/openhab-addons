@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link PhoneManager} is the Java class used to handle api requests related to phone and calls
  *
@@ -38,6 +40,7 @@ public class PhoneManager extends ConfigurableRest<PhoneManager.Config, PhoneMan
     }
 
     private enum NetworkStatus {
+        @SerializedName("working")
         WORKING,
         UNKNOWN
     }
@@ -47,7 +50,9 @@ public class PhoneManager extends ConfigurableRest<PhoneManager.Config, PhoneMan
     }
 
     public enum Type {
+        @SerializedName("fxs")
         FXS,
+        @SerializedName("dect")
         DECT,
         UNKNOWN
     }

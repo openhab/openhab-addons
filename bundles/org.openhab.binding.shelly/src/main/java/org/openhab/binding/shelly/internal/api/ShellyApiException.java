@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.api;
 
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.getString;
 
+import java.io.EOFException;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.NoRouteToHostException;
@@ -115,7 +116,7 @@ public class ShellyApiException extends Exception {
         Class<?> exType = getCauseClass();
         return isUnknownHost() || isMalformedURL() || exType == ConnectException.class
                 || exType == SocketException.class || exType == PortUnreachableException.class
-                || exType == NoRouteToHostException.class;
+                || exType == NoRouteToHostException.class || exType == EOFException.class;
     }
 
     public boolean isNoRouteToHost() {

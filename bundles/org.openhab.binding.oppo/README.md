@@ -114,11 +114,11 @@ The following channels are available:
 | sub_shift         | Number      | Sets the subtitle shift (-10 to 10) [10x models and up] (note more than 5 from 0 throws an error on the BDP103)                       |
 | hdmi_mode         | String      | Sets the current HDMI output mode (options vary by model; see notes above for allowed values)                                         |
 | hdr_mode          | String      | Sets current HDR output mode (Auto, On, Off) [UDP-203/205 only]                                                                       |
-| remote_button     | String      | Simulate pressing a button on the remote control (3 letter code; codes can be found in Appendix A below)                              |
+| remote_button     | String      | Simulate pressing a button on the remote control [3 letter code; codes can be found in Appendix A below] (WriteOnly)                  |
 
 ## Full Example
 
-oppo.things:
+### `oppo.things` Example
 
 ```java
 // direct IP connection
@@ -132,7 +132,7 @@ oppo:player:myoppo "Oppo Blu-ray" [ host="192.168.0.9", port=4444, model=103, ve
 
 ```
 
-oppo.items:
+### `oppo.items` Example
 
 ```java
 Switch oppo_power "Power" { channel="oppo:player:myoppo:power" }
@@ -160,10 +160,10 @@ Number oppo_osd_position "OSD Position [%s]" { channel="oppo:player:myoppo:osd_p
 Number oppo_sub_shift "Subtitle Shift [%s]" { channel="oppo:player:myoppo:sub_shift" }
 String oppo_hdmi_mode "HDMI Mode [%s]" { channel="oppo:player:myoppo:hdmi_mode" }
 String oppo_hdr_mode "HDR Mode [%s]" { channel="oppo:player:myoppo:hdr_mode" }
-String oppo_remote_button "Remote Button [%s]" { channel="oppo:player:myoppo:remote_button", autoupdate="false" }
+String oppo_remote_button "Remote Button [%s]" { channel="oppo:player:myoppo:remote_button" }
 ```
 
-secondsformat.js:
+### `secondsformat.js` Example
 
 ```javascript
 (function(timestamp) {
@@ -190,7 +190,7 @@ secondsformat.js:
 })(input)
 ```
 
-oppo.sitemap:
+### `oppo.sitemap` Example
 
 ```perl
 sitemap oppo label="Oppo Blu-ray" {
@@ -228,7 +228,7 @@ sitemap oppo label="Oppo Blu-ray" {
 }
 ```
 
-### Appendix A - 'remote_button' codes:
+### Appendix A - 'remote_button' codes
 
 | Command | Function                                                                    |
 |---------|-----------------------------------------------------------------------------|
@@ -296,7 +296,7 @@ sitemap oppo label="Oppo Blu-ray" {
 | SEH     | Display the Picture Adjustment menu                                         |
 | DRB     | Display the Darbee Adjustment menu                                          |
 
-#### Extra buttons on UDP models:
+#### Extra buttons on UDP models
 
 | Command | Function                                                                            |
 |---------|-------------------------------------------------------------------------------------|

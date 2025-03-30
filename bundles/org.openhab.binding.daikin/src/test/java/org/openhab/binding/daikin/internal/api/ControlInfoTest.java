@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.daikin.internal.api.Enums.FanMovement;
 
 /**
- * This class provides tests for deconz lights
+ * This class provides tests for the ControlInfo class
  *
  * @author Leo Siepel - Initial contribution
  *

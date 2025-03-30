@@ -55,6 +55,17 @@ See [console command](#console-command-for-finding-resourceids)
 
 The configuration of all things (as described above) is the same regardless of whether it is a device containing a light, a button, or (one or more) sensors, or whether it is a room or zone.
 
+### Channels for Bridges
+
+Bridge Things support the following channels:
+
+| Channel ID                                      | Item Type          | Description                                 |
+|-------------------------------------------------|--------------------|---------------------------------------------|
+| automation#11111111-2222-3333-4444-555555555555 | Switch             | Enable / disable the respective automation. |
+
+The Bridge dynamically creates `automation` channels corresponding to the automations in the Hue App;
+the '11111111-2222-3333-4444-555555555555' is the unique id of the respective automation.
+
 ### Channels for Devices
 
 Device things support some of the following channels:
@@ -196,14 +207,14 @@ openhab> openhab:hue hue:bridge-api2:g24 things > myThingsFile.things
 This binding includes a rule action, which implements dynamic (i.e. gradual) transitions to a new scene or light(s) state.
 Each thing has a separate action instance, which can be retrieved as follows.
 
-```php
+```java
 val hueActions = getActions("hue","hue:device:g24:11111111-2222-3333-4444-555555555555")
 ```
 
 Where the first parameter must always be `hue` and the second must be the full thing UID.
 Once the action instance has been retrieved, you can invoke its `dynamicCommand(String channelId, Command command, Long durationMs)` method as follows.
 
-```php
+```java
 hueActions.dynamicCommand("brightness", new PercentType(100), new Long(10000))
 
 hueActions.dynamicCommand("scene", new StringType("SceneName"), new Long(20000))

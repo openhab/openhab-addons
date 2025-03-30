@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,4 @@ public class MqttBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID HOMEASSISTANT_MQTT_THING = new ThingTypeUID(BINDING_ID, "homeassistant");
-
-    public static final String CONFIG_HA_CHANNEL = "channel-type:mqtt:ha-channel";
 }

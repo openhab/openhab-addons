@@ -17,7 +17,7 @@ The binding has the following configuration options:
 
 Create a `<openHAB-conf>/services/network.cfg` file and use the above options like this:
 
-```text
+```ini
 binding.network:allowSystemPings=true
 binding.network:allowDHCPlisten=false
 binding.network:arpPingToolPath=arping
@@ -54,6 +54,12 @@ Use the following options for a **network:pingdevice**:
 - **timeout:** How long the ping will wait for an answer, in milliseconds. Default: `5000` (5 seconds).
 - **refreshInterval:** How often the device will be checked, in milliseconds. Default: `60000` (one minute).
 - **useIOSWakeUp:** When set to true, an additional port knock is performed before a ping. Default: `true`.
+- **useArpPing:** When set to true if the presence detection is allowed to use arp ping.
+  This can speed up presence detection, but may lead to inaccurate ping latency measurements.
+  Switch off if you want to use this for ping latency monitoring. Default: `true`.
+- **useIcmpPing:** When set to true if the presence detection is allowed to use icmp ping.
+  When also using arp ping, the latency measurements will not be comparable.
+  Switch off if you rather want to use arp ping latency monitoring. Default: `true`.
 - **networkInterfaceNames:** The network interface names used for communicating with the device.
   Limiting the network interfaces reduces the load when arping and Wake-on-LAN are used.
   Use comma separated values when using textual config. Default: empty (all network interfaces).
@@ -190,6 +196,7 @@ demo.things:
 
 ```java
 Thing network:pingdevice:devicename [ hostname="192.168.0.42", macAddress="6f:70:65:6e:48:41", useIOSWakeUp="false" ]
+Thing network:pingdevice:router [ hostname="192.168.0.1", useArpPing="false" ]
 Thing network:speedtest:local "SpeedTest 50Mo" @ "Internet" [url="https://bouygues.testdebit.info/", fileName="50M.iso"]
 ```
 
@@ -198,6 +205,8 @@ demo.items:
 ```java
 Switch MyDevice { channel="network:pingdevice:devicename:online" }
 Number:Time MyDeviceResponseTime { channel="network:pingdevice:devicename:latency" }
+
+Number:Time MyRouterResponseTime { channel="network:pingdevice:router:latency" }
 
 String Speedtest_Running "Test running ... [%s]" {channel="network:speedtest:local:isRunning"}
 Number:Dimensionless Speedtest_Progress "Test progress [%d %unit%]"  {channel="network:speedtest:local:progress"}
@@ -217,13 +226,17 @@ sitemap demo label="Main Menu"
         Text item=MyDevice label="Device [%s]"
         Text item=MyDeviceResponseTime label="Device Response Time [%s]"
     }
-    
+
+    Frame {
+        Text item=MyRouterResponseTime label="Router Response Time [%s]"
+    }
+
     Frame label="SpeedTest" {
         Text item=Speedtest_Start
         Switch item=Speedtest_Running
         Default item=Speedtest_Progress
         Text item=Speedtest_Running label="Speedtest [%s]" visibility=[Speedtest_Running != "-"]
-    }    
+    }
 
     Frame label="Down" {
         Text item=Speedtest_ResultDown
@@ -238,7 +251,7 @@ sitemap demo label="Main Menu"
         Chart item=Speedtest_ResultUp period=D refresh=30000 service="influxdb" visibility=[sys_chart_period==0, sys_chart_period=="Non initialisé"]
         Chart item=Speedtest_ResultUp period=W refresh=30000 service="influxdb" visibility=[sys_chart_period==1]
         Chart item=Speedtest_ResultUp period=M refresh=30000 service="influxdb" visibility=[sys_chart_period==2]
-        Chart item=Speedtest_ResultUp period=Y refresh=30000 service="influxdb" visibility=[sys_chart_period==3]  
+        Chart item=Speedtest_ResultUp period=Y refresh=30000 service="influxdb" visibility=[sys_chart_period==3]
     }
 }
 ```
@@ -257,7 +270,7 @@ if (actions === null) {
     // Send via MAC address
     actions.sendWakeOnLanPacketViaMac()
     actions.sendWakeOnLanPacket() // deprecated
-    
+
     // Send via IP address
     actions.sendWakeOnLanPacketViaIp()
 }

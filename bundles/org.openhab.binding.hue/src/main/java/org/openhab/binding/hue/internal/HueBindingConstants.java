@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link HueBindingConstants} class defines common constants, which are
@@ -178,7 +179,8 @@ public class HueBindingConstants {
 
     // channel IDs that (optionally) support dynamics
     public static final Set<String> DYNAMIC_CHANNELS = Set.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_COLOR,
-            CHANNEL_2_COLOR_TEMP_PERCENT, CHANNEL_2_COLOR_TEMP_ABSOLUTE, CHANNEL_2_SCENE, CHANNEL_2_EFFECT);
+            CHANNEL_2_COLOR_TEMP_PERCENT, CHANNEL_2_COLOR_TEMP_ABSOLUTE, CHANNEL_2_SCENE, CHANNEL_2_EFFECT,
+            CHANNEL_2_COLOR_XY_ONLY, CHANNEL_2_DIMMING_ONLY);
 
     /*
      * Map of API v1 channel IDs against API v2 channel IDs where, if the v1 channel exists in the system, then we
@@ -200,4 +202,7 @@ public class HueBindingConstants {
             Map.entry(CHANNEL_LAST_UPDATED, CHANNEL_2_LAST_UPDATED));
 
     public static final String ALL_LIGHTS_KEY = "discovery.group.all-lights.label";
+
+    public static final String CHANNEL_GROUP_AUTOMATION = "automation";
+    public static final ChannelTypeUID CHANNEL_TYPE_AUTOMATION = new ChannelTypeUID(BINDING_ID, "automation-enable");
 }

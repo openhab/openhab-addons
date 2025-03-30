@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,7 +67,7 @@ public class DescriptionLoader {
             }
             var body = response.getContentAsString();
             var description = gson.fromJson(body, WebThingDescription.class);
-            if ((description != null) && (description.properties != null) && (description.properties.size() > 0)) {
+            if ((description != null) && (description.properties != null) && !description.properties.isEmpty()) {
                 if ((description.contextKeyword == null) || description.contextKeyword.trim().length() == 0) {
                     description.contextKeyword = "https://webthings.io/schemas";
                 }

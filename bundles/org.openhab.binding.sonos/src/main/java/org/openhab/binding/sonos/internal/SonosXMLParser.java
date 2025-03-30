@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -1016,13 +1016,16 @@ public class SonosXMLParser {
         }
         // Finally remove unexpected characters in a thing type ID
         id = id.replaceAll("[^a-zA-Z0-9_]", "");
-        // ZP80 is translated to CONNECT and ZP100 to CONNECTAMP
+        // ZP80 is translated to CONNECT and ZP100 to CONNECTAMP; Boost is ignored
         switch (id) {
             case "ZP80":
                 id = "CONNECT";
                 break;
             case "ZP100":
                 id = "CONNECTAMP";
+                break;
+            case "Boost":
+                id = "";
                 break;
             default:
                 break;

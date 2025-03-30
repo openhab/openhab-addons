@@ -150,9 +150,11 @@
 				<label>Sender Filter</label>
 				<description>A (regular expression) filter for the mail sender address.</description>
 			</parameter>
-			<parameter name="transformation" type="text">
+			<parameter name="transformation" type="text" multiple="true">
 				<label>Transformation</label>
-				<description>Transformation pattern used when processing messages. Multiple transformation can be chained using "∩".</description>
+				<description>Transformation pattern used when processing messages. Multiple transformations can be chained by
+					listing
+					each transformation on a separate line, or by concatenating them with "∩".</description>
 			</parameter>
 			<parameter name="markAsRead" type="boolean">
 				<label>Mark As Read</label>

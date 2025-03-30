@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -246,7 +246,7 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
         }
         try {
             session.execute(uriBuilder.build(), HttpMethod.GET, GenericResponse.class, null);
-        } catch (FreeboxException ignore) {
+        } catch (IllegalArgumentException | FreeboxException ignore) {
             // This call does not return anything, we can safely ignore
         }
     }

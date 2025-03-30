@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ import org.openhab.core.types.UnDefType;
  * RFXCOM data class for lighting1 message. See X10, ARC, etc..
  *
  * @author Evert van Es, Cycling Engineer - Initial contribution
- * @author Pauli Anttila
+ * @author Pauli Anttila - Migrated to OH2
  */
 public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighting1Message.SubType> {
 

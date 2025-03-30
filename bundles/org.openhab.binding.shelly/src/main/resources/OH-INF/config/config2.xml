@@ -117,5 +117,10 @@
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="enableBluGateway" type="boolean" required="false">
+			<label>@text/thing-type.config.shelly.enableBluGateway.label</label>
+			<description>@text/thing-type.config.shelly.enableBluGateway.description</description>
+			<default>false</default>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

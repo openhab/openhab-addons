@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,8 @@ public class Precipitation {
     }
 
     public Double getVolume() {
+        Double oneHour = this.oneHour;
+        Double threeHours = this.threeHours;
         return oneHour != null ? oneHour : threeHours != null ? threeHours / 3 : 0;
     }
 }

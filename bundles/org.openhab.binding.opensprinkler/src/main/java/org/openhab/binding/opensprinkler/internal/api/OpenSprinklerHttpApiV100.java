@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -382,7 +382,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
             ContentResponse response = null;
             int retriesLeft = Math.max(1, config.retry);
             boolean connectionSuccess = false;
-            while (connectionSuccess == false && retriesLeft > 0) {
+            while (!connectionSuccess && retriesLeft > 0) {
                 retriesLeft--;
                 try {
                     response = withGeneralProperties(httpClient.newRequest(location))
@@ -393,7 +393,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
                             e.getMessage());
                 }
             }
-            if (connectionSuccess == false) {
+            if (!connectionSuccess) {
                 throw new CommunicationApiException("Request to OpenSprinkler device failed");
             }
             if (response != null && response.getStatus() != HTTP_OK_CODE) {

@@ -36,6 +36,7 @@ Auto discovery is not supported.
 | basePrice  | The net(!) base price you have to pay for every kWh. Optional, but you most probably want to set it based on you delivery contract.                                                                                                                                                                             |
 | timeZone   | The time zone the hour definitions of the things below refer to. Default is `CET`, as it corresponds to the aWATTar API. It is strongly recommended not to change this. However, if you do so, be aware that the prices delivered by the API will not cover a whole calendar day in this timezone. **Advanced** |
 | country    | The country prices should be received for. Use `DE` for Germany or `AT` for Austria. `DE` is the default.                                                                                                                                                                                                       |
+| serviceFee | The service fee in percent. Will be added to the total price. Will be calculated on top of the absolute price per hour. Default is `0`.                                                                                                                                                                         |
 
 ### Prices Thing
 
@@ -59,6 +60,17 @@ So for a bestprice thing with `[ rangeStart=5, rangeDuration=5  ]` all channels 
 Also, due to the time the aWATTar API delivers the data for the next day, it doesn't make sense to define a thing with `[ rangeStart=12, rangeDuration=20 ]` as the binding will be able to compute the channels only after 14:00.
 
 ## Channels
+
+### Bridge
+
+The bridge has two channels which support a time-series:
+
+| channel      | type               | description                                                                                                                             |
+| ------------ |--------------------| --------------------------------------------------------------------------------------------------------------------------------------- |
+| market-net   | Number:EnergyPrice | This net market price per kWh. This is directly taken from the price the aWATTar API delivers.                                          |
+| total-net    | Number:EnergyPrice | Sum of net market price and configured base price                                                                                       |
+
+If you need gross prices, please use the [VAT profile](https://www.openhab.org/addons/transformations/vat/).
 
 ### Prices Thing
 
@@ -97,7 +109,7 @@ All prices are available in each of the following channel groups:
 awattar.things:
 
 ```java
-Bridge awattar:bridge:bridge1 "aWATTar Bridge" [ country="DE", vatPercent="19", basePrice="17.22"] {
+Bridge awattar:bridge:bridge1 "aWATTar Bridge" [ country="DE", vatPercent="19", basePrice="17.22", serviceFee="3" ] {
  Thing prices price1 "aWATTar Price" []
 // The car should be loaded for 4 hours during the night
  Thing bestprice carloader "Car Loader" [ rangeStart="22", rangeDuration="8", length="4", consecutive="true" ]

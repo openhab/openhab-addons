@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,21 +14,12 @@ package org.openhab.binding.gree.internal.gson;
 
 /**
  *
- * The GreeStatusResponse4Gson class is used by Gson to hold values returned from
+ * The GreeStatusResponseDTO class is used by Gson to hold values returned from
  * the Air Conditioner during requests for Status Updates to the
  * Air Conditioner.
  *
  * @author John Cunha - Initial contribution
  */
-public class GreeStatusResponseDTO {
-
-    public String t = null;
-    public int i = 0;
-    public int uid = 0;
-    public String cid = null;
-    public String tcid = null;
-    public String pack = null;
-
-    public transient String decryptedPack = null;
+public class GreeStatusResponseDTO extends GreeResponseBaseDTO {
     public transient GreeStatusResponsePackDTO packJson = null;
 }

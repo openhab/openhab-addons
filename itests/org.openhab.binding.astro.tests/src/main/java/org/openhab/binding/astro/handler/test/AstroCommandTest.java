@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,7 @@ public class AstroCommandTest {
         Thing thing = mock(Thing.class);
         when(thing.getConfiguration()).thenReturn(thingConfiguration);
         when(thing.getUID()).thenReturn(thingUID);
-        when(thing.getChannel(DEFAULT_TEST_CHANNEL_ID)).thenReturn(channel);
+        when(thing.getChannel(channelUID)).thenReturn(channel);
 
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         CronScheduler cronScheduler = mock(CronScheduler.class);

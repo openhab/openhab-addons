@@ -1,13 +1,17 @@
-# Go-eCharger Binding
+# go-e Charger Binding
 
-This Binding controls and reads data from the [Go-eCharger](https://go-e.co/).
-It is a mobile wallbox for charging EVs and has an open REST API for reading data and configuration.
-The API must be activated in the Go-eCharger app.
+This Binding controls and reads data from the [go-e Charger](https://go-e.co/), which is a mobile wallbox for charging EVs and has an open REST API for reading data and configuration.
 
 ## Supported Things
 
-This binding supports Go-eCharger HOME+ with 7.4kW, 11kW or 22kW.
-The Go-eCharger HOMEfix with 11kW and 22kW is supported too.
+This binding supports go-e Charger HOME+ with 7.4kW, 11kW or 22kW as well as go-e Charger HOMEfix and go-e Charger Gemini with 11kW and 22kW.
+
+## Setup
+
+1) Install the binding
+2) Activate the local HTTP API in the go-e Charger app (Settings --> Connection --> API Settings --> "Allow access to local HTTP API vX").
+Please note that v1 is the default, but more functions (channels) are supported by the API v2. However, v2 has to be supported by your go-e Charger (details see below).
+3) Configure the thing (see below).
 
 ## Thing Configuration
 
@@ -15,43 +19,45 @@ The thing has three configuration parameters:
 
 | Parameter       | Description                                   | Required |
 |-----------------|-----------------------------------------------|----------|
-| ip              | The IP-address of your Go-eCharger            | yes      |
+| ip              | The IP-address of your go-e Charger           | yes      |
 | apiVersion      | The API version to use (1=default or 2)       | no       |
 | refreshInterval | Interval to read data, default 5 (in seconds) | no       |
 
-The apiVersion 2 is only available for Go-eCharger with new hardware revision (CM-03).
+The apiVersion 2 is only available for go-e Charger with new hardware revision (CM-03, GM-10 and potentially others), which can be recognized with the serial number on the back of the device.
 
 ## Channels
 
-Currently available channels are
-| Channel ID               | Item Type                | Description                                                   | API version       |
-|--------------------------|--------------------------|---------------------------------------------------------------|-------------------|
-| maxCurrent               | Number:ElectricCurrent   | Maximum current allowed to use for charging                   | 1 (r/w), 2 (r/w)  |
-| maxCurrentTemp           | Number:ElectricCurrent   | Maximum current temporary (not written to EEPROM)             | 1 (r)             |
-| pwmSignal                | String                   | Signal status for PWM signal                                  | 1 (r), 2 (r)      |
-| error                    | String                   | Error code of charger                                         | 1 (r), 2 (r)      |
-| voltageL1                | Number:ElectricPotential | Voltage on L1                                                 | 1 (r), 2 (r)      |
-| voltageL2                | Number:ElectricPotential | Voltage on L2                                                 | 1 (r), 2 (r)      |
-| voltageL3                | Number:ElectricPotential | Voltage on L3                                                 | 1 (r), 2 (r)      |
-| currentL1                | Number:ElectricCurrent   | Current on L1                                                 | 1 (r), 2 (r)      |
-| currentL2                | Number:ElectricCurrent   | Current on L2                                                 | 1 (r), 2 (r)      |
-| currentL3                | Number:ElectricCurrent   | Current on L3                                                 | 1 (r), 2 (r)      |
-| powerL1                  | Number:Power             | Power on L1                                                   | 1 (r), 2 (r)      |
-| powerL2                  | Number:Power             | Power on L2                                                   | 1 (r), 2 (r)      |
-| powerL3                  | Number:Power             | Power on L2                                                   | 1 (r), 2 (r)      |
-| powerAll                 | Number:Power             | Power over all three phases                                   | 1 (r), 2 (r)      |
-| phases                   | Number                   | Amount of phases currently used for charging                  | 1 (r), 2 (r/w)    |
-| sessionChargeEnergyLimit | Number:Energy            | Wallbox stops charging after defined value, disable with 0    | 1 (r/w), 2 (r/w)  |
-| sessionChargedEnergy     | Number:Energy            | Amount of energy that has been charged in this session        | 1 (r), 2 (r)      |
-| totalChargedEnergy       | Number:Energy            | Amount of energy that has been charged since installation     | 1 (r), 2 (r)      |
-| transaction              | Number                   | 0 if no card, otherwise card ID                               | 2 (r/w)           |
-| allowCharging            | Switch                   | If `ON` charging is allowed                                   | 1 (r/w), 2 (r)    |
-| cableCurrent             | Number:ElectricCurrent   | Specifies the max current that can be charged with that cable | 1 (r), 2 (r)      |
-| temperature              | Number:Temperature       | Temperature of the curciuit board of the Go-eCharger          | 1 (r), 2 (r)      |
-| temperatureType2Port     | Number:Temperature       | Temperature of the type 2 port of the Go-eCharger             | 2 (r)             |
-| firmware                 | String                   | Firmware Version                                              | 1 (r), 2 (r)      |
-| accessConfiguration      | String                   | Access configuration, for example OPEN, RFID ...              | 1 (r/w)           |
-| forceState               | Number                   | Force state  (Neutral=0, Off=1, On=2)                         | 2 (r/w)           |
+Currently available channels are:
+
+| Channel ID               | Item Type                | Description                                                   | API version      |
+|--------------------------|--------------------------|---------------------------------------------------------------|------------------|
+| maxCurrent               | Number:ElectricCurrent   | Maximum current allowed to use for charging                   | 1 (r/w), 2 (r/w) |
+| maxCurrentTemp           | Number:ElectricCurrent   | Maximum current temporary (not written to EEPROM)             | 1 (r)            |
+| pwmSignal                | String                   | Signal status for PWM signal                                  | 1 (r), 2 (r)     |
+| error                    | String                   | Error code of charger                                         | 1 (r), 2 (r)     |
+| voltageL1                | Number:ElectricPotential | Voltage on L1                                                 | 1 (r), 2 (r)     |
+| voltageL2                | Number:ElectricPotential | Voltage on L2                                                 | 1 (r), 2 (r)     |
+| voltageL3                | Number:ElectricPotential | Voltage on L3                                                 | 1 (r), 2 (r)     |
+| currentL1                | Number:ElectricCurrent   | Current on L1                                                 | 1 (r), 2 (r)     |
+| currentL2                | Number:ElectricCurrent   | Current on L2                                                 | 1 (r), 2 (r)     |
+| currentL3                | Number:ElectricCurrent   | Current on L3                                                 | 1 (r), 2 (r)     |
+| powerL1                  | Number:Power             | Power on L1                                                   | 1 (r), 2 (r)     |
+| powerL2                  | Number:Power             | Power on L2                                                   | 1 (r), 2 (r)     |
+| powerL3                  | Number:Power             | Power on L2                                                   | 1 (r), 2 (r)     |
+| powerAll                 | Number:Power             | Power over all three phases                                   | 1 (r), 2 (r)     |
+| phases                   | Number                   | Amount of phases currently used for charging                  | 1 (r), 2 (r/w)   |
+| sessionChargeEnergyLimit | Number:Energy            | Wallbox stops charging after defined value, disable with 0    | 1 (r/w), 2 (r/w) |
+| sessionChargedEnergy     | Number:Energy            | Amount of energy that has been charged in this session        | 1 (r), 2 (r)     |
+| totalChargedEnergy       | Number:Energy            | Amount of energy that has been charged since installation     | 1 (r), 2 (r)     |
+| transaction              | Number                   | 0 if no card, otherwise card ID                               | 2 (r/w)          |
+| allowCharging            | Switch                   | If `ON` charging is allowed                                   | 1 (r/w), 2 (r)   |
+| cableCurrent             | Number:ElectricCurrent   | Specifies the max current that can be charged with that cable | 1 (r), 2 (r)     |
+| temperature              | Number:Temperature       | Temperature of the curciuit board of the go-e Charger         | 1 (r), 2 (r)     |
+| temperatureType2Port     | Number:Temperature       | Temperature of the type 2 port of the go-e Charger            | 2 (r)            |
+| firmware                 | String                   | Firmware Version                                              | 1 (r), 2 (r)     |
+| accessConfiguration      | String                   | Access configuration, for example OPEN, RFID ...              | 1 (r/w)          |
+| forceState               | Number                   | Force state  (Neutral=0, Off=1, On=2)                         | 2 (r/w)          |
+| awattarMaxPrice          | Number                   | Awattar Max Price in ct                                       | 2 (r/w)          |
 
 ## Full Example
 
@@ -91,7 +97,7 @@ String                     GoEChargerFirmware                   "Firmware"      
 String                     GoEChargerAccessConfiguration        "Access configuration"                  {channel="goecharger:goe:garage:accessConfiguration"}
 ```
 
-## Setting charge current of Go-eCharger based on photovoltaik output
+## Setting charge current of go-e Charger based on photovoltaik output
 
 You can easily define rules to charge with PV power alone.
 Here is a simple sample how such a rule could look like:
@@ -109,7 +115,7 @@ end
 Advanced example:
 
 ```java
-rule "Set charging limit for go-eCharger"
+rule "Set charging limit for go-e Charger"
 when
     Time cron "*/10 * * ? * *" // Trigger every 10 seconds
 then
@@ -152,7 +158,7 @@ then
                 GoEChargerMaxCurrent.sendCommand(maxAmp3Phases.intValue)
                 // logInfo("eCharger", "Set charging limit 3 Phases: " + maxAmp3Phases.intValue + " A")
             }
-        } else {         
+        } else {
             if (maxAmp1Phase.intValue >= 6 ) {
                 // set force state to neutral (Neutral=0, Off=1, On=2)
                 if (GoEChargerForceState.state != 0) {

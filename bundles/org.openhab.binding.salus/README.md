@@ -1,6 +1,6 @@
 # Salus Binding
 
-The Salus Binding facilitates seamless integration between OpenHAB and [Salus Cloud](https://eu.salusconnect.io/).
+The Salus Binding facilitates seamless integration between openHAB and [Salus Cloud](https://eu.salusconnect.io/).
 
 For years, SALUS Controls has been at the forefront of designing building automation solutions for the heating industry.
 Our commitment to innovation has resulted in modern, efficient solutions to control various heating systems. With
@@ -75,11 +75,12 @@ removed.
 
 ### `salus-it600-device` Channels
 
-| Channel                     | Type               | Read/Write | Description                                                                                                                                                                                                                                                                                     |
-|-----------------------------|--------------------|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| it600-temp-channel          | Number:Temperature | RO         | Current temperature in the room                                                                                                                                                                                                                                                                 |
-| it600-expected-temp-channel | Number:Temperature | RW         | Sets the desired temperature in the room                                                                                                                                                                                                                                                        |
-| it600-work-type-channel     | String             | RW         | Sets the work type for the device. OFF - device is turned off MANUAL - schedules are turned off, following a manual temperature set, AUTOMATIC - schedules are turned on, following schedule, TEMPORARY_MANUAL - schedules are turned on, following manual temperature until the next schedule. |
+| Channel                    | Type               | Read/Write | Description                                                                                                                                                                                                                                                                                     |
+|----------------------------|--------------------|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| temperature         | Number:Temperature | RO         | Current temperature in the room                                                                                                                                                                                                                                                                 |
+| expected-temperature | Number:Temperature | RW         | Sets the desired temperature in the room                                                                                                                                                                                                                                                        |
+| work-type | String             | RW         | Sets the work type for the device. OFF - device is turned off MANUAL - schedules are turned off, following a manual temperature set, AUTOMATIC - schedules are turned on, following schedule, TEMPORARY_MANUAL - schedules are turned on, following manual temperature until the next schedule. |
+| running-state     | Switch             | RO         | Is the device running |
 
 ## Full Example
 

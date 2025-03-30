@@ -86,7 +86,7 @@
 			<channel id="mode" typeId="colorBulbMode"/>
 			<channel id="brightness" typeId="dimmerChannel"/>
 			<channel id="color" typeId="colorChannel"/>
-			<channel id="colorTemperature" typeId="colorTemperature"/>
+			<channel id="colorTemperature" typeId="system.color-temperature-abs"/>
 		</channels>
 	</channel-group-type>
 
@@ -137,7 +137,7 @@
 
 	<!-- Temperature Sensor -->
 	<channel-group-type id="temperatureSensor">
-		<label>Wheater Sensor</label>
+		<label>Weather Sensor</label>
 		<description>Temperature and Humidity Sensor Channels</description>
 		<channels>
 			<channel id="currentTemp" typeId="temperatureChannel"></channel>

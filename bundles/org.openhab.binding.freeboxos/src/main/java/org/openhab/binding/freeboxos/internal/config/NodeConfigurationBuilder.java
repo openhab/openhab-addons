@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,7 @@ public class NodeConfigurationBuilder {
         if (node.category() == Category.UNKNOWN) {
             return Optional.empty();
         }
-        ThingUID thingUID = new ThingUID(node.category().getThingTypeUID(), bridgeUID, Integer.toString(node.id()));
+        ThingUID thingUID = new ThingUID(node.category().thingTypeUID, bridgeUID, Integer.toString(node.id()));
         DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID);
         discoveryResultBuilder.withProperty(ClientConfiguration.ID, node.id()).withLabel(node.label())
                 .withRepresentationProperty(ClientConfiguration.ID).withBridge(bridgeUID);

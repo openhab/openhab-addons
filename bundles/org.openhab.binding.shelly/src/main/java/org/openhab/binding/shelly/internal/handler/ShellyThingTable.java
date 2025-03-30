@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -82,7 +82,8 @@ public class ShellyThingTable {
 
     public void startDiscoveryService(BundleContext bundleContext) {
         if (discoveryService == null) {
-            discoveryService = new ShellyBasicDiscoveryService(bundleContext, this);
+            ShellyBasicDiscoveryService discoveryService = this.discoveryService = new ShellyBasicDiscoveryService(
+                    bundleContext, this);
             discoveryService.registerDeviceDiscoveryService();
         }
     }
@@ -94,20 +95,23 @@ public class ShellyThingTable {
     }
 
     public void stopDiscoveryService() {
+        ShellyBasicDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
             discoveryService.unregisterDeviceDiscoveryService();
-            discoveryService = null;
+            this.discoveryService = null;
         }
     }
 
     public void discoveredResult(ThingTypeUID uid, String model, String serviceName, String address,
             Map<String, Object> properties) {
+        ShellyBasicDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
             discoveryService.discoveredResult(uid, model, serviceName, address, properties);
         }
     }
 
     public void discoveredResult(DiscoveryResult result) {
+        ShellyBasicDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
             discoveryService.discoveredResult(result);
         }

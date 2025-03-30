@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,7 +50,6 @@ import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 @NonNullByDefault
 public class AudioSourceHandler extends AbstractOmnilinkHandler {
     private final Logger logger = LoggerFactory.getLogger(AudioSourceHandler.class);
-    private final int pollDelaySeconds = 5;
     private final int thingID = getThingNumber();
     private @Nullable ScheduledFuture<?> scheduledPolling = null;
     public @Nullable String number;
@@ -64,7 +63,7 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
         final OmnilinkBridgeHandler bridgeHandler = getOmnilinkBridgeHandler();
         if (bridgeHandler != null) {
             updateStatus(ThingStatus.ONLINE);
-            if (((Boolean) getThing().getConfiguration().get(THING_PROPERTIES_AUTOSTART)).booleanValue()) {
+            if ((Boolean) getThing().getConfiguration().get(THING_PROPERTIES_AUTOSTART)) {
                 logger.debug("Autostart enabled, scheduling polling for Audio Source: {}", thingID);
                 schedulePolling();
             } else {
@@ -104,6 +103,7 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
     private synchronized void schedulePolling() {
         cancelPolling();
         logger.debug("Scheduling polling for Audio Source: {}", thingID);
+        int pollDelaySeconds = 5;
         scheduledPolling = super.scheduler.scheduleWithFixedDelay(this::pollAudioSource, 0, pollDelaySeconds,
                 TimeUnit.SECONDS);
     }
@@ -113,19 +113,17 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
         logger.debug("handleCommand called for channel: {}, command: {}", channelUID, command);
         final ScheduledFuture<?> scheduledPolling = this.scheduledPolling;
 
-        switch (channelUID.getId()) {
-            case CHANNEL_AUDIO_SOURCE_POLLING:
-                if (command instanceof RefreshType) {
-                    updateState(CHANNEL_AUDIO_SOURCE_POLLING,
-                            OnOffType.from((scheduledPolling != null && !scheduledPolling.isDone())));
-                } else if (command instanceof OnOffType onOffCommand) {
-                    handlePolling(channelUID, onOffCommand);
-                } else {
-                    logger.debug("Invalid command: {}, must be RefreshType or OnOffType", command);
-                }
-                break;
-            default:
-                logger.warn("Unknown channel for Audio Source thing: {}", channelUID);
+        if (CHANNEL_AUDIO_SOURCE_POLLING.equals(channelUID.getId())) {
+            if (command instanceof RefreshType) {
+                updateState(CHANNEL_AUDIO_SOURCE_POLLING,
+                        OnOffType.from((scheduledPolling != null && !scheduledPolling.isDone())));
+            } else if (command instanceof OnOffType onOffCommand) {
+                handlePolling(channelUID, onOffCommand);
+            } else {
+                logger.debug("Invalid command: {}, must be RefreshType or OnOffType", command);
+            }
+        } else {
+            logger.warn("Unknown channel for Audio Source thing: {}", channelUID);
         }
     }
 
@@ -174,7 +172,7 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
                 logger.debug("Received null bridge while polling Audio Source statuses!");
             }
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
-            logger.debug("Exception recieved while polling for Audio Source statuses: {}", e.getMessage());
+            logger.debug("Exception received while polling for Audio Source statuses: {}", e.getMessage());
         }
     }
 }

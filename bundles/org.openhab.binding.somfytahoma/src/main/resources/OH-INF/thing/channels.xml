@@ -45,14 +45,14 @@
 	</channel-type>
 
 	<channel-type id="co2_concentration">
-		<item-type>Number:DimensionLess</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>CO2 concentration</label>
 		<description>A CO2 sensor carbon dioxide concentration in ppm</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="noise">
-		<item-type>Number:DimensionLess</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Noise</label>
 		<description>A noise sensor noise in decibel</description>
 		<state readOnly="true" pattern="%d %unit%"/>
@@ -883,6 +883,13 @@
 				<option value="high demand">High Demand</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="tilt">
+		<item-type>Number</item-type>
+		<label>Tilt</label>
+		<description>Venetian blind tilt (-5..5)</description>
+		<state min="-5" max="5" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>
 
 </thing:thing-descriptions>

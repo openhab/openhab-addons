@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,6 +90,7 @@ public class SensiboAccountHandlerTest {
         final String getPodsResponse = new String(getClass().getResourceAsStream(podsResponse).readAllBytes(),
                 StandardCharsets.UTF_8);
         stubFor(get(urlEqualTo("/api/v2/users/me/pods?fields=*&apiKey=APIKEY"))
+                .withHeader("Accept-Encoding", equalTo("gzip"))
                 .willReturn(aResponse().withStatus(200).withBody(getPodsResponse)));
 
         when(sensiboAccountMock.getConfiguration()).thenReturn(configuration);

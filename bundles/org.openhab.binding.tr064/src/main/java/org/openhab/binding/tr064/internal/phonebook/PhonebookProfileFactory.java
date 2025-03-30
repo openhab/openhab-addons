@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,6 +63,7 @@ public class PhonebookProfileFactory implements ProfileFactory, ProfileTypeProvi
     private final Map<LocalizedKey, ProfileType> localizedProfileTypeCache = new ConcurrentHashMap<>();
 
     private final ProfileTypeI18nLocalizationService profileTypeI18nLocalizationService;
+    @Nullable
     private final Bundle bundle;
 
     @Activate

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,8 +47,8 @@ import org.slf4j.LoggerFactory;
  * For that it uses the {@link BridgeHandler} to register this class as a {@link DeviceStatusListener} to get informed
  * about changes from the accompanying {@link Circuit}.
  *
- * @author Michael Ochel
- * @author Matthias Siegele
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 public class CircuitHandler extends BaseThingHandler implements DeviceStatusListener {
 

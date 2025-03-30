@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,8 +36,8 @@ import io.github.hapjava.services.impl.SmartSpeakerService;
  * @author Eugen Freiter - Initial contribution
  */
 public class HomekitSmartSpeakerImpl extends AbstractHomekitAccessoryImpl implements SmartSpeakerAccessory {
-    private final Map<CurrentMediaStateEnum, String> currentMediaState;
-    private final Map<TargetMediaStateEnum, String> targetMediaState;
+    private final Map<CurrentMediaStateEnum, Object> currentMediaState;
+    private final Map<TargetMediaStateEnum, Object> targetMediaState;
 
     public HomekitSmartSpeakerImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,

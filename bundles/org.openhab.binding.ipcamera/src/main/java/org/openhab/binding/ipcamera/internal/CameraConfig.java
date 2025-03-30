@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +29,7 @@ public class CameraConfig {
     private String password = "";
     public boolean useToken = true;
     private int onvifMediaProfile;
+    private int onvifEventServiceType;
     private int pollTime;
     private String ffmpegInput = "";
     private String snapshotUrl = "";
@@ -52,6 +53,10 @@ public class CameraConfig {
 
     public int getOnvifMediaProfile() {
         return onvifMediaProfile;
+    }
+
+    public int getOnvifEventServiceType() {
+        return onvifEventServiceType;
     }
 
     public String getFfmpegInputOptions() {
@@ -104,6 +109,10 @@ public class CameraConfig {
 
     public String getAlarmInputUrl() {
         return alarmInputUrl;
+    }
+
+    public void setAlarmInputUrl(String url) {
+        alarmInputUrl = url;
     }
 
     public String getCustomAudioAlarmUrl() {

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -112,7 +112,7 @@ public interface ShellyApiInterface {
 
     boolean setBluetooth(boolean enable) throws ShellyApiException;
 
-    String deviceReboot() throws ShellyApiException;
+    void deviceReboot() throws ShellyApiException;
 
     String setDebug(boolean enabled) throws ShellyApiException;
 

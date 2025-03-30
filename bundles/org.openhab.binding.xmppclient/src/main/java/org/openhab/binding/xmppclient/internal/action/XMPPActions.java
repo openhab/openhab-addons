@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.xmppclient.internal.action;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.xmppclient.internal.XMPPClient;
+import org.openhab.binding.xmppclient.internal.client.XMPPClient;
 import org.openhab.binding.xmppclient.internal.handler.XMPPClientHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @ThingActionsScope(name = "xmppclient")
 @NonNullByDefault
 public class XMPPActions implements ThingActions {
-    private static final Logger logger = LoggerFactory.getLogger(XMPPActions.class);
+    private final Logger logger = LoggerFactory.getLogger(XMPPActions.class);
     private @Nullable XMPPClientHandler handler;
 
     @Override
@@ -58,15 +58,28 @@ public class XMPPActions implements ThingActions {
         }
 
         XMPPClient connection = clientHandler.getXMPPClient();
-        if (connection == null) {
-            logger.warn("XMPP ThingHandler connection is null");
-            return;
-        }
-        if ((to == null) || (text == null)) {
-            logger.info("Skipping XMPP messaging to {} value {}", to, text);
+        if (to == null || text == null) {
+            logger.warn("Skipping XMPP messaging to {} value {}", to, text);
             return;
         }
         connection.sendMessage(to, text);
+    }
+
+    @RuleAction(label = "publish a group message", description = "Publish a group message using XMPP.")
+    public void publishGroupXMPP(@ActionInput(name = "to", label = "To", description = "Send to") @Nullable String to,
+            @ActionInput(name = "text", label = "Text", description = "Message text") @Nullable String text) {
+        XMPPClientHandler clientHandler = handler;
+        if (clientHandler == null) {
+            logger.warn("XMPP ThingHandler is null");
+            return;
+        }
+
+        XMPPClient connection = clientHandler.getXMPPClient();
+        if (to == null || text == null) {
+            logger.warn("Skipping XMPP messaging to {} value {}", to, text);
+            return;
+        }
+        connection.sendGroupMessage(to, text);
     }
 
     @RuleAction(label = "publish an image by HTTP", description = "Publish an image by HTTP using XMPP.")
@@ -80,11 +93,7 @@ public class XMPPActions implements ThingActions {
         }
 
         XMPPClient connection = clientHandler.getXMPPClient();
-        if (connection == null) {
-            logger.warn("XMPP ThingHandler connection is null");
-            return;
-        }
-        if ((to == null) || (filename == null)) {
+        if (to == null || filename == null) {
             logger.warn("Skipping XMPP messaging to {} value {}", to, filename);
             return;
         }
@@ -93,6 +102,10 @@ public class XMPPActions implements ThingActions {
 
     public static void publishXMPP(ThingActions actions, @Nullable String to, @Nullable String text) {
         ((XMPPActions) actions).publishXMPP(to, text);
+    }
+
+    public static void publishGroupXMPP(ThingActions actions, @Nullable String to, @Nullable String text) {
+        ((XMPPActions) actions).publishGroupXMPP(to, text);
     }
 
     public static void publishXMPPImageByHTTP(ThingActions actions, @Nullable String to, @Nullable String filename) {

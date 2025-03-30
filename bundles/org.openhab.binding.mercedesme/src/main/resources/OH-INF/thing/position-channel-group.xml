@@ -9,6 +9,7 @@
 		<channels>
 			<channel id="heading" typeId="heading"/>
 			<channel id="gps" typeId="gps"/>
+			<channel id="status" typeId="status-pos"/>
 			<channel id="signal" typeId="signal"/>
 		</channels>
 	</channel-group-type>

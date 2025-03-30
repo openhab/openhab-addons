@@ -219,6 +219,14 @@ Thing nikohomecontrol:alarm:mybridge:myalarm [ alarmId="abcdef01-dcba-1234-ab98-
 | alarm           |    |          |                    | bridge, alarm | trigger channel with alarm event message, can be used in rules                                    |
 | notice          |    |          |                    | bridge      | trigger channel with notice event message, can be used in rules                                     |
 
+## Console Commands
+
+To help with further development, a number of console commands allow you to collect information about your current system:
+
+- `nikohomecontrol controllers`: Lists all controllers in the network and return the controller ID
+- `nikohomecontrol systeminfo <controller ID>`: Info about the system
+- `nikohomecontrol devicelist <controller ID>`: JSON list of devices with their characteristics in a Niko Home Control II system
+- `nikohomecontrol devicelist  <controller ID> dump`: Dump system info and device characteristics in a file
 
 ## Limitations
 

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,6 @@ public class SensiboModelTest {
 
     @Test
     public void testCaseInsensitiveMacAddress() throws IOException {
-
         final PodDetailsDTO rsp = wireHelper.deSerializeResponse("/get_pod_details_response.json", PodDetailsDTO.class);
         SensiboSky sky = new SensiboSky(rsp);
 

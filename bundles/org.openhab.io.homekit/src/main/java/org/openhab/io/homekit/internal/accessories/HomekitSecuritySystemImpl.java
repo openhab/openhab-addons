@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,8 +43,8 @@ import io.github.hapjava.services.impl.SecuritySystemService;
  * @author Cody Cutrer - Initial contribution
  */
 public class HomekitSecuritySystemImpl extends AbstractHomekitAccessoryImpl implements SecuritySystemAccessory {
-    private final Map<CurrentSecuritySystemStateEnum, String> currentStateMapping;
-    private final Map<TargetSecuritySystemStateEnum, String> targetStateMapping;
+    private final Map<CurrentSecuritySystemStateEnum, Object> currentStateMapping;
+    private final Map<TargetSecuritySystemStateEnum, Object> targetStateMapping;
     private final List<CurrentSecuritySystemStateEnum> customCurrentStateList = new ArrayList<>();
     private final List<TargetSecuritySystemStateEnum> customTargetStateList = new ArrayList<>();
 

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:myuplink:account">
+		<parameter-group name="authentication">
+			<label>Authentication</label>
+			<description>Authentication settings.</description>
+		</parameter-group>
+		<parameter-group name="connection">
+			<label>Connection</label>
+			<description>Connection settings.</description>
+		</parameter-group>
+
+		<parameter name="clientId" type="text" required="true" groupName="authentication">
+			<label>Username</label>
+			<description>The Client Id to login at myUplink.</description>
+		</parameter>
+		<parameter name="clientSecret" type="text" required="true" groupName="authentication">
+			<label>Password</label>
+			<context>password</context>
+			<description>The Client Secret to login at myUplink.</description>
+		</parameter>
+		<parameter name="dataPollingInterval" type="integer" required="false" min="30" max="3600" unit="s"
+			groupName="connection">
+			<label>Polling Interval</label>
+			<description>Interval in which data is polled from myUplink (in seconds).</description>
+			<default>60</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:myuplink:generic-device">
+		<parameter name="deviceId" type="text" required="true">
+			<label>Device Id</label>
+			<description>The Id to identify the device.</description>
+		</parameter>
+		<parameter name="systemId" type="text" required="false">
+			<label>System Id</label>
+			<description>The Id of the system the device belongs to.</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,6 +54,7 @@ public class TeslascopeBindingConstants {
     public static final String CHANNEL_CHARGE_ENERGY_ADDED = "charge-energy-added";
     public static final String CHANNEL_CHARGE_LIMIT_SOC_STANDARD = "charge-limit-soc-standard";
     public static final String CHANNEL_CHARGE_PORT = "charge-port";
+    public static final String CHANNEL_CHARGE_PORT_LATCH = "charge-port-latch";
     public static final String CHANNEL_CHARGE_RATE = "charge-rate";
     public static final String CHANNEL_CHARGER_POWER = "charger-power";
     public static final String CHANNEL_CHARGER_VOLTAGE = "charger-voltage";

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,8 @@ package org.openhab.binding.freeboxos.internal.handler;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.VmManager;
@@ -22,6 +24,7 @@ import org.openhab.binding.freeboxos.internal.api.rest.VmManager.VirtualMachine;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +44,15 @@ public class VmHandler extends HostHandler {
     }
 
     @Override
+    void initializeProperties(Map<String, String> properties) throws FreeboxException {
+        // We need to get and set the MAC address before calling super.initializeProperties
+        VirtualMachine vm = getManager(VmManager.class).getDevice(getClientId());
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, vm.mac().toColonDelimitedString());
+        updateProperties(properties);
+        super.initializeProperties(properties);
+    }
+
+    @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
 
@@ -51,11 +63,24 @@ public class VmHandler extends HostHandler {
         }
     }
 
+    @Override
+    protected void internalForcePoll() throws FreeboxException {
+        super.internalForcePoll();
+
+        logger.debug("Polling Virtual machine status");
+        VirtualMachine vm = getManager(VmManager.class).getDevice(getClientId());
+        updateVmChannels(vm);
+    }
+
     public void updateVmChannels(VirtualMachine vm) {
         boolean running = Status.RUNNING.equals(vm.status());
-        updateChannelOnOff(VM_STATUS, STATUS, running);
-        updateChannelOnOff(CONNECTIVITY, REACHABLE, running);
-        updateStatus(running ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+        updateChannelOnOff(GROUP_VM_STATUS, STATUS, running);
+        updateChannelOnOff(GROUP_CONNECTIVITY, REACHABLE, running);
+        if (running) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/info-vm-not-running");
+        }
     }
 
     @Override

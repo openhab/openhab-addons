@@ -548,6 +548,21 @@
 				<default>0</default>
 			</parameter>
 
+			<parameter name="onvifEventServiceType" type="integer" groupName="Settings" multiple="false">
+				<label>ONVIF event method:</label>
+				<description>ONVIF event method to use. If camera does not report event capabilities, the event method can be forced
+					here.
+				</description>
+				<default>0</default>
+				<advanced>true</advanced>
+				<options>
+					<option value="0">Auto detect (0)</option>
+					<option value="1">Disabled (1)</option>
+					<option value="2">Force PullMessages (2)</option>
+					<option value="3">Force WSBaseSubscription (3)</option>
+				</options>
+			</parameter>
+
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
 				<label>IP Whitelist</label>
 				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
@@ -887,6 +902,7 @@
 			<channel id="ffmpegMotionControl" typeId="ffmpegMotionControl"/>
 			<channel id="ffmpegMotionAlarm" typeId="ffmpegMotionAlarm"/>
 			<channel id="enableMotionAlarm" typeId="enableMotionAlarm"/>
+			<channel id="motionDetectionLevel" typeId="motionDetectionLevel"/>
 			<channel id="motionAlarm" typeId="motionAlarm"/>
 			<channel id="externalMotion" typeId="externalMotion"/>
 			<channel id="enableAudioAlarm" typeId="enableAudioAlarm"/>
@@ -922,10 +938,17 @@
 			<channel id="tooDarkAlarm" typeId="tooDarkAlarm"/>
 			<channel id="sceneChangeAlarm" typeId="sceneChangeAlarm"/>
 			<channel id="tooBlurryAlarm" typeId="tooBlurryAlarm"/>
+			<channel id="acceptedCardNumber" typeId="acceptedCardNumber"/>
+			<channel id="unacceptedCardNumber" typeId="unacceptedCardNumber"/>
+			<channel id="doorUnlock" typeId="doorUnlock"/>
+			<channel id="doorContact" typeId="doorContact"/>
+			<channel id="exitButton" typeId="exitButton"/>
+			<channel id="exitButtonEnabled" typeId="exitButtonEnabled"/>
+			<channel id="magneticLockWarning" typeId="magneticLockWarning"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -2321,10 +2344,11 @@
 			<channel id="enableFTP" typeId="enableFTP"/>
 			<channel id="enableEmail" typeId="enableEmail"/>
 			<channel id="enablePush" typeId="enablePush"/>
+			<channel id="autoTracking" typeId="autoTracking"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -2418,7 +2442,7 @@
 				<label>MJPEG Options</label>
 				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
 				</description>
-				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
+				<default>-q:v 4 -r 4 -update 1</default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -2561,6 +2585,21 @@
 					be used.
 				</description>
 				<default>0</default>
+			</parameter>
+
+			<parameter name="onvifEventServiceType" type="integer" groupName="Settings" multiple="false">
+				<label>ONVIF event method:</label>
+				<description>ONVIF event method to use. If camera does not report event capabilities, the event method can be forced
+					here.
+				</description>
+				<default>0</default>
+				<advanced>true</advanced>
+				<options>
+					<option value="0">Auto detect (0)</option>
+					<option value="1">Disabled (1)</option>
+					<option value="2">Force PullMessages (2)</option>
+					<option value="3">Force WSBaseSubscription (3)</option>
+				</options>
 			</parameter>
 
 			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings" unit="ms">
@@ -3040,6 +3079,78 @@
 		<description>Enter some text you wish to overlay on top of the cameras snapshot and video streams.</description>
 	</channel-type>
 
+	<channel-type id="acceptedCardNumber" advanced="true">
+		<item-type>String</item-type>
+		<label>Accepted Card Number</label>
+		<description>Displays last accepted card number.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="unacceptedCardNumber" advanced="true">
+		<item-type>String</item-type>
+		<label>Unaccepted Card Number</label>
+		<description>Displays last unaccepted card number.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="doorUnlock" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Door Unlock</label>
+		<description>Lock/unlock.</description>
+		<category>Lock</category>
+	</channel-type>
+
+	<channel-type id="doorContact" advanced="true">
+		<item-type>Contact</item-type>
+		<label>Door Contact</label>
+		<description>Door contact representing if the door is opened/closed.</description>
+		<category>Door</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="exitButton" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Exit Button</label>
+		<description>Exit button pressed/released.</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="exitButtonEnabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Disable/Enable Exit Button</label>
+		<description>Use to enable/disable exit button.</description>
+		<category>Switch</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="magneticLockWarning" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Magnetic Lock Fail Warning</label>
+		<description>Will switch to ON if the door will be opened while locked.</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="motionDetectionLevel" advanced="true">
+		<item-type>Number</item-type>
+		<label>Motion Detection Level</label>
+		<description>Change how sensitive the camera's motion detection is to
+			movement.</description>
+		<category>Motion</category>
+		<state min="0" max="6" step="1" readOnly="false">
+			<options>
+				<option value="0">Detection Off</option>
+				<option value="1">Lowest sensitivity</option>
+				<option value="2">Low sensitivity</option>
+				<option value="3">Middle sensitivity</option>
+				<option value="4">High sensitivity</option>
+				<option value="5">Higher sensitivity</option>
+				<option value="6">Highest sensitivity</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="gotoPreset" advanced="true">
 		<item-type>String</item-type>
 		<label>Go To Preset</label>
@@ -3073,5 +3184,11 @@
 				<option value="25">Preset 25</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="autoTracking" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Auto Tracking</label>
+		<description>Turn the automatic mode for tracking ON or OFF.</description>
 	</channel-type>
 </thing:thing-descriptions>

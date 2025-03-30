@@ -99,6 +99,7 @@
 				<option value="SHREV2">(swipe in CCW circle)</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="control">

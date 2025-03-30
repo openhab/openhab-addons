@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.http.internal.config;
+
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,7 +28,7 @@ public class HttpChannelConfig extends ChannelValueConverterConfig {
 
     public @Nullable String stateExtension;
     public @Nullable String commandExtension;
-    public @Nullable String stateTransformation;
-    public @Nullable String commandTransformation;
+    public @Nullable List<String> stateTransformation;
+    public @Nullable List<String> commandTransformation;
     public String stateContent = "";
 }

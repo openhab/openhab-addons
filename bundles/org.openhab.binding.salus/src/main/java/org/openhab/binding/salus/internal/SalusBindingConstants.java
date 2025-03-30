@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,6 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
-/**
- * @author Martin Grześlowski - Initial contribution
- */
 /**
  * The {@link SalusBindingConstants} class defines common constants, which are
  * used across the whole binding.
@@ -65,6 +62,7 @@ public class SalusBindingConstants {
             public static final String TEMPERATURE = "temperature";
             public static final String EXPECTED_TEMPERATURE = "expected-temperature";
             public static final String WORK_TYPE = "work-type";
+            public static final String RUNNING_STATE = "running-state";
         }
 
         public static final String GENERIC_OUTPUT_CHANNEL = "generic-output-channel";

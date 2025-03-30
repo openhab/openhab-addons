@@ -8,6 +8,21 @@
 	<description>Controls the Nuvo Grand Concerto or Essentia G Whole House Amplifier.</description>
 	<connection>local</connection>
 
+	<config-description>
+		<parameter name="imageHeight" type="integer" min="1" max="1024" required="false">
+			<label>Image Height</label>
+			<description>Height for MPS4 album art images</description>
+			<default>150</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="imageWidth" type="integer" min="1" max="1024" required="false">
+			<label>Image Width</label>
+			<description>Width for MPS4 album art images</description>
+			<default>150</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
 	<discovery-methods>
 		<discovery-method>
 			<service-type>mdns</service-type>

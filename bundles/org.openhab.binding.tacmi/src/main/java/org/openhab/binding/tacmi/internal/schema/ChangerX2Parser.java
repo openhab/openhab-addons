@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -102,7 +102,7 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
             this.optionFieldName = attributes == null ? null : attributes.get("name");
         } else if ((this.parserState == ParserState.INIT || this.parserState == ParserState.INPUT)
                 && "br".equals(elementName)) {
-            // ignored
+            return; // ignored
         } else if ((this.parserState == ParserState.INIT || this.parserState == ParserState.INPUT)
                 && "input".equals(elementName) && "changeto".equals(id)) {
             this.parserState = ParserState.INPUT_DATA;
@@ -111,10 +111,65 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
                 String type = attributes.get("type");
                 if ("number".equals(type)) {
                     this.optionType = OptionType.NUMBER;
-                    // we transfer the limits from the input elemnt...
+                    // we transfer the limits from the input element...
                     this.options.put(ChangerX2Entry.NUMBER_MIN, attributes.get(ChangerX2Entry.NUMBER_MIN));
                     this.options.put(ChangerX2Entry.NUMBER_MAX, attributes.get(ChangerX2Entry.NUMBER_MAX));
                     this.options.put(ChangerX2Entry.NUMBER_STEP, attributes.get(ChangerX2Entry.NUMBER_STEP));
+                } else {
+                    logger.warn("Error parsing options for {}: Unhandled input field in {}:{}: {}", channelName, line,
+                            col, attributes);
+                }
+            }
+        } else if ((this.parserState == ParserState.INIT || this.parserState == ParserState.INPUT
+                || this.parserState == ParserState.INPUT_DATA) // input tags are not closed properly
+                && "input".equals(elementName) && id != null && id.startsWith("changetotime")) {
+            this.parserState = ParserState.INPUT_DATA;
+            var timeType = id.charAt(12);
+            if (attributes != null) {
+                this.optionFieldName = attributes.get("name");
+                if ("number".equals(attributes.get("type"))) {
+                    this.optionType = OptionType.TIME;
+                    switch (timeType) {
+                        case 'h':
+                            String maxHourValue = attributes.get(ChangerX2Entry.NUMBER_MAX);
+                            // validate hour limits; for 'time' max is 24, for time period max is 23 ...
+                            if (!"0".equals(attributes.get(ChangerX2Entry.NUMBER_MIN))
+                                    || (!"24".equals(maxHourValue) && !"23".equals(maxHourValue))) {
+                                logger.warn(
+                                        "Error parsing options for {}: Unexpected MIN/MAX values for hour input field in {}:{}: {}",
+                                        channelName, line, col, attributes);
+                            }
+                            break;
+                        case 'm':
+                        case 's':
+                            if (!"0".equals(attributes.get(ChangerX2Entry.NUMBER_MIN))
+                                    || !"59".equals(attributes.get(ChangerX2Entry.NUMBER_MAX))) {
+                                logger.warn(
+                                        "Error parsing options for {}: Unexpected MIN/MAX values for minute input field in {}:{}: {}",
+                                        channelName, line, col, attributes);
+                            }
+                            break;
+                        case 'z': // this is 'zehntelsekunde' - tenth of a second
+                            if (!"0".equals(attributes.get(ChangerX2Entry.NUMBER_MIN))
+                                    || !"59.9".equals(attributes.get(ChangerX2Entry.NUMBER_MAX))) {
+                                logger.warn(
+                                        "Error parsing options for {}: Unexpected MIN/MAX values for minute input field in {}:{}: {}",
+                                        channelName, line, col, attributes);
+                            }
+                            break;
+                        case 'd': // for day's we don't validate. usually min = 0 and no max is given
+                            break;
+                        default:
+                            throw new IllegalArgumentException(
+                                    "Unexpected timeType " + timeType + " during time span input field parsing");
+                    }
+                    var timeParts = this.options.get(ChangerX2Entry.TIME_PERIOD_PARTS);
+                    if (timeParts == null) {
+                        timeParts = "" + timeType;
+                    } else {
+                        timeParts = timeParts + timeType;
+                    }
+                    this.options.put(ChangerX2Entry.TIME_PERIOD_PARTS, timeParts);
                 } else {
                     logger.warn("Error parsing options for {}: Unhandled input field in {}:{}: {}", channelName, line,
                             col, attributes);
@@ -136,6 +191,8 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
             throws ParseException {
         if (this.parserState == ParserState.INPUT && "input".equals(elementName)) {
             this.parserState = ParserState.INIT;
+        } else if (this.parserState == ParserState.INPUT_DATA && "input".equals(elementName)) {
+            this.parserState = ParserState.INPUT;
         } else if (this.parserState == ParserState.SELECT && "select".equals(elementName)) {
             this.parserState = ParserState.INIT;
         } else if (this.parserState == ParserState.SELECT_OPTION && "option".equals(elementName)) {
@@ -159,6 +216,8 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
                             channelName, line, col, value, prev, id);
                 }
             }
+        } else if (this.parserState == ParserState.INPUT && "span".equals(elementName)) {
+            return; // span's are ignored...
         } else {
             logger.debug("Error parsing options for {}: Unexpected CloseElement in {}:{}: {}", channelName, line, col,
                     elementName);
@@ -215,10 +274,11 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
                 sb.append(buffer, offset, len);
             }
         } else if (this.parserState == ParserState.INIT && len == 1 && buffer[offset] == '\n') {
-            // single newline - ignore/drop it...
+            return; // single newline - ignore/drop it...
         } else if (this.parserState == ParserState.INPUT) {
             // this is a label next to the value input field - we currently have no use for it so
             // it's dropped...
+            return;
         } else {
             logger.debug("Error parsing options for {}: Unexpected Text {}:{}: (ctx: {} len: {}) '{}' ",
                     this.channelName, line, col, this.parserState, len, new String(buffer, offset, len));

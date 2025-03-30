@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="xcenter-power-values">
+		<label>Power and Efficiency</label>
+		<description>Information about power and efficiency</description>
+		<channels>
+			<channel id="cop" typeId="cop-channel"/>
+			<channel id="cop-heating" typeId="cop-heating-channel"/>
+			<channel id="cop-drinkingwater" typeId="cop-drinkingwater-channel"/>
+			<channel id="cop-cooling" typeId="cop-cooling-channel"/>
+			<channel id="power" typeId="power-channel"/>
+			<channel id="power-heating" typeId="power-heating-channel"/>
+			<channel id="power-drinkingwater" typeId="power-drinkingwater-channel"/>
+			<channel id="power-cooling" typeId="power-cooling-channel"/>
+			<channel id="electric-power" typeId="electric-power-channel"/>
+			<channel id="electric-power-heating" typeId="electric-power-heating-channel"/>
+			<channel id="electric-power-drinkingwater" typeId="electric-power-drinkingwater-channel"/>
+			<channel id="electric-power-cooling" typeId="electric-power-cooling-channel"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

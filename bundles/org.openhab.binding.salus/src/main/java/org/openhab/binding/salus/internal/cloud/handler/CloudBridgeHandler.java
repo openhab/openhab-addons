@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,7 +45,8 @@ public final class CloudBridgeHandler extends AbstractBridgeHandler<CloudBridgeC
     @Override
     public Set<String> it600RequiredChannels() {
         return Set.of("ep_9:sIT600TH:LocalTemperature_x100", "ep_9:sIT600TH:HeatingSetpoint_x100",
-                "ep_9:sIT600TH:SetHeatingSetpoint_x100", "ep_9:sIT600TH:HoldType", "ep_9:sIT600TH:SetHoldType");
+                "ep_9:sIT600TH:SetHeatingSetpoint_x100", "ep_9:sIT600TH:HoldType", "ep_9:sIT600TH:SetHoldType",
+                "ep_9:sIT600TH:RunningState");
     }
 
     @Override

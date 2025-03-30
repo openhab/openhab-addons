@@ -128,7 +128,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="batterySoC">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery SoC</label>
 		<description>Current State of Charge of battery</description>
 		<category>BatteryLevel</category>
@@ -154,7 +154,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="prioritySoC">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Priority SoC</label>
 		<description>State of Charge for which the battery has priority over charging the EV when charging mode is "pv"
 		</description>
@@ -162,7 +162,7 @@
 		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="bufferSoC">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Buffer SoC</label>
 		<description>Until this State of Charge the discharging of a house battery is allowed in "pv" mode, when there is
 			insufficient solar surplus (below the minimum charging power)
@@ -171,7 +171,7 @@
 		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="bufferStartSoC">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Buffer Start SoC</label>
 		<description>State of Charge for which a charging session in "pv" mode is started, even if there is insufficient solar
 			surplus
@@ -344,7 +344,7 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="limitSoC">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Charging Limit SoC</label>
 		<description>Until which state of charge (SoC) should the vehicle be charged</description>
 		<category>BatteryLevel</category>
@@ -360,7 +360,7 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="effectiveLimitSoC">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Effective Charging Limit</label>
 		<description>Effective state of charge (SoC) until which the vehicle will be charged</description>
 		<category>BatteryLevel</category>
@@ -426,7 +426,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehicleSoC">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Vehicle SoC</label>
 		<description>Current State of Charge of EV</description>
 		<category>BatteryLevel</category>
@@ -488,7 +488,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehicleMinSoC">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Vehicle Min SoC</label>
 		<description>Minimum state of charge (SoC) a vehicle should have</description>
 		<category>BatteryLevel</category>
@@ -504,7 +504,7 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="vehicleLimitSoC">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Vehicle Charging Limit SoC</label>
 		<description>Until which state of charge (SoC) should the specific vehicle be charged</description>
 		<category>BatteryLevel</category>
@@ -560,7 +560,7 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="vehiclePlanSoC">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Vehicle Plan SoC</label>
 		<description>Until which state of charge (SoC) should vehicle be charged in plan</description>
 		<category>BatteryLevel</category>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,7 @@ public interface ShellyManagerInterface {
 
     public void setThingOnline();
 
-    public void setThingOffline(ThingStatusDetail detail, String messageKey, Object... arguments);
+    public void setThingOfflineAndDisconnect(ThingStatusDetail detail, String messageKey, Object... arguments);
 
     public boolean requestUpdates(int requestCount, boolean refreshSettings);
 

@@ -32,10 +32,11 @@
 			<channel id="artJson" typeId="artworkjson"/>
 			<channel id="artBrightness" typeId="artworkbrightness"/>
 			<channel id="artColorTemperature" typeId="artworkcolortemperature"/>
+			<channel id="artOrientation" typeId="artworkorientation"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>hostName</representation-property>

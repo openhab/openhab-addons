@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.modbus.internal.config;
+
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,11 +27,11 @@ import org.eclipse.jdt.annotation.Nullable;
 public class ModbusDataConfiguration {
 
     private @Nullable String readStart;
-    private @Nullable String readTransform;
+    private @Nullable List<String> readTransform;
     private @Nullable String readValueType;
     private @Nullable String writeStart;
     private @Nullable String writeType;
-    private @Nullable String writeTransform;
+    private @Nullable List<String> writeTransform;
     private @Nullable String writeValueType;
     private boolean writeMultipleEvenWithSingleRegisterOrCoil;
     private int writeMaxTries = 3; // backwards compatibility and tests
@@ -43,11 +45,11 @@ public class ModbusDataConfiguration {
         this.readStart = readStart;
     }
 
-    public @Nullable String getReadTransform() {
+    public @Nullable List<String> getReadTransform() {
         return readTransform;
     }
 
-    public void setReadTransform(String readTransform) {
+    public void setReadTransform(List<String> readTransform) {
         this.readTransform = readTransform;
     }
 
@@ -75,11 +77,11 @@ public class ModbusDataConfiguration {
         this.writeType = writeType;
     }
 
-    public @Nullable String getWriteTransform() {
+    public @Nullable List<String> getWriteTransform() {
         return writeTransform;
     }
 
-    public void setWriteTransform(String writeTransform) {
+    public void setWriteTransform(List<String> writeTransform) {
         this.writeTransform = writeTransform;
     }
 

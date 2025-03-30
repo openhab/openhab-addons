@@ -236,14 +236,14 @@ They are added dynamically if a player is found. The player and group channels a
 Example
 
  ```java
- Switch Player_1 "Player [%s]" {channel="heos:bridge:main:P123456789"}
+Switch Player_1 "Player [%s]" {channel="heos:bridge:main:P123456789"}
  ```
 
  The {playerUID} has either a P in front of the number which indicates that this is a player or a G to indicate this is a group.
 
 ## Full Example
 
-### demo.things:
+### `demo.things` Example
 
 ```java
 Bridge heos:bridge:main "Bridge" [ipAddress="192.168.0.1", username="userName", password="123456"] {
@@ -253,7 +253,7 @@ Bridge heos:bridge:main "Bridge" [ipAddress="192.168.0.1", username="userName", 
 }
 ```
 
-### demo.items:
+### `demo.items` Example
 
 ```java
 Player LivingRoom_Control "Control" {channel="heos:player:main:LivingRoom:Control"}
@@ -338,12 +338,12 @@ Sitemap:
 Switch item=HeosKitchen_InputSelect mappings=[aux_in_1 = "Aux In" , LivingRoom = "Living Room"]
 ```
 
-### The Online status of Groups and Players
+### The Online Status of Groups and Players
 
 The online state of a Thing can be helpful for groups to control the visibility of group items within sitemap.
 So if the group is removed the visibility of those items is also changed.
 
-#### Example
+#### Groups and Players Example
 
 First you have to define a new Item within the Item section which is used later within the Sitemap:
 

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,19 +32,17 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryService;
-import org.openhab.binding.mercedesme.internal.server.AuthServer;
 import org.openhab.binding.mercedesme.internal.server.AuthService;
 import org.openhab.binding.mercedesme.internal.server.MBWebsocket;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
@@ -57,8 +55,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
+import com.daimler.mbcarkit.proto.Protos.AcknowledgeAssignedVehicles;
+import com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeVEPUpdatesByVIN;
+import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
 import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
+import com.daimler.mbcarkit.proto.Vehicleapi.AcknowledgeAppTwinCommandStatusUpdatesByVIN;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByPID;
+import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByVIN;
+import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinPendingCommandsRequest;
 
 /**
  * The {@link AccountHandler} acts as Bridge between MercedesMe Account and the associated vehicles
@@ -71,7 +75,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private static final String COMMAND_APPENDIX = "-commands";
 
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
-    private final NetworkAddressService networkService;
     private final MercedesMeDiscoveryService discoveryService;
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
@@ -80,26 +83,26 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final Map<String, VEPUpdate> vepUpdateMap = new HashMap<>();
     private final Map<String, Map<String, Object>> capabilitiesMap = new HashMap<>();
 
-    private Optional<AuthServer> server = Optional.empty();
-    private Optional<AuthService> authService = Optional.empty();
-    private Optional<ScheduledFuture<?>> scheduledFuture = Optional.empty();
+    private Optional<ScheduledFuture<?>> refreshScheduler = Optional.empty();
+    private List<PushMessage> eventQueue = new ArrayList<>();
+    private boolean updateRunning = false;
 
     private String capabilitiesEndpoint = "/v1/vehicle/%s/capabilities";
     private String commandCapabilitiesEndpoint = "/v1/vehicle/%s/capabilities/commands";
     private String poiEndpoint = "/v1/vehicle/%s/route";
 
+    Optional<AuthService> authService = Optional.empty();
     final MBWebsocket ws;
-    Optional<AccountConfiguration> config = Optional.empty();
+    AccountConfiguration config = new AccountConfiguration();
     @Nullable
     ClientMessage message;
 
     public AccountHandler(Bridge bridge, MercedesMeDiscoveryService mmds, HttpClient hc, LocaleProvider lp,
-            StorageService store, NetworkAddressService nas) {
+            StorageService store) {
         super(bridge);
         discoveryService = mmds;
-        networkService = nas;
-        ws = new MBWebsocket(this);
         httpClient = hc;
+        ws = new MBWebsocket(this, hc);
         localeProvider = lp;
         storage = store.getStorage(Constants.BINDING_ID);
     }
@@ -111,83 +114,39 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        config = Optional.of(getConfigAs(AccountConfiguration.class));
-        autodetectCallback();
+        config = getConfigAs(AccountConfiguration.class);
         String configValidReason = configValid();
         if (!configValidReason.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configValidReason);
         } else {
-            String callbackUrl = Utils.getCallbackAddress(config.get().callbackIP, config.get().callbackPort);
-            thing.setProperty("callbackUrl", callbackUrl);
-            server = Optional.of(new AuthServer(httpClient, config.get(), callbackUrl));
-            authService = Optional
-                    .of(new AuthService(this, httpClient, config.get(), localeProvider.getLocale(), storage));
-            if (!server.get().start()) {
-                String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
-                        + Constants.STATUS_SERVER_RESTART;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                        textKey + " [\"" + thing.getProperties().get("callbackUrl") + "\"]");
-            } else {
-                scheduledFuture = Optional.of(scheduler.scheduleWithFixedDelay(this::update, 0,
-                        config.get().refreshInterval, TimeUnit.MINUTES));
-            }
+            authService = Optional.of(new AuthService(this, httpClient, config, localeProvider.getLocale(), storage,
+                    config.refreshToken));
+            refreshScheduler = Optional
+                    .of(scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refreshInterval, TimeUnit.MINUTES));
         }
     }
 
-    public void update() {
-        if (server.isPresent()) {
-            if (!Constants.NOT_SET.equals(authService.get().getToken())) {
-                ws.run();
-            } else {
-                // all failed - start manual authorization
-                String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
-                        + Constants.STATUS_AUTH_NEEDED;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        textKey + " [\"" + thing.getProperties().get("callbackUrl") + "\"]");
-            }
+    public void refresh() {
+        if (!Constants.NOT_SET.equals(authService.get().getToken())) {
+            ws.run();
         } else {
-            // server not running - fix first
+            // all failed - start manual authorization
             String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
-                    + Constants.STATUS_SERVER_RESTART;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, textKey);
+                    + Constants.STATUS_AUTH_NEEDED;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, textKey);
         }
-    }
-
-    private void autodetectCallback() {
-        // if Callback IP and Callback Port are not set => autodetect these values
-        config = Optional.of(getConfigAs(AccountConfiguration.class));
-        Configuration updateConfig = super.editConfiguration();
-        if (!updateConfig.containsKey("callbackPort")) {
-            updateConfig.put("callbackPort", Utils.getFreePort());
-        } else {
-            Utils.addPort(config.get().callbackPort);
-        }
-        if (!updateConfig.containsKey("callbackIP")) {
-            String ip = networkService.getPrimaryIpv4HostAddress();
-            if (ip != null) {
-                updateConfig.put("callbackIP", ip);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                        "@text/mercedesme.account.status.ip-autodetect-failure");
-            }
-        }
-        super.updateConfiguration(updateConfig);
-        // get new config after update
-        config = Optional.of(getConfigAs(AccountConfiguration.class));
     }
 
     private String configValid() {
-        config = Optional.of(getConfigAs(AccountConfiguration.class));
+        config = getConfigAs(AccountConfiguration.class);
         String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId();
-        if (Constants.NOT_SET.equals(config.get().callbackIP)) {
-            return textKey + Constants.STATUS_IP_MISSING;
-        } else if (config.get().callbackPort == -1) {
-            return textKey + Constants.STATUS_PORT_MISSING;
-        } else if (Constants.NOT_SET.equals(config.get().email)) {
+        if (Constants.NOT_SET.equals(config.refreshToken)) {
+            return textKey + Constants.STATUS_REFRESH_TOKEN_MISSING;
+        } else if (Constants.NOT_SET.equals(config.email)) {
             return textKey + Constants.STATUS_EMAIL_MISSING;
-        } else if (Constants.NOT_SET.equals(config.get().region)) {
+        } else if (Constants.NOT_SET.equals(config.region)) {
             return textKey + Constants.STATUS_REGION_MISSING;
-        } else if (config.get().refreshInterval <= 01) {
+        } else if (config.refreshInterval < 5) {
             return textKey + Constants.STATUS_REFRESH_INVALID;
         } else {
             return Constants.EMPTY;
@@ -196,19 +155,20 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     @Override
     public void dispose() {
-        if (server.isPresent()) {
-            AuthServer authServer = server.get();
-            authServer.stop();
-            authServer.dispose();
-            server = Optional.empty();
-            Utils.removePort(config.get().callbackPort);
-        }
-        ws.interrupt();
-        scheduledFuture.ifPresent(schedule -> {
+        refreshScheduler.ifPresent(schedule -> {
             if (!schedule.isCancelled()) {
                 schedule.cancel(true);
             }
         });
+        ws.interrupt();
+        eventQueue.clear();
+    }
+
+    @Override
+    public void handleRemoval() {
+        storage.remove(config.email);
+        authService = Optional.empty();
+        super.handleRemoval();
     }
 
     /**
@@ -217,28 +177,17 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
         if (!Constants.NOT_SET.equals(tokenResponse.getAccessToken())) {
-            scheduler.schedule(this::update, 2, TimeUnit.SECONDS);
-        } else if (server.isEmpty()) {
-            // server not running - fix first
-            String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
-                    + Constants.STATUS_SERVER_RESTART;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, textKey);
+            scheduler.schedule(this::refresh, 2, TimeUnit.SECONDS);
         } else {
             // all failed - start manual authorization
             String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
                     + Constants.STATUS_AUTH_NEEDED;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    textKey + " [\"" + thing.getProperties().get("callbackUrl") + "\"]");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, textKey);
         }
     }
 
-    @Override
-    public String toString() {
-        return Integer.toString(config.get().callbackPort);
-    }
-
     public String getWSUri() {
-        return Utils.getWebsocketServer(config.get().region);
+        return Utils.getWebsocketServer(config.region);
     }
 
     public ClientUpgradeRequest getClientUpgradeRequest() {
@@ -248,21 +197,22 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         request.setHeader("X-TrackingId", UUID.randomUUID().toString());
         request.setHeader("Ris-Os-Name", Constants.RIS_OS_NAME);
         request.setHeader("Ris-Os-Version", Constants.RIS_OS_VERSION);
-        request.setHeader("Ris-Sdk-Version", Utils.getRisSDKVersion(config.get().region));
+        request.setHeader("Ris-Sdk-Version", Utils.getRisSDKVersion(config.region));
         request.setHeader("X-Locale",
                 localeProvider.getLocale().getLanguage() + "-" + localeProvider.getLocale().getCountry()); // de-DE
-        request.setHeader("User-Agent", Utils.getApplication(config.get().region));
-        request.setHeader("X-Applicationname", Utils.getUserAgent(config.get().region));
-        request.setHeader("Ris-Application-Version", Utils.getRisApplicationVersion(config.get().region));
+        request.setHeader("User-Agent", Utils.getApplication(config.region));
+        request.setHeader("X-Applicationname", Utils.getUserAgent(config.region));
+        request.setHeader("Ris-Application-Version", Utils.getRisApplicationVersion(config.region));
         return request;
     }
 
     public void registerVin(String vin, VehicleHandler handler) {
         discoveryService.vehicleRemove(this, vin, handler.getThing().getThingTypeUID().getId());
         activeVehicleHandlerMap.put(vin, handler);
+        discovery(vin); // update properties for added vehicle
         VEPUpdate updateForVin = vepUpdateMap.get(vin);
         if (updateForVin != null) {
-            handler.distributeContent(updateForVin);
+            handler.enqueueUpdate(updateForVin);
         }
     }
 
@@ -284,12 +234,88 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         }
     }
 
+    /**
+     * functions for websocket handling
+     */
+
+    public void enqueueMessage(PushMessage pm) {
+        synchronized (eventQueue) {
+            eventQueue.add(pm);
+            scheduler.execute(this::scheduleMessage);
+        }
+    }
+
+    private void scheduleMessage() {
+        PushMessage pm;
+        synchronized (eventQueue) {
+            while (updateRunning) {
+                try {
+                    eventQueue.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    eventQueue.clear();
+                    return;
+                }
+            }
+            if (!eventQueue.isEmpty()) {
+                pm = eventQueue.remove(0);
+            } else {
+                return;
+            }
+            updateRunning = true;
+        }
+        try {
+            handleMessage(pm);
+        } finally {
+            synchronized (eventQueue) {
+                updateRunning = false;
+                eventQueue.notifyAll();
+            }
+        }
+    }
+
+    private void handleMessage(PushMessage pm) {
+        if (pm.hasVepUpdates()) {
+            boolean distributed = distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
+            if (distributed) {
+                AcknowledgeVEPUpdatesByVIN ack = AcknowledgeVEPUpdatesByVIN.newBuilder()
+                        .setSequenceNumber(pm.getVepUpdates().getSequenceNumber()).build();
+                ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVepUpdatesByVin(ack).build();
+                ws.sendAcknowledgeMessage(cm);
+            }
+        } else if (pm.hasAssignedVehicles()) {
+            for (int i = 0; i < pm.getAssignedVehicles().getVinsCount(); i++) {
+                String vin = pm.getAssignedVehicles().getVins(i);
+                discovery(vin);
+            }
+            AcknowledgeAssignedVehicles ack = AcknowledgeAssignedVehicles.newBuilder().build();
+            ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeAssignedVehicles(ack).build();
+            ws.sendAcknowledgeMessage(cm);
+        } else if (pm.hasApptwinCommandStatusUpdatesByVin()) {
+            AppTwinCommandStatusUpdatesByVIN csubv = pm.getApptwinCommandStatusUpdatesByVin();
+            commandStatusUpdate(csubv.getUpdatesByVinMap());
+            AcknowledgeAppTwinCommandStatusUpdatesByVIN ack = AcknowledgeAppTwinCommandStatusUpdatesByVIN.newBuilder()
+                    .setSequenceNumber(csubv.getSequenceNumber()).build();
+            ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeApptwinCommandStatusUpdateByVin(ack).build();
+            ws.sendAcknowledgeMessage(cm);
+        } else if (pm.hasApptwinPendingCommandRequest()) {
+            AppTwinPendingCommandsRequest pending = pm.getApptwinPendingCommandRequest();
+            if (!pending.getAllFields().isEmpty()) {
+                logger.trace("Pending Command {}", pending.getAllFields());
+            }
+        } else if (pm.hasDebugMessage()) {
+            logger.trace("MB Debug Message: {}", pm.getDebugMessage().getMessage());
+        } else {
+            logger.trace("MB Message: {} not handled", pm.getAllFields());
+        }
+    }
+
     public boolean distributeVepUpdates(Map<String, VEPUpdate> map) {
         List<String> notFoundList = new ArrayList<>();
         map.forEach((key, value) -> {
             VehicleHandler h = activeVehicleHandlerMap.get(key);
             if (h != null) {
-                h.distributeContent(value);
+                h.enqueueUpdate(value);
             } else {
                 if (value.getFullUpdate()) {
                     vepUpdateMap.put(key, value);
@@ -298,6 +324,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             }
         });
         notFoundList.forEach(vin -> {
+            discovery(vin); // add vehicle to discovery
             logger.trace("No VehicleHandler available for VIN {}", vin);
         });
         return notFoundList.isEmpty();
@@ -314,17 +341,24 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         });
     }
 
+    /**
+     * Updates properties for existing handlers or delivers discovery result
+     *
+     * @param vin of discovered vehicle
+     */
     @SuppressWarnings("null")
     public void discovery(String vin) {
         if (activeVehicleHandlerMap.containsKey(vin)) {
             VehicleHandler vh = activeVehicleHandlerMap.get(vin);
-            if (vh.getThing().getProperties().isEmpty()) {
-                vh.getThing().setProperties(getStringCapabilities(vin));
-            }
+            Map<String, String> properties = getStringCapabilities(vin);
+            properties.putAll(vh.getThing().getProperties());
+            vh.getThing().setProperties(properties);
         } else {
             if (!capabilitiesMap.containsKey(vin)) {
                 // only report new discovery if capabilities aren't discovered yet
-                discoveryService.vehicleDiscovered(this, vin, getCapabilities(vin));
+                Map<String, Object> discoveryProperties = getCapabilities(vin);
+                discoveryProperties.put("vin", vin);
+                discoveryService.vehicleDiscovered(this, vin, discoveryProperties);
             }
         }
     }
@@ -347,8 +381,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         Map<String, Object> featureMap = new HashMap<>();
         try {
             // add vehicle capabilities
-            String capabilitiesUrl = Utils.getRestAPIServer(config.get().region)
-                    + String.format(capabilitiesEndpoint, vin);
+            String capabilitiesUrl = Utils.getRestAPIServer(config.region) + String.format(capabilitiesEndpoint, vin);
             Request capabilitiesRequest = httpClient.newRequest(capabilitiesUrl);
             authService.get().addBasicHeaders(capabilitiesRequest);
             capabilitiesRequest.header("X-SessionId", UUID.randomUUID().toString());
@@ -384,7 +417,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             }
 
             // add command capabilities
-            String commandCapabilitiesUrl = Utils.getRestAPIServer(config.get().region)
+            String commandCapabilitiesUrl = Utils.getRestAPIServer(config.region)
                     + String.format(commandCapabilitiesEndpoint, vin);
             Request commandCapabilitiesRequest = httpClient.newRequest(commandCapabilitiesUrl);
             authService.get().addBasicHeaders(commandCapabilitiesRequest);
@@ -417,7 +450,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             // store in cache
             capabilitiesMap.put(vin, featureMap);
             return featureMap;
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException | JSONException e) {
             logger.trace("Error retrieving capabilities: {}", e.getMessage());
             featureMap.clear();
         }
@@ -428,7 +461,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         if (cm != null) {
             ws.setCommand(cm);
         }
-        scheduler.schedule(this::update, 2, TimeUnit.SECONDS);
+        scheduler.schedule(this::refresh, 2, TimeUnit.SECONDS);
     }
 
     public void keepAlive(boolean b) {
@@ -452,7 +485,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
      */
 
     public void sendPoi(String vin, JSONObject poi) {
-        String poiUrl = Utils.getRestAPIServer(config.get().region) + String.format(poiEndpoint, vin);
+        String poiUrl = Utils.getRestAPIServer(config.region) + String.format(poiEndpoint, vin);
         Request poiRequest = httpClient.POST(poiUrl);
         authService.get().addBasicHeaders(poiRequest);
         poiRequest.header("X-SessionId", UUID.randomUUID().toString());

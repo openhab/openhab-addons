@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -39,13 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
-import com.daimler.mbcarkit.proto.Protos.AcknowledgeAssignedVehicles;
 import com.daimler.mbcarkit.proto.VehicleEvents;
-import com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeVEPUpdatesByVIN;
 import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
-import com.daimler.mbcarkit.proto.Vehicleapi.AcknowledgeAppTwinCommandStatusUpdatesByVIN;
-import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByVIN;
-import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinPendingCommandsRequest;
 
 /**
  * {@link MBWebsocket} as socket endpoint to communicate with Mercedes
@@ -68,6 +64,7 @@ public class MBWebsocket {
 
     private final Logger logger = LoggerFactory.getLogger(MBWebsocket.class);
     private AccountHandler accountHandler;
+    private HttpClient httpClient;
     private boolean running = false;
     private Instant runTill = Instant.now();
     private @Nullable Session session;
@@ -75,8 +72,9 @@ public class MBWebsocket {
 
     private boolean keepAlive = false;
 
-    public MBWebsocket(AccountHandler ah) {
+    public MBWebsocket(AccountHandler ah, HttpClient hc) {
         accountHandler = ah;
+        httpClient = hc;
     }
 
     /**
@@ -95,16 +93,16 @@ public class MBWebsocket {
             }
         }
         try {
-            WebSocketClient client = new WebSocketClient();
+            WebSocketClient client = new WebSocketClient(httpClient);
             client.setMaxIdleTimeout(CONNECT_TIMEOUT_MS);
             client.setStopTimeout(CONNECT_TIMEOUT_MS);
             ClientUpgradeRequest request = accountHandler.getClientUpgradeRequest();
             String websocketURL = accountHandler.getWSUri();
-            logger.trace("Websocket start {}", websocketURL);
             if (Constants.JUNIT_TOKEN.equals(request.getHeader("Authorization"))) {
-                // avoid unit test requesting real websocket - simply return
+                // avoid unit test requesting real web socket - simply return
                 return;
             }
+            logger.trace("Websocket start {} max message size{}", websocketURL, client.getMaxBinaryMessageSize());
             client.start();
             client.connect(this, new URI(websocketURL), request);
             while (keepAlive || Instant.now().isBefore(runTill)) {
@@ -128,9 +126,10 @@ public class MBWebsocket {
             accountHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/mercedesme.account.status.websocket-failure");
             logger.warn("Websocket handling exception: {}", t.getMessage());
-        }
-        synchronized (this) {
-            running = false;
+        } finally {
+            synchronized (this) {
+                running = false;
+            }
         }
     }
 
@@ -157,7 +156,7 @@ public class MBWebsocket {
         return false;
     }
 
-    private void sendAcknowledgeMessage(ClientMessage message) {
+    public void sendAcknowledgeMessage(ClientMessage message) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             message.writeTo(baos);
@@ -167,10 +166,6 @@ public class MBWebsocket {
         } catch (IOException e) {
             logger.warn("Error sending acknowledge {} : {}", message.getAllFields(), e.getMessage());
         }
-    }
-
-    public boolean isRunning() {
-        return running;
     }
 
     public void interrupt() {
@@ -187,7 +182,8 @@ public class MBWebsocket {
             }
         } else {
             if (!b) {
-                // after keep alive is finished add 5 minutes to cover e.g. door events after trip is finished
+                // after keep alive is finished add 5 minutes to cover e.g. door events after
+                // trip is finished
                 runTill = Instant.now().plusMillis(KEEP_ALIVE_ADDON);
                 logger.trace("Websocket - keep alive stop - run till {}", runTill.toString());
             }
@@ -200,49 +196,26 @@ public class MBWebsocket {
      */
 
     @OnWebSocketMessage
-    public void onBytes(InputStream is) {
+    public void onByteStream(InputStream is) {
         try {
             PushMessage pm = VehicleEvents.PushMessage.parseFrom(is);
-            if (pm.hasVepUpdates()) {
-                boolean distributed = accountHandler.distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
-                if (distributed) {
-                    AcknowledgeVEPUpdatesByVIN ack = AcknowledgeVEPUpdatesByVIN.newBuilder()
-                            .setSequenceNumber(pm.getVepUpdates().getSequenceNumber()).build();
-                    ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVepUpdatesByVin(ack).build();
-                    sendAcknowledgeMessage(cm);
-                }
-            } else if (pm.hasAssignedVehicles()) {
-                for (int i = 0; i < pm.getAssignedVehicles().getVinsCount(); i++) {
-                    String vin = pm.getAssignedVehicles().getVins(0);
-                    accountHandler.discovery(vin);
-                }
-                AcknowledgeAssignedVehicles ack = AcknowledgeAssignedVehicles.newBuilder().build();
-                ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeAssignedVehicles(ack).build();
-                sendAcknowledgeMessage(cm);
-            } else if (pm.hasApptwinCommandStatusUpdatesByVin()) {
-                AppTwinCommandStatusUpdatesByVIN csubv = pm.getApptwinCommandStatusUpdatesByVin();
-                accountHandler.commandStatusUpdate(csubv.getUpdatesByVinMap());
-                AcknowledgeAppTwinCommandStatusUpdatesByVIN ack = AcknowledgeAppTwinCommandStatusUpdatesByVIN
-                        .newBuilder().setSequenceNumber(csubv.getSequenceNumber()).build();
-                ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeApptwinCommandStatusUpdateByVin(ack)
-                        .build();
-                sendAcknowledgeMessage(cm);
-            } else if (pm.hasApptwinPendingCommandRequest()) {
-                AppTwinPendingCommandsRequest pending = pm.getApptwinPendingCommandRequest();
-                if (!pending.getAllFields().isEmpty()) {
-                    logger.trace("Pending Command {}", pending.getAllFields());
-                }
-            } else if (pm.hasDebugMessage()) {
-                logger.trace("MB Debug Message: {}", pm.getDebugMessage().getMessage());
-            } else {
-                logger.trace("MB Message: {} not handled", pm.getAllFields());
-            }
+            logger.trace("WebSocket - Message {}", pm.getMsgCase());
+            accountHandler.enqueueMessage(pm);
+            /**
+             * https://community.openhab.org/t/mercedes-me/136866/12
+             * Release Websocket thread as early as possible to avoid execeptions
+             *
+             * 1. Websocket thread responsible for reading stream into PushMessage and enqueue for
+             * AccountHandler.
+             * 2. AccountHamdler thread responsible for handling PushMessage. In case of
+             * update enqueue PushMessage
+             * at VehicleHandöer
+             * 3. VehicleHandler responsible to update channels
+             */
         } catch (IOException e) {
-            // don't report thing status errors here.
-            // Sometimes messages cannot be decoded which doesn't effect the overall functionality
-            logger.trace("IOException {}", e.getMessage());
+            logger.warn("IOException decoding message {}", e.getMessage());
         } catch (Error err) {
-            logger.trace("Error caught {}", err.getMessage());
+            logger.warn("Error decoding message {}", err.getMessage());
         }
     }
 
@@ -262,8 +235,8 @@ public class MBWebsocket {
 
     @OnWebSocketError
     public void onError(Throwable t) {
-        logger.warn("onError {}", t.getMessage());
+        logger.debug("Error during web socket connection - {}", t.getMessage());
         accountHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                "@text/mercedesme.account.status.websocket-failure");
+                "@text/mercedesme.account.status.websocket-failure [\"" + t.getMessage() + "\"]");
     }
 }

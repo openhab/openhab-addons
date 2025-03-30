@@ -5,40 +5,25 @@
       controllers {
       id
       name
-        status {
+      status {
         summary
         online
         lastContact {
           timestamp
         }
-      }    
+      }
+      hardware {
+          version
+          model {
+            maxZones
+            name
+            description
+          }
+        }    
       location {
         coordinates {
           latitude
           longitude
-        }
-        forecast(days: 3) {
-          time
-          updateTime
-          conditions
-          averageWindSpeed {
-            value
-            unit
-          }
-          highTemperature {
-            value
-            unit
-          }
-          lowTemperature {
-            value
-            unit
-          }
-          probabilityOfPrecipitation
-          precipitation {
-            value
-            unit
-          }
-          averageHumidity
         }
       }
       zones {

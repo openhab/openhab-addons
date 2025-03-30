@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -148,8 +148,7 @@ public class AlarmSettingsData {
         }
     }
 
-    public void setAlarmTime(DateTimeType timeState) {
-        final ZonedDateTime zonedTime = timeState.getZonedDateTime();
+    public void setAlarmTime(ZonedDateTime zonedTime) {
         final LocalTime time = LocalTime.of(zonedTime.getHour(), zonedTime.getMinute());
         if (time == null) {
             return;

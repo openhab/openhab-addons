@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,8 +52,8 @@ import io.github.hapjava.services.impl.HeaterCoolerService;
 public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implements HeaterCoolerAccessory {
     private final Logger logger = LoggerFactory.getLogger(HomekitHeaterCoolerImpl.class);
     private final BooleanItemReader activeReader;
-    private final Map<CurrentHeaterCoolerStateEnum, String> currentStateMapping;
-    private final Map<TargetHeaterCoolerStateEnum, String> targetStateMapping;
+    private final Map<CurrentHeaterCoolerStateEnum, Object> currentStateMapping;
+    private final Map<TargetHeaterCoolerStateEnum, Object> targetStateMapping;
 
     private final List<CurrentHeaterCoolerStateEnum> customCurrentStateList = new ArrayList<>();
     private final List<TargetHeaterCoolerStateEnum> customTargetStateList = new ArrayList<>();

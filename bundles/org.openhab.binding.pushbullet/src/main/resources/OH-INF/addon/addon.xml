@@ -4,8 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>@text/addon.pushbullet.name</name>
-	<description>@text/addon.pushbullet.description</description>
+	<name>Pushbullet Binding</name>
+	<description>The Pushbullet binding allows you to send messages to other users of the Pushbullet service.</description>
 	<connection>cloud</connection>
 
 </addon:addon>

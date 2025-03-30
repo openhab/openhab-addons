@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,6 @@ package org.openhab.binding.ahawastecollection.internal;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
@@ -136,15 +134,14 @@ public class AhaWasteCollectionHandlerTest {
         }).when(executorStub).execute(any(Runnable.class));
 
         final AhaWasteCollectionHandler handler = new AhaWasteCollectionHandler(thing, createStubScheduler(),
-                ZoneId::systemDefault, new AhaCollectionScheduleStubFactory(), executorStub);
+                new AhaCollectionScheduleStubFactory(), executorStub);
         handler.setCallback(callback);
         handler.initialize();
         return handler;
     }
 
     private static State getDateTime(final Date day) {
-        final ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(day.toInstant(), ZoneId.systemDefault());
-        return new DateTimeType(zonedDateTime);
+        return new DateTimeType(day.toInstant());
     }
 
     @Test

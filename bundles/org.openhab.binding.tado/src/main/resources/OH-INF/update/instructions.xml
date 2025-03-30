@@ -14,6 +14,13 @@
 				<description>Current humidity in %</description>
 			</update-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<add-channel id="openWindowRemainingTime">
+				<type>tado:openWindowRemainingTime</type>
+			</add-channel>
+		</instruction-set>
+
 	</thing-type>
 
 </update:update-descriptions>

@@ -27,6 +27,11 @@
 			<channel id="waterPressure" typeId="waterPressure"/>
 			<channel id="coolingState" typeId="coolingState"/>
 			<channel id="flameState" typeId="flameState"/>
+			<channel id="burnerStartsFailed" typeId="burnerStartsFailed"/>
+			<channel id="burnerStarts" typeId="burnerStarts"/>
+			<channel id="burnerIgnitionsFailed" typeId="burnerIgnitionsFailed"/>
+			<channel id="burnerOpTime" typeId="burnerOpTime"/>
+			<channel id="burnerDHWOpTime" typeId="burnerDHWOpTime"/>
 			<channel id="intendedHeatingState" typeId="intendedHeatingState"/>
 			<channel id="dhwComfortMode" typeId="dhwComfortMode"/>
 			<channel id="intendedBoilerTemp" typeId="intendedBoilerTemp"/>
@@ -39,6 +44,10 @@
 			<channel id="maxBoilerTemperature" typeId="maxBoilerTemperature"/>
 			<channel id="returnWaterTemperature" typeId="returnWaterTemperature"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>id</representation-property>
 
@@ -56,12 +65,19 @@
 
 		<channels>
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
-			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature" typeId="system.indoor-temperature">
+				<label>Zone Temperature</label>
+				<description>Gets the temperature of this zone</description>
+			</channel>
 			<channel id="presetScene" typeId="presetScene"/>
 			<channel id="preHeat" typeId="preHeat"/>
 			<channel id="coolingAllowed" typeId="coolingAllowed"/>
 			<channel id="regulationControl" typeId="regulationControl"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>id</representation-property>
 
@@ -79,9 +95,16 @@
 
 		<channels>
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
-			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature" typeId="system.indoor-temperature">
+				<label>Zone Temperature</label>
+				<description>Gets the temperature of this zone</description>
+			</channel>
 			<channel id="valvePosition" typeId="valvePosition"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 
 		<representation-property>id</representation-property>
 
@@ -98,10 +121,19 @@
 		<description>A Plugwise Home Automation smart plug switch connected to a central heating pump</description>
 
 		<channels>
-			<channel id="power" typeId="power"/>
+			<channel id="power" typeId="system.power">
+				<label>Power</label>
+				<description>Switch the Plugwise Smart plug ON or OFF</description>
+			</channel>
 			<channel id="lock" typeId="lock"/>
-			<channel id="powerUsage" typeId="powerUsage"/>
+			<channel id="powerUsage" typeId="system.electric-power">
+				<label>Power Usage</label>
+			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>id</representation-property>
 
@@ -119,9 +151,16 @@
 
 		<channels>
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
-			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature" typeId="system.indoor-temperature">
+				<label>Zone Temperature</label>
+				<description>Gets the temperature of this zone</description>
+			</channel>
 			<channel id="offsetTemperature" typeId="offsetTemperature"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>id</representation-property>
 

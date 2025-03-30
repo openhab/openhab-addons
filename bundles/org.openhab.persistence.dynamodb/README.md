@@ -5,9 +5,9 @@ Query functionality is also fully supported.
 
 Features:
 
-* Writing/reading information to relational database systems
-* Configurable database table names
-* Automatic table creation
+- Writing/reading information to relational database systems
+- Configurable database table names
+- Automatic table creation
 
 ## Disclaimer
 
@@ -15,11 +15,7 @@ This service is provided "AS IS", and the user takes full responsibility of any 
 
 ## Table of Contents
 
-{::options toc_levels="2..4"/}
-<!-- markdownlint-disable-next-line ul-style -->
-- TOC
-
-{:toc}
+[[toc]]
 
 ## Prerequisites
 
@@ -35,8 +31,8 @@ Please also note possible [Free Tier](https://aws.amazon.com/free/) benefits.
 <!-- markdownlint-disable-next-line no-emphasis-as-heading -->
 **Login to AWS web console**
 
-* [Sign up](https://aws.amazon.com/) for Amazon AWS.
-* Select the AWS region in the [AWS console](https://console.aws.amazon.com/) using [these instructions](https://docs.aws.amazon.com/awsconsolehelpdocs/latest/gsg/getting-started.html#select-region). Note the region identifier in the URL (e.g. `https://eu-west-1.console.aws.amazon.com/console/home?region=eu-west-1` means that region id is `eu-west-1`).
+- [Sign up](https://aws.amazon.com/) for Amazon AWS.
+- Select the AWS region in the [AWS console](https://console.aws.amazon.com/) using [these instructions](https://docs.aws.amazon.com/awsconsolehelpdocs/latest/gsg/getting-started.html#select-region). Note the region identifier in the URL (e.g. `https://eu-west-1.console.aws.amazon.com/console/home?region=eu-west-1` means that region id is `eu-west-1`).
 
 <!-- markdownlint-disable-next-line no-emphasis-as-heading -->
 **Create policy controlling permissions for AWS user**
@@ -56,9 +52,8 @@ For users with old table schema, one can use pre-existing policy `AmazonDynamoDB
   5. Open _JSON_ tab and input the below policy code.
   6. Make the below the changes to the policy JSON `Resource` section
 
-* Modify the AWS account id from `055251986555` to to the one you have on clipboard (see step 2 above)
-* If you are on some other region than `eu-west-1`, change the entry accordingly
-
+- Modify the AWS account id from `055251986555` to to the one you have on clipboard (see step 2 above)
+- If you are on some other region than `eu-west-1`, change the entry accordingly
 
 ```json
 {
@@ -267,4 +262,3 @@ Eclipse instructions
 ```
 
 The `--add-opens` parameter is necessary also with the local temporary DynamoDB server, otherwise the mockito will fail at runtime with (`java.base does not "opens java.lang" to unnamed module`).
-

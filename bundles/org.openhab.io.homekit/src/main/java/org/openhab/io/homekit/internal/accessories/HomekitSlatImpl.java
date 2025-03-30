@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ import io.github.hapjava.services.impl.SlatService;
  */
 public class HomekitSlatImpl extends AbstractHomekitAccessoryImpl implements SlatAccessory {
     private static final String CONFIG_TYPE = "type";
-    private final Map<CurrentSlatStateEnum, String> currentSlatStateMapping;
+    private final Map<CurrentSlatStateEnum, Object> currentSlatStateMapping;
     private final SlatTypeEnum slatType;
 
     public HomekitSlatImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,

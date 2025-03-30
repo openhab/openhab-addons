@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,11 +76,11 @@ public class HomekitAccessoryFactory {
             put(CARBON_MONOXIDE_SENSOR, new HomekitCharacteristicType[] { CARBON_MONOXIDE_DETECTED_STATE });
             put(CONTACT_SENSOR, new HomekitCharacteristicType[] { CONTACT_SENSOR_STATE });
             put(DOOR, new HomekitCharacteristicType[] { CURRENT_POSITION, TARGET_POSITION, POSITION_STATE });
+            put(DOORBELL, new HomekitCharacteristicType[] { PROGRAMMABLE_SWITCH_EVENT });
             put(FAN, new HomekitCharacteristicType[] { ACTIVE_STATUS });
             put(FAUCET, new HomekitCharacteristicType[] { ACTIVE_STATUS });
             put(FILTER_MAINTENANCE, new HomekitCharacteristicType[] { FILTER_CHANGE_INDICATION });
-            put(GARAGE_DOOR_OPENER,
-                    new HomekitCharacteristicType[] { CURRENT_DOOR_STATE, TARGET_DOOR_STATE, OBSTRUCTION_STATUS });
+            put(GARAGE_DOOR_OPENER, new HomekitCharacteristicType[] { CURRENT_DOOR_STATE, TARGET_DOOR_STATE });
             put(HEATER_COOLER, new HomekitCharacteristicType[] { ACTIVE_STATUS, CURRENT_HEATER_COOLER_STATE,
                     TARGET_HEATER_COOLER_STATE, CURRENT_TEMPERATURE });
             put(HUMIDITY_SENSOR, new HomekitCharacteristicType[] { RELATIVE_HUMIDITY });
@@ -105,8 +105,7 @@ public class HomekitAccessoryFactory {
             put(TELEVISION, new HomekitCharacteristicType[] { ACTIVE });
             put(TELEVISION_SPEAKER, new HomekitCharacteristicType[] { MUTE });
             put(TEMPERATURE_SENSOR, new HomekitCharacteristicType[] { CURRENT_TEMPERATURE });
-            put(THERMOSTAT, new HomekitCharacteristicType[] { CURRENT_HEATING_COOLING_STATE,
-                    TARGET_HEATING_COOLING_STATE, CURRENT_TEMPERATURE });
+            put(THERMOSTAT, new HomekitCharacteristicType[] { TARGET_HEATING_COOLING_STATE, CURRENT_TEMPERATURE });
             put(VALVE, new HomekitCharacteristicType[] { ACTIVE_STATUS, INUSE_STATUS });
             put(WINDOW, new HomekitCharacteristicType[] { CURRENT_POSITION, TARGET_POSITION, POSITION_STATE });
             put(WINDOW_COVERING, new HomekitCharacteristicType[] { TARGET_POSITION, CURRENT_POSITION, POSITION_STATE });
@@ -125,6 +124,7 @@ public class HomekitAccessoryFactory {
             put(CARBON_MONOXIDE_SENSOR, HomekitCarbonMonoxideSensorImpl.class);
             put(CONTACT_SENSOR, HomekitContactSensorImpl.class);
             put(DOOR, HomekitDoorImpl.class);
+            put(DOORBELL, HomekitDoorbellImpl.class);
             put(FAN, HomekitFanImpl.class);
             put(FAUCET, HomekitFaucetImpl.class);
             put(FILTER_MAINTENANCE, HomekitFilterMaintenanceImpl.class);

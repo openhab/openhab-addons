@@ -65,6 +65,9 @@
 			<channel id="comfortModeState" typeId="comfortModeState-channel"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>id</representation-property>
 	</thing-type>
 
@@ -158,6 +161,9 @@
 			<channel id="deviceLocked" typeId="deviceLocked-channel"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>serialNumber</representation-property>
 
 		<config-description>
@@ -192,6 +198,9 @@
 			<channel id="deviceLocked" typeId="deviceLocked-channel"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>serialNumber</representation-property>
 
 		<config-description>
@@ -223,6 +232,9 @@
 			<channel id="plugEnergyDelivered" typeId="plugEnergyDelivered-channel"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>serialNumber</representation-property>
 
 		<config-description>
@@ -294,10 +306,10 @@
 	</channel-type>
 
 	<channel-type id="signalRSSI-channel" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Signal RSSI</label>
 		<description>The reported network signal RSSI</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="signalLQI-channel" advanced="true">

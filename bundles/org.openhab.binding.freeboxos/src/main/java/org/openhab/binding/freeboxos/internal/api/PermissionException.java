@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.freeboxos.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.Response.ErrorCode;
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager;
 
 /**
@@ -25,6 +26,11 @@ public class PermissionException extends FreeboxException {
     private static final long serialVersionUID = 3965810786699311126L;
 
     private final LoginManager.Permission permission;
+
+    public PermissionException(LoginManager.Permission permission, String message) {
+        super(ErrorCode.INSUFFICIENT_RIGHTS, message);
+        this.permission = permission;
+    }
 
     public PermissionException(LoginManager.Permission permission, String format, Object... args) {
         super(format, args);

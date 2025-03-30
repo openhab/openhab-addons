@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.smartmeter;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.smartmeter.internal.MeterValue;
 import org.openhab.binding.smartmeter.internal.conformity.negate.NegateBitModel;
@@ -25,6 +26,7 @@ import org.openhab.binding.smartmeter.internal.conformity.negate.NegateHandler;
  * @author Matthias Steigenberger - Initial contribution
  *
  */
+@NonNullByDefault
 public class TestNegateBit {
 
     @Test

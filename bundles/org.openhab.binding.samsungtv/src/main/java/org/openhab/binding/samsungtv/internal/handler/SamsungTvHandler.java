@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -86,7 +86,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     private static final String HTTP_ENDPOINT_V2 = "/api/v2/";
 
     // common Samsung TV remote control ports
-    private final static List<Integer> PORTS = List.of(55000, 1515, 7001, 15500);
+    private static final List<Integer> PORTS = List.of(55000, 1515, 7001, 15500);
 
     private final Logger logger = LoggerFactory.getLogger(SamsungTvHandler.class);
 
@@ -198,7 +198,10 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                 // @Nullable
                 String response = HttpUtil.executeUrl("GET", uri.toURL().toString(), 500);
                 properties = Optional.ofNullable(new Gson().fromJson(response, TVProperties.class));
-            } catch (JsonSyntaxException | URISyntaxException | IOException e) {
+            } catch (IOException e) {
+                logger.debug("{}: Cannot connect to TV: {}", host, e.getMessage());
+                properties = Optional.empty();
+            } catch (JsonSyntaxException | URISyntaxException e) {
                 logger.warn("{}: Cannot connect to TV: {}", host, e.getMessage());
                 properties = Optional.empty();
             }
@@ -229,7 +232,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         } catch (InterruptedException | ExecutionException e) {
             logger.warn("{}: Cannot get TVProperties: {}", host, e.getMessage());
         }
-        logger.warn("{}: Cannot get TVProperties, return Empty properties", host);
+        logger.debug("{}: Cannot get TVProperties, return Empty properties", host);
         return new TVProperties();
     }
 
@@ -344,10 +347,10 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     public String fetchPowerState() {
         logger.trace("{}: fetching TV Power State", host);
         TVProperties properties = fetchTVProperties(0, 2);
-        String PowerState = properties.getPowerState();
-        setPowerState("on".equals(PowerState));
-        logger.debug("{}: PowerState is: {}", host, PowerState);
-        return PowerState;
+        String powerState = properties.getPowerState();
+        setPowerState("on".equals(powerState));
+        logger.debug("{}: PowerState is: {}", host, powerState);
+        return powerState;
     }
 
     public boolean handleCommand(String channel, Command command, int ms) {
@@ -557,7 +560,9 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     private void poll() {
         try {
             // Skip channels if service is not connected/started
-            services.stream().filter(service -> service.checkConnection())
+            // Only poll SmartThings if TV is ON (ie playing)
+            services.stream().filter(service -> service.checkConnection()).filter(
+                    service -> getPowerState() || !service.getServiceName().equals(SmartThingsApiService.SERVICE_NAME))
                     .forEach(service -> service.getSupportedChannelNames(true).stream()
                             .filter(channel -> isLinked(channel) && !isDuplicateChannel(channel))
                             .forEach(channel -> service.handleCommand(channel, RefreshType.REFRESH)));
@@ -635,7 +640,6 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
      * @return true if service restated or created, false otherwise
      */
     private synchronized boolean createService(String type, String udn) {
-
         Optional<SamsungTvService> service = findServiceInstance(type);
 
         if (service.isPresent()) {

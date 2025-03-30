@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,6 +45,8 @@ public class OpenWeatherMapBindingConstants {
     public static final String CONFIG_API_KEY = "apikey";
     public static final String CONFIG_LANGUAGE = "language";
     public static final String CONFIG_LOCATION = "location";
+    public static final String CONFIG_HISTORY_DAYS = "historyDay";
+    public static final String CONFIG_API_VERSION = "apiVersion";
 
     // Channel group types
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_STATION = new ChannelGroupTypeUID(BINDING_ID, "station");

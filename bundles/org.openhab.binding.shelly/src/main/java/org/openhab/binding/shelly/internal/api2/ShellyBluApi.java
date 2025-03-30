@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -53,7 +54,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ShellyBluApi extends Shelly2ApiRpc {
-    private static final Logger logger = LoggerFactory.getLogger(ShellyBluApi.class);
+    private final Logger logger = LoggerFactory.getLogger(ShellyBluApi.class);
     private boolean connected = false; // true = BLU devices has connected
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private int lastPid = -1;
@@ -92,7 +93,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         if (!initialized) {
             initialized = true;
             connected = false;
-        } else {
         }
     }
 
@@ -155,17 +155,14 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             profile.numInputs = 1;
             settings.btnType = SHELLY_BTNT_MOMENTARY;
 
-            if (profile.settings.inputs != null) {
-                profile.settings.inputs.set(0, settings);
+            List<ShellySettingsInput> inputs = profile.settings.inputs;
+            if (inputs != null) {
+                inputs.set(0, settings);
             } else {
-                profile.settings.inputs = new ArrayList<>();
-                profile.settings.inputs.add(settings);
+                inputs = profile.settings.inputs = new ArrayList<>();
+                inputs.add(settings);
             }
             profile.status = deviceStatus;
-        }
-
-        if (!connected) {
-            throw new ShellyApiException("BLU Device not yet connected");
         }
 
         profile.initialized = true;

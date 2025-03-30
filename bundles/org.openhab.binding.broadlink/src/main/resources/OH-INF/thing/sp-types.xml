@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="broadlink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="sp1">
+		<label>Broadlink SP1</label>
+		<description>The Broadlink SP1 is a Wi-Fi smart socket.</description>
+		<channels>
+			<channel id="power-on" typeId="system.power"/>
+		</channels>
+		<representation-property>macAddress</representation-property>
+		<config-description-ref uri="thing-type:broadlink:config"/>
+	</thing-type>
+	<thing-type id="sp2">
+		<label>Broadlink SP2</label>
+		<description>The Broadlink SP2 is a Wi-Fi smart socket.</description>
+		<channels>
+			<channel id="power-on" typeId="system.power"/>
+		</channels>
+		<representation-property>macAddress</representation-property>
+		<config-description-ref uri="thing-type:broadlink:config"/>
+	</thing-type>
+	<thing-type id="sp2-s">
+		<label>Broadlink SP2-s</label>
+		<description>The Broadlink SP2-s is a Wi-Fi smart socket with power consumption measurement.</description>
+		<channels>
+			<channel id="power-on" typeId="system.power"/>
+			<channel id="power-consumption" typeId="system.electric-energy"/>
+		</channels>
+		<representation-property>macAddress</representation-property>
+		<config-description-ref uri="thing-type:broadlink:config"/>
+	</thing-type>
+	<thing-type id="sp3">
+		<label>Broadlink SP3</label>
+		<description>The Broadlink SP3 is a Wi-Fi smart socket with night light. The SP mini 3 omits the night light.</description>
+		<channels>
+			<channel id="power-on" typeId="system.power"/>
+			<channel id="night-light" typeId="night-light">
+				<label>Night Light Power</label>
+			</channel>
+		</channels>
+		<representation-property>macAddress</representation-property>
+		<config-description-ref uri="thing-type:broadlink:config"/>
+	</thing-type>
+	<thing-type id="sp3-s">
+		<label>Broadlink SP3-s</label>
+		<description>The Broadlink SP3-s is a Wi-Fi smart socket with power consumption measurement</description>
+		<channels>
+			<channel id="power-on" typeId="system.power"/>
+			<channel id="power-consumption" typeId="system.electric-energy"/>
+		</channels>
+		<representation-property>macAddress</representation-property>
+		<config-description-ref uri="thing-type:broadlink:config"/>
+	</thing-type>
+</thing:thing-descriptions>

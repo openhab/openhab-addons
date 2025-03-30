@@ -19,6 +19,8 @@
 			<channel id="playMode" typeId="playMode"/>
 			<channel id="timeElapsed" typeId="timeElapsed"/>
 			<channel id="timeTotal" typeId="timeTotal"/>
+			<channel id="endTime" typeId="endTime"/>
+			<channel id="progress" typeId="progress"/>
 		</channels>
 
 		<properties>
@@ -28,7 +30,7 @@
 			<property name="Serial Number">unknown</property>
 			<property name="Device Id">unknown</property>
 			<property name="Software Version">unknown</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<representation-property>uuid</representation-property>
@@ -52,6 +54,8 @@
 			<channel id="playMode" typeId="playMode"/>
 			<channel id="timeElapsed" typeId="timeElapsed"/>
 			<channel id="timeTotal" typeId="timeTotal"/>
+			<channel id="endTime" typeId="endTime"/>
+			<channel id="progress" typeId="progress"/>
 			<channel id="activeChannel" typeId="activeChannel"/>
 			<channel id="signalMode" typeId="signalMode"/>
 			<channel id="signalQuality" typeId="signalQuality"/>
@@ -69,7 +73,7 @@
 			<property name="Serial Number">unknown</property>
 			<property name="Device Id">unknown</property>
 			<property name="Software Version">unknown</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<representation-property>uuid</representation-property>
@@ -101,6 +105,7 @@
 				<option value="FindRemote">Find Remote</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="buttonTv">
@@ -140,6 +145,7 @@
 				<option value="POWERON">Power On</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="control">
@@ -153,6 +159,10 @@
 		<item-type>String</item-type>
 		<label>Active App</label>
 		<description>The Currently Running App on the Roku</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>App</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="activeAppName">
@@ -183,10 +193,32 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
+	<channel-type id="endTime">
+		<item-type>DateTime</item-type>
+		<label>End Time</label>
+		<description>The date/time when the currently playing media will end</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="progress">
+		<item-type>Dimmer</item-type>
+		<label>Media Progress</label>
+		<description>The current progress of playing media</description>
+	</channel-type>
+
 	<channel-type id="activeChannel">
 		<item-type>String</item-type>
 		<label>Active Channel</label>
 		<description>The TV Channel Currently Selected on the Roku TV</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="signalMode">

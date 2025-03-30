@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.knx.internal.channel;
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -45,15 +44,11 @@ class TypeDimmer extends KNXChannel {
 
     @Override
     protected String getDefaultDPT(String gaConfigKey) {
-        if (Objects.equals(gaConfigKey, INCREASE_DECREASE_GA)) {
-            return DPTXlator3BitControlled.DPT_CONTROL_DIMMING.getID();
-        }
-        if (Objects.equals(gaConfigKey, SWITCH_GA)) {
-            return DPTXlatorBoolean.DPT_SWITCH.getID();
-        }
-        if (Objects.equals(gaConfigKey, POSITION_GA)) {
-            return DPTXlator8BitUnsigned.DPT_SCALING.getID();
-        }
-        throw new IllegalArgumentException("GA configuration '" + gaConfigKey + "' is not supported");
+        return switch (gaConfigKey) {
+            case INCREASE_DECREASE_GA -> DPTXlator3BitControlled.DPT_CONTROL_DIMMING.getID();
+            case SWITCH_GA -> DPTXlatorBoolean.DPT_SWITCH.getID();
+            case POSITION_GA -> DPTXlator8BitUnsigned.DPT_SCALING.getID();
+            default -> throw new IllegalArgumentException("GA configuration '" + gaConfigKey + "' is not supported");
+        };
     }
 }

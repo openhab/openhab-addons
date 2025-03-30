@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -77,6 +77,7 @@ public enum MiIoDevices {
     DREAME_VACUUM_P2156O("dreame.vacuum.p2156o", "MOVA Z500 Robot Vacuum and Mop Cleaner", THING_TYPE_BASIC),
     DREAME_VACUUM_P2157("dreame.vacuum.p2157", "MOVA L600 Robot Vacuum and Mop Cleaner", THING_TYPE_BASIC),
     DREAME_VACUUM_P2259("dreame.vacuum.p2259", "Dreame Bot D9 Max", THING_TYPE_BASIC),
+    DREAME_VACUUM_R2209("dreame.vacuum.r2209", "Xiaomi Robot Vacuum X10", THING_TYPE_BASIC),
     DREAME_VACUUM_R2228O("dreame.vacuum.r2228o", "DreameBot L10s Ultra", THING_TYPE_BASIC),
     HUAYI_LIGHT_ARI013("huayi.light.ari013", "HUIZUO ARIES For Bedroom", THING_TYPE_BASIC),
     HUAYI_LIGHT_ARIES("huayi.light.aries", "HUIZUO ARIES For Living Room", THING_TYPE_BASIC),
@@ -311,6 +312,7 @@ public enum MiIoDevices {
             "Mi Smart Ultra Electricity Saving Air Conditioner (1.5HP/Inverter/New China Energy Label Level 1)",
             THING_TYPE_BASIC),
     XIAOMI_REPEATER_V2("xiaomi.repeater.v2", "Mi Wi-Fi Repeater 2", THING_TYPE_UNSUPPORTED),
+    XIAOMI_VACUUM_C102GL("xiaomi.vacuum.c102gl", "Xiaomi Robot Vacuum X20+", THING_TYPE_BASIC),
     XIAOMI_WIFISPEAKER_V1("xiaomi.wifispeaker.v1", "Mi Network Speaker", THING_TYPE_UNSUPPORTED),
     XJX_TOILET_PRO("xjx.toilet.pro", "Uclean Smart Toilet Seat", THING_TYPE_BASIC),
     XJX_TOILET_PURE("xjx.toilet.pure", "Uclean Smart Toilet pure", THING_TYPE_BASIC),
@@ -408,6 +410,7 @@ public enum MiIoDevices {
     ZHIMI_AIRP_CPA4("zhimi.airp.cpa4", "Xiaomi Smart Air Purifier 4 Compact", THING_TYPE_BASIC),
     ZHIMI_AIRP_MB4A("zhimi.airp.mb4a", "Mi Air Purifier 3C", THING_TYPE_BASIC),
     ZHIMI_AIRP_MB5("zhimi.airp.mb5", "Xiaomi Smart Air Purifier 4", THING_TYPE_BASIC),
+    ZHIMI_AIRP_RMB1("zhimi.airp.rmb1", "Xiaomi Smart Air Purifier 4 Lite", THING_TYPE_BASIC),
     ZHIMI_AIRP_VB4("zhimi.airp.vb4", "Xiaomi Smart Air Purifier 4 Pro", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_M1("zhimi.airpurifier.m1", "Mi Air Purifier 2 (mini)", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_M2("zhimi.airpurifier.m2", "Mi Air Purifier 2", THING_TYPE_BASIC),

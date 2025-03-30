@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -149,9 +149,9 @@ public class ShellyColorUtils {
             for (int i = 0; i < rgbw.length; i++) {
                 values[i] = Integer.parseInt(rgbw[i]);
             }
-        } catch (NullPointerException e) { // might be a format problem
+        } catch (NumberFormatException e) { // might be a format problem
             throw new IllegalArgumentException(
-                    "Unable to convert fullColor value: " + rgbwString + ", " + e.getMessage());
+                    "Unable to convert fullColor value: " + rgbwString + ", " + e.getMessage(), e);
         }
         if (values[0] != -1) {
             setRed(values[0]);

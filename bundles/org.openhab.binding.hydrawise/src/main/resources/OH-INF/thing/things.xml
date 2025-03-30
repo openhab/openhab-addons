@@ -38,7 +38,8 @@
 		<label>Hydrawise Controller Thing</label>
 		<description>Hydrawise connected irrigation controller</description>
 
-		<!-- Until we have https://github.com/eclipse/smarthome/issues/1118 fixed, we need to list all possible channel groups.
+		<!-- Until we have https://github.com/eclipse/smarthome/issues/1118 fixed, we need to list
+			all possible channel groups.
 			Once this is fixed we can dynamically add them to the thing and not list them here. -->
 		<channel-groups>
 
@@ -229,6 +230,78 @@
 			<channel-group id="zone36" typeId="zone">
 				<label>Zone 36</label>
 				<description>Sprinkler Zone 36</description>
+			</channel-group>
+			<channel-group id="zone37" typeId="zone">
+				<label>Zone 37</label>
+				<description>Sprinkler Zone 37</description>
+			</channel-group>
+			<channel-group id="zone38" typeId="zone">
+				<label>Zone 38</label>
+				<description>Sprinkler Zone 38</description>
+			</channel-group>
+			<channel-group id="zone39" typeId="zone">
+				<label>Zone 39</label>
+				<description>Sprinkler Zone 39</description>
+			</channel-group>
+			<channel-group id="zone40" typeId="zone">
+				<label>Zone 40</label>
+				<description>Sprinkler Zone 40</description>
+			</channel-group>
+			<channel-group id="zone41" typeId="zone">
+				<label>Zone 41</label>
+				<description>Sprinkler Zone 41</description>
+			</channel-group>
+			<channel-group id="zone42" typeId="zone">
+				<label>Zone 42</label>
+				<description>Sprinkler Zone 42</description>
+			</channel-group>
+			<channel-group id="zone43" typeId="zone">
+				<label>Zone 43</label>
+				<description>Sprinkler Zone 43</description>
+			</channel-group>
+			<channel-group id="zone44" typeId="zone">
+				<label>Zone 44</label>
+				<description>Sprinkler Zone 44</description>
+			</channel-group>
+			<channel-group id="zone45" typeId="zone">
+				<label>Zone 45</label>
+				<description>Sprinkler Zone 45</description>
+			</channel-group>
+			<channel-group id="zone46" typeId="zone">
+				<label>Zone 46</label>
+				<description>Sprinkler Zone 46</description>
+			</channel-group>
+			<channel-group id="zone47" typeId="zone">
+				<label>Zone 47</label>
+				<description>Sprinkler Zone 47</description>
+			</channel-group>
+			<channel-group id="zone48" typeId="zone">
+				<label>Zone 48</label>
+				<description>Sprinkler Zone 48</description>
+			</channel-group>
+			<channel-group id="zone49" typeId="zone">
+				<label>Zone 49</label>
+				<description>Sprinkler Zone 49</description>
+			</channel-group>
+			<channel-group id="zone50" typeId="zone">
+				<label>Zone 50</label>
+				<description>Sprinkler Zone 50</description>
+			</channel-group>
+			<channel-group id="zone51" typeId="zone">
+				<label>Zone 51</label>
+				<description>Sprinkler Zone 51</description>
+			</channel-group>
+			<channel-group id="zone52" typeId="zone">
+				<label>Zone 52</label>
+				<description>Sprinkler Zone 52</description>
+			</channel-group>
+			<channel-group id="zone53" typeId="zone">
+				<label>Zone 53</label>
+				<description>Sprinkler Zone 53</description>
+			</channel-group>
+			<channel-group id="zone54" typeId="zone">
+				<label>Zone 54</label>
+				<description>Sprinkler Zone 54</description>
 			</channel-group>
 		</channel-groups>
 		<config-description>

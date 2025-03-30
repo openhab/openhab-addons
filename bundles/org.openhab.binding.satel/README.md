@@ -31,7 +31,7 @@ This binding supports following thing types:
 ## Discovery
 
 The binding discovers all devices (partitions, zones) defined in the system, but bridge things must be configured manually.
-  
+
 ## Thing Configuration
 
 ### ethm-1 bridge

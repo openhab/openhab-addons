@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,7 @@ import io.github.hapjava.services.impl.CarbonDioxideSensorService;
  */
 public class HomekitCarbonDioxideSensorImpl extends AbstractHomekitAccessoryImpl
         implements CarbonDioxideSensorAccessory {
-    private final Map<CarbonDioxideDetectedEnum, String> mapping;
+    private final Map<CarbonDioxideDetectedEnum, Object> mapping;
 
     public HomekitCarbonDioxideSensorImpl(HomekitTaggedItem taggedItem,
             List<HomekitTaggedItem> mandatoryCharacteristics, List<Characteristic> mandatoryRawCharacteristics,

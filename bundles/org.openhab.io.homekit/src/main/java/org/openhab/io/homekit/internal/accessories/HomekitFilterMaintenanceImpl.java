@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,7 @@ import io.github.hapjava.services.impl.FilterMaintenanceService;
  * @author Eugen Freiter - Initial contribution
  */
 public class HomekitFilterMaintenanceImpl extends AbstractHomekitAccessoryImpl implements FilterMaintenanceAccessory {
-    private final Map<FilterChangeIndicationEnum, String> mapping;
+    private final Map<FilterChangeIndicationEnum, Object> mapping;
 
     public HomekitFilterMaintenanceImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)

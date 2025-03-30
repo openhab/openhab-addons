@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test for LEDStateDTO
  *
- * @author Ries van Twisk - Prevent flashes during classic driver color + white updates
+ * @author Ries van Twisk - Initial contribution, prevent flashes during classic driver color + white updates
  */
 public class LEDStateDTOTest {
 

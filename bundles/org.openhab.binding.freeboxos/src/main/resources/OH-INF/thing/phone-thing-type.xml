@@ -9,7 +9,7 @@
 			<bridge-type-ref id="api"/>
 		</supported-bridge-type-refs>
 
-		<label>Landline</label>
+		<label>Landline Phone</label>
 		<description>Provides various informations regarding the landline state</description>
 
 		<channels>
@@ -29,7 +29,7 @@
 			<bridge-type-ref id="api"/>
 		</supported-bridge-type-refs>
 
-		<label>DECT</label>
+		<label>DECT Phone</label>
 		<description>Provides various informations regarding the DECT state and configuration</description>
 
 		<channels>
@@ -56,7 +56,7 @@
 			<bridge-type-ref id="api"/>
 		</supported-bridge-type-refs>
 
-		<label>Calls</label>
+		<label>Phone Calls</label>
 		<description>Provides various informations regarding the phone calls</description>
 
 		<channel-groups>

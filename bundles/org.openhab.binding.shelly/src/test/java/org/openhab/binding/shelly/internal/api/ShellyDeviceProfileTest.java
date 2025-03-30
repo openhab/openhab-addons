@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Tests for {@link ShellyDeviceProfile}.
- * 
+ *
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
@@ -48,7 +48,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYBLUDW_STR, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUMOTION_STR, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUHT_STR, true, true), //
-                Arguments.of(THING_TYPE_SHELLYBLUGW_STR, false, false), //
+                Arguments.of(THING_TYPE_SHELLYBLUGW_STR, true, false), //
                 // Shelly Bulb
                 Arguments.of(THING_TYPE_SHELLYBULB_STR, false, false), //
                 // Generation 1

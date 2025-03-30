@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.freeboxos.internal.handler;
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
@@ -49,7 +50,7 @@ public class ShutterHandler extends HomeNodeHandler {
     }
 
     @Override
-    protected State getChannelState(HomeManager homeManager, String channelId, EndpointState state) {
+    protected State getChannelState(String channelId, EndpointState state, Optional<Endpoint> endPoint) {
         String value = state.value();
         return value != null && channelId.equals(SHUTTER_POSITION) ? QuantityType.valueOf(value + " %")
                 : UnDefType.NULL;

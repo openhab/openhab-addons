@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,18 +46,12 @@ class TypeColor extends KNXChannel {
 
     @Override
     protected String getDefaultDPT(String gaConfigKey) {
-        if (gaConfigKey.equals(HSB_GA)) {
-            return DPTXlatorRGB.DPT_RGB.getID();
-        }
-        if (gaConfigKey.equals(INCREASE_DECREASE_GA)) {
-            return DPTXlator3BitControlled.DPT_CONTROL_DIMMING.getID();
-        }
-        if (gaConfigKey.equals(SWITCH_GA)) {
-            return DPTXlatorBoolean.DPT_SWITCH.getID();
-        }
-        if (gaConfigKey.equals(POSITION_GA)) {
-            return DPTXlator8BitUnsigned.DPT_SCALING.getID();
-        }
-        throw new IllegalArgumentException("GA configuration '" + gaConfigKey + "' is not supported");
+        return switch (gaConfigKey) {
+            case HSB_GA -> DPTXlatorRGB.DPT_RGB.getID();
+            case INCREASE_DECREASE_GA -> DPTXlator3BitControlled.DPT_CONTROL_DIMMING.getID();
+            case SWITCH_GA -> DPTXlatorBoolean.DPT_SWITCH.getID();
+            case POSITION_GA -> DPTXlator8BitUnsigned.DPT_SCALING.getID();
+            default -> throw new IllegalArgumentException("GA configuration '" + gaConfigKey + "' is not supported");
+        };
     }
 }

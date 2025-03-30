@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -110,7 +110,7 @@ public class HotWaterHandler extends DraytonWiserThingHandler<HotWaterData> {
     }
 
     private State getBoostedState() {
-        if (getData().hotWater.size() >= 1) {
+        if (!getData().hotWater.isEmpty()) {
             final HotWaterDTO firstChannel = getData().hotWater.get(0);
 
             if (firstChannel.getOverrideTimeoutUnixTime() != null
@@ -125,7 +125,7 @@ public class HotWaterHandler extends DraytonWiserThingHandler<HotWaterData> {
     }
 
     private State getBoostRemainingState() {
-        if (getData().hotWater.size() >= 1) {
+        if (!getData().hotWater.isEmpty()) {
             final HotWaterDTO firstChannel = getData().hotWater.get(0);
             final Integer overrideTimeout = firstChannel.getOverrideTimeoutUnixTime();
 

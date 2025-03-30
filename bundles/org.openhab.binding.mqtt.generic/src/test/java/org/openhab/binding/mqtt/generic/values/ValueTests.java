@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -99,7 +100,7 @@ public class ValueTests {
 
     @Test
     public void illegalPercentCommand() {
-        PercentageValue v = new PercentageValue(null, null, null, null, null);
+        PercentageValue v = new PercentageValue(null, null, null, null, null, null);
         assertThrows(IllegalStateException.class, () -> v.parseCommand(new StringType("demo")));
     }
 
@@ -111,7 +112,7 @@ public class ValueTests {
 
     @Test
     public void illegalPercentUpdate() {
-        PercentageValue v = new PercentageValue(null, null, null, null, null);
+        PercentageValue v = new PercentageValue(null, null, null, null, null, null);
         assertThrows(IllegalArgumentException.class, () -> v.parseCommand(new DecimalType(101.0)));
     }
 
@@ -229,6 +230,12 @@ public class ValueTests {
     }
 
     @Test
+    public void numberDimension() {
+        NumberValue v = new NumberValue(null, null, new BigDecimal(10), Units.MIRED);
+        assertThat(v.getItemType(), is("Number:Temperature"));
+    }
+
+    @Test
     public void rollershutterUpdateWithStrings() {
         RollershutterValue v = new RollershutterValue("fancyON", "fancyOff", "fancyStop");
         // Test with UP/DOWN/STOP command
@@ -304,19 +311,36 @@ public class ValueTests {
     @Test
     public void percentCalc() {
         PercentageValue v = new PercentageValue(new BigDecimal(10.0), new BigDecimal(110.0), new BigDecimal(1.0), null,
-                null);
+                null, null);
+        assertThat(v.createStateDescription(false).build().getStep(), is(new BigDecimal(1)));
+
         assertThat(v.parseCommand(new DecimalType("110.0")), is(PercentType.HUNDRED));
         assertThat(v.getMQTTpublishValue(PercentType.HUNDRED, null), is("110"));
         assertThat(v.parseCommand(new DecimalType(10.0)), is(PercentType.ZERO));
         assertThat(v.getMQTTpublishValue(PercentType.ZERO, null), is("10"));
 
-        assertThat(v.parseCommand(OnOffType.ON), is(PercentType.HUNDRED));
-        assertThat(v.parseCommand(OnOffType.OFF), is(PercentType.ZERO));
+        v.update(OnOffType.OFF);
+
+        assertThat(v.parseCommand(OnOffType.ON), is(OnOffType.ON));
+        assertThat(v.getMQTTpublishValue(OnOffType.ON, null), is("110"));
+        assertThat(v.parseCommand(OnOffType.OFF), is(OnOffType.OFF));
+        assertThat(v.getMQTTpublishValue(OnOffType.OFF, null), is("10"));
+    }
+
+    @Test
+    public void percentFormatOverride() {
+        PercentageValue v = new PercentageValue(BigDecimal.ZERO, new BigDecimal(3.0), null, null, null, "%.0f");
+        assertThat(v.createStateDescription(false).build().getStep(),
+                is(new BigDecimal(100).divide(new BigDecimal(3), MathContext.DECIMAL128)));
+        assertThat(v.getMQTTpublishValue(PercentType.HUNDRED, null), is("3"));
+        assertThat(v.getMQTTpublishValue(PercentType.valueOf("67"), null), is("2"));
+        assertThat(v.getMQTTpublishValue(PercentType.valueOf("33"), null), is("1"));
+        assertThat(v.getMQTTpublishValue(PercentType.ZERO, null), is("0"));
     }
 
     @Test
     public void percentMQTTValue() {
-        PercentageValue v = new PercentageValue(null, null, null, null, null);
+        PercentageValue v = new PercentageValue(null, null, null, null, null, null);
         assertThat(v.parseCommand(new DecimalType("10.10000")), is(new PercentType("10.1")));
         assertThat(v.getMQTTpublishValue(new PercentType("10.1"), null), is("10.1"));
         Command command;
@@ -331,83 +355,85 @@ public class ValueTests {
     @Test
     public void percentCustomOnOff() {
         PercentageValue v = new PercentageValue(new BigDecimal("0.0"), new BigDecimal("100.0"), new BigDecimal("1.0"),
-                "on", "off");
-        assertThat(v.parseCommand(new StringType("on")), is(PercentType.HUNDRED));
-        assertThat(v.parseCommand(new StringType("off")), is(PercentType.ZERO));
+                "on", "off", null);
+        assertThat(v.parseCommand(new StringType("on")), is(OnOffType.ON));
+        assertThat(v.getMQTTpublishValue(OnOffType.ON, "%s"), is("on"));
+        assertThat(v.parseCommand(new StringType("off")), is(OnOffType.OFF));
+        assertThat(v.getMQTTpublishValue(OnOffType.OFF, "%s"), is("off"));
     }
 
     @Test
     public void decimalCalc() {
         PercentageValue v = new PercentageValue(new BigDecimal("0.1"), new BigDecimal("1.0"), new BigDecimal("0.1"),
-                null, null);
+                null, null, null);
         assertThat(v.parseCommand(new DecimalType(1.0)), is(PercentType.HUNDRED));
         assertThat(v.parseCommand(new DecimalType(0.1)), is(PercentType.ZERO));
-        PercentType command = v.parseCommand(new DecimalType(0.2));
+        PercentType command = (PercentType) v.parseCommand(new DecimalType(0.2));
         assertEquals(command.floatValue(), 11.11f, 0.01f);
     }
 
     @Test
     public void increaseDecreaseCalc() {
         PercentageValue v = new PercentageValue(new BigDecimal("1.0"), new BigDecimal("11.0"), new BigDecimal("0.5"),
-                null, null);
+                null, null, null);
 
         // Normal operation.
-        PercentType command = v.parseCommand(new DecimalType("6.0"));
+        PercentType command = (PercentType) v.parseCommand(new DecimalType("6.0"));
         assertEquals(command.floatValue(), 50.0f, 0.01f);
         v.update(command);
-        command = v.parseCommand(IncreaseDecreaseType.INCREASE);
+        command = (PercentType) v.parseCommand(IncreaseDecreaseType.INCREASE);
         assertEquals(command.floatValue(), 55.0f, 0.01f);
-        command = v.parseCommand(IncreaseDecreaseType.DECREASE);
+        command = (PercentType) v.parseCommand(IncreaseDecreaseType.DECREASE);
         assertEquals(command.floatValue(), 45.0f, 0.01f);
 
         // Lower limit.
-        command = v.parseCommand(new DecimalType("1.1"));
+        command = (PercentType) v.parseCommand(new DecimalType("1.1"));
         assertEquals(command.floatValue(), 1.0f, 0.01f);
         v.update(command);
-        command = v.parseCommand(IncreaseDecreaseType.DECREASE);
+        command = (PercentType) v.parseCommand(IncreaseDecreaseType.DECREASE);
         assertEquals(command.floatValue(), 0.0f, 0.01f);
 
         // Upper limit.
-        command = v.parseCommand(new DecimalType("10.8"));
+        command = (PercentType) v.parseCommand(new DecimalType("10.8"));
         assertEquals(command.floatValue(), 98.0f, 0.01f);
         v.update(command);
-        command = v.parseCommand(IncreaseDecreaseType.INCREASE);
+        command = (PercentType) v.parseCommand(IncreaseDecreaseType.INCREASE);
         assertEquals(command.floatValue(), 100.0f, 0.01f);
     }
 
     @Test
     public void upDownCalc() {
         PercentageValue v = new PercentageValue(new BigDecimal("1.0"), new BigDecimal("11.0"), new BigDecimal("0.5"),
-                null, null);
+                null, null, null);
 
         // Normal operation.
-        PercentType command = v.parseCommand(new DecimalType("6.0"));
+        PercentType command = (PercentType) v.parseCommand(new DecimalType("6.0"));
         assertEquals(command.floatValue(), 50.0f, 0.01f);
         v.update(command);
-        command = v.parseCommand(UpDownType.UP);
+        command = (PercentType) v.parseCommand(UpDownType.UP);
         assertEquals(command.floatValue(), 55.0f, 0.01f);
-        command = v.parseCommand(UpDownType.DOWN);
+        command = (PercentType) v.parseCommand(UpDownType.DOWN);
         assertEquals(command.floatValue(), 45.0f, 0.01f);
 
         // Lower limit.
-        command = v.parseCommand(new DecimalType("1.1"));
+        command = (PercentType) v.parseCommand(new DecimalType("1.1"));
         assertEquals(command.floatValue(), 1.0f, 0.01f);
         v.update(command);
-        command = v.parseCommand(UpDownType.DOWN);
+        command = (PercentType) v.parseCommand(UpDownType.DOWN);
         assertEquals(command.floatValue(), 0.0f, 0.01f);
 
         // Upper limit.
-        command = v.parseCommand(new DecimalType("10.8"));
+        command = (PercentType) v.parseCommand(new DecimalType("10.8"));
         assertEquals(command.floatValue(), 98.0f, 0.01f);
         v.update(command);
-        command = v.parseCommand(UpDownType.UP);
+        command = (PercentType) v.parseCommand(UpDownType.UP);
         assertEquals(command.floatValue(), 100.0f, 0.01f);
     }
 
     @Test
     public void percentCalcInvalid() {
         PercentageValue v = new PercentageValue(new BigDecimal(10.0), new BigDecimal(110.0), new BigDecimal(1.0), null,
-                null);
+                null, null);
         assertThrows(IllegalArgumentException.class, () -> v.parseCommand(new DecimalType(9.0)));
     }
 

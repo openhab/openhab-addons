@@ -20,7 +20,15 @@
 			<channel-group typeId="sysinfo" id="sysinfo"/>
 			<channel-group typeId="actions" id="actions"/>
 			<channel-group typeId="connection-status" id="connection-status"/>
+			<channel-group typeId="ftth" id="ftth"/>
+			<channel-group typeId="xdsl" id="xdsl"/>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<representation-property>macAddress</representation-property>
 
 		<config-description-ref uri="thing-type:freeboxos:server"/>
 	</thing-type>
@@ -40,7 +48,15 @@
 			<channel-group typeId="sysinfo" id="sysinfo"/>
 			<channel-group typeId="actions" id="actions"/>
 			<channel-group typeId="connection-status" id="connection-status"/>
+			<channel-group typeId="ftth" id="ftth"/>
+			<channel-group typeId="xdsl" id="xdsl"/>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<representation-property>macAddress</representation-property>
 
 		<config-description-ref uri="thing-type:freeboxos:server"/>
 	</thing-type>

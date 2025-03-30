@@ -22,18 +22,24 @@
 			<description>An MQTT topic that this thing will send a command to. If not set, this will be a read-only
 				rollershutter.</description>
 		</parameter>
-		<parameter name="transformationPattern" type="text" groupName="transformations">
+		<parameter name="stopCommandTopic" type="text">
+			<label>MQTT Stop Command Topic</label>
+			<description>An MQTT topic that this thing will send a STOP command to. If not set, it will send STOP commands to the
+				main commandTopic.</description>
+		</parameter>
+		<parameter name="transformationPattern" type="text" groupName="transformations" multiple="true">
 			<label>Incoming Value Transformations</label>
 			<description><![CDATA[
 			Applies transformations to an incoming MQTT topic value.
 			A transformation example for a received JSON would be "JSONPATH:$.device.status.temperature" for
 			a json {device: {status: { temperature: 23.2 }}}.
 
-			You can chain transformations by separating them with the intersection character ∩.
+			You can chain transformations by listing each transformation on a separate line, or
+			by separating them with the intersection character ∩.
 			]]></description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="transformationPatternOut" type="text" groupName="transformations">
+		<parameter name="transformationPatternOut" type="text" groupName="transformations" multiple="true">
 			<label>Outgoing Value Transformation</label>
 			<description><![CDATA[
 			Applies a transformation before publishing a MQTT topic value.

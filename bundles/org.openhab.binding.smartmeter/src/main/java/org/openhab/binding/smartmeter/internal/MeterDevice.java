@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.smartmeter.internal;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.UndeliverableException;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
@@ -83,7 +85,18 @@ public abstract class MeterDevice<T> {
         this.connector = createConnector(serialPortManagerSupplier, serialPort, baudrate, baudrateChangeDelay,
                 protocolMode);
         RxJavaPlugins.setErrorHandler(error -> {
-            logger.error("Fatal error occured", error);
+            if (error == null) {
+                logger.warn("Fatal but unknown error occurred");
+                return;
+            }
+            if (error instanceof UndeliverableException) {
+                error = error.getCause();
+            }
+            if (error instanceof IOException) {
+                logger.warn("Connection related issue occurred: {}", error.getMessage());
+                return;
+            }
+            logger.warn("Fatal error occurred", error);
         });
     }
 
@@ -169,7 +182,7 @@ public abstract class MeterDevice<T> {
                     connector.openConnection();
                 }).doOnError(ex -> {
                     if (ex instanceof TimeoutException) {
-                        logger.debug("Timeout occured for {}; {}", getDeviceId(), ex.getMessage());
+                        logger.debug("Timeout occurred for {}; {}", getDeviceId(), ex.getMessage());
                     } else {
                         logger.debug("Failed to read: {}. Closing connection and trying again in {} seconds...; {}",
                                 ex.getMessage(), RETRY_DELAY, getDeviceId(), ex);

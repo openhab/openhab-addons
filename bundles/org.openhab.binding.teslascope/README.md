@@ -50,6 +50,7 @@ Additionally, these advanced channels are available (not all are available on al
 | charge                      | Switch                   | Charge                        | Start (ON) or stop (OFF) charging                                                                        |
 | charge-energy-added         | Number:Energy            | Charge Energy Added           | Energy added, in kWh, during the last charging session                                                   |
 | charge-limit-soc-standard   | Dimmer                   | Charge Limit SOC Standard     | Standard charging limit of the vehicle, in %                                                             |
+| charge-port-latch           | Switch                   | Charge Port Latch             | Indicate the Charge Port Latch status, (ON/OFF if latched/unlatched) |
 | charge-rate                 | Number:Speed             | Charge Rate                   | Distance per hour charging rate                                                                          |
 | charger-power               | Number:Power             | Charger Power                 | Power actually delivered by the charger                                                                  |
 | charger-voltage             | Number:ElectricPotential | Charger Voltage               | Voltage (V) actually presented by the charger                                                            |
@@ -110,13 +111,13 @@ Additionally, these advanced channels are available (not all are available on al
 
 ## Full Example
 
-### `demo.things`:
+### `demo.things` Example
 
 ```java
 teslascope:vehicle:model3 [ apiKey="xxxx", publicID="aXb3" ]
 ```
 
-### `example.items`:
+### `example.items` Example
 
 ```java
 String              TeslaVehicleName            {channel="teslascope:vehicle:model3:vehicle-name"}
@@ -138,6 +139,7 @@ Switch              TeslaCharge                 {channel="teslascope:vehicle:mod
 Dimmer              TeslaChargeLimit            {channel="teslascope:vehicle:model3:charge-limit"}
 Number              TeslaChargeRate             {channel="teslascope:vehicle:model3:charge-rate"}
 String              TeslaChargingState          {channel="teslascope:vehicle:model3:charging-state"}
+String              TeslaChargePortLatch        {channel="teslascope:vehicle:model3:charge-port-latch"}
 Number              TeslaChargerPower           {channel="teslascope:vehicle:model3:charger-power"}
 Number              TeslaTimeToFullCharge       {channel="teslascope:vehicle:model3:time-to-full-charge"}
 
@@ -177,22 +179,22 @@ Switch              TeslaTPMSSoftWarningRL      {channel="teslascope:vehicle:mod
 Switch              TeslaTPMSSoftWarningRR      {channel="teslascope:vehicle:model3:tpms-soft-warning-rr"}
 ```
 
-### `example.sitemap`:
+### `example.sitemap` Example
 
 ```perl
 sitemap main label="Main"
 {
     Text item=TeslaUsableBatteryLevel label="Car" icon="tesla" valuecolor=[<=20="red",>60="green"]
     {
-        Frame 
+        Frame
         {
             Text item=TeslaState label="State [%s]" icon=""
             Text item=TeslaHomelink label="Homelink Available[%s]" icon=""
             Text item=TeslaSpeed label="Speed [%.1f]"
             Text item=TeslaShiftState label="Shift State [%s]" icon=""
-            Text item=TeslaShiftState 
+            Text item=TeslaShiftState
             Text item=TeslaOdometer label="Odometer [%.1f miles]"
-            Text item=TeslaRange 
+            Text item=TeslaRange
         }
         Frame
         {
@@ -213,6 +215,7 @@ sitemap main label="Main"
             Switch item=TeslaCharge label="Charge"
             Slider item=TeslaChargeLimit label="Charge Limit [%.1f]"
             Text item=TeslaChargingState label="Charging State [%s]" icon=""
+            Text item=TeslaChargePortLatch label="Charge Port Status"
             Text item=TeslaTimeToFullCharge label="Time To Full Charge [%.1f hours]"
             Text item=TeslaPreconditioning label="Preconditioning [%s]" icon=""
             Text item=TeslaChargeRate label="Charge Rate [%d miles/hr]"
@@ -223,15 +226,15 @@ sitemap main label="Main"
         Frame
         {
             Switch item=TeslaDoorLock label="Doorlock"
-            Switch item=TeslaHorn label="Horn" 
+            Switch item=TeslaHorn label="Horn"
             Switch item=TeslaLights label="Lights"
             Switch item=TeslaValet label="Valet Mode"
             Switch item=TeslaSentry label="Sentry Mode"
 
-            Switch item=TeslaFrontDefrost label="Defrost Front"     
-            Switch item=TeslaRearDefrost label="Defrost Rear"                                               
-            Switch item=TeslaLeftSeatHeater label="Seat Heat Left" 
-            Switch item=TeslaRightSeatHeater label="Seat Heat Right" 
+            Switch item=TeslaFrontDefrost label="Defrost Front"
+            Switch item=TeslaRearDefrost label="Defrost Rear"
+            Switch item=TeslaLeftSeatHeater label="Seat Heat Left"
+            Switch item=TeslaRightSeatHeater label="Seat Heat Right"
         }
         Frame
         {

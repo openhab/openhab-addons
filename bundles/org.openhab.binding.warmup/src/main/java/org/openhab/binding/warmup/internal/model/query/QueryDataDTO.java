@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,11 +15,5 @@ package org.openhab.binding.warmup.internal.model.query;
 /**
  * @author James Melville - Initial contribution
  */
-public class QueryDataDTO {
-
-    private UserDTO user;
-
-    public UserDTO getUser() {
-        return user;
-    }
+public record QueryDataDTO(UserDTO user) {
 }

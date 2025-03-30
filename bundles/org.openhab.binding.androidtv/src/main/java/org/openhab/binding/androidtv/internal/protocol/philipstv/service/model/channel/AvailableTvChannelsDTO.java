@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ public class AvailableTvChannelsDTO {
     private String medium = "";
 
     @JsonProperty("version")
-    private int version;
+    private String version;
 
     @JsonProperty("listType")
     private String listType = "";
@@ -75,11 +75,11 @@ public class AvailableTvChannelsDTO {
         return medium;
     }
 
-    public void setVersion(int version) {
+    public void setVersion(String version) {
         this.version = version;
     }
 
-    public int getVersion() {
+    public String getVersion() {
         return version;
     }
 

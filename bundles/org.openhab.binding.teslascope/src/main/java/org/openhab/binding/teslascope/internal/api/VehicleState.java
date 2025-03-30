@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,10 +25,12 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VehicleState {
     // vehicle_state
-    public int locked;
+    public boolean locked;
 
     @SerializedName("sentry_mode")
-    public int sentryMode;
+    public boolean sentryMode;
+
+    public double odometer;
 
     @SerializedName("valet_mode")
     public int valetMode;

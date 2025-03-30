@@ -7,16 +7,16 @@ openHAB Cloud service hosted by the [openHAB Foundation](https://www.openhabfoun
 
 The openHAB Cloud service (and thus the connector to it) is useful for different use cases:
 
-* It allows remote access to local openHAB instances without having to expose ports to the Internet or to require a complex VPN setup.
-* It serves as a connector to Firebase Cloud Messaging (FCM) for pushing notifications to mobile phone apps.
-* It provides integrations with 3rd party services that require OAuth2 authentication, such as Amazon Alexa or Google Home applications.
+- It allows remote access to local openHAB instances without having to expose ports to the Internet or to require a complex VPN setup.
+- It serves as a connector to Firebase Cloud Messaging (FCM) for pushing notifications to mobile phone apps.
+- It provides integrations with 3rd party services that require OAuth2 authentication, such as Amazon Alexa or Google Home applications.
 
 ## Installation via UI
 
-* Open the openHAB web UI and login as an administrator.
-* Click on Add-on Store, followed by System Integrations.
-* Use the Install button to install the openHAB Cloud Connector.
-* Register your session (https://myopenhab.org/) using UUID and Secret.
+- Open the openHAB web UI and login as an administrator.
+- Click on Add-on Store, followed by System Integrations.
+- Use the Install button to install the openHAB Cloud Connector.
+- Register your session (https://myopenhab.org/) using UUID and Secret.
 
 ## UUID and Secret
 
@@ -45,7 +45,7 @@ After installing this add-on, you will find configuration options in the openHAB
 
 ![Configuration](doc/configuration.png)
 
-By default, both remote access and push notifications are enabled.  
+By default, both remote access and push notifications are enabled.
 
 ### Advanced Configuration
 
@@ -57,7 +57,7 @@ This is also not required for remote access through the cloud service to functio
 
 Alternatively, you can configure the settings in the file `conf/services/openhabcloud.cfg`:
 
-```
+```ini
 ############################## openHAB Cloud Connector #############################
 
 # The URL of the openHAB Cloud service to connect to.
@@ -72,7 +72,7 @@ Alternatively, you can configure the settings in the file `conf/services/openhab
 # Optional, default is 'remote'.
 #mode=
 
-# A comma-separated list of items to be exposed to external services like IFTTT. 
+# A comma-separated list of items to be exposed to external services like IFTTT.
 # Events of those items are pushed to the openHAB Cloud and commands received for
 # these items from the openHAB Cloud service are accepted and sent to the local bus.
 # Optional, default is an empty list.
@@ -134,9 +134,9 @@ To specify media attachments and actions, there is another variant of the `sendN
 - `sendNotification(emailAddress, message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
 - `sendBroadcastNotification(message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
 
-
 The additional parameter for these variants have the following meaning:
-- `tag` : A user supplied tag to group messages for removing using the `hideNotificationByTag` action or grouping messages when displayed in the app. This renames the `severity` parameter, both are functionally identical. 
+
+- `tag`: A user supplied tag to group messages for removing using the `hideNotificationByTag` action or grouping messages when displayed in the app. This renames the `severity` parameter, both are functionally identical.
 - `title`: The title of the notification. Defaults to "openHAB" inside the Android and iOS apps.
 - `referenceId`: A user supplied id to both replace existing messages when pushed, and later remove messages with the `hideNotificationByReferenceId` actions.
 - `onClickAction`: The action to be performed when the user clicks on the notification. Specified using the [action syntax](#action-syntax).
@@ -151,13 +151,15 @@ These parameters may be skipped by setting them to `null`.
 
 The action syntax is a string containing the action type and the action payload separated by a colon.
 
-There are three types of actions available:
+There are several types of actions available:
 
 - `command`: Sends a command to an Item by using the following syntax: `command:$itemName:$commandString` where `$itemName` is the name of the Item and `$commandString` is the command to be sent.
 - `ui`: Controls the UI in two possible ways:
   - `ui:$path` where `$path` is either `/basicui/app?...` for navigating sitemaps (using the native renderer) or `/some/absolute/path` for navigating (using the web view).
   - `ui:$commandItemSyntax` where `$commandItemSyntax` is the same syntax as used for the [UI Command Item]({{base}}/mainui/about.html#ui-command-item).
-- `http:` or `https:` : Opens the fully qualified URL in an embedded browser on the device.
+- `http:` or `https:`: Opens the fully qualified URL in an embedded browser on the device.
+- `rule` (currently only on iOS): Runs a rule by using the following syntax: `rule:$ruleId:$prop1Key=$prop1Value,$prop2Key=$prop2Value,...` where `$ruleId` is the id of the rule, and optional properties to send to the rule are in the format `name=value` separated by commas. Most rules can omit the properties.
+- `app` (currently only on iOS): Launches a native app when possible using the following syntax: `app:android=$appId,ios=$appId:$path` where `$appId` on Android is a qualified app id like `com.acme.app` (see [partial list of Android ids](https://github.com/petarov/google-android-app-ids)), and on iOS is the registered URL scheme along with an optional `$path` like `acme://foo` (see [partial list of iOS ids](https://github.com/bhagyas/app-urls)). Either `android` or `ios` can be omitted if that platform is not used.
 
 Examples:
 
@@ -168,6 +170,8 @@ Examples:
 - `ui:navigate:/page/my_floorplan_page`: Navigates Main UI to the page with the ID `my_floorplan_page`.
 - `ui:popup:oh-clock-card`: Opens a popup with `oh-clock-card`.
 - `https://openhab.org`: Opens an embedded browser to the site `https://openhab.org`
+- `rule:02ffc3a297:prop1=foo`: Runs the rule with an id of `02ffc3a297` passing in an optional parameter named `prop1` with a value of `foo`
+- `app:android=com.sonos.acr2,ios=sonos-2://`: Opens the Sonos app depending on the device type (Android or iOS)
 
 ### Hide Notification Actions
 
@@ -194,6 +198,7 @@ then
   sendNotification("me@email.com", "Front door was opened!")
 end
 ```
+
 :::
 
 ::: tab JS
@@ -301,7 +306,7 @@ rules.when().item('Apartment_MotionSensor').changed().to('ON').then(() => {
     .withTitle('Motion Detected')
     .withReferenceId('motion-id-1234')
     .withMediaAttachment('https://apartment.my/camera-snapshot.jpg')
-    .addActionButton('Turn on the light', 'command:Apartment_Light:ON')  
+    .addActionButton('Turn on the light', 'command:Apartment_Light:ON')
     .send();
 }).build('Motion Detected Notification');
 ```

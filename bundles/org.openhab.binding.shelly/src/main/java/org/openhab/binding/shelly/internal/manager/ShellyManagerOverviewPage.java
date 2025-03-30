@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -263,7 +263,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
         ShellyThingConfiguration config = thing.getConfiguration().as(ShellyThingConfiguration.class);
         TreeMap<String, String> result = new TreeMap<>();
 
-        if ((status != ThingStatus.ONLINE) && (status != ThingStatus.UNKNOWN)) {
+        if (status != ThingStatus.ONLINE && status != ThingStatus.UNKNOWN) {
             result.put("Thing Status", status.toString());
         }
         State wifiSignal = handler.getChannelValue(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI);

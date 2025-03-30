@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wiz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="color-bulb">
+		<label>WiZ Color Bulb</label>
+		<description>Supports WiZ Full Color with Tunable White Bulbs</description>
+
+		<channels>
+			<channel id="color" typeId="system.color"/>
+			<channel id="temperature" typeId="system.color-temperature"/>
+			<channel id="temperature-abs" typeId="system.color-temperature-abs"/>
+			<channel id="mode" typeId="light-mode"/>
+			<channel id="speed" typeId="light-mode-speed"/>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+			<channel id="last-update" typeId="last-update"/>
+			<channel id="rssi" typeId="rssi"/>
+		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+		<config-description-ref uri="thing-type:wiz:device"/>
+	</thing-type>
+
+	<thing-type id="tunable-bulb">
+		<label>WiZ Tunable Bulb</label>
+		<description>Supports WiZ Tunable White Bulbs</description>
+
+		<channels>
+			<channel id="temperature" typeId="system.color-temperature"/>
+			<channel id="temperature-abs" typeId="system.color-temperature-abs"/>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="mode" typeId="light-mode"/>
+			<channel id="speed" typeId="light-mode-speed"/>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+			<channel id="last-update" typeId="last-update"/>
+			<channel id="rssi" typeId="rssi"/>
+		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+		<config-description-ref uri="thing-type:wiz:device"/>
+	</thing-type>
+
+	<thing-type id="dimmable-bulb">
+		<label>WiZ Dimmable Bulb</label>
+		<description>Supports WiZ Single Color Dimmable Bulbs</description>
+
+		<channels>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="mode" typeId="light-mode"/>
+			<channel id="speed" typeId="light-mode-speed"/>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+			<channel id="last-update" typeId="last-update"/>
+			<channel id="rssi" typeId="rssi"/>
+		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+		<config-description-ref uri="thing-type:wiz:device"/>
+	</thing-type>
+
+	<thing-type id="plug">
+		<label>WiZ Smart Plug</label>
+		<description>Supports WiZ Smart Plugs</description>
+
+		<channels>
+			<channel id="state" typeId="system.power"/>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+			<channel id="last-update" typeId="last-update"/>
+			<channel id="rssi" typeId="rssi"/>
+		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+		<config-description-ref uri="thing-type:wiz:device"/>
+	</thing-type>
+
+	<thing-type id="fan">
+		<label>WiZ Ceiling Fan</label>
+		<description>Supports WiZ Ceiling Fans</description>
+
+		<channels>
+			<channel id="state" typeId="system.power"/>
+			<channel id="speed" typeId="fan-speed"/>
+			<channel id="reverse" typeId="fan-reverse"/>
+			<channel id="mode" typeId="fan-mode"/>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+			<channel id="last-update" typeId="last-update"/>
+			<channel id="rssi" typeId="rssi"/>
+		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+		<config-description-ref uri="thing-type:wiz:device"/>
+	</thing-type>
+
+	<thing-type id="fan-with-dimmable-bulb">
+		<label>WiZ Ceiling Fan With Dimmable Bulb</label>
+		<description>Supports WiZ Ceiling Fans With a Dimmable Bulb</description>
+
+		<channel-groups>
+			<channel-group id="device" typeId="device-channels"/>
+			<channel-group id="light" typeId="dimmable-light"/>
+			<channel-group id="fan" typeId="fan-group"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+		<config-description-ref uri="thing-type:wiz:device"/>
+	</thing-type>
+
+	<channel-type id="light-mode">
+		<item-type>String</item-type>
+		<label>Light Mode</label>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="1">Ocean</option>
+				<option value="2">Romance</option>
+				<option value="3">Sunset</option>
+				<option value="4">Party</option>
+				<option value="5">Fireplace</option>
+				<option value="6">Cozy White</option>
+				<option value="7">Forest</option>
+				<option value="8">Pastel Colors</option>
+				<option value="9">Wakeup</option>
+				<option value="10">Bed Time</option>
+				<option value="11">Warm White</option>
+				<option value="12">Daylight</option>
+				<option value="13">Cool White</option>
+				<option value="14">Night Light</option>
+				<option value="15">Focus</option>
+				<option value="16">Relax</option>
+				<option value="17">True Colors</option>
+				<option value="18">TV Time</option>
+				<option value="19">Plant Growth</option>
+				<option value="20">Spring</option>
+				<option value="21">Summer</option>
+				<option value="22">Fall</option>
+				<option value="23">Deep Dive</option>
+				<option value="24">Jungle</option>
+				<option value="25">Mojito</option>
+				<option value="26">Club</option>
+				<option value="27">Christmas</option>
+				<option value="28">Halloween</option>
+				<option value="29">Candlelight</option>
+				<option value="30">Golden White</option>
+				<option value="31">Pulse</option>
+				<option value="32">Steampunk</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="light-mode-speed">
+		<item-type>Dimmer</item-type>
+		<label>Dynamic Light Mode Speed</label>
+		<description>Speed of color/intensity changes in dynamic light modes</description>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="fan-speed">
+		<item-type>Number</item-type>
+		<label>Fan Speed</label>
+		<description>Speed of the fan, in arbitrary steps</description>
+		<category>Fan</category>
+		<state min="0" max="6" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="fan-reverse">
+		<item-type>Switch</item-type>
+		<label>Reverse</label>
+		<state>
+			<options>
+				<option value="OFF">Forward</option>
+				<option value="ON">Reverse</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="fan-mode">
+		<item-type>Number</item-type>
+		<label>Mode</label>
+		<state>
+			<options>
+				<option value="1">Normal</option>
+				<option value="2">Breeze</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="last-update" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>Timestamp of last status update</description>
+		<category>Time</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="rssi" advanced="true">
+		<item-type unitHint="dBm">Number:Power</item-type>
+		<label>RSSI</label>
+		<description>WiFi Received Signal Strength Indicator</description>
+		<category>QualityOfService</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-group-type id="device-channels">
+		<label>Device</label>
+		<channels>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+			<channel id="last-update" typeId="last-update"/>
+			<channel id="rssi" typeId="rssi"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="dimmable-light">
+		<label>Light</label>
+		<channels>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="mode" typeId="light-mode"/>
+			<channel id="speed" typeId="light-mode-speed"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="fan-group">
+		<label>Fan</label>
+		<channels>
+			<channel id="state" typeId="system.power"/>
+			<channel id="speed" typeId="fan-speed"/>
+			<channel id="reverse" typeId="fan-reverse"/>
+			<channel id="mode" typeId="fan-mode"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

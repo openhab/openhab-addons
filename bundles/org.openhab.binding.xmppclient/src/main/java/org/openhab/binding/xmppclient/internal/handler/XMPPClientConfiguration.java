@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.xmppclient.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
 
 /**
  * The {@link XMPPClientConfiguration} class contains fields mapping thing configuration parameters.
@@ -25,6 +26,13 @@ public class XMPPClientConfiguration {
     public @Nullable String host;
     public Integer port = 5222;
     public String username = "";
+    public String nickname = "";
     public String password = "";
     public String domain = "";
+    public String securityMode = SecurityMode.required.toString();
+
+    public boolean isValid() {
+        String host = this.host;
+        return !((host == null || host.isBlank()) && domain.isBlank());
+    }
 }

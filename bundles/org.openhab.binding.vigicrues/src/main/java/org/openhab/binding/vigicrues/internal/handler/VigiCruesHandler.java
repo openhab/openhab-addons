@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -131,7 +131,7 @@ public class VigiCruesHandler extends BaseThingHandler {
         try {
             HubEauResponse stationDetails = apiHandler.discoverStations(config.id);
             List<StationData> stations = stationDetails.stations;
-            if (stations != null && stations.size() > 0) {
+            if (stations != null && !stations.isEmpty()) {
                 stationDetails.stations.stream().findFirst().ifPresent(station -> {
                     PointType stationLocation = new PointType(
                             String.format(Locale.US, "%f,%f", station.latitudeStation, station.longitudeStation));

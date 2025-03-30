@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * The {@link AirthingsWaveGen1Handler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Davy Wong - Added Airthings Wave Gen 1 support
+ * @author Davy Wong - initial contribution, added Airthings Wave Gen 1 support
  */
 @NonNullByDefault
 public class AirthingsWaveGen1Handler extends AbstractAirthingsHandler {

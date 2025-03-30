@@ -72,6 +72,7 @@
 			<property name="firmwareVersion"/>
 			<property name="serialNumber"/>
 			<property name="modelId"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>serialNumber</representation-property>
 
@@ -121,6 +122,7 @@
 			<property name="firmwareVersion"/>
 			<property name="serialNumber"/>
 			<property name="modelId"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>location</representation-property>
 
@@ -161,7 +163,7 @@
 	</channel-type>
 
 	<channel-type id="wifi">
-		<item-type>Number</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>RSSI</label>
 		<description>Received signal strength indicator</description>
 		<category>QualityOfService</category>

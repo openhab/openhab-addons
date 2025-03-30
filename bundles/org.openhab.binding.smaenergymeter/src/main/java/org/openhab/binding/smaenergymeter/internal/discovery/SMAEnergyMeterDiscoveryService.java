@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,7 +79,12 @@ public class SMAEnergyMeterDiscoveryService extends AbstractDiscoveryService imp
             return;
         }
 
-        packetListener.addPayloadHandler(this);
+        try {
+            packetListener.addPayloadHandler(this);
+        } catch (IOException e) {
+            logger.warn("Could not start background discovery, unable to add PayloadHandler", e);
+            return;
+        }
         this.packetListener = packetListener;
     }
 

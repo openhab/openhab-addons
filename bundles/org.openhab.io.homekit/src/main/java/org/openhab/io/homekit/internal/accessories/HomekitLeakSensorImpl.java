@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ import io.github.hapjava.services.impl.LeakSensorService;
  * @author Tim Harper - Initial contribution
  */
 public class HomekitLeakSensorImpl extends AbstractHomekitAccessoryImpl implements LeakSensorAccessory {
-    private final Map<LeakDetectedStateEnum, String> mapping;
+    private final Map<LeakDetectedStateEnum, Object> mapping;
 
     public HomekitLeakSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)

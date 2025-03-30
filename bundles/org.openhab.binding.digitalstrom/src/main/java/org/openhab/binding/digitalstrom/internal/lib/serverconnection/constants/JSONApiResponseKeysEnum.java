@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,8 +16,8 @@ package org.openhab.binding.digitalstrom.internal.lib.serverconnection.constants
  * The {@link JSONApiResponseKeysEnum} contains digitalSTROM-JSON response keys.
  *
  * @author Alexander Betker - Initial contribution
- * @author Michael Ochel completely changed and updated only methods remained
- * @author Matthias Siegele completely changed and updated only methods remained
+ * @author Michael Ochel - completely changed and updated only methods remained
+ * @author Matthias Siegele - completely changed and updated only methods remained
  */
 public enum JSONApiResponseKeysEnum {
 

@@ -47,7 +47,7 @@ The supported channels depend on the WebThing device that is connected. Each map
 In the example below WebThings provided by the [Internet Monitor Service](https://pypi.org/project/internet-monitor-webthing/) will be connected.
 This service does not require specific hardware or devices. To connect the WebThings, the service has to be installed inside your local network.
 
-### Thing  
+### Thing
 
 After installing the WebThing binding you should find the WebThings of your network in the things section of your openHAB administration interface as shown below.
 
@@ -58,7 +58,7 @@ _Internet Speed Monitor_ WebThing have been discovered. To add a WebThing as an 
 
 ![discovery picture](doc/speedmonitor.png)
 
-Alternatively, you may add the WebThing as an openHAB Thing by using a webthing.thing file that has to be located inside the things folder.  
+Alternatively, you may add the WebThing as an openHAB Thing by using a webthing.thing file that has to be located inside the things folder.
 
 ```java
 Thing  webthing:generic:speedmonitor [ webThingURI="http://192.168.1.27:9496/0" ]
@@ -95,8 +95,8 @@ To add the newly linked WebThing items to the sitemap you place a sitemap file s
 
 ```perl
 sitemap internetmonitor label="Internet Speed Monitor" {
-    Text item=uploadSpeed  
-    Text item=downloadSpeed  
+    Text item=uploadSpeed
+    Text item=downloadSpeed
 }
 ```
 

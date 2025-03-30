@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.gree.internal.gson;
 
 /**
  *
- * The GreeBindRequestPack4Gson class is used by Gson to hold values to be send to
+ * The GreeBindRequestPackDTO class is used by Gson to hold values to be send to
  * the Air Conditioner during Binding
  *
  * @author John Cunha - Initial contribution

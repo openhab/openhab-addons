@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,7 @@ public class GardenaHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_ACCOUNT.equals(thing.getThingTypeUID())) {
             return new GardenaAccountHandler((Bridge) thing, httpClientFactory, webSocketFactory, timeZoneProvider);
         } else {
-            return new GardenaThingHandler(thing, timeZoneProvider);
+            return new GardenaThingHandler(thing);
         }
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -120,5 +120,5 @@ public class NuvoBindingConstants {
     public static final String GET_MCS_INSTANCE = "http://%s/api/Script/MRAD.SetZone%%20Zone_%s/MRAD.GetStatus/?clientId=%s";
     public static final String GET_MCS_STATUS = "http://%s/api/Script/SetInstance%%20%s/GetStatus?clientId=%s";
     public static final String GET_MCS_JSON = "http://%s/api/?clientId=%s";
-    public static final String GET_MCS_ART = "http://%s/getArt?guid=%s&instance=%s&h=143&w=143&changed=true&c=1&fmt=jpg";
+    public static final String GET_MCS_ART = "http://%s/getArt?guid=%s&instance=%s&h=%s&w=%s&changed=true&c=1&fmt=jpg";
 }

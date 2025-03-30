@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,6 @@ import org.openhab.binding.mqtt.generic.ChannelConfigBuilder;
 import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.ThingHandlerHelper;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.ValueFactory;
@@ -90,8 +89,8 @@ public class GenericThingHandlerTests {
         doReturn(CompletableFuture.completedFuture(true)).when(connectionMock).publish(any(), any(), anyInt(),
                 anyBoolean());
 
-        thingHandler = spy(new GenericMQTTThingHandler(thingMock, mock(MqttChannelStateDescriptionProvider.class),
-                mock(TransformationServiceProvider.class), 1500));
+        thingHandler = spy(
+                new GenericMQTTThingHandler(thingMock, mock(MqttChannelStateDescriptionProvider.class), 1500));
         thingHandler.setCallback(callbackMock);
 
         // Return the bridge handler if the thing handler asks for it

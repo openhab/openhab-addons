@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -292,9 +292,8 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
         } else if (item instanceof ContactItem) {
             return new DynamoDBBigDecimalItem(name, convert(state, DecimalType.class).toBigDecimal(), time, expireDays);
         } else if (item instanceof DateTimeItem) {
-            return new DynamoDBStringItem(name,
-                    ZONED_DATE_TIME_CONVERTER_STRING.toString(((DateTimeType) state).getZonedDateTime()), time,
-                    expireDays);
+            return new DynamoDBStringItem(name, ZONED_DATE_TIME_CONVERTER_STRING
+                    .toString(((DateTimeType) state).getZonedDateTime(ZoneId.systemDefault())), time, expireDays);
         } else if (item instanceof ImageItem) {
             throw new IllegalArgumentException("Unsupported item " + item.getClass().getSimpleName());
         } else if (item instanceof LocationItem) {
@@ -333,7 +332,8 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                 return new DynamoDBStringItem(name, stringType.toString(), time, expireDays);
             } else if (state instanceof DateTimeType dateType) {
                 return new DynamoDBStringItem(name,
-                        ZONED_DATE_TIME_CONVERTER_STRING.toString(dateType.getZonedDateTime()), time, expireDays);
+                        ZONED_DATE_TIME_CONVERTER_STRING.toString(dateType.getZonedDateTime(ZoneId.systemDefault())),
+                        time, expireDays);
             } else {
                 throw new IllegalStateException(
                         String.format("Unexpected state type %s with StringItem", state.getClass().getSimpleName()));
@@ -386,9 +386,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                         try {
                             // Parse ZoneDateTime from string. DATEFORMATTER assumes UTC in case it is not clear
                             // from the string (should be).
-                            // We convert to default/local timezone for user convenience (e.g. display)
-                            return new DateTimeType(ZONED_DATE_TIME_CONVERTER_STRING.transformTo(stringState)
-                                    .withZoneSameInstant(ZoneId.systemDefault()));
+                            return new DateTimeType(ZONED_DATE_TIME_CONVERTER_STRING.transformTo(stringState));
                         } catch (DateTimeParseException e) {
                             logger.warn("Failed to parse {} as date. Outputting UNDEF instead", stringState);
                             return UnDefType.UNDEF;
@@ -451,7 +449,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
             if (deserializedState == null) {
                 return null;
             }
-            return new DynamoDBHistoricItem(getName(), deserializedState, getTime());
+            return new DynamoDBHistoricItem(item.getName(), deserializedState, getTime().toInstant());
         } catch (Exception e) {
             logger.trace("Failed to convert state '{}' to item {} {}: {} {}. Data persisted with incompatible item.",
                     this.state, item.getClass().getSimpleName(), item.getName(), e.getClass().getSimpleName(),

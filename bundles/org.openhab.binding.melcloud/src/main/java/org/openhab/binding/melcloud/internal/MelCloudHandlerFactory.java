@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.melcloud.internal;
 
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.melcloud.internal.handler.MelCloudAccountHandler;
 import org.openhab.binding.melcloud.internal.handler.MelCloudDeviceHandler;
@@ -33,6 +34,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Luca Calcaterra - Initial contribution
  * @author Wietse van Buitenen - Added heatpump device
  */
+@NonNullByDefault
 @Component(configurationPid = "binding.melcloud", service = ThingHandlerFactory.class)
 public class MelCloudHandlerFactory extends BaseThingHandlerFactory {
 

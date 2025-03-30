@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,19 @@
  */
 package org.openhab.binding.fronius.internal.handler;
 
-import org.eclipse.jdt.annotation.NonNull;
+import static org.openhab.binding.fronius.internal.FroniusBindingConstants.API_TIMEOUT;
+
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
-import org.openhab.binding.fronius.internal.FroniusCommunicationException;
-import org.openhab.binding.fronius.internal.FroniusHttpUtil;
-import org.openhab.binding.fronius.internal.api.BaseFroniusResponse;
-import org.openhab.binding.fronius.internal.api.HeadStatus;
+import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
+import org.openhab.binding.fronius.internal.api.FroniusHttpUtil;
+import org.openhab.binding.fronius.internal.api.dto.BaseFroniusResponse;
+import org.openhab.binding.fronius.internal.api.dto.Head;
+import org.openhab.binding.fronius.internal.api.dto.HeadStatus;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -45,18 +52,17 @@ import com.google.gson.JsonSyntaxException;
  *         Convert ValueUnit to QuantityType
  *         Support NULL value
  */
+@NonNullByDefault
 public abstract class FroniusBaseThingHandler extends BaseThingHandler {
 
-    private static final int API_TIMEOUT = 5000;
     private final Logger logger = LoggerFactory.getLogger(FroniusBaseThingHandler.class);
     private final String serviceDescription;
-    private FroniusBridgeHandler bridgeHandler;
     private final Gson gson;
 
     public FroniusBaseThingHandler(Thing thing) {
         super(thing);
-        gson = new Gson();
         serviceDescription = getDescription();
+        gson = new Gson();
     }
 
     @Override
@@ -78,6 +84,14 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
+    }
+
+    /**
+     * Called by the bridge to handle a bridge configuration update.
+     *
+     * @param configurationParameters map of changed bridge configuration parameters
+     */
+    protected void handleBridgeConfigurationUpdate(Map<String, Object> configurationParameters) {
     }
 
     /**
@@ -124,7 +138,7 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
      * @param channelId the id identifying the channel
      * @return the "new" associated value
      */
-    protected abstract State getValue(String channelId);
+    protected abstract @Nullable State getValue(String channelId);
 
     /**
      * Called by the bridge to fetch data and update channels
@@ -158,22 +172,27 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
      * @param url to request
      * @return the object representation of the json response
      */
-    protected @NonNull <T extends BaseFroniusResponse> T collectDataFromUrl(Class<T> type, String url)
+    protected <T extends BaseFroniusResponse> T collectDataFromUrl(Class<T> type, String url)
             throws FroniusCommunicationException {
         try {
             int attempts = 1;
             while (true) {
                 logger.trace("Fetching URL = {}", url);
-                String response = FroniusHttpUtil.executeUrl(url, API_TIMEOUT);
+                String response = FroniusHttpUtil.executeUrl(HttpMethod.GET, url, API_TIMEOUT);
                 logger.trace("aqiResponse = {}", response);
 
+                @Nullable
                 T result = gson.fromJson(response, type);
                 if (result == null) {
                     throw new FroniusCommunicationException("Empty json result");
                 }
 
-                HeadStatus status = result.getHead().getStatus();
-                if (status.getCode() == 0) {
+                Head head = result.getHead();
+                if (head == null) {
+                    throw new FroniusCommunicationException("Empty head in json result");
+                }
+                HeadStatus status = head.getStatus();
+                if (status != null && status.getCode() == 0) {
                     return result;
                 }
 
@@ -185,9 +204,11 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
                 // "Reason" : "Transfer timeout.",
                 // "UserMessage" : ""
                 // },
-                logger.debug("Error from Fronius attempt #{}: {} - {}", attempts, status.getCode(), status.getReason());
+                int code = status != null ? status.getCode() : 255;
+                String reason = status != null ? status.getReason() : "undefined runtime error";
+                logger.debug("Error from Fronius attempt #{}: {} - {}", attempts, code, reason);
                 if (attempts >= 3) {
-                    throw new FroniusCommunicationException(status.getReason());
+                    throw new FroniusCommunicationException(reason);
                 }
                 Thread.sleep(500 * attempts);
                 attempts++;
