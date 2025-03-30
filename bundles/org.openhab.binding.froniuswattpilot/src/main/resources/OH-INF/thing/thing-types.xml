@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="froniuswattpilot"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing Types -->
+	<thing-type id="wattpilot">
+		<label>Fronius Wattpilot</label>
+		<description>Fronius Wattpilot wallbox</description>
+
+		<channel-groups>
+			<channel-group id="status" typeId="status"/>
+			<channel-group id="metrics" typeId="metrics"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to access the device (the same password as required by the Solar.Wattpilot app)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel Group Types -->
+	<channel-group-type id="status">
+		<label>Charging Status</label>
+		<channels>
+			<channel id="charging-state" typeId="charging-state"/>
+			<channel id="charging-allowed" typeId="charging-allowed"/>
+			<channel id="single-phase" typeId="charging-single-phase"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="metrics">
+		<label>Charging Metrics</label>
+		<channels>
+			<channel id="power" typeId="system.electric-power">
+				<label>Total Power</label>
+			</channel>
+			<channel id="energy-session" typeId="system.electric-energy">
+				<label>Charged Energy</label>
+				<description>Energy charged in the current/last session</description>
+			</channel>
+			<channel id="l1-power" typeId="system.electric-power">
+				<label>Phase 1 Power</label>
+			</channel>
+			<channel id="l2-power" typeId="system.electric-power">
+				<label>Phase 2 Power</label>
+			</channel>
+			<channel id="l3-power" typeId="system.electric-power">
+				<label>Phase 3 Power</label>
+			</channel>
+			<channel id="l1-voltage" typeId="system.electric-voltage">
+				<label>Phase 1 Voltage</label>
+			</channel>
+			<channel id="l2-voltage" typeId="system.electric-voltage">
+				<label>Phase 2 Voltage</label>
+			</channel>
+			<channel id="l3-voltage" typeId="system.electric-voltage">
+				<label>Phase 3 Voltage</label>
+			</channel>
+			<channel id="l1-current" typeId="system.electric-current">
+				<label>Phase 1 Current</label>
+			</channel>
+			<channel id="l2-current" typeId="system.electric-current">
+				<label>Phase 2 Current</label>
+			</channel>
+			<channel id="l3-current" typeId="system.electric-current">
+				<label>Phase 3 Current</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<!-- Channel Types -->
+	<channel-type id="charging-state">
+		<item-type>String</item-type>
+		<label>Charging State</label>
+		<description>Current Charging State of the wallbox</description>
+		<state readOnly="true">
+			<options>
+				<option value="NO_CAR">No car connected</option>
+				<option value="CHARGING">Charging</option>
+				<option value="READY">Ready to charge</option>
+				<option value="COMPLETE">Charging completed</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="charging-allowed">
+		<item-type>Switch</item-type>
+		<label>Charging Allowed</label>
+		<description>Whether charging is currently allowed, e.g. when using eco mode too low solar sur-plus can forbid
+			charging</description>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Allowed</option>
+				<option value="OFF">Not Allowed</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="charging-single-phase">
+		<item-type>Switch</item-type>
+		<label>Single Phase Charging</label>
+		<description>Whether the wallbox is charging single phase only</description>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Single Phase</option>
+				<option value="OFF">Three Phase</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>
