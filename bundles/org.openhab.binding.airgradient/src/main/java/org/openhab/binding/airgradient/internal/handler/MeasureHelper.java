@@ -67,11 +67,14 @@ public class MeasureHelper {
         Map<String, State> states = new HashMap<>(11);
 
         states.put(CHANNEL_ATMP, toQuantityType(measure.getTemperature(), SIUnits.CELSIUS));
+        states.put(CHANNEL_ATMP_COMPENSATED, toQuantityType(measure.atmpCompensated, SIUnits.CELSIUS));
         states.put(CHANNEL_PM_003_COUNT, toQuantityType(measure.pm003Count, Units.ONE));
         states.put(CHANNEL_PM_01, toQuantityType(measure.pm01, Units.MICROGRAM_PER_CUBICMETRE));
         states.put(CHANNEL_PM_02, toQuantityType(measure.pm02, Units.MICROGRAM_PER_CUBICMETRE));
+        states.put(CHANNEL_PM02_COMPENSATED, toQuantityType(measure.pm02Compensated, Units.MICROGRAM_PER_CUBICMETRE));
         states.put(CHANNEL_PM_10, toQuantityType(measure.pm10, Units.MICROGRAM_PER_CUBICMETRE));
         states.put(CHANNEL_RHUM, toQuantityType(measure.getHumidity(), Units.PERCENT));
+        states.put(CHANNEL_RHUM_COMPENSATED, toQuantityType(measure.rhumCompensated, Units.PERCENT));
         states.put(CHANNEL_UPLOADS_SINCE_BOOT, toQuantityType(measure.getBootCount(), Units.ONE));
 
         Double rco2 = measure.rco2;
@@ -86,6 +89,21 @@ public class MeasureHelper {
 
         states.put(CHANNEL_WIFI, toQuantityType(measure.wifi, Units.DECIBEL_MILLIWATTS));
         states.put(CHANNEL_LEDS_MODE, toStringType(measure.ledMode));
+
+        states.put(CHANNEL_PM01_STANDARD, toQuantityType(measure.pm01Standard, Units.MICROGRAM_PER_CUBICMETRE));
+        states.put(CHANNEL_PM02_STANDARD, toQuantityType(measure.pm02Standard, Units.MICROGRAM_PER_CUBICMETRE));
+        states.put(CHANNEL_PM10_STANDARD, toQuantityType(measure.pm10Standard, Units.MICROGRAM_PER_CUBICMETRE));
+
+        states.put(CHANNEL_PM005_COUNT, toQuantityType(measure.pm005Count, Units.ONE));
+        states.put(CHANNEL_PM01_COUNT, toQuantityType(measure.pm01Count, Units.ONE));
+        states.put(CHANNEL_PM02_COUNT, toQuantityType(measure.pm02Count, Units.ONE));
+        states.put(CHANNEL_PM50_COUNT, toQuantityType(measure.pm50Count, Units.ONE));
+        states.put(CHANNEL_PM10_COUNT, toQuantityType(measure.pm10Count, Units.ONE));
+
+        states.put(CHANNEL_TVOC_INDEX, toQuantityType(measure.tvocIndex, Units.ONE));
+        states.put(CHANNEL_TVOC_RAW, toQuantityType(measure.tvocRaw, Units.ONE));
+        states.put(CHANNEL_NOX_INDEX, toQuantityType(measure.noxIndex, Units.ONE));
+        states.put(CHANNEL_NOX_RAW, toQuantityType(measure.noxRaw, Units.ONE));
 
         return states;
     }
