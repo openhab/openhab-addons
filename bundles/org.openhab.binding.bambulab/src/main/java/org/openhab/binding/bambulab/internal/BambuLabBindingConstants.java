@@ -136,92 +136,113 @@ public class BambuLabBindingConstants {
          * According to Bambu Lab documentation, you can attach up to 4 AMS
          */
         public static final int MAX_AMS = 4;
-        /**
-         * Each AMS device has 4 trays
-         */
-        public static final int MAX_AMS_TRAYS = 4;
 
-        public static String getTrayTypeChannel(int trayId) {
+        public static String getTrayTypeChannel(TrayId trayId) {
             return prefix(trayId) + "ams-tray-type";
         }
 
-        public static String getTrayColorChannel(int trayId) {
+        public static String getTrayColorChannel(TrayId trayId) {
             return prefix(trayId) + "ams-tray-color";
         }
 
-        public static String getNozzleTemperatureMaxChannel(int trayId) {
+        public static String getNozzleTemperatureMaxChannel(TrayId trayId) {
             return prefix(trayId) + "ams-nozzle-temperature-max";
         }
 
-        public static String getNozzleTemperatureMinChannel(int trayId) {
+        public static String getNozzleTemperatureMinChannel(TrayId trayId) {
             return prefix(trayId) + "ams-nozzle-temperature-min";
         }
 
-        public static String getRemainChannel(int trayId) {
+        public static String getRemainChannel(TrayId trayId) {
             return prefix(trayId) + "ams-remain";
         }
 
-        public static String getKChannel(int trayId) {
+        public static String getKChannel(TrayId trayId) {
             return prefix(trayId) + "ams-k";
         }
 
-        public static String getNChannel(int trayId) {
+        public static String getNChannel(TrayId trayId) {
             return prefix(trayId) + "ams-n";
         }
 
-        public static String getTagUuidChannel(int trayId) {
+        public static String getTagUuidChannel(TrayId trayId) {
             return prefix(trayId) + "ams-tag-uuid";
         }
 
-        public static String getTrayIdNameChannel(int trayId) {
+        public static String getTrayIdNameChannel(TrayId trayId) {
             return prefix(trayId) + "ams-tray-id-name";
         }
 
-        public static String getTrayInfoIdxChannel(int trayId) {
+        public static String getTrayInfoIdxChannel(TrayId trayId) {
             return prefix(trayId) + "ams-tray-info-idx";
         }
 
-        public static String getTraySubBrandsChannel(int trayId) {
+        public static String getTraySubBrandsChannel(TrayId trayId) {
             return prefix(trayId) + "ams-tray-sub-brands";
         }
 
-        public static String getTrayWeightChannel(int trayId) {
+        public static String getTrayWeightChannel(TrayId trayId) {
             return prefix(trayId) + "ams-tray-weight";
         }
 
-        public static String getTrayDiameterChannel(int trayId) {
+        public static String getTrayDiameterChannel(TrayId trayId) {
             return prefix(trayId) + "ams-tray-diameter";
         }
 
-        public static String getTrayTemperatureChannel(int trayId) {
+        public static String getTrayTemperatureChannel(TrayId trayId) {
             return prefix(trayId) + "ams-tray-temperature";
         }
 
-        public static String getTrayTimeChannel(int trayId) {
+        public static String getTrayTimeChannel(TrayId trayId) {
             return prefix(trayId) + "ams-tray-time";
         }
 
-        public static String getBedTemperatureTypeChannel(int trayId) {
+        public static String getBedTemperatureTypeChannel(TrayId trayId) {
             return prefix(trayId) + "ams-bed-temp-type";
         }
 
-        public static String getBedTemperatureChannel(int trayId) {
+        public static String getBedTemperatureChannel(TrayId trayId) {
             return prefix(trayId) + "ams-bed-temperature";
         }
 
-        public static String getCtypeChannel(int trayId) {
+        public static String getCtypeChannel(TrayId trayId) {
             return prefix(trayId) + "ams-ctype";
         }
 
-        private static String prefix(int trayId) {
-            checkTrayId(trayId);
-            return "ams-tray-%s#".formatted(trayId + 1);
+        private static String prefix(TrayId trayId) {
+            return "ams-tray-%s#".formatted(trayId.getIdx());
         }
 
-        private static void checkTrayId(int trayId) {
-            if (trayId <= 0 || trayId > MAX_AMS_TRAYS) {
-                throw new IllegalArgumentException(
-                        "Invalid tray ID: %d. Allowed range: 1 to %d.".formatted(trayId, MAX_AMS_TRAYS));
+        public static enum TrayId {
+            TRAY_1(1),
+            TRAY_2(2),
+            TRAY_3(3),
+            TRAY_4(4);
+
+            /**
+             * Each AMS device has 4 trays
+             */
+            public static final int MAX_AMS_TRAYS = values().length;
+
+            private final int idx;
+
+            TrayId(int idx) {
+                this.idx = idx;
+            }
+
+            public int getIdx() {
+                return idx;
+            }
+
+            public static Optional<TrayId> parseFromApi(int idx) {
+                // tray ID in api starts from 0 and for channels it starts for 1
+                return switch (idx) {
+                    case 0 -> Optional.of(TRAY_1);
+                    case 1 -> Optional.of(TRAY_2);
+                    case 2 -> Optional.of(TRAY_3);
+                    case 3 -> Optional.of(TRAY_4);
+                    default -> Optional.empty();
+                };
             }
         }
 
@@ -239,11 +260,9 @@ public class BambuLabBindingConstants {
             private static final Logger log = LoggerFactory.getLogger(TrayType.class);
 
             public static Optional<TrayType> findTrayType(String name) {
-                var any = stream(values()).filter(t -> t.name().equalsIgnoreCase(name)).findAny();
-                if (any.isEmpty()) {
-                    log.warn("Cannot parse TrayType from {}!", name);
-                }
-                return any;
+                return stream(values())//
+                        .filter(t -> t.name().equalsIgnoreCase(name))//
+                        .findAny();
             }
         }
     }

@@ -13,7 +13,6 @@
 package org.openhab.binding.bambulab.internal;
 
 import static java.util.Objects.requireNonNull;
-import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.AmsChannel.MAX_AMS_TRAYS;
 import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.ThingStatusDetail.BRIDGE_UNINITIALIZED;
 
@@ -111,22 +110,28 @@ public class AmsDeviceHandler extends BaseThingHandler {
     private void updateAmsTray(Map<?, ?> map) {
         var someId = findKey(map, "id")//
                 .map(Object::toString)//
-                .map(Integer::parseInt)
-                // tray ID in api starts from 0 and for channels it starts for 1
-                .map(t -> t + 1);
+                .map(Integer::parseInt)//
+                .flatMap(AmsChannel.TrayId::parseFromApi);
         if (someId.isEmpty()) {
             logger.warn("There is no tray ID in {}", map);
             return;
         }
-        int trayId = someId.get();
-        if (trayId > MAX_AMS_TRAYS) {
-            logger.warn("Tray ID needs to be lower that {}. Was {}", MAX_AMS_TRAYS, trayId);
-            return;
-        }
+        var trayId = someId.get();
 
         findKey(map, "tray_type")//
                 .map(Object::toString)//
-                .flatMap(AmsChannel.TrayType::findTrayType)//
+                .flatMap(name -> {
+                    var trayType = AmsChannel.TrayType.findTrayType(name);
+                    if (trayType.isEmpty()) {
+                        var msg = "Cannot parse tray type from [{}]! Please report this on https://github.com/openhab/openhab-addons .";
+                        if (logger.isDebugEnabled()) {
+                            logger.debug(msg + " Full map: {}", name, map);
+                        } else {
+                            logger.warn(msg, name);
+                        }
+                    }
+                    return trayType;
+                })//
                 .map(Enum::name)//
                 .map(value -> (State) StringType.valueOf(value))//
                 .or(StateParserHelper::undef)//

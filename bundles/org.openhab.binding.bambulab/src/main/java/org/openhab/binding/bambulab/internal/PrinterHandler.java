@@ -454,6 +454,12 @@ public class PrinterHandler extends BaseBridgeHandler
             case CHANNEL_CAMERA_RECORD -> Optional.empty();
         };
         state.ifPresent(s -> updateState(channel, s));
+        Optional.of(print)//
+                .map(Report.Print::ams)//
+                .map(Report.Print.Ams::ams)//
+                .stream()//
+                .flatMap(Collection::stream)//
+                .forEach(this::updateAms);
     }
 
     private void updateAms(Map<String, Object> amsMap) {
