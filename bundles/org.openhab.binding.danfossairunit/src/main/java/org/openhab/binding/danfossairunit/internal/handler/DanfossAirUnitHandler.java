@@ -92,7 +92,6 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE,
                         "@text/offline.connection-not-initialized");
-                return;
             }
         } catch (IOException ioe) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, ioe.getMessage());
