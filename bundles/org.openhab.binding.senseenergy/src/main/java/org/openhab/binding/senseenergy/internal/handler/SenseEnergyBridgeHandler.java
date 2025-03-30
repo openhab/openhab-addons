@@ -18,10 +18,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -92,7 +90,7 @@ public class SenseEnergyBridgeHandler extends BaseBridgeHandler {
     public void goOnline() {
         try {
             this.monitorIDs = api.initialize(config.email, config.password);
-        } catch (InterruptedException | TimeoutException | ExecutionException | SenseEnergyApiException e) {
+        } catch (SenseEnergyApiException e) {
             handleApiException(e);
             return;
         }
@@ -120,7 +118,7 @@ public class SenseEnergyBridgeHandler extends BaseBridgeHandler {
         // token is verified on each api call, called here in case no API calls are made in the alloted period
         try {
             getApi().verifyToken();
-        } catch (InterruptedException | TimeoutException | ExecutionException | SenseEnergyApiException e) {
+        } catch (SenseEnergyApiException e) {
             handleApiException(e);
         }
 
@@ -133,17 +131,27 @@ public class SenseEnergyBridgeHandler extends BaseBridgeHandler {
     }
 
     public void handleApiException(Exception e) {
-        ThingStatusDetail statusDetail = ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR;
-
         if (e instanceof SenseEnergyApiException apiException) {
-            statusDetail = apiException.isConfigurationIssue() ? ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR
-                    : ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR;
+            switch (apiException.severity) {
+                case TRANSIENT:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
+                    break;
+                case CONFIG:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
+                    break;
+                case FATAL:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
+                    break;
+                case DATA:
+                    logger.error("Data exception: {}", e.toString());
+                    break;
+                default:
+                    logger.error("SenseEnergyApiException: {}", e.toString());
+                    break;
+            }
         } else {
-            logger.debug("Unhandled Exception", e);
-            statusDetail = ThingStatusDetail.OFFLINE.NONE;
+            logger.error("Unhandled Exception", e);
         }
-
-        updateStatus(ThingStatus.OFFLINE, statusDetail, e.getLocalizedMessage());
     }
 
     /*

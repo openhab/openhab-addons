@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.measure.Unit;
@@ -170,7 +168,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
             this.solarConfigured = apiMonitor.solarConfigured;
             apiMonitorStatus = getApi().getMonitorStatus(id);
             refreshDevices();
-        } catch (InterruptedException | TimeoutException | ExecutionException | SenseEnergyApiException e) {
+        } catch (Exception e) {
             handleApiException(e);
             return;
         }
@@ -204,7 +202,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         ThingStatus thingStatus = getThing().getStatus();
 
         if (thingStatus == ThingStatus.OFFLINE
-                && getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR) {
+                && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR) {
             goOnline(); // only attempt to goOnline if not a configuration error
             return;
         }
@@ -230,17 +228,27 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
     }
 
     public void handleApiException(Exception e) {
-        ThingStatusDetail statusDetail = ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR;
-
         if (e instanceof SenseEnergyApiException apiException) {
-            statusDetail = apiException.isConfigurationIssue() ? ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR
-                    : ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR;
+            switch (apiException.severity) {
+                case TRANSIENT:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
+                    break;
+                case CONFIG:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
+                    break;
+                case FATAL:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
+                    break;
+                case DATA:
+                    logger.error("Data exception: {}", e.toString());
+                    break;
+                default:
+                    logger.error("SenseEnergyApiException: {}", e.toString());
+                    break;
+            }
         } else {
-            logger.debug("Unhandled Exception", e);
-            statusDetail = ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR;
+            logger.error("Unhandled Exception", e);
         }
-
-        updateStatus(ThingStatus.OFFLINE, statusDetail, e.getLocalizedMessage());
     }
 
     @Override
@@ -361,7 +369,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
             senseDevices.entrySet().stream() //
                     .filter(e -> !senseDevicesType.containsKey(e.getKey())) //
                     .forEach(e -> senseDevicesType.put(e.getKey(), deduceDeviceType(e.getValue())));
-        } catch (InterruptedException | TimeoutException | ExecutionException | SenseEnergyApiException e) {
+        } catch (Exception e) {
             handleApiException(e);
         }
     }

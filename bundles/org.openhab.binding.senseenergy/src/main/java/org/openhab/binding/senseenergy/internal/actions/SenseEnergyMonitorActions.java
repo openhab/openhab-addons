@@ -18,8 +18,6 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Energy;
@@ -27,7 +25,6 @@ import javax.measure.quantity.Energy;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.senseenergy.internal.api.SenseEnergyApi;
-import org.openhab.binding.senseenergy.internal.api.SenseEnergyApiException;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiGetTrends;
 import org.openhab.binding.senseenergy.internal.handler.SenseEnergyMonitorHandler;
 import org.openhab.core.automation.annotation.ActionInput;
@@ -105,7 +102,7 @@ public class SenseEnergyMonitorActions implements ThingActions {
         SenseEnergyApiGetTrends trends;
         try {
             trends = localDeviceHandler.getApi().getTrendData(localDeviceHandler.getId(), trendScale, localDateTime);
-        } catch (InterruptedException | TimeoutException | ExecutionException | SenseEnergyApiException e) {
+        } catch (Exception e) {
             logger.warn("queryEnergyTrends function failed - {}", e.getMessage());
             return Collections.emptyMap();
         }
