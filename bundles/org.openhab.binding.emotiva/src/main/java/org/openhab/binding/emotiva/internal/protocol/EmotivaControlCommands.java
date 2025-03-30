@@ -33,6 +33,7 @@ import static org.openhab.binding.emotiva.internal.protocol.EmotivaDataType.STRI
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaDataType.UNKNOWN;
 
 import java.util.EnumMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -202,16 +203,60 @@ public enum EmotivaControlCommands {
         this.dataType = dataType;
     }
 
-    public static EmotivaControlCommands matchToInput(String inputName) {
-        for (EmotivaControlCommands value : values()) {
-            if (inputName.toLowerCase().equals(value.name())) {
-                return value;
+    /**
+     * Matches given tag to Emotiva command using the following rules:
+     *
+     * 1. Check if tag name matches any known {@link EmotivaControlCommands} command.
+     * 2. Check if tag name has a corresponding {@link EmotivaControlCommands} source command (input_ -> source_).
+     *
+     * @param tag Input tag
+     * @return Command matched from tag or else {@link EmotivaControlCommands#none}
+     */
+    public static EmotivaControlCommands matchFromSourceInput(EmotivaSubscriptionTags tag) {
+        for (EmotivaControlCommands command : values()) {
+            if (tag.name().equalsIgnoreCase(command.name())) {
+                return command;
             }
         }
-        if (inputName.startsWith("input_")) {
-            return valueOf(inputName.replace("input_", "source_"));
+        if (tag.name().toLowerCase().startsWith("input_")) {
+            return valueOf(tag.name().toLowerCase().replace("input_", "source_"));
         }
         return none;
+    }
+
+    /**
+     * Matches a string input to a {@link EmotivaControlCommands} source command, uses the rules listed below for
+     * matching. User customised labels might have equal content for multiple sources, so it is up to the user to keep
+     * each unique, if not the first in the set is returned.
+     *
+     * 1. First match between of input label and label from map.
+     * 2. Check if input matches name of any command in map.
+     * 3. Check if input matches name of any known {@link EmotivaControlCommands}.
+     *
+     * @param input Label or command input
+     * @param sourceCommandToLabelMap Source to label map
+     * @return Command matched from input or else {@link EmotivaControlCommands#none}
+     */
+    public static EmotivaControlCommands matchFromSourceInput(String input,
+            Map<EmotivaControlCommands, String> sourceCommandToLabelMap) {
+        // Cleanup input, Emotiva labels might have spaces and REST API might add line breaks
+        String inputTrimmed = input.trim().replaceAll("(\r\n|\n)", "");
+
+        for (EmotivaControlCommands command : sourceCommandToLabelMap.keySet()) {
+            String label = sourceCommandToLabelMap.get(command);
+            if (label != null && label.equals(inputTrimmed)) {
+                return command;
+            } else if (command.name().equalsIgnoreCase(inputTrimmed)) {
+                return command;
+            }
+        }
+        for (EmotivaControlCommands command : values()) {
+            // Check if input label matches label of the current command list
+            if (inputTrimmed.equalsIgnoreCase(command.name())) {
+                return command;
+            }
+        }
+        return EmotivaControlCommands.none;
     }
 
     public String getLabel() {
@@ -226,13 +271,17 @@ public enum EmotivaControlCommands {
         return dataType;
     }
 
-    public static EnumMap<EmotivaControlCommands, String> getCommandsFromType(EmotivaCommandType filter) {
+    /**
+     * Provides map of Emotiva command to label for given {@link EmotivaCommandType}.
+     *
+     * @param filter Filter provided for reducing the map to a given type
+     * @return Map
+     */
+    public static EnumMap<EmotivaControlCommands, String> getByCommandType(EmotivaCommandType filter) {
         EnumMap<EmotivaControlCommands, String> commands = new EnumMap<>(EmotivaControlCommands.class);
-        for (EmotivaControlCommands value : values()) {
-            if (value.getCommandType().equals(filter)) {
-                var sb = new StringBuilder(value.name());
-                sb.setCharAt(0, Character.toUpperCase(value.name().charAt(0)));
-                commands.put(value, sb.toString());
+        for (EmotivaControlCommands command : values()) {
+            if (command.getCommandType().equals(filter)) {
+                commands.put(command, command.label);
             }
         }
         return commands;

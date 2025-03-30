@@ -18,17 +18,28 @@ The binding automatically discovers devices on your network.
 The Emotiva Processor thing requires the `ipAddress` it can connect to.
 There are more parameters which all have defaults set.
 
-| Parameter             | Values                                                        | Default |
-|-----------------------|---------------------------------------------------------------|---------|
-| ipAddress             | IP address of the processor                                   | -       |
-| controlPort           | port number, e.g. 7002                                        | 7002    |
-| notifyPort            | port number, e.g. 7003                                        | 7003    |
-| infoPort              | port number, e.g. 7004                                        | 7004    |
-| setupPortTCP          | port number, e.g. 7100                                        | 7100    |
-| menuNotifyPort        | port number, e.g. 7005                                        | 7005    |
-| protocolVersion       | Emotiva Network Protocol version, e.g. 3.0                    | 2.0     |
-| keepAlive             | Time between notification update from device, in milliseconds | 7500    |
-| retryConnectInMinutes | Time between connection retry, in minutes                     | 2       |
+| Parameter              | Values                                                        | Default |
+|------------------------|---------------------------------------------------------------|---------|
+| ipAddress              | IP address of the processor                                   | -       |
+| controlPort            | port number, e.g. 7002                                        | 7002    |
+| notifyPort             | port number, e.g. 7003                                        | 7003    |
+| infoPort               | port number, e.g. 7004                                        | 7004    |
+| setupPortTCP           | port number, e.g. 7100                                        | 7100    |
+| menuNotifyPort         | port number, e.g. 7005                                        | 7005    |
+| activateFrontBar       | Activates Front Bar channels                                  | false   |
+| activateOSDMenu        | Activates OSD menu channels                                   | false   |
+| activateZone2          | Activates Zone 2 channels                                     | false   |
+| protocolVersion        | Emotiva Network Protocol version, e.g. 3.0                    | 2.0     |
+| keepAlive              | Time between notification update from device, in milliseconds | 7500    |
+| retryConnectInMinutes  | Time between connection retry, in minutes                     | 2       |
+
+### Dynamic channels and extended functionality
+
+Emotiva processors have limited processing power, so if the binding subscribes to all channels simultaneously the 
+device might grind to a halt after a while, requiring a manual reboot of the device. The binding is designed to 
+dynamically enable and disabled channels based on the selected source. Furthermore, the configuration values 
+**activateFrontBar**, **activateOSDMenu** and **activateZone2** controls extra functionality this is default off to 
+reduce the overall load on the device.
 
 ## Channels
 
