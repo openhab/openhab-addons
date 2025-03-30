@@ -100,7 +100,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 buildCommandUsage(INFO, "displays information about JRuby Scripting add-on"), //
                 buildCommandUsage(CONSOLE + " [--list|-l|--help|-h] | [script] [options]",
                         "starts an interactive JRuby console"), //
-                buildCommandUsage(BUNDLE + " [arguments]", "runs Ruby bundler in the main Script path"), //
+                buildCommandUsage(BUNDLE + " [arguments]", "runs Ruby bundler against your Gemfile"), //
                 buildCommandUsage(GEM + " [arguments]", "manages JRuby Scripting add-on's RubyGems"), //
                 buildCommandUsage(PRUNE + " [-f|--force]", "cleans up older versions in the .gem directory") //
         );
@@ -316,7 +316,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         final String gemfilePath = jRubyScriptEngineFactory.getConfiguration().getGemfilePath();
         if (gemfilePath == null) {
             console.println(
-                    "No Gemfile configured. Please set the 'bundle_gemfile_path' or 'bundle_gemfile_content' property in the add-on configuration.");
+                    "No Gemfile configured. Please set the 'bundle_gemfile' setting in the add-on configuration, and ensure that the Gemfile exists.");
             return;
         }
 

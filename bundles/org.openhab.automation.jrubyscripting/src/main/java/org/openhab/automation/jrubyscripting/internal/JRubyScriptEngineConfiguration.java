@@ -115,7 +115,7 @@ public class JRubyScriptEngineConfiguration {
         if (bundleGemfile != null) {
             bundlerInit(engine, configuration.check_update);
         } else {
-            configureGems(engine);
+            configureGems(engine, configuration.check_update);
         }
         if (writer.toString().length() > 0) {
             LOGGER.debug("{}", writer);
@@ -246,11 +246,6 @@ public class JRubyScriptEngineConfiguration {
      * @param update when true, run Bundler update, otherwise run Bundler install
      */
     public void bundlerInit(ScriptEngine engine, boolean update) {
-        if (bundleGemfile == null) {
-            LOGGER.debug("No Gemfile is found or configured. Skipping Bundler initialization.");
-            return;
-        }
-
         String operation = update ? "update" : "install";
         String code = """
                 require "jruby"
@@ -263,7 +258,7 @@ public class JRubyScriptEngineConfiguration {
                 """.formatted(operation);
 
         try {
-            LOGGER.debug("Running Bundler {} with Gemfile {}", operation, bundleGemfile);
+            LOGGER.info("Running 'bundle {}' with Gemfile '{}'", operation, bundleGemfile);
             LOGGER.trace("Bundler code:\n{}", code);
             engine.eval(code);
         } catch (ScriptException e) {
@@ -307,7 +302,7 @@ public class JRubyScriptEngineConfiguration {
      * 
      * @param engine Engine to install gems
      */
-    synchronized void configureGems(ScriptEngine engine) {
+    synchronized void configureGems(ScriptEngine engine, boolean update) {
         String gems = configuration.gems;
         if (gems.isEmpty()) {
             return;
@@ -357,10 +352,10 @@ public class JRubyScriptEngineConfiguration {
                   source 'https://rubygems.org/'
                 %s
                 end
-                """.formatted(configuration.check_update, gemLines);
+                """.formatted(update, gemLines);
 
         try {
-            LOGGER.debug("Installing Gems");
+            LOGGER.info("Checking for {} gems '{}'", update ? "updated" : "installed", gems);
             LOGGER.trace("Gem install code:\n{}", gemCommand);
             engine.eval(gemCommand);
         } catch (ScriptException e) {
