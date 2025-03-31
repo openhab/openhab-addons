@@ -539,7 +539,7 @@ public class ThingLinkyLocalHandler extends BaseThingHandler {
             return null;
         }
 
-        if (timestamp.startsWith("H") || timestamp.startsWith(" ")) {
+        if (timestamp.startsWith("H") || timestamp.startsWith("E") || timestamp.startsWith(" ")) {
             DateTimeFormatter df = DateTimeFormatter.ofPattern("yyMMdd[HH][mm][ss]");
             res = LocalDateTime.parse(timestamp.substring(1), df);
         } else {
