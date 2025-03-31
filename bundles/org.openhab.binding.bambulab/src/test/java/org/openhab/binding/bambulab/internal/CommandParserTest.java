@@ -15,6 +15,7 @@ package org.openhab.binding.bambulab.internal;
 import static org.assertj.core.api.Assertions.*;
 import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.LedMode.*;
 import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.LedNode.*;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -101,8 +102,8 @@ class CommandParserTest {
                 new PrinterClient.Channel.AmsFilamentSettingCommand(11, 22, "s3", "s4", 55, 66, "s7")));
         var amsControlCommandStream = Arrays.stream(PrinterClient.Channel.AmsControlCommand.values())//
                 .map(value -> Arguments.of("AmsControl:" + value.name(), value));
-        var printSpeedCommandStream = Arrays.stream(PrinterClient.Channel.PrintSpeedCommand.values())//
-                .map(value -> Arguments.of("PrintSpeed:" + value.name(), value));
+        var printSpeedCommandStream = Stream.of(SILENT, STANDARD, SPORT, LUDICROUS)//
+                .map(value -> Arguments.of("PrintSpeed:" + value.getName(), value));
         var gCodeFileCommandStream = stream(
                 Arguments.of("GCodeFile:s1", new PrinterClient.Channel.GCodeFileCommand("s1")));
         var gCodeLineCommandStream = stream(Arguments.of("""
