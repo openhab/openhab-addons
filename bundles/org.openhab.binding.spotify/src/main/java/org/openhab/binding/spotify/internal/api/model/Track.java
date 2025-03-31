@@ -12,16 +12,20 @@
  */
 package org.openhab.binding.spotify.internal.api.model;
 
+import java.util.List;
+
 /**
  * Spotify Web Api Playlist data class.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-public class Playlist {
+public class Track {
 
     private String name;
     private String uri;
-    public Tracks tracks;
+
+    private Album album;
+    private List<Artist> artists;
 
     public String getName() {
         return name;
@@ -31,7 +35,11 @@ public class Playlist {
         return uri;
     }
 
-    public Tracks getTracks() {
-        return tracks;
+    public Album getAlbum() {
+        return album;
+    }
+
+    public List<Artist> getArtists() {
+        return artists;
     }
 }

@@ -17,21 +17,7 @@ package org.openhab.binding.spotify.internal.api.model;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-public class Playlist {
+public class PlaylistTrack {
 
-    private String name;
-    private String uri;
-    public Tracks tracks;
-
-    public String getName() {
-        return name;
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public Tracks getTracks() {
-        return tracks;
-    }
+    public Track track;
 }

@@ -40,6 +40,7 @@ import org.openhab.binding.spotify.internal.api.model.Devices;
 import org.openhab.binding.spotify.internal.api.model.Me;
 import org.openhab.binding.spotify.internal.api.model.ModelUtil;
 import org.openhab.binding.spotify.internal.api.model.Playlist;
+import org.openhab.binding.spotify.internal.api.model.PlaylistTrack;
 import org.openhab.binding.spotify.internal.api.model.Playlists;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
@@ -47,9 +48,12 @@ import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.media.MediaService;
+import org.openhab.core.media.model.MediaAlbums;
+import org.openhab.core.media.model.MediaArtists;
 import org.openhab.core.media.model.MediaPlayList;
 import org.openhab.core.media.model.MediaPlayLists;
 import org.openhab.core.media.model.MediaSource;
+import org.openhab.core.media.model.MediaTrack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -230,8 +234,41 @@ public class SpotifyApi {
         final Playlists playlists = request(GET, SPOTIFY_API_URL + "/playlists?offset" + offset + "&limit=" + limit, "",
                 Playlists.class);
 
-        MediaSource mediaSource = new MediaSource("Spotify");
+        MediaSource mediaSource = new MediaSource("Spotify", "Spotify");
         mediaService.registerMediaEntry(mediaSource);
+
+        MediaAlbums mediaAlbumss = new MediaAlbums();
+        mediaSource.addChild("Albums", mediaAlbumss);
+
+        MediaArtists mediaArtistss = new MediaArtists();
+        mediaSource.addChild("Artists", mediaArtistss);
+
+        MediaSource mediaSourcet = new MediaSource("Tidal", "Tidal");
+        mediaService.registerMediaEntry(mediaSourcet);
+
+        MediaAlbums mediaAlbumst = new MediaAlbums();
+        mediaSourcet.addChild("Albums", mediaAlbumst);
+
+        MediaArtists mediaArtistst = new MediaArtists();
+        mediaSourcet.addChild("Artists", mediaArtistst);
+
+        MediaSource mediaSourceu = new MediaSource("Upnp", "Upnp");
+        mediaService.registerMediaEntry(mediaSourceu);
+
+        MediaAlbums mediaAlbumsu = new MediaAlbums();
+        mediaSourceu.addChild("Albums", mediaAlbumsu);
+
+        MediaArtists mediaArtistsu = new MediaArtists();
+        mediaSourceu.addChild("Artists", mediaArtistsu);
+
+        MediaSource mediaSourcel = new MediaSource("Local", "Local");
+        mediaService.registerMediaEntry(mediaSourcel);
+
+        MediaAlbums mediaAlbumsl = new MediaAlbums();
+        mediaSourcel.addChild("Albums", mediaAlbumsl);
+
+        MediaArtists mediaArtistsl = new MediaArtists();
+        mediaSourcel.addChild("Artists", mediaArtistsl);
 
         MediaPlayLists mediaPlayLists = new MediaPlayLists();
         mediaSource.addChild("Playlists", mediaPlayLists);
@@ -239,8 +276,23 @@ public class SpotifyApi {
         if (playlists != null && playlists.getItems() != null) {
             List<Playlist> list = playlists.getItems();
             for (Playlist pl : list) {
-                MediaPlayList mediaPlayList = new MediaPlayList(pl.getName());
-                mediaPlayLists.addChild(mediaPlayList.getName(), mediaPlayList);
+                MediaPlayList mediaPlayList = new MediaPlayList(pl.getUri(), pl.getName());
+                mediaPlayLists.addChild(pl.getUri(), mediaPlayList);
+
+                final Playlist playlist = request(GET,
+                        SPOTIFY_API_BASE_URL + "/playlists/" + pl.getUri().replace("spotify:playlist:", ""), "",
+                        Playlist.class);
+
+                for (PlaylistTrack plTrack : playlist.tracks.getPlaylistTrack()) {
+                    String trackName = plTrack.track.getName();
+                    String trackAlbum = plTrack.track.getAlbum().getName();
+                    String trackArtist = plTrack.track.getArtists().getFirst().getName();
+
+                    MediaTrack track = new MediaTrack(plTrack.track.getUri(), trackName);
+                    mediaPlayList.addChild(plTrack.track.getUri(), track);
+
+                }
+                logger.debug("p1");
             }
         }
         return playlists == null || playlists.getItems() == null ? Collections.emptyList() : playlists.getItems();
