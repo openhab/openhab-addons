@@ -32,7 +32,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.mideaac.internal.MideaACConfiguration;
 import org.openhab.binding.mideaac.internal.cloud.Cloud;
 import org.openhab.binding.mideaac.internal.cloud.CloudProvider;
-import org.openhab.binding.mideaac.internal.cloud.Clouds;
 import org.openhab.binding.mideaac.internal.connection.CommandHelper;
 import org.openhab.binding.mideaac.internal.connection.ConnectionManager;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaAuthenticationException;
@@ -69,16 +68,13 @@ import org.slf4j.LoggerFactory;
  * @author Jacek Dobrowolski - Initial contribution
  * @author Justan Oldman - Last Response added
  * @author Bob Eckhoff - Longer Polls and OH developer guidelines
- * @author Leo Siepel - Refactored class, improved seperation of concerns
+ * @author Leo Siepel - Refactored class, improved separation of concerns
  */
 @NonNullByDefault
 public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler {
 
     private final Logger logger = LoggerFactory.getLogger(MideaACHandler.class);
-    private final Clouds clouds;
     private final boolean imperialUnits;
-    private boolean isPollRunning = false;
-    private boolean isKeyTokenUpdateRunning = false;
     private final HttpClient httpClient;
 
     private MideaACConfiguration config = new MideaACConfiguration();
@@ -99,23 +95,12 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * @param thing Thing
      * @param unitProvider OH core unit provider
      * @param httpClient http Client
-     * @param clouds Clouds
      */
-    public MideaACHandler(Thing thing, UnitProvider unitProvider, HttpClient httpClient, Clouds clouds) {
+    public MideaACHandler(Thing thing, UnitProvider unitProvider, HttpClient httpClient) {
         super(thing);
         this.thing = thing;
         this.imperialUnits = unitProvider.getMeasurementSystem() instanceof ImperialUnits;
         this.httpClient = httpClient;
-        this.clouds = clouds;
-    }
-
-    /**
-     * Returns Cloud Provider
-     * 
-     * @return clouds
-     */
-    public Clouds getClouds() {
-        return clouds;
     }
 
     /**
@@ -188,13 +173,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      */
     @Override
     public void initialize() {
-        if (isPollRunning) {
-            stopScheduler();
-        }
-        if (isKeyTokenUpdateRunning) {
-            stopTokenKeyUpdate();
-        }
-
         config = getConfigAs(MideaACConfiguration.class);
 
         if (!config.isValid()) {
@@ -243,23 +221,17 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                 config.deviceId, config.version, config.promptTone);
 
         if (scheduledTask == null) {
-            isPollRunning = true;
             scheduledTask = scheduler.scheduleWithFixedDelay(this::pollJob, 2, config.pollingTime, TimeUnit.SECONDS);
             logger.debug("Scheduled task started, Poll Time {} seconds", config.pollingTime);
         } else {
             logger.debug("Scheduler already running");
         }
 
-        if (config.keyTokenUpdate != 0) {
-            if (scheduledKeyTokenUpdate == null) {
-                isKeyTokenUpdateRunning = true;
-                scheduledKeyTokenUpdate = scheduler.scheduleWithFixedDelay(
-                        () -> getTokenKeyCloud(CloudProvider.getCloudProvider(config.cloud)), config.keyTokenUpdate,
-                        config.keyTokenUpdate, TimeUnit.DAYS);
-                logger.debug("Token Key Update Scheduler started, update interval {} days", config.keyTokenUpdate);
-            } else {
-                logger.debug("Token Key Update Scheduler already running");
-            }
+        if (config.keyTokenUpdate != 0 && scheduledKeyTokenUpdate == null) {
+            scheduledKeyTokenUpdate = scheduler.scheduleWithFixedDelay(
+                    () -> getTokenKeyCloud(CloudProvider.getCloudProvider(config.cloud)), config.keyTokenUpdate,
+                    config.keyTokenUpdate, TimeUnit.DAYS);
+            logger.debug("Token Key Update Scheduler started, update interval {} days", config.keyTokenUpdate);
         }
     }
 
@@ -368,29 +340,27 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * @param cloudProvider Cloud Provider account
      */
     public void getTokenKeyCloud(CloudProvider cloudProvider) {
-        if (isPollRunning) {
+        if (scheduledTask != null) {
             stopScheduler();
         }
         logger.debug("Retrieving Token and/or Key from cloud");
-        Cloud cloud = getClouds().get(config.email, config.password, cloudProvider);
-        if (cloud != null) {
-            cloud.setHttpClient(httpClient);
-            if (cloud.login()) {
-                TokenKey tk = cloud.getToken(config.deviceId);
-                Configuration configuration = editConfiguration();
+        Cloud cloud = new Cloud(config.email, config.password, cloudProvider);
+        cloud.setHttpClient(httpClient);
+        if (cloud.login()) {
+            TokenKey tk = cloud.getToken(config.deviceId);
+            Configuration configuration = editConfiguration();
 
-                configuration.put(CONFIG_TOKEN, tk.token());
-                configuration.put(CONFIG_KEY, tk.key());
-                updateConfiguration(configuration);
+            configuration.put(CONFIG_TOKEN, tk.token());
+            configuration.put(CONFIG_KEY, tk.key());
+            updateConfiguration(configuration);
 
-                logger.trace("Token: {}", tk.token());
-                logger.trace("Key: {}", tk.key());
-                logger.debug("Token and Key obtained from cloud, saving, back to initialize");
-                initialize();
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
-                        "Can't retrieve Token and Key from Cloud; email, password and/or cloud parameter error"));
-            }
+            logger.trace("Token: {}", tk.token());
+            logger.trace("Key: {}", tk.key());
+            logger.debug("Token and Key obtained from cloud, saving, back to initialize");
+            initialize();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String
+                    .format("Can't retrieve Token and Key from Cloud; email, password and/or cloud parameter error"));
         }
     }
 
@@ -400,7 +370,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         if (localScheduledTask != null && !localScheduledTask.isCancelled()) {
             localScheduledTask.cancel(true);
             logger.debug("Scheduled task cancelled.");
-            isPollRunning = false;
             scheduledTask = null;
         }
     }
@@ -411,7 +380,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         if (localScheduledTask != null && !localScheduledTask.isCancelled()) {
             localScheduledTask.cancel(true);
             logger.debug("Scheduled Key Token Update cancelled.");
-            isKeyTokenUpdateRunning = false;
             scheduledKeyTokenUpdate = null;
         }
     }

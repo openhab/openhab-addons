@@ -71,9 +71,9 @@ public class ConnectionManager {
     private int droppedCommands = 0;
 
     /**
-     * True allows command retry if null response
+     * True allows command resend if null and timeout response
      */
-    private boolean retry = true;
+    private boolean resend = true;
 
     public ConnectionManager(String ipAddress, int ipPort, int timeout, String key, String token, String cloud,
             String email, String password, String deviceId, int version, boolean promptTone) {
@@ -117,43 +117,43 @@ public class ConnectionManager {
         logger.trace("Connecting to {}:{}", ipAddress, ipPort);
 
         int maxTries = 3;
-        int retryCount = 0;
+        int retrySocket = 0;
 
-        // If retrying command add delay to avoid connection rejection
-        if (!retry) {
+        // If resending command add delay to avoid connection rejection
+        if (!resend) {
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException ex) {
-                logger.debug("An interupted error (retry command delay) has occured {}", ex.getMessage());
+                logger.debug("An interupted error (resend command delay-connect) has occured {}", ex.getMessage());
             }
         }
 
         // Open socket
-        // Retry addresses most common wifi connection problems- wait 5 seconds and try again
-        while (retryCount < maxTries) {
+        // RetrySocket addresses the Timeout exception, others exceptions end the thread
+        while (retrySocket < maxTries) {
             try {
                 socket = new Socket();
                 socket.setSoTimeout(timeout * 1000);
                 socket.connect(new InetSocketAddress(ipAddress, ipPort), timeout * 1000);
                 break;
             } catch (SocketTimeoutException e) {
-                retryCount++;
-                if (retryCount < maxTries) {
+                retrySocket++;
+                if (retrySocket < maxTries) {
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException ex) {
                         logger.debug("An interupted error (socket retry) has occured {}", ex.getMessage());
                     }
-                    logger.debug("Socket retry count {}, Socket timeout connecting to {}: {}", retryCount, ipAddress,
+                    logger.debug("Socket retry count {}, Socket timeout connecting to {}: {}", retrySocket, ipAddress,
                             e.getMessage());
                 }
             } catch (IOException e) {
-                logger.debug("Socket retry count {}, IOException connecting to {}: {}", retryCount, ipAddress,
+                logger.debug("Socket retry count {}, IOException connecting to {}: {}", retrySocket, ipAddress,
                         e.getMessage());
-                break;
+                throw new MideaConnectionException(e);
             }
         }
-        if (retryCount == maxTries) {
+        if (retrySocket == maxTries) {
             deviceIsConnected = false;
             logger.debug("Failed to connect after {} tries. Try again with next scheduled poll", maxTries);
             throw new MideaConnectionException("Failed to connect after maximum tries");
@@ -210,10 +210,9 @@ public class ConnectionManager {
     }
 
     /**
-     * Sends the Handshake Request to the V3 device. Generally quick response
-     * Without the 1000 ms sleep delay there are problems in sending the Poll/Command
-     * Suspect that the socket write and read streams need a moment to clear
-     * as they will be reused in the SendCommand method
+     * Sends the Handshake Request to the V3 device. Generally quick response.
+     * After success, but without the 1000 ms sleep delay there are problems.
+     * Suspect that the device needs a moment to clear before the Poll.
      */
     private void doV3Handshake() throws MideaConnectionException, MideaAuthenticationException {
         byte[] request = security.encode8370(Utils.hexStringToByteArray(token), MsgType.MSGTYPE_HANDSHAKE_REQUEST);
@@ -230,8 +229,7 @@ public class ConnectionManager {
                             Utils.hexStringToByteArray(key));
                     if (success) {
                         logger.debug("Authentication successful");
-                        // Altering the sleep caused or can cause write errors problems. Use caution.
-                        // At 500 ms the first write usually fails. Works, but no backup
+                        // Altering the sleep can cause write errors problems. Use caution.
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
@@ -277,13 +275,16 @@ public class ConnectionManager {
      * make sure to make sure the input stream is empty before sending
      * the new command and another check if input stream is empty after 1.5 seconds.
      * Normal device response in 0.75 - 1 second range
-     * If still empty, send the bytes again. If there are bytes, the read method is called.
-     * If the socket times out with no response the command is dropped. There will be another poll
-     * in the time set by the user (30 seconds min). A Set command will need to be resent.
+     * If still empty, send the bytes again. If the socket times out with no bytes read()
+     * one resend of the command will be sent. A second failure the command is dropped.
+     * The scheduler will still send the next poll.
      * 
      * @param command either the set or polling command
-     * @throws MideaAuthenticationException
+     * @param callback communication with the MideaACHandler to update channel status
      * @throws MideaConnectionException
+     * @throws MideaAuthenticationException
+     * @throws MideaException
+     * @throws IOException
      */
     public synchronized void sendCommand(CommandBase command, @Nullable Callback callback)
             throws MideaConnectionException, MideaAuthenticationException, MideaException, IOException {
@@ -312,21 +313,22 @@ public class ConnectionManager {
             try {
                 Thread.sleep(1500);
             } catch (InterruptedException e) {
-                logger.debug("An interupted error (retrycommand2) has occured {}", e.getMessage());
+                logger.debug("An interupted error (write command2) has occured {}", e.getMessage());
                 Thread.currentThread().interrupt();
-                // Note, but continue anyway for second write.
+                // Note, but continue anyway for second write if needed.
             }
 
+            // Input stream is checked after 1.5 seconds
+            // Socket timeout (UI parameter) 2 seconds minimum.
             if (inputStream.available() == 0) {
                 logger.debug("Input stream empty sending second write {}", command);
                 write(bytes);
             }
 
-            // Socket timeout (UI parameter) 2 seconds minimum up to 10 seconds.
             byte[] responseBytes = read();
 
             if (responseBytes != null) {
-                retry = true;
+                resend = true;
                 if (version == 3) {
                     Decryption8370Result result = security.decode8370(responseBytes);
                     for (byte[] response : result.getResponses()) {
@@ -450,15 +452,15 @@ public class ConnectionManager {
                 }
                 return;
             } else {
-                if (retry) {
+                if (resend) {
                     logger.debug("Resending Command {}", command);
-                    retry = false;
+                    resend = false;
                     sendCommand(command, callback);
                 } else {
                     droppedCommands = droppedCommands + 1;
                     logger.debug("Problem with reading response, skipping {} skipped count since startup {}", command,
                             droppedCommands);
-                    retry = true;
+                    resend = true;
                     return;
                 }
             }
@@ -498,7 +500,7 @@ public class ConnectionManager {
     }
 
     /**
-     * Reads the inputStream byte array
+     * Reads the inputStream byte array (Handshake or command)
      * 
      * @return byte array or null
      */
