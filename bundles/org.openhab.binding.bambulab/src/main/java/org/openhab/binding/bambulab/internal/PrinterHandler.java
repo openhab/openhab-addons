@@ -113,7 +113,7 @@ public class PrinterHandler extends BaseBridgeHandler
             if (bambuCommand.canSend()) {
                 sendCommand(bambuCommand);
             } else {
-                logger.warn("Cannot send command: " + bambuCommand);
+                logger.warn("Cannot send command: {}", bambuCommand);
             }
         } else if (CHANNEL_CAMERA_RECORD.is(channelUID) && command instanceof OnOffType onOffCommand) {
             requireNonNull(camera).handleCommand(onOffCommand);
