@@ -20,9 +20,9 @@
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <hikari.version>2.4.7</hikari.version>
-    <dbutils.version>1.6</dbutils.version>
-    <yank.version>3.4.0</yank.version>
+    <hikari.version>5.1.0</hikari.version>
+    <dbutils.version>1.8.1</dbutils.version>
+    <yank.version>3.5.0</yank.version>
 
     <!-- JDBC database driver versions -->
     <derby.version>10.17.1.0</derby.version>

@@ -266,7 +266,7 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         }
     }
 
-    public void updateConfig(Map<Object, Object> configuration) {
+    private void updateConfig(Map<Object, Object> configuration) {
         logger.debug("JDBC::updateConfig");
 
         conf = new JdbcConfiguration(configuration);
