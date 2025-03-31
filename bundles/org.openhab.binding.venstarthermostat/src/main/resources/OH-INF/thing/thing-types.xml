@@ -178,6 +178,10 @@
 		<item-type>Switch</item-type>
 		<label>Fan State</label>
 		<description>Current Fan State</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -291,6 +295,7 @@
 		<description>Current System Operating State</description>
 		<tags>
 			<tag>Status</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
