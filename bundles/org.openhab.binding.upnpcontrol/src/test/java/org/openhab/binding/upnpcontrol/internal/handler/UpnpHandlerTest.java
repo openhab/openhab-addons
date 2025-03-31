@@ -38,6 +38,7 @@ import org.openhab.binding.upnpcontrol.internal.config.UpnpControlBindingConfigu
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlConfiguration;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
+import org.openhab.core.media.MediaService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
@@ -72,6 +73,9 @@ public class UpnpHandlerTest {
 
     @Mock
     protected @Nullable UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider;
+
+    @Mock
+    protected @Nullable MediaService mediaService;
 
     protected UpnpControlBindingConfiguration configuration = new UpnpControlBindingConfiguration();
 

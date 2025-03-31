@@ -252,15 +252,6 @@ public class SpotifyApi {
         MediaArtists mediaArtistst = new MediaArtists();
         mediaSourcet.addChild("Artists", mediaArtistst);
 
-        MediaSource mediaSourceu = new MediaSource("Upnp", "Upnp");
-        mediaService.registerMediaEntry(mediaSourceu);
-
-        MediaAlbums mediaAlbumsu = new MediaAlbums();
-        mediaSourceu.addChild("Albums", mediaAlbumsu);
-
-        MediaArtists mediaArtistsu = new MediaArtists();
-        mediaSourceu.addChild("Artists", mediaArtistsu);
-
         MediaSource mediaSourcel = new MediaSource("Local", "Local");
         mediaService.registerMediaEntry(mediaSourcel);
 

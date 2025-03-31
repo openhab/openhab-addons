@@ -171,7 +171,7 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
 
         handler = spy(new UpnpServerHandler(requireNonNull(thing), requireNonNull(upnpIOService),
                 requireNonNull(upnpRenderers), requireNonNull(upnpStateDescriptionProvider),
-                requireNonNull(upnpCommandDescriptionProvider), configuration));
+                requireNonNull(upnpCommandDescriptionProvider), configuration, requireNonNull(mediaService)));
 
         initHandler(requireNonNull(handler));
 

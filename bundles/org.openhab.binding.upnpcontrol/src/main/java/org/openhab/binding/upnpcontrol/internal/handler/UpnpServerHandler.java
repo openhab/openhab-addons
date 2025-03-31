@@ -43,6 +43,10 @@ import org.openhab.binding.upnpcontrol.internal.util.UpnpProtocolMatcher;
 import org.openhab.binding.upnpcontrol.internal.util.UpnpXMLParser;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.media.MediaService;
+import org.openhab.core.media.model.MediaAlbums;
+import org.openhab.core.media.model.MediaArtists;
+import org.openhab.core.media.model.MediaSource;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -75,6 +79,7 @@ public class UpnpServerHandler extends UpnpHandler {
     static final String UP = "..";
 
     ConcurrentMap<String, UpnpRendererHandler> upnpRenderers;
+    private final MediaService mediaService;
     private volatile @Nullable UpnpRendererHandler currentRendererHandler;
     private volatile List<StateOption> rendererStateOptionList = Collections.synchronizedList(new ArrayList<>());
 
@@ -104,9 +109,10 @@ public class UpnpServerHandler extends UpnpHandler {
             ConcurrentMap<String, UpnpRendererHandler> upnpRenderers,
             UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider,
-            UpnpControlBindingConfiguration configuration) {
+            UpnpControlBindingConfiguration configuration, MediaService mediaService) {
         super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
         this.upnpRenderers = upnpRenderers;
+        this.mediaService = mediaService;
 
         // put root as highest level in parent map
         parentMap.put(ROOT_ENTRY.getId(), ROOT_ENTRY);
@@ -143,6 +149,21 @@ public class UpnpServerHandler extends UpnpHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
         }
+
+        MediaSource mediaSource = (MediaSource) mediaService.getMediaRegistry().getChilds().get("Upnp");
+        if (mediaSource == null) {
+            mediaSource = new MediaSource("Upnp", "Upnp");
+            mediaService.registerMediaEntry(mediaSource);
+        }
+
+        MediaSource mediaSource1 = new MediaSource(this.thing.getUID().getId(), "" + this.getThing().getLabel());
+        mediaSource.addChild(this.thing.getUID().getId(), mediaSource1);
+
+        MediaAlbums mediaAlbumsu = new MediaAlbums();
+        mediaSource1.addChild("Albums", mediaAlbumsu);
+
+        MediaArtists mediaArtistsu = new MediaArtists();
+        mediaSource1.addChild("Artists", mediaArtistsu);
 
         initDevice();
     }
