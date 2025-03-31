@@ -55,21 +55,6 @@ public class Cloud {
     private static final int FORMAT = 2; // JSON
     private static final String LANGUAGE = "en_US";
 
-    private Date tokenRequestedAt = new Date();
-
-    private void setTokenRequested() {
-        tokenRequestedAt = new Date();
-    }
-
-    /**
-     * Token requested date
-     * 
-     * @return tokenRequestedAt
-     */
-    public Date getTokenRequested() {
-        return tokenRequestedAt;
-    }
-
     private HttpClient httpClient;
 
     /**
@@ -128,10 +113,10 @@ public class Cloud {
     }
 
     /**
-     * Set up the initial data payload with the global variable set
-     * This first message is to confirm the email is in the cloud provider's
-     * memory. The return is msg "ok", "errorCode":"0", and a loginId to be used
-     * in the next message.
+     * This is called during the loginId(), login() and getToken() methods to send a HHTP Post
+     * to the cloud provider. There are two different messages and formats separated
+     * by the type of Cloud Provider (proxied or Not). The return is msg "ok", "errorCode":"0"
+     * There is also information for the next message or the key and token themselves.
      */
     private @Nullable JsonObject apiRequest(String endpoint, @Nullable JsonObject args, @Nullable JsonObject data) {
         if (data == null) {
@@ -144,40 +129,45 @@ public class Cloud {
             data.addProperty("stamp", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
         }
 
-        // Add the method parameters for the endpoint
+        // For the getLoginId() this adds the email account
+        // For the login() this adds the email account and the encrpted password
+        // For the getToken() this adds the udpid
         if (args != null) {
             for (Map.Entry<String, JsonElement> entry : args.entrySet()) {
                 data.add(entry.getKey(), entry.getValue().getAsJsonPrimitive());
             }
         }
 
-        // Add the login information to the payload
-        if (!data.has("reqId") && !Objects.isNull(cloudProvider.proxied()) && !cloudProvider.proxied().isBlank()) {
+        // This adds the first 16 characters of a 16 byte string
+        // if Cloud provider uses proxied and wasn't added by the method()
+        if (!data.has("reqId") && !cloudProvider.proxied().isBlank()) {
             data.addProperty("reqId", Utils.tokenHex(16));
         }
 
         String url = cloudProvider.apiurl() + endpoint;
+        logger.debug("Url for request {}", url);
 
-        int time = (int) (new Date().getTime() / 1000);
-
-        String random = String.valueOf(time);
-
-        // Add the sign to the header
         String json = data.toString();
         logger.debug("Request json: {}", json);
+
+        int time = (int) (new Date().getTime() / 1000);
+        String random = String.valueOf(time);
 
         Request request = httpClient.newRequest(url).method(HttpMethod.POST).timeout(15, TimeUnit.SECONDS);
 
         // .version(HttpVersion.HTTP_1_1)
         request.agent("Dalvik/2.1.0 (Linux; U; Android 7.0; SM-G935F Build/NRD90M)");
 
-        if (!Objects.isNull(cloudProvider.proxied()) && !cloudProvider.proxied().isBlank()) {
+        if (!cloudProvider.proxied().isBlank()) {
             request.header("Content-Type", "application/json");
         } else {
             request.header("Content-Type", "application/x-www-form-urlencoded");
         }
+
         request.header("secretVersion", "1");
-        if (!Objects.isNull(cloudProvider.proxied()) && !cloudProvider.proxied().isBlank()) {
+
+        // Add the sign to the header, different for proxied
+        if (!cloudProvider.proxied().isBlank()) {
             String sign = security.newSign(json, random);
             request.header("sign", sign);
         } else {
@@ -190,11 +180,14 @@ public class Cloud {
         }
 
         request.header("random", random);
+
+        // If available, blank if not
         request.header("accessToken", accessToken);
 
         logger.debug("Request headers: {}", request.getHeaders().toString());
 
-        if (!Objects.isNull(cloudProvider.proxied()) && !cloudProvider.proxied().isBlank()) {
+        // Different formats for proxied
+        if (!cloudProvider.proxied().isBlank()) {
             request.content(new StringContentProvider(json));
         } else {
             String body = Utils.getQueryString(data);
@@ -202,7 +195,7 @@ public class Cloud {
             request.content(new StringContentProvider(body));
         }
 
-        // POST the endpoint with the payload
+        // POST the payload
         @Nullable
         ContentResponse cr = null;
         try {
@@ -239,7 +232,7 @@ public class Cloud {
                 return null;
             } else {
                 logger.debug("Api response ok: {} ({})", code, msg);
-                if (!Objects.isNull(cloudProvider.proxied()) && !cloudProvider.proxied().isBlank()) {
+                if (!cloudProvider.proxied().isBlank()) {
                     return result.get("data").getAsJsonObject();
                 } else {
                     return result.get("result").getAsJsonObject();
@@ -253,18 +246,21 @@ public class Cloud {
     }
 
     /**
-     * Performs a user login with the credentials supplied to the constructor
-     * in the first message
+     * First gets the loginId using your email, then gets the session
+     * Id with the email and encypted password (using the LoginId). Then
+     * gets the token and key. If loginId and sessionId exist from an earlier
+     * attempt, it goes directly to getting the token and key
      * 
      * @return true or false
      */
     public boolean login() {
+        // First get the loginId using the your email
         if (loginId == null) {
             if (!getLoginId()) {
                 return false;
             }
         }
-        // Don't try logging in again, someone beat this thread to it
+        // No need to login again, skip to getToken() with device Id
         if (!Objects.isNull(sessionId) && !sessionId.isBlank()) {
             return true;
         }
@@ -272,8 +268,8 @@ public class Cloud {
         logger.trace("Using loginId: {}", loginId);
         logger.trace("Using password: {}", password);
 
-        // This is for the MSmartHome. It uses proxied
-        if (!Objects.isNull(cloudProvider.proxied()) && !cloudProvider.proxied().isBlank()) {
+        // This is for the MSmartHome (proxied)
+        if (!cloudProvider.proxied().isBlank()) {
             JsonObject newData = new JsonObject();
 
             JsonObject data = new JsonObject();
@@ -301,7 +297,7 @@ public class Cloud {
 
             accessToken = response.getAsJsonObject("mdata").get("accessToken").getAsString();
 
-            // This for NetHomePlus and MideaAir apps
+            // This for the non-proxied cloud providers
         } else {
             String passwordEncrypted = security.encryptPassword(loginId, password);
 
@@ -323,14 +319,14 @@ public class Cloud {
     }
 
     /**
-     * Get token and key with udpid
-     * Unique Device Product ID
+     * Gets token and key with the device Id modified to udpid
+     * after SessionId (non-proxied) accessToken are established
      * 
-     * @param udpid udp id
+     * @param deviceId The discovered Device Id
      * @return token and key
      */
-    public TokenKey getToken(String udpid) {
-        long i = Long.valueOf(udpid);
+    public TokenKey getToken(String deviceId) {
+        long i = Long.valueOf(deviceId);
 
         JsonObject args = new JsonObject();
         args.addProperty("udpid", security.getUdpId(Utils.toIntTo6ByteArray(i, ByteOrder.BIG_ENDIAN)));
@@ -345,15 +341,15 @@ public class Cloud {
         String token = el.getAsJsonPrimitive("token").getAsString();
         String key = el.getAsJsonPrimitive("key").getAsString();
 
-        setTokenRequested();
-
         return new TokenKey(token, key);
     }
 
     /**
-     * Get the login ID from the email address
+     * Gets the login ID from your email address
+     * 
+     * @return loginId (not your email)
      */
-    private boolean getLoginId() {
+    public boolean getLoginId() {
         JsonObject args = new JsonObject();
         args.addProperty("loginAccount", loginAccount);
         JsonObject response = apiRequest("/v1/user/login/id/get", args, null);

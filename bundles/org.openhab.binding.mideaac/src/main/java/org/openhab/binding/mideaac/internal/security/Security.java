@@ -59,7 +59,7 @@ public class Security {
     CloudProvider cloudProvider;
 
     /**
-     * Set Cloud Provider
+     * Set Cloud Provider to get provider specific keys
      * 
      * @param cloudProvider Name of Cloud provider
      */
@@ -488,7 +488,8 @@ public class Security {
     }
 
     /**
-     * Path to cloud provider
+     * Encodes the sign for a non-proxy Cloud provider Request
+     * using the url and the payload into a lower case hex string
      * 
      * @param url url of cloud provider
      * @param payload message
@@ -513,7 +514,8 @@ public class Security {
     }
 
     /**
-     * Provides a randown iotKey for Cloud Providers that do not have one
+     * Encodes the sign for a proxied Cloud provider Request
+     * using the iotkey and a random lower case hex string
      * 
      * @param data input data array
      * @param random random values
@@ -608,7 +610,8 @@ public class Security {
     }
 
     /**
-     * Gets UDPID from byte data
+     * Gets Udpid from byte data
+     * This is based on the Device Id
      * 
      * @param data data array
      * @return string of lower case bytes

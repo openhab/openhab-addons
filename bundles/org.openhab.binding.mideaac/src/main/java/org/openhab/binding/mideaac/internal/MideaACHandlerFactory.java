@@ -16,7 +16,6 @@ import static org.openhab.binding.mideaac.internal.MideaACBindingConstants.SUPPO
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mideaac.internal.cloud.Clouds;
 import org.openhab.binding.mideaac.internal.handler.MideaACHandler;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -40,7 +39,6 @@ import org.osgi.service.component.annotations.Reference;
 public class MideaACHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClientFactory httpClientFactory;
-    private final Clouds clouds;
     private final UnitProvider unitProvider;
 
     @Override
@@ -58,14 +56,13 @@ public class MideaACHandlerFactory extends BaseThingHandlerFactory {
     public MideaACHandlerFactory(@Reference UnitProvider unitProvider, @Reference HttpClientFactory httpClientFactory) {
         this.httpClientFactory = httpClientFactory;
         this.unitProvider = unitProvider;
-        clouds = new Clouds();
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new MideaACHandler(thing, unitProvider, httpClientFactory.getCommonHttpClient(), clouds);
+            return new MideaACHandler(thing, unitProvider, httpClientFactory.getCommonHttpClient());
         }
         return null;
     }
