@@ -403,12 +403,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
             case CHANNEL_COLOR -> updateColorChannel(channelUID, newState);
             case CHANNEL_BRIGHTNESS -> updatePercentTypeChannel(channelUID, newState.bri, newState.on);
             case CHANNEL_COLOR_TEMPERATURE -> updateColorTemperatureChannel(channelUID, newState);
-            case CHANNEL_POSITION -> {
-                Integer lift = newState.lift;
-                if (lift != null) {
-                    updateState(channelUID, new PercentType(lift));
-                }
-            }
+            case CHANNEL_POSITION -> updatePosition(channelUID, newState);
             case CHANNEL_EFFECT -> updateStringChannel(channelUID, newState.effect);
             case CHANNEL_EFFECT_SPEED -> updateDecimalTypeChannel(channelUID, newState.effectSpeed);
         }
@@ -447,20 +442,21 @@ public class LightThingHandler extends DeconzBaseThingHandler {
     /**
      * Update the given {@link ChannelUID} depending on the given {@link LightState}. If the 'colorMode' is "xy"
      * then update the channel with an {@link HSBType} built from the given CIE XY co-ordinates and brightness,
-     * and if the 'colorMode' is "hs" then update the channel with an {@link HSBType} from the given hue, saturation
-     * and brightness. In either case if the 'on' field is false then the brightness becomes zero. If the color
-     * channel has been updated then also update the color temperature channel to {@link UnDefType.UNDEF}
+     * otherwise if the 'colorMode' is not "ct" then update the channel with an {@link HSBType} from the given hue,
+     * saturation and brightness. In either case if the 'on' field is false then the brightness is set to zero.
+     * Furthermore if the color channel has been updated then cross-update the color temperature channel (if any)
+     * to {@link UnDefType.UNDEF} as well.
      *
      * @param channelUID the UID of the channel being updated.
      * @param newState the new {@link LightState}
      */
     private void updateColorChannel(ChannelUID channelUID, LightState newState) {
-        logger.trace("TODO REMOVE updateColorChannel(ChannelUID:{}, LightState:{})", channelUID, newState);
         Boolean on = newState.on;
         Integer bri = newState.bri;
         Integer hue = newState.hue;
         Integer sat = newState.sat;
 
+        boolean ctChannelUpdate = false;
         if (on != null && !on) {
             bri = 0;
         }
@@ -468,77 +464,54 @@ public class LightThingHandler extends DeconzBaseThingHandler {
         if (bri != null && "xy".equals(newState.colormode)) {
             final double @Nullable [] xy = newState.xy;
             if (xy != null && xy.length == 2) {
-                HSBType hs = ColorUtil.xyToHsb(xy);
-                HSBType hsb = new HSBType(hs.getHue(), hs.getSaturation(), toPercentType(bri));
+                HSBType hsX = ColorUtil.xyToHsb(xy);
+                HSBType hsb = new HSBType(hsX.getHue(), hsX.getSaturation(), toPercentType(bri));
                 updateState(channelUID, hsb);
-                logger.trace("TODO REMOVE updateState(ChannelUID:{}, State:{})", channelUID, hsb);
-                updateColorTemperatureChannel(channelUID);
+                ctChannelUpdate = true;
             }
-        } else if (bri != null && hue != null && sat != null) {
+        } else if (bri != null && !"ct".equals(newState.colormode) && hue != null && sat != null) {
             HSBType hsb = new HSBType(new DecimalType(hue / HUE_FACTOR), toPercentType(sat), toPercentType(bri));
             updateState(channelUID, hsb);
-            logger.trace("TODO REMOVE updateState(ChannelUID:{}, State:{})", channelUID, hsb);
-            updateColorTemperatureChannel(channelUID);
+            ctChannelUpdate = true;
+        }
+
+        // cross-update the color temperature channel (if any)
+        if (ctChannelUpdate && thing.getChannel(CHANNEL_COLOR_TEMPERATURE) instanceof Channel ctChannel) {
+            updateState(ctChannel.getUID(), UnDefType.UNDEF);
         }
     }
 
     /**
-     * If the color temperature channel state is being updated, and the lamp also has a color channel then update the
-     * latter channel state to match the given color temperature. We update the color channel with an {@link HSBType}
-     * whose hue and saturation are derived from the XY co-ordinates of {@code newState.ct} (color temperature) on the
-     * "Planckian Locus" of the CIE color chart. And whose brightness is derived from the {@code newState.bri}
-     * (brightness), except in the case that {@code newState.on} is false.
-     *
-     * @param channelUID the UID of the channel being updated.
-     * @param newState the new {@link LightState}
-     * @param kelvin the new color temperature in Kelvin
-     */
-    private void updateColorChannel(ChannelUID channelUID, LightState newState, int kelvin) {
-        logger.trace("TODO REMOVE updateColorChannel(ChannelUID:{}, LightState:{}, Kelvin:{})", channelUID, newState,
-                kelvin);
-        if (CHANNEL_COLOR_TEMPERATURE.equals(channelUID.getId()) && thing.getChannel(CHANNEL_COLOR) != null) {
-            int b = !Boolean.TRUE.equals(newState.on) ? 0 : newState.bri instanceof Integer b2 ? b2 : -1;
-            if (b >= 0) {
-                HSBType hs = ColorUtil.xyToHsb(ColorUtil.kelvinToXY(kelvin));
-                HSBType hsb = new HSBType(hs.getHue(), hs.getSaturation(), toPercentType(b));
-                logger.trace("TODO REMOVE updateState(ChannelUID:{}, State:{})", channelUID, hsb);
-                updateState(CHANNEL_COLOR, hsb);
-            }
-        }
-    }
-
-    /**
-     * Update the given {@link ChannelUID} depending on the given {@link LightState}. If the DTO contains a 'ct'
-     * value (in mired) then convert to Kelvin and update the channel. If the color temperature channel state has
-     * been updated then also update the color channel state to an {@link HSBType} that matches the given Kelvin
-     * value on the "Planckian Locus" on the CIE color chart.
+     * Update the given {@link ChannelUID} depending on the given {@link LightState}. If the 'colorMode' is "ct" and
+     * there is a 'ct' value (in mired) then convert it to Kelvin and update the channel. If the color temperature
+     * channel state has been updated then cross-update the color channel (if any) state to an {@link HSBType} that
+     * matches the given Kelvin value on the "Planckian Locus" on the CIE color chart as well.
      *
      * @param channelUID the UID of the channel being updated.
      * @param newState the new {@link LightState}
      */
     private void updateColorTemperatureChannel(ChannelUID channelUID, LightState newState) {
-        logger.trace("TODO REMOVE updateColorTemperatureChannel(ChannelUID:{}, LightState:{})", channelUID, newState);
         Integer ct = newState.ct;
-        if (ct != null && ct >= ctMin && ct <= ctMax) {
+        if ("ct".equals(newState.colormode) && ct != null && ct >= ctMin && ct <= ctMax) {
             int kelvin = miredToKelvin(ct);
-            logger.trace("TODO REMOVE updateState(ChannelUID:{}, State:{})", channelUID,
-                    QuantityType.valueOf(kelvin, Units.KELVIN));
             updateState(channelUID, QuantityType.valueOf(kelvin, Units.KELVIN));
-            updateColorChannel(channelUID, newState, kelvin);
+
+            // cross-update the color channel (if any)
+            if (thing.getChannel(CHANNEL_COLOR) instanceof Channel colChannel) {
+                int brightness = !Boolean.TRUE.equals(newState.on) ? 0 : newState.bri instanceof Integer bri ? bri : -1;
+                if (brightness >= 0) {
+                    HSBType hsX = ColorUtil.xyToHsb(ColorUtil.kelvinToXY(kelvin));
+                    HSBType hsb = new HSBType(hsX.getHue(), hsX.getSaturation(), toPercentType(brightness));
+                    updateState(colChannel.getUID(), hsb);
+                }
+            }
         }
     }
 
-    /**
-     * If the color channel state is being updated, and the lamp also has a color temperature channel then
-     * update the latter channel state to {@link UnDefType.UNDEF}
-     *
-     * @param channelUID the UID of the channel being updated.
-     */
-    private void updateColorTemperatureChannel(ChannelUID channelUID) {
-        logger.trace("TODO REMOVE updateColorTemperatureChannel(ChannelUID:{})", channelUID);
-        if (CHANNEL_COLOR.equals(channelUID.getId()) && thing.getChannel(CHANNEL_COLOR_TEMPERATURE) != null) {
-            logger.trace("TODO REMOVE updateState(ChannelUID:{}, State:{})", channelUID, UnDefType.UNDEF);
-            updateState(CHANNEL_COLOR_TEMPERATURE, UnDefType.UNDEF);
+    private void updatePosition(ChannelUID channelUID, LightState newState) {
+        Integer lift = newState.lift;
+        if (lift != null) {
+            updateState(channelUID, new PercentType(lift));
         }
     }
 }
