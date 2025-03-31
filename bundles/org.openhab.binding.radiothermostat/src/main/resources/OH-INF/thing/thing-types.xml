@@ -141,6 +141,7 @@
 		<description>Indicates the Current Running Status of the HVAC System</description>
 		<tags>
 			<tag>Status</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state min="0" max="2" pattern="%d"/>
 	</channel-type>
@@ -151,6 +152,7 @@
 		<description>Indicates the Current Fan Status of the HVAC System</description>
 		<tags>
 			<tag>Status</tag>
+			<tag>Airflow</tag>
 		</tags>
 		<state min="0" max="2" pattern="%d"/>
 	</channel-type>
