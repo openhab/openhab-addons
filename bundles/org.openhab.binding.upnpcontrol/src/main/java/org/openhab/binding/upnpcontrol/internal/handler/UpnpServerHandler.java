@@ -44,8 +44,7 @@ import org.openhab.binding.upnpcontrol.internal.util.UpnpXMLParser;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.media.MediaService;
-import org.openhab.core.media.model.MediaAlbums;
-import org.openhab.core.media.model.MediaArtists;
+import org.openhab.core.media.model.MediaCollection;
 import org.openhab.core.media.model.MediaSource;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -158,12 +157,6 @@ public class UpnpServerHandler extends UpnpHandler {
 
         MediaSource mediaSource1 = new MediaSource(this.thing.getUID().getId(), "" + this.getThing().getLabel());
         mediaSource.addChild(this.thing.getUID().getId(), mediaSource1);
-
-        MediaAlbums mediaAlbumsu = new MediaAlbums();
-        mediaSource1.addChild("Albums", mediaAlbumsu);
-
-        MediaArtists mediaArtistsu = new MediaArtists();
-        mediaSource1.addChild("Artists", mediaArtistsu);
 
         initDevice();
     }
@@ -609,6 +602,25 @@ public class UpnpServerHandler extends UpnpHandler {
 
     private void updateTitleSelection(List<UpnpEntry> titleList) {
         // Optionally, filter only items that can be played on the renderer
+
+        MediaSource mediaSource = (MediaSource) mediaService.getMediaRegistry()
+                .getChildForPath("/Root/Upnp/" + this.thing.getUID().getId());
+        if (mediaSource != null) {
+
+            for (UpnpEntry entry : titleList) {
+                logger.debug("aa");
+                MediaCollection mediaEntry = new MediaCollection(entry.getTitle(), entry.getTitle());
+                mediaSource.addChild(entry.getTitle(), mediaEntry);
+            }
+        }
+
+        // MediaAlbums mediaAlbumsu = new MediaAlbums();
+        // mediaSource1.addChild("Albums", mediaAlbumsu);
+
+        // MediaArtists mediaArtistsu = new MediaArtists();
+        // mediaSource1.addChild("Artists", mediaArtistsu);
+        // mediaSource1
+
         logger.debug("Filtering content on server {}: {}", thing.getLabel(), config.filter);
         List<UpnpEntry> resultList = config.filter ? filterEntries(titleList, true) : titleList;
 
