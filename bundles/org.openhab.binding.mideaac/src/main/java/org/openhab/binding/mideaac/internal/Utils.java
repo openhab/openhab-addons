@@ -138,6 +138,7 @@ public class Utils {
 
     /**
      * Create String of the V.3 Token
+     * String length is the nbytes characters long
      * 
      * @param nbytes number of bytes
      * @return String
