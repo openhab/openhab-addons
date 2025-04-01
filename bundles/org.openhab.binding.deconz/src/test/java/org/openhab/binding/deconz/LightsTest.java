@@ -185,6 +185,30 @@ public class LightsTest {
     }
 
     @Test
+    public void colorTemperatureSparseLightUpdateTest() throws IOException {
+        LightMessage lightMessage = DeconzTest.getObjectFromJson("colortemperature-sparse.json", LightMessage.class,
+                gson);
+        assertNotNull(lightMessage);
+
+        ThingUID thingUID = new ThingUID("deconz", "light");
+        ChannelUID channelUIDBri = new ChannelUID(thingUID, CHANNEL_BRIGHTNESS);
+        ChannelUID channelUIDCt = new ChannelUID(thingUID, CHANNEL_COLOR_TEMPERATURE);
+
+        Thing light = ThingBuilder.create(THING_TYPE_COLOR_TEMPERATURE_LIGHT, thingUID)
+                .withProperties(Map.of(PROPERTY_THING_TYPE_VERSION, "1"))
+                .withChannel(ChannelBuilder.create(channelUIDBri, "Dimmer").build())
+                .withChannel(ChannelBuilder.create(channelUIDCt, "Number").build()).build();
+        LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider,
+                commandDescriptionProvider);
+        lightThingHandler.setCallback(thingHandlerCallback);
+
+        lightThingHandler.messageReceived(lightMessage);
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDBri), eq(new PercentType("21")));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDCt),
+                eq(QuantityType.valueOf(2500, Units.KELVIN)));
+    }
+
+    @Test
     public void colorTemperatureLightStateDescriptionProviderTest() {
         ThingUID thingUID = new ThingUID("deconz", "light");
         ChannelUID channelUIDBri = new ChannelUID(thingUID, CHANNEL_BRIGHTNESS);
