@@ -421,6 +421,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     public Iterable<HistoricItem> query(FilterCriteria filter, @Nullable String alias) {
         ZonedDateTime filterBeginDate = filter.getBeginDate();
         ZonedDateTime filterEndDate = filter.getEndDate();
+        Ordering ordering = filter.getOrdering();
         if (filterBeginDate != null && filterEndDate != null && filterBeginDate.isAfter(filterEndDate)) {
             throw new IllegalArgumentException("begin (" + filterBeginDate + ") before end (" + filterEndDate + ")");
         }
@@ -470,27 +471,26 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         try {
             if (filterBeginDate == null) {
                 // as rrd goes back for years and gets more and more inaccurate, we only support descending order
-                // and a single return value if no begin date is given - this case is required specifically for the
-                // historicState() query, which we want to support
-                if (filter.getOrdering() == Ordering.DESCENDING && filter.getPageSize() == 1
-                        && filter.getPageNumber() == 0) {
-                    if (filterEndDate == null || Duration.between(filterEndDate, ZonedDateTime.now()).getSeconds() < db
-                            .getHeader().getStep()) {
+                // and only return values from the most granular archive of the end date - this case is required
+                // specifically for the persistedState() and previousChange() queries, which we want to support
+                if (ordering == Ordering.DESCENDING) {
+                    if (filter.getPageSize() == 1 && filter.getPageNumber() == 0 && (filterEndDate == null || Duration
+                            .between(filterEndDate, ZonedDateTime.now()).getSeconds() < db.getHeader().getStep())) {
                         // we are asked only for the most recent value!
                         double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
                         if (!Double.isNaN(lastValue)) {
                             HistoricItem rrd4jItem = new RRD4jItem(itemName, toState.apply(lastValue),
                                     Instant.ofEpochSecond(db.getLastArchiveUpdateTime()));
                             return List.of(rrd4jItem);
-                        } else {
-                            return List.of();
                         }
                     } else {
-                        start = end;
+                        ConsolFun consolFun = getConsolidationFunction(db);
+                        FetchRequest request = db.createFetchRequest(consolFun, end, end, 1);
+                        start = db.findMatchingArchive(request).getStartTime();
                     }
                 } else {
                     throw new UnsupportedOperationException(
-                            "rrd4j does not allow querys without a begin date, unless order is descending and a single value is requested");
+                            "rrd4j does not allow querys without a begin date, unless order is descending");
                 }
             } else {
                 start = filterBeginDate.toInstant().getEpochSecond();
@@ -513,7 +513,13 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
             double prevValue = Double.NaN;
             State prevState = null;
-            for (double value : result.getValues(DATASOURCE_STATE)) {
+            double[] values = result.getValues(DATASOURCE_STATE);
+            step = (ordering == Ordering.DESCENDING) ? -1 * step : step;
+            int startIndex = (ordering == Ordering.DESCENDING) ? values.length - 1 : 0;
+            int endIndex = (ordering == Ordering.DESCENDING) ? -1 : values.length;
+            int indexStep = (ordering == Ordering.DESCENDING) ? -1 : 1;
+            for (int i = startIndex; i != endIndex; i = i + indexStep) {
+                double value = values[i];
                 if (!Double.isNaN(value) && (((ts >= start) && (ts <= end)) || (start == end))) {
                     State state;
 
