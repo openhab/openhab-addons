@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,7 +72,6 @@ import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceCronStrategy;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -99,6 +99,7 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Initial contribution
  * @author Jan N. Klug - some improvements
  * @author Karel Goderis - remove TimerThread dependency
+ * @author Mark Herwege - restore on startup, retrieve persistedItem
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
@@ -420,6 +421,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     public Iterable<HistoricItem> query(FilterCriteria filter, @Nullable String alias) {
         ZonedDateTime filterBeginDate = filter.getBeginDate();
         ZonedDateTime filterEndDate = filter.getEndDate();
+        Ordering ordering = filter.getOrdering();
         if (filterBeginDate != null && filterEndDate != null && filterBeginDate.isAfter(filterEndDate)) {
             throw new IllegalArgumentException("begin (" + filterBeginDate + ") before end (" + filterEndDate + ")");
         }
@@ -469,27 +471,26 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         try {
             if (filterBeginDate == null) {
                 // as rrd goes back for years and gets more and more inaccurate, we only support descending order
-                // and a single return value if no begin date is given - this case is required specifically for the
-                // historicState() query, which we want to support
-                if (filter.getOrdering() == Ordering.DESCENDING && filter.getPageSize() == 1
-                        && filter.getPageNumber() == 0) {
-                    if (filterEndDate == null || Duration.between(filterEndDate, ZonedDateTime.now()).getSeconds() < db
-                            .getHeader().getStep()) {
+                // and only return values from the most granular archive of the end date - this case is required
+                // specifically for the persistedState() and previousChange() queries, which we want to support
+                if (ordering == Ordering.DESCENDING) {
+                    if (filter.getPageSize() == 1 && filter.getPageNumber() == 0 && (filterEndDate == null || Duration
+                            .between(filterEndDate, ZonedDateTime.now()).getSeconds() < db.getHeader().getStep())) {
                         // we are asked only for the most recent value!
                         double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
                         if (!Double.isNaN(lastValue)) {
                             HistoricItem rrd4jItem = new RRD4jItem(itemName, toState.apply(lastValue),
                                     Instant.ofEpochSecond(db.getLastArchiveUpdateTime()));
                             return List.of(rrd4jItem);
-                        } else {
-                            return List.of();
                         }
                     } else {
-                        start = end;
+                        ConsolFun consolFun = getConsolidationFunction(db);
+                        FetchRequest request = db.createFetchRequest(consolFun, end, end, 1);
+                        start = db.findMatchingArchive(request).getStartTime();
                     }
                 } else {
                     throw new UnsupportedOperationException(
-                            "rrd4j does not allow querys without a begin date, unless order is descending and a single value is requested");
+                            "rrd4j does not allow querys without a begin date, unless order is descending");
                 }
             } else {
                 start = filterBeginDate.toInstant().getEpochSecond();
@@ -512,7 +513,13 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
             double prevValue = Double.NaN;
             State prevState = null;
-            for (double value : result.getValues(DATASOURCE_STATE)) {
+            double[] values = result.getValues(DATASOURCE_STATE);
+            step = (ordering == Ordering.DESCENDING) ? -1 * step : step;
+            int startIndex = (ordering == Ordering.DESCENDING) ? values.length - 1 : 0;
+            int endIndex = (ordering == Ordering.DESCENDING) ? -1 : values.length;
+            int indexStep = (ordering == Ordering.DESCENDING) ? -1 : 1;
+            for (int i = startIndex; i != endIndex; i = i + indexStep) {
+                double value = values[i];
                 if (!Double.isNaN(value) && (((ts >= start) && (ts <= end)) || (start == end))) {
                     State state;
 
@@ -549,7 +556,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
      * algorithm.
      *
      * This method overrides the default implementation in the interface as queries without a begin date are not allowed
-     * in the rrd4j database. If the last change cannot be found in half the length of the first archive, a null value
+     * in the rrd4j database. If the last change cannot be found in the archive containing the last update, a null value
      * for the last change and previous persisted state will be returned with {@link PersistedItem}.
      *
      * @param itemName name of item
@@ -559,71 +566,94 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
      */
     @Override
     public @Nullable PersistedItem persistedItem(String itemName, @Nullable String alias) {
-        State currentState = UnDefType.NULL;
-        State previousState = null;
-        ZonedDateTime lastUpdate = null;
-        ZonedDateTime lastChange = null;
+        double currentValue = Double.NaN;
+        double previousValue = Double.NaN;
+        long lastUpdate = System.currentTimeMillis() / 1000;
+        long lastChange = 0L;
 
-        // Avoid query with open begin date. Don't look further back than half of the first archive.
-        // Only half of the archive is considered to avoid accidently querying the next archive with lower granularity.
         String localAlias = alias != null ? alias : itemName;
-        RrdDefConfig rrdDefConfig = getRrdDefConfig(localAlias);
-        if (rrdDefConfig == null) {
-            logger.warn("No rrd4j database definition found for {}", itemName);
-            return null;
-        }
-        List<RrdArchiveDef> rrdArchiveDefs = rrdDefConfig.archives;
-        if (rrdArchiveDefs.isEmpty()) {
-            logger.warn("No rrd4j archive definition found for {}", itemName);
-            return null;
-        }
-        RrdArchiveDef rrdArchiveDef = rrdArchiveDefs.get(0);
-        long archiveLength = (rrdArchiveDef.rows * rrdArchiveDef.steps) / 2;
-        ZonedDateTime endDate = ZonedDateTime.now();
-        ZonedDateTime beginDate = endDate.minusSeconds(archiveLength);
 
-        int pageNumber = 0;
-        FilterCriteria filter = new FilterCriteria().setItemName(itemName).setBeginDate(beginDate).setEndDate(endDate)
-                .setOrdering(Ordering.DESCENDING).setPageSize(1000).setPageNumber(pageNumber);
-        Iterable<HistoricItem> items = query(filter, alias);
-        while (items != null) {
-            Iterator<HistoricItem> it = items.iterator();
-            int itemCount = 0;
-            if (UnDefType.NULL.equals(currentState) && it.hasNext()) {
-                HistoricItem historicItem = it.next();
-                itemCount++;
-                currentState = historicItem.getState();
-                lastUpdate = historicItem.getTimestamp();
-                lastChange = lastUpdate;
+        RrdDb db = null;
+        try {
+            db = getDB(localAlias, false);
+        } catch (Exception e) {
+            logger.warn("Failed to open rrd4j database '{}' for querying ({})", itemName, e.toString());
+            return null;
+        }
+        if (db == null) {
+            logger.debug("Could not find item '{}' in rrd4j database", itemName);
+            return null;
+        }
+
+        try {
+            // First get the last update state and time
+            currentValue = db.getLastDatasourceValue(DATASOURCE_STATE);
+            lastUpdate = db.getLastArchiveUpdateTime();
+            if (currentValue == Double.NaN) {
+                logger.debug("Could not find persisted value for item '{}' in rrjd4j database", itemName);
+                return null;
             }
-            while (it.hasNext()) {
-                HistoricItem historicItem = it.next();
-                itemCount++;
-                if (!historicItem.getState().equals(currentState)) {
-                    previousState = historicItem.getState();
-                    items = null;
+
+            // Then query backwards in the archive that contains the last update. Don't go beyond as the aggregation
+            // function may make comparison impossible, and we want to keep the performance impact low. If there is no
+            // change found in this archive, don't update last change.
+            ConsolFun consolFun = getConsolidationFunction(db);
+            FetchRequest request = db.createFetchRequest(consolFun, lastUpdate, lastUpdate, 1);
+            long archiveStart = db.findMatchingArchive(request).getStartTime();
+            request = db.createFetchRequest(consolFun, archiveStart, lastUpdate, 1);
+            FetchData result = request.fetchData();
+
+            long ts = result.getLastTimestamp();
+            long step = result.getRowCount() > 1 ? result.getStep() : 0;
+            double[] values = result.getValues(DATASOURCE_STATE);
+            for (int i = values.length - 1; i >= 0; i--) {
+                double value = values[i];
+                if (value != currentValue) {
+                    previousValue = value;
+                    lastChange = ts;
                     break;
                 }
-                lastChange = historicItem.getTimestamp();
+                ts -= step;
             }
-            if (itemCount == filter.getPageSize()) {
-                filter.setPageNumber(++pageNumber);
-                items = query(filter);
-            } else {
-                items = null;
-            }
-        }
-
-        if (UnDefType.NULL.equals(currentState) || lastUpdate == null) {
+        } catch (IOException e) {
+            logger.warn("Could not query rrd4j database for item '{}': {}", itemName, e.getMessage());
             return null;
+        } finally {
+            try {
+                db.close();
+            } catch (IOException e) {
+                logger.debug("Error closing rrd4j database: {}", e.getMessage());
+            }
         }
 
-        final State state = currentState;
-        final ZonedDateTime lastStateUpdate = lastUpdate;
-        final State lastState = previousState;
-        // if we don't find a previous state in persistence, we also don't know when it last changed
-        final ZonedDateTime lastStateChange = previousState != null ? lastChange : null;
+        Item item = null;
+        Unit<?> unit = null;
+        try {
+            item = itemRegistry.getItem(itemName);
+            if (item instanceof GroupItem groupItem) {
+                item = groupItem.getBaseItem();
+            }
+            if (item instanceof NumberItem numberItem) {
+                unit = numberItem.getUnit();
+            }
+        } catch (ItemNotFoundException e) {
+            logger.debug("Could not find item '{}' in registry", itemName);
+        }
 
+        DoubleFunction<State> toState = toStateMapper(item, unit);
+
+        final State state = toState.apply(currentValue);
+        final ZonedDateTime lastStateUpdate = ZonedDateTime.ofInstant(Instant.ofEpochSecond(lastUpdate),
+                ZoneId.systemDefault());
+        final State lastState = !Double.isNaN(previousValue) ? toState.apply(previousValue) : null;
+        // If we don't find a previous state in the archive we queried, we also don't know when it last changed
+        final ZonedDateTime lastStateChange = !Double.isNaN(previousValue)
+                ? ZonedDateTime.ofInstant(Instant.ofEpochSecond(lastChange), ZoneId.systemDefault())
+                : null;
+
+        logger.trace(
+                "Restore from rrd4 item '{}', state '{}', lastStateUpdate '{}', lastState '{}', lastStateChange'{}'",
+                itemName, state, lastStateUpdate, lastState, lastStateChange);
         return new PersistedItem() {
 
             @Override
