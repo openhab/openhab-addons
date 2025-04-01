@@ -43,8 +43,10 @@ import org.openhab.binding.upnpcontrol.internal.util.UpnpProtocolMatcher;
 import org.openhab.binding.upnpcontrol.internal.util.UpnpXMLParser;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.media.MediaListenner;
 import org.openhab.core.media.MediaService;
 import org.openhab.core.media.model.MediaCollection;
+import org.openhab.core.media.model.MediaEntry;
 import org.openhab.core.media.model.MediaSource;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -68,7 +70,7 @@ import org.slf4j.LoggerFactory;
  * @author Karel Goderis - Based on UPnP logic in Sonos binding
  */
 @NonNullByDefault
-public class UpnpServerHandler extends UpnpHandler {
+public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
 
     private final Logger logger = LoggerFactory.getLogger(UpnpServerHandler.class);
 
@@ -112,6 +114,8 @@ public class UpnpServerHandler extends UpnpHandler {
         super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
         this.upnpRenderers = upnpRenderers;
         this.mediaService = mediaService;
+
+        this.mediaService.setMediaListenner(this);
 
         // put root as highest level in parent map
         parentMap.put(ROOT_ENTRY.getId(), ROOT_ENTRY);
@@ -202,6 +206,35 @@ public class UpnpServerHandler extends UpnpHandler {
                 addSubscriptions();
             }
         }
+    }
+
+    @Override
+    public void refreshEntry(MediaEntry mediaEntry) {
+        // TODO Auto-generated method stub
+
+        logger.debug("aa");
+
+        String browseTarget = "/" + mediaEntry.getKey();
+        UpnpEntry entry = parentMap.get(browseTarget);
+        if (entry != null) {
+            currentEntry = entry;
+        } else {
+            final String target = browseTarget;
+            synchronized (entries) {
+                Optional<UpnpEntry> current = entries.stream().filter(e -> target.equals(e.getId())).findFirst();
+                if (current.isPresent()) {
+                    currentEntry = current.get();
+                } else {
+                    // The real entry is not in the parentMap or options list yet, so construct a default one
+                    currentEntry = new UpnpEntry(browseTarget, browseTarget, DIRECTORY_ROOT, "object.container");
+                }
+            }
+        }
+        logger.debug("Browse target {}", browseTarget);
+        logger.debug("Navigating to node {} on server {}", currentEntry.getId(), thing.getLabel());
+        updateState(FAVORITE_SELECT, StringType.valueOf(browseTarget));
+        updateState(CURRENTTITLE, StringType.valueOf(currentEntry.getTitle()));
+        browse(browseTarget, "BrowseDirectChildren", "*", "0", "0", config.sortCriteria);
     }
 
     /**
@@ -603,14 +636,65 @@ public class UpnpServerHandler extends UpnpHandler {
     private void updateTitleSelection(List<UpnpEntry> titleList) {
         // Optionally, filter only items that can be played on the renderer
 
-        MediaSource mediaSource = (MediaSource) mediaService.getMediaRegistry()
-                .getChildForPath("/Root/Upnp/" + this.thing.getUID().getId());
-        if (mediaSource != null) {
+        String idr = currentEntry.getId();
+        if (idr.startsWith(currentEntry.getParentId())) {
+            idr = idr.substring(currentEntry.getParentId().length());
+        }
+        if (idr.startsWith("/")) {
+            idr = idr.substring(1);
+        }
+
+        String path = "/Root/Upnp/" + this.thing.getUID().getId();
+        if (currentEntry != null && !currentEntry.getId().equals("/music")) {
+            if (!currentEntry.getParentId().equals("/music") && !currentEntry.getParentId().equals("0")) {
+                path = path + currentEntry.getParentId();
+            }
+            path = path + "/" + idr;
+        }
+        MediaEntry mediaEntry = mediaService.getMediaRegistry().getChildForPath(path);
+        if (mediaEntry != null && mediaEntry instanceof MediaSource) {
 
             for (UpnpEntry entry : titleList) {
-                logger.debug("aa");
-                MediaCollection mediaEntry = new MediaCollection(entry.getTitle(), entry.getTitle());
-                mediaSource.addChild(entry.getTitle(), mediaEntry);
+                String id = entry.getId();
+                if (id.startsWith(entry.getParentId())) {
+                    id = id.substring(entry.getParentId().length());
+                }
+                if (id.startsWith("/")) {
+                    id = id.substring(1);
+                }
+
+                String subPath = path + "/" + id;
+                MediaCollection mediaEntryChild = (MediaCollection) mediaService.getMediaRegistry()
+                        .getChildForPath(subPath);
+
+                if (mediaEntryChild == null) {
+
+                    mediaEntryChild = new MediaCollection(id, entry.getTitle());
+                    mediaEntry.addChild(id, mediaEntryChild);
+                }
+
+            }
+        } else if (mediaEntry != null && mediaEntry instanceof MediaCollection) {
+
+            for (UpnpEntry entry : titleList) {
+                String id = entry.getId();
+                if (id.startsWith(entry.getParentId())) {
+                    id = id.substring(entry.getParentId().length());
+                }
+                if (id.startsWith("/")) {
+                    id = id.substring(1);
+                }
+
+                String subPath = path + "/" + id;
+                MediaCollection mediaEntryChild = (MediaCollection) mediaService.getMediaRegistry()
+                        .getChildForPath(subPath);
+                mediaService.getMediaRegistry().getChildForPath(path);
+                ;
+                if (mediaEntryChild == null) {
+
+                    mediaEntryChild = new MediaCollection(id, entry.getTitle());
+                    mediaEntry.addChild(id, mediaEntryChild);
+                }
             }
         }
 
