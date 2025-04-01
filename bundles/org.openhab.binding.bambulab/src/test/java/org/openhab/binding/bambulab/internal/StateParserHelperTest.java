@@ -16,14 +16,22 @@ import static org.assertj.core.api.Assertions.*;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.DECIBEL_MILLIWATTS;
 import static org.openhab.core.types.UnDefType.UNDEF;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand.*;
 import static tech.units.indriya.unit.Units.PERCENT;
+
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient;
 
 /**
  * @author Martin Grześlowski - Initial contribution
@@ -520,5 +528,53 @@ class StateParserHelperTest {
         var quantityType = (QuantityType<?>) result.get();
         assertThat(quantityType.doubleValue()).isEqualTo(Double.MIN_VALUE);
         assertThat(quantityType.getUnit()).isEqualTo(PERCENT);
+    }
+
+    @ParameterizedTest(name = "{index}: should properly parse {0}")
+    @MethodSource
+    void speedLevel(PrinterClient.Channel.PrintSpeedCommand command) {
+        // Given
+        var speedLevel = command.getLevel();
+
+        // When
+        var result = StateParserHelper.parseSpeedLevel(speedLevel);
+
+        // Then
+        assertThat(result).isPresent();
+        assertThat(result.get()).isInstanceOf(StringType.class);
+        assertThat(((StringType) result.get()).toString()).isEqualTo(command.getName());
+    }
+
+    static Stream<Arguments> speedLevel() {
+        return Stream.of(SILENT, STANDARD, SPORT, LUDICROUS).map(Arguments::of);
+    }
+
+    // Handles null input by returning empty Optional
+    @Test
+    @DisplayName("Given null input, when parseSpeedLevel is called, then returns empty Optional")
+    public void testHandlesNullInput() {
+        // Given
+        Integer speedLevel = null;
+
+        // When
+        var result = StateParserHelper.parseSpeedLevel(speedLevel);
+
+        // Then
+        assertThat(result).isEmpty();
+    }
+
+    // Returns UNDEF for non-basic speed levels
+    @Test
+    @DisplayName("Given non-basic speed level, when parseSpeedLevel is called, then returns UNDEF")
+    public void testReturnsUndefForNonBasicSpeedLevels() {
+        // Given
+        var speedLevel = 101;
+
+        // When
+        var result = StateParserHelper.parseSpeedLevel(speedLevel);
+
+        // Then
+        assertThat(result).isPresent();
+        assertThat(result.get()).isEqualTo(UNDEF);
     }
 }

@@ -109,10 +109,12 @@ public class PrinterHandler extends BaseBridgeHandler
             var bambuCommand = new GCodeFileCommand(command.toString());
             sendCommand(bambuCommand);
         } else if (CHANNEL_SPEED_LEVEL.is(channelUID) && command instanceof StringType) {
-            stream(PrintSpeedCommand.values())//
-                    .filter(type -> type.name().equalsIgnoreCase(command.toString()))//
-                    .findAny()//
-                    .ifPresent(this::sendCommand);
+            var bambuCommand = PrintSpeedCommand.findByName(command.toString());
+            if (bambuCommand.canSend()) {
+                sendCommand(bambuCommand);
+            } else {
+                logger.warn("Cannot send command: {}", bambuCommand);
+            }
         } else if (CHANNEL_CAMERA_RECORD.is(channelUID) && command instanceof OnOffType onOffCommand) {
             requireNonNull(camera).handleCommand(onOffCommand);
         } else if (CHANNEL_COMMAND.is(channelUID) && command instanceof StringType) {
@@ -322,6 +324,13 @@ public class PrinterHandler extends BaseBridgeHandler
             return;
         }
         stream(PrinterChannel.values()).forEach(channel -> updateState(channel, print));
+
+        Optional.of(print)//
+                .map(Report.Print::ams)//
+                .map(Report.Print.Ams::ams)//
+                .stream()//
+                .flatMap(Collection::stream)//
+                .forEach(this::updateAms);
 
         // if got new Printer state (and not failed) then make sure that thing status in ONLINE
         updateStatus(ONLINE);

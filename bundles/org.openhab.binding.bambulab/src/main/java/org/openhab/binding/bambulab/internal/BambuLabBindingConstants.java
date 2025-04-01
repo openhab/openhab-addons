@@ -130,98 +130,83 @@ public class BambuLabBindingConstants {
         }
     }
 
-    public static class AmsChannel {
+    public enum AmsChannel {
+        CHANNEL_TRAY_TYPE("ams-tray-type", "tray_type"),
+        CHANNEL_TRAY_COLOR("ams-tray-color", "tray_color"),
+        CHANNEL_NOZZLE_TEMPERATURE_MAX("ams-nozzle-temperature-max", "nozzle_temp_max"),
+        CHANNEL_NOZZLE_TEMPERATURE_MIN("ams-nozzle-temperature-min", "nozzle_temp_min"),
+        CHANNEL_REMAIN("ams-remain", "remain"),
+        CHANNEL_K("ams-k", "k"),
+        CHANNEL_N("ams-n", "n"),
+        CHANNEL_TAG_UUID("ams-tag-uuid", "tag_uuid"),
+        CHANNEL_TRAY_ID_NAME("ams-tray-id-name", "tray_id_name"),
+        CHANNEL_TRAY_INFO_IDX("ams-tray-info-idx", "tray_info_idx"),
+        CHANNEL_TRAY_SUB_BRANDS("ams-tray-sub-brands", "tray_sub_brands"),
+        CHANNEL_TRAY_WEIGHT("ams-tray-weight", "tray_weight"),
+        CHANNEL_TRAY_DIAMETER("ams-tray-diameter", "tray_diameter"),
+        CHANNEL_TRAY_TEMPERATURE("ams-tray-temperature", "tray_temp"),
+        CHANNEL_TRAY_TIME("ams-tray-time", "tray_time"),
+        CHANNEL_BED_TEMPERATURE_TYPE("ams-bed-temp-type", "bed_temp_type"),
+        CHANNEL_BED_TEMPERATURE("ams-bed-temperature", "bed_temp"),
+        CHANNEL_CTYPE("ams-ctype", "ctype");
+
         public static final int MIN_AMS = 1;
         /**
          * According to Bambu Lab documentation, you can attach up to 4 AMS
          */
         public static final int MAX_AMS = 4;
-        /**
-         * Each AMS device has 4 trays
-         */
-        public static final int MAX_AMS_TRAYS = 4;
+        private final String group;
+        private final String jsonKey;
 
-        public static String getTrayTypeChannel(int trayId) {
-            return prefix(trayId) + "ams-tray-type";
+        AmsChannel(String group, String jsonKey) {
+            this.group = group;
+            this.jsonKey = jsonKey;
         }
 
-        public static String getTrayColorChannel(int trayId) {
-            return prefix(trayId) + "ams-tray-color";
+        public String getJsonKey() {
+            return jsonKey;
         }
 
-        public static String getNozzleTemperatureMaxChannel(int trayId) {
-            return prefix(trayId) + "ams-nozzle-temperature-max";
+        public String findType(TrayId trayId) {
+            return "ams-tray-%s#%s".formatted(trayId.getIdx(), group);
         }
 
-        public static String getNozzleTemperatureMinChannel(int trayId) {
-            return prefix(trayId) + "ams-nozzle-temperature-min";
+        public static Optional<AmsChannel> findAmsChannel(ChannelUID channel) {
+            return Optional.of(channel)//
+                    .map(ChannelUID::getGroupId)//
+                    .flatMap(group -> stream(values()).filter(c -> c.group.equals(group)).findAny());
         }
 
-        public static String getRemainChannel(int trayId) {
-            return prefix(trayId) + "ams-remain";
-        }
+        public static enum TrayId {
+            TRAY_1(1),
+            TRAY_2(2),
+            TRAY_3(3),
+            TRAY_4(4);
 
-        public static String getKChannel(int trayId) {
-            return prefix(trayId) + "ams-k";
-        }
+            /**
+             * Each AMS device has 4 trays
+             */
+            public static final int MAX_AMS_TRAYS = values().length;
 
-        public static String getNChannel(int trayId) {
-            return prefix(trayId) + "ams-n";
-        }
+            private final int idx;
 
-        public static String getTagUuidChannel(int trayId) {
-            return prefix(trayId) + "ams-tag-uuid";
-        }
+            TrayId(int idx) {
+                this.idx = idx;
+            }
 
-        public static String getTrayIdNameChannel(int trayId) {
-            return prefix(trayId) + "ams-tray-id-name";
-        }
+            public int getIdx() {
+                return idx;
+            }
 
-        public static String getTrayInfoIdxChannel(int trayId) {
-            return prefix(trayId) + "ams-tray-info-idx";
-        }
-
-        public static String getTraySubBrandsChannel(int trayId) {
-            return prefix(trayId) + "ams-tray-sub-brands";
-        }
-
-        public static String getTrayWeightChannel(int trayId) {
-            return prefix(trayId) + "ams-tray-weight";
-        }
-
-        public static String getTrayDiameterChannel(int trayId) {
-            return prefix(trayId) + "ams-tray-diameter";
-        }
-
-        public static String getTrayTemperatureChannel(int trayId) {
-            return prefix(trayId) + "ams-tray-temperature";
-        }
-
-        public static String getTrayTimeChannel(int trayId) {
-            return prefix(trayId) + "ams-tray-time";
-        }
-
-        public static String getBedTemperatureTypeChannel(int trayId) {
-            return prefix(trayId) + "ams-bed-temp-type";
-        }
-
-        public static String getBedTemperatureChannel(int trayId) {
-            return prefix(trayId) + "ams-bed-temperature";
-        }
-
-        public static String getCtypeChannel(int trayId) {
-            return prefix(trayId) + "ams-ctype";
-        }
-
-        private static String prefix(int trayId) {
-            checkTrayId(trayId);
-            return "ams-tray-%s#".formatted(trayId + 1);
-        }
-
-        private static void checkTrayId(int trayId) {
-            if (trayId <= 0 || trayId > MAX_AMS_TRAYS) {
-                throw new IllegalArgumentException(
-                        "Invalid tray ID: %d. Allowed range: 1 to %d.".formatted(trayId, MAX_AMS_TRAYS));
+            public static Optional<TrayId> parseFromApi(int idx) {
+                // tray ID in api starts from 0 and for channels it starts for 1
+                return switch (idx) {
+                    case 0 -> Optional.of(TRAY_1);
+                    case 1 -> Optional.of(TRAY_2);
+                    case 2 -> Optional.of(TRAY_3);
+                    case 3 -> Optional.of(TRAY_4);
+                    default -> Optional.empty();
+                };
             }
         }
 
@@ -239,11 +224,9 @@ public class BambuLabBindingConstants {
             private static final Logger log = LoggerFactory.getLogger(TrayType.class);
 
             public static Optional<TrayType> findTrayType(String name) {
-                var any = stream(values()).filter(t -> t.name().equalsIgnoreCase(name)).findAny();
-                if (any.isEmpty()) {
-                    log.warn("Cannot parse TrayType from {}!", name);
-                }
-                return any;
+                return stream(values())//
+                        .filter(t -> t.name().equalsIgnoreCase(name))//
+                        .findAny();
             }
         }
     }
