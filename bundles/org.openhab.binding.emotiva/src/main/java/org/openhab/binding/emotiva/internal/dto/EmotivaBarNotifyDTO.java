@@ -51,7 +51,11 @@ public class EmotivaBarNotifyDTO {
     }
 
     public EmotivaBarNotifyDTO(String name) {
-        this.name = name;
+        if (name == null) {
+            throw new IllegalArgumentException("Name cannot be null");
+        } else {
+            this.name = name.trim();
+        }
     }
 
     public String getName() {

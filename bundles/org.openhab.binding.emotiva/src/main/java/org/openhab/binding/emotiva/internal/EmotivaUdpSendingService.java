@@ -93,7 +93,7 @@ public class EmotivaUdpSendingService {
         if (config.controlPort <= 0) {
             throw new IllegalArgumentException("Invalid udpSendingControlPort: " + config.controlPort);
         }
-        if (config.ipAddress.trim().isEmpty()) {
+        if (config.ipAddress.isBlank()) {
             throw new IllegalArgumentException("Missing ipAddress");
         }
         this.ipAddress = config.ipAddress;

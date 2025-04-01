@@ -155,7 +155,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                     "@text/message.processor.connection.error.port");
             return;
         }
-        if (config.ipAddress.trim().isEmpty()) {
+        if (config.ipAddress.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/message.processor.connection.error.address-empty");
             return;
@@ -544,12 +544,10 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             for (EmotivaNotifyDTO tag : xmlUtils.unmarshallToNotification(answerDto.getTags())) {
                 try {
                     EmotivaSubscriptionTags tagName = EmotivaSubscriptionTags.valueOf(tag.getName());
-                    if (EmotivaSubscriptionTags.hasChannel(tag.getName())) {
-                        findChannelDatatypeAndUpdateChannel(tagName.getChannel(), tag.getValue(),
-                                tagName.getDataType());
-                    }
+                    findChannelDatatypeAndUpdateChannel(tagName.getChannel(), tag.getValue(), tagName.getDataType());
                 } catch (IllegalArgumentException e) {
-                    logger.debug("Subscription name '{}' could not be mapped to a channel", tag.getName());
+                    logger.debug("Subscription name '{}' could not be mapped to Emotiva property tag, skipping",
+                            tag.getName());
                 }
             }
         } else {
@@ -560,7 +558,8 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
         }
     }
 
-    private void handleChannelUpdate(String emotivaSubscriptionName, String rawValue, String visible, String status) {
+    private void handleChannelUpdate(String emotivaSubscriptionName, @Nullable String rawValue, String visible,
+            String status) {
         logger.trace("Subscription property '{}' with raw value '{}' received, start processing",
                 emotivaSubscriptionName, rawValue);
 
@@ -577,10 +576,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
         }
 
         if (keepAlive.name().equals(emotivaSubscriptionName)) {
-            state.updateLastSeen(ZonedDateTime.now(ZoneId.systemDefault()).toInstant());
-            logger.trace(
-                    "Subscription property '{}' with value '{}' mapped to last-seen for device '{}', value updated",
-                    keepAlive.name(), rawValue, thing.getUID());
+            updateKeepAliveState(rawValue);
             return;
         }
 
@@ -609,7 +605,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                 return;
             }
 
-            String trimmedValue = rawValue.trim();
+            String trimmedValue = rawValue == null ? "" : rawValue.trim();
             logger.trace("Subscription property '{}' with value '{}' mapped to OH channel '{}'", subscriptionTag,
                     trimmedValue, subscriptionTag.getChannel());
 
@@ -637,47 +633,64 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
         }
     }
 
-    private void findChannelDatatypeAndUpdateChannel(String channelName, String value, EmotivaDataType dataType) {
+    private void findChannelDatatypeAndUpdateChannel(String channelName, @Nullable String rawValue,
+            EmotivaDataType dataType) {
         switch (dataType) {
             case DIMENSIONLESS_DECIBEL -> {
-                String trimmedString = value.replaceAll("[ +]", "");
-                logger.debug("Preparing to update OH channel '{}' with value:type '{}:{}'", channelName, trimmedString,
-                        QuantityType.class.getSimpleName());
-                if (channelName.equals(CHANNEL_MAIN_VOLUME)) {
-                    updateVolumeChannels(trimmedString, CHANNEL_MUTE, channelName, CHANNEL_MAIN_VOLUME_DB);
-                } else if (channelName.equals(CHANNEL_ZONE2_VOLUME)) {
-                    updateVolumeChannels(trimmedString, CHANNEL_ZONE2_MUTE, channelName, CHANNEL_ZONE2_VOLUME_DB);
+                if (rawValue == null) {
+                    logger.debug("Channel '{}' with DIMENSIONLESS_DECIBEL type has value 'null', not updated",
+                            channelName);
                 } else {
-                    if ("None".equals(trimmedString)) {
-                        updateChannelState(channelName, QuantityType.valueOf(0, Units.DECIBEL));
+                    String trimmedString = rawValue.replaceAll("[ +]", "");
+                    logger.debug("Preparing to update OH channel '{}' with value:type '{}:{}'", channelName,
+                            trimmedString, QuantityType.class.getSimpleName());
+                    if (channelName.equals(CHANNEL_MAIN_VOLUME)) {
+                        updateVolumeChannels(trimmedString, CHANNEL_MUTE, channelName, CHANNEL_MAIN_VOLUME_DB);
+                    } else if (channelName.equals(CHANNEL_ZONE2_VOLUME)) {
+                        updateVolumeChannels(trimmedString, CHANNEL_ZONE2_MUTE, channelName, CHANNEL_ZONE2_VOLUME_DB);
                     } else {
-                        updateChannelState(channelName,
-                                QuantityType.valueOf(Double.parseDouble(trimmedString), Units.DECIBEL));
+                        if ("None".equals(trimmedString)) {
+                            updateChannelState(channelName, QuantityType.valueOf(0, Units.DECIBEL));
+                        } else {
+                            updateChannelState(channelName,
+                                    QuantityType.valueOf(Double.parseDouble(trimmedString), Units.DECIBEL));
+                        }
                     }
                 }
             }
             case DIMENSIONLESS_PERCENT -> {
-                String trimmedString = value.replaceAll("[ +]", "");
-                logger.debug("Preparing to update OH channel '{}' with value:type '{}:{}'", channelName, value,
-                        PercentType.class.getSimpleName());
-                updateChannelState(channelName, PercentType.valueOf(trimmedString));
+                if (rawValue == null) {
+                    logger.debug("Channel '{}' with DIMENSIONLESS_PERCENT type has value 'null', not updated",
+                            channelName);
+                } else {
+                    String trimmedString = rawValue.replaceAll("[ +]", "");
+                    logger.debug("Preparing to update OH channel '{}' with value:type '{}:{}'", channelName, rawValue,
+                            PercentType.class.getSimpleName());
+                    updateChannelState(channelName, PercentType.valueOf(trimmedString));
+                }
+            }
+            case KEEP_ALIVE -> {
+                updateKeepAliveState(rawValue);
             }
             case FREQUENCY_HERTZ -> {
-                logger.debug("Preparing to update OH channel '{}' with value:type '{}:{}'", channelName, value,
+                logger.debug("Preparing to update OH channel '{}' with value:type '{}:{}'", channelName, rawValue,
                         Units.HERTZ.getClass().getSimpleName());
-                if (!value.isEmpty()) {
+                if (rawValue == null || rawValue.isBlank()) {
+                    logger.debug("Channel '{}' with FREQUENCY_HERTZ type has value '{}', not updated", channelName,
+                            rawValue);
+                } else {
                     // Getting rid of characters and empty space leaves us with the raw frequency
                     try {
-                        String frequencyString = value.replaceAll("[a-zA-Z ]", "");
+                        String frequencyString = rawValue.replaceAll("[a-zA-Z ]", "");
                         QuantityType<Frequency> hz = QuantityType.valueOf(0, Units.HERTZ);
-                        if (value.contains("AM")) {
+                        if (rawValue.contains("AM")) {
                             hz = QuantityType.valueOf(Double.parseDouble(frequencyString) * 1000, Units.HERTZ);
-                        } else if (value.contains("FM")) {
+                        } else if (rawValue.contains("FM")) {
                             hz = QuantityType.valueOf(Double.parseDouble(frequencyString) * 1000000, Units.HERTZ);
                         }
                         updateChannelState(CHANNEL_TUNER_CHANNEL, hz);
                     } catch (NumberFormatException e) {
-                        logger.debug("Could not extract radio tuner frequency from '{}'", value);
+                        logger.debug("Could not extract radio tuner frequency from '{}'", rawValue);
                     }
                 }
             }
@@ -688,45 +701,66 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                 setOfflineAndScheduleConnectRetry();
             }
             case NUMBER_TIME -> {
-                logger.debug("Preparing to update OH channel '{}' with value:type '{}:{}'", channelName, value,
+                logger.debug("Preparing to update OH channel '{}' with value:type '{}:{}'", channelName, rawValue,
                         Number.class.getSimpleName());
                 updateChannelState(channelName,
                         new QuantityType<>(ZonedDateTime.now(ZoneId.systemDefault()).toEpochSecond(), Units.SECOND));
             }
             case ON_OFF -> {
-                logger.debug("Preparing to update OH channel '{}' with value:type '{}:{}'", channelName, value,
+                logger.debug("Preparing to update OH channel '{}' with value:type '{}:{}'", channelName, rawValue,
                         OnOffType.class.getSimpleName());
-                OnOffType switchValue = OnOffType.from(value.trim().toUpperCase());
-                updateChannelState(channelName, switchValue);
-                if (switchValue.equals(OnOffType.OFF) && CHANNEL_MENU.equals(channelName)) {
-                    resetMenuPanelChannels();
+                if (rawValue == null) {
+                    logger.debug("Channel '{}' with ON_OFF type has value 'null', not updated", channelName);
+                } else {
+                    OnOffType switchValue = OnOffType.from(rawValue.trim().toUpperCase());
+                    updateChannelState(channelName, switchValue);
+                    if (switchValue.equals(OnOffType.OFF) && CHANNEL_MENU.equals(channelName)) {
+                        resetMenuPanelChannels();
+                    }
                 }
             }
             case STRING -> {
-                logger.debug("Preparing to update OH channel '{}' with value:type '{}:{}'", channelName, value,
+                logger.debug("Preparing to update OH channel '{}' with value:type '{}:{}'", channelName, rawValue,
                         StringType.class.getSimpleName());
-                updateChannelState(channelName, StringType.valueOf(value));
-                if (channelName.equals(CHANNEL_SOURCE)) {
-                    EmotivaControlCommands matchedSource = matchCommandFromSourceAndLabels(value);
-                    if (matchedSource.equals(none)) {
-                        logger.error(
-                                "Error trying to get source command from OhCommand '{}:{}', not able to update subscriptions",
-                                channelName, value);
-                    } else {
-                        BiConsumer<Set<EmotivaSubscriptionTagGroup>, Set<EmotivaSubscriptionTagGroup>> tagGroups = (
-                                subscribeSet, unsubscribeSet) -> {
-                            updateTagGroupChangesForSource(subscribeSet, unsubscribeSet, value, matchedSource);
-                        };
-                        subscriptionHandler.tagGroupsFromSource(matchedSource, tagGroups);
-                        logger.debug("Currently subscribed tag groups: '{}'", state.getSubscriptionsTagGroups());
+                if (rawValue == null) {
+                    logger.trace("Channel '{}' with STRING type has value 'null', not updated", channelName);
+                } else {
+                    updateChannelState(channelName, StringType.valueOf(rawValue));
+                    if (channelName.equals(CHANNEL_SOURCE)) {
+                        EmotivaControlCommands matchedSource = matchCommandFromSourceAndLabels(rawValue);
+                        if (matchedSource.equals(none)) {
+                            logger.error(
+                                    "Error trying to get source command from OhCommand '{}:{}', not able to update subscriptions",
+                                    channelName, rawValue);
+                        } else {
+                            BiConsumer<Set<EmotivaSubscriptionTagGroup>, Set<EmotivaSubscriptionTagGroup>> tagGroups = (
+                                    subscribeSet, unsubscribeSet) -> {
+                                updateTagGroupChangesForSource(subscribeSet, unsubscribeSet, rawValue, matchedSource);
+                            };
+                            subscriptionHandler.tagGroupsFromSource(matchedSource, tagGroups);
+                            logger.debug("Currently subscribed tag groups: '{}'", state.getSubscriptionsTagGroups());
+                        }
                     }
                 }
             }
             case UNKNOWN -> // Do nothing, types not connect to channels
-                logger.debug("Channel '{}' with UNKNOWN type and value '{}' was not updated", channelName, value);
+                logger.debug("Channel '{}' with UNKNOWN type and value '{}' was not updated", channelName, rawValue);
             default -> {
                 // datatypes not connect to a channel, so do nothing
             }
+        }
+    }
+
+    private void updateKeepAliveState(@Nullable String rawValue) {
+        String trimmedValue = rawValue == null ? "" : rawValue.trim();
+        if (trimmedValue.isBlank()) {
+            logger.trace("Subscription property '{}' has invalid value '{}' for device '{}', not updated",
+                    keepAlive.name(), trimmedValue, thing.getUID());
+        } else {
+            state.updateLastSeen(ZonedDateTime.now(ZoneId.systemDefault()).toInstant());
+            logger.trace(
+                    "Subscription property '{}' with value '{}' mapped to last-seen for device '{}', value updated",
+                    keepAlive.name(), trimmedValue, thing.getUID());
         }
     }
 
