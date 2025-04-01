@@ -120,7 +120,8 @@ public class TadoAuthenticationServlet extends HttpServlet {
         if (dynamicHtml == null) {
             if (request.getRequestURL() instanceof StringBuffer baseUrl) {
                 String dynamicUrl = baseUrl.append("?").append(PARAM_NAME_OAUTH).append("=").append(PARAM_VALUE_START)
-                        .toString();
+                        .append("&").append(PARAM_NAME_ACCOUNT).append("=")
+                        .append(request.getParameter(PARAM_NAME_ACCOUNT)).toString();
                 dynamicHtml = HTML_AUTH_START_TEMPLATE.replace(REPLACE_TAG, dynamicUrl);
             } else {
                 dynamicHtml = HTML_AUTH_ERROR_TEMPLATE.replace(REPLACE_TAG, ERROR_BAD_URL);
