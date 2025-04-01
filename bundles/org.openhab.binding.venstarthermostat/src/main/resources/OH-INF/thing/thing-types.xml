@@ -159,6 +159,10 @@
 		<item-type>String</item-type>
 		<label>Fan Mode</label>
 		<description>Current Fan Mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="auto">Auto</option>

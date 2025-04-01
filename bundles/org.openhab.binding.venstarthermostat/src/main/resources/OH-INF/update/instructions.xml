@@ -26,6 +26,12 @@
 			<update-channel id="systemState">
 				<type>venstarthermostat:systemState</type>
 			</update-channel>
+			<update-channel id="fanMode">
+				<type>venstarthermostat:fanMode</type>
+			</update-channel>
+			<update-channel id="fanState">
+				<type>venstarthermostat:fanState</type>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 
