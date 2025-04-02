@@ -16,6 +16,7 @@ import static org.openhab.binding.froniuswattpilot.internal.FroniusWattpilotBind
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -109,8 +110,13 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
     }
 
     @Override
-    public void disconnected(@Nullable String reason) {
+    public void disconnected(@Nullable String reason, @Nullable Throwable cause) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        if (cause instanceof Exception e) {
+            if (e.getCause() instanceof TimeoutException) {
+                // TODO: Handle timeout
+            }
+        }
     }
 
     @Override
