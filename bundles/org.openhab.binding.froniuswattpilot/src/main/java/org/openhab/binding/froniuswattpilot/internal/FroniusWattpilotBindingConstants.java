@@ -23,7 +23,8 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class FroniusWattpilotBindingConstants {
-    private FroniusWattpilotBindingConstants() {}
+    private FroniusWattpilotBindingConstants() {
+    }
 
     private static final String BINDING_ID = "froniuswattpilot";
 
