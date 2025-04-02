@@ -99,6 +99,9 @@
 		<label>Charging State</label>
 		<description>Current Charging State of the wallbox</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NO_CAR">No car connected</option>
@@ -114,6 +117,9 @@
 		<description>Whether charging is currently allowed, e.g. when using eco mode too low solar sur-plus can forbid
 			charging</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Allowed</option>
@@ -126,6 +132,9 @@
 		<label>Single Phase Charging</label>
 		<description>Whether the wallbox is charging single phase only</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Single Phase</option>
@@ -138,6 +147,9 @@
 		<label>Enforced Charging State</label>
 		<description>Enforced charging state, i.e. force/forbid charging or let the wallbox decide</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="NEUTRAL">Wallbox decides</option>
@@ -152,6 +164,9 @@
 		<label>Charging Mode</label>
 		<description>The mode of charging</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="DEFAULT">Default</option>
@@ -166,6 +181,10 @@
 		<label>Charging Current</label>
 		<description>The current to charge with</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%d A" min="6" max="32" step="1"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -174,6 +193,10 @@
 		<label>PV Surplus Power Threshold</label>
 		<description>The PV Surplus power at which surplus charging starts</description>
 		<category>SolarPlant</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Power</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>
