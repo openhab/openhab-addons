@@ -21,6 +21,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -38,6 +39,12 @@ import org.slf4j.LoggerFactory;
 import com.florianhotze.wattpilot.WattpilotClient;
 import com.florianhotze.wattpilot.WattpilotClientListener;
 import com.florianhotze.wattpilot.WattpilotStatus;
+import com.florianhotze.wattpilot.commands.SetChargingCurrentCommand;
+import com.florianhotze.wattpilot.commands.SetChargingModeCommand;
+import com.florianhotze.wattpilot.commands.SetEnforcedChargingStateCommand;
+import com.florianhotze.wattpilot.commands.SetSurplusPowerThresholdCommand;
+import com.florianhotze.wattpilot.dto.ChargingMode;
+import com.florianhotze.wattpilot.dto.EnforcedChargingState;
 
 /**
  * The {@link FroniusWattpilotHandler} is responsible for handling commands, which are
@@ -60,6 +67,64 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        String groupId = channelUID.getGroupId();
+        if (!(CHANNEL_GROUP_ID_CONTROL.equals(groupId))) {
+            return;
+        }
+        String channelId = channelUID.getIdWithoutGroup();
+        try {
+            switch (channelId) {
+                case CHANNEL_ENFORCED_CHARGING_STATE:
+                    if (command instanceof StringType st) {
+                        client.sendCommand(
+                                new SetEnforcedChargingStateCommand(EnforcedChargingState.valueOf(st.toString())));
+                    } else {
+                        logger.debug("Command has wrong type, StringType required!");
+                    }
+                    break;
+                case CHANNEL_CHARGING_MODE:
+                    if (command instanceof StringType st) {
+                        client.sendCommand(new SetChargingModeCommand(ChargingMode.valueOf(st.toString())));
+                    } else {
+                        logger.debug("Command has wrong type, StringType required!");
+                    }
+                    break;
+                case CHANNEL_CHARGING_CURRENT:
+                    int ampere;
+                    if (command instanceof QuantityType<?> qt) {
+                        ampere = qt.toUnit(Units.AMPERE).intValue();
+                    } else if (command instanceof DecimalType dt) {
+                        ampere = dt.intValue();
+                    } else {
+                        logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                        return;
+                    }
+                    client.sendCommand(new SetChargingCurrentCommand(ampere));
+                    break;
+                case CHANNEL_PV_SURPLUS_THRESHOLD:
+                    int watts;
+                    if (command instanceof QuantityType<?> qt) {
+                        watts = qt.toUnit(Units.WATT).intValue();
+                    } else if (command instanceof DecimalType dt) {
+                        watts = dt.intValue();
+                    } else {
+                        logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                        return;
+                    }
+                    client.sendCommand(new SetSurplusPowerThresholdCommand(watts));
+                    break;
+                default:
+                    logger.debug("Unknown channel id: {}", channelId);
+            }
+        } catch (IllegalArgumentException e) {
+            Throwable cause = e.getCause();
+            if (cause == null) {
+                logger.debug("Failed to handle command {} for channel {}: {}", command, channelUID, e.getMessage());
+            } else {
+                logger.debug("Failed to handle command {} for channel {}: {} -> {}", command, channelUID,
+                        e.getMessage(), cause.getMessage());
+            }
+        }
     }
 
     @Override
@@ -124,8 +189,26 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
         if (status == null) {
             return;
         }
+        updateChannelsControl(status);
         updateChannelsStatus(status);
         updateChannelsMetrics(status);
+    }
+
+    private void updateChannelsControl(WattpilotStatus status) {
+        final ThingUID uid = getThing().getUID();
+        ChannelUID channel;
+
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_ENFORCED_CHARGING_STATE);
+        updateState(channel, new StringType(status.getEnforcedChargingState().toString()));
+
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_CHARGING_MODE);
+        updateState(channel, new StringType(status.getChargingMode().toString()));
+
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_CHARGING_CURRENT);
+        updateState(channel, new QuantityType<>(status.getChargingCurrent(), Units.AMPERE));
+
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_PV_SURPLUS_THRESHOLD);
+        updateState(channel, new QuantityType<>(status.getSurplusPowerThreshold(), Units.WATT));
     }
 
     private void updateChannelsStatus(WattpilotStatus status) {
@@ -150,8 +233,11 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
         channel = new ChannelUID(uid, CHANNEL_GROUP_ID_METRICS, CHANNEL_POWER);
         updateState(channel, new QuantityType<>(status.getChargingMetrics().power(), Units.WATT));
 
-        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_METRICS, CHANNEL_CHARGED_ENERGY);
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_METRICS, CHANNEL_CHARGED_ENERGY_SESSION);
         updateState(channel, new QuantityType<>(status.getEnergyCounterSinceStart(), Units.WATT_HOUR));
+
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_METRICS, CHANNEL_CHARGED_ENERGY_TOTAL);
+        updateState(channel, new QuantityType<>(status.getEnergyCounterTotal(), Units.WATT_HOUR));
 
         // phase 1
         channel = new ChannelUID(uid, CHANNEL_GROUP_ID_METRICS, PREFIX_PHASE_1 + CHANNEL_POWER);

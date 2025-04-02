@@ -10,6 +10,7 @@
 		<description>Fronius Wattpilot wallbox</description>
 
 		<channel-groups>
+			<channel-group id="control" typeId="control"/>
 			<channel-group id="status" typeId="status"/>
 			<channel-group id="metrics" typeId="metrics"/>
 		</channel-groups>
@@ -29,6 +30,16 @@
 	</thing-type>
 
 	<!-- Channel Group Types -->
+	<channel-group-type id="control">
+		<label>Charging Control</label>
+		<channels>
+			<channel id="enforced-charging-state" typeId="enforced-charging-state"/>
+			<channel id="charging-mode" typeId="charging-mode"/>
+			<channel id="charging-current" typeId="charging-current"/>
+			<channel id="pv-surplus-threshold" typeId="pv-surplus-threshold"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="status">
 		<label>Charging Status</label>
 		<channels>
@@ -47,6 +58,10 @@
 			<channel id="energy-session" typeId="system.electric-energy">
 				<label>Charged Energy</label>
 				<description>Energy charged in the current/last session</description>
+			</channel>
+			<channel id="energy-total" typeId="system.electric-energy">
+				<label>Total Charged Energy</label>
+				<description>Energy charged in total</description>
 			</channel>
 			<channel id="l1-power" typeId="system.electric-power">
 				<label>Phase 1 Power</label>
@@ -83,6 +98,7 @@
 		<item-type>String</item-type>
 		<label>Charging State</label>
 		<description>Current Charging State of the wallbox</description>
+		<category>BatteryLevel</category>
 		<state readOnly="true">
 			<options>
 				<option value="NO_CAR">No car connected</option>
@@ -97,6 +113,7 @@
 		<label>Charging Allowed</label>
 		<description>Whether charging is currently allowed, e.g. when using eco mode too low solar sur-plus can forbid
 			charging</description>
+		<category>BatteryLevel</category>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Allowed</option>
@@ -108,11 +125,55 @@
 		<item-type>Switch</item-type>
 		<label>Single Phase Charging</label>
 		<description>Whether the wallbox is charging single phase only</description>
+		<category>BatteryLevel</category>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Single Phase</option>
-				<option value="OFF">Three Phase</option>
+				<option value="OFF">Three Phases</option>
 			</options>
 		</state>
+	</channel-type>
+	<channel-type id="enforced-charging-state">
+		<item-type>String</item-type>
+		<label>Enforced Charging State</label>
+		<description>Enforced charging state, i.e. force/forbid charging or let the wallbox decide</description>
+		<category>BatteryLevel</category>
+		<state>
+			<options>
+				<option value="NEUTRAL">Wallbox decides</option>
+				<option value="ON">Force charging</option>
+				<option value="OFF">Forbid charging</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="charging-mode">
+		<item-type>String</item-type>
+		<label>Charging Mode</label>
+		<description>The mode of charging</description>
+		<category>BatteryLevel</category>
+		<state>
+			<options>
+				<option value="DEFAULT">Default</option>
+				<option value="ECO">Eco</option>
+				<option value="NEXT_TRIP">Next Trip</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="charging-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Charging Current</label>
+		<description>The current to charge with</description>
+		<category>Energy</category>
+		<state pattern="%d A" min="6" max="32" step="1"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="pv-surplus-threshold">
+		<item-type>Number:Power</item-type>
+		<label>PV Surplus Power Threshold</label>
+		<description>The PV Surplus power at which surplus charging starts</description>
+		<category>SolarPlant</category>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>
