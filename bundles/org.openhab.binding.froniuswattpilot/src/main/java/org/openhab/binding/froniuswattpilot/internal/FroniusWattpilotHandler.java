@@ -91,25 +91,39 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
                     break;
                 case CHANNEL_CHARGING_CURRENT:
                     int ampere;
-                    if (command instanceof QuantityType<?> qt) {
-                        ampere = qt.toUnit(Units.AMPERE).intValue();
-                    } else if (command instanceof DecimalType dt) {
-                        ampere = dt.intValue();
-                    } else {
-                        logger.debug("Command has wrong type, QuantityType or DecimalType required!");
-                        return;
+                    switch (command) {
+                        case QuantityType<?> qt -> {
+                            qt = qt.toUnit(Units.AMPERE);
+                            if (qt == null) {
+                                logger.debug("Failed to convert QuantityType to AMPERE!");
+                                return;
+                            }
+                            ampere = qt.intValue();
+                        }
+                        case DecimalType dt -> ampere = dt.intValue();
+                        default -> {
+                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                            return;
+                        }
                     }
                     client.sendCommand(new SetChargingCurrentCommand(ampere));
                     break;
                 case CHANNEL_PV_SURPLUS_THRESHOLD:
                     int watts;
-                    if (command instanceof QuantityType<?> qt) {
-                        watts = qt.toUnit(Units.WATT).intValue();
-                    } else if (command instanceof DecimalType dt) {
-                        watts = dt.intValue();
-                    } else {
-                        logger.debug("Command has wrong type, QuantityType or DecimalType required!");
-                        return;
+                    switch (command) {
+                        case QuantityType<?> qt -> {
+                            qt = qt.toUnit(Units.WATT);
+                            if (qt == null) {
+                                logger.debug("Failed to convert QuantityType to WATT!");
+                                return;
+                            }
+                            watts = qt.intValue();
+                        }
+                        case DecimalType dt -> watts = dt.intValue();
+                        default -> {
+                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                            return;
+                        }
                     }
                     client.sendCommand(new SetSurplusPowerThresholdCommand(watts));
                     break;
@@ -177,10 +191,8 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
     @Override
     public void disconnected(@Nullable String reason, @Nullable Throwable cause) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-        if (cause instanceof Exception e) {
-            if (e.getCause() instanceof TimeoutException) {
-                // TODO: Handle timeout
-            }
+        if (cause instanceof Exception e && e.getCause() instanceof TimeoutException) {
+            // TODO: Handle timeout
         }
     }
 
