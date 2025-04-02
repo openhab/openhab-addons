@@ -34,19 +34,26 @@ public class FroniusWattpilotBindingConstants {
     public static final String CHANNEL_GROUP_ID_STATUS = "status";
     public static final String CHANNEL_GROUP_ID_METRICS = "metrics";
 
-    // Wattpilot metrics channel prefixes
-    public static final String PREFIX_PHASE_1 = "l1-";
-    public static final String PREFIX_PHASE_2 = "l2-";
-    public static final String PREFIX_PHASE_3 = "l3-";
+    // Wattpilot control channels
+    public static final String CHANNEL_ENFORCED_CHARGING_STATE = "enforced-charging-state";
+    public static final String CHANNEL_CHARGING_MODE = "charging-mode";
+    public static final String CHANNEL_CHARGING_CURRENT = "charging-current";
+    public static final String CHANNEL_PV_SURPLUS_THRESHOLD = "pv-surplus-threshold";
 
     // Wattpilot status channels
     public static final String CHANNEL_CHARGING_STATE = "charging-state";
     public static final String CHANNEL_CHARGING_ALLOWED = "charging-allowed";
     public static final String CHANNEL_CHARGING_SINGLE_PHASE = "single-phase";
 
+    // Wattpilot metrics channel prefixes
+    public static final String PREFIX_PHASE_1 = "l1-";
+    public static final String PREFIX_PHASE_2 = "l2-";
+    public static final String PREFIX_PHASE_3 = "l3-";
+
     // Wattpilot metrics channels
     public static final String CHANNEL_POWER = "power";
-    public static final String CHANNEL_CHARGED_ENERGY = "energy-session";
+    public static final String CHANNEL_CHARGED_ENERGY_SESSION = "energy-session";
+    public static final String CHANNEL_CHARGED_ENERGY_TOTAL = "energy-total";
     public static final String CHANNEL_VOLTAGE = "voltage";
     public static final String CHANNEL_CURRENT = "current";
 }
