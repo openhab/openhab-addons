@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import com.florianhotze.wattpilot.WattpilotClient;
 import com.florianhotze.wattpilot.WattpilotClientListener;
+import com.florianhotze.wattpilot.WattpilotInfo;
 import com.florianhotze.wattpilot.WattpilotStatus;
 import com.florianhotze.wattpilot.commands.SetChargingCurrentCommand;
 import com.florianhotze.wattpilot.commands.SetChargingModeCommand;
@@ -188,6 +189,7 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
     @Override
     public void connected() {
         updateStatus(ThingStatus.ONLINE);
+        updateDeviceProperties(client.getDeviceInfo());
     }
 
     @Override
@@ -206,6 +208,13 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
         updateChannelsControl(status);
         updateChannelsStatus(status);
         updateChannelsMetrics(status);
+    }
+
+    private void updateDeviceProperties(WattpilotInfo deviceInfo) {
+        Map<String, String> properties = editProperties();
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, deviceInfo.serial());
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, deviceInfo.firmwareVersion());
+        updateProperties(properties);
     }
 
     private void updateChannelsControl(WattpilotStatus status) {

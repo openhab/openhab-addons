@@ -15,6 +15,11 @@
 			<channel-group id="metrics" typeId="metrics"/>
 		</channel-groups>
 
+		<properties>
+			<property name="serialNumber"/>
+			<property name="firmwareVersion"/>
+		</properties>
+
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
