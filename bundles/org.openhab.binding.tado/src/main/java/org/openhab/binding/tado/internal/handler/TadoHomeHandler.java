@@ -39,6 +39,7 @@ import org.openhab.binding.tado.swagger.codegen.api.model.UserHomes;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -56,6 +57,7 @@ import org.slf4j.LoggerFactory;
  * The {@link TadoHomeHandler} is the bridge of all home-based things.
  *
  * @author Dennis Frommknecht - Initial contribution
+ * @author Andrew Fiddian-Green - OAuth RFC18628 authentication
  */
 @NonNullByDefault
 public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRefreshListener {
@@ -99,9 +101,9 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
     public void initialize() {
         configuration = getConfigAs(TadoHomeConfig.class);
 
-        String userName = configuration.username;
+        String username = configuration.username;
         String password = configuration.password;
-        boolean v1CredentialsMissing = userName == null || userName.isBlank() || password == null || password.isBlank();
+        boolean v1CredentialsMissing = username == null || username.isBlank() || password == null || password.isBlank();
 
         boolean suggestRfc8628 = false;
         suggestRfc8628 |= Boolean.TRUE.equals(configuration.useRfc8628);
@@ -109,18 +111,23 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
         suggestRfc8628 |= ZonedDateTime.now().isAfter(OAUTH_MANDATORY_FROM_DATE);
 
         if (suggestRfc8628) {
-            String account = Boolean.TRUE.equals(configuration.rfcWithAccount) //
-                    ? userName != null && !userName.isBlank() ? userName : null
+            String rfcUser = Boolean.TRUE.equals(configuration.rfcWithUser) //
+                    ? username != null && !username.isBlank() ? username : null
                     : null;
-            OAuthClientService oAuthClientService = tadoHandlerFactory.subscribeOAuthClientService(this, account);
+            OAuthClientService oAuthClientService = tadoHandlerFactory.subscribeOAuthClientService(this, rfcUser);
             oAuthClientService.addAccessTokenRefreshListener(this);
             this.api = new HomeApiFactory().create(oAuthClientService);
             this.oAuthClientService = oAuthClientService;
             logger.trace("initialize() api v2 created");
             confPendingText = CONF_PENDING_OAUTH_CREDS.formatted(TadoAuthenticationServlet.PATH,
-                    TadoAuthenticationServlet.PARAM_NAME_ACCOUNT, account != null ? account : "");
+                    TadoAuthenticationServlet.PARAM_NAME_USER, rfcUser != null ? rfcUser : "");
+            if (!Boolean.TRUE.equals(configuration.useRfc8628)) {
+                Configuration configuration = editConfiguration();
+                configuration.put(CONFIG_USE_RFC8628, Boolean.TRUE);
+                updateConfiguration(configuration);
+            }
         } else {
-            api = new HomeApiFactory().create(Objects.requireNonNull(userName), Objects.requireNonNull(password));
+            api = new HomeApiFactory().create(Objects.requireNonNull(username), Objects.requireNonNull(password));
             logger.trace("initialize() api v1 created");
             confPendingText = CONF_PENDING_USER_CREDS;
         }

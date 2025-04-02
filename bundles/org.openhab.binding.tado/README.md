@@ -17,13 +17,23 @@ There are two ways to authenticate it as follows:
 1. Online via the OAuth Device Code Grant Flow (RFC-8628) authentication process through the link provided at `http://[openhab-ip-address]:8080/tado`.
 1. Enter `username` and `password` credentials in the thing configuration parameters as shown in the table below.
 
-Note: after March 15th, 2025 online authentication is the tado° preferred method.
-It is possible that the `username` and `password` method may cease to work some time after this date.
+Note: after March 15th, 2025 online authentication is the tado° preferred (or even only) method.
+In other words the `username` and `password` method has probably ceased to work after that date.
 
-| Parameter  | Required | Description                                               |
-|------------|----------|-----------------------------------------------------------|
-| `username` | yes      | Username used to log in at [my.tado](https://my.tado.com) |
-| `password` | yes      | Password of the username                                  |
+| Parameter     | Optional | Description                                                                        |
+|---------------|----------|------------------------------------------------------------------------------------|
+| `useRfc8628`  | yes      | Determines if the binding shall use oAuth RFC-8628 authentication                  |
+| `rfcWithUser` | yes      | Determines if the user name shall be included in the oAuth RFC-8628 authentication |
+| `username`    | yes      | Username used to log in at [my.tado](https://my.tado.com)                          |
+| `password`    | yes      | Password of the username                                                           |
+| `homeId`      | yes      | Selects the Home Id to use (only needed if the account has multiple homes)         |
+
+The `rfcWithUser` setting is only needed if you have multiple tado° accounts.
+It forces the binding to use different authentication tokens for each respective account `username`.
+
+The `homeId` is only needed if you have multiple homes under a single tado° account.
+It forces the binding to read and write the data for the respective Home Id.
+If you do not have multiple homes, the binding always uses the first and only Home Id.
 
 Example `tado.things`
 

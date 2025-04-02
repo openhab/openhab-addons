@@ -43,7 +43,7 @@ public class TadoAuthenticationServlet extends HttpServlet {
     private static final String HTML_AUTH_ERROR_TEMPLATE = "<span style=\"color: #ff0000\">$REPLACE$</span>";
     private static final String HTML_AUTH_START_TEMPLATE = "<a href=\"$REPLACE$\"><span style=\"color: #cc3300\">click to authenticate</span></a>";
 
-    public static final String PARAM_NAME_ACCOUNT = "account";
+    public static final String PARAM_NAME_USER = "user";
     private static final String PARAM_NAME_OAUTH = "oauth";
     private static final String PARAM_VALUE_START = "start";
 
@@ -79,7 +79,7 @@ public class TadoAuthenticationServlet extends HttpServlet {
             throws ServletException, IOException {
         // if the query string contains "oauth=start" then serve the user authentication page
         if (PARAM_VALUE_START.equals(request.getParameter(PARAM_NAME_OAUTH))
-                && tadoHandlerFactory.hasOAuthClientService(request.getParameter(PARAM_NAME_ACCOUNT))) {
+                && tadoHandlerFactory.hasOAuthClientService(request.getParameter(PARAM_NAME_USER))) {
             serveUserAuthenticationPage(request, response);
         } else {
             serveStatusPage(request, response);
@@ -102,13 +102,13 @@ public class TadoAuthenticationServlet extends HttpServlet {
     private void serveStatusPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String dynamicHtml = null;
 
-        if (!tadoHandlerFactory.hasOAuthClientService(request.getParameter(PARAM_NAME_ACCOUNT))) {
+        if (!tadoHandlerFactory.hasOAuthClientService(request.getParameter(PARAM_NAME_USER))) {
             dynamicHtml = HTML_AUTH_NOT_REQUIRED;
         }
 
         if (dynamicHtml == null) {
             try {
-                if (tadoHandlerFactory.getAccessTokenResponse(request.getParameter(PARAM_NAME_ACCOUNT)) != null) {
+                if (tadoHandlerFactory.getAccessTokenResponse(request.getParameter(PARAM_NAME_USER)) != null) {
                     dynamicHtml = HTML_AUTH_PASSED;
                 }
             } catch (OAuthException e) {
@@ -120,8 +120,8 @@ public class TadoAuthenticationServlet extends HttpServlet {
         if (dynamicHtml == null) {
             if (request.getRequestURL() instanceof StringBuffer baseUrl) {
                 String dynamicUrl = baseUrl.append("?").append(PARAM_NAME_OAUTH).append("=").append(PARAM_VALUE_START)
-                        .append("&").append(PARAM_NAME_ACCOUNT).append("=")
-                        .append(request.getParameter(PARAM_NAME_ACCOUNT)).toString();
+                        .append("&").append(PARAM_NAME_USER).append("=").append(request.getParameter(PARAM_NAME_USER))
+                        .toString();
                 dynamicHtml = HTML_AUTH_START_TEMPLATE.replace(REPLACE_TAG, dynamicUrl);
             } else {
                 dynamicHtml = HTML_AUTH_ERROR_TEMPLATE.replace(REPLACE_TAG, ERROR_BAD_URL);
@@ -150,7 +150,7 @@ public class TadoAuthenticationServlet extends HttpServlet {
 
         try {
             DeviceCodeResponseDTO deviceCodeResponse = tadoHandlerFactory
-                    .getDeviceCodeResponse(request.getParameter(PARAM_NAME_ACCOUNT));
+                    .getDeviceCodeResponse(request.getParameter(PARAM_NAME_USER));
             String userVerificationUri = deviceCodeResponse.getVerificationUriComplete();
             if (userVerificationUri != null && !userVerificationUri.isBlank()) {
                 response.sendRedirect(userVerificationUri);

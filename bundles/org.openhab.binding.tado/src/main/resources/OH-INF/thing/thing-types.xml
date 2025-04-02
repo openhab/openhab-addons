@@ -19,9 +19,10 @@
 				<description>Determines if the binding shall use oAuth RFC-8628 authentication</description>
 			</parameter>
 
-			<parameter name="rfcWithAccount" type="boolean" required="false">
-				<label>RFC-8628 With Account</label>
-				<description>Determines if the binding shall include the account in oAuth RFC-8628 authentication</description>
+			<parameter name="rfcWithUser" type="boolean" required="false">
+				<label>RFC-8628 with User</label>
+				<description>Determines if the user name is included in the oAuth RFC-8628 authentication</description>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="username" type="text" required="false">
@@ -40,6 +41,7 @@
 			<parameter name="homeId" type="integer" required="false">
 				<label>Home Id</label>
 				<description>Selects the Home Id to be used (only needed if there are multiple homes)</description>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>

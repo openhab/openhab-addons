@@ -57,6 +57,7 @@ import org.slf4j.LoggerFactory;
  * handlers.
  *
  * @author Dennis Frommknecht - Initial contribution
+ * @author Andrew Fiddian-Green - OAuth RFC18628 authentication
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.tado", service = ThingHandlerFactory.class)
@@ -148,10 +149,10 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
      * If necessary also registers the {@link TadoAuthenticationServlet}.
      *
      * @param tadoHomeHandler the subscribing thing handler
-     * @param account the optional account name (may be null)
+     * @param user the optional user name (may be null)
      * @return an {@link OAuthClientService}
      */
-    public OAuthClientService subscribeOAuthClientService(TadoHomeHandler tadoHomeHandler, @Nullable String account) {
+    public OAuthClientService subscribeOAuthClientService(TadoHomeHandler tadoHomeHandler, @Nullable String user) {
         if (oAuthClientServiceSubscribers.isEmpty()) {
             try {
                 httpService.registerServlet(TadoAuthenticationServlet.PATH, httpServlet, null, null);
@@ -162,18 +163,18 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
 
         oAuthClientServiceSubscribers.add(tadoHomeHandler);
 
-        OAuthClientService oAuthClientService = oAuthClientServices.get(getServiceId(account));
+        OAuthClientService oAuthClientService = oAuthClientServices.get(getServiceId(user));
         if (oAuthClientService == null) {
-            oAuthClientService = oAuthFactory.getOAuthClientService(getServiceId(account));
+            oAuthClientService = oAuthFactory.getOAuthClientService(getServiceId(user));
             if (oAuthClientService != null) {
-                oAuthClientServices.put(getServiceId(account), oAuthClientService);
+                oAuthClientServices.put(getServiceId(user), oAuthClientService);
             }
         }
 
         if (oAuthClientService == null) {
-            oAuthClientService = oAuthFactory.createOAuthClientService(getServiceId(account), OAUTH_TOKEN_URL,
+            oAuthClientService = oAuthFactory.createOAuthClientService(getServiceId(user), OAUTH_TOKEN_URL,
                     OAUTH_DEVICE_URL, OAUTH_CLIENT_ID, null, OAUTH_SCOPE, false);
-            oAuthClientServices.put(getServiceId(account), oAuthClientService);
+            oAuthClientServices.put(getServiceId(user), oAuthClientService);
         }
 
         return oAuthClientService;
@@ -195,12 +196,12 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Returns a nullable {@link AccessTokenResponse} if the OAuthClientService exists.
      *
-     * @param account the optional account name (may be null)
+     * @param user the optional user name (may be null)
      * @return a nullable {@link AccessTokenResponse}.
      * @throws OAuthException on any error
      */
-    public @Nullable AccessTokenResponse getAccessTokenResponse(@Nullable String account) throws OAuthException {
-        OAuthClientService oAuthClientService = oAuthClientServices.get(getServiceId(account));
+    public @Nullable AccessTokenResponse getAccessTokenResponse(@Nullable String user) throws OAuthException {
+        OAuthClientService oAuthClientService = oAuthClientServices.get(getServiceId(user));
         if (oAuthClientService == null) {
             throw new OAuthException("Missing OAuthClientService");
         }
@@ -215,12 +216,12 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Returns a non null DeviceCodeResponse from the OAuthClientService if it exists.
      *
-     * @param account the optional account name (may be null)
+     * @param user the optional user name (may be null)
      * @return a {@link DeviceCodeResponseDTO}
      * @throws OAuthException if it cannot return a non null result
      */
-    public DeviceCodeResponseDTO getDeviceCodeResponse(@Nullable String account) throws OAuthException {
-        OAuthClientService oAuthClientService = oAuthClientServices.get(getServiceId(account));
+    public DeviceCodeResponseDTO getDeviceCodeResponse(@Nullable String user) throws OAuthException {
+        OAuthClientService oAuthClientService = oAuthClientServices.get(getServiceId(user));
         if (oAuthClientService == null) {
             throw new OAuthException("Missing OAuthClientService");
         }
@@ -234,18 +235,18 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Check if there is an OAuthClientService registered
      *
-     * @param account the optional account name (may be null)
+     * @param user the optional user name (may be null)
      */
-    public boolean hasOAuthClientService(@Nullable String account) {
-        return oAuthClientServices.containsKey(getServiceId(account));
+    public boolean hasOAuthClientService(@Nullable String user) {
+        return oAuthClientServices.containsKey(getServiceId(user));
     }
 
     /**
-     * Build a unique OAuth service id using the (optional) account if present and not blank
+     * Build a unique OAuth service id using the (optional) user name if present and not blank
      *
-     * @param account the optional account name (may be null)
+     * @param user the optional user name (may be null)
      */
-    private String getServiceId(@Nullable String account) {
-        return THING_TYPE_HOME.toString() + (account != null && !account.isBlank() ? ":" + account : "");
+    private String getServiceId(@Nullable String user) {
+        return THING_TYPE_HOME.toString() + (user != null && !user.isBlank() ? ":" + user : "");
     }
 }
