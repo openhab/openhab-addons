@@ -27,12 +27,14 @@ public enum CleanMode {
     EDGE,
     @SerializedName("spot")
     SPOT,
-    @SerializedName(value = "SpotArea", alternate = { "spotArea", "freeClean", "sceneClean" })
+    @SerializedName(value = "SpotArea", alternate = { "spotArea", "freeClean" })
     SPOT_AREA,
     @SerializedName(value = "CustomArea", alternate = { "customArea" })
     CUSTOM_AREA,
     @SerializedName("singleRoom")
     SINGLE_ROOM,
+    @SerializedName("sceneClean")
+    SCENE,
     @SerializedName("pause")
     PAUSE,
     @SerializedName("stop")
