@@ -693,21 +693,15 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         if (charging) {
             return CMD_CHARGE;
         }
-        switch (cleanMode) {
-            case AUTO:
-                return CMD_AUTO_CLEAN;
-            case SPOT_AREA:
-                return CMD_SPOT_AREA;
-            case PAUSE:
-                return CMD_PAUSE;
-            case STOP:
-                return CMD_STOP;
-            case RETURNING:
-                return CMD_CHARGE;
-            default:
-                break;
-        }
-        return null;
+        return switch (cleanMode) {
+            case AUTO -> CMD_AUTO_CLEAN;
+            case SPOT_AREA -> CMD_SPOT_AREA;
+            case SCENE -> CMD_SCENE;
+            case PAUSE -> CMD_PAUSE;
+            case STOP -> CMD_STOP;
+            case RETURNING -> CMD_CHARGE;
+            default -> null;
+        };
     }
 
     private State stringToState(@Nullable String value) {
@@ -771,6 +765,14 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             }
             logger.info("{}: customArea command needs to have the form customArea:<x1>;<y1>;<x2>;<y2>[:x2]",
                     serialNumber);
+        }
+        if (command.startsWith(CMD_SCENE) && device.hasCapability(DeviceCapability.CLEANING_SCENES)) {
+            String[] splitted = command.split(":");
+            if (splitted.length == 2) {
+                logger.info("{}: scene command is not yet supported", serialNumber);
+                // return new SceneCleaningCommand(splitted[1]);
+            }
+            // logger.info("{}: scene command needs to have the form scene:<sceneName>", serialNumber);
         }
 
         return null;

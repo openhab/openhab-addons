@@ -84,6 +84,7 @@ public class EcovacsBindingConstants {
     public static final String CMD_CHARGE = "charge";
     public static final String CMD_STOP = "stop";
     public static final String CMD_SPOT_AREA = "spotArea";
+    public static final String CMD_SCENE = "scene";
     public static final String CMD_CUSTOM_AREA = "customArea";
 
     public static final StateOptionMapping<CleanMode> CLEAN_MODE_MAPPING = StateOptionMapping.of(

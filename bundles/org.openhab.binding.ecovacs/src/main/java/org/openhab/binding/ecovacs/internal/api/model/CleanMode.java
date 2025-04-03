@@ -43,7 +43,7 @@ public enum CleanMode {
     RETURNING,
     @SerializedName("washing")
     WASHING,
-    @SerializedName("drying")
+    @SerializedName(value = "drying", alternate = { "spin-dry" })
     DRYING,
     @SerializedName("idle")
     IDLE;
