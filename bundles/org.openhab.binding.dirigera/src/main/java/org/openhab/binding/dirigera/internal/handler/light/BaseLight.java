@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.config.ColorLightConfiguration;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
-import org.openhab.binding.dirigera.internal.interfaces.LightListener;
+import org.openhab.binding.dirigera.internal.interfaces.PowerListener;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class BaseLight extends BaseHandler implements LightListener {
+public class BaseLight extends BaseHandler implements PowerListener {
     private final Logger logger = LoggerFactory.getLogger(BaseLight.class);
 
     protected ColorLightConfiguration lightConfig = new ColorLightConfiguration();

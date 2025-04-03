@@ -226,7 +226,7 @@ public class MotionSensorHandler extends BaseHandler {
                                                         updateState(
                                                                 new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START),
                                                                 UnDefType.UNDEF);
-                                                        logger.info(
+                                                        logger.warn(
                                                                 "MOTION_SENSOR Location not activated in IKEA App - cannot follow sun");
                                                     }
                                                     Instant sunriseDateTime = gateway().getSunriseDateTime();
@@ -238,7 +238,7 @@ public class MotionSensorHandler extends BaseHandler {
                                                         updateState(
                                                                 new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_END),
                                                                 UnDefType.UNDEF);
-                                                        logger.info(
+                                                        logger.warn(
                                                                 "MOTION_SENSOR Location not activated in IKEA App - cannot follow sun");
                                                     }
                                                 } else {

@@ -75,7 +75,7 @@ public class BlindHandler extends BaseHandler {
                                 attributes.put(targetProperty, commandAttribute);
                                 super.sendAttributes(attributes);
                             } else {
-                                logger.info("DIRIGERA BLIND_DEVICE Blind state unknown {}", state.intValue());
+                                logger.warn("DIRIGERA BLIND_DEVICE Blind state unknown {}", state.intValue());
                             }
                         }
                         break;

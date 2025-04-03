@@ -422,10 +422,10 @@ public class DirigeraModel implements Model {
                         } else if (capabilityList.contains("isOn")) {
                             return THING_TYPE_SWITCH_LIGHT;
                         } else {
-                            logger.info("DIRIGERA MODEL cannot identify light {}", data);
+                            logger.warn("DIRIGERA MODEL cannot identify light {}", data);
                         }
                     } else {
-                        logger.info("DIRIGERA MODEL cannot identify light {}", data);
+                        logger.warn("DIRIGERA MODEL cannot identify light {}", data);
                     }
                     break;
                 case DEVICE_TYPE_MOTION_SENSOR:

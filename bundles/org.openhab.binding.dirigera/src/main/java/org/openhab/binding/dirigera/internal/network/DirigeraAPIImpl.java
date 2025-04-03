@@ -160,7 +160,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             if (responseStatus == 200 || responseStatus == 202) {
                 logger.debug("DIRIGERA API send finished {} with {} {}", url, dataArray, responseStatus);
             } else {
-                logger.info("DIRIGERA API send failed {} with {} {}", url, dataArray, responseStatus);
+                logger.warn("DIRIGERA API send failed {} with {} {}", url, dataArray, responseStatus);
             }
             return responseStatus;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
@@ -240,19 +240,19 @@ public class DirigeraAPIImpl implements DirigeraAPI {
                             .send();
                     responseStatus = response.getStatus();
                     if (responseStatus == 200 || responseStatus == 202) {
-                        logger.info("DIRIGERA API send {} to {} delivered", payload, url);
+                        logger.debug("DIRIGERA API send {} to {} delivered", payload, url);
                         String responseString = response.getContentAsString();
                         JSONObject responseJSON = new JSONObject(responseString);
                         responseUUID = responseJSON.getString(PROPERTY_DEVICE_ID);
                         break;
                     } else {
-                        logger.info("DIRIGERA API send {} to {} failed with status {}", payload, url,
+                        logger.warn("DIRIGERA API send {} to {} failed with status {}", payload, url,
                                 response.getStatus());
                     }
                 } catch (InterruptedException | TimeoutException | ExecutionException | JSONException e) {
                     logger.warn("DIRIGERA API call to {} failed {}", url, e.getMessage());
                 }
-                logger.info("DIRIGERA API createScene failed {} retries remaining", retryCounter);
+                logger.debug("DIRIGERA API createScene failed {} retries remaining", retryCounter);
                 retryCounter--;
             }
             return responseUUID;
@@ -278,12 +278,12 @@ public class DirigeraAPIImpl implements DirigeraAPI {
                         logger.debug("DIRIGERA API delete {} performed", url);
                         break;
                     } else {
-                        logger.info("DIRIGERA API send {} failed with status {}", url, response.getStatus());
+                        logger.warn("DIRIGERA API send {} failed with status {}", url, response.getStatus());
                     }
                 } catch (InterruptedException | TimeoutException | ExecutionException e) {
                     logger.warn("DIRIGERA API call to {} failed {}", url, e.getMessage());
                 }
-                logger.info("DIRIGERA API deleteScene failed with status {}, {} retries remaining", responseStatus,
+                logger.debug("DIRIGERA API deleteScene failed with status {}, {} retries remaining", responseStatus,
                         retryCounter);
                 retryCounter--;
             }

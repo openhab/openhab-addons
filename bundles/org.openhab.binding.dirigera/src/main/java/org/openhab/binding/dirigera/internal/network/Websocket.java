@@ -182,7 +182,7 @@ public class Websocket {
                 statistics.put(PING_LATENCY, durationMS);
                 statistics.put(PING_LAST, Instant.now());
             } else {
-                logger.info("DIRIGERA WS receiced pong without ping {}", paylodString);
+                logger.debug("DIRIGERA WS receiced pong without ping {}", paylodString);
             }
         } else if (Frame.Type.PING.equals(frame.getType())) {
             session.ifPresentOrElse((session) -> {
@@ -218,7 +218,7 @@ public class Websocket {
     @OnWebSocketError
     public void onError(Throwable t) {
         String message = t.getMessage();
-        logger.info("DIRIGERA WS onError {}", message);
+        logger.warn("DIRIGERA WS onError {}", message);
         this.session = Optional.empty();
         if (message == null) {
             message = "unknown";

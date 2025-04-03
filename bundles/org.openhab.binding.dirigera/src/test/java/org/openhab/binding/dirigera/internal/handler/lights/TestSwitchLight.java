@@ -35,8 +35,6 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link TestSwitchLight} Tests device handler creation, initializing and refresh of channels
@@ -45,7 +43,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 class TestSwitchLight {
-    private final Logger logger = LoggerFactory.getLogger(TestSwitchLight.class);
     String deviceId = "eb9a4367-9e23-4d37-9566-401a7ae7caf0_2";
     ThingTypeUID thingTypeUID = THING_TYPE_SWITCH_LIGHT;
 

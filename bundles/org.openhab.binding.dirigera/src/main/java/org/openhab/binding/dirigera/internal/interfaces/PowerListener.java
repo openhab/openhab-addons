@@ -16,12 +16,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.OnOffType;
 
 /**
- * {@link LightListener} for notifications of device power events
+ * {@link PowerListener} for notifications of device power events
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public interface LightListener {
+public interface PowerListener {
 
+    /**
+     * Informs if power state of light source has changed.
+     *
+     * @param power new power state
+     * @param requested flag showing if new power state was requested by OH user command or from outside (e.g wall
+     *            mounted switch)
+     */
     void powerChanged(OnOffType power, boolean requested);
 }

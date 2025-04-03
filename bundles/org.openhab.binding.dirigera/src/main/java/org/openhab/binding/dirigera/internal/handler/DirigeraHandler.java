@@ -144,8 +144,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
         websocket = new Websocket(this, insecureClient);
 
         List<CommandOption> locationOptions = new ArrayList<>();
-        // not working right now
-        // locationOptions.add(new CommandOption("", "Remove location"));
+        locationOptions.add(new CommandOption("", "Remove location"));
         PointType location = locationProvider.getLocation();
         if (location != null) {
             locationOptions.add(new CommandOption(location.toFullString(), "Home location"));
@@ -184,7 +183,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                     try {
                         coordinatesPoint = new PointType(string.toFullString());
                     } catch (IllegalArgumentException exception) {
-                        logger.info("DIRIGERA HANDLER wrong home location format {} : {}", string,
+                        logger.warn("DIRIGERA HANDLER wrong home location format {} : {}", string,
                                 exception.getMessage());
                     }
                 }
@@ -412,9 +411,9 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                     .header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded")
                     .content(new StringContentProvider("application/x-www-form-urlencoded", urlEncoded,
                             StandardCharsets.UTF_8))
-                    .followRedirects(true);
+                    .followRedirects(true).timeout(10, TimeUnit.SECONDS);
 
-            ContentResponse response = tokenRequest.timeout(10, TimeUnit.SECONDS).send();
+            ContentResponse response = tokenRequest.send();
             logger.debug("DIRIGERA HANDLER token response {} : {}", response.getStatus(),
                     response.getContentAsString());
             int responseStatus = response.getStatus();
@@ -723,7 +722,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
         if (websocket.isRunning()) {
             Map<String, Instant> pingPongMap = websocket.getPingPongMap();
             if (pingPongMap.size() > 1) { // at least 2 shall be missing before watchdog trigger
-                logger.info("DIRIGERA HANDLER Watchdog Ping Pong Panic - {} pings not answered", pingPongMap.size());
+                logger.debug("DIRIGERA HANDLER Watchdog Ping Pong Panic - {} pings not answered", pingPongMap.size());
                 websocket.stop();
                 String message = "ping not answered";
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

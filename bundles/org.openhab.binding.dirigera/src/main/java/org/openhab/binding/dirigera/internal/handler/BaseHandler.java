@@ -32,8 +32,8 @@ import org.openhab.binding.dirigera.internal.config.BaseDeviceConfiguration;
 import org.openhab.binding.dirigera.internal.exception.GatewayException;
 import org.openhab.binding.dirigera.internal.interfaces.DebugHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
-import org.openhab.binding.dirigera.internal.interfaces.LightListener;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
+import org.openhab.binding.dirigera.internal.interfaces.PowerListener;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -70,7 +70,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BaseHandler extends BaseThingHandler implements DebugHandler {
     private final Logger logger = LoggerFactory.getLogger(BaseHandler.class);
-    private List<LightListener> powerListeners = new ArrayList<>();
+    private List<PowerListener> powerListeners = new ArrayList<>();
     private @Nullable Gateway gateway;
 
     // to be overwritten by child class in order to route the updates to the right instance
@@ -689,13 +689,13 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
                 || !gateway().model().getDevicesForTypes(linkCandidateTypes).isEmpty());
     }
 
-    public void addPowerListener(LightListener listener) {
+    public void addPowerListener(PowerListener listener) {
         synchronized (powerListeners) {
             powerListeners.add(listener);
         }
     }
 
-    public void removePowerListener(LightListener listener) {
+    public void removePowerListener(PowerListener listener) {
         synchronized (powerListeners) {
             powerListeners.remove(listener);
         }

@@ -38,6 +38,7 @@ import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.network.DirigeraAPIImpl;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.util.ColorUtil;
 
 /**
  * {@link TestGeneric} some basic tests
@@ -100,6 +101,12 @@ class TestGeneric {
         hsb = ColorLightHandler.getHSBTemperature(5000);
         assertEquals(26, hsb.getHue().intValue(), "HSB Color Hue");
         assertEquals(19, hsb.getSaturation().intValue(), "HSB Saturation");
+
+        for (int i = 1000; i < 10000; i = i + 100) {
+            HSBType selfHSB = ColorLightHandler.getHSBTemperature(i);
+            HSBType utilHSB = ColorUtil.xyToHsb(ColorUtil.kelvinToXY(i));
+            System.out.println(i + " : " + selfHSB + " : " + utilHSB);
+        }
     }
 
     @Test
