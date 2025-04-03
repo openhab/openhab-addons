@@ -24,7 +24,7 @@ import org.openhab.core.library.types.OnOffType;
 public interface PowerListener {
 
     /**
-     * Informs if power state of light source has changed.
+     * Informs if power state of device has changed.
      *
      * @param power new power state
      * @param requested flag showing if new power state was requested by OH user command or from outside (e.g wall

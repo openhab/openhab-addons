@@ -15,8 +15,8 @@ package org.openhab.binding.dirigera.internal.handler.sensor;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 public class MotionSensorHandler extends BaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(MotionSensorHandler.class);
-    private final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
+    private final String timeFormat = "HH:mm";
     private String startTime = "20:00";
     private String endTime = "07:00";
 
@@ -114,7 +114,7 @@ public class MotionSensorHandler extends BaseHandler {
                     // take string as it is, no consistency check
                     startTime = string.toFullString();
                 } else if (command instanceof DateTimeType dateTime) {
-                    startTime = dateTime.getZonedDateTime().format(timeFormat);
+                    startTime = dateTime.format(timeFormat, ZoneId.systemDefault());
                 }
                 gateway().api().sendPatch(config.id, new JSONObject(String.format(startSchedule, startTime, endTime)));
                 break;
@@ -124,7 +124,7 @@ public class MotionSensorHandler extends BaseHandler {
                     endTime = string.toFullString();
                     // take string as it is, no consistency check
                 } else if (command instanceof DateTimeType dateTime) {
-                    endTime = dateTime.getZonedDateTime().format(timeFormat);
+                    endTime = dateTime.format(timeFormat, ZoneId.systemDefault());
                 }
                 gateway().api().sendPatch(config.id, new JSONObject(String.format(endSchedule, startTime, endTime)));
                 break;
