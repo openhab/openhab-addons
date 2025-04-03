@@ -58,15 +58,6 @@ public class Cloud {
     private HttpClient httpClient;
 
     /**
-     * Client for Http requests
-     * 
-     * @return httpClient
-     */
-    public HttpClient getHttpClient() {
-        return httpClient;
-    }
-
-    /**
      * Sets Http Client
      * 
      * @param httpClient Http Client
@@ -76,15 +67,6 @@ public class Cloud {
     }
 
     private String errMsg = "";
-
-    /**
-     * Gets error message
-     * 
-     * @return errMsg
-     */
-    public String getErrMsg() {
-        return errMsg;
-    }
 
     private @Nullable String accessToken = "";
 
@@ -227,8 +209,7 @@ public class Cloud {
             String msg = result.get("msg").getAsString();
             if (code != 0) {
                 errMsg = msg;
-                handleApiError(code, msg);
-                logger.warn("Error logging to Cloud: {}", msg);
+                logger.warn("Error {} logging to Cloud: {}", code, msg);
                 return null;
             } else {
                 logger.debug("Api response ok: {} ({})", code, msg);
@@ -358,9 +339,5 @@ public class Cloud {
         }
         loginId = response.get("loginId").getAsString();
         return true;
-    }
-
-    private void handleApiError(int asInt, String asString) {
-        logger.debug("Api error in Cloud class");
     }
 }
