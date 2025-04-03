@@ -69,7 +69,7 @@
 		<category>Moisture</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Moisture</tag>
+			<tag>Rain</tag>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
