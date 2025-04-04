@@ -147,16 +147,19 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
         config = getConfigAs(FroniusWattpilotConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
 
-        String hostname = config.hostname;
-        String password = config.password;
+        FroniusWattpilotConfiguration config = this.config;
+        if (config == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            return;
+        }
 
-        if (hostname == null || hostname.isBlank()) {
+        if (config.hostname.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.no-host");
             return;
         }
 
-        if (password == null || password.isBlank()) {
+        if (config.password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.no-password");
             return;
