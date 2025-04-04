@@ -69,7 +69,6 @@
 		<category>Moisture</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Humidity</tag>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
