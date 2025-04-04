@@ -20,6 +20,8 @@
 			<property name="firmwareVersion"/>
 		</properties>
 
+		<representation-property>hostname</representation-property>
+
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>

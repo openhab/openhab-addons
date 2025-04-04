@@ -38,7 +38,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.froniuswattpilot", service = ThingHandlerFactory.class)
 public class FroniusWattpilotHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE);
+    static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_WATTPILOT);
 
     private final HttpClient httpClient;
 
@@ -57,7 +57,7 @@ public class FroniusWattpilotHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE.equals(thingTypeUID)) {
+        if (THING_TYPE_WATTPILOT.equals(thingTypeUID)) {
             return new FroniusWattpilotHandler(thing, httpClient);
         }
 
