@@ -64,9 +64,15 @@
 		<label>Dimmable Light</label>
 		<category>Lightbulb</category>
 		<channels>
-			<channel typeId="system.brightness" id="brightness"/>
-			<channel typeId="ontime" id="ontime"/>
-			<channel typeId="alert" id="alert"/>
+			<channel typeId="system.brightness" id="brightness">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="ontime" id="ontime">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="alert" id="alert">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
 		</channels>
 
 		<properties>
@@ -86,10 +92,18 @@
 		<description>A dimmable light with adjustable color temperature.</description>
 		<category>Lightbulb</category>
 		<channels>
-			<channel typeId="system.brightness" id="brightness"/>
-			<channel typeId="system.color-temperature-abs" id="color_temperature"/>
-			<channel typeId="ontime" id="ontime"/>
-			<channel typeId="alert" id="alert"/>
+			<channel typeId="system.brightness" id="brightness">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="system.color-temperature-abs" id="color_temperature">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="ontime" id="ontime">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="alert" id="alert">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
 		</channels>
 
 		<properties>
@@ -109,9 +123,15 @@
 		<description>A dimmable light with adjustable color.</description>
 		<category>Lightbulb</category>
 		<channels>
-			<channel typeId="system.color" id="color"/>
-			<channel typeId="ontime" id="ontime"/>
-			<channel typeId="alert" id="alert"/>
+			<channel typeId="system.color" id="color">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="ontime" id="ontime">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="alert" id="alert">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
 		</channels>
 
 		<properties>
@@ -131,10 +151,18 @@
 		<description>A dimmable light with adjustable color.</description>
 		<category>Lightbulb</category>
 		<channels>
-			<channel typeId="system.color" id="color"/>
-			<channel typeId="system.color-temperature-abs" id="color_temperature"/>
-			<channel typeId="ontime" id="ontime"/>
-			<channel typeId="alert" id="alert"/>
+			<channel typeId="system.color" id="color">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="system.color-temperature-abs" id="color_temperature">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="ontime" id="ontime">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel typeId="alert" id="alert">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
 		</channels>
 
 		<properties>
