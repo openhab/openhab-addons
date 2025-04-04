@@ -44,8 +44,7 @@ public class FroniusWattpilotHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public FroniusWattpilotHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.createHttpClient("fronius-wattpilot");
-        httpClient.setIdleTimeout(30L * 1000);
+        this.httpClient = httpClientFactory.createHttpClient("openhab-fronius-wattpilot");
     }
 
     @Override
