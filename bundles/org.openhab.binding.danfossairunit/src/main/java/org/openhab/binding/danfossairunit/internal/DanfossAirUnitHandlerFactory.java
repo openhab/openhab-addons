@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.danfossairunit.internal;
 
-import static org.openhab.binding.danfossairunit.internal.DanfossAirUnitBindingConstants.THING_TYPE_AIRUNIT;
-
-import java.util.Set;
+import static org.openhab.binding.danfossairunit.internal.DanfossAirUnitBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,8 +37,6 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.danfossairunit", service = ThingHandlerFactory.class)
 public class DanfossAirUnitHandlerFactory extends BaseThingHandlerFactory {
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AIRUNIT);
 
     private final TimeZoneProvider timeZoneProvider;
 

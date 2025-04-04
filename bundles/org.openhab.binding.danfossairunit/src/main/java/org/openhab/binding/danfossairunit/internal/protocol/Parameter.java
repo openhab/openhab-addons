@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum Parameter {
+    CCM_SERIAL_NUMBER(Endpoint.ENDPOINT_0, Flag.READ, (short) 22),
     ROOM_TEMPERATURE_CALCULATED(Endpoint.ENDPOINT_0, Flag.READ, (short) 5270),
     ROOM_TEMPERATURE(Endpoint.ENDPOINT_1, Flag.READ, (short) 768),
     BATTERY_LIFE(Endpoint.ENDPOINT_1, Flag.READ, (short) 783),
@@ -36,6 +37,8 @@ public enum Parameter {
     CURRENT_TIME(Endpoint.ENDPOINT_1, Flag.READ, (short) 5600),
     UNIT_NAME(Endpoint.ENDPOINT_1, Flag.READ, (short) 5605),
     DEFROST_STATUS(Endpoint.ENDPOINT_1, Flag.READ, (short) 5617),
+    UNIT_HARDWARE_REVISION(Endpoint.ENDPOINT_4, Flag.READ, (short) 34),
+    UNIT_SOFTWARE_REVISION(Endpoint.ENDPOINT_4, Flag.READ, (short) 35),
     UNIT_SERIAL(Endpoint.ENDPOINT_4, Flag.READ, (short) 37),
     SUPPLY_FAN_STEP(Endpoint.ENDPOINT_4, Flag.READ, (short) 5160),
     EXTRACT_FAN_STEP(Endpoint.ENDPOINT_4, Flag.READ, (short) 5161),

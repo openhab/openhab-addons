@@ -76,16 +76,27 @@ public class DanfossAirUnit {
         communicationController.sendRobustRequest(parameter, valueArray);
     }
 
-    private short getShort(Parameter parameter) throws IOException {
+    private short getShort(Parameter parameter) throws IOException, UnexpectedResponseValueException {
         byte[] result = communicationController.sendRobustRequest(parameter);
+        if (result.length < 2) {
+            throw new UnexpectedResponseValueException("Response too short: %d".formatted(result.length));
+        }
         return (short) ((result[0] << 8) | (result[1] & 0xff));
+    }
+
+    private int getInt(Parameter parameter) throws IOException, UnexpectedResponseValueException {
+        byte[] result = communicationController.sendRobustRequest(parameter);
+        if (result.length < 4) {
+            throw new UnexpectedResponseValueException("Response too short: %d".formatted(result.length));
+        }
+        return ((result[0] & 0xff) << 24) | ((result[1] & 0xff) << 16) | ((result[2] & 0xff) << 8) | (result[3] & 0xff);
     }
 
     private float getTemperature(Parameter parameter) throws IOException, UnexpectedResponseValueException {
         short shortTemp = getShort(parameter);
         float temp = ((float) shortTemp) / 100;
         if (temp <= -274 || temp > 100) {
-            throw new UnexpectedResponseValueException(String.format("Invalid temperature: %s", temp));
+            throw new UnexpectedResponseValueException("Invalid temperature: %s".formatted(temp));
         }
         return temp;
     }
@@ -96,6 +107,9 @@ public class DanfossAirUnit {
     }
 
     private Instant asInstant(byte[] data) throws UnexpectedResponseValueException {
+        if (data.length < 6) {
+            throw new UnexpectedResponseValueException("Response too short: %d".formatted(data.length));
+        }
         int second = data[0];
         int minute = data[1];
         int hour = data[2] & 0x1f;
@@ -106,7 +120,7 @@ public class DanfossAirUnit {
             return ZonedDateTime.of(year, month, day, hour, minute, second, 0, timeZoneProvider.getTimeZone())
                     .toInstant();
         } catch (DateTimeException e) {
-            String msg = String.format("Ignoring invalid timestamp %s.%s.%s %s:%s:%s", day, month, year, hour, minute,
+            String msg = "Ignoring invalid timestamp %s.%s.%s %s:%s:%s".formatted(day, month, year, hour, minute,
                     second);
             throw new UnexpectedResponseValueException(msg, e);
         }
@@ -125,8 +139,20 @@ public class DanfossAirUnit {
         return getString(Parameter.UNIT_NAME);
     }
 
-    public String getUnitSerialNumber() throws IOException {
+    public String getUnitSerialNumber() throws IOException, UnexpectedResponseValueException {
         return String.valueOf(getShort(Parameter.UNIT_SERIAL));
+    }
+
+    public String getCCMSerialNumber() throws IOException, UnexpectedResponseValueException {
+        return String.valueOf(getInt(Parameter.CCM_SERIAL_NUMBER));
+    }
+
+    public String getHardwareRevision() throws IOException, UnexpectedResponseValueException {
+        return String.valueOf(getShort(Parameter.UNIT_HARDWARE_REVISION));
+    }
+
+    public String getSoftwareRevision() throws IOException, UnexpectedResponseValueException {
+        return String.valueOf(getShort(Parameter.UNIT_SOFTWARE_REVISION));
     }
 
     public StringType getMode() throws IOException {
@@ -136,16 +162,16 @@ public class DanfossAirUnit {
     public PercentType getManualFanStep() throws IOException, UnexpectedResponseValueException {
         byte value = getByte(Parameter.MANUAL_FAN_SPEED_STEP);
         if (value < 0 || value > 10) {
-            throw new UnexpectedResponseValueException(String.format("Invalid fan step: %d", value));
+            throw new UnexpectedResponseValueException("Invalid fan step: %d".formatted(value));
         }
         return new PercentType(BigDecimal.valueOf(value * 10));
     }
 
-    public QuantityType<Frequency> getSupplyFanSpeed() throws IOException {
+    public QuantityType<Frequency> getSupplyFanSpeed() throws IOException, UnexpectedResponseValueException {
         return new QuantityType<>(BigDecimal.valueOf(getShort(Parameter.SUPPLY_FAN_SPEED)), Units.RPM);
     }
 
-    public QuantityType<Frequency> getExtractFanSpeed() throws IOException {
+    public QuantityType<Frequency> getExtractFanSpeed() throws IOException, UnexpectedResponseValueException {
         return new QuantityType<>(BigDecimal.valueOf(getShort(Parameter.EXTRACT_FAN_SPEED)), Units.RPM);
     }
 

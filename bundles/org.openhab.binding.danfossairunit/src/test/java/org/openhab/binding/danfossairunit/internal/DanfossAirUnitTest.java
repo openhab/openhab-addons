@@ -47,7 +47,7 @@ public class DanfossAirUnitTest {
 
     @Test
     void getUnitNameIsReturned() throws IOException {
-        byte[] response = new byte[] { (byte) 0x05, (byte) 'w', (byte) '2', (byte) '/', (byte) 'a', (byte) '2' };
+        byte[] response = new byte[] { 0x05, (byte) 'w', (byte) '2', (byte) '/', (byte) 'a', (byte) '2' };
         when(communicationController.sendRobustRequest(Parameter.UNIT_NAME)).thenReturn(response);
         var airUnit = new DanfossAirUnit(communicationController, timeZoneProvider);
         assertEquals("w2/a2", airUnit.getUnitName());
@@ -72,16 +72,24 @@ public class DanfossAirUnitTest {
     @Test
     void getSupplyTemperatureWhenNearestNeighborIsBelowRoundsDown()
             throws IOException, UnexpectedResponseValueException {
-        byte[] response = new byte[] { (byte) 0x09, (byte) 0xf0 }; // 0x09f0 = 2544 => 25.44
+        byte[] response = new byte[] { 0x09, (byte) 0xf0 }; // 0x09f0 = 2544 => 25.44
         when(communicationController.sendRobustRequest(Parameter.SUPPLY_TEMPERATURE)).thenReturn(response);
         var airUnit = new DanfossAirUnit(communicationController, timeZoneProvider);
         assertEquals(new QuantityType<>("25.4 °C"), airUnit.getSupplyTemperature());
     }
 
     @Test
+    void getSupplyTemperatureWhenResponseTooShortThrows() throws IOException, UnexpectedResponseValueException {
+        byte[] response = new byte[] { 0x09 };
+        when(communicationController.sendRobustRequest(Parameter.SUPPLY_TEMPERATURE)).thenReturn(response);
+        var airUnit = new DanfossAirUnit(communicationController, timeZoneProvider);
+        assertThrows(UnexpectedResponseValueException.class, () -> airUnit.getSupplyTemperature());
+    }
+
+    @Test
     void getSupplyTemperatureWhenBothNeighborsAreEquidistantRoundsUp()
             throws IOException, UnexpectedResponseValueException {
-        byte[] response = new byte[] { (byte) 0x09, (byte) 0xf1 }; // 0x09f1 = 2545 => 25.45
+        byte[] response = new byte[] { 0x09, (byte) 0xf1 }; // 0x09f1 = 2545 => 25.45
         when(communicationController.sendRobustRequest(Parameter.SUPPLY_TEMPERATURE)).thenReturn(response);
         var airUnit = new DanfossAirUnit(communicationController, timeZoneProvider);
         assertEquals(new QuantityType<>("25.5 °C"), airUnit.getSupplyTemperature());
@@ -97,7 +105,7 @@ public class DanfossAirUnitTest {
 
     @Test
     void getSupplyTemperatureWhenAboveValidRangeThrows() throws IOException {
-        byte[] response = new byte[] { (byte) 0x27, (byte) 0x11 }; // 0x2711 = 10001 => 100,01
+        byte[] response = new byte[] { 0x27, 0x11 }; // 0x2711 = 10001 => 100,01
         when(communicationController.sendRobustRequest(Parameter.SUPPLY_TEMPERATURE)).thenReturn(response);
         var airUnit = new DanfossAirUnit(communicationController, timeZoneProvider);
         assertThrows(UnexpectedResponseValueException.class, () -> airUnit.getSupplyTemperature());
@@ -105,8 +113,8 @@ public class DanfossAirUnitTest {
 
     @Test
     void getCurrentTimeWhenWellFormattedIsParsed() throws IOException, UnexpectedResponseValueException {
-        byte[] response = new byte[] { (byte) 0x03, (byte) 0x02, (byte) 0x0f, (byte) 0x1d, (byte) 0x08, (byte) 0x15 }; // 29.08.21
-                                                                                                                       // 15:02:03
+        byte[] response = new byte[] { 0x03, 0x02, 0x0f, 0x1d, 0x08, 0x15 }; // 29.08.21
+                                                                             // 15:02:03
         when(communicationController.sendRobustRequest(Parameter.CURRENT_TIME)).thenReturn(response);
         when(timeZoneProvider.getTimeZone()).thenReturn(ZoneId.of("Europe/Copenhagen"));
         var airUnit = new DanfossAirUnit(communicationController, timeZoneProvider);
@@ -116,8 +124,8 @@ public class DanfossAirUnitTest {
 
     @Test
     void getCurrentTimeWhenInvalidDateThrows() throws IOException {
-        byte[] response = new byte[] { (byte) 0x03, (byte) 0x02, (byte) 0x0f, (byte) 0x20, (byte) 0x08, (byte) 0x15 }; // 32.08.21
-                                                                                                                       // 15:02:03
+        byte[] response = new byte[] { 0x03, 0x02, 0x0f, 0x20, 0x08, 0x15 }; // 32.08.21
+                                                                             // 15:02:03
         when(communicationController.sendRobustRequest(Parameter.CURRENT_TIME)).thenReturn(response);
         when(timeZoneProvider.getTimeZone()).thenReturn(ZoneId.of("Europe/Copenhagen"));
         var airUnit = new DanfossAirUnit(communicationController, timeZoneProvider);
@@ -125,8 +133,16 @@ public class DanfossAirUnitTest {
     }
 
     @Test
+    void getCurrentTimeWhenResponseTooShortThrows() throws IOException {
+        byte[] response = new byte[] { 0x03, 0x02, 0x0f, 0x20, 0x08 };
+        when(communicationController.sendRobustRequest(Parameter.CURRENT_TIME)).thenReturn(response);
+        var airUnit = new DanfossAirUnit(communicationController, timeZoneProvider);
+        assertThrows(UnexpectedResponseValueException.class, () -> airUnit.getCurrentTime());
+    }
+
+    @Test
     void getBoostWhenZeroIsOff() throws IOException {
-        byte[] response = new byte[] { (byte) 0x00 };
+        byte[] response = new byte[] { 0x00 };
         when(communicationController.sendRobustRequest(Parameter.BOOST)).thenReturn(response);
         var airUnit = new DanfossAirUnit(communicationController, timeZoneProvider);
         assertEquals(OnOffType.OFF, airUnit.getBoost());
@@ -143,15 +159,15 @@ public class DanfossAirUnitTest {
     @Test
     void getManualFanStepWhenWithinValidRangeIsConvertedIntoPercent()
             throws IOException, UnexpectedResponseValueException {
-        byte[] response = new byte[] { (byte) 0x05 };
+        byte[] response = new byte[] { 0x05 };
         when(communicationController.sendRobustRequest(Parameter.MANUAL_FAN_SPEED_STEP)).thenReturn(response);
         var airUnit = new DanfossAirUnit(communicationController, timeZoneProvider);
         assertEquals(new PercentType(50), airUnit.getManualFanStep());
     }
 
     @Test
-    void getSupplyFanSpeedIsReturnedAsRPM() throws IOException {
-        byte[] response = new byte[] { (byte) 0x04, (byte) 0xda };
+    void getSupplyFanSpeedIsReturnedAsRPM() throws IOException, UnexpectedResponseValueException {
+        byte[] response = new byte[] { 0x04, (byte) 0xda };
         when(communicationController.sendRobustRequest(Parameter.SUPPLY_FAN_SPEED)).thenReturn(response);
         var airUnit = new DanfossAirUnit(communicationController, timeZoneProvider);
         assertEquals(new QuantityType<>(1242, Units.RPM), airUnit.getSupplyFanSpeed());
@@ -159,7 +175,7 @@ public class DanfossAirUnitTest {
 
     @Test
     void getManualFanStepWhenOutOfRangeThrows() throws IOException {
-        byte[] response = new byte[] { (byte) 0x0b };
+        byte[] response = new byte[] { 0x0b };
         when(communicationController.sendRobustRequest(Parameter.MANUAL_FAN_SPEED_STEP)).thenReturn(response);
         var airUnit = new DanfossAirUnit(communicationController, timeZoneProvider);
         assertThrows(UnexpectedResponseValueException.class, () -> airUnit.getManualFanStep());
@@ -171,5 +187,21 @@ public class DanfossAirUnitTest {
         when(communicationController.sendRobustRequest(Parameter.FILTER_LIFE)).thenReturn(response);
         var airUnit = new DanfossAirUnit(communicationController, timeZoneProvider);
         assertEquals(new DecimalType("94.1"), airUnit.getFilterLife());
+    }
+
+    @Test
+    void getCCMSerialNumber() throws IOException, UnexpectedResponseValueException {
+        byte[] response = new byte[] { 0x00, (byte) 0xbc, 0x61, 0x4e };
+        when(communicationController.sendRobustRequest(Parameter.CCM_SERIAL_NUMBER)).thenReturn(response);
+        var airUnit = new DanfossAirUnit(communicationController, timeZoneProvider);
+        assertEquals("12345678", airUnit.getCCMSerialNumber());
+    }
+
+    @Test
+    void getCCMSerialNumberWhenResponseTooShortThrows() throws IOException {
+        byte[] response = new byte[] { 0x00, (byte) 0xbc, 0x61 };
+        when(communicationController.sendRobustRequest(Parameter.CCM_SERIAL_NUMBER)).thenReturn(response);
+        var airUnit = new DanfossAirUnit(communicationController, timeZoneProvider);
+        assertThrows(UnexpectedResponseValueException.class, () -> airUnit.getCCMSerialNumber());
     }
 }
