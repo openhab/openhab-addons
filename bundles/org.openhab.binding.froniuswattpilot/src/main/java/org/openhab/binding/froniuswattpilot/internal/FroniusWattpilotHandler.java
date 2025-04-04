@@ -16,6 +16,9 @@ import static org.openhab.binding.froniuswattpilot.internal.FroniusWattpilotBind
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -57,6 +60,8 @@ import com.florianhotze.wattpilot.dto.EnforcedChargingState;
 public class FroniusWattpilotHandler extends BaseThingHandler implements WattpilotClientListener {
     private final Logger logger = LoggerFactory.getLogger(FroniusWattpilotHandler.class);
     private final WattpilotClient client;
+
+    private @Nullable CompletableFuture<?> awaitDisconnect;
 
     private @Nullable FroniusWattpilotConfiguration config;
 
@@ -175,18 +180,18 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
     @Override
     public void dispose() {
         if (client.isConnected()) {
+            if (awaitDisconnect != null) {
+                awaitDisconnect.cancel(true);
+                awaitDisconnect = null;
+            }
+            awaitDisconnect = new CompletableFuture<>();
             client.disconnect();
+            try {
+                awaitDisconnect.get(3, TimeUnit.SECONDS);
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                logger.error("Failed to wait for disconnect", e);
+            }
         }
-    }
-
-    @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        super.handleConfigurationUpdate(configurationParameters);
-
-        if (client.isConnected()) {
-            client.disconnect();
-        }
-        initialize();
     }
 
     @Override
@@ -197,9 +202,13 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
 
     @Override
     public void disconnected(@Nullable String reason, @Nullable Throwable cause) {
+        if (awaitDisconnect != null) {
+            awaitDisconnect.complete(null);
+        }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-        if (cause instanceof Exception e && e.getCause() instanceof TimeoutException) {
-            // TODO: Handle timeout
+        if (cause instanceof TimeoutException) {
+            logger.debug("Connection to Wattpilot timed out, scheduling reconnection attempt.");
+            scheduler.schedule(this::initialize, 30, TimeUnit.SECONDS);
         }
     }
 
