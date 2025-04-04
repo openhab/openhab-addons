@@ -104,7 +104,7 @@
 	<channel-type id="charging-state">
 		<item-type>String</item-type>
 		<label>Charging State</label>
-		<description>Current Charging State of the wallbox</description>
+		<description>Charging State of the wallbox</description>
 		<category>BatteryLevel</category>
 		<tags>
 			<tag>Status</tag>
@@ -121,8 +121,7 @@
 	<channel-type id="charging-allowed">
 		<item-type>Switch</item-type>
 		<label>Charging Allowed</label>
-		<description>Whether charging is currently allowed, e.g. when using eco mode too low solar sur-plus can forbid
-			charging</description>
+		<description>Whether charging is currently allowed, e.g. when using eco mode too low PV surplus can forbid charging</description>
 		<category>BatteryLevel</category>
 		<tags>
 			<tag>Status</tag>
@@ -152,7 +151,7 @@
 	<channel-type id="enforced-charging-state">
 		<item-type>String</item-type>
 		<label>Enforced Charging State</label>
-		<description>Enforced charging state, i.e. force/forbid charging or let the wallbox decide</description>
+		<description>Force or forbid charging, or let the wallbox decide</description>
 		<category>BatteryLevel</category>
 		<tags>
 			<tag>Control</tag>

@@ -1,94 +1,94 @@
 # Fronius Wattpilot Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding integrates the [Fronius Wattpilot EV charging stations](https://www.fronius.com/en-gb/uk/solar-energy/installers-partners/products-solutions/residential-energy-solutions/e-mobility-and-photovoltaic-residential/wattpilot-ev-charging-solution-for-homes)
+through their unofficial WebSocket API, which is also used by the [Fronius Solar.Wattpilot app](https://www.fronius.com/en-gb/uk/solar-energy/installers-partners/products-solutions/residential-energy-solutions/e-mobility-and-photovoltaic-residential/wattpilot-ev-charging-solution-for-homes#anc_app).
 
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
+It should support all Fronius Wattpilot wallboxes and has been tested with the following models:
 
-_Put each sentence in a separate line to improve readability of diffs._
+- Fronius Wattpilot Home 22J
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
+- `wattpilot`: A Fronius Wattpilot wallbox
 
 ## Discovery
 
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
+The binding implements auto-discovery of Wattpilot wallboxes through mDNS.
 
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
-
-```
-# Configuration for the FroniusWattpilot Binding
-#
-# Default secret key for the pairing of the FroniusWattpilot Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+If the binding discovered a Wattpilot, it is added to the inbox.
+After adding it from the inbox, you need to configure the password for accessing the Wattpilot.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-### `sample` Thing Configuration
+### `wattpilot` Thing Configuration
 
 | Name            | Type    | Description                           | Default | Required | Advanced |
 |-----------------|---------|---------------------------------------|---------|----------|----------|
 | hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
 | password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+| Channel                         | Type                   | Read/Write | Description                                                                                            |
+|---------------------------------|------------------------|------------|--------------------------------------------------------------------------------------------------------|
+| control#enforced-charging-state | String                 | RW         | Force (`ON`) or Forbid (`OFF`) charging, or let the wallbox decide (`NEUTRAL`)                         |
+| control#charging-mode           | String                 | RW         | The mode of charging: `DEFAULT`, `ECO`, `NEXT_TRIP`                                                    |
+| control#charging-current        | Number:ElectricCurrent | RW         | The current to charge with                                                                             |
+| control#pv-surplus-threshold    | Number:Power           | RW         | The PV surplus power at which surplus charging starts                                                  |
+| status#charging-state           | String                 | R          | Charging state: `NO_CAR`, `CHARGING`, `READY` or `COMPLETE`                                            |
+| status#charging-allows          | Switch                 | R          | Whether charging is currently allowed, e.g. when using eco mode too low PV surplus can forbid charging |
+| status#single-phase             | Switch                 | R          | Whether the wallbox is currently charging single phase only                                            |
+| metrics#power                   | Number:Power           | R          | Total power                                                                                            |
+| metrics#energy-session          | Number:Energy          | R          | Amount of energy charged in the current/last charging session                                          |
+| metrics#energy-total            | Number:Energy          | R          | Amount of energy charged in total                                                                      |
+| metrics#l1-power                | Number:Power           | R          | Power of phase 1                                                                                       |
+| metrics#l2-power                | Number:Power           | R          | Power of phase 2                                                                                       |
+| metrics#l3-power                | Number:Power           | R          | Power of phase 3                                                                                       |
+| metrics#l1-voltage              | Number:Voltage         | R          | Voltage of phase 1                                                                                     |
+| metrics#l2-voltage              | Number:Voltage         | R          | Voltage of phase 2                                                                                     |
+| metrics#l3-voltage              | Number:Voltage         | R          | Voltage of phase 3                                                                                     |
+| metrics#l1-current              | Number:ElectricCurrent | R          | Current/amperage of phase 1                                                                            |
+| metrics#l2-current              | Number:ElectricCurrent | R          | Current/amperage of phase 2                                                                            |
+| metrics#l3-current              | Number:ElectricCurrent | R          | Current/amperage of phase 3                                                                            |
 
 ## Full Example
-
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
 
 ### Thing Configuration
 
 ```java
-Example thing configuration goes here.
+Thing froniuswattpilot:wattpilot:garage "Wattpilot Garage" [hostname="xxx.xxx.xxx.xxx", password="secret"]
 ```
+
 ### Item Configuration
 
 ```java
-Example item configuration goes here.
+Group                     Wattpilot_Garage                             "Wattpilot Garage"                                                          ["Equipment"]
+
+// Control
+String                    Wattpilot_Garage_Enforced_Charging_State     "Enforced Charging State"               <BatteryLevel>  (Wattpilot_Garage)  ["Control"]                 {channel="froniuswattpilot:wattpilot:garage:control#enforced-charging-state"}
+String                    Wattpilot_Garage_Charging_Mode               "Charging Mode"                         <BatteryLevel>  (Wattpilot_Garage)  ["Control"]                 {channel="froniuswattpilot:wattpilot:garage:control#charging-mode"}
+Number:ElectricCurrent    Wattpilot_Garage_Charging_Current            "Charging Current [%d A]"               <Energy>        (Wattpilot_Garage)  ["Current", "Setpoint"]     {channel="froniuswattpilot:wattpilot:garage:control#charging-current", unit="A"}
+Number:Power              Wattpilot_Garage_PV_Surplus_Power_Threshold  "PV Surplus Power Threshold [%.1f kW]"  <SolarPlant>    (Wattpilot_Garage)  ["Power", "Setpoint"]       {channel="froniuswattpilot:wattpilot:garage:control#pv-surplus-threshold", unit="W"}
+
+// Status
+Switch                    Wattpilot_Garage_Charging_Allowed            "Charging Allowed"                      <BatteryLevel>  (Wattpilot_Garage)  ["Status"]                  {channel="froniuswattpilot:wattpilot:garage:status#charging-allowed"}
+String                    Wattpilot_Garage_Charging_State              "Charging State"                        <BatteryLevel>  (Wattpilot_Garage)  ["Status"]                  {channel="froniuswattpilot:wattpilot:garage:status#charging-state"}
+Switch                    Wattpilot_Garage_Single_Phase_Charging       "Single Phase Charging"                 <BatteryLevel>  (Wattpilot_Garage)  ["Status"]                  {channel="froniuswattpilot:wattpilot:garage:status#single-phase"}
+
+// Metrics total
+Number:Power              Wattpilot_Garage_Total_Power                 "Total Power [%.2f kW]"                 <Energy>        (Wattpilot_Garage)  ["Measurement", "Power"]    {channel="froniuswattpilot:wattpilot:garage:metrics#power", unit="W"}
+Number:Energy             Wattpilot_Garage_Charged_Energy              "Charged Energy [%.2f kWh]"             <Energy>        (Wattpilot_Garage)  ["Energy", "Measurement"]   {channel="froniuswattpilot:wattpilot:garage:metrics#energy-session", unit="kWh"}
+Number:Energy             Wattpilot_Garage_Total_Charged_Energy        "Total Charged Energy [%.0f kWh]"       <Energy>        (Wattpilot_Garage)  ["Energy", "Measurement"]   {channel="froniuswattpilot:wattpilot:garage:metrics#energy-total", unit="kWh"}
+// Metrics phase 1
+Number:Power              Wattpilot_Garage_Phase_1_Power               "Phase 1 Power [%.2f kW]"               <Energy>        (Wattpilot_Garage)  ["Measurement", "Power"]    {channel="froniuswattpilot:wattpilot:garage:metrics#l1-power", unit="W"}
+Number:ElectricPotential  Wattpilot_Garage_Phase_1_Voltage             "Phase 1 Voltage [%d V]"                <Energy>        (Wattpilot_Garage)  ["Measurement", "Voltage"]  {channel="froniuswattpilot:wattpilot:garage:metrics#l1-voltage", unit="V"}
+Number:ElectricCurrent    Wattpilot_Garage_Phase_1_Current             "Phase 1 Current [%.1f A]"              <Energy>        (Wattpilot_Garage)  ["Current", "Measurement"]  {channel="froniuswattpilot:wattpilot:garage:metrics#l1-current", unit="A"}
+// Metrics phase 2
+Number:Power              Wattpilot_Garage_Phase_2_Power               "Phase 2 Power [%.2f kW]"               <Energy>        (Wattpilot_Garage)  ["Measurement", "Power"]    {channel="froniuswattpilot:wattpilot:garage:metrics#l2-power", unit="W"}
+Number:ElectricPotential  Wattpilot_Garage_Phase_2_Voltage             "Phase 2 Voltage [%d V]"                <Energy>        (Wattpilot_Garage)  ["Measurement", "Voltage"]  {channel="froniuswattpilot:wattpilot:garage:metrics#l2-voltage", unit="V"}
+Number:ElectricCurrent    Wattpilot_Garage_Phase_2_Current             "Phase 2 Current [%.1f A]"              <Energy>        (Wattpilot_Garage)  ["Current", "Measurement"]  {channel="froniuswattpilot:wattpilot:garage:metrics#l2-current", unit="A"}
+// Metrics phase 3
+Number:Power              Wattpilot_Garage_Phase_3_Power               "Phase 3 Power [%.2f kW]"               <Energy>        (Wattpilot_Garage)  ["Measurement", "Power"]    {channel="froniuswattpilot:wattpilot:garage:metrics#l3-power", unit="W"}
+Number:ElectricPotential  Wattpilot_Garage_Phase_3_Voltage             "Phase 3 Voltage [%d V]"                <Energy>        (Wattpilot_Garage)  ["Measurement", "Voltage"]  {channel="froniuswattpilot:wattpilot:garage:metrics#l3-voltage", unit="V"}
+Number:ElectricCurrent    Wattpilot_Garage_Phase_3_Current             "Phase 3 Current [%.1f A]"              <Energy>        (Wattpilot_Garage)  ["Current", "Measurement"]  {channel="froniuswattpilot:wattpilot:garage:metrics#l3-current", unit="A"}
 ```
-
-### Sitemap Configuration
-
-```perl
-Optional Sitemap configuration goes here.
-Remove this section, if not needed.
-```
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
