@@ -18,7 +18,7 @@
     <dependency>
       <groupId>com.florianhotze.sdk</groupId>
       <artifactId>wattpilot4j</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
