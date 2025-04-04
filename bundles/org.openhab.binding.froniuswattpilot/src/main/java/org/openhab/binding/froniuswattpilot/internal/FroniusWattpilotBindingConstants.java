@@ -29,7 +29,7 @@ public class FroniusWattpilotBindingConstants {
     private static final String BINDING_ID = "froniuswattpilot";
 
     // Wattpilot Thing Type UID
-    public static final ThingTypeUID THING_TYPE = new ThingTypeUID(BINDING_ID, "wattpilot");
+    public static final ThingTypeUID THING_TYPE_WATTPILOT = new ThingTypeUID(BINDING_ID, "wattpilot");
 
     // Wattpilot channel groups
     public static final String CHANNEL_GROUP_ID_CONTROL = "control";
