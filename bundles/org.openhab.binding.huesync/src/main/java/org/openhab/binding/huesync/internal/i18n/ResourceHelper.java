@@ -24,6 +24,7 @@ import org.osgi.framework.ServiceReference;
 /**
  * 
  * @author Patrik Gfeller - Initial Contribution
+ * @author Patrik Gfeller - Issue #18376, Fix/improve log message and exception handling
  */
 @NonNullByDefault
 public class ResourceHelper {
@@ -33,17 +34,15 @@ public class ResourceHelper {
     private static final ServiceReference<TranslationProvider> SERVICE_REFERENCE = BUNDLE_CONTEXT
             .getServiceReference(TranslationProvider.class);
     private static final Bundle BUNDLE = BUNDLE_CONTEXT.getBundle();
+    private static final TranslationProvider TRANSLATION_PROVIDER = BUNDLE_CONTEXT.getService(SERVICE_REFERENCE);
 
     public static String getResourceString(String key) {
         String lookupKey = key.replace("@text/", "");
 
         String missingKey = "Missing Translation: " + key;
 
-        String result = (BUNDLE_CONTEXT
-                .getService(SERVICE_REFERENCE) instanceof TranslationProvider translationProvider)
-                        ? translationProvider.getText(BUNDLE, lookupKey, missingKey, LOCALE)
-                        : missingKey;
+        var localizedString = TRANSLATION_PROVIDER.getText(BUNDLE, lookupKey, missingKey, LOCALE);
 
-        return result == null ? missingKey : result;
+        return localizedString == null ? missingKey : localizedString;
     }
 }
