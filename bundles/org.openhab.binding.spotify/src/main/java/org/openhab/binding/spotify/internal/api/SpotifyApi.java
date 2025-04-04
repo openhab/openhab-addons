@@ -34,26 +34,22 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyAuthorizationException;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyTokenExpiredException;
+import org.openhab.binding.spotify.internal.api.model.Albums;
+import org.openhab.binding.spotify.internal.api.model.Artist;
+import org.openhab.binding.spotify.internal.api.model.Artists;
 import org.openhab.binding.spotify.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.spotify.internal.api.model.Device;
 import org.openhab.binding.spotify.internal.api.model.Devices;
 import org.openhab.binding.spotify.internal.api.model.Me;
 import org.openhab.binding.spotify.internal.api.model.ModelUtil;
 import org.openhab.binding.spotify.internal.api.model.Playlist;
-import org.openhab.binding.spotify.internal.api.model.PlaylistTrack;
 import org.openhab.binding.spotify.internal.api.model.Playlists;
+import org.openhab.binding.spotify.internal.api.model.SavedAlbum;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.media.MediaService;
-import org.openhab.core.media.model.MediaAlbums;
-import org.openhab.core.media.model.MediaArtists;
-import org.openhab.core.media.model.MediaPlayList;
-import org.openhab.core.media.model.MediaPlayLists;
-import org.openhab.core.media.model.MediaSource;
-import org.openhab.core.media.model.MediaTrack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -230,63 +226,40 @@ public class SpotifyApi {
     /**
      * @return Returns the playlists of the user.
      */
-    public List<Playlist> getPlaylists(MediaService mediaService, int offset, int limit) {
+    public List<Playlist> getPlaylists(int offset, int limit) {
         final Playlists playlists = request(GET, SPOTIFY_API_URL + "/playlists?offset" + offset + "&limit=" + limit, "",
                 Playlists.class);
 
-        MediaSource mediaSource = new MediaSource("Spotify", "Spotify");
-        mediaService.registerMediaEntry(mediaSource);
-
-        MediaAlbums mediaAlbumss = new MediaAlbums();
-        mediaSource.addChild("Albums", mediaAlbumss);
-
-        MediaArtists mediaArtistss = new MediaArtists();
-        mediaSource.addChild("Artists", mediaArtistss);
-
-        MediaSource mediaSourcet = new MediaSource("Tidal", "Tidal");
-        mediaService.registerMediaEntry(mediaSourcet);
-
-        MediaAlbums mediaAlbumst = new MediaAlbums();
-        mediaSourcet.addChild("Albums", mediaAlbumst);
-
-        MediaArtists mediaArtistst = new MediaArtists();
-        mediaSourcet.addChild("Artists", mediaArtistst);
-
-        MediaSource mediaSourcel = new MediaSource("Local", "Local");
-        mediaService.registerMediaEntry(mediaSourcel);
-
-        MediaAlbums mediaAlbumsl = new MediaAlbums();
-        mediaSourcel.addChild("Albums", mediaAlbumsl);
-
-        MediaArtists mediaArtistsl = new MediaArtists();
-        mediaSourcel.addChild("Artists", mediaArtistsl);
-
-        MediaPlayLists mediaPlayLists = new MediaPlayLists();
-        mediaSource.addChild("Playlists", mediaPlayLists);
-
-        if (playlists != null && playlists.getItems() != null) {
-            List<Playlist> list = playlists.getItems();
-            for (Playlist pl : list) {
-                MediaPlayList mediaPlayList = new MediaPlayList(pl.getUri(), pl.getName());
-                mediaPlayLists.addChild(pl.getUri(), mediaPlayList);
-
-                final Playlist playlist = request(GET,
-                        SPOTIFY_API_BASE_URL + "/playlists/" + pl.getUri().replace("spotify:playlist:", ""), "",
-                        Playlist.class);
-
-                for (PlaylistTrack plTrack : playlist.tracks.getPlaylistTrack()) {
-                    String trackName = plTrack.track.getName();
-                    String trackAlbum = plTrack.track.getAlbum().getName();
-                    String trackArtist = plTrack.track.getArtists().getFirst().getName();
-
-                    MediaTrack track = new MediaTrack(plTrack.track.getUri(), trackName);
-                    mediaPlayList.addChild(plTrack.track.getUri(), track);
-
-                }
-                logger.debug("p1");
-            }
-        }
         return playlists == null || playlists.getItems() == null ? Collections.emptyList() : playlists.getItems();
+    }
+
+    /**
+     * @return Returns the albums of the user.
+     */
+    public List<SavedAlbum> getAlbums(int offset, int limit) {
+        final Albums albums = request(GET, SPOTIFY_API_URL + "/albums?offset" + offset + "&limit=" + limit, "",
+                Albums.class);
+
+        return albums == null || albums.getItems() == null ? Collections.emptyList() : albums.getItems();
+    }
+
+    /**
+     * @return Returns the artists of the user.
+     */
+    public List<Artist> getArtists(int offset, int limit) {
+        final Artists artists = request(GET, SPOTIFY_API_URL + "/following?offset" + offset + "&limit=" + limit, "",
+                Artists.class);
+
+        return artists == null || artists.getItems() == null ? Collections.emptyList() : artists.getItems();
+    }
+
+    /**
+     * @return Returns a playlist details
+     */
+    public @Nullable Playlist getPlaylist(String uri) {
+        final Playlist playlist = request(GET,
+                SPOTIFY_API_BASE_URL + "/playlists/" + uri.replace("spotify:playlist:", ""), "", Playlist.class);
+        return playlist;
     }
 
     /**

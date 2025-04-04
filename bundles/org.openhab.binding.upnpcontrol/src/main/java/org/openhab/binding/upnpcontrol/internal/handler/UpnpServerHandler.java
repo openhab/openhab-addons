@@ -47,6 +47,7 @@ import org.openhab.core.media.MediaListenner;
 import org.openhab.core.media.MediaService;
 import org.openhab.core.media.model.MediaCollection;
 import org.openhab.core.media.model.MediaEntry;
+import org.openhab.core.media.model.MediaRegistry;
 import org.openhab.core.media.model.MediaSource;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -97,6 +98,8 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
     private static final UpnpEntry ROOT_ENTRY = new UpnpEntry(DIRECTORY_ROOT, DIRECTORY_ROOT, DIRECTORY_ROOT,
             "object.container");
     volatile UpnpEntry currentEntry = ROOT_ENTRY;
+    volatile @Nullable MediaEntry currentMediaEntry = null;
+
     // current entry list in selection
     List<UpnpEntry> entries = Collections.synchronizedList(new ArrayList<>());
     // store parents in hierarchy separately to be able to move up in directory structure
@@ -114,8 +117,6 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
         super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
         this.upnpRenderers = upnpRenderers;
         this.mediaService = mediaService;
-
-        this.mediaService.setMediaListenner(this);
 
         // put root as highest level in parent map
         parentMap.put(ROOT_ENTRY.getId(), ROOT_ENTRY);
@@ -153,14 +154,18 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
             return;
         }
 
-        MediaSource mediaSource = (MediaSource) mediaService.getMediaRegistry().getChilds().get("Upnp");
-        if (mediaSource == null) {
-            mediaSource = new MediaSource("Upnp", "Upnp");
-            mediaService.registerMediaEntry(mediaSource);
-        }
+        MediaRegistry mediaRegistry = mediaService.getMediaRegistry();
+        MediaCollection mediaCollection = mediaRegistry.registerEntry("Upnp", () -> {
+            return new MediaCollection("Upnp", "Upnp");
+        });
 
-        MediaSource mediaSource1 = new MediaSource(this.thing.getUID().getId(), "" + this.getThing().getLabel());
-        mediaSource.addChild(this.thing.getUID().getId(), mediaSource1);
+        String key = this.thing.getUID().getId();
+        this.mediaService.addMediaListenner(key, this);
+        MediaSource mediaSource = mediaCollection.registerEntry(key, () -> {
+            return new MediaSource(key, "" + this.getThing().getLabel());
+        });
+
+        currentMediaEntry = mediaSource;
 
         initDevice();
     }
@@ -211,30 +216,36 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
     @Override
     public void refreshEntry(MediaEntry mediaEntry) {
         // TODO Auto-generated method stub
+        boolean browse = true;
+        currentMediaEntry = mediaEntry;
+        if (mediaEntry instanceof MediaSource) {
+            browse = false;
 
-        logger.debug("aa");
 
-        String browseTarget = "/" + mediaEntry.getKey();
-        UpnpEntry entry = parentMap.get(browseTarget);
-        if (entry != null) {
-            currentEntry = entry;
-        } else {
-            final String target = browseTarget;
-            synchronized (entries) {
-                Optional<UpnpEntry> current = entries.stream().filter(e -> target.equals(e.getId())).findFirst();
-                if (current.isPresent()) {
-                    currentEntry = current.get();
-                } else {
-                    // The real entry is not in the parentMap or options list yet, so construct a default one
-                    currentEntry = new UpnpEntry(browseTarget, browseTarget, DIRECTORY_ROOT, "object.container");
-                }
-            }
         }
-        logger.debug("Browse target {}", browseTarget);
-        logger.debug("Navigating to node {} on server {}", currentEntry.getId(), thing.getLabel());
-        updateState(FAVORITE_SELECT, StringType.valueOf(browseTarget));
-        updateState(CURRENTTITLE, StringType.valueOf(currentEntry.getTitle()));
-        browse(browseTarget, "BrowseDirectChildren", "*", "0", "0", config.sortCriteria);
+        if (browse) {
+            // String browseTarget = mediaEntry.getSubPath();
+            String browseTarget = mediaEntry.getKey();
+       
+            logger.debug("Browse target {}", browseTarget);
+            logger.debug("Navigating to node {} on server {}", currentEntry.getId(), thing.getLabel());
+
+            browse(browseTarget, "BrowseDirectChildren", "*", "0", "0", config.sortCriteria);
+        }
+
+        CompletableFuture<Boolean> browsing = isBrowsing;
+        boolean browsed = true;
+        try {
+
+            if (browsing != null) {
+                // wait for maximum 2.5s until browsing is finished
+                browsed = browsing.get(config.responseTimeout, TimeUnit.MILLISECONDS);
+            }
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            logger.debug("Exception, previous server query on {} interrupted or timed out, trying new browse anyway",
+                    thing.getLabel());
+        }
+
     }
 
     /**
@@ -636,74 +647,32 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
     private void updateTitleSelection(List<UpnpEntry> titleList) {
         // Optionally, filter only items that can be played on the renderer
 
-        String idr = currentEntry.getId();
-        if (idr.startsWith(currentEntry.getParentId())) {
-            idr = idr.substring(currentEntry.getParentId().length());
-        }
-        if (idr.startsWith("/")) {
-            idr = idr.substring(1);
-        }
 
-        String path = "/Root/Upnp/" + this.thing.getUID().getId();
-        if (currentEntry != null && !currentEntry.getId().equals("/music")) {
-            if (!currentEntry.getParentId().equals("/music") && !currentEntry.getParentId().equals("0")) {
-                path = path + currentEntry.getParentId();
+        MediaEntry mediaEntry = currentMediaEntry;
+
+        logger.debug("aa");
+
+        for (UpnpEntry upnpEntry : titleList) {
+            String id = upnpEntry.getId();
+
+            if (id.startsWith(mediaEntry.getSubPath())) {
+                id = id.substring(mediaEntry.getSubPath().length());
             }
-            path = path + "/" + idr;
-        }
-        MediaEntry mediaEntry = mediaService.getMediaRegistry().getChildForPath(path);
-        if (mediaEntry != null && mediaEntry instanceof MediaSource) {
 
-            for (UpnpEntry entry : titleList) {
-                String id = entry.getId();
-                if (id.startsWith(entry.getParentId())) {
-                    id = id.substring(entry.getParentId().length());
-                }
-                if (id.startsWith("/")) {
-                    id = id.substring(1);
-                }
-
-                String subPath = path + "/" + id;
-                MediaCollection mediaEntryChild = (MediaCollection) mediaService.getMediaRegistry()
-                        .getChildForPath(subPath);
-
-                if (mediaEntryChild == null) {
-
-                    mediaEntryChild = new MediaCollection(id, entry.getTitle());
-                    mediaEntry.addChild(id, mediaEntryChild);
-                }
-
+            if (id.startsWith("/")) {
+                id = id.substring(1);
             }
-        } else if (mediaEntry != null && mediaEntry instanceof MediaCollection) {
 
-            for (UpnpEntry entry : titleList) {
-                String id = entry.getId();
-                if (id.startsWith(entry.getParentId())) {
-                    id = id.substring(entry.getParentId().length());
-                }
-                if (id.startsWith("/")) {
-                    id = id.substring(1);
-                }
+            final String idFinal = id;
 
-                String subPath = path + "/" + id;
-                MediaCollection mediaEntryChild = (MediaCollection) mediaService.getMediaRegistry()
-                        .getChildForPath(subPath);
-                mediaService.getMediaRegistry().getChildForPath(path);
-                ;
-                if (mediaEntryChild == null) {
+            MediaCollection mediaCol = mediaEntry.registerEntry(id, () -> {
+                return new MediaCollection(idFinal, upnpEntry.getTitle());
+            });
 
-                    mediaEntryChild = new MediaCollection(id, entry.getTitle());
-                    mediaEntry.addChild(id, mediaEntryChild);
-                }
-            }
         }
+        logger.debug("aa");
 
-        // MediaAlbums mediaAlbumsu = new MediaAlbums();
-        // mediaSource1.addChild("Albums", mediaAlbumsu);
-
-        // MediaArtists mediaArtistsu = new MediaArtists();
-        // mediaSource1.addChild("Artists", mediaArtistsu);
-        // mediaSource1
+        
 
         logger.debug("Filtering content on server {}: {}", thing.getLabel(), config.filter);
         List<UpnpEntry> resultList = config.filter ? filterEntries(titleList, true) : titleList;

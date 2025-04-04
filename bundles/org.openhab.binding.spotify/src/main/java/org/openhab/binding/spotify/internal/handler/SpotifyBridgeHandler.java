@@ -45,6 +45,9 @@ import org.openhab.binding.spotify.internal.api.model.Image;
 import org.openhab.binding.spotify.internal.api.model.Item;
 import org.openhab.binding.spotify.internal.api.model.Me;
 import org.openhab.binding.spotify.internal.api.model.Playlist;
+import org.openhab.binding.spotify.internal.api.model.PlaylistTrack;
+import org.openhab.binding.spotify.internal.api.model.SavedAlbum;
+import org.openhab.binding.spotify.internal.api.model.Tracks;
 import org.openhab.binding.spotify.internal.discovery.SpotifyDeviceDiscoveryService;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -60,7 +63,15 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.media.MediaListenner;
 import org.openhab.core.media.MediaService;
+import org.openhab.core.media.model.MediaAlbum;
+import org.openhab.core.media.model.MediaCollection;
+import org.openhab.core.media.model.MediaEntry;
+import org.openhab.core.media.model.MediaPlayList;
+import org.openhab.core.media.model.MediaRegistry;
+import org.openhab.core.media.model.MediaSource;
+import org.openhab.core.media.model.MediaTrack;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -84,7 +95,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SpotifyBridgeHandler extends BaseBridgeHandler
-        implements SpotifyAccountHandler, AccessTokenRefreshListener {
+        implements SpotifyAccountHandler, AccessTokenRefreshListener, MediaListenner {
 
     private static final CurrentlyPlayingContext EMPTY_CURRENTLY_PLAYING_CONTEXT = new CurrentlyPlayingContext();
     private static final Album EMPTY_ALBUM = new Album();
@@ -128,6 +139,8 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     private @NonNullByDefault({}) SpotifyHandleCommands handleCommand;
     private @NonNullByDefault({}) ExpiringCache<CurrentlyPlayingContext> playingContextCache;
     private @NonNullByDefault({}) ExpiringCache<List<Playlist>> playlistCache;
+    private @NonNullByDefault({}) ExpiringCache<List<SavedAlbum>> albumsCache;
+    private @NonNullByDefault({}) ExpiringCache<List<Artist>> artistsCache;
     private @NonNullByDefault({}) ExpiringCache<List<Device>> devicesCache;
 
     /**
@@ -319,8 +332,18 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         final int offset = getIntChannelParameter(CHANNEL_PLAYLISTS, CHANNEL_PLAYLISTS_OFFSET, 0);
         final int limit = getIntChannelParameter(CHANNEL_PLAYLISTS, CHANNEL_PLAYLISTS_LIMIT, 20);
 
-        playlistCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS,
-                () -> spotifyApi.getPlaylists(mediaService, offset, limit));
+        mediaService.addMediaListenner("Spotify", this);
+
+        MediaRegistry mediaRegistry = mediaService.getMediaRegistry();
+
+        MediaSource mediaSource = mediaRegistry.registerEntry("Spotify", () -> {
+            return new MediaSource("Spotify", "Spotify");
+        });
+
+        playlistCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getPlaylists(offset, limit));
+        albumsCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getAlbums(offset, limit));
+        artistsCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getArtists(offset, limit));
+
         devicesCache = new ExpiringCache<>(expiringPeriod, spotifyApi::getDevices);
 
         // Start with update status by calling Spotify. If no credentials available no polling should be started.
@@ -332,6 +355,77 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         imageChannelAlbumImageIndex = getIntChannelParameter(CHANNEL_PLAYED_ALBUMIMAGE, CHANNEL_CONFIG_IMAGE_INDEX, 0);
         imageChannelAlbumImageUrlIndex = getIntChannelParameter(CHANNEL_PLAYED_ALBUMIMAGEURL,
                 CHANNEL_CONFIG_IMAGE_INDEX, 0);
+    }
+
+    @Override
+    public void refreshEntry(MediaEntry mediaEntry) {
+        if (mediaEntry.getKey().equals("Spotify")) {
+
+            MediaCollection mediaAlbums = mediaEntry.registerEntry("Albums", () -> {
+                return new MediaCollection("Albums", "Albums");
+            });
+
+            MediaCollection mediaArtists = mediaEntry.registerEntry("Artists", () -> {
+                return new MediaCollection("Artists", "Artists");
+            });
+
+            @SuppressWarnings("unused")
+            MediaCollection mediaPlaylist = mediaEntry.registerEntry("Playlists", () -> {
+                return new MediaCollection("Playlists", "Playlists");
+            });
+
+        } else if (mediaEntry.getKey().equals("Playlists")) {
+            List<Playlist> playLists = playlistCache.getValue();
+
+            for (Playlist playList : playLists) {
+                String key = playList.getUri();
+                MediaPlayList mediaPlayList = mediaEntry.registerEntry(key, () -> {
+                    return new MediaPlayList(key, playList.getName());
+                });
+            }
+        } else if (mediaEntry.getKey().equals("Albums")) {
+            List<SavedAlbum> albums = albumsCache.getValue();
+
+            for (SavedAlbum savedAlbum : albums) {
+                String key = savedAlbum.album.getUri();
+                String name = savedAlbum.album.getName();
+
+                MediaAlbum mediaAlbum = mediaEntry.registerEntry(key, () -> {
+                    return new MediaAlbum(key, name);
+                });
+
+            }
+        } else if (mediaEntry.getKey().equals("Artists")) {
+            /*
+             * List<Playlist> playLists = playlistCache.getValue();
+             *
+             * for (Playlist playList : playLists) {
+             * String key = playList.getUri();
+             * MediaPlayList mediaPlayList = mediaEntry.registerEntry(key, () -> {
+             * return new MediaPlayList(key, playList.getName());
+             * });
+             * }
+             */
+        } else if (mediaEntry instanceof MediaPlayList) {
+            Playlist pl = spotifyApi.getPlaylist(mediaEntry.getKey());
+
+            if (pl != null) {
+                Tracks tracks = pl.getTracks();
+                List<PlaylistTrack> playlistTrack = tracks.getPlaylistTrack();
+
+                for (PlaylistTrack plTrack : playlistTrack) {
+
+                    String uri = plTrack.track.getUri();
+                    String name = plTrack.track.getName();
+
+                    MediaTrack mediaTrack = mediaEntry.registerEntry(uri, () -> {
+                        return new MediaTrack(uri, name);
+                    });
+
+                }
+            }
+        }
+
     }
 
     private int getIntChannelParameter(String channelName, String parameter, int _default) {
