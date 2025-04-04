@@ -13,7 +13,6 @@
 package org.openhab.binding.froniuswattpilot.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link FroniusWattpilotConfiguration} class contains fields mapping thing configuration parameters.
@@ -22,6 +21,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class FroniusWattpilotConfiguration {
-    public @Nullable String hostname = "";
-    public @Nullable String password = "";
+    public String hostname = "";
+    public String password = "";
 }
