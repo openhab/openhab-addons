@@ -67,10 +67,6 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Moisture</label>
 		<category>Moisture</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Moisture</tag>
-		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
