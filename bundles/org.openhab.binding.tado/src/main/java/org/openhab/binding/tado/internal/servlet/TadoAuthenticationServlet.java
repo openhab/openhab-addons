@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tado.internal.handler.TadoHandlerFactory;
 import org.openhab.core.auth.client.oauth2.DeviceCodeResponseDTO;
 import org.openhab.core.auth.client.oauth2.OAuthException;
+import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 
 /**
  * The {@link TadoAuthenticationServlet} manages the authorization with the Tado API.
@@ -111,9 +112,8 @@ public class TadoAuthenticationServlet extends HttpServlet {
                 if (tadoHandlerFactory.getAccessTokenResponse(request.getParameter(PARAM_NAME_USER)) != null) {
                     dynamicHtml = HTML_AUTH_PASSED;
                 }
-            } catch (OAuthException e) {
-                dynamicHtml = HTML_AUTH_ERROR_TEMPLATE.replace(REPLACE_TAG,
-                        e.getMessage() instanceof String exception ? exception : e.getClass().getName());
+            } catch (OAuthException | OAuthResponseException e) {
+                // error already logged => fall through
             }
         }
 

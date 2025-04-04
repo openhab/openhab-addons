@@ -198,9 +198,12 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
      *
      * @param user the optional user name (may be null)
      * @return a nullable {@link AccessTokenResponse}.
-     * @throws OAuthException on any error
+     * @throws OAuthException
+     * @throws IOException
+     * @throws OAuthResponseException
      */
-    public @Nullable AccessTokenResponse getAccessTokenResponse(@Nullable String user) throws OAuthException {
+    public @Nullable AccessTokenResponse getAccessTokenResponse(@Nullable String user)
+            throws OAuthException, IOException, OAuthResponseException {
         OAuthClientService oAuthClientService = oAuthClientServices.get(getServiceId(user));
         if (oAuthClientService == null) {
             throw new OAuthException("Missing OAuthClientService");
@@ -209,7 +212,7 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
             return oAuthClientService.getAccessTokenResponse();
         } catch (OAuthException | IOException | OAuthResponseException e) {
             logger.debug("getAccessTokenResponse() error {}", e.getMessage(), e);
-            throw new OAuthException("OAuthClientService error" + e.getMessage(), e);
+            throw e;
         }
     }
 
