@@ -28,6 +28,7 @@ import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxPlayerHandler;
 import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxServerHandler;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.audio.AudioSink;
+import org.openhab.core.media.MediaService;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
@@ -65,6 +66,7 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
     private final AudioHTTPServer audioHTTPServer;
     private final NetworkAddressService networkAddressService;
     private final SqueezeBoxStateDescriptionOptionsProvider stateDescriptionProvider;
+    private final MediaService mediaService;
 
     private Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
 
@@ -74,10 +76,12 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public SqueezeBoxHandlerFactory(final @Reference AudioHTTPServer audioHTTPServer,
             final @Reference NetworkAddressService networkAddressService,
-            final @Reference SqueezeBoxStateDescriptionOptionsProvider stateDescriptionProvider) {
+            final @Reference SqueezeBoxStateDescriptionOptionsProvider stateDescriptionProvider,
+            final @Reference MediaService mediaService) {
         this.audioHTTPServer = audioHTTPServer;
         this.networkAddressService = networkAddressService;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.mediaService = mediaService;
     }
 
     @Override
@@ -98,7 +102,7 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
 
         if (SQUEEZEBOXSERVER_THING_TYPE.equals(thingTypeUID)) {
             logger.trace("Creating handler for bridge thing {}", thing);
-            return new SqueezeBoxServerHandler((Bridge) thing);
+            return new SqueezeBoxServerHandler((Bridge) thing, mediaService);
         }
 
         if (SQUEEZEBOXPLAYER_THING_TYPE.equals(thingTypeUID)) {

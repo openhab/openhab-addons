@@ -45,10 +45,12 @@ import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.media.MediaListenner;
 import org.openhab.core.media.MediaService;
+import org.openhab.core.media.model.MediaAlbum;
 import org.openhab.core.media.model.MediaCollection;
 import org.openhab.core.media.model.MediaEntry;
 import org.openhab.core.media.model.MediaRegistry;
 import org.openhab.core.media.model.MediaSource;
+import org.openhab.core.media.model.MediaTrack;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -156,13 +158,13 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
 
         MediaRegistry mediaRegistry = mediaService.getMediaRegistry();
         MediaCollection mediaCollection = mediaRegistry.registerEntry("Upnp", () -> {
-            return new MediaCollection("Upnp", "Upnp");
+            return new MediaCollection("Upnp", "Upnp", "/static/Upnp.png");
         });
 
         String key = this.thing.getUID().getId();
         this.mediaService.addMediaListenner(key, this);
         MediaSource mediaSource = mediaCollection.registerEntry(key, () -> {
-            return new MediaSource(key, "" + this.getThing().getLabel());
+            return new MediaSource(key, "" + this.getThing().getLabel(), "/static/Upnp.png");
         });
 
         currentMediaEntry = mediaSource;
@@ -221,12 +223,11 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
         if (mediaEntry instanceof MediaSource) {
             browse = false;
 
-
         }
         if (browse) {
-            // String browseTarget = mediaEntry.getSubPath();
-            String browseTarget = mediaEntry.getKey();
-       
+            String browseTarget = mediaEntry.getSubPath();
+            // String browseTarget = mediaEntry.getKey();
+
             logger.debug("Browse target {}", browseTarget);
             logger.debug("Navigating to node {} on server {}", currentEntry.getId(), thing.getLabel());
 
@@ -647,7 +648,6 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
     private void updateTitleSelection(List<UpnpEntry> titleList) {
         // Optionally, filter only items that can be played on the renderer
 
-
         MediaEntry mediaEntry = currentMediaEntry;
 
         logger.debug("aa");
@@ -665,14 +665,27 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
 
             final String idFinal = id;
 
-            MediaCollection mediaCol = mediaEntry.registerEntry(id, () -> {
-                return new MediaCollection(idFinal, upnpEntry.getTitle());
-            });
+            if (upnpEntry.getUpnpClass().equals("object.container.album.musicAlbum")) {
+                MediaAlbum mediaAlbum = mediaEntry.registerEntry(id, () -> {
+                    MediaAlbum album = new MediaAlbum(idFinal, upnpEntry.getTitle());
+                    album.setArtUri(upnpEntry.getAlbumArtUri());
+                    album.setArtist(upnpEntry.getArtist());
+                    album.setGenre(upnpEntry.getGenre());
+                    return album;
+                });
+            } else if (upnpEntry.getUpnpClass().equals("object.item.audioItem.musicTrack")) {
+                MediaTrack mediaTrack = mediaEntry.registerEntry(id, () -> {
+                    MediaTrack track = new MediaTrack(idFinal, upnpEntry.getTitle());
+                    return track;
+                });
+            } else {
+                MediaCollection mediaCol = mediaEntry.registerEntry(id, () -> {
+                    return new MediaCollection(idFinal, upnpEntry.getTitle());
+                });
+            }
 
         }
         logger.debug("aa");
-
-        
 
         logger.debug("Filtering content on server {}: {}", thing.getLabel(), config.filter);
         List<UpnpEntry> resultList = config.filter ? filterEntries(titleList, true) : titleList;

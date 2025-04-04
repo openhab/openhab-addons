@@ -42,4 +42,8 @@ public class Track {
     public List<Artist> getArtists() {
         return artists;
     }
+
+    public List<Image> getImages() {
+        return album.getImages();
+    }
 }

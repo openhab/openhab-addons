@@ -17,5 +17,5 @@ package org.openhab.binding.spotify.internal.api.model;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-public class Albums extends Paging<SavedAlbum> {
+public class Albums extends Paging<Album> {
 }
