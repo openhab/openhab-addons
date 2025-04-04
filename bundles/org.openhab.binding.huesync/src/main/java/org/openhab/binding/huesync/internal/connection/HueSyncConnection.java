@@ -48,6 +48,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * 
  * @author Patrik Gfeller - Initial Contribution
+ * @author Patrik Gfeller - Issue #18376, Fix/improve log message and exception handling
  */
 @NonNullByDefault
 public class HueSyncConnection {
@@ -55,10 +56,8 @@ public class HueSyncConnection {
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     /**
      * Request format: The Sync Box API can be accessed locally via HTTPS on root
-     * level (port 443,
-     * /api/v1), resource level /api/v1/<resource> and in some cases sub-resource
-     * level
-     * /api/v1/<resource>/<sub-resource>.
+     * level (port 443, /api/v1), resource level /api/v1/<resource>
+     * and in some cases sub-resource level /api/v1/<resource>/<sub-resource>.
      */
     private static final String REQUEST_FORMAT = "https://%s:%s/%s/%s";
     private static final String API = "api/v1";
@@ -182,10 +181,8 @@ public class HueSyncConnection {
              * 400 Invalid State: Registration in progress
              * 
              * 401 Authentication failed: If credentials are missing or invalid, errors out.
-             * If
-             * credentials are missing, continues on to GET only the Configuration state
-             * when
-             * unauthenticated, to allow for device identification.
+             * If credentials are missing, continues on to GET only the Configuration
+             * state when unauthenticated, to allow for device identification.
              * 
              * 404 Invalid URI Path: Accessing URI path which is not supported
              * 
@@ -204,9 +201,7 @@ public class HueSyncConnection {
             }
             throw new HueSyncConnectionException(message, new HttpResponseException(message, response));
         } catch (JsonProcessingException | InterruptedException | ExecutionException | TimeoutException e) {
-
-            var logMessage = message + " {}";
-            this.logger.warn(logMessage, e.toString());
+            this.logger.warn("{}", e.getMessage());
 
             throw new HueSyncConnectionException(message, e);
         }
