@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-public class Tracks {
+public class PlayListTracks {
     private String href;
     private int total;
 
