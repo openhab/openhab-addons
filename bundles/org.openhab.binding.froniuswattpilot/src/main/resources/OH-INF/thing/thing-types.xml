@@ -18,6 +18,7 @@
 		<properties>
 			<property name="serialNumber"/>
 			<property name="firmwareVersion"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>hostname</representation-property>
