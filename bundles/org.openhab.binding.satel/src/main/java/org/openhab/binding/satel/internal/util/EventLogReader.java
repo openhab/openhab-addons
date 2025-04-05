@@ -220,6 +220,7 @@ public class EventLogReader {
             case 7 -> deviceNameResolver.resolveUser(eventDesc.getSource());
             case 8 -> deviceNameResolver.resolve(DeviceType.EXPANDER, eventDesc.getSource());
             case 9 -> deviceNameResolver.resolveTelephone(eventDesc.getSource());
+            case 10 -> deviceNameResolver.resolveTelephoneRelay(eventDesc.getSource());
             case 11 -> deviceNameResolver.resolve(DeviceType.PARTITION, eventDesc.getPartition()) + DETAILS_SEPARATOR
                     + deviceNameResolver.resolveDataBus(eventDesc.getSource());
             case 12 -> (eventDesc.getSource() <= bridgeHandler.getIntegraType().getOnMainboard())
