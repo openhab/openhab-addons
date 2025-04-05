@@ -82,6 +82,8 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
     static final String DIRECTORY_ROOT = "0";
     static final String UP = "..";
 
+    private boolean pathMode = false;
+
     ConcurrentMap<String, UpnpRendererHandler> upnpRenderers;
     private final MediaService mediaService;
     private volatile @Nullable UpnpRendererHandler currentRendererHandler;
@@ -170,6 +172,12 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
         currentMediaEntry = mediaSource;
 
         initDevice();
+
+        if (this.getThing().getUID().getId().equals("b6f2fff2-9300-43c8-bad1-df933609a320")) {
+            pathMode = false;
+        } else {
+            pathMode = true;
+        }
     }
 
     @Override
@@ -225,8 +233,13 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
 
         }
         if (browse) {
-            String browseTarget = mediaEntry.getSubPath();
-            // String browseTarget = mediaEntry.getKey();
+            String browseTarget = "";
+
+            if (pathMode) {
+                browseTarget = mediaEntry.getSubPath();
+            } else {
+                browseTarget = mediaEntry.getKey();
+            }
 
             logger.debug("Browse target {}", browseTarget);
             logger.debug("Navigating to node {} on server {}", currentEntry.getId(), thing.getLabel());
@@ -664,11 +677,14 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
             }
 
             final String idFinal = id;
+            String artUri = upnpEntry.getAlbumArtUri();
 
             if (upnpEntry.getUpnpClass().equals("object.container.album.musicAlbum")) {
                 MediaAlbum mediaAlbum = mediaEntry.registerEntry(id, () -> {
                     MediaAlbum album = new MediaAlbum(idFinal, upnpEntry.getTitle());
-                    album.setArtUri(upnpEntry.getAlbumArtUri());
+                    if (artUri != null && !artUri.isBlank()) {
+                        album.setArtUri(artUri);
+                    }
                     album.setArtist(upnpEntry.getArtist());
                     album.setGenre(upnpEntry.getGenre());
                     return album;
@@ -680,7 +696,11 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
                 });
             } else {
                 MediaCollection mediaCol = mediaEntry.registerEntry(id, () -> {
-                    return new MediaCollection(idFinal, upnpEntry.getTitle());
+                    MediaCollection res = new MediaCollection(idFinal, upnpEntry.getTitle());
+                    if (artUri != null && !artUri.isBlank()) {
+                        res.setArtUri(artUri);
+                    }
+                    return res;
                 });
             }
 
