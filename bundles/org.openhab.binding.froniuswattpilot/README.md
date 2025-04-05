@@ -5,6 +5,7 @@ through their unofficial WebSocket API, which is also used by the [Fronius Solar
 
 It should support all Fronius Wattpilot wallboxes and has been tested with the following models:
 
+- Fronius Wattpilot Home 11J
 - Fronius Wattpilot Home 22J
 
 ## Supported Things
