@@ -72,11 +72,11 @@ The Sbus Bridge has the following configuration parameters:
 
 ### Switch Controller Channels
 
-| Channel | Type    | Read/Write | Description                                               |
-|---------|---------|------------|-----------------------------------------------------------|
-| switch  | Switch  | RW         | Basic ON/OFF state control                                |
-| dimmer  | Dimmer  | RW         | ON/OFF state with timer transition                        |
-| paired  | Contact | RW         | OPEN/CLOSED state for two paired channels (e.g., curtains)|
+| Channel | Type           | Read/Write | Description                                               |
+|---------|----------------|------------|-----------------------------------------------------------|
+| switch  | Switch         | RW         | Basic ON/OFF state control                                |
+| dimmer  | Dimmer         | RW         | ON/OFF state with timer transition                        |
+| paired  | Rollershutter  | RW         | UP/DOWN control for two paired channels (e.g., rollershutters)|
 
 ## Full Example
 
@@ -99,7 +99,7 @@ Bridge sbus:udp:mybridge [ host="192.168.1.255", port=5000 ] {
         Channels:
             Type switch-channel : first_switch  [ channelNumber=1 ]
             Type dimmer-channel : second_switch [ channelNumber=2 ]
-            Type paired-channel : third_switch [ channelNumber=3 ]
+            Type paired-channel : third_switch [ channelNumber=3, pairedChannelNumber=4 ]
     }
 }
 ```
@@ -113,8 +113,8 @@ Number:Temperature Temp_Sensor "Temperature [%.1f °C]" { channel="sbus:temperat
 // Basic Switch
 Switch Light_Switch "Switch" { channel="sbus:switch:mybridge:switch1:switch" }
 
-// Paired Channel (e.g., for curtains)
-Contact Curtain_Switch "Curtain [%s]" { channel="sbus:switch:mybridge:switch1:third_switch" }
+// Paired Channel (e.g., for rollershutters)
+Rollershutter Rollershutter_Switch "Rollershutter [%s]" { channel="sbus:switch:mybridge:switch1:third_switch" }
 
 // RGBW Controller with Power Control
 Group   gLight      "RGBW Light"    <light>     ["Lighting"]
@@ -131,6 +131,6 @@ sitemap sbus label="Sbus Demo"
         Colorpicker item=Light_RGB
         Text item=Temp_Sensor
         Switch item=Light_Switch
-        Text item=Curtain_Switch
+        Rollershutter item=Rollershutter_Switch
     }
 }
