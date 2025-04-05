@@ -146,4 +146,13 @@ public class ThingMock implements Thing {
     public boolean isEnabled() {
         return false;
     }
+
+    @Override
+    public void setSemanticEquipmentTag(@Nullable String semanticEquipmentTag) {
+    }
+
+    @Override
+    public @Nullable String getSemanticEquipmentTag() {
+        return null;
+    }
 }
