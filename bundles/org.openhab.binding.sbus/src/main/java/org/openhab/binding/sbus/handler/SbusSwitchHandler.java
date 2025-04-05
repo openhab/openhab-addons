@@ -102,6 +102,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
                     }
                 }
             }
+            updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             Bundle bundle = FrameworkUtil.getBundle(getClass());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
