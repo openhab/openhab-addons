@@ -29,9 +29,14 @@ public class DanfossAirUnitBindingConstants {
 
     public static final String BINDING_ID = "danfossairunit";
 
-    // The only thing type UIDs
+    // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_AIRUNIT = new ThingTypeUID(BINDING_ID, "airunit");
 
-    // The thing type as a set
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AIRUNIT);
+
+    // List of all Thing Type configuration parameters
+    public static final String PARAMETER_HOST = "host";
+
+    // List of all Thing Type properties
+    public static final String PROPERTY_CCM_SERIAL_NUMBER = "ccmSerialNumber";
 }

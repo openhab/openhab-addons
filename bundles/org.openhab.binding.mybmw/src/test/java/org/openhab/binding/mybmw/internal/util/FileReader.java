@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mybmw.internal.utils.Constants;
@@ -34,20 +35,20 @@ public class FileReader {
 
     /**
      * reads a file into a string
-     * 
+     *
      * @param filename
      * @return
      */
     public static String fileToString(String filename) {
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(FileReader.class.getClassLoader().getResourceAsStream(filename), "UTF-8"))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(
+                Objects.requireNonNull(FileReader.class.getClassLoader()).getResourceAsStream(filename), "UTF-8"))) {
             StringBuilder buf = new StringBuilder();
             String sCurrentLine;
 
             while ((sCurrentLine = br.readLine()) != null) {
                 buf.append(sCurrentLine);
             }
-            return buf != null ? buf.toString() : "";
+            return buf.toString();
         } catch (IOException e) {
             fail("Read failure " + filename, e);
         }
@@ -56,7 +57,7 @@ public class FileReader {
 
     /**
      * reads a file into a byte[]
-     * 
+     *
      * @param filename
      * @return
      */
@@ -64,8 +65,9 @@ public class FileReader {
         File file = new File(filename);
         byte[] bytes = new byte[(int) file.length()];
 
-        try (InputStream is = (FileReader.class.getClassLoader().getResourceAsStream(filename))) {
-            is.read(bytes);
+        try (InputStream is = (Objects.requireNonNull(FileReader.class.getClassLoader())
+                .getResourceAsStream(filename))) {
+            Objects.requireNonNull(is).read(bytes);
         } catch (IOException e) {
             fail("Read failure " + filename, e);
         }

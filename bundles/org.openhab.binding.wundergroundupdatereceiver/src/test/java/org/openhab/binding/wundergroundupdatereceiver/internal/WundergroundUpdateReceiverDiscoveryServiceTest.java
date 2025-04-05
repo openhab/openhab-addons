@@ -134,7 +134,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
     }
 
     @Test
-    void aRequestWithAnUnregisteredStationidIsAddedToTheQueueOnce()
+    void aRequestWithAnUnregisteredStationIdIsAddedToTheQueueOnce()
             throws ServletException, NamespaceException, IOException {
         // Given
         final String queryString = """

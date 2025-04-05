@@ -48,6 +48,8 @@ public class TextTests extends AbstractComponentTests {
 
         assertChannel(component, Text.TEXT_CHANNEL_ID, "txt/state", "txt/cmd", "MQTT Text", TextValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("txt/state", "stuff");
         assertState(component, Text.TEXT_CHANNEL_ID, new StringType("stuff"));
 

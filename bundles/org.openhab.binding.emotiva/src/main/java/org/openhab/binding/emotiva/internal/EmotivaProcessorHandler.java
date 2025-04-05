@@ -25,8 +25,8 @@ import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlComman
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaDataType.STRING;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaPropertyStatus.NOT_VALID;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaProtocolVersion.protocolFromConfig;
+import static org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTagGroup.SOURCES;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags.keepAlive;
-import static org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags.noSubscriptionToChannel;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -39,11 +39,15 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import javax.measure.quantity.Frequency;
 import javax.xml.bind.JAXBException;
@@ -67,6 +71,7 @@ import org.openhab.binding.emotiva.internal.protocol.EmotivaCommandType;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaControlRequest;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaDataType;
+import org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTagGroup;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaUdpResponse;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaXmlUtils;
@@ -112,10 +117,12 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
     private final List<EmotivaSubscriptionTags> zone2Subscriptions = EmotivaSubscriptionTags.channels("zone2");
 
     private final EmotivaProcessorState state = new EmotivaProcessorState();
+    private final EmotivaSubscriptionTagGroupHandler subscriptionHandler;
     private final EmotivaTranslationProvider i18nProvider;
 
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable ScheduledFuture<?> connectRetryJob;
+    private @Nullable ScheduledFuture<?> sourceLabelRefreshJob;
     private @Nullable EmotivaUdpSendingService sendingService;
     private @Nullable EmotivaUdpReceivingService notifyListener;
     private @Nullable EmotivaUdpReceivingService menuNotifyListener;
@@ -135,6 +142,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
         super(thing);
         this.i18nProvider = i18nProvider;
         this.config = getConfigAs(EmotivaConfiguration.class);
+        this.subscriptionHandler = new EmotivaSubscriptionTagGroupHandler(config, state);
         this.retryConnectInMinutes = config.retryConnectInMinutes;
     }
 
@@ -180,9 +188,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             for (int attempt = 1; attempt <= DEFAULT_CONNECTION_RETRIES && !udpSenderActive; attempt++) {
                 try {
                     logger.debug("Connection attempt '{}'", attempt);
-                    sendConnector.sendSubscription(generalSubscription, config);
-                    sendConnector.sendSubscription(mainZoneSubscriptions, config);
-                    sendConnector.sendSubscription(zone2Subscriptions, config);
+                    sendConnector.sendSubscription(subscriptionHandler.init(), config);
                 } catch (IOException e) {
                     // network or socket failure, also wait 2 sec and try again
                 }
@@ -195,6 +201,8 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             if (udpSenderActive) {
                 updateStatus(ThingStatus.ONLINE);
                 state.updateLastSeen(ZonedDateTime.now(ZoneId.systemDefault()).toInstant());
+                setInitialSourceLabels();
+                starthSourceLabelsRefresJob();
                 startPollingKeepAlive();
 
                 final var menuListenerConnector = new EmotivaUdpReceivingService(localConfig.menuNotifyPort,
@@ -220,7 +228,10 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
 
     private void scheduleConnectRetry(long waitMinutes) {
         logger.debug("Scheduling connection retry in '{}' minutes", waitMinutes);
-        connectRetryJob = scheduler.schedule(this::connect, waitMinutes, TimeUnit.MINUTES);
+        final ScheduledFuture<?> localScheduleConnectRetryJob = connectRetryJob;
+        if (localScheduleConnectRetryJob == null || localScheduleConnectRetryJob.isCancelled()) {
+            connectRetryJob = scheduler.schedule(this::connect, waitMinutes, TimeUnit.MINUTES);
+        }
     }
 
     /**
@@ -242,6 +253,82 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             pollingJob = scheduler.scheduleWithFixedDelay(this::checkKeepAliveTimestamp, delay, delay,
                     TimeUnit.MILLISECONDS);
             logger.debug("Started scheduled job to check connection to device, with an {}ms internal", delay);
+        }
+    }
+
+    /**
+     * Starts a polling job for refreshing source labels
+     */
+    private void starthSourceLabelsRefresJob() {
+        final ScheduledFuture<?> localSourceLabelRefreshJob = sourceLabelRefreshJob;
+        if (localSourceLabelRefreshJob == null || localSourceLabelRefreshJob.isCancelled()) {
+            sourceLabelRefreshJob = scheduler.scheduleWithFixedDelay(this::refreshSourceLabels, 0,
+                    DEFAULT_REFRESH_SOURCE_LABEL_JOB_IN_MINUTES, TimeUnit.MINUTES);
+            logger.debug("Started scheduled job to update source labels now and every {}min",
+                    DEFAULT_REFRESH_SOURCE_LABEL_JOB_IN_MINUTES);
+        }
+    }
+
+    private void refreshSourceLabels() {
+        EmotivaUdpSendingService localSendingService = sendingService;
+        if (localSendingService != null) {
+            try {
+                localSendingService
+                        .sendSubscription(EmotivaSubscriptionTags.getBySubscriptionTagGroups(Set.of(SOURCES)), config);
+                scheduler.schedule(this::unsubscribeSourceLabels, DEFAULT_REFRESH_SOURCE_UNSUBSCRIBE_DELAY_IN_SECONDS,
+                        TimeUnit.SECONDS);
+            } catch (InterruptedIOException e) {
+                logger.debug("Interrupted during sending of EmotivaSubscription message to device '{}'", thing.getUID(),
+                        e);
+            } catch (IOException e) {
+                logger.warn("Failed to send EmotivaSubscription message to device '{}'", thing.getUID(), e);
+            }
+        }
+    }
+
+    private void unsubscribeSourceLabels() {
+        EmotivaUdpSendingService localSendingService = sendingService;
+        if (localSendingService != null) {
+            try {
+                localSendingService
+                        .sendUnsubscribe(EmotivaSubscriptionTags.getBySubscriptionTagGroups(Set.of(SOURCES)));
+            } catch (InterruptedIOException e) {
+                logger.debug("Interrupted during sending of EmotivaUnsubscribe message to device '{}'", thing.getUID(),
+                        e);
+            } catch (IOException e) {
+                logger.warn("Failed to send EmotivaUnsubscribe message to device '{}'", thing.getUID(), e);
+            }
+        }
+    }
+
+    private void subscribeTagGroups(Set<EmotivaSubscriptionTagGroup> groups) {
+        EmotivaUdpSendingService localSendingService = sendingService;
+        if (localSendingService != null) {
+            try {
+                localSendingService.sendSubscription(EmotivaSubscriptionTags.getBySubscriptionTagGroups(groups),
+                        config);
+                state.updateSubscribedTagGroups(groups);
+            } catch (InterruptedIOException e) {
+                logger.debug("Interrupted during sending of EmotivaSubscription message to device '{}'", thing.getUID(),
+                        e);
+            } catch (IOException e) {
+                logger.warn("Failed to send EmotivaSubscription message to device '{}'", thing.getUID(), e);
+            }
+        }
+    }
+
+    private void unsubscribeTagGroups(Set<EmotivaSubscriptionTagGroup> groups) {
+        EmotivaUdpSendingService localSendingService = sendingService;
+        if (localSendingService != null) {
+            try {
+                localSendingService.sendUnsubscribe(EmotivaSubscriptionTags.getBySubscriptionTagGroups(groups));
+                state.updateUnsubscribedTagGroups(groups);
+            } catch (InterruptedIOException e) {
+                logger.debug("Interrupted during sending of EmotivaUnsubscribe message to device '{}'", thing.getUID(),
+                        e);
+            } catch (IOException e) {
+                logger.warn("Failed to send EmotivaUnsubscribe message to device '{}'", thing.getUID(), e);
+            }
         }
     }
 
@@ -355,17 +442,6 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
         } else if (object instanceof EmotivaSubscriptionResponse answerDto) {
             logger.trace("Processing received '{}' with '{}'", EmotivaSubscriptionResponse.class.getSimpleName(),
                     emotivaUdpResponse.answer());
-            // Populates static input sources, except input
-            EnumMap<EmotivaControlCommands, String> sourceMainZone = EmotivaControlCommands
-                    .getCommandsFromType(EmotivaCommandType.SOURCE_MAIN_ZONE);
-            sourceMainZone.remove(EmotivaControlCommands.input);
-            state.setSourcesMainZone(sourceMainZone);
-
-            EnumMap<EmotivaControlCommands, String> sourcesZone2 = EmotivaControlCommands
-                    .getCommandsFromType(EmotivaCommandType.SOURCE_ZONE2);
-            sourcesZone2.remove(EmotivaControlCommands.input);
-            state.setSourcesZone2(sourcesZone2);
-
             if (answerDto.getProperties() == null) {
                 for (EmotivaNotifyDTO dto : xmlUtils.unmarshallToNotification(answerDto.getTags())) {
                     handleChannelUpdate(dto.getName(), dto.getValue(), dto.getVisible(), dto.getAck());
@@ -377,6 +453,21 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                 }
             }
         }
+    }
+
+    /**
+     * Sets initial source labels based on command list.
+     */
+    private void setInitialSourceLabels() {
+        EnumMap<EmotivaControlCommands, String> sourceMainZone = EmotivaControlCommands
+                .getByCommandType(EmotivaCommandType.SOURCE_MAIN_ZONE);
+        sourceMainZone.remove(EmotivaControlCommands.input);
+        state.setSourcesMainZone(sourceMainZone);
+
+        EnumMap<EmotivaControlCommands, String> sourcesZone2 = EmotivaControlCommands
+                .getByCommandType(EmotivaCommandType.SOURCE_ZONE2);
+        sourcesZone2.remove(EmotivaControlCommands.input);
+        state.setSourcesZone2(sourcesZone2);
     }
 
     private void handleMenuNotify(EmotivaMenuNotifyDTO answerDto) {
@@ -469,16 +560,16 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
         }
     }
 
-    private void handleChannelUpdate(String emotivaSubscriptionName, String value, String visible, String status) {
+    private void handleChannelUpdate(String emotivaSubscriptionName, String rawValue, String visible, String status) {
         logger.trace("Subscription property '{}' with raw value '{}' received, start processing",
-                emotivaSubscriptionName, value);
+                emotivaSubscriptionName, rawValue);
 
         if (status.equals(NOT_VALID.name())) {
             logger.debug("Subscription property '{}' not present in device, skipping", emotivaSubscriptionName);
             return;
         }
 
-        if ("None".equals(value)) {
+        if ("None".equals(rawValue)) {
             logger.debug(
                     "Subscription property '{}' has no value, no update needed, usually means a speaker is not enabled",
                     emotivaSubscriptionName);
@@ -489,7 +580,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             state.updateLastSeen(ZonedDateTime.now(ZoneId.systemDefault()).toInstant());
             logger.trace(
                     "Subscription property '{}' with value '{}' mapped to last-seen for device '{}', value updated",
-                    keepAlive.name(), value.trim(), thing.getUID());
+                    keepAlive.name(), rawValue, thing.getUID());
             return;
         }
 
@@ -497,13 +588,6 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             EmotivaSubscriptionTags.hasChannel(emotivaSubscriptionName);
         } catch (IllegalArgumentException e) {
             logger.debug("Subscription property '{}' is not know to the binding, might need updating",
-                    emotivaSubscriptionName);
-            return;
-        }
-
-        if (noSubscriptionToChannel().contains(EmotivaSubscriptionTags.valueOf(emotivaSubscriptionName))) {
-            logger.debug(
-                    "Subscription property '{}' is not mapped to a OH channel, no update needed, only used for logging",
                     emotivaSubscriptionName);
             return;
         }
@@ -519,19 +603,20 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             }
 
             if (subscriptionTag.getChannel().isEmpty()) {
-                logger.debug("Subscription property '{}' does not have a corresponding OH channel, skipping",
-                        emotivaSubscriptionName);
+                logger.debug(
+                        "Subscription property '{}' with value '{}' does not have a corresponding OH channel, skipping",
+                        emotivaSubscriptionName, rawValue);
                 return;
             }
 
-            String trimmedValue = value.trim();
+            String trimmedValue = rawValue.trim();
             logger.trace("Subscription property '{}' with value '{}' mapped to OH channel '{}'", subscriptionTag,
                     trimmedValue, subscriptionTag.getChannel());
 
-            // Add/Update user assigned name for inputs
+            // Add/Update user assigned name for sources
             if (subscriptionTag.getChannel().startsWith(CHANNEL_INPUT1.substring(0, CHANNEL_INPUT1.indexOf("-") + 1))
                     && "true".equals(visible)) {
-                state.updateSourcesMainZone(EmotivaControlCommands.matchToInput(subscriptionTag.name()), trimmedValue);
+                state.updateSourcesMainZone(EmotivaControlCommands.matchFromSourceInput(subscriptionTag), trimmedValue);
                 logger.trace("Adding/Updating '{}' to OH channel '{}' state options, all options are now {}",
                         trimmedValue, CHANNEL_SOURCE, state.getSourcesMainZone());
             }
@@ -621,6 +706,21 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                 logger.debug("Preparing to update OH channel '{}' with value:type '{}:{}'", channelName, value,
                         StringType.class.getSimpleName());
                 updateChannelState(channelName, StringType.valueOf(value));
+                if (channelName.equals(CHANNEL_SOURCE)) {
+                    EmotivaControlCommands matchedSource = matchCommandFromSourceAndLabels(value);
+                    if (matchedSource.equals(none)) {
+                        logger.error(
+                                "Error trying to get source command from OhCommand '{}:{}', not able to update subscriptions",
+                                channelName, value);
+                    } else {
+                        BiConsumer<Set<EmotivaSubscriptionTagGroup>, Set<EmotivaSubscriptionTagGroup>> tagGroups = (
+                                subscribeSet, unsubscribeSet) -> {
+                            updateTagGroupChangesForSource(subscribeSet, unsubscribeSet, value, matchedSource);
+                        };
+                        subscriptionHandler.tagGroupsFromSource(matchedSource, tagGroups);
+                        logger.debug("Currently subscribed tag groups: '{}'", state.getSubscriptionsTagGroups());
+                    }
+                }
             }
             case UNKNOWN -> // Do nothing, types not connect to channels
                 logger.debug("Channel '{}' with UNKNOWN type and value '{}' was not updated", channelName, value);
@@ -628,6 +728,43 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                 // datatypes not connect to a channel, so do nothing
             }
         }
+    }
+
+    /**
+     * Updates tags subscriptions by the binding based on a source command and tag groups. The subscribe and unsubscribe
+     * sets are matched against the currently subscribed tag groups to reduce number of needed subscription calls and
+     * avoid recursive updates.
+     *
+     * @param subscribeSet Tag groups to subscribe to
+     * @param unsubscribeSet Tag groups to unsubscribe from
+     * @param value Input value from channel er device
+     * @param matchedSource Source command matched from input value
+     */
+    private void updateTagGroupChangesForSource(Set<EmotivaSubscriptionTagGroup> subscribeSet,
+            Set<EmotivaSubscriptionTagGroup> unsubscribeSet, String value, EmotivaControlCommands matchedSource) {
+        Set<EmotivaSubscriptionTagGroup> currentSubscriptionTagGroups = state.getSubscriptionsTagGroups();
+        var unsubscribe = unsubscribeSet.stream().filter(currentSubscriptionTagGroups::contains)
+                .collect(Collectors.toCollection(HashSet::new));
+        if (!unsubscribe.isEmpty()) {
+            unsubscribeTagGroups(unsubscribeSet);
+        }
+        var subscribe = subscribeSet.stream().filter(group -> !currentSubscriptionTagGroups.contains(group))
+                .collect(Collectors.toCollection(HashSet::new));
+        if (!subscribe.isEmpty()) {
+            subscribeTagGroups(subscribe);
+        }
+        logger.debug("Input '{}' matched to source '{}' subscribing to '{}' and unsubscribing from '{}'", value,
+                matchedSource.name(), subscribe, unsubscribe);
+    }
+
+    public EmotivaControlCommands matchCommandFromSourceAndLabels(String value) {
+        Map<EmotivaControlCommands, String> map = state.getCommandMap(MAP_SOURCES_MAIN_ZONE);
+        EmotivaControlCommands command = EmotivaControlCommands.matchFromSourceInput(value, map);
+        if (command.equals(none)) {
+            logger.debug("Could not match OH command {} with value '{}' to values in map '{}', no matching command",
+                    CHANNEL_SOURCE, value, map);
+        }
+        return command;
     }
 
     private void updateChannelState(String channelID, State channelState) {
@@ -670,7 +807,26 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                             .or(() -> Optional.of(emotivaRequest.createDTO(ohCommand, UnDefType.UNDEF)));
                     localSendingService.send(dto.get());
 
-                    if (emotivaRequest.getName().equals(EmotivaControlCommands.volume.name())
+                    if (emotivaRequest.getDefaultCommand().equals(EmotivaControlCommands.input)
+                            && ohCommand instanceof StringType sourceString) {
+                        try {
+                            EmotivaControlCommands source = EmotivaControlCommands.valueOf(sourceString.toString());
+                            BiConsumer<Set<EmotivaSubscriptionTagGroup>, Set<EmotivaSubscriptionTagGroup>> tagGroups = (
+                                    subscribeSet, unsubscribeSet) -> {
+                                logger.debug(
+                                        "OhCommand '{}:{}' is a source command with subscribeSet '{}' and unsubscribeSet '{}'",
+                                        channelUID.getId(), ohCommand, subscribeSet, unsubscribeSet);
+                                updateTagGroupChangesForSource(subscribeSet, unsubscribeSet, sourceString.toString(),
+                                        source);
+                            };
+                            subscriptionHandler.tagGroupsFromSource(source, tagGroups);
+                            logger.debug("Currently subscribed tag groups: '{}'", state.getSubscriptionsTagGroups());
+                        } catch (IllegalArgumentException e) {
+                            logger.error(
+                                    "Error trying to get source command from OhCommand '{}:{}', not able to update subscriptions",
+                                    channelUID.getId(), ohCommand);
+                        }
+                    } else if (emotivaRequest.getName().equals(EmotivaControlCommands.volume.name())
                             || emotivaRequest.getName().equals(EmotivaControlCommands.set_volume.name())) {
                         logger.debug("OhCommand '{}:{}' is of type main zone volume", channelUID.getId(), ohCommand);
                         if (ohCommand instanceof PercentType value) {
@@ -776,7 +932,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(InputStateOptionProvider.class);
+        return Set.of(EmotivaInputStateOptionProvider.class);
     }
 
     public EnumMap<EmotivaControlCommands, String> getSourcesMainZone() {

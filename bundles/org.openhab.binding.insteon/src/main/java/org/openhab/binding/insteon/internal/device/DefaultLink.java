@@ -12,12 +12,9 @@
  */
 package org.openhab.binding.insteon.internal.device;
 
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.insteon.internal.device.database.LinkDBRecord;
 import org.openhab.binding.insteon.internal.device.database.ModemDBRecord;
-import org.openhab.binding.insteon.internal.transport.message.Msg;
 
 /**
  * The {@link DefaultLink} represents a device default link
@@ -29,13 +26,11 @@ public class DefaultLink {
     private String name;
     private LinkDBRecord linkDBRecord;
     private ModemDBRecord modemDBRecord;
-    private List<Msg> commands;
 
-    public DefaultLink(String name, LinkDBRecord linkDBRecord, ModemDBRecord modemDBRecord, List<Msg> commands) {
+    public DefaultLink(String name, LinkDBRecord linkDBRecord, ModemDBRecord modemDBRecord) {
         this.name = name;
         this.linkDBRecord = linkDBRecord;
         this.modemDBRecord = modemDBRecord;
-        this.commands = commands;
     }
 
     public String getName() {
@@ -50,16 +45,8 @@ public class DefaultLink {
         return modemDBRecord;
     }
 
-    public List<Msg> getCommands() {
-        return commands;
-    }
-
     @Override
     public String toString() {
-        String s = name + "|linkDB:" + linkDBRecord + "|modemDB:" + modemDBRecord;
-        if (!commands.isEmpty()) {
-            s += "|commands:" + commands;
-        }
-        return s;
+        return name + "|linkDB:" + linkDBRecord + "|modemDB:" + modemDBRecord;
     }
 }

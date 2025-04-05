@@ -17,6 +17,7 @@ These are the available configuration parameters:
 - `host` Hostname/IP of the air unit (automatically set by discovery service)
 - `refreshInterval` Time (in seconds) between monitoring requests to the air unit. Smaller values mean more network load, typically set between a few seconds and a minute. Defaults to 10 seconds.
 - `updateUnchangedValuesEveryMillis` Minimum time between state updates sent to the event bus for a particular channel when the state of the channel didn't change. This should avoid spamming the event bus with unnecessary updates. When set to 0, all channel state are updated every time the air unit requests are sent (see refresh interval). When set to a non zero value, unchanged values are only reported after the configured timespan has passed. Changed values are always sent to the event bus. Defaults to 60.000 (one minute), so updates are sent every minute or if the state of the channel changes.
+- `timeZone` Time zone of the air unit. Leave empty for defaulting to openHAB time zone.
 
 ## Channels
 
@@ -36,6 +37,7 @@ These are the available configuration parameters:
 | outdoor_temp         | temps         | Number:Temperature   | RO                                  | Temperature of the air outside                                                                                                                                                           |
 | humidity             | humidity      | Number:Dimensionless | RO                                  | Current relative humidity measured by the air unit                                                                                                                                       |
 | bypass               | recuperator   | Switch               | RW                                  | Disables the heat exchange. Useful in summer when room temperature is above target and outside temperature is below target.                                                              |
+| defrost              | recuperator   | Switch               | RO                                  | Defrost status. Active when low outdoor temperatures pose a risk of ice formation in the heat exchanger.                                                                                 |
 | supply_temp          | recuperator   | Number               | RO                                  | Temperature of air which is passed to the rooms                                                                                                                                          |
 | extract_temp         | recuperator   | Number               | RO                                  | Temperature of the air as extracted from the rooms                                                                                                                                       |
 | exhaust_temp         | recuperator   | Number               | RO                                  | Temperature of the air when pushed outside                                                                                                                                               |

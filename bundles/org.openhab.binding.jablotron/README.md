@@ -49,7 +49,7 @@ Binding itself doesn't require specific configuration.
 | JA-80/JA-100/JA-100F | lastEventTime    | DateTime           | the time of the last event                                |
 | JA-80/JA-100/JA-100F | lastCheckTime    | DateTime           | the time of the last checking                             |
 | JA-80/JA-100/JA-100F | alarm            | N/A                | the alarm trigger, might fire ALARM or TAMPER events      |
-| JA-100/JA-100F       | lastEventSection | String             | the section of the last event                             |
+| JA-80/JA-100/JA-100F | lastEventSection | String             | the section of the last event                             |
 | JA-100               | state_%nr%       | String             | the section %nr% status/control                           |
 | JA-100               | pgm_%nr%         | Switch             | the PG switch %nr% status/control                         |
 | JA-100               | thermometer_%nr% | Number:Temperature | the thermometer %nr% value                                |

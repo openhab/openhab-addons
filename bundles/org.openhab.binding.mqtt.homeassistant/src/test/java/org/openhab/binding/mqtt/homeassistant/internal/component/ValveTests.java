@@ -70,6 +70,8 @@ public class ValveTests extends AbstractComponentTests {
                 OnOffValue.class);
         assertChannel(component, Valve.STATE_CHANNEL_ID, "", "", "State", TextValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("home-assistant/valve/state", "{\"x\": \"open\"}");
         assertState(component, Valve.VALVE_CHANNEL_ID, OnOffType.ON);
         assertState(component, Valve.STATE_CHANNEL_ID, new StringType("open"));
@@ -111,6 +113,8 @@ public class ValveTests extends AbstractComponentTests {
                 OnOffValue.class);
         assertChannel(component, Valve.STATE_CHANNEL_ID, "", "", "State", TextValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("home-assistant/valve/state", "{\"state\": \"open\"}");
         assertState(component, Valve.VALVE_CHANNEL_ID, OnOffType.ON);
         assertState(component, Valve.STATE_CHANNEL_ID, new StringType("open"));
@@ -140,6 +144,8 @@ public class ValveTests extends AbstractComponentTests {
         assertChannel(component, Valve.VALVE_CHANNEL_ID, "", "home-assistant/valve/set", "MQTT valve",
                 PercentageValue.class);
         assertChannel(component, Valve.STATE_CHANNEL_ID, "", "", "State", TextValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("home-assistant/valve/state", "open");
         assertState(component, Valve.VALVE_CHANNEL_ID, PercentType.HUNDRED);
@@ -207,6 +213,8 @@ public class ValveTests extends AbstractComponentTests {
 
         assertChannel(component, Valve.VALVE_CHANNEL_ID, "", "home-assistant/valve/set", "MQTT valve",
                 OnOffValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("home-assistant/valve/state", "open");
         assertState(component, Valve.VALVE_CHANNEL_ID, OnOffType.ON);

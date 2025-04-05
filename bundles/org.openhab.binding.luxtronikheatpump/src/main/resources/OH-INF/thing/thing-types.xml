@@ -168,6 +168,7 @@
 			<channel id="outputCompressorHeating" typeId="outputCompressorHeating"/>
 			<channel id="controlSignalCirculatingPump" typeId="controlSignalCirculatingPump"/>
 			<channel id="fanSpeed" typeId="fanSpeed"/>
+			<channel id="inputUtilityLock2" typeId="inputUtilityLock2"/>
 			<channel id="temperatureSafetyLimitFloorHeating" typeId="temperatureSafetyLimitFloorHeating"/>
 			<channel id="powerTargetValue" typeId="powerTargetValue"/>
 			<channel id="powerActualValue" typeId="powerActualValue"/>
@@ -266,6 +267,28 @@
 			<channel id="heatingPowerActualValue" typeId="heatingPowerActualValue"/>
 			<channel id="outputControlSignalCooling" typeId="outputControlSignalCooling"/>
 			<channel id="timeCoolingRelease" typeId="timeCoolingRelease"/>
+			<channel id="channel261" typeId="unknown">
+				<label>Channel 261</label>
+			</channel>
+			<channel id="channel262" typeId="unknown">
+				<label>Channel 262</label>
+			</channel>
+			<channel id="channel263" typeId="unknown">
+				<label>Channel 263</label>
+			</channel>
+			<channel id="channel264" typeId="unknown">
+				<label>Channel 264</label>
+			</channel>
+			<channel id="channel265" typeId="unknown">
+				<label>Channel 265</label>
+			</channel>
+			<channel id="channel266" typeId="unknown">
+				<label>Channel 266</label>
+			</channel>
+			<channel id="channel267" typeId="unknown">
+				<label>Channel 267</label>
+			</channel>
+			<channel id="powerConsumption" typeId="powerConsumption"/>
 
 			<channel id="temperatureHeatingParallelShift" typeId="temperatureHeatingParallelShift"/>
 			<channel id="heatingMode" typeId="heatingMode"/>
@@ -287,7 +310,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description>

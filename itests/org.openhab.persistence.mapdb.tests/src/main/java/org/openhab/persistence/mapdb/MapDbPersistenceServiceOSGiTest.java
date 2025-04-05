@@ -17,12 +17,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
 import static org.hamcrest.collection.IsEmptyIterable.emptyIterable;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZonedDateTime;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterAll;
@@ -32,6 +34,7 @@ import org.openhab.core.items.GenericItem;
 import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.SwitchItem;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -132,5 +135,29 @@ public class MapDbPersistenceServiceOSGiTest extends JavaOSGiTest {
         assertThat(persistenceService.query(filterByName), is(emptyIterable()));
         waitForAssert(() -> assertThat(persistenceService.query(filterByAlias),
                 contains(allOf(hasProperty("name", equalTo(alias)), hasProperty("state", equalTo(state))))));
+        waitForAssert(() -> assertThat(persistenceService.query(filterByName, alias),
+                contains(allOf(hasProperty("name", equalTo(name)), hasProperty("state", equalTo(state))))));
+    }
+
+    @Test
+    public void persistedItemShouldFindItem() {
+        String name = "decimal";
+        State state = DecimalType.valueOf("100");
+        State lastState = DecimalType.ZERO;
+        ZonedDateTime lastStateUpdate = ZonedDateTime.now().minusHours(1);
+        ZonedDateTime lastStateChange = ZonedDateTime.now().minusHours(2);
+
+        GenericItem item = new DimmerItem(name);
+        item.setState(state, lastState, lastStateUpdate, lastStateChange);
+
+        assertNull(persistenceService.persistedItem(name, null));
+
+        persistenceService.store(item);
+
+        waitForAssert(() -> assertThat(persistenceService.persistedItem(name, null),
+                allOf(hasProperty("name", equalTo(name)), hasProperty("state", equalTo(state)),
+                        hasProperty("lastState", equalTo(lastState)),
+                        hasProperty("timestamp", any(ZonedDateTime.class)),
+                        hasProperty("lastStateChange", any(ZonedDateTime.class)))));
     }
 }

@@ -85,6 +85,7 @@ public class VelbusVMB7INHandler extends VelbusSensorWithAlarmClockHandler {
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }
+        this.refreshJob = null;
         super.dispose();
     }
 
