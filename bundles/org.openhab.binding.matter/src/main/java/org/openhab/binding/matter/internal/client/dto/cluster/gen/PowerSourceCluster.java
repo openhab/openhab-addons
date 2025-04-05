@@ -17,12 +17,8 @@ package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Map;
-import java.util.LinkedHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
-
-import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
  * PowerSource
@@ -31,7 +27,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class PowerSourceCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x002F;
+    public static final int CLUSTER_ID = 0x002F;
     public static final String CLUSTER_NAME = "PowerSource";
     public static final String CLUSTER_PREFIX = "powerSource";
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
@@ -69,220 +65,285 @@ public static final int CLUSTER_ID = 0x002F;
     public static final String ATTRIBUTE_ACTIVE_BAT_CHARGE_FAULTS = "activeBatChargeFaults";
     public static final String ATTRIBUTE_ENDPOINT_LIST = "endpointList";
 
-    public Integer clusterRevision; // 65533 ClusterRevision 
-    public FeatureMap featureMap; // 65532 FeatureMap 
+    public Integer clusterRevision; // 65533 ClusterRevision
+    public FeatureMap featureMap; // 65532 FeatureMap
     /**
-    * Indicates the participation of this power source in providing power to the Node as specified in PowerSourceStatusEnum.
-    */
+     * Indicates the participation of this power source in providing power to the Node as specified in
+     * PowerSourceStatusEnum.
+     */
     public PowerSourceStatusEnum status; // 0 PowerSourceStatusEnum R V
     /**
-    * Indicates the relative preference with which the Node will select this source to provide power. A source with a lower order shall be selected by the Node to provide power before any other source with a higher order, if the lower order source is available (see Status).
-Note, Order is read-only and therefore NOT intended to allow clients control over power source selection.
-    */
+     * Indicates the relative preference with which the Node will select this source to provide power. A source with a
+     * lower order shall be selected by the Node to provide power before any other source with a higher order, if the
+     * lower order source is available (see Status).
+     * Note, Order is read-only and therefore NOT intended to allow clients control over power source selection.
+     */
     public Integer order; // 1 uint8 R V
     /**
-    * This attribute shall provide a user-facing description of this source, used to distinguish it from other power sources, e.g. &quot;DC Power&quot;, &quot;Primary Battery&quot; or &quot;Battery back-up&quot;. This attribute shall NOT be used to convey information such as battery form factor, or chemistry.
-    */
+     * This attribute shall provide a user-facing description of this source, used to distinguish it from other power
+     * sources, e.g. &quot;DC Power&quot;, &quot;Primary Battery&quot; or &quot;Battery back-up&quot;. This attribute
+     * shall NOT be used to convey information such as battery form factor, or chemistry.
+     */
     public String description; // 2 string R V
     /**
-    * Indicates the assessed RMS or DC voltage currently provided by the hard-wired source, in mV (millivolts). A value of NULL shall indicate the Node is currently unable to assess the value. If the wired source is not connected, but the Node is still able to assess a value, then the assessed value may be reported.
-    */
+     * Indicates the assessed RMS or DC voltage currently provided by the hard-wired source, in mV (millivolts). A value
+     * of NULL shall indicate the Node is currently unable to assess the value. If the wired source is not connected,
+     * but the Node is still able to assess a value, then the assessed value may be reported.
+     */
     public Integer wiredAssessedInputVoltage; // 3 uint32 R V
     /**
-    * Indicates the assessed frequency of the voltage, currently provided by the hard-wired source, in Hz. A value of NULL shall indicate the Node is currently unable to assess the value. If the wired source is not connected, but the Node is still able to assess a value, then the assessed value may be reported.
-    */
+     * Indicates the assessed frequency of the voltage, currently provided by the hard-wired source, in Hz. A value of
+     * NULL shall indicate the Node is currently unable to assess the value. If the wired source is not connected, but
+     * the Node is still able to assess a value, then the assessed value may be reported.
+     */
     public Integer wiredAssessedInputFrequency; // 4 uint16 R V
     /**
-    * Indicates the type of current the Node expects to be provided by the hard- wired source as specified in WiredCurrentTypeEnum.
-    */
+     * Indicates the type of current the Node expects to be provided by the hard- wired source as specified in
+     * WiredCurrentTypeEnum.
+     */
     public WiredCurrentTypeEnum wiredCurrentType; // 5 WiredCurrentTypeEnum R V
     /**
-    * Indicates the assessed instantaneous current draw of the Node on the hard- wired source, in mA (milliamps). A value of NULL shall indicate the Node is currently unable to assess the value. If the wired source is not connected, but the Node is still able to assess a value, then the assessed value may be reported.
-    */
+     * Indicates the assessed instantaneous current draw of the Node on the hard- wired source, in mA (milliamps). A
+     * value of NULL shall indicate the Node is currently unable to assess the value. If the wired source is not
+     * connected, but the Node is still able to assess a value, then the assessed value may be reported.
+     */
     public Integer wiredAssessedCurrent; // 6 uint32 R V
     /**
-    * Indicates the nominal voltage, printed as part of the Node’s regulatory compliance label in mV (millivolts), expected to be provided by the hard-wired source.
-    */
+     * Indicates the nominal voltage, printed as part of the Node’s regulatory compliance label in mV (millivolts),
+     * expected to be provided by the hard-wired source.
+     */
     public Integer wiredNominalVoltage; // 7 uint32 R V
     /**
-    * Indicates the maximum current, printed as part of the Node’s regulatory compliance label in mA (milliamps), expected to be provided by the hard-wired source.
-    */
+     * Indicates the maximum current, printed as part of the Node’s regulatory compliance label in mA (milliamps),
+     * expected to be provided by the hard-wired source.
+     */
     public Integer wiredMaximumCurrent; // 8 uint32 R V
     /**
-    * Indicates if the Node detects that the hard-wired power source is properly connected.
-    */
+     * Indicates if the Node detects that the hard-wired power source is properly connected.
+     */
     public Boolean wiredPresent; // 9 bool R V
     /**
-    * Indicates the set of wired faults currently detected by the Node on this power source. This set is represented as a list of WiredFaultEnum. When the Node detects a fault has been raised, the appropriate WiredFaultEnum value shall be added to this list, provided it is not already present. This list shall NOT contain more than one instance of a specific WiredFaultEnum value. When the Node detects all conditions contributing to a fault have been cleared, the corresponding WiredFaultEnum value shall be removed from this list. An empty list shall indicate there are currently no active faults. The order of this list SHOULD have no significance. Clients interested in monitoring changes in active faults may subscribe to this attribute, or they may subscribe to WiredFaultChange.
-    */
+     * Indicates the set of wired faults currently detected by the Node on this power source. This set is represented as
+     * a list of WiredFaultEnum. When the Node detects a fault has been raised, the appropriate WiredFaultEnum value
+     * shall be added to this list, provided it is not already present. This list shall NOT contain more than one
+     * instance of a specific WiredFaultEnum value. When the Node detects all conditions contributing to a fault have
+     * been cleared, the corresponding WiredFaultEnum value shall be removed from this list. An empty list shall
+     * indicate there are currently no active faults. The order of this list SHOULD have no significance. Clients
+     * interested in monitoring changes in active faults may subscribe to this attribute, or they may subscribe to
+     * WiredFaultChange.
+     */
     public List<WiredFaultEnum> activeWiredFaults; // 10 list R V
     /**
-    * Indicates the currently measured output voltage of the battery in mV (millivolts). A value of NULL shall indicate the Node is currently unable to assess the value.
-    */
+     * Indicates the currently measured output voltage of the battery in mV (millivolts). A value of NULL shall indicate
+     * the Node is currently unable to assess the value.
+     */
     public Integer batVoltage; // 11 uint32 R V
     /**
-    * Indicates the estimated percentage of battery charge remaining until the battery will no longer be able to provide power to the Node. Values are expressed in half percent units, ranging from 0 to 200. E.g. a value of 48 is equivalent to 24%. A value of NULL shall indicate the Node is currently unable to assess the value.
-Changes to this attribute shall only be marked as reportable in the following cases:
-  • At most once every 10 seconds, or
-  • When it changes from null to any other value and vice versa.
-Since reporting consumes power, devices SHOULD be careful not to over-report.
-    */
+     * Indicates the estimated percentage of battery charge remaining until the battery will no longer be able to
+     * provide power to the Node. Values are expressed in half percent units, ranging from 0 to 200. E.g. a value of 48
+     * is equivalent to 24%. A value of NULL shall indicate the Node is currently unable to assess the value.
+     * Changes to this attribute shall only be marked as reportable in the following cases:
+     * • At most once every 10 seconds, or
+     * • When it changes from null to any other value and vice versa.
+     * Since reporting consumes power, devices SHOULD be careful not to over-report.
+     */
     public Integer batPercentRemaining; // 12 uint8 R V
     /**
-    * Indicates the estimated time in seconds before the battery will no longer be able to provide power to the Node. A value of NULL shall indicate the Node is currently unable to assess the value.
-Changes to this attribute shall only be marked as reportable in the following cases:
-  • At most once every 10 seconds, or
-  • When it changes from null to any other value and vice versa.
-Since reporting consumes power, devices SHOULD be careful not to over-report.
-    */
+     * Indicates the estimated time in seconds before the battery will no longer be able to provide power to the Node. A
+     * value of NULL shall indicate the Node is currently unable to assess the value.
+     * Changes to this attribute shall only be marked as reportable in the following cases:
+     * • At most once every 10 seconds, or
+     * • When it changes from null to any other value and vice versa.
+     * Since reporting consumes power, devices SHOULD be careful not to over-report.
+     */
     public Integer batTimeRemaining; // 13 uint32 R V
     /**
-    * Indicates a coarse ranking of the charge level of the battery, used to indicate when intervention is required as specified in BatChargeLevelEnum.
-    */
+     * Indicates a coarse ranking of the charge level of the battery, used to indicate when intervention is required as
+     * specified in BatChargeLevelEnum.
+     */
     public BatChargeLevelEnum batChargeLevel; // 14 BatChargeLevelEnum R V
     /**
-    * Indicates if the battery needs to be replaced. Replacement may be simple routine maintenance, such as with a single use, non-rechargeable cell. Replacement, however, may also indicate end of life, or serious fault with a rechargeable or even non-replaceable cell.
-    */
+     * Indicates if the battery needs to be replaced. Replacement may be simple routine maintenance, such as with a
+     * single use, non-rechargeable cell. Replacement, however, may also indicate end of life, or serious fault with a
+     * rechargeable or even non-replaceable cell.
+     */
     public Boolean batReplacementNeeded; // 15 bool R V
     /**
-    * Indicates the replaceability of the battery as specified in BatReplaceabilityEnum.
-    */
+     * Indicates the replaceability of the battery as specified in BatReplaceabilityEnum.
+     */
     public BatReplaceabilityEnum batReplaceability; // 16 BatReplaceabilityEnum R V
     /**
-    * Indicates whether the Node detects that the batteries are properly installed.
-    */
+     * Indicates whether the Node detects that the batteries are properly installed.
+     */
     public Boolean batPresent; // 17 bool R V
     /**
-    * Indicates the set of battery faults currently detected by the Node on this power source. This set is represented as a list of BatFaultEnum. When the Node detects a fault has been raised, the appropriate BatFaultEnum value shall be added to this list, provided it is not already present. This list shall NOT contain more than one instance of a specific BatFaultEnum value. When the Node detects all conditions contributing to a fault have been cleared, the corresponding BatFaultEnum value shall be removed from this list. An empty list shall indicate there are currently no active faults. The order of this list SHOULD have no significance. Clients interested in monitoring changes in active faults may subscribe to this attribute, or they may subscribe to Bat
-FaultChange.
-    */
+     * Indicates the set of battery faults currently detected by the Node on this power source. This set is represented
+     * as a list of BatFaultEnum. When the Node detects a fault has been raised, the appropriate BatFaultEnum value
+     * shall be added to this list, provided it is not already present. This list shall NOT contain more than one
+     * instance of a specific BatFaultEnum value. When the Node detects all conditions contributing to a fault have been
+     * cleared, the corresponding BatFaultEnum value shall be removed from this list. An empty list shall indicate there
+     * are currently no active faults. The order of this list SHOULD have no significance. Clients interested in
+     * monitoring changes in active faults may subscribe to this attribute, or they may subscribe to Bat
+     * FaultChange.
+     */
     public List<BatFaultEnum> activeBatFaults; // 18 list R V
     /**
-    * This attribute shall provide a user-facing description of this battery, which SHOULD contain information required to identify a replacement, such as form factor, chemistry or preferred manufacturer.
-    */
+     * This attribute shall provide a user-facing description of this battery, which SHOULD contain information required
+     * to identify a replacement, such as form factor, chemistry or preferred manufacturer.
+     */
     public String batReplacementDescription; // 19 string R V
     /**
-    * Indicates the ID of the common or colloquial designation of the battery, as specified in BatCommonDesignationEnum.
-    */
+     * Indicates the ID of the common or colloquial designation of the battery, as specified in
+     * BatCommonDesignationEnum.
+     */
     public BatCommonDesignationEnum batCommonDesignation; // 20 BatCommonDesignationEnum R V
     /**
-    * Indicates the string representing the ANSI designation for the battery as specified in ANSI C18.
-    */
+     * Indicates the string representing the ANSI designation for the battery as specified in ANSI C18.
+     */
     public String batAnsiDesignation; // 21 string R V
     /**
-    * Indicates the string representing the IEC designation for the battery as specified in IEC 60086.
-    */
+     * Indicates the string representing the IEC designation for the battery as specified in IEC 60086.
+     */
     public String batIecDesignation; // 22 string R V
     /**
-    * Indicates the ID of the preferred chemistry of the battery source as specified in BatApprovedChemistryEnum.
-    */
+     * Indicates the ID of the preferred chemistry of the battery source as specified in BatApprovedChemistryEnum.
+     */
     public BatApprovedChemistryEnum batApprovedChemistry; // 23 BatApprovedChemistryEnum R V
     /**
-    * Indicates the preferred minimum charge capacity rating in mAh of individual, user- or factory-serviceable battery cells or packs in the battery source.
-    */
+     * Indicates the preferred minimum charge capacity rating in mAh of individual, user- or factory-serviceable battery
+     * cells or packs in the battery source.
+     */
     public Integer batCapacity; // 24 uint32 R V
     /**
-    * Indicates the quantity of individual, user- or factory-serviceable battery cells or packs in the battery source.
-    */
+     * Indicates the quantity of individual, user- or factory-serviceable battery cells or packs in the battery source.
+     */
     public Integer batQuantity; // 25 uint8 R V
     /**
-    * Indicates the current state of the battery source with respect to charging as specified in BatChargeStateEnum.
-    */
+     * Indicates the current state of the battery source with respect to charging as specified in BatChargeStateEnum.
+     */
     public BatChargeStateEnum batChargeState; // 26 BatChargeStateEnum R V
     /**
-    * Indicates the estimated time in seconds before the battery source will be at full charge. A value of NULL shall indicate the Node is currently unable to assess the value.
-Changes to this attribute shall only be marked as reportable in the following cases:
-  • At most once every 10 seconds, or
-  • When it changes from null to any other value and vice versa.
-Since reporting consumes power, devices SHOULD be careful not to over-report.
-    */
+     * Indicates the estimated time in seconds before the battery source will be at full charge. A value of NULL shall
+     * indicate the Node is currently unable to assess the value.
+     * Changes to this attribute shall only be marked as reportable in the following cases:
+     * • At most once every 10 seconds, or
+     * • When it changes from null to any other value and vice versa.
+     * Since reporting consumes power, devices SHOULD be careful not to over-report.
+     */
     public Integer batTimeToFullCharge; // 27 uint32 R V
     /**
-    * Indicates whether the Node can remain operational while the battery source is charging.
-    */
+     * Indicates whether the Node can remain operational while the battery source is charging.
+     */
     public Boolean batFunctionalWhileCharging; // 28 bool R V
     /**
-    * Indicates assessed current in mA (milliamps) presently supplied to charge the battery source. A value of NULL shall indicate the Node is currently unable to assess the value.
-    */
+     * Indicates assessed current in mA (milliamps) presently supplied to charge the battery source. A value of NULL
+     * shall indicate the Node is currently unable to assess the value.
+     */
     public Integer batChargingCurrent; // 29 uint32 R V
     /**
-    * Indicates the set of charge faults currently detected by the Node on this power source. This set is represented as a list of BatChargeFaultEnum. When the Node detects a fault has been raised, the appropriate BatChargeFaultEnum value shall be added to this list, provided it is not already present. This list shall NOT contain more than one instance of a specific BatChargeFaultEnum value. When the Node detects all conditions contributing to a fault have been cleared, the corresponding BatChargeFaultEnum value shall be removed from this list. An empty list shall indicate there are currently no active faults. The order of this list SHOULD have no significance. Clients interested in monitoring changes in active faults may subscribe to this attribute, or they may subscribe to the BatFaultChange event.
-    */
+     * Indicates the set of charge faults currently detected by the Node on this power source. This set is represented
+     * as a list of BatChargeFaultEnum. When the Node detects a fault has been raised, the appropriate
+     * BatChargeFaultEnum value shall be added to this list, provided it is not already present. This list shall NOT
+     * contain more than one instance of a specific BatChargeFaultEnum value. When the Node detects all conditions
+     * contributing to a fault have been cleared, the corresponding BatChargeFaultEnum value shall be removed from this
+     * list. An empty list shall indicate there are currently no active faults. The order of this list SHOULD have no
+     * significance. Clients interested in monitoring changes in active faults may subscribe to this attribute, or they
+     * may subscribe to the BatFaultChange event.
+     */
     public List<BatChargeFaultEnum> activeBatChargeFaults; // 30 list R V
     /**
-    * Indicates a list of endpoints that are powered by the source defined by this cluster. Multiple instances of this cluster may list the same endpoint, because it is possible for power for an endpoint to come from multiple sources. In that case the Order attribute indicates their priority.
-For each power source on a node, there shall only be one instance of this cluster.
-A cluster instance with an empty list shall indicate that the power source is for the entire node, which includes all endpoints.
-A cluster instance with a non-empty list shall include the endpoint, upon which the cluster instance resides.
-The above rules allow that some endpoints can have an unknown power source, and therefore would not be indicated by any instance of this cluster.
-Empty list examples
-Typically, there is one power source for the node. Also common is mains power for the node with battery backup power for the node. In both these common cases, for each cluster instance described, the list is empty.
-Populated list example
-A node has a mains power source with Order as 0 (zero), but some application endpoints (not all) have a battery back up source with Order as 1, which means this list is empty for the Power Source cluster associated with the mains power, because it indicates the entire node, but the Power Source cluster instance associated with the battery backup would list the endpoints that have a battery backup.
-    */
+     * Indicates a list of endpoints that are powered by the source defined by this cluster. Multiple instances of this
+     * cluster may list the same endpoint, because it is possible for power for an endpoint to come from multiple
+     * sources. In that case the Order attribute indicates their priority.
+     * For each power source on a node, there shall only be one instance of this cluster.
+     * A cluster instance with an empty list shall indicate that the power source is for the entire node, which includes
+     * all endpoints.
+     * A cluster instance with a non-empty list shall include the endpoint, upon which the cluster instance resides.
+     * The above rules allow that some endpoints can have an unknown power source, and therefore would not be indicated
+     * by any instance of this cluster.
+     * Empty list examples
+     * Typically, there is one power source for the node. Also common is mains power for the node with battery backup
+     * power for the node. In both these common cases, for each cluster instance described, the list is empty.
+     * Populated list example
+     * A node has a mains power source with Order as 0 (zero), but some application endpoints (not all) have a battery
+     * back up source with Order as 1, which means this list is empty for the Power Source cluster associated with the
+     * mains power, because it indicates the entire node, but the Power Source cluster instance associated with the
+     * battery backup would list the endpoints that have a battery backup.
+     */
     public List<Integer> endpointList; // 31 list R V
-    //Structs
+    // Structs
+
     /**
-    * The WiredFaultChange Event shall be generated when the set of wired faults currently detected by the Node on this wired power source changes. This event shall correspond to a change in value of ActiveWiredFaults.
-    */
-     public class WiredFaultChange {
+     * The WiredFaultChange Event shall be generated when the set of wired faults currently detected by the Node on this
+     * wired power source changes. This event shall correspond to a change in value of ActiveWiredFaults.
+     */
+    public class WiredFaultChange {
         /**
-        * This field shall represent the set of faults currently detected, as per ActiveWiredFaults.
-        */
+         * This field shall represent the set of faults currently detected, as per ActiveWiredFaults.
+         */
         public List<WiredFaultEnum> current; // list
         /**
-        * This field shall represent the set of faults detected prior to this change event, as per ActiveWiredFaults.
-        */
+         * This field shall represent the set of faults detected prior to this change event, as per ActiveWiredFaults.
+         */
         public List<WiredFaultEnum> previous; // list
+
         public WiredFaultChange(List<WiredFaultEnum> current, List<WiredFaultEnum> previous) {
             this.current = current;
             this.previous = previous;
         }
-     }
+    }
+
     /**
-    * The BatFaultChange Event shall be generated when the set of battery faults currently detected by the Node on this battery power source changes. This event shall correspond to a change in value of ActiveBatFaults.
-    */
-     public class BatFaultChange {
+     * The BatFaultChange Event shall be generated when the set of battery faults currently detected by the Node on this
+     * battery power source changes. This event shall correspond to a change in value of ActiveBatFaults.
+     */
+    public class BatFaultChange {
         /**
-        * This field shall represent the set of faults currently detected, as per ActiveBatFaults.
-        */
+         * This field shall represent the set of faults currently detected, as per ActiveBatFaults.
+         */
         public List<BatFaultEnum> current; // list
         /**
-        * This field shall represent the set of faults detected prior to this change event, as per ActiveBatFaults.
-        */
+         * This field shall represent the set of faults detected prior to this change event, as per ActiveBatFaults.
+         */
         public List<BatFaultEnum> previous; // list
+
         public BatFaultChange(List<BatFaultEnum> current, List<BatFaultEnum> previous) {
             this.current = current;
             this.previous = previous;
         }
-     }
+    }
+
     /**
-    * The BatChargeFaultChange Event shall be generated when the set of charge faults currently detected by the Node on this battery power source changes. This event shall correspond to a change in value of ActiveBatChargeFaults.
-    */
-     public class BatChargeFaultChange {
+     * The BatChargeFaultChange Event shall be generated when the set of charge faults currently detected by the Node on
+     * this battery power source changes. This event shall correspond to a change in value of ActiveBatChargeFaults.
+     */
+    public class BatChargeFaultChange {
         /**
-        * This field shall represent the set of faults currently detected, as per ActiveBatChargeFaults.
-        */
+         * This field shall represent the set of faults currently detected, as per ActiveBatChargeFaults.
+         */
         public List<BatChargeFaultEnum> current; // list
         /**
-        * This field shall represent the set of faults detected prior to this change event, as per ActiveBatChargeFaults.
-        */
+         * This field shall represent the set of faults detected prior to this change event, as per
+         * ActiveBatChargeFaults.
+         */
         public List<BatChargeFaultEnum> previous; // list
+
         public BatChargeFaultChange(List<BatChargeFaultEnum> current, List<BatChargeFaultEnum> previous) {
             this.current = current;
             this.previous = previous;
         }
-     }
+    }
 
-
-    //Enums
+    // Enums
     public enum WiredFaultEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
         OVER_VOLTAGE(1, "OverVoltage"),
         UNDER_VOLTAGE(2, "UnderVoltage");
+
         public final Integer value;
         public final String label;
-        private WiredFaultEnum(Integer value, String label){
+
+        private WiredFaultEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -297,13 +358,16 @@ A node has a mains power source with Order as 0 (zero), but some application end
             return label;
         }
     }
+
     public enum BatFaultEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
         OVER_TEMP(1, "OverTemp"),
         UNDER_TEMP(2, "UnderTemp");
+
         public final Integer value;
         public final String label;
-        private BatFaultEnum(Integer value, String label){
+
+        private BatFaultEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -318,6 +382,7 @@ A node has a mains power source with Order as 0 (zero), but some application end
             return label;
         }
     }
+
     public enum BatChargeFaultEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
         AMBIENT_TOO_HOT(1, "AmbientTooHot"),
@@ -330,9 +395,11 @@ A node has a mains power source with Order as 0 (zero), but some application end
         CHARGER_OVER_VOLTAGE(8, "ChargerOverVoltage"),
         CHARGER_UNDER_VOLTAGE(9, "ChargerUnderVoltage"),
         SAFETY_TIMEOUT(10, "SafetyTimeout");
+
         public final Integer value;
         public final String label;
-        private BatChargeFaultEnum(Integer value, String label){
+
+        private BatChargeFaultEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -347,14 +414,17 @@ A node has a mains power source with Order as 0 (zero), but some application end
             return label;
         }
     }
+
     public enum PowerSourceStatusEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
         ACTIVE(1, "Active"),
         STANDBY(2, "Standby"),
         UNAVAILABLE(3, "Unavailable");
+
         public final Integer value;
         public final String label;
-        private PowerSourceStatusEnum(Integer value, String label){
+
+        private PowerSourceStatusEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -369,12 +439,15 @@ A node has a mains power source with Order as 0 (zero), but some application end
             return label;
         }
     }
+
     public enum WiredCurrentTypeEnum implements MatterEnum {
         AC(0, "Ac"),
         DC(1, "Dc");
+
         public final Integer value;
         public final String label;
-        private WiredCurrentTypeEnum(Integer value, String label){
+
+        private WiredCurrentTypeEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -389,13 +462,16 @@ A node has a mains power source with Order as 0 (zero), but some application end
             return label;
         }
     }
+
     public enum BatChargeLevelEnum implements MatterEnum {
         OK(0, "Ok"),
         WARNING(1, "Warning"),
         CRITICAL(2, "Critical");
+
         public final Integer value;
         public final String label;
-        private BatChargeLevelEnum(Integer value, String label){
+
+        private BatChargeLevelEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -410,14 +486,17 @@ A node has a mains power source with Order as 0 (zero), but some application end
             return label;
         }
     }
+
     public enum BatReplaceabilityEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
         NOT_REPLACEABLE(1, "NotReplaceable"),
         USER_REPLACEABLE(2, "UserReplaceable"),
         FACTORY_REPLACEABLE(3, "FactoryReplaceable");
+
         public final Integer value;
         public final String label;
-        private BatReplaceabilityEnum(Integer value, String label){
+
+        private BatReplaceabilityEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -432,6 +511,7 @@ A node has a mains power source with Order as 0 (zero), but some application end
             return label;
         }
     }
+
     public enum BatCommonDesignationEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
         AAA(1, "Aaa"),
@@ -514,9 +594,11 @@ A node has a mains power source with Order as 0 (zero), but some application end
         V25500(78, "25500"),
         V26650(79, "26650"),
         V32600(80, "32600");
+
         public final Integer value;
         public final String label;
-        private BatCommonDesignationEnum(Integer value, String label){
+
+        private BatCommonDesignationEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -531,6 +613,7 @@ A node has a mains power source with Order as 0 (zero), but some application end
             return label;
         }
     }
+
     public enum BatApprovedChemistryEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
         ALKALINE(1, "Alkaline"),
@@ -565,9 +648,11 @@ A node has a mains power source with Order as 0 (zero), but some application end
         SODIUM_SULFUR(30, "SodiumSulfur"),
         ZINC_BROMIDE(31, "ZincBromide"),
         ZINC_CERIUM(32, "ZincCerium");
+
         public final Integer value;
         public final String label;
-        private BatApprovedChemistryEnum(Integer value, String label){
+
+        private BatApprovedChemistryEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -582,14 +667,17 @@ A node has a mains power source with Order as 0 (zero), but some application end
             return label;
         }
     }
+
     public enum BatChargeStateEnum implements MatterEnum {
         UNKNOWN(0, "Unknown"),
         IS_CHARGING(1, "IsCharging"),
         IS_AT_FULL_CHARGE(2, "IsAtFullCharge"),
         IS_NOT_CHARGING(3, "IsNotCharging");
+
         public final Integer value;
         public final String label;
-        private BatChargeStateEnum(Integer value, String label){
+
+        private BatChargeStateEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -608,26 +696,27 @@ A node has a mains power source with Order as 0 (zero), but some application end
     // Bitmaps
     public static class FeatureMap {
         /**
-        * Wired
-        * A wired power source
-        */
+         * Wired
+         * A wired power source
+         */
         public boolean wired;
         /**
-        * Battery
-        * A battery power source
-        */
+         * Battery
+         * A battery power source
+         */
         public boolean battery;
         /**
-        * Rechargeable
-        * A rechargeable battery power source
-        */
+         * Rechargeable
+         * A rechargeable battery power source
+         */
         public boolean rechargeable;
         /**
-        * Replaceable
-        * A replaceable battery power source
-        */
+         * Replaceable
+         * A replaceable battery power source
+         */
         public boolean replaceable;
-        public FeatureMap(boolean wired, boolean battery, boolean rechargeable, boolean replaceable){
+
+        public FeatureMap(boolean wired, boolean battery, boolean rechargeable, boolean replaceable) {
             this.wired = wired;
             this.battery = battery;
             this.rechargeable = rechargeable;
@@ -639,7 +728,6 @@ A node has a mains power source with Order as 0 (zero), but some application end
         super(nodeId, endpointId, 47, "PowerSource");
     }
 
-    
     @Override
     public @NonNull String toString() {
         String str = "";

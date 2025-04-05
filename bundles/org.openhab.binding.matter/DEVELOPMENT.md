@@ -22,12 +22,20 @@ mvn clean install
 
 ### Maven Build Process
 
-The `mvn clean install` command executes several steps to generate classes, build the websocket server, and package everything together:
+The `mvn clean install` command executes several steps to build the websocket server and package everything together. 
+By default, this will not regenerate the matter cluster classes. To regenerate the cluster classes, use the `code-gen` profile:
+
+```bash
+mvn clean install -P code-gen
+```
+
+The following maven steps are executed:
 
 1. **Clean Phase**
-   - Cleans previously generated code directories
-   - Removes `code-gen/out` directory
-   - Cleans generated Java classes in `src/main/java/org/openhab/binding/matter/internal/client/dto/cluster/gen`
+   - Without `-P code-gen`: Cleans only standard build output directories
+   - With `-P code-gen`: Additionally cleans:
+     - The `code-gen/out` directory
+     - Generated Java classes in `src/main/java/org/openhab/binding/matter/internal/client/dto/cluster/gen`
 
 2. **Generate Resources Phase**
    - Sets up Node.js and npm environment
@@ -35,14 +43,14 @@ The `mvn clean install` command executes several steps to generate classes, buil
    - Builds Matter server using webpack
    - Copies built `matter.js` to the appropriate resource directory for inclusion in the final jar
 
-3. **Generate Sources Phase**
+3. **Generate Sources Phase** (only with `-P code-gen`)
    - Runs code generation tool:
      1. Installs code-gen npm dependencies
      2. Runs the main 'app.ts' which uses custom handlebars template for code generation from Matter.js SDK definitions
      3. Moves generated Java classes to `src/main/java/.../internal/client/dto/cluster/gen`
      4. Cleans up temporary output directories
 
-4. **Process Sources Phase**
+4. **Process Sources Phase** (only with `-P code-gen`)
    - Formats generated code using spotless
 
 5. **Compile and Package**

@@ -16,12 +16,8 @@
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
-import java.util.LinkedHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
-
 import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
@@ -31,28 +27,25 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class LowPowerCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x0508;
+    public static final int CLUSTER_ID = 0x0508;
     public static final String CLUSTER_NAME = "LowPower";
     public static final String CLUSTER_PREFIX = "lowPower";
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
 
-    public Integer clusterRevision; // 65533 ClusterRevision 
-
-
-
+    public Integer clusterRevision; // 65533 ClusterRevision
 
     public LowPowerCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 1288, "LowPower");
     }
 
-    
-    //commands
+    // commands
     /**
-    * This command shall put the device into low power mode.
-    */
+     * This command shall put the device into low power mode.
+     */
     public static ClusterCommand sleep() {
         return new ClusterCommand("sleep");
     }
+
     @Override
     public @NonNull String toString() {
         String str = "";

@@ -16,12 +16,11 @@
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
-
 import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
@@ -31,26 +30,27 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x0029;
+    public static final int CLUSTER_ID = 0x0029;
     public static final String CLUSTER_NAME = "OtaSoftwareUpdateProvider";
     public static final String CLUSTER_PREFIX = "otaSoftwareUpdateProvider";
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
 
-    public Integer clusterRevision; // 65533 ClusterRevision 
+    public Integer clusterRevision; // 65533 ClusterRevision
 
-
-    //Enums
+    // Enums
     /**
-    * See Section 11.20.3.2, “Querying the OTA Provider” for the semantics of these values.
-    */
+     * See Section 11.20.3.2, “Querying the OTA Provider” for the semantics of these values.
+     */
     public enum StatusEnum implements MatterEnum {
         UPDATE_AVAILABLE(0, "UpdateAvailable"),
         BUSY(1, "Busy"),
         NOT_AVAILABLE(2, "NotAvailable"),
         DOWNLOAD_PROTOCOL_NOT_SUPPORTED(3, "DownloadProtocolNotSupported");
+
         public final Integer value;
         public final String label;
-        private StatusEnum(Integer value, String label){
+
+        private StatusEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -65,16 +65,20 @@ public static final int CLUSTER_ID = 0x0029;
             return label;
         }
     }
+
     /**
-    * See Section 11.20.3.6, “Applying a software update” for the semantics of the values. This enumeration is used in the Action field of the ApplyUpdateResponse command. See (Action).
-    */
+     * See Section 11.20.3.6, “Applying a software update” for the semantics of the values. This enumeration is used in
+     * the Action field of the ApplyUpdateResponse command. See (Action).
+     */
     public enum ApplyUpdateActionEnum implements MatterEnum {
         PROCEED(0, "Proceed"),
         AWAIT_NEXT_ACTION(1, "AwaitNextAction"),
         DISCONTINUE(2, "Discontinue");
+
         public final Integer value;
         public final String label;
-        private ApplyUpdateActionEnum(Integer value, String label){
+
+        private ApplyUpdateActionEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -89,17 +93,21 @@ public static final int CLUSTER_ID = 0x0029;
             return label;
         }
     }
+
     /**
-    * Note that only HTTP over TLS (HTTPS) is supported (see RFC 7230). Using HTTP without TLS shall NOT be supported, as there is no way to authenticate the involved participants.
-    */
+     * Note that only HTTP over TLS (HTTPS) is supported (see RFC 7230). Using HTTP without TLS shall NOT be supported,
+     * as there is no way to authenticate the involved participants.
+     */
     public enum DownloadProtocolEnum implements MatterEnum {
         BDX_SYNCHRONOUS(0, "BdxSynchronous"),
         BDX_ASYNCHRONOUS(1, "BdxAsynchronous"),
         HTTPS(2, "Https"),
         VENDOR_SPECIFIC(3, "VendorSpecific");
+
         public final Integer value;
         public final String label;
-        private DownloadProtocolEnum(Integer value, String label){
+
+        private DownloadProtocolEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -115,17 +123,18 @@ public static final int CLUSTER_ID = 0x0029;
         }
     }
 
-
     public OtaSoftwareUpdateProviderCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 41, "OtaSoftwareUpdateProvider");
     }
 
-    
-    //commands
+    // commands
     /**
-    * Upon receipt, this command shall trigger an attempt to find an updated Software Image by the OTA Provider to match the OTA Requestor’s constraints provided in the payload fields.
-    */
-    public static ClusterCommand queryImage(Integer vendorId, Integer productId, Integer softwareVersion, List<DownloadProtocolEnum> protocolsSupported, Integer hardwareVersion, String location, Boolean requestorCanConsent, String metadataForProvider) {
+     * Upon receipt, this command shall trigger an attempt to find an updated Software Image by the OTA Provider to
+     * match the OTA Requestor’s constraints provided in the payload fields.
+     */
+    public static ClusterCommand queryImage(Integer vendorId, Integer productId, Integer softwareVersion,
+            List<DownloadProtocolEnum> protocolsSupported, Integer hardwareVersion, String location,
+            Boolean requestorCanConsent, String metadataForProvider) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (vendorId != null) {
             map.put("vendorId", vendorId);
@@ -153,6 +162,7 @@ public static final int CLUSTER_ID = 0x0029;
         }
         return new ClusterCommand("queryImage", map);
     }
+
     public static ClusterCommand applyUpdateRequest(String updateToken, Integer newVersion) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (updateToken != null) {
@@ -163,6 +173,7 @@ public static final int CLUSTER_ID = 0x0029;
         }
         return new ClusterCommand("applyUpdateRequest", map);
     }
+
     public static ClusterCommand notifyUpdateApplied(String updateToken, Integer softwareVersion) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (updateToken != null) {
@@ -173,6 +184,7 @@ public static final int CLUSTER_ID = 0x0029;
         }
         return new ClusterCommand("notifyUpdateApplied", map);
     }
+
     @Override
     public @NonNull String toString() {
         String str = "";

@@ -16,12 +16,11 @@
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
-
 import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
@@ -31,7 +30,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class MicrowaveOvenControlCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x005F;
+    public static final int CLUSTER_ID = 0x005F;
     public static final String CLUSTER_NAME = "MicrowaveOvenControl";
     public static final String CLUSTER_PREFIX = "microwaveOvenControl";
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
@@ -46,77 +45,80 @@ public static final int CLUSTER_ID = 0x005F;
     public static final String ATTRIBUTE_SELECTED_WATT_INDEX = "selectedWattIndex";
     public static final String ATTRIBUTE_WATT_RATING = "wattRating";
 
-    public Integer clusterRevision; // 65533 ClusterRevision 
-    public FeatureMap featureMap; // 65532 FeatureMap 
+    public Integer clusterRevision; // 65533 ClusterRevision
+    public FeatureMap featureMap; // 65532 FeatureMap
     /**
-    * Indicates the total cook time associated with the operation of the device.
-This attribute shall remain unchanged during the operation of the oven unless the value is changed via a command or out-of-band action.
-    */
+     * Indicates the total cook time associated with the operation of the device.
+     * This attribute shall remain unchanged during the operation of the oven unless the value is changed via a command
+     * or out-of-band action.
+     */
     public Integer cookTime; // 0 elapsed-s R V
     /**
-    * Indicates the maximum value to which the CookTime attribute can be set.
-    */
+     * Indicates the maximum value to which the CookTime attribute can be set.
+     */
     public Integer maxCookTime; // 1 elapsed-s R V
     /**
-    * Indicates the power level associated with the operation of the device. If the MinPower, MaxPower, and PowerStep attributes are not supported:
-  • The minimum value of this attribute shall be 10,
-  • The maximum value of this attribute shall be 100,
-  • The value shall be in even multiples of 10,
-  • The default value shall be 100.
-If the MinPower, MaxPower, and PowerStep attributes are supported:
-  • The value of this attribute shall be between MinPower and MaxPower inclusive.
-  • The value of this attribute shall be such that (PowerSetting - MinPower) % PowerStep &#x3D;&#x3D; 0
-    */
+     * Indicates the power level associated with the operation of the device. If the MinPower, MaxPower, and PowerStep
+     * attributes are not supported:
+     * • The minimum value of this attribute shall be 10,
+     * • The maximum value of this attribute shall be 100,
+     * • The value shall be in even multiples of 10,
+     * • The default value shall be 100.
+     * If the MinPower, MaxPower, and PowerStep attributes are supported:
+     * • The value of this attribute shall be between MinPower and MaxPower inclusive.
+     * • The value of this attribute shall be such that (PowerSetting - MinPower) % PowerStep &#x3D;&#x3D; 0
+     */
     public Integer powerSetting; // 2 uint8 R V
     /**
-    * Indicates the minimum value to which the PowerSetting attribute that can be set on the server.
-    */
+     * Indicates the minimum value to which the PowerSetting attribute that can be set on the server.
+     */
     public Integer minPower; // 3 uint8 R V
     /**
-    * Indicates the maximum value to which the PowerSetting attribute that can be set on the server.
-    */
+     * Indicates the maximum value to which the PowerSetting attribute that can be set on the server.
+     */
     public Integer maxPower; // 4 uint8 R V
     /**
-    * Indicates the increment of power that can be set on the server. The value of this attribute shall be between 1 and MaxPower inclusive.
-The value of this attribute shall be such that (MaxPower - MinPower) % PowerStep &#x3D;&#x3D; 0
-For example, if MinPower is 1, MaxPower is 10, and PowerSetting can be set to any integer between MinPower and MaxPower, PowerStep would be set to 1.
-    */
+     * Indicates the increment of power that can be set on the server. The value of this attribute shall be between 1
+     * and MaxPower inclusive.
+     * The value of this attribute shall be such that (MaxPower - MinPower) % PowerStep &#x3D;&#x3D; 0
+     * For example, if MinPower is 1, MaxPower is 10, and PowerSetting can be set to any integer between MinPower and
+     * MaxPower, PowerStep would be set to 1.
+     */
     public Integer powerStep; // 5 uint8 R V
     /**
-    * Indicates the list of power levels (in W) supported by the server.
-    */
+     * Indicates the list of power levels (in W) supported by the server.
+     */
     public List<Integer> supportedWatts; // 6 list R V
     /**
-    * Indicates the index into the list of SupportedWatts of the currently selected power setting.
-The index shall be a valid index into the SupportedWatts list.
-    */
+     * Indicates the index into the list of SupportedWatts of the currently selected power setting.
+     * The index shall be a valid index into the SupportedWatts list.
+     */
     public Integer selectedWattIndex; // 7 uint8 R V
     /**
-    * Indicates the rating, in Watts, of the microwave power of the oven.
-Supporting this attribute can assist clients in suggesting cooking settings for various foods and beverages.
-    */
+     * Indicates the rating, in Watts, of the microwave power of the oven.
+     * Supporting this attribute can assist clients in suggesting cooking settings for various foods and beverages.
+     */
     public Integer wattRating; // 8 uint16 R V
-
-
 
     // Bitmaps
     public static class FeatureMap {
         /**
-        * PowerAsNumber
-        * Power is specified as a unitless number or a percentage
-        */
+         * PowerAsNumber
+         * Power is specified as a unitless number or a percentage
+         */
         public boolean powerAsNumber;
         /**
-        * PowerInWatts
-        * Power is specified in Watts
-        */
+         * PowerInWatts
+         * Power is specified in Watts
+         */
         public boolean powerInWatts;
         /**
-        * PowerNumberLimits
-        * Supports the limit attributes used with the PWRNUM feature
-        */
+         * PowerNumberLimits
+         * Supports the limit attributes used with the PWRNUM feature
+         */
         public boolean powerNumberLimits;
-        public FeatureMap(boolean powerAsNumber, boolean powerInWatts, boolean powerNumberLimits){
+
+        public FeatureMap(boolean powerAsNumber, boolean powerInWatts, boolean powerNumberLimits) {
             this.powerAsNumber = powerAsNumber;
             this.powerInWatts = powerInWatts;
             this.powerNumberLimits = powerNumberLimits;
@@ -127,12 +129,13 @@ Supporting this attribute can assist clients in suggesting cooking settings for 
         super(nodeId, endpointId, 95, "MicrowaveOvenControl");
     }
 
-    
-    //commands
+    // commands
     /**
-    * This command is used to set the cooking parameters associated with the operation of the device. This command supports the following fields:
-    */
-    public static ClusterCommand setCookingParameters(Integer cookMode, Integer cookTime, Integer powerSetting, Integer wattSettingIndex, Boolean startAfterSetting) {
+     * This command is used to set the cooking parameters associated with the operation of the device. This command
+     * supports the following fields:
+     */
+    public static ClusterCommand setCookingParameters(Integer cookMode, Integer cookTime, Integer powerSetting,
+            Integer wattSettingIndex, Boolean startAfterSetting) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (cookMode != null) {
             map.put("cookMode", cookMode);
@@ -151,9 +154,11 @@ Supporting this attribute can assist clients in suggesting cooking settings for 
         }
         return new ClusterCommand("setCookingParameters", map);
     }
+
     /**
-    * This command is used to add more time to the CookTime attribute of the server. This command supports these fields:
-    */
+     * This command is used to add more time to the CookTime attribute of the server. This command supports these
+     * fields:
+     */
     public static ClusterCommand addMoreTime(Integer timeToAdd) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (timeToAdd != null) {
@@ -161,6 +166,7 @@ Supporting this attribute can assist clients in suggesting cooking settings for 
         }
         return new ClusterCommand("addMoreTime", map);
     }
+
     @Override
     public @NonNull String toString() {
         String str = "";

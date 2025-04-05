@@ -17,12 +17,8 @@ package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Map;
-import java.util.LinkedHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
-
-import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
  * LaundryDryerControls
@@ -31,38 +27,48 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class LaundryDryerControlsCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x004A;
+    public static final int CLUSTER_ID = 0x004A;
     public static final String CLUSTER_NAME = "LaundryDryerControls";
     public static final String CLUSTER_PREFIX = "laundryDryerControls";
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_SUPPORTED_DRYNESS_LEVELS = "supportedDrynessLevels";
     public static final String ATTRIBUTE_SELECTED_DRYNESS_LEVEL = "selectedDrynessLevel";
 
-    public Integer clusterRevision; // 65533 ClusterRevision 
+    public Integer clusterRevision; // 65533 ClusterRevision
     /**
-    * Indicates the list of supported dryness levels available to the appliance in the currently selected mode. The dryness level values are determined by the manufacturer. At least one dryness level value shall be provided in the SupportedDrynessLevels list. The list of dryness levels may change depending on the currently-selected Laundry Dryer mode.
-    */
+     * Indicates the list of supported dryness levels available to the appliance in the currently selected mode. The
+     * dryness level values are determined by the manufacturer. At least one dryness level value shall be provided in
+     * the SupportedDrynessLevels list. The list of dryness levels may change depending on the currently-selected
+     * Laundry Dryer mode.
+     */
     public List<DrynessLevelEnum> supportedDrynessLevels; // 0 list R V
     /**
-    * Indicates the currently-selected dryness level and it shall be the index into the SupportedDrynessLevels list of the selected dryness level.
-If an attempt is made to write this attribute with a value other than null or a value contained in SupportedDrynessLevels, a CONSTRAINT_ERROR response shall be sent as the response. If an attempt is made to write this attribute while the device is not in a state that supports modifying the dryness level, an INVALID_IN_STATE error shall be sent as the response. A value of null shall indicate that there will be no dryness level setting for the current mode.
-    */
+     * Indicates the currently-selected dryness level and it shall be the index into the SupportedDrynessLevels list of
+     * the selected dryness level.
+     * If an attempt is made to write this attribute with a value other than null or a value contained in
+     * SupportedDrynessLevels, a CONSTRAINT_ERROR response shall be sent as the response. If an attempt is made to write
+     * this attribute while the device is not in a state that supports modifying the dryness level, an INVALID_IN_STATE
+     * error shall be sent as the response. A value of null shall indicate that there will be no dryness level setting
+     * for the current mode.
+     */
     public DrynessLevelEnum selectedDrynessLevel; // 1 DrynessLevelEnum RW VO
 
-
-    //Enums
+    // Enums
     /**
-    * This enum provides a representation of the level of dryness that will be used while drying in a selected mode.
-It is up to the device manufacturer to determine the mapping between the enum values and the corresponding temperature level.
-    */
+     * This enum provides a representation of the level of dryness that will be used while drying in a selected mode.
+     * It is up to the device manufacturer to determine the mapping between the enum values and the corresponding
+     * temperature level.
+     */
     public enum DrynessLevelEnum implements MatterEnum {
         LOW(0, "Low"),
         NORMAL(1, "Normal"),
         EXTRA(2, "Extra"),
         MAX(3, "Max");
+
         public final Integer value;
         public final String label;
-        private DrynessLevelEnum(Integer value, String label){
+
+        private DrynessLevelEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -78,12 +84,10 @@ It is up to the device manufacturer to determine the mapping between the enum va
         }
     }
 
-
     public LaundryDryerControlsCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 74, "LaundryDryerControls");
     }
 
-    
     @Override
     public @NonNull String toString() {
         String str = "";

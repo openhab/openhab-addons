@@ -16,12 +16,11 @@
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
-
 import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
@@ -31,64 +30,74 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class TargetNavigatorCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x0505;
+    public static final int CLUSTER_ID = 0x0505;
     public static final String CLUSTER_NAME = "TargetNavigator";
     public static final String CLUSTER_PREFIX = "targetNavigator";
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_TARGET_LIST = "targetList";
     public static final String ATTRIBUTE_CURRENT_TARGET = "currentTarget";
 
-    public Integer clusterRevision; // 65533 ClusterRevision 
+    public Integer clusterRevision; // 65533 ClusterRevision
     /**
-    * Indicates a list of targets that can be navigated to within the experience presented to the user by the Endpoint (Video Player or Content App). The list shall NOT contain any entries with the same Identifier in the TargetInfoStruct object.
-    */
+     * Indicates a list of targets that can be navigated to within the experience presented to the user by the Endpoint
+     * (Video Player or Content App). The list shall NOT contain any entries with the same Identifier in the
+     * TargetInfoStruct object.
+     */
     public List<TargetInfoStruct> targetList; // 0 list R V
     /**
-    * Indicates the Identifier for the target which is currently in foreground on the corresponding Endpoint (Video Player or Content App), or 0xFF to indicate that no target is in the foreground.
-When not 0xFF, the CurrentTarget shall be an Identifier value contained within one of the TargetInfoStruct objects in the TargetList attribute.
-    */
+     * Indicates the Identifier for the target which is currently in foreground on the corresponding Endpoint (Video
+     * Player or Content App), or 0xFF to indicate that no target is in the foreground.
+     * When not 0xFF, the CurrentTarget shall be an Identifier value contained within one of the TargetInfoStruct
+     * objects in the TargetList attribute.
+     */
     public Integer currentTarget; // 1 uint8 R V
-    //Structs
+    // Structs
+
     /**
-    * This event shall be generated when there is a change in either the active target or the list of available targets or both.
-    */
-     public class TargetUpdated {
+     * This event shall be generated when there is a change in either the active target or the list of available targets
+     * or both.
+     */
+    public class TargetUpdated {
         public List<TargetInfoStruct> targetList; // list
         public Integer currentTarget; // uint8
         public String data; // octstr
+
         public TargetUpdated(List<TargetInfoStruct> targetList, Integer currentTarget, String data) {
             this.targetList = targetList;
             this.currentTarget = currentTarget;
             this.data = data;
         }
-     }
+    }
+
     /**
-    * This indicates an object describing the navigable target.
-    */
-     public class TargetInfoStruct {
+     * This indicates an object describing the navigable target.
+     */
+    public class TargetInfoStruct {
         /**
-        * This field shall contain an unique id within the TargetList.
-        */
+         * This field shall contain an unique id within the TargetList.
+         */
         public Integer identifier; // uint8
         /**
-        * This field shall contain a name string for the TargetInfoStruct.
-        */
+         * This field shall contain a name string for the TargetInfoStruct.
+         */
         public String name; // string
+
         public TargetInfoStruct(Integer identifier, String name) {
             this.identifier = identifier;
             this.name = name;
         }
-     }
+    }
 
-
-    //Enums
+    // Enums
     public enum StatusEnum implements MatterEnum {
         SUCCESS(0, "Success"),
         TARGET_NOT_FOUND(1, "TargetNotFound"),
         NOT_ALLOWED(2, "NotAllowed");
+
         public final Integer value;
         public final String label;
-        private StatusEnum(Integer value, String label){
+
+        private StatusEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -104,16 +113,14 @@ When not 0xFF, the CurrentTarget shall be an Identifier value contained within o
         }
     }
 
-
     public TargetNavigatorCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 1285, "TargetNavigator");
     }
 
-    
-    //commands
+    // commands
     /**
-    * Upon receipt, this shall navigation the UX to the target identified.
-    */
+     * Upon receipt, this shall navigation the UX to the target identified.
+     */
     public static ClusterCommand navigateTarget(Integer target, String data) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (target != null) {
@@ -124,6 +131,7 @@ When not 0xFF, the CurrentTarget shall be an Identifier value contained within o
         }
         return new ClusterCommand("navigateTarget", map);
     }
+
     @Override
     public @NonNull String toString() {
         String str = "";

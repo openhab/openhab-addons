@@ -16,12 +16,11 @@
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
-
 import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
@@ -31,7 +30,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class MediaInputCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x0507;
+    public static final int CLUSTER_ID = 0x0507;
     public static final String CLUSTER_NAME = "MediaInput";
     public static final String CLUSTER_PREFIX = "mediaInput";
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
@@ -39,47 +38,50 @@ public static final int CLUSTER_ID = 0x0507;
     public static final String ATTRIBUTE_INPUT_LIST = "inputList";
     public static final String ATTRIBUTE_CURRENT_INPUT = "currentInput";
 
-    public Integer clusterRevision; // 65533 ClusterRevision 
-    public FeatureMap featureMap; // 65532 FeatureMap 
+    public Integer clusterRevision; // 65533 ClusterRevision
+    public FeatureMap featureMap; // 65532 FeatureMap
     /**
-    * This attribute shall provide a list of the media inputs supported by the device.
-    */
+     * This attribute shall provide a list of the media inputs supported by the device.
+     */
     public List<InputInfoStruct> inputList; // 0 list R V
     /**
-    * This attribute shall contain the value of the index field of the currently selected InputInfoStruct.
-    */
+     * This attribute shall contain the value of the index field of the currently selected InputInfoStruct.
+     */
     public Integer currentInput; // 1 uint8 R V
-    //Structs
+    // Structs
+
     /**
-    * This contains information about an input.
-    */
-     public class InputInfoStruct {
+     * This contains information about an input.
+     */
+    public class InputInfoStruct {
         /**
-        * This field shall indicate the unique index into the list of Inputs.
-        */
+         * This field shall indicate the unique index into the list of Inputs.
+         */
         public Integer index; // uint8
         /**
-        * This field shall indicate the type of input
-        */
+         * This field shall indicate the type of input
+         */
         public InputTypeEnum inputType; // InputTypeEnum
         /**
-        * This field shall indicate the input name, such as “HDMI 1”. This field may be blank, but SHOULD be provided when known.
-        */
+         * This field shall indicate the input name, such as “HDMI 1”. This field may be blank, but SHOULD be provided
+         * when known.
+         */
         public String name; // string
         /**
-        * This field shall indicate the user editable input description, such as “Living room Playstation”. This field may be blank, but SHOULD be provided when known.
-        */
+         * This field shall indicate the user editable input description, such as “Living room Playstation”. This field
+         * may be blank, but SHOULD be provided when known.
+         */
         public String description; // string
+
         public InputInfoStruct(Integer index, InputTypeEnum inputType, String name, String description) {
             this.index = index;
             this.inputType = inputType;
             this.name = name;
             this.description = description;
         }
-     }
+    }
 
-
-    //Enums
+    // Enums
     public enum InputTypeEnum implements MatterEnum {
         INTERNAL(0, "Internal"),
         AUX(1, "Aux"),
@@ -93,9 +95,11 @@ public static final int CLUSTER_ID = 0x0507;
         SCART(9, "Scart"),
         USB(10, "Usb"),
         OTHER(11, "Other");
+
         public final Integer value;
         public final String label;
-        private InputTypeEnum(Integer value, String label){
+
+        private InputTypeEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -114,11 +118,12 @@ public static final int CLUSTER_ID = 0x0507;
     // Bitmaps
     public static class FeatureMap {
         /**
-        * NameUpdates
-        * Supports updates to the input names
-        */
+         * NameUpdates
+         * Supports updates to the input names
+         */
         public boolean nameUpdates;
-        public FeatureMap(boolean nameUpdates){
+
+        public FeatureMap(boolean nameUpdates) {
             this.nameUpdates = nameUpdates;
         }
     }
@@ -127,12 +132,11 @@ public static final int CLUSTER_ID = 0x0507;
         super(nodeId, endpointId, 1287, "MediaInput");
     }
 
-    
-    //commands
+    // commands
     /**
-    * Upon receipt, this command shall change the media input on the device to the input at a specific
-index in the Input List.
-    */
+     * Upon receipt, this command shall change the media input on the device to the input at a specific
+     * index in the Input List.
+     */
     public static ClusterCommand selectInput(Integer index) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (index != null) {
@@ -140,21 +144,25 @@ index in the Input List.
         }
         return new ClusterCommand("selectInput", map);
     }
+
     /**
-    * Upon receipt, this command shall display the active status of the input list on screen.
-    */
+     * Upon receipt, this command shall display the active status of the input list on screen.
+     */
     public static ClusterCommand showInputStatus() {
         return new ClusterCommand("showInputStatus");
     }
+
     /**
-    * Upon receipt, this command shall hide the input list from the screen.
-    */
+     * Upon receipt, this command shall hide the input list from the screen.
+     */
     public static ClusterCommand hideInputStatus() {
         return new ClusterCommand("hideInputStatus");
     }
+
     /**
-    * Upon receipt, this command shall rename the input at a specific index in the Input List. Updates to the input name shall appear in the device’s settings menus.
-    */
+     * Upon receipt, this command shall rename the input at a specific index in the Input List. Updates to the input
+     * name shall appear in the device’s settings menus.
+     */
     public static ClusterCommand renameInput(Integer index, String name) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (index != null) {
@@ -165,6 +173,7 @@ index in the Input List.
         }
         return new ClusterCommand("renameInput", map);
     }
+
     @Override
     public @NonNull String toString() {
         String str = "";

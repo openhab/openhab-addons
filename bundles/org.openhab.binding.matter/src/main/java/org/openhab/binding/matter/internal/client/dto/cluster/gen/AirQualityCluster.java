@@ -16,13 +16,8 @@
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
-import java.util.LinkedHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
-
-import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
  * AirQuality
@@ -31,25 +26,25 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class AirQualityCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x005B;
+    public static final int CLUSTER_ID = 0x005B;
     public static final String CLUSTER_NAME = "AirQuality";
     public static final String CLUSTER_PREFIX = "airQuality";
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_AIR_QUALITY = "airQuality";
 
-    public Integer clusterRevision; // 65533 ClusterRevision 
-    public FeatureMap featureMap; // 65532 FeatureMap 
+    public Integer clusterRevision; // 65533 ClusterRevision
+    public FeatureMap featureMap; // 65532 FeatureMap
     /**
-    * Indicates a value from AirQualityEnum that is indicative of the currently measured air quality.
-    */
+     * Indicates a value from AirQualityEnum that is indicative of the currently measured air quality.
+     */
     public AirQualityEnum airQuality; // 0 AirQualityEnum R V
 
-
-    //Enums
+    // Enums
     /**
-    * The AirQualityEnum provides a representation of the quality of the analyzed air. It is up to the device manufacturer to determine the mapping between the measured values and their corresponding enumeration values.
-    */
+     * The AirQualityEnum provides a representation of the quality of the analyzed air. It is up to the device
+     * manufacturer to determine the mapping between the measured values and their corresponding enumeration values.
+     */
     public enum AirQualityEnum implements MatterEnum {
         UNKNOWN(0, "Unknown"),
         GOOD(1, "Good"),
@@ -58,9 +53,11 @@ public static final int CLUSTER_ID = 0x005B;
         POOR(4, "Poor"),
         VERY_POOR(5, "VeryPoor"),
         EXTREMELY_POOR(6, "ExtremelyPoor");
+
         public final Integer value;
         public final String label;
-        private AirQualityEnum(Integer value, String label){
+
+        private AirQualityEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -79,26 +76,27 @@ public static final int CLUSTER_ID = 0x005B;
     // Bitmaps
     public static class FeatureMap {
         /**
-        * Fair
-        * Cluster supports the Fair air quality level
-        */
+         * Fair
+         * Cluster supports the Fair air quality level
+         */
         public boolean fair;
         /**
-        * Moderate
-        * Cluster supports the Moderate air quality level
-        */
+         * Moderate
+         * Cluster supports the Moderate air quality level
+         */
         public boolean moderate;
         /**
-        * VeryPoor
-        * Cluster supports the Very poor air quality level
-        */
+         * VeryPoor
+         * Cluster supports the Very poor air quality level
+         */
         public boolean veryPoor;
         /**
-        * ExtremelyPoor
-        * Cluster supports the Extremely poor air quality level
-        */
+         * ExtremelyPoor
+         * Cluster supports the Extremely poor air quality level
+         */
         public boolean extremelyPoor;
-        public FeatureMap(boolean fair, boolean moderate, boolean veryPoor, boolean extremelyPoor){
+
+        public FeatureMap(boolean fair, boolean moderate, boolean veryPoor, boolean extremelyPoor) {
             this.fair = fair;
             this.moderate = moderate;
             this.veryPoor = veryPoor;
@@ -110,7 +108,6 @@ public static final int CLUSTER_ID = 0x005B;
         super(nodeId, endpointId, 91, "AirQuality");
     }
 
-    
     @Override
     public @NonNull String toString() {
         String str = "";

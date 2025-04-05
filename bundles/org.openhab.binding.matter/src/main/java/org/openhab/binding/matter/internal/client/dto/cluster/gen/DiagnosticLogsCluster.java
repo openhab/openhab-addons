@@ -16,12 +16,10 @@
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
-
 import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
@@ -31,22 +29,23 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class DiagnosticLogsCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x0032;
+    public static final int CLUSTER_ID = 0x0032;
     public static final String CLUSTER_NAME = "DiagnosticLogs";
     public static final String CLUSTER_PREFIX = "diagnosticLogs";
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
 
-    public Integer clusterRevision; // 65533 ClusterRevision 
+    public Integer clusterRevision; // 65533 ClusterRevision
 
-
-    //Enums
+    // Enums
     public enum IntentEnum implements MatterEnum {
         END_USER_SUPPORT(0, "EndUserSupport"),
         NETWORK_DIAG(1, "NetworkDiag"),
         CRASH_LOGS(2, "CrashLogs");
+
         public final Integer value;
         public final String label;
-        private IntentEnum(Integer value, String label){
+
+        private IntentEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -61,15 +60,18 @@ public static final int CLUSTER_ID = 0x0032;
             return label;
         }
     }
+
     public enum StatusEnum implements MatterEnum {
         SUCCESS(0, "Success"),
         EXHAUSTED(1, "Exhausted"),
         NO_LOGS(2, "NoLogs"),
         BUSY(3, "Busy"),
         DENIED(4, "Denied");
+
         public final Integer value;
         public final String label;
-        private StatusEnum(Integer value, String label){
+
+        private StatusEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -84,12 +86,15 @@ public static final int CLUSTER_ID = 0x0032;
             return label;
         }
     }
+
     public enum TransferProtocolEnum implements MatterEnum {
         RESPONSE_PAYLOAD(0, "ResponsePayload"),
         BDX(1, "Bdx");
+
         public final Integer value;
         public final String label;
-        private TransferProtocolEnum(Integer value, String label){
+
+        private TransferProtocolEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -104,18 +109,17 @@ public static final int CLUSTER_ID = 0x0032;
             return label;
         }
     }
-
 
     public DiagnosticLogsCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 50, "DiagnosticLogs");
     }
 
-    
-    //commands
+    // commands
     /**
-    * Reception of this command starts the process of retrieving diagnostic logs from a Node.
-    */
-    public static ClusterCommand retrieveLogsRequest(IntentEnum intent, TransferProtocolEnum requestedProtocol, String transferFileDesignator) {
+     * Reception of this command starts the process of retrieving diagnostic logs from a Node.
+     */
+    public static ClusterCommand retrieveLogsRequest(IntentEnum intent, TransferProtocolEnum requestedProtocol,
+            String transferFileDesignator) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (intent != null) {
             map.put("intent", intent);
@@ -128,6 +132,7 @@ public static final int CLUSTER_ID = 0x0032;
         }
         return new ClusterCommand("retrieveLogsRequest", map);
     }
+
     @Override
     public @NonNull String toString() {
         String str = "";

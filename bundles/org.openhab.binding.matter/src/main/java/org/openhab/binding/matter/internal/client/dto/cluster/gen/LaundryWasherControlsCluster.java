@@ -17,12 +17,8 @@ package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Map;
-import java.util.LinkedHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
-
-import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
  * LaundryWasherControls
@@ -31,7 +27,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class LaundryWasherControlsCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x0053;
+    public static final int CLUSTER_ID = 0x0053;
     public static final String CLUSTER_NAME = "LaundryWasherControls";
     public static final String CLUSTER_PREFIX = "laundryWasherControls";
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
@@ -41,39 +37,55 @@ public static final int CLUSTER_ID = 0x0053;
     public static final String ATTRIBUTE_NUMBER_OF_RINSES = "numberOfRinses";
     public static final String ATTRIBUTE_SUPPORTED_RINSES = "supportedRinses";
 
-    public Integer clusterRevision; // 65533 ClusterRevision 
-    public FeatureMap featureMap; // 65532 FeatureMap 
+    public Integer clusterRevision; // 65533 ClusterRevision
+    public FeatureMap featureMap; // 65532 FeatureMap
     /**
-    * Indicates the list of spin speeds available to the appliance in the currently selected mode. The spin speed values are determined by the manufacturer. At least one spin speed value shall be provided in the SpinSpeeds list. The list of spin speeds may change depending on the currently selected Laundry Washer mode. For example, Quick mode might have a completely different list of SpinSpeeds than Delicates mode.
-    */
+     * Indicates the list of spin speeds available to the appliance in the currently selected mode. The spin speed
+     * values are determined by the manufacturer. At least one spin speed value shall be provided in the SpinSpeeds
+     * list. The list of spin speeds may change depending on the currently selected Laundry Washer mode. For example,
+     * Quick mode might have a completely different list of SpinSpeeds than Delicates mode.
+     */
     public List<String> spinSpeeds; // 0 list R V
     /**
-    * Indicates the currently selected spin speed. It is the index into the SpinSpeeds list of the selected spin speed, as such, this attribute can be an integer between 0 and the number of entries in SpinSpeeds - 1. If a value is received that is outside of the defined constraints, a CONSTRAINT_ERROR shall be sent as the response. If a value is attempted to be written that doesn’t match a valid index (e.g. an index of 5 when the list has 4 values), a CONSTRAINT_ERROR shall be sent as the response. If null is written to this attribute, there will be no spin speed for the selected cycle. If the value is null, there will be no spin speed on the current mode.
-    */
+     * Indicates the currently selected spin speed. It is the index into the SpinSpeeds list of the selected spin speed,
+     * as such, this attribute can be an integer between 0 and the number of entries in SpinSpeeds - 1. If a value is
+     * received that is outside of the defined constraints, a CONSTRAINT_ERROR shall be sent as the response. If a value
+     * is attempted to be written that doesn’t match a valid index (e.g. an index of 5 when the list has 4 values), a
+     * CONSTRAINT_ERROR shall be sent as the response. If null is written to this attribute, there will be no spin speed
+     * for the selected cycle. If the value is null, there will be no spin speed on the current mode.
+     */
     public Integer spinSpeedCurrent; // 1 uint8 RW VO
     /**
-    * Indicates how many times a rinse cycle shall be performed on a device for the current mode of operation. A value of None shall indicate that no rinse cycle will be performed. This value may be set by the client to adjust the number of rinses that are performed for
-the current mode of operation. If the device is not in a compatible state to accept the provided value, an INVALID_IN_STATE error shall be sent as the response.
-    */
+     * Indicates how many times a rinse cycle shall be performed on a device for the current mode of operation. A value
+     * of None shall indicate that no rinse cycle will be performed. This value may be set by the client to adjust the
+     * number of rinses that are performed for
+     * the current mode of operation. If the device is not in a compatible state to accept the provided value, an
+     * INVALID_IN_STATE error shall be sent as the response.
+     */
     public NumberOfRinsesEnum numberOfRinses; // 2 NumberOfRinsesEnum RW VO
     /**
-    * Indicates the amount of rinses allowed for a specific mode. Each entry shall indicate a NumberOfRinsesEnum value that is possible in the selected mode on the device. The value of this attribute may change at runtime based on the currently selected mode. Each entry shall be distinct.
-    */
+     * Indicates the amount of rinses allowed for a specific mode. Each entry shall indicate a NumberOfRinsesEnum value
+     * that is possible in the selected mode on the device. The value of this attribute may change at runtime based on
+     * the currently selected mode. Each entry shall be distinct.
+     */
     public List<NumberOfRinsesEnum> supportedRinses; // 3 list R V
 
-
-    //Enums
+    // Enums
     /**
-    * The NumberOfRinsesEnum provides a representation of the number of rinses that will be performed for a selected mode. NumberOfRinsesEnum is derived from enum8. It is up to the device manufacturer to determine the mapping between the enum values and the corresponding numbers of rinses.
-    */
+     * The NumberOfRinsesEnum provides a representation of the number of rinses that will be performed for a selected
+     * mode. NumberOfRinsesEnum is derived from enum8. It is up to the device manufacturer to determine the mapping
+     * between the enum values and the corresponding numbers of rinses.
+     */
     public enum NumberOfRinsesEnum implements MatterEnum {
         NONE(0, "None"),
         NORMAL(1, "Normal"),
         EXTRA(2, "Extra"),
         MAX(3, "Max");
+
         public final Integer value;
         public final String label;
-        private NumberOfRinsesEnum(Integer value, String label){
+
+        private NumberOfRinsesEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -92,16 +104,19 @@ the current mode of operation. If the device is not in a compatible state to acc
     // Bitmaps
     public static class FeatureMap {
         /**
-        * Spin
-        * This feature indicates multiple spin speeds are supported in at least one supported mode. Note that some modes may not support multiple spin speeds even if this feature is supported.
-        */
+         * Spin
+         * This feature indicates multiple spin speeds are supported in at least one supported mode. Note that some
+         * modes may not support multiple spin speeds even if this feature is supported.
+         */
         public boolean spin;
         /**
-        * Rinse
-        * This feature indicates multiple rinse cycles are supported in at least one supported mode. Note that some modes may not support selection of the number of rinse cycles even if this feature is supported.
-        */
+         * Rinse
+         * This feature indicates multiple rinse cycles are supported in at least one supported mode. Note that some
+         * modes may not support selection of the number of rinse cycles even if this feature is supported.
+         */
         public boolean rinse;
-        public FeatureMap(boolean spin, boolean rinse){
+
+        public FeatureMap(boolean spin, boolean rinse) {
             this.spin = spin;
             this.rinse = rinse;
         }
@@ -111,7 +126,6 @@ the current mode of operation. If the device is not in a compatible state to acc
         super(nodeId, endpointId, 83, "LaundryWasherControls");
     }
 
-    
     @Override
     public @NonNull String toString() {
         String str = "";

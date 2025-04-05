@@ -21,11 +21,12 @@ import java.util.Map;
 /**
  *
  * ClusterRegistry
+ * 
  * @author Dan Cunningham - Initial contribution
  */
 public class ClusterRegistry {
 
-public static final Map<Integer, Class<? extends BaseCluster>> CLUSTER_IDS = new HashMap<>();
+    public static final Map<Integer, Class<? extends BaseCluster>> CLUSTER_IDS = new HashMap<>();
     static {
         CLUSTER_IDS.put(31, AccessControlCluster.class);
         CLUSTER_IDS.put(1294, AccountLoginCluster.class);

@@ -16,12 +16,8 @@
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
-import java.util.LinkedHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
-
 import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
@@ -31,50 +27,59 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class WiFiNetworkManagementCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x0451;
+    public static final int CLUSTER_ID = 0x0451;
     public static final String CLUSTER_NAME = "WiFiNetworkManagement";
     public static final String CLUSTER_PREFIX = "wiFiNetworkManagement";
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_SSID = "ssid";
     public static final String ATTRIBUTE_PASSPHRASE_SURROGATE = "passphraseSurrogate";
 
-    public Integer clusterRevision; // 65533 ClusterRevision 
+    public Integer clusterRevision; // 65533 ClusterRevision
     /**
-    * Indicates the SSID of the primary Wi-Fi network provided by this device.
-A value of null shall indicate that no primary Wi-Fi network is available (e.g. because the Wi-Fi network has not yet been configured by the user).
-NOTE
-The SSID in Wi-Fi is a collection of 1-32 bytes, the text encoding of which is not specified. Implementations must be careful to support transferring these byte strings without requiring a particular encoding. The most common encoding is UTF-8, however this is just a convention. Some configurations may use Latin-1 or other character sets.
-    */
+     * Indicates the SSID of the primary Wi-Fi network provided by this device.
+     * A value of null shall indicate that no primary Wi-Fi network is available (e.g. because the Wi-Fi network has not
+     * yet been configured by the user).
+     * NOTE
+     * The SSID in Wi-Fi is a collection of 1-32 bytes, the text encoding of which is not specified. Implementations
+     * must be careful to support transferring these byte strings without requiring a particular encoding. The most
+     * common encoding is UTF-8, however this is just a convention. Some configurations may use Latin-1 or other
+     * character sets.
+     */
     public String ssid; // 0 octstr R V
     /**
-    * This attribute shall contain an arbitrary numeric value; this value shall increase whenever the passphrase or PSK associated with the primary Wi-Fi network provided by this device changes.
-A value of null shall indicate that no primary Wi-Fi network is available.
-Clients can subscribe to this attribute or compare its value to a locally cached copy to detect if a cached passphrase value has become stale.
-It is recommended that servers implement this attribute as either a timestamp or a counter. When implemented as a counter it SHOULD be initialized with a random value.
-NOTE
-The passphrase itself is not exposed as an attribute to avoid its unintentional retrieval or caching by clients that use wildcard reads or otherwise routinely read all available attributes. It can be retrieved using the NetworkPassphraseRequest
-command.
-    */
+     * This attribute shall contain an arbitrary numeric value; this value shall increase whenever the passphrase or PSK
+     * associated with the primary Wi-Fi network provided by this device changes.
+     * A value of null shall indicate that no primary Wi-Fi network is available.
+     * Clients can subscribe to this attribute or compare its value to a locally cached copy to detect if a cached
+     * passphrase value has become stale.
+     * It is recommended that servers implement this attribute as either a timestamp or a counter. When implemented as a
+     * counter it SHOULD be initialized with a random value.
+     * NOTE
+     * The passphrase itself is not exposed as an attribute to avoid its unintentional retrieval or caching by clients
+     * that use wildcard reads or otherwise routinely read all available attributes. It can be retrieved using the
+     * NetworkPassphraseRequest
+     * command.
+     */
     public BigInteger passphraseSurrogate; // 1 uint64 R M
-
-
-
 
     public WiFiNetworkManagementCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 1105, "WiFiNetworkManagement");
     }
 
-    
-    //commands
+    // commands
     /**
-    * This command is used to request the current WPA-Personal passphrase or PSK associated with the Wi-Fi network provided by this device.
-If the command is not executed via a CASE session, the command shall be rejected with a status of UNSUPPORTED_ACCESS.
-If no primary Wi-Fi network is available (the SSID attribute is null), the command shall be rejected with a status of INVALID_IN_STATE.
-Otherwise a NetworkPassphraseResponse shall be generated.
-    */
+     * This command is used to request the current WPA-Personal passphrase or PSK associated with the Wi-Fi network
+     * provided by this device.
+     * If the command is not executed via a CASE session, the command shall be rejected with a status of
+     * UNSUPPORTED_ACCESS.
+     * If no primary Wi-Fi network is available (the SSID attribute is null), the command shall be rejected with a
+     * status of INVALID_IN_STATE.
+     * Otherwise a NetworkPassphraseResponse shall be generated.
+     */
     public static ClusterCommand networkPassphraseRequest() {
         return new ClusterCommand("networkPassphraseRequest");
     }
+
     @Override
     public @NonNull String toString() {
         String str = "";

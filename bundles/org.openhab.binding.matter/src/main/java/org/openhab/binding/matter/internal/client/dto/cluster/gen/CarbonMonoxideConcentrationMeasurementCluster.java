@@ -16,13 +16,8 @@
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
-import java.util.LinkedHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
-
-import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
  * CarbonMonoxideConcentrationMeasurement
@@ -31,16 +26,14 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class CarbonMonoxideConcentrationMeasurementCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x040C;
+    public static final int CLUSTER_ID = 0x040C;
     public static final String CLUSTER_NAME = "CarbonMonoxideConcentrationMeasurement";
     public static final String CLUSTER_PREFIX = "carbonMonoxideConcentrationMeasurement";
 
-
-
-    //Enums
+    // Enums
     /**
-    * Where mentioned, Billion refers to 10, Trillion refers to 1012 (short scale).
-    */
+     * Where mentioned, Billion refers to 10, Trillion refers to 1012 (short scale).
+     */
     public enum MeasurementUnitEnum implements MatterEnum {
         PPM(0, "Ppm"),
         PPB(1, "Ppb"),
@@ -50,9 +43,11 @@ public static final int CLUSTER_ID = 0x040C;
         NGM3(5, "Ngm3"),
         PM3(6, "Pm3"),
         BQM3(7, "Bqm3");
+
         public final Integer value;
         public final String label;
-        private MeasurementUnitEnum(Integer value, String label){
+
+        private MeasurementUnitEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -67,13 +62,16 @@ public static final int CLUSTER_ID = 0x040C;
             return label;
         }
     }
+
     public enum MeasurementMediumEnum implements MatterEnum {
         AIR(0, "Air"),
         WATER(1, "Water"),
         SOIL(2, "Soil");
+
         public final Integer value;
         public final String label;
-        private MeasurementMediumEnum(Integer value, String label){
+
+        private MeasurementMediumEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -88,15 +86,18 @@ public static final int CLUSTER_ID = 0x040C;
             return label;
         }
     }
+
     public enum LevelValueEnum implements MatterEnum {
         UNKNOWN(0, "Unknown"),
         LOW(1, "Low"),
         MEDIUM(2, "Medium"),
         HIGH(3, "High"),
         CRITICAL(4, "Critical");
+
         public final Integer value;
         public final String label;
-        private LevelValueEnum(Integer value, String label){
+
+        private LevelValueEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -112,12 +113,10 @@ public static final int CLUSTER_ID = 0x040C;
         }
     }
 
-
     public CarbonMonoxideConcentrationMeasurementCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 1036, "CarbonMonoxideConcentrationMeasurement");
     }
 
-    
     @Override
     public @NonNull String toString() {
         String str = "";

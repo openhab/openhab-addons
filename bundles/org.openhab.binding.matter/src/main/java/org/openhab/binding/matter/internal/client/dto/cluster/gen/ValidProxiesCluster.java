@@ -17,11 +17,8 @@ package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Map;
-import java.util.LinkedHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
-
 import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
@@ -31,43 +28,43 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class ValidProxiesCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x0044;
+    public static final int CLUSTER_ID = 0x0044;
     public static final String CLUSTER_NAME = "ValidProxies";
     public static final String CLUSTER_PREFIX = "validProxies";
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_VALID_PROXY_LIST = "validProxyList";
 
-    public Integer clusterRevision; // 65533 ClusterRevision 
+    public Integer clusterRevision; // 65533 ClusterRevision
     /**
-    * List of valid proxies that can proxy this Node. Each entry in this list is fabric-scoped.
-    */
+     * List of valid proxies that can proxy this Node. Each entry in this list is fabric-scoped.
+     */
     public List<ValidProxyStruct> validProxyList; // 0 list RW
-    //Structs
+    // Structs
+
     /**
-    * Encapsulates the Node ID of a Valid Proxy.
-    */
-     public class ValidProxyStruct {
+     * Encapsulates the Node ID of a Valid Proxy.
+     */
+    public class ValidProxyStruct {
         public BigInteger nodeId; // node-id
+
         public ValidProxyStruct(BigInteger nodeId) {
             this.nodeId = nodeId;
         }
-     }
-
-
-
+    }
 
     public ValidProxiesCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 68, "ValidProxies");
     }
 
-    
-    //commands
+    // commands
     /**
-    * This command is used during proxy discovery, as specified in Section 9.15.7, “Proxy Discovery &amp; Assignment Flow”.
-    */
+     * This command is used during proxy discovery, as specified in Section 9.15.7, “Proxy Discovery &amp; Assignment
+     * Flow”.
+     */
     public static ClusterCommand getValidProxiesRequest() {
         return new ClusterCommand("getValidProxiesRequest");
     }
+
     @Override
     public @NonNull String toString() {
         String str = "";

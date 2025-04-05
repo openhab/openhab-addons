@@ -16,12 +16,10 @@
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
-
 import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
@@ -31,7 +29,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class BridgedDeviceBasicInformationCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x0039;
+    public static final int CLUSTER_ID = 0x0039;
     public static final String CLUSTER_NAME = "BridgedDeviceBasicInformation";
     public static final String CLUSTER_PREFIX = "bridgedDeviceBasicInformation";
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
@@ -54,117 +52,151 @@ public static final int CLUSTER_ID = 0x0039;
     public static final String ATTRIBUTE_UNIQUE_ID = "uniqueId";
     public static final String ATTRIBUTE_PRODUCT_APPEARANCE = "productAppearance";
 
-    public Integer clusterRevision; // 65533 ClusterRevision 
-    public FeatureMap featureMap; // 65532 FeatureMap 
-    public String vendorName; // 1  
-    public String vendorId; // 2  
-    public String productName; // 3  
-    public String productId; // 4  
-    public String nodeLabel; // 5  
-    public String hardwareVersion; // 7  
-    public String hardwareVersionString; // 8  
-    public String softwareVersion; // 9  
-    public String softwareVersionString; // 10  
-    public String manufacturingDate; // 11  
-    public String partNumber; // 12  
-    public String productUrl; // 13  
-    public String productLabel; // 14  
-    public String serialNumber; // 15  
+    public Integer clusterRevision; // 65533 ClusterRevision
+    public FeatureMap featureMap; // 65532 FeatureMap
+    public String vendorName; // 1
+    public String vendorId; // 2
+    public String productName; // 3
+    public String productId; // 4
+    public String nodeLabel; // 5
+    public String hardwareVersion; // 7
+    public String hardwareVersionString; // 8
+    public String softwareVersion; // 9
+    public String softwareVersionString; // 10
+    public String manufacturingDate; // 11
+    public String partNumber; // 12
+    public String productUrl; // 13
+    public String productLabel; // 14
+    public String serialNumber; // 15
     /**
-    * This attribute shall be used to indicate whether the bridged device is reachable by the bridge, so a Matter Node which wants to communicate with a bridged device can get an indication that this might fail (when the attribute is False). Determination of reachability might not be perfect (e.g. depending on technology employed), so the Matter Node SHOULD be aware of the risk of false positives and negatives on reachability determination. For example, a bridged device may be marked as unreachable while it could actually be reached, and vice-versa. Also, detection (and indication) that a bridged device is not longer reachable may be delayed due to the technique employed (e.g. detecting that a number of expected messages from the bridged device did not arrive). Also see event ReachableChanged below.
-    */
-    public String reachable; // 17  
+     * This attribute shall be used to indicate whether the bridged device is reachable by the bridge, so a Matter Node
+     * which wants to communicate with a bridged device can get an indication that this might fail (when the attribute
+     * is False). Determination of reachability might not be perfect (e.g. depending on technology employed), so the
+     * Matter Node SHOULD be aware of the risk of false positives and negatives on reachability determination. For
+     * example, a bridged device may be marked as unreachable while it could actually be reached, and vice-versa. Also,
+     * detection (and indication) that a bridged device is not longer reachable may be delayed due to the technique
+     * employed (e.g. detecting that a number of expected messages from the bridged device did not arrive). Also see
+     * event ReachableChanged below.
+     */
+    public String reachable; // 17
     /**
-    * This attribute shall, for a Bridged Device, be updated when the Bridge is factory reset. If the bridged device does not provide some unique id (e.g. in the case of bridging from non-Matter devices, or in case of bridging Matter devices from an earlier revision which were not required to provide a UniqueID attribute), the bridge shall generate a unique id on behalf of the bridged device.
-NOTE The UniqueID attribute was optional in cluster revisions prior to revision 4.
-    */
-    public String uniqueId; // 18  
-    public String productAppearance; // 20  
-    //Structs
-     public class StartUp {
+     * This attribute shall, for a Bridged Device, be updated when the Bridge is factory reset. If the bridged device
+     * does not provide some unique id (e.g. in the case of bridging from non-Matter devices, or in case of bridging
+     * Matter devices from an earlier revision which were not required to provide a UniqueID attribute), the bridge
+     * shall generate a unique id on behalf of the bridged device.
+     * NOTE The UniqueID attribute was optional in cluster revisions prior to revision 4.
+     */
+    public String uniqueId; // 18
+    public String productAppearance; // 20
+    // Structs
+
+    public class StartUp {
         public StartUp() {
         }
-     }
-     public class ShutDown {
+    }
+
+    public class ShutDown {
         public ShutDown() {
         }
-     }
+    }
+
     /**
-    * The Leave event SHOULD be generated by the bridge when it detects that the associated device has left the non-Matter network.
-NOTE
-The FabricIndex field has the X conformance, indicating it shall NOT be present. This event, in the context of Bridged Device Basic Information cluster, has no usable fields, but the original Basic Information cluster’s field definition is kept for completeness.
-    */
-     public class Leave {
-        public String fabricIndex; // 
+     * The Leave event SHOULD be generated by the bridge when it detects that the associated device has left the
+     * non-Matter network.
+     * NOTE
+     * The FabricIndex field has the X conformance, indicating it shall NOT be present. This event, in the context of
+     * Bridged Device Basic Information cluster, has no usable fields, but the original Basic Information cluster’s
+     * field definition is kept for completeness.
+     */
+    public class Leave {
+        public String fabricIndex; //
+
         public Leave(String fabricIndex) {
             this.fabricIndex = fabricIndex;
         }
-     }
+    }
+
     /**
-    * This event shall be generated when there is a change in the Reachable attribute. Its purpose is to provide an indication towards interested parties that the reachability of a bridged device has changed over its native connectivity technology, so they may take appropriate action.
-After (re)start of a bridge this event may be generated.
-    */
-     public class ReachableChanged {
+     * This event shall be generated when there is a change in the Reachable attribute. Its purpose is to provide an
+     * indication towards interested parties that the reachability of a bridged device has changed over its native
+     * connectivity technology, so they may take appropriate action.
+     * After (re)start of a bridge this event may be generated.
+     */
+    public class ReachableChanged {
         public ReachableChanged() {
         }
-     }
+    }
+
     /**
-    * This event (when supported) shall be generated the next time a bridged device becomes active after a KeepActive command is received.
-See KeepActive for more details.
-    */
-     public class ActiveChanged {
+     * This event (when supported) shall be generated the next time a bridged device becomes active after a KeepActive
+     * command is received.
+     * See KeepActive for more details.
+     */
+    public class ActiveChanged {
         /**
-        * This field shall indicate the minimum duration, in milliseconds, that the bridged device will remain active after receiving the initial request from the KeepActive processing steps.
-If the bridged device is a Matter Intermittently Connected Device, PromisedActiveDuration shall be set to the PromisedActiveDuration value returned in the StayActiveResponse command.
-If the bridged device is not a Matter Intermittently Connected Device, the implementation of this is best-effort since it may interact with non-native protocol.
-        */
+         * This field shall indicate the minimum duration, in milliseconds, that the bridged device will remain active
+         * after receiving the initial request from the KeepActive processing steps.
+         * If the bridged device is a Matter Intermittently Connected Device, PromisedActiveDuration shall be set to the
+         * PromisedActiveDuration value returned in the StayActiveResponse command.
+         * If the bridged device is not a Matter Intermittently Connected Device, the implementation of this is
+         * best-effort since it may interact with non-native protocol.
+         */
         public Integer promisedActiveDuration; // uint32
+
         public ActiveChanged(Integer promisedActiveDuration) {
             this.promisedActiveDuration = promisedActiveDuration;
         }
-     }
+    }
+
     /**
-    * This structure provides a description of the product’s appearance.
-    */
-     public class ProductAppearanceStruct {
+     * This structure provides a description of the product’s appearance.
+     */
+    public class ProductAppearanceStruct {
         /**
-        * This field shall indicate the visible finish of the product.
-        */
+         * This field shall indicate the visible finish of the product.
+         */
         public ProductFinishEnum finish; // ProductFinishEnum
         /**
-        * This field indicates the representative color of the visible parts of the product. If the product has no representative color, the field shall be null.
-        */
+         * This field indicates the representative color of the visible parts of the product. If the product has no
+         * representative color, the field shall be null.
+         */
         public ColorEnum primaryColor; // ColorEnum
+
         public ProductAppearanceStruct(ProductFinishEnum finish, ColorEnum primaryColor) {
             this.finish = finish;
             this.primaryColor = primaryColor;
         }
-     }
+    }
+
     /**
-    * This structure provides constant values related to overall global capabilities of this Node, that are not cluster-specific.
-    */
-     public class CapabilityMinimaStruct {
+     * This structure provides constant values related to overall global capabilities of this Node, that are not
+     * cluster-specific.
+     */
+    public class CapabilityMinimaStruct {
         /**
-        * This field shall indicate the actual minimum number of concurrent CASE sessions that are supported per fabric.
-This value shall NOT be smaller than the required minimum indicated in Section 4.14.2.8, “Minimal Number of CASE Sessions”.
-        */
+         * This field shall indicate the actual minimum number of concurrent CASE sessions that are supported per
+         * fabric.
+         * This value shall NOT be smaller than the required minimum indicated in Section 4.14.2.8, “Minimal Number of
+         * CASE Sessions”.
+         */
         public Integer caseSessionsPerFabric; // uint16
         /**
-        * This field shall indicate the actual minimum number of concurrent subscriptions supported per fabric.
-This value shall NOT be smaller than the required minimum indicated in Section 8.5.1, “Subscribe Transaction”.
-        */
+         * This field shall indicate the actual minimum number of concurrent subscriptions supported per fabric.
+         * This value shall NOT be smaller than the required minimum indicated in Section 8.5.1, “Subscribe
+         * Transaction”.
+         */
         public Integer subscriptionsPerFabric; // uint16
+
         public CapabilityMinimaStruct(Integer caseSessionsPerFabric, Integer subscriptionsPerFabric) {
             this.caseSessionsPerFabric = caseSessionsPerFabric;
             this.subscriptionsPerFabric = subscriptionsPerFabric;
         }
-     }
+    }
 
-
-    //Enums
+    // Enums
     /**
-    * The data type of ProductFinishEnum is derived from enum8.
-    */
+     * The data type of ProductFinishEnum is derived from enum8.
+     */
     public enum ProductFinishEnum implements MatterEnum {
         OTHER(0, "Other"),
         MATTE(1, "Matte"),
@@ -172,9 +204,11 @@ This value shall NOT be smaller than the required minimum indicated in Section 8
         POLISHED(3, "Polished"),
         RUGGED(4, "Rugged"),
         FABRIC(5, "Fabric");
+
         public final Integer value;
         public final String label;
-        private ProductFinishEnum(Integer value, String label){
+
+        private ProductFinishEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -189,9 +223,10 @@ This value shall NOT be smaller than the required minimum indicated in Section 8
             return label;
         }
     }
+
     /**
-    * The data type of ColorEnum is derived from enum8.
-    */
+     * The data type of ColorEnum is derived from enum8.
+     */
     public enum ColorEnum implements MatterEnum {
         BLACK(0, "Black"),
         NAVY(1, "Navy"),
@@ -214,9 +249,11 @@ This value shall NOT be smaller than the required minimum indicated in Section 8
         COPPER(18, "Copper"),
         SILVER(19, "Silver"),
         GOLD(20, "Gold");
+
         public final Integer value;
         public final String label;
-        private ColorEnum(Integer value, String label){
+
+        private ColorEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -235,11 +272,12 @@ This value shall NOT be smaller than the required minimum indicated in Section 8
     // Bitmaps
     public static class FeatureMap {
         /**
-        * BridgedIcdSupport
-        * Support bridged ICDs.
-        */
+         * BridgedIcdSupport
+         * Support bridged ICDs.
+         */
         public boolean bridgedIcdSupport;
-        public FeatureMap(boolean bridgedIcdSupport){
+
+        public FeatureMap(boolean bridgedIcdSupport) {
             this.bridgedIcdSupport = bridgedIcdSupport;
         }
     }
@@ -248,17 +286,28 @@ This value shall NOT be smaller than the required minimum indicated in Section 8
         super(nodeId, endpointId, 57, "BridgedDeviceBasicInformation");
     }
 
-    
-    //commands
+    // commands
     /**
-    * Upon receipt, the server shall attempt to keep the bridged device active for the duration specified by the command, when the device is next active.
-The implementation of this is best-effort since it may interact with non-native protocols. However, several specific protocol requirements are:
-  • If the bridged device is a Matter Intermittently Connected Device, then the server shall send a     StayActiveRequest command with the StayActiveDuration field set to value of the     StayActiveDuration field in the received command to the bridged device when the bridged device     next sends a checks-in message or subscription report. See Intermittently Connected Devices     Behavior for details on ICD state management.
-When the bridge detects that the bridged device goes into an active state, an ActiveChanged event shall be generated.
-In order to avoid unnecessary power consumption in the bridged device:
-  • The server shall enter a &quot;pending active&quot; state for the associated device when the KeepActive     command is received. The server &quot;pending active&quot; state shall expire after the amount of time     defined by the TimeoutMs field, in milliseconds, if no subsequent KeepActive command is     received. When a KeepActive command is received, the &quot;pending active&quot; state is set, the     StayActiveDuration is updated to the greater of the new value and the previously stored value,     and the TimeoutMs is updated to the greater of the new value and the remaining time until the     prior &quot;pending active&quot; state expires.
-  • The server shall only keep the bridged device active once for a request. (The server shall only     consider the operation performed if an associated ActiveChanged event was generated.)
-    */
+     * Upon receipt, the server shall attempt to keep the bridged device active for the duration specified by the
+     * command, when the device is next active.
+     * The implementation of this is best-effort since it may interact with non-native protocols. However, several
+     * specific protocol requirements are:
+     * • If the bridged device is a Matter Intermittently Connected Device, then the server shall send a
+     * StayActiveRequest command with the StayActiveDuration field set to value of the StayActiveDuration field in the
+     * received command to the bridged device when the bridged device next sends a checks-in message or subscription
+     * report. See Intermittently Connected Devices Behavior for details on ICD state management.
+     * When the bridge detects that the bridged device goes into an active state, an ActiveChanged event shall be
+     * generated.
+     * In order to avoid unnecessary power consumption in the bridged device:
+     * • The server shall enter a &quot;pending active&quot; state for the associated device when the KeepActive command
+     * is received. The server &quot;pending active&quot; state shall expire after the amount of time defined by the
+     * TimeoutMs field, in milliseconds, if no subsequent KeepActive command is received. When a KeepActive command is
+     * received, the &quot;pending active&quot; state is set, the StayActiveDuration is updated to the greater of the
+     * new value and the previously stored value, and the TimeoutMs is updated to the greater of the new value and the
+     * remaining time until the prior &quot;pending active&quot; state expires.
+     * • The server shall only keep the bridged device active once for a request. (The server shall only consider the
+     * operation performed if an associated ActiveChanged event was generated.)
+     */
     public static ClusterCommand keepActive(Integer stayActiveDuration, Integer timeoutMs) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (stayActiveDuration != null) {
@@ -269,6 +318,7 @@ In order to avoid unnecessary power consumption in the bridged device:
         }
         return new ClusterCommand("keepActive", map);
     }
+
     @Override
     public @NonNull String toString() {
         String str = "";

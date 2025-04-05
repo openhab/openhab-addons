@@ -16,12 +16,10 @@
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
-
 import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
@@ -31,21 +29,22 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class ContentAppObserverCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x0510;
+    public static final int CLUSTER_ID = 0x0510;
     public static final String CLUSTER_NAME = "ContentAppObserver";
     public static final String CLUSTER_PREFIX = "contentAppObserver";
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
 
-    public Integer clusterRevision; // 65533 ClusterRevision 
+    public Integer clusterRevision; // 65533 ClusterRevision
 
-
-    //Enums
+    // Enums
     public enum StatusEnum implements MatterEnum {
         SUCCESS(0, "Success"),
         UNEXPECTED_DATA(1, "UnexpectedData");
+
         public final Integer value;
         public final String label;
-        private StatusEnum(Integer value, String label){
+
+        private StatusEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -61,17 +60,17 @@ public static final int CLUSTER_ID = 0x0510;
         }
     }
 
-
     public ContentAppObserverCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 1296, "ContentAppObserver");
     }
 
-    
-    //commands
+    // commands
     /**
-    * Upon receipt, the data field may be parsed and interpreted. Message encoding is specific to the Content App. A Content App may when possible read attributes from the Basic Information Cluster on the Observer and use this to determine the Message encoding.
-This command returns a ContentAppMessage Response.
-    */
+     * Upon receipt, the data field may be parsed and interpreted. Message encoding is specific to the Content App. A
+     * Content App may when possible read attributes from the Basic Information Cluster on the Observer and use this to
+     * determine the Message encoding.
+     * This command returns a ContentAppMessage Response.
+     */
     public static ClusterCommand contentAppMessage(String data, String encodingHint) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (data != null) {
@@ -82,6 +81,7 @@ This command returns a ContentAppMessage Response.
         }
         return new ClusterCommand("contentAppMessage", map);
     }
+
     @Override
     public @NonNull String toString() {
         String str = "";

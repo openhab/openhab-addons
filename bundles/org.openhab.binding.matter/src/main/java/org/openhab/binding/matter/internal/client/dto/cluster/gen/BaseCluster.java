@@ -17,8 +17,6 @@ package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Map;
-
 
 import com.google.gson.Gson;
 
@@ -28,8 +26,8 @@ import com.google.gson.Gson;
  * @author Dan Cunningham - Initial contribution
  */
 
- public class BaseCluster {
- 
+public class BaseCluster {
+
     protected static final Gson GSON = new Gson();
     public BigInteger nodeId;
     public int endpointId;
@@ -63,16 +61,18 @@ import com.google.gson.Gson;
         this.name = clusterName;
     }
 
-    //Structs
-     public class AtomicAttributeStatusStruct {
+    // Structs
+    public class AtomicAttributeStatusStruct {
         public Integer attributeId; // attrib-id
         public Integer statusCode; // status
+
         public AtomicAttributeStatusStruct(Integer attributeId, Integer statusCode) {
             this.attributeId = attributeId;
             this.statusCode = statusCode;
         }
-     }
-     public class MeasurementAccuracyRangeStruct {
+    }
+
+    public class MeasurementAccuracyRangeStruct {
         public BigInteger rangeMin; // int64
         public BigInteger rangeMax; // int64
         public Integer percentMax; // percent100ths
@@ -81,7 +81,10 @@ import com.google.gson.Gson;
         public BigInteger fixedMax; // uint64
         public BigInteger fixedMin; // uint64
         public BigInteger fixedTypical; // uint64
-        public MeasurementAccuracyRangeStruct(BigInteger rangeMin, BigInteger rangeMax, Integer percentMax, Integer percentMin, Integer percentTypical, BigInteger fixedMax, BigInteger fixedMin, BigInteger fixedTypical) {
+
+        public MeasurementAccuracyRangeStruct(BigInteger rangeMin, BigInteger rangeMax, Integer percentMax,
+                Integer percentMin, Integer percentTypical, BigInteger fixedMax, BigInteger fixedMin,
+                BigInteger fixedTypical) {
             this.rangeMin = rangeMin;
             this.rangeMax = rangeMax;
             this.percentMax = percentMax;
@@ -91,81 +94,94 @@ import com.google.gson.Gson;
             this.fixedMin = fixedMin;
             this.fixedTypical = fixedTypical;
         }
-     }
-     public class MeasurementAccuracyStruct {
+    }
+
+    public class MeasurementAccuracyStruct {
         public MeasurementTypeEnum measurementType; // MeasurementTypeEnum
         public Boolean measured; // bool
         public BigInteger minMeasuredValue; // int64
         public BigInteger maxMeasuredValue; // int64
         public List<MeasurementAccuracyRangeStruct> accuracyRanges; // list
-        public MeasurementAccuracyStruct(MeasurementTypeEnum measurementType, Boolean measured, BigInteger minMeasuredValue, BigInteger maxMeasuredValue, List<MeasurementAccuracyRangeStruct> accuracyRanges) {
+
+        public MeasurementAccuracyStruct(MeasurementTypeEnum measurementType, Boolean measured,
+                BigInteger minMeasuredValue, BigInteger maxMeasuredValue,
+                List<MeasurementAccuracyRangeStruct> accuracyRanges) {
             this.measurementType = measurementType;
             this.measured = measured;
             this.minMeasuredValue = minMeasuredValue;
             this.maxMeasuredValue = maxMeasuredValue;
             this.accuracyRanges = accuracyRanges;
         }
-     }
-     public class Date {
+    }
+
+    public class Date {
         public Integer year; // uint8
         public Integer month; // uint8
         public Integer day; // uint8
         public Integer dayOfWeek; // uint8
+
         public Date(Integer year, Integer month, Integer day, Integer dayOfWeek) {
             this.year = year;
             this.month = month;
             this.day = day;
             this.dayOfWeek = dayOfWeek;
         }
-     }
-     public class Locationdesc {
+    }
+
+    public class Locationdesc {
         public String locationName; // string
         public Integer floorNumber; // int16
         public Integer areaType; // tag
+
         public Locationdesc(String locationName, Integer floorNumber, Integer areaType) {
             this.locationName = locationName;
             this.floorNumber = floorNumber;
             this.areaType = areaType;
         }
-     }
-     public class Semtag {
+    }
+
+    public class Semtag {
         public Integer mfgCode; // vendor-id
         public Integer namespaceId; // namespace
         public Integer tag; // tag
         public String label; // string
+
         public Semtag(Integer mfgCode, Integer namespaceId, Integer tag, String label) {
             this.mfgCode = mfgCode;
             this.namespaceId = namespaceId;
             this.tag = tag;
             this.label = label;
         }
-     }
-     public class Tod {
+    }
+
+    public class Tod {
         public Integer hours; // uint8
         public Integer minutes; // uint8
         public Integer seconds; // uint8
         public Integer hundredths; // uint8
+
         public Tod(Integer hours, Integer minutes, Integer seconds, Integer hundredths) {
             this.hours = hours;
             this.minutes = minutes;
             this.seconds = seconds;
             this.hundredths = hundredths;
         }
-     }
+    }
 
-
-    //Enums
+    // Enums
     public enum AtomicRequestTypeEnum implements MatterEnum {
         BEGIN_WRITE(0, "BeginWrite"),
         COMMIT_WRITE(1, "CommitWrite"),
         ROLLBACK_WRITE(2, "RollbackWrite");
+
         public final Integer value;
         public final String label;
-        private AtomicRequestTypeEnum(Integer value, String label){
+
+        private AtomicRequestTypeEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
-        
+
         @Override
         public Integer getValue() {
             return value;
@@ -193,13 +209,15 @@ import com.google.gson.Gson;
         POWER_FACTOR(12, "PowerFactor"),
         NEUTRAL_CURRENT(13, "NeutralCurrent"),
         ELECTRICAL_ENERGY(14, "ElectricalEnergy");
+
         public final Integer value;
         public final String label;
-        private MeasurementTypeEnum(Integer value, String label){
+
+        private MeasurementTypeEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
-        
+
         @Override
         public Integer getValue() {
             return value;
@@ -216,13 +234,15 @@ import com.google.gson.Gson;
         PROVISIONAL(1, "Provisional"),
         CERTIFIED(2, "Certified"),
         REVOKED(3, "Revoked");
+
         public final Integer value;
         public final String label;
-        private SoftwareVersionCertificationStatusEnum(Integer value, String label){
+
+        private SoftwareVersionCertificationStatusEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
-        
+
         @Override
         public Integer getValue() {
             return value;
@@ -238,13 +258,15 @@ import com.google.gson.Gson;
         DEBUG(0, "Debug"),
         INFO(1, "Info"),
         CRITICAL(2, "Critical");
+
         public final Integer value;
         public final String label;
-        private Priority(Integer value, String label){
+
+        private Priority(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
-        
+
         @Override
         public Integer getValue() {
             return value;
@@ -289,13 +311,15 @@ import com.google.gson.Gson;
         NO_COMMAND_RESPONSE(204, "NoCommandResponse"),
         TERMS_AND_CONDITIONS_CHANGED(205, "TermsAndConditionsChanged"),
         MAINTENANCE_REQUIRED(206, "MaintenanceRequired");
+
         public final Integer value;
         public final String label;
-        private Status(Integer value, String label){
+
+        private Status(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
-        
+
         @Override
         public Integer getValue() {
             return value;
@@ -306,7 +330,6 @@ import com.google.gson.Gson;
             return label;
         }
     }
-
 
     // Bitmaps
     public static class WildcardPathFlagsBitmap {
@@ -319,7 +342,11 @@ import com.google.gson.Gson;
         public boolean wildcardSkipFixedAttributes;
         public boolean wildcardSkipChangesOmittedAttributes;
         public boolean wildcardSkipDiagnosticsClusters;
-        public WildcardPathFlagsBitmap(boolean wildcardSkipRootNode, boolean wildcardSkipGlobalAttributes, boolean wildcardSkipAttributeList, boolean reserved, boolean wildcardSkipCommandLists, boolean wildcardSkipCustomElements, boolean wildcardSkipFixedAttributes, boolean wildcardSkipChangesOmittedAttributes, boolean wildcardSkipDiagnosticsClusters){
+
+        public WildcardPathFlagsBitmap(boolean wildcardSkipRootNode, boolean wildcardSkipGlobalAttributes,
+                boolean wildcardSkipAttributeList, boolean reserved, boolean wildcardSkipCommandLists,
+                boolean wildcardSkipCustomElements, boolean wildcardSkipFixedAttributes,
+                boolean wildcardSkipChangesOmittedAttributes, boolean wildcardSkipDiagnosticsClusters) {
             this.wildcardSkipRootNode = wildcardSkipRootNode;
             this.wildcardSkipGlobalAttributes = wildcardSkipGlobalAttributes;
             this.wildcardSkipAttributeList = wildcardSkipAttributeList;
@@ -331,12 +358,12 @@ import com.google.gson.Gson;
             this.wildcardSkipDiagnosticsClusters = wildcardSkipDiagnosticsClusters;
         }
     }
+
     public static class FeatureMap {
         public List<Boolean> map;
-        public FeatureMap(List<Boolean> map){
+
+        public FeatureMap(List<Boolean> map) {
             this.map = map;
         }
     }
-
- }
- 
+}

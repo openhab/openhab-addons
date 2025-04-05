@@ -16,13 +16,8 @@
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
-import java.util.LinkedHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
-
-import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
  * FlowMeasurement
@@ -31,7 +26,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class FlowMeasurementCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x0404;
+    public static final int CLUSTER_ID = 0x0404;
     public static final String CLUSTER_NAME = "FlowMeasurement";
     public static final String CLUSTER_PREFIX = "flowMeasurement";
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
@@ -40,37 +35,34 @@ public static final int CLUSTER_ID = 0x0404;
     public static final String ATTRIBUTE_MAX_MEASURED_VALUE = "maxMeasuredValue";
     public static final String ATTRIBUTE_TOLERANCE = "tolerance";
 
-    public Integer clusterRevision; // 65533 ClusterRevision 
+    public Integer clusterRevision; // 65533 ClusterRevision
     /**
-    * Indicates the flow in m/h as follows:
-MeasuredValue &#x3D; 10 x Flow
-The null value indicates that the flow measurement is unknown, otherwise the range shall be as described in Measured Value.
-    */
+     * Indicates the flow in m/h as follows:
+     * MeasuredValue &#x3D; 10 x Flow
+     * The null value indicates that the flow measurement is unknown, otherwise the range shall be as described in
+     * Measured Value.
+     */
     public Integer measuredValue; // 0 uint16 R V
     /**
-    * Indicates the minimum value of MeasuredValue that can be measured. See Measured Value for more details.
-The null value indicates that the value is not available.
-    */
+     * Indicates the minimum value of MeasuredValue that can be measured. See Measured Value for more details.
+     * The null value indicates that the value is not available.
+     */
     public Integer minMeasuredValue; // 1 uint16 R V
     /**
-    * Indicates the maximum value of MeasuredValue that can be measured. See
-Measured Value for more details.
-The null value indicates that the value is not available.
-    */
+     * Indicates the maximum value of MeasuredValue that can be measured. See
+     * Measured Value for more details.
+     * The null value indicates that the value is not available.
+     */
     public Integer maxMeasuredValue; // 2 uint16 R V
     /**
-    * See Measured Value.
-    */
+     * See Measured Value.
+     */
     public Integer tolerance; // 3 uint16 R V
-
-
-
 
     public FlowMeasurementCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 1028, "FlowMeasurement");
     }
 
-    
     @Override
     public @NonNull String toString() {
         String str = "";

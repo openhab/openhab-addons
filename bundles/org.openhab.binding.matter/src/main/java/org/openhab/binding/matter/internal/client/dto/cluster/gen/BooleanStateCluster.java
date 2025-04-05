@@ -16,13 +16,8 @@
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
-import java.util.LinkedHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
-
-import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
  * BooleanState
@@ -31,41 +26,39 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class BooleanStateCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x0045;
+    public static final int CLUSTER_ID = 0x0045;
     public static final String CLUSTER_NAME = "BooleanState";
     public static final String CLUSTER_PREFIX = "booleanState";
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_STATE_VALUE = "stateValue";
 
-    public Integer clusterRevision; // 65533 ClusterRevision 
+    public Integer clusterRevision; // 65533 ClusterRevision
     /**
-    * This represents a boolean state.
-The semantics of this boolean state are defined by the device type using this cluster.
-For example, in a Contact Sensor device type, FALSE&#x3D;open or no contact, TRUE&#x3D;closed or contact.
-    */
+     * This represents a boolean state.
+     * The semantics of this boolean state are defined by the device type using this cluster.
+     * For example, in a Contact Sensor device type, FALSE&#x3D;open or no contact, TRUE&#x3D;closed or contact.
+     */
     public Boolean stateValue; // 0 bool R V
-    //Structs
+    // Structs
+
     /**
-    * If this event is supported, it shall be generated when the StateValue attribute changes.
-    */
-     public class StateChange {
+     * If this event is supported, it shall be generated when the StateValue attribute changes.
+     */
+    public class StateChange {
         /**
-        * This field shall indicate the new value of the StateValue attribute.
-        */
+         * This field shall indicate the new value of the StateValue attribute.
+         */
         public Boolean stateValue; // bool
+
         public StateChange(Boolean stateValue) {
             this.stateValue = stateValue;
         }
-     }
-
-
-
+    }
 
     public BooleanStateCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 69, "BooleanState");
     }
 
-    
     @Override
     public @NonNull String toString() {
         String str = "";

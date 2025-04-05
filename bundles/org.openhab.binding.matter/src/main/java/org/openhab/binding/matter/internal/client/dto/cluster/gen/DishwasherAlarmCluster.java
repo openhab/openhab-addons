@@ -16,13 +16,8 @@
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
-import java.util.LinkedHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
-
-import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
  * DishwasherAlarm
@@ -31,14 +26,12 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class DishwasherAlarmCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x005D;
+    public static final int CLUSTER_ID = 0x005D;
     public static final String CLUSTER_NAME = "DishwasherAlarm";
     public static final String CLUSTER_PREFIX = "dishwasherAlarm";
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
 
-    public Integer clusterRevision; // 65533 ClusterRevision 
-
-
+    public Integer clusterRevision; // 65533 ClusterRevision
 
     // Bitmaps
     public static class AlarmBitmap {
@@ -48,7 +41,9 @@ public static final int CLUSTER_ID = 0x005D;
         public boolean tempTooLow;
         public boolean tempTooHigh;
         public boolean waterLevelError;
-        public AlarmBitmap(boolean inflowError, boolean drainError, boolean doorError, boolean tempTooLow, boolean tempTooHigh, boolean waterLevelError){
+
+        public AlarmBitmap(boolean inflowError, boolean drainError, boolean doorError, boolean tempTooLow,
+                boolean tempTooHigh, boolean waterLevelError) {
             this.inflowError = inflowError;
             this.drainError = drainError;
             this.doorError = doorError;
@@ -62,7 +57,6 @@ public static final int CLUSTER_ID = 0x005D;
         super(nodeId, endpointId, 93, "DishwasherAlarm");
     }
 
-    
     @Override
     public @NonNull String toString() {
         String str = "";

@@ -282,7 +282,8 @@ public class ConsoleCommandExtension extends AbstractConsoleCommandExtension {
                 buildCommandUsage(BRIDGE + " fabrics", "List all fabrics"),
                 buildCommandUsage(BRIDGE + " removeFabric <fabric_id>", "Remove a fabric"),
                 buildCommandUsage(BRIDGE + " allowCommissioning <true|false>", "Set commissioning mode"),
-                buildCommandUsage(BRIDGE + " resetStorage", "Reset bridge storage (WARNING: This will delete all fabrics!)"),
+                buildCommandUsage(BRIDGE + " resetStorage",
+                        "Reset bridge storage (WARNING: This will delete all fabrics!)"),
                 buildCommandUsage(BRIDGE + " rpc <command>", "Execute RPC command"),
                 buildCommandUsage(COMMON + " restartNode", "Restart the NodeJs server"));
     }

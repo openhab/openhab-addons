@@ -17,12 +17,8 @@ package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Map;
-import java.util.LinkedHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
-
-import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
  * UserLabel
@@ -31,42 +27,45 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class UserLabelCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x0041;
+    public static final int CLUSTER_ID = 0x0041;
     public static final String CLUSTER_NAME = "UserLabel";
     public static final String CLUSTER_PREFIX = "userLabel";
     public static final String ATTRIBUTE_LABEL_LIST = "labelList";
 
     /**
-    * An implementation shall support at least 4 list entries per node for all User Label cluster instances on the node.
-    */
+     * An implementation shall support at least 4 list entries per node for all User Label cluster instances on the
+     * node.
+     */
     public List<LabelStruct> labelList; // 0 list RW VM
-    //Structs
+    // Structs
+
     /**
-    * This is a string tuple with strings that are user defined.
-    */
-     public class LabelStruct {
+     * This is a string tuple with strings that are user defined.
+     */
+    public class LabelStruct {
         /**
-        * The Label or Value semantic is not defined here. Label examples: &quot;room&quot;, &quot;zone&quot;, &quot;group&quot;, &quot;direction&quot;.
-        */
+         * The Label or Value semantic is not defined here. Label examples: &quot;room&quot;, &quot;zone&quot;,
+         * &quot;group&quot;, &quot;direction&quot;.
+         */
         public String label; // string
         /**
-        * The Label or Value semantic is not defined here. The Value is a discriminator for a Label that may have multiple instances. Label:Value examples: &quot;room&quot;:&quot;bedroom 2&quot;, &quot;orientation&quot;:&quot;North&quot;, &quot;floor&quot;:&quot;2&quot;, &quot;direction&quot;:&quot;up&quot;
-        */
+         * The Label or Value semantic is not defined here. The Value is a discriminator for a Label that may have
+         * multiple instances. Label:Value examples: &quot;room&quot;:&quot;bedroom 2&quot;,
+         * &quot;orientation&quot;:&quot;North&quot;, &quot;floor&quot;:&quot;2&quot;,
+         * &quot;direction&quot;:&quot;up&quot;
+         */
         public String value; // string
+
         public LabelStruct(String label, String value) {
             this.label = label;
             this.value = value;
         }
-     }
-
-
-
+    }
 
     public UserLabelCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 65, "UserLabel");
     }
 
-    
     @Override
     public @NonNull String toString() {
         String str = "";

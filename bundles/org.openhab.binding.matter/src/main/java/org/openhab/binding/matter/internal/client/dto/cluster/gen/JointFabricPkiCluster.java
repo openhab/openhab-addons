@@ -16,12 +16,10 @@
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
-
 import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 
 /**
@@ -31,18 +29,18 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
  */
 public class JointFabricPkiCluster extends BaseCluster {
 
-public static final int CLUSTER_ID = 0x0753;
+    public static final int CLUSTER_ID = 0x0753;
     public static final String CLUSTER_NAME = "JointFabricPki";
     public static final String CLUSTER_PREFIX = "jointFabricPki";
     public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
 
-    public Integer clusterRevision; // 65533 ClusterRevision 
+    public Integer clusterRevision; // 65533 ClusterRevision
 
-
-    //Enums
+    // Enums
     /**
-    * This enumeration is used by the ICACSRResponse command to convey the detailed outcome of this cluster’s ICACSRRequest command.
-    */
+     * This enumeration is used by the ICACSRResponse command to convey the detailed outcome of this cluster’s
+     * ICACSRRequest command.
+     */
     public enum IcacsrRequestStatusEnum implements MatterEnum {
         OK(0, "Ok"),
         INVALID_ICA_CSR_FORMAT(1, "InvalidIcaCsrFormat"),
@@ -52,9 +50,11 @@ public static final int CLUSTER_ID = 0x0753;
         BUSY_ANCHOR_TRANSFER(5, "BusyAnchorTransfer"),
         ICA_CSR_SIGNING_FAILED(6, "IcaCsrSigningFailed"),
         ICA_CSR_REQUEST_NO_USER_CONSENT(7, "IcaCsrRequestNoUserConsent");
+
         public final Integer value;
         public final String label;
-        private IcacsrRequestStatusEnum(Integer value, String label){
+
+        private IcacsrRequestStatusEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -69,16 +69,20 @@ public static final int CLUSTER_ID = 0x0753;
             return label;
         }
     }
+
     /**
-    * This enumeration is used by the TransferAnchorResponse command to convey the detailed outcome of this cluster’s TransferAnchorRequest command.
-    */
+     * This enumeration is used by the TransferAnchorResponse command to convey the detailed outcome of this cluster’s
+     * TransferAnchorRequest command.
+     */
     public enum TransferAnchorResponseStatusEnum implements MatterEnum {
         OK(0, "Ok"),
         TRANSFER_ANCHOR_STATUS_DATASTORE_BUSY(1, "TransferAnchorStatusDatastoreBusy"),
         TRANSFER_ANCHOR_STATUS_NO_USER_CONSENT(2, "TransferAnchorStatusNoUserConsent");
+
         public final Integer value;
         public final String label;
-        private TransferAnchorResponseStatusEnum(Integer value, String label){
+
+        private TransferAnchorResponseStatusEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -93,18 +97,17 @@ public static final int CLUSTER_ID = 0x0753;
             return label;
         }
     }
-
 
     public JointFabricPkiCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 1875, "JointFabricPki");
     }
 
-    
-    //commands
+    // commands
     /**
-    * This command shall be generated and executed during the Joint Commissioning Method steps and subsequently respond in the form of an ICACSRResponse command.
-Check ICA Cross Signing for details about the generation and contents of the ICACSR.
-    */
+     * This command shall be generated and executed during the Joint Commissioning Method steps and subsequently respond
+     * in the form of an ICACSRResponse command.
+     * Check ICA Cross Signing for details about the generation and contents of the ICACSR.
+     */
     public static ClusterCommand icacsrRequest(String icacsr) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (icacsr != null) {
@@ -112,12 +115,15 @@ Check ICA Cross Signing for details about the generation and contents of the ICA
         }
         return new ClusterCommand("icacsrRequest", map);
     }
+
     public static ClusterCommand transferAnchorRequest() {
         return new ClusterCommand("transferAnchorRequest");
     }
+
     public static ClusterCommand transferAnchorComplete() {
         return new ClusterCommand("transferAnchorComplete");
     }
+
     @Override
     public @NonNull String toString() {
         String str = "";
