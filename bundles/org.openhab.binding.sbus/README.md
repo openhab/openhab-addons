@@ -18,7 +18,7 @@ Auto-discovery is not supported at this moment.
 
 ## Binding Configuration
 
-The binding itself does not require any special configuration.
+The binding itself does not require any special configuration but if you choose to deploy openhab in a docker container, it is mandatory to do it with network_mode: host, otherwise, the messages flowing on the host network, won't reach the internal docker networks.
 
 ## Thing Configuration
 
