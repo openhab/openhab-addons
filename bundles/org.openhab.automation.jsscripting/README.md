@@ -350,8 +350,10 @@ Calling `getItem(...)` or `...` returns an `Item` object with the following prop
   - .getMetadata(namespace) ⇒ `object|null`
   - .replaceMetadata(namespace, value, configuration) ⇒ `object`
   - .removeMetadata(namespace) ⇒ `object|null`
-  - .sendCommand(value): `value` can be a string, a [`time.ZonedDateTime`](#time) or a [`Quantity`](#quantity)
-  - .sendCommandIfDifferent(value) ⇒ `boolean`: `value` can be a string, a [`time.ZonedDateTime`](#time) or a [`Quantity`](#quantity)
+  - .sendCommand(value): `value` can be a string, a number, a [`time.ZonedDateTime`](#time), a [`time.Instant`](#time) or a [`Quantity`](#quantity)
+  - .sendCommand(value, expire): `expire` is a [`time.Duration`](#time), this will return the Item to its previous state after the given `expire` duration
+  - .sendCommand(value, expire, onExpire): `onExpire` can be the same type as `value`, this will return the Item to the given `onExpire` value after the given `expire` duration
+  - .sendCommandIfDifferent(value) ⇒ `boolean`: `value` can be a string, a number, a [`time.ZonedDateTime`](#time), a [`time.Instant`](#time) or a [`Quantity`](#quantity)
   - .sendIncreaseCommand(value) ⇒ `boolean`: `value` can be a number, or a [`Quantity`](#quantity)
   - .sendDecreaseCommand(value) ⇒ `boolean`: `value` can be a number, or a [`Quantity`](#quantity)
   - .sendToggleCommand(): Sends a command to flip the Item's state (e.g. if it is 'ON' an 'OFF' command is sent).
@@ -441,9 +443,9 @@ See [openhab-js : ItemConfig](https://openhab.github.io/openhab-js/global.html#I
 Calling `Item.persistence` returns an `ItemPersistence` object with the following functions:
 
 - ItemPersistence :`object`
-  - .averageSince(timestamp, serviceId) ⇒ `PersistedState | null`
-  - .averageUntil(timestamp, serviceId) ⇒ `PersistedState | null`
-  - .averageBetween(begin, end, serviceId) ⇒ `PersistedState | null`
+  - .averageSince(timestamp, riemannType, serviceId) ⇒ `PersistedState | null`
+  - .averageUntil(timestamp, riemannType, serviceId) ⇒ `PersistedState | null`
+  - .averageBetween(begin, end, riemannType, serviceId) ⇒ `PersistedState | null`
   - .changedSince(timestamp, serviceId) ⇒ `boolean`
   - .changedUntil(timestamp, serviceId) ⇒ `boolean`
   - .changedBetween(begin, end, serviceId) ⇒ `boolean`
@@ -456,12 +458,12 @@ Calling `Item.persistence` returns an `ItemPersistence` object with the followin
   - .deltaSince(timestamp, serviceId) ⇒ `PersistedState | null`
   - .deltaUntil(timestamp, serviceId) ⇒ `PersistedState | null`
   - .deltaBetween(begin, end, serviceId) ⇒ `PersistedState | null`
-  - .deviationSince(timestamp, serviceId) ⇒ `PersistedState | null`
-  - .deviationUntil(timestamp, serviceId) ⇒ `PersistedState | null`
-  - .deviationBetween(begin, end, serviceId) ⇒ `PersistedState | null`
-  - .evolutionRateSince(timestamp, serviceId) ⇒ `number | null`
-  - .evolutionRateUntil(timestamp, serviceId) ⇒ `number | null`
-  - .evolutionRateBetween(begin, end, serviceId) ⇒ `number | null`
+  - .deviationSince(timestamp, riemannType, serviceId) ⇒ `PersistedState | null`
+  - .deviationUntil(timestamp, riemannType, serviceId) ⇒ `PersistedState | null`
+  - .deviationBetween(begin, end, riemannType, serviceId) ⇒ `PersistedState | null`
+  - .evolutionRateSince(timestamp, riemannType, serviceId) ⇒ `number | null`
+  - .evolutionRateUntil(timestamp, riemannType, serviceId) ⇒ `number | null`
+  - .evolutionRateBetween(begin, end, riemannType, serviceId) ⇒ `number | null`
   - .getAllStatesSince(timestamp, serviceId)  ⇒ `Array[PersistedItem]`
   - .getAllStatesUntil(timestamp, serviceId)  ⇒ `Array[PersistedItem]`
   - .getAllStatesBetween(begin, end, serviceId)  ⇒ `Array[PersistedItem]`
@@ -485,6 +487,9 @@ Calling `Item.persistence` returns an `ItemPersistence` object with the followin
   - .persistedState(timestamp, serviceId) ⇒ `PersistedItem | null`
   - .previousState(skipEqual, serviceId) ⇒ `PersistedItem | null`
   - .nextState(skipEqual, serviceId) ⇒ `PersistedItem | null`
+  - .riemannSumSince(timestamp, riemannType, serviceId)  ⇒ `PersistedState | null`
+  - .riemannSumUntil(timestamp, riemannType, serviceId)  ⇒ `PersistedState | null`
+  - .riemannSumBetween(begin, end, riemannType, serviceId)  ⇒ `PersistedState | null`
   - .sumSince(timestamp, serviceId) ⇒ `PersistedState | null`
   - .sumUntil(timestamp, serviceId) ⇒ `PersistedState | null`
   - .sumBetween(begin, end, serviceId) ⇒ `PersistedState | null`
@@ -494,6 +499,20 @@ Calling `Item.persistence` returns an `ItemPersistence` object with the followin
   - .varianceSince(timestamp, serviceId) ⇒ `PersistedState | null`
   - .varianceUntil(timestamp, serviceId) ⇒ `PersistedState | null`
   - .varianceBetween(begin, end, serviceId) ⇒ `PersistedState | null`
+
+`riemannType` is an optional argument for methods that require calculating an approximation of the integral value.
+The approximation is calculated using a Riemann sum, with left, right, trapezoidal or midpoint value approximations.
+The argument is a Java RiemannType enum with possible values: `RiemannType.LEFT`, `RiemannType.RIGHT`, `RiemannType.TRAPEZOIDAL` or `RiemannType.MIDPOINT`. If omitted, `RiemannType.LEFT` is used.
+The RiemannType enum can be statically accessed on the `items` namespace, e.g.:
+
+```javascript
+items.RiemannType.LEFT
+```
+
+A Riemann sum is always calculated using seconds as unit for time.
+As an example, the Riemann sum of power values in `kW` will result in an energy measurement in `kWs`.
+You can rely on framework functionality to convert to the appropriate unit (e.g. `kWh`), or do an explicit conversion.
+If you don't use units, be aware of this time factor.
 
 Note: `serviceId` is optional, if omitted, the default persistence service will be used.
 
@@ -867,7 +886,7 @@ cache.private.put('counter', counter);
 
 openHAB internally makes extensive use of the `java.time` package.
 openHAB-JS exports the excellent [JS-Joda](https://js-joda.github.io/js-joda/) library via the `time` namespace, which is a native JavaScript port of the same API standard used in Java for `java.time`.
-Anywhere a native Java `ZonedDateTime` or `Duration` is required, the runtime will automatically convert a JS-Joda `ZonedDateTime` or `Duration` to its Java counterpart.
+Anywhere a native Java `ZonedDateTime`, `Instant`, or `Duration` is required, the runtime will automatically convert a JS-Joda `ZonedDateTime`, `Instant`, or `Duration` to its Java counterpart.
 
 The exported JS-Joda library is also extended with convenient functions relevant to openHAB usage.
 
@@ -937,7 +956,11 @@ The following rules are used during the conversion:
 If no time zone is explicitly set, the system default time zone is used.
 When a type or string that cannot be handled is encountered, an error is thrown.
 
-#### `toToday()`
+#### Additions to `time.ZonedDateTime`
+
+The openHAB JavaScript library extends the JS-Joda `ZonedDateTime` class with additional methods that are useful in openHAB.
+
+##### `toToday()`
 
 When you have a `time.ZonedDateTime`, a new `toToday()` method was added which will return a new `time.ZonedDateTime` with today's date but the original's time, accounting for DST changes.
 
@@ -948,7 +971,7 @@ var alarm = items.Alarm;
 alarm.postUpdate(time.toZDT(alarm).toToday());
 ```
 
-#### `isBeforeTime(timestamp)`, `isBeforeDate(timestamp)`, `isBeforeDateTime(timestamp)`
+##### `isBeforeTime(timestamp)`, `isBeforeDate(timestamp)`, `isBeforeDateTime(timestamp)`
 
 Tests whether this `time.ZonedDateTime` is before the time passed in `timestamp`, tested in various ways:
 
@@ -965,7 +988,7 @@ time.toZDT('22:00').isBeforeTime('23:00')
 time.toZDT('2022-12-01T12:00Z').isBeforeDateTime('2022-12-02T13:00Z')
 ```
 
-#### `isAfterTime(timestamp)`, `isAfterDate(timestamp)`, `isAfterDateTime(timestamp)`
+##### `isAfterTime(timestamp)`, `isAfterDate(timestamp)`, `isAfterDateTime(timestamp)`
 
 Tests whether this `time.ZonedDateTime` is after the time passed in `timestamp`, tested in various ways:
 
@@ -981,7 +1004,7 @@ time.toZDT().isAfterTime(items.getItem('Sunset')) // is now after sunset?
 time.toZDT().isAfterDateTime('2022-12-01T12:00Z') // is now after 2022-12-01 noon?
 ```
 
-#### `isBetweenTimes(start, end)`
+##### `isBetweenTimes(start, end)`
 
 Tests whether this `time.ZonedDateTime` is between the passed in `start` and `end`.
 However, the function only compares the time portion of the three, ignoring the date portion.
@@ -998,7 +1021,7 @@ time.toZDT().isBetweenTimes(items.getItem('Sunset'), '11:30 PM') // is now betwe
 time.toZDT(items.getItem('StartTime')).isBetweenTimes(time.toZDT(), 'PT1H'); // is the state of StartTime between now and one hour from now
 ```
 
-#### `isBetweenDates(start, end)`
+##### `isBetweenDates(start, end)`
 
 Tests whether this `time.ZonedDateTime` is between the passed in `start` and `end`.
 However, the function only compares the date portion of the three, ignoring the time portion.
@@ -1010,7 +1033,7 @@ Examples:
 time.toZDT().isBetweenDates('2022-06-18', '2023-12-24') // currently between 2022-06-18 and 2023-12-24
 ```
 
-#### `isBetweenDateTimes(start, end)`
+##### `isBetweenDateTimes(start, end)`
 
 Tests whether this `time.ZonedDateTime` is between the passed in `start` and `end`.
 `start` and `end` can be anything supported by `time.toZDT()`.
@@ -1021,7 +1044,7 @@ Examples:
 time.toZDT().isBetweenDateTimes('2022-06-18T22:00Z', '2023-12-24T05:00Z') // currently between 2022-06-18 22:00 and 2023-12-24 05:00
 ```
 
-#### `isClose(zdt, maxDur)`
+##### `isClose(zdt, maxDur)`
 
 Tests to see if the delta between the `time.ZonedDateTime` and the passed in `time.ZonedDateTime` is within the passed in `time.Duration`.
 
@@ -1033,7 +1056,7 @@ if(timestamp.isClose(time.toZDT(), time.Duration.ofMillis(100))) {
 }
 ```
 
-#### `getMillisFromNow`
+##### `getMillisFromNow`
 
 This method on `time.ZonedDateTime` returns the milliseconds from now to the passed in `time.ZonedDateTime`.
 
@@ -1273,7 +1296,7 @@ Operations and conditions can also optionally take functions:
 
 ```javascript
 rules.when().item("F1_light").changed().then(event => {
-    console.log(event);
+  console.log(event);
 }).build("Test Rule", "My Test Rule");
 ```
 
