@@ -52,6 +52,12 @@
   notes:
     - "Nettarif C"
   start: "StartOfDay"
+# Forsyning Elnet
+- gln: "5790001088309"
+  chargeTypeCodes:
+    - "STR-NT-03"
+  notes:
+    - "Nettarif C"
 # Hammel Elforsyning Net
 - gln: "5790001090166"
   chargeTypeCodes:
