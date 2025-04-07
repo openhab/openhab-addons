@@ -62,7 +62,7 @@ public class SenseEnergyWebSocket implements WebSocketListener {
         this.client = client;
     }
 
-    public void start(long monitorId, String accessToken) throws Exception {
+    public void start(long monitorId, String accessToken) throws InterruptedException, ExecutionException, IOException, URISyntaxException {
         logger.debug("Starting Sense Energy WebSocket for monitor ID: {}", monitorId);
         this.monitorId = monitorId;
 
@@ -71,7 +71,7 @@ public class SenseEnergyWebSocket implements WebSocketListener {
     }
 
     public void restart(String accessToken)
-            throws InterruptedException, ExecutionException, IOException, URISyntaxException, Exception {
+            throws InterruptedException, ExecutionException, IOException, URISyntaxException {
         logger.debug("Re-starting Sense Energy WebSocket");
 
         stop();
@@ -80,7 +80,7 @@ public class SenseEnergyWebSocket implements WebSocketListener {
 
     public synchronized void stop() {
         closing = true;
-        logger.trace("Stopping Sense Energy WebSocket");
+        logger.debug("Stopping Sense Energy WebSocket");
 
         WebSocketSession localSession = session;
         if (localSession != null) {

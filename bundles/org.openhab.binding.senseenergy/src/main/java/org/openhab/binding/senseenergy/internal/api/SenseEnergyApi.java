@@ -21,7 +21,9 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -35,6 +37,7 @@ import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
+import org.openhab.binding.senseenergy.internal.api.SenseEnergyApiException.SEVERITY;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiAuthenticate;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiDevice;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiGetTrends;
@@ -310,6 +313,10 @@ public class SenseEnergyApi {
         try {
             logger.trace("REQUEST: {}", request.toString());
             response = request.send();
+        } catch (InterruptedException e) {
+            throw new SenseEnergyApiException("@text/api.connection-closed", SEVERITY.FATAL, e);
+        } catch (TimeoutException | ExecutionException e) {
+            throw new SenseEnergyApiException("@text/api.connection-timeout", SEVERITY.TRANSIENT, e);
         } catch (Exception e) {
             throw new SenseEnergyApiException("@text/api.request-error", SenseEnergyApiException.SEVERITY.TRANSIENT, e);
         }

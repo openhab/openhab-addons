@@ -103,6 +103,7 @@ public class SenseEnergyBridgeHandler extends BaseBridgeHandler {
     }
 
     private void heartbeat() {
+        logger.trace("heartbeat");
         ThingStatus thingStatus = getThing().getStatus();
 
         if (thingStatus == ThingStatus.OFFLINE
@@ -134,23 +135,23 @@ public class SenseEnergyBridgeHandler extends BaseBridgeHandler {
         if (e instanceof SenseEnergyApiException apiException) {
             switch (apiException.severity) {
                 case TRANSIENT:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
                     break;
                 case CONFIG:
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
                     break;
                 case FATAL:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, e.getMessage());
                     break;
                 case DATA:
-                    logger.error("Data exception: {}", e.toString());
+                    logger.warn("Data exception: {}", e.toString());
                     break;
                 default:
-                    logger.error("SenseEnergyApiException: {}", e.toString());
+                    logger.warn("SenseEnergyApiException: {}", e.toString());
                     break;
             }
         } else {
-            logger.error("Unhandled Exception", e);
+            logger.warn("Unhandled Exception", e);
         }
     }
 
