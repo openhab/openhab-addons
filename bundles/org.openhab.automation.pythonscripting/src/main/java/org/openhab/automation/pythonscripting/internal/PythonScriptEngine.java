@@ -426,15 +426,15 @@ public class PythonScriptEngine
         if (!closed) {
             try {
                 this.lifecycleTracker.dispose();
-            } catch (Throwable e) {
-                logger.error("Ignoreable exception during dispose: {}", stringifyThrowable(e));
+            } catch (Exception e) {
+                logger.warn("Ignoreable exception during dispose: {}", stringifyThrowable(e));
             }
             logger.debug("Engine disposed.");
 
             try {
                 super.close();
-            } catch (Throwable e) {
-                logger.error("Ignoreable exception during close: {}", stringifyThrowable(e));
+            } catch (Exception e) {
+                logger.warn("Ignoreable exception during close: {}", stringifyThrowable(e));
             }
 
             logger.debug("Engine closed.");
