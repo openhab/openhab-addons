@@ -66,6 +66,23 @@ public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.Chann
     public static final String STATE_PENDING = "pending";
     public static final String STATE_TRIGGERED = "triggered";
 
+    private static final Map<String, String> COMMAND_LABELS = Map.of(PAYLOAD_ARM_AWAY,
+            "@text/command.alarm-control-panel.arm-away", PAYLOAD_ARM_HOME,
+            "@text/command.alarm-control-panel.arm-home", PAYLOAD_ARM_NIGHT,
+            "@text/command.alarm-control-panel.arm-night", PAYLOAD_ARM_VACATION,
+            "@text/command.alarm-control-panel.arm-vacation", PAYLOAD_ARM_CUSTOM_BYPASS,
+            "@text/command.alarm-control-panel.arm-custom-bypass", PAYLOAD_DISARM,
+            "@text/command.alarm-control-panel.disarm", PAYLOAD_TRIGGER, "@text/command.alarm-control-panel.trigger");
+    private static final Map<String, String> STATE_LABELS = Map.of(STATE_ARMED_AWAY,
+            "@text/state.alarm-control-panel.armed-away", STATE_ARMED_CUSTOM_BYPASS,
+            "@text/state.alarm-control-panel.armed-custom-bypass", STATE_ARMED_HOME,
+            "@text/state.alarm-control-panel.armed-home", STATE_ARMED_NIGHT,
+            "@text/state.alarm-control-panel.armed-night", STATE_ARMED_VACATION,
+            "@text/state.alarm-control-panel.armed-vacation", STATE_ARMING, "@text/state.alarm-control-panel.arming",
+            STATE_DISARMED, "@text/state.alarm-control-panel.disarmed", STATE_DISARMING,
+            "@text/state.alarm-control-panel.disarming", STATE_PENDING, "@text/state.alarm-control-panel.pending",
+            STATE_TRIGGERED, "@text/state.alarm-control-panel.triggered");
+
     /**
      * Configuration class for MQTT component
      */
@@ -140,7 +157,7 @@ public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.Chann
             commandEnum.put(PAYLOAD_TRIGGER, channelConfiguration.payloadTrigger);
         }
 
-        TextValue value = new TextValue(stateEnum, commandEnum);
+        TextValue value = new TextValue(stateEnum, commandEnum, STATE_LABELS, COMMAND_LABELS);
         var builder = buildChannel(STATE_CHANNEL_ID, ComponentChannelType.STRING, value, getName(),
                 componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate());

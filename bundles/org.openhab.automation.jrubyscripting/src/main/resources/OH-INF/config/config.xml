@@ -23,6 +23,12 @@
 			<advanced>true</advanced>
 		</parameter-group>
 
+		<parameter-group name="console">
+			<label>JRuby Console</label>
+			<description>This group defines the JRuby console settings.</description>
+			<advanced>true</advanced>
+		</parameter-group>
+
 		<parameter name="gems" type="text" required="false" groupName="gems">
 			<label>Ruby Gems</label>
 			<description><![CDATA[A comma separated list of Ruby Gems to install. Versions may be constrained by separating with an
@@ -99,6 +105,14 @@
 				<option value="persistent">Persistent</option>
 				<option value="global">Global</option>
 			</options>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="console" type="text" required="false" groupName="console">
+			<label>Console Script</label>
+			<description><![CDATA[The script file to be required by the <tt>jrubyscripting console</tt>
+			console command. When specified without any path, <tt>openhab/console/</tt> will be prepended.]]></description>
+			<default>irb</default>
 			<advanced>true</advanced>
 		</parameter>
 

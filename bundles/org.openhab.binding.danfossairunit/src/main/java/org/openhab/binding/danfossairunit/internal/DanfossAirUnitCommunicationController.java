@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.danfossairunit.internal;
 
-import static org.openhab.binding.danfossairunit.internal.Commands.EMPTY;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -24,6 +22,7 @@ import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.danfossairunit.internal.protocol.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,17 +92,14 @@ public class DanfossAirUnitCommunicationController implements CommunicationContr
     }
 
     @Override
-    public byte[] sendRobustRequest(byte[] operation, byte[] register) throws IOException {
-        return sendRobustRequest(operation, register, EMPTY);
+    public byte[] sendRobustRequest(Parameter parameter) throws IOException {
+        return sendRobustRequest(parameter, new byte[] {});
     }
 
     @Override
-    public synchronized byte[] sendRobustRequest(byte[] operation, byte[] register, byte[] value) throws IOException {
+    public synchronized byte[] sendRobustRequest(Parameter parameter, byte[] value) throws IOException {
         connect();
-        byte[] request = new byte[4 + value.length];
-        System.arraycopy(operation, 0, request, 0, 2);
-        System.arraycopy(register, 0, request, 2, 2);
-        System.arraycopy(value, 0, request, 4, value.length);
+        byte[] request = parameter.getRequest(value);
         try {
             return sendRequestInternal(request);
         } catch (IOException ioe) {

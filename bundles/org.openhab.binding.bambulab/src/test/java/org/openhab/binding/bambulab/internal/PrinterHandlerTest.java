@@ -15,7 +15,7 @@ package org.openhab.binding.bambulab.internal;
 import static java.util.Arrays.stream;
 import static java.util.function.Predicate.not;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel.*;
+import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PrinterChannel.*;
 import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.*;
 import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.LedNode.*;
 
@@ -31,13 +31,14 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel;
+import org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PrinterChannel;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient;
+import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.Command;
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand;
 
 /**
@@ -47,16 +48,16 @@ import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand;
 @NonNullByDefault
 class PrinterHandlerTest {
     @Spy
-    PrinterHandler printerHandler = new PrinterHandler(mock(Thing.class));
+    PrinterHandler printerHandler = new PrinterHandler(mock(Bridge.class));
 
     @BeforeEach
     void setUp() {
-        lenient().doNothing().when(printerHandler).sendCommand(any(PrinterClient.Channel.Command.class));
+        lenient().doNothing().when(printerHandler).sendCommand(any(Command.class));
     }
 
     @ParameterizedTest(name = "Should handle {0} command for {1} channel and send {2}")
     @MethodSource
-    public void testSendLightCommand(OnOffType command, Channel channel, PrinterClient.Channel.Command sendCommand) {
+    public void testSendLightCommand(OnOffType command, PrinterChannel channel, Command sendCommand) {
         // Given
         var channelUID = new ChannelUID("bambulab:printer:test:" + channel);
 
@@ -108,7 +109,7 @@ class PrinterHandlerTest {
 
     @ParameterizedTest(name = "Command to channel {0} should not invoke `client.sendCommand`")
     @MethodSource
-    public void notImplementedCommands(Channel channel) {
+    public void notImplementedCommands(PrinterChannel channel) {
         // Given
         var channelUID = new ChannelUID("bambulab:printer:test:" + channel);
 
@@ -116,12 +117,13 @@ class PrinterHandlerTest {
         printerHandler.handleCommand(channelUID, OnOffType.ON);
 
         // Then
-        verify(printerHandler, never()).sendCommand(any());
+        verify(printerHandler, never()).sendCommand(any(Command.class));
+        verify(printerHandler, never()).sendCommand(anyString());
     }
 
     static Stream<Arguments> notImplementedCommands() {
-        return stream(Channel.values())//
-                .filter(not(Channel::isSupportCommand))//
+        return stream(PrinterChannel.values())//
+                .filter(not(PrinterChannel::isSupportCommand))//
                 .map(Arguments::of);
     }
 }

@@ -50,6 +50,7 @@ Additionally, these advanced channels are available (not all are available on al
 | charge                      | Switch                   | Charge                        | Start (ON) or stop (OFF) charging                                                                        |
 | charge-energy-added         | Number:Energy            | Charge Energy Added           | Energy added, in kWh, during the last charging session                                                   |
 | charge-limit-soc-standard   | Dimmer                   | Charge Limit SOC Standard     | Standard charging limit of the vehicle, in %                                                             |
+| charge-port-latch           | Switch                   | Charge Port Latch             | Indicate the Charge Port Latch status, (ON/OFF if latched/unlatched) |
 | charge-rate                 | Number:Speed             | Charge Rate                   | Distance per hour charging rate                                                                          |
 | charger-power               | Number:Power             | Charger Power                 | Power actually delivered by the charger                                                                  |
 | charger-voltage             | Number:ElectricPotential | Charger Voltage               | Voltage (V) actually presented by the charger                                                            |
@@ -138,6 +139,7 @@ Switch              TeslaCharge                 {channel="teslascope:vehicle:mod
 Dimmer              TeslaChargeLimit            {channel="teslascope:vehicle:model3:charge-limit"}
 Number              TeslaChargeRate             {channel="teslascope:vehicle:model3:charge-rate"}
 String              TeslaChargingState          {channel="teslascope:vehicle:model3:charging-state"}
+String              TeslaChargePortLatch        {channel="teslascope:vehicle:model3:charge-port-latch"}
 Number              TeslaChargerPower           {channel="teslascope:vehicle:model3:charger-power"}
 Number              TeslaTimeToFullCharge       {channel="teslascope:vehicle:model3:time-to-full-charge"}
 
@@ -213,6 +215,7 @@ sitemap main label="Main"
             Switch item=TeslaCharge label="Charge"
             Slider item=TeslaChargeLimit label="Charge Limit [%.1f]"
             Text item=TeslaChargingState label="Charging State [%s]" icon=""
+            Text item=TeslaChargePortLatch label="Charge Port Status"
             Text item=TeslaTimeToFullCharge label="Time To Full Charge [%.1f hours]"
             Text item=TeslaPreconditioning label="Preconditioning [%s]" icon=""
             Text item=TeslaChargeRate label="Charge Rate [%d miles/hr]"

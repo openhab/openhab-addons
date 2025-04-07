@@ -48,6 +48,12 @@ public class ChargeState {
     @SerializedName("charge_port_door_open")
     public int chargePortDoorOpen;
 
+    @SerializedName("charge_port_latch")
+    public String chargePortLatch = "";
+
+    @SerializedName("charge_amps")
+    public float chargeAmps;
+
     @SerializedName("charge_rate")
     public float chargeRate;
 
@@ -68,6 +74,9 @@ public class ChargeState {
 
     @SerializedName("scheduled_charging_start_time")
     public String scheduledChargingStartTime = " ";
+
+    @SerializedName("detailed_charge_state")
+    public String detailedChargeState = "";
 
     private ChargeState() {
     }
