@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.danfossairunit.internal.handler;
 
+import static org.openhab.binding.danfossairunit.internal.DanfossAirUnitBindingConstants.*;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -190,13 +192,16 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
         logger.debug("Initializing DanfossHRV properties '{}'", getThing().getUID());
 
         try {
-            Map<String, String> properties = new HashMap<>(2);
+            Map<String, String> properties = new HashMap<>(5);
             properties.put(Thing.PROPERTY_MODEL_ID, localAirUnit.getUnitName());
+            properties.put(Thing.PROPERTY_HARDWARE_VERSION, localAirUnit.getHardwareRevision());
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, localAirUnit.getSoftwareRevision());
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, localAirUnit.getUnitSerialNumber());
+            properties.put(PROPERTY_CCM_SERIAL_NUMBER, localAirUnit.getCCMSerialNumber());
             updateProperties(properties);
             propertiesInitializedSuccessfully = true;
             updateStatus(ThingStatus.ONLINE);
-        } catch (IOException e) {
+        } catch (IOException | UnexpectedResponseValueException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             logger.debug("Cannot initialize properties: an error occurred: {}", e.getMessage());
         }
@@ -210,11 +215,11 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
 
         stopPolling();
 
-        this.airUnit = null;
+        airUnit = null;
 
-        DanfossAirUnitCommunicationController localCommunicationController = this.communicationController;
-        if (localCommunicationController != null) {
-            localCommunicationController.disconnect();
+        DanfossAirUnitCommunicationController communicationController = this.communicationController;
+        if (communicationController != null) {
+            communicationController.disconnect();
         }
         this.communicationController = null;
     }
