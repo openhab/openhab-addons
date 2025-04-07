@@ -14,6 +14,7 @@ package org.openhab.binding.bambulab.internal;
 
 import static java.lang.Integer.parseInt;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.AmsChannel.*;
+import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.AmsChannel.TrayId.MAX_AMS_TRAYS;
 import static org.openhab.core.types.UnDefType.UNDEF;
 
 import java.util.Optional;

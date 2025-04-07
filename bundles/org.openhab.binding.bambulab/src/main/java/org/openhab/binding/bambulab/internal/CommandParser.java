@@ -143,7 +143,7 @@ public class CommandParser {
 
     private static PrinterClient.Channel.PrintSpeedCommand parsePrintSpeedCommand(String[] commandLine) {
         requireLength(commandLine, 1);
-        return PrinterClient.Channel.PrintSpeedCommand.valueOf(commandLine[0]);
+        return PrinterClient.Channel.PrintSpeedCommand.findByName(commandLine[0]);
     }
 
     private static PrinterClient.Channel.GCodeFileCommand parseGCodeFileCommand(String[] commandLine) {

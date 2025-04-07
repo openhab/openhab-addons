@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.bambulab.internal;
 
+import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
-import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.AmsChannel.MAX_AMS_TRAYS;
 import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.ThingStatusDetail.BRIDGE_UNINITIALIZED;
+import static org.openhab.core.types.UnDefType.UNDEF;
 
 import java.util.Collection;
 import java.util.Map;
@@ -83,9 +84,14 @@ public class AmsDeviceHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
+            var amsChannel = AmsChannel.findAmsChannel(channelUID);
+            if (amsChannel.isEmpty()) {
+                logger.warn("Could not find AmsChannel for channel UUID: [{}]!", channelUID);
+                return;
+            }
             Optional.ofNullable(printer)//
                     .flatMap(p -> p.findLatestAms(getAmsNumber()))//
-                    .ifPresent(this::updateAms);
+                    .ifPresent(ams -> updateAms(amsChannel.get(), ams));
         }
     }
 
@@ -97,6 +103,10 @@ public class AmsDeviceHandler extends BaseThingHandler {
                     .orElse("?!");
             logger.debug("Updating AMS #{}", number);
         }
+        stream(AmsChannel.values()).forEach(channel -> updateAms(channel, ams));
+    }
+
+    private void updateAms(AmsChannel channel, Map<String, Object> ams) {
         Optional.of(ams)//
                 .map(map -> map.get("tray"))//
                 .filter(obj -> obj instanceof Collection<?>)//
@@ -105,117 +115,56 @@ public class AmsDeviceHandler extends BaseThingHandler {
                 .flatMap(Collection::stream)//
                 .filter(obj -> obj instanceof Map<?, ?>)//
                 .map(obj -> (Map<?, ?>) obj)//
-                .forEach(this::updateAmsTray);
+                .forEach(map -> updateAmsTray(channel, map));
     }
 
-    private void updateAmsTray(Map<?, ?> map) {
+    @SuppressWarnings("DuplicateBranchesInSwitch")
+    private void updateAmsTray(AmsChannel channel, Map<?, ?> map) {
         var someId = findKey(map, "id")//
                 .map(Object::toString)//
-                .map(Integer::parseInt)
-                // tray ID in api starts from 0 and for channels it starts for 1
-                .map(t -> t + 1);
+                .map(Integer::parseInt)//
+                .flatMap(AmsChannel.TrayId::parseFromApi);
         if (someId.isEmpty()) {
             logger.warn("There is no tray ID in {}", map);
             return;
         }
-        int trayId = someId.get();
-        if (trayId > MAX_AMS_TRAYS) {
-            logger.warn("Tray ID needs to be lower that {}. Was {}", MAX_AMS_TRAYS, trayId);
-            return;
-        }
-
-        findKey(map, "tray_type")//
-                .map(Object::toString)//
-                .flatMap(AmsChannel.TrayType::findTrayType)//
-                .map(Enum::name)//
-                .map(value -> (State) StringType.valueOf(value))//
-                .or(StateParserHelper::undef)//
-                .ifPresent(value -> updateState(AmsChannel.getTrayTypeChannel(trayId), value));
-        findKey(map, "tray_color")//
-                .map(Object::toString)//
-                .map(StateParserHelper::parseColor)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(value -> updateState(AmsChannel.getTrayColorChannel(trayId), value));
-        findKey(map, "nozzle_temp_max")//
-                .map(Object::toString)//
-                .flatMap(StateParserHelper::parseTemperatureType)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(value -> updateState(AmsChannel.getNozzleTemperatureMaxChannel(trayId), value));
-        findKey(map, "nozzle_temp_min")//
-                .map(Object::toString)//
-                .flatMap(StateParserHelper::parseTemperatureType)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(value -> updateState(AmsChannel.getNozzleTemperatureMinChannel(trayId), value));
-        findKey(map, "remain")//
-                .map(Object::toString)//
-                .flatMap(StateParserHelper::parsePercentType)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(value -> updateState(AmsChannel.getRemainChannel(trayId), value));
-        findKey(map, "k")//
-                .map(Object::toString)//
-                .flatMap(StateParserHelper::parseDecimalType)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(value -> updateState(AmsChannel.getKChannel(trayId), value));
-        findKey(map, "n")//
-                .map(Object::toString)//
-                .flatMap(StateParserHelper::parseDecimalType)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(value -> updateState(AmsChannel.getNChannel(trayId), value));
-        findKey(map, "tag_uuid")//
-                .map(Object::toString)//
-                .flatMap(StateParserHelper::parseStringType)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(value -> updateState(AmsChannel.getTagUuidChannel(trayId), value));
-        findKey(map, "tray_id_name")//
-                .map(Object::toString)//
-                .flatMap(StateParserHelper::parseStringType)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(value -> updateState(AmsChannel.getTrayIdNameChannel(trayId), value));
-        findKey(map, "tray_info_idx")//
-                .map(Object::toString)//
-                .flatMap(StateParserHelper::parseStringType)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(value -> updateState(AmsChannel.getTrayInfoIdxChannel(trayId), value));
-        findKey(map, "tray_sub_brands")//
-                .map(Object::toString)//
-                .flatMap(StateParserHelper::parseStringType)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(value -> updateState(AmsChannel.getTraySubBrandsChannel(trayId), value));
-        findKey(map, "tray_weight")//
-                .map(Object::toString)//
-                .flatMap(StateParserHelper::parseDecimalType)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(value -> updateState(AmsChannel.getTrayWeightChannel(trayId), value));
-        findKey(map, "tray_diameter")//
-                .map(Object::toString)//
-                .flatMap(StateParserHelper::parseDecimalType)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(value -> updateState(AmsChannel.getTrayDiameterChannel(trayId), value));
-        findKey(map, "tray_temp")//
-                .map(Object::toString)//
-                .flatMap(StateParserHelper::parseTemperatureType)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(value -> updateState(AmsChannel.getTrayTemperatureChannel(trayId), value));
-        findKey(map, "tray_time")//
-                .map(Object::toString)//
-                .flatMap(StateParserHelper::parseDecimalType)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(value -> updateState(AmsChannel.getTrayTimeChannel(trayId), value));
-        findKey(map, "bed_temp_type")//
-                .map(Object::toString)//
-                .flatMap(StateParserHelper::parseStringType)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(value -> updateState(AmsChannel.getBedTemperatureTypeChannel(trayId), value));
-        findKey(map, "bed_temp")//
-                .map(Object::toString)//
-                .flatMap(StateParserHelper::parseTemperatureType)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(value -> updateState(AmsChannel.getBedTemperatureChannel(trayId), value));
-        findKey(map, "ctype")//
-                .map(Object::toString)//
-                .flatMap(StateParserHelper::parseDecimalType)//
-                .or(StateParserHelper::undef)//
-                .ifPresent(value -> updateState(AmsChannel.getCtypeChannel(trayId), value));
+        var trayId = someId.get();
+        var key = findKey(map, channel.getJsonKey()).map(Object::toString);
+        var state = switch (channel) {
+            case CHANNEL_TRAY_TYPE -> //
+                key.flatMap(name -> {
+                    var trayType = AmsChannel.TrayType.findTrayType(name);
+                    if (trayType.isEmpty()) {
+                        var msg = "Cannot parse tray type from [{}]! Please report this on https://github.com/openhab/openhab-addons .";
+                        if (logger.isDebugEnabled()) {
+                            logger.debug(msg + " Full map: {}", name, map);
+                        } else {
+                            logger.warn(msg, name);
+                        }
+                    }
+                    return trayType;
+                })//
+                        .map(Enum::name)//
+                        .map(value -> (State) StringType.valueOf(value));
+            case CHANNEL_TRAY_COLOR -> key.map(StateParserHelper::parseColor);
+            case CHANNEL_NOZZLE_TEMPERATURE_MAX -> key.flatMap(StateParserHelper::parseTemperatureType);
+            case CHANNEL_NOZZLE_TEMPERATURE_MIN -> key.flatMap(StateParserHelper::parseTemperatureType);
+            case CHANNEL_REMAIN -> key.flatMap(StateParserHelper::parsePercentType);
+            case CHANNEL_K -> key.flatMap(StateParserHelper::parseDecimalType);
+            case CHANNEL_N -> key.flatMap(StateParserHelper::parseDecimalType);
+            case CHANNEL_TAG_UUID -> key.flatMap(StateParserHelper::parseStringType);
+            case CHANNEL_TRAY_ID_NAME -> key.flatMap(StateParserHelper::parseStringType);
+            case CHANNEL_TRAY_INFO_IDX -> key.flatMap(StateParserHelper::parseStringType);
+            case CHANNEL_TRAY_SUB_BRANDS -> key.flatMap(StateParserHelper::parseStringType);
+            case CHANNEL_TRAY_WEIGHT -> key.flatMap(StateParserHelper::parseDecimalType);
+            case CHANNEL_TRAY_DIAMETER -> key.flatMap(StateParserHelper::parseDecimalType);
+            case CHANNEL_TRAY_TEMPERATURE -> key.flatMap(StateParserHelper::parseTemperatureType);
+            case CHANNEL_TRAY_TIME -> key.flatMap(StateParserHelper::parseDecimalType);
+            case CHANNEL_BED_TEMPERATURE_TYPE -> key.flatMap(StateParserHelper::parseStringType);
+            case CHANNEL_BED_TEMPERATURE -> key.flatMap(StateParserHelper::parseTemperatureType);
+            case CHANNEL_CTYPE -> key.flatMap(StateParserHelper::parseDecimalType);
+        };
+        updateState(channel.findType(trayId), requireNonNull(state.orElse(UNDEF)));
     }
 
     private static Optional<?> findKey(Map<?, ?> map, String key) {

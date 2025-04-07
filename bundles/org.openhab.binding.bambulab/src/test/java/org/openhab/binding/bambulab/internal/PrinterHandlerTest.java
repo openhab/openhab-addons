@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PrinterChannel.*;
 import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.*;
 import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.LedControlCommand.LedNode.*;
+import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand.*;
 
 import java.util.stream.Stream;
 
@@ -103,8 +104,8 @@ class PrinterHandlerTest {
     }
 
     static Stream<Arguments> speedLevel() {
-        return stream(PrintSpeedCommand.values())//
-                .map(command -> Arguments.of(command.name(), command));
+        return Stream.of(SILENT, STANDARD, SPORT, LUDICROUS)//
+                .map(command -> Arguments.of(command.getName(), command));
     }
 
     @ParameterizedTest(name = "Command to channel {0} should not invoke `client.sendCommand`")
