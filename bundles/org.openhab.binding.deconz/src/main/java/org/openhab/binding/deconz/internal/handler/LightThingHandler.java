@@ -466,17 +466,20 @@ public class LightThingHandler extends DeconzBaseThingHandler {
             if (xy != null && xy.length == 2) {
                 HSBType hsX = ColorUtil.xyToHsb(xy);
                 HSBType hsb = new HSBType(hsX.getHue(), hsX.getSaturation(), toPercentType(bri));
+                logger.trace("updateColorChannel(xy) channelUID:{}, hsb:{}", channelUID, hsb);
                 updateState(channelUID, hsb);
                 ctChannelUpdate = true;
             }
         } else if (bri != null && !"ct".equals(newState.colormode) && hue != null && sat != null) {
             HSBType hsb = new HSBType(new DecimalType(hue / HUE_FACTOR), toPercentType(sat), toPercentType(bri));
+            logger.trace("updateColorChannel(hsb) channelUID:{}, hsb:{}", channelUID, hsb);
             updateState(channelUID, hsb);
             ctChannelUpdate = true;
         }
 
         // cross-update the color temperature channel (if any)
         if (ctChannelUpdate && thing.getChannel(CHANNEL_COLOR_TEMPERATURE) instanceof Channel ctChannel) {
+            logger.trace("updateColorTemperatureChannel() channelUID:{}, ct:UNDEF", ctChannel.getUID());
             updateState(ctChannel.getUID(), UnDefType.UNDEF);
         }
     }
@@ -495,6 +498,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
         String colorMode = newState.colormode;
         if ((colorMode == null || "ct".equals(colorMode)) && ct != null && ct >= ctMin && ct <= ctMax) {
             int kelvin = miredToKelvin(ct);
+            logger.trace("updateColorTemperatureChannel() channelUID:{}, kelvin:{}", channelUID, kelvin);
             updateState(channelUID, QuantityType.valueOf(kelvin, Units.KELVIN));
 
             // cross-update the color channel (if any)
@@ -503,6 +507,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                 if (brightness >= 0) {
                     HSBType hsX = ColorUtil.xyToHsb(ColorUtil.kelvinToXY(kelvin));
                     HSBType hsb = new HSBType(hsX.getHue(), hsX.getSaturation(), toPercentType(brightness));
+                    logger.trace("updateColorChannel() channelUID:{}, hsb:{}", colChannel.getUID(), hsb);
                     updateState(colChannel.getUID(), hsb);
                 }
             }
