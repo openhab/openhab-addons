@@ -30,6 +30,8 @@ import pl.grzeslowski.jbambuapi.mqtt.PrinterClient;
 @NonNullByDefault
 public class CommandParser {
 
+    public static final String SEQUENCE_ID = "%sequence_id%";
+
     public static PrinterClient.Channel.Command parseCommand(String stringCommand) {
         var split = stringCommand.split(":");
         if (split.length <= 1) {
@@ -83,6 +85,10 @@ public class CommandParser {
         }
         if (commandName.equals(PrinterClient.Channel.XCamControlCommand.class.getSimpleName())) {
             return parseXCamControlCommand(tail);
+        }
+        if (commandName.equals(PrinterClient.Channel.RawCommand.class.getSimpleName())//
+                || commandName.equals(PrinterClient.Channel.RawStringCommand.class.getSimpleName())) {
+            return parseRawCommand(tail);
         }
 
         throw new IllegalArgumentException("Unknown command name: " + commandName);
@@ -200,5 +206,26 @@ public class CommandParser {
         return new PrinterClient.Channel.XCamControlCommand(
                 PrinterClient.Channel.XCamControlCommand.Module.valueOf(commandLine[0]), parseBoolean(commandLine[1]),
                 parseBoolean(commandLine[2]));
+    }
+
+    private static PrinterClient.Channel.RawCommand parseRawCommand(String[] commandLine) {
+        requireLength(commandLine, 2);
+        var raw = commandLine[1];
+        if (!raw.contains(SEQUENCE_ID)) {
+            throw new IllegalArgumentException(
+                    "Command line does not contain sequence ID. Please add %s into second parameter."
+                            .formatted(SEQUENCE_ID));
+        }
+        return new PrinterClient.Channel.RawStringCommand() {
+            @Override
+            public String topic() {
+                return commandLine[0];
+            }
+
+            @Override
+            public String buildRawStringCommand(long sequenceId) {
+                return raw.replace(SEQUENCE_ID, String.valueOf(sequenceId));
+            }
+        };
     }
 }
