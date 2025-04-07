@@ -18,7 +18,7 @@ Auto-discovery is not supported at this moment.
 
 ## Binding Configuration
 
-The binding itself does not require any special configuration but if you choose to deploy openhab in a docker container, it is mandatory to do it with network_mode: host, otherwise, the messages flowing on the host network, won't reach the internal docker networks.
+The binding itself does not require any special configuration but if you choose to deploy openhab in a docker container, it is mandatory to do it with `network_mode: host`, otherwise, the messages flowing on the host network, won't reach the internal docker networks.
 
 ## Thing Configuration
 
@@ -76,7 +76,7 @@ The Sbus Bridge has the following configuration parameters:
 |---------|----------------|------------|-----------------------------------------------------------|
 | switch  | Switch         | RW         | Basic ON/OFF state control                                |
 | dimmer  | Dimmer         | RW         | ON/OFF state with timer transition                        |
-| paired  | Rollershutter  | RW         | UP/DOWN control for two paired channels (e.g., rollershutters)|
+| paired  | Rollershutter  | RW         | UP/DOWN/STOP control for two paired channels (e.g., rollershutters)|
 
 ## Full Example
 

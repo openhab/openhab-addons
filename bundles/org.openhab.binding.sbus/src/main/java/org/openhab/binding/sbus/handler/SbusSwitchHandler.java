@@ -20,6 +20,7 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -139,6 +140,8 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
                     handlePercentCommand(percentCommand, config, channelConfig, channelUID, adapter);
                 } else if (command instanceof UpDownType upDownCommand) {
                     handleUpDownCommand(upDownCommand, config, channelConfig, channelUID, adapter);
+                } else if (command instanceof StopMoveType stopMoveCommand && stopMoveCommand == StopMoveType.STOP) {
+                    handleStopMoveCommand(config, channelConfig, channelUID, adapter);
                 }
             }
         } catch (Exception e) {
@@ -186,5 +189,18 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
 
     private int getChannelToClose(SbusChannelConfig channelConfig, boolean state) {
         return state ? channelConfig.pairedChannelNumber : channelConfig.channelNumber;
+    }
+
+    private void handleStopMoveCommand(SbusDeviceConfig config, SbusChannelConfig channelConfig, ChannelUID channelUID,
+            SbusService adapter) throws Exception {
+        // For STOP command, we stop both channels by setting them to 0
+        if (channelConfig.channelNumber > 0) {
+            adapter.writeSingleChannel(config.subnetId, config.id, channelConfig.channelNumber, 0, channelConfig.timer);
+        }
+        if (channelConfig.pairedChannelNumber > 0) {
+            adapter.writeSingleChannel(config.subnetId, config.id, channelConfig.pairedChannelNumber, 0,
+                    channelConfig.timer);
+        }
+        // We don't update the state here as the rollershutter is neither UP nor DOWN after stopping
     }
 }
