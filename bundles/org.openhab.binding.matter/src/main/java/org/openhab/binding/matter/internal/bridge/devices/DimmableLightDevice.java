@@ -93,15 +93,18 @@ public class DimmableLightDevice extends GenericDevice {
                     ValueUtils.percentToLevel(hsb.getBrightness()));
             setEndpointState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF,
                     hsb.getBrightness().intValue() > 0);
+            lastOnOffState = hsb.getBrightness().intValue() > 0 ? OnOffType.ON : OnOffType.OFF;
         } else if (state instanceof PercentType percentType) {
             setEndpointState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, percentType.intValue() > 0);
             if (percentType.intValue() > 0) {
                 setEndpointState(LevelControlCluster.CLUSTER_PREFIX, LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL,
                         ValueUtils.percentToLevel(percentType));
+                lastOnOffState = OnOffType.ON;
             }
         } else if (state instanceof OnOffType onOffType) {
             setEndpointState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF,
                     onOffType == OnOffType.ON ? true : false);
+            lastOnOffState = onOffType;
         }
     }
 
