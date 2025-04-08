@@ -248,7 +248,7 @@ public class CommandSet extends CommandBase {
     public void setScreenDisplay(boolean screenDisplayToggle) {
         modifyBytesForDisplayOff();
         removeExtraBytes();
-        logger.trace(" Set Bytes before crypt {}", Utils.bytesToHex(data));
+        logger.trace("Set Bytes before crypt {}", Utils.bytesToHex(data));
     }
 
     private void modifyBytesForDisplayOff() {
@@ -270,6 +270,32 @@ public class CommandSet extends CommandBase {
 
     private void removeExtraBytes() {
         byte[] newData = new byte[data.length - 3];
+        System.arraycopy(data, 0, newData, 0, newData.length);
+        data = newData;
+    }
+
+    /**
+     * Creates the Get capability message
+     * 
+     * @param getCapabilities
+     * @return
+     */
+    public void getCapabilities() {
+        modifyBytesForCapabilities();
+        removeExtraCapabilityBytes();
+        logger.debug("Set Bytes before encrypt {}", Utils.bytesToHex(data));
+    }
+
+    private void modifyBytesForCapabilities() {
+        data[0x01] = (byte) 0x0E;
+        data[0x09] = (byte) 0x03;
+        data[0x0a] = (byte) 0xB5;
+        data[0x0b] = (byte) 0x02;
+        data[0x0c] = (byte) 0x00;
+    }
+
+    private void removeExtraCapabilityBytes() {
+        byte[] newData = new byte[data.length - 21];
         System.arraycopy(data, 0, newData, 0, newData.length);
         data = newData;
     }
