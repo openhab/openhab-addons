@@ -156,8 +156,8 @@ class CommandParserTest {
         ThrowableAssert.ThrowingCallable when = () -> CommandParser.parseCommand(command);
 
         // then
-        assertThatThrownBy(when)//
-                .message()//
+        assertThatCode(when)//
+                .as("Command should be supported! But it was not! Command: %s", command)
                 // if an error message starts with "Unknown..." it means that the giant if statement did not cover
                 // command.
                 //
@@ -166,7 +166,7 @@ class CommandParserTest {
                 //
                 // it might happen that there will be some other IllegalArgumentException (like not enough params) would
                 // be thrown, but none of them starts with "Unknown...".
-                .doesNotStartWith("Unknown command name: " + command);
+                .hasMessageNotContaining("Unknown command");
     }
 
     static Stream<Arguments> shouldSupportCommand() {
@@ -174,6 +174,9 @@ class CommandParserTest {
                 .getSubTypesOf(PrinterClient.Channel.Command.class)//
                 .stream()//
                 .map(Class::getSimpleName)//
-                .map(command -> command.replace("Command", "")).map(Arguments::of);
+                .sorted()//
+                .map(command -> command.replace("Command", ""))//
+                .map(command -> command + ":x:y:z:w")//
+                .map(Arguments::of);
     }
 }
