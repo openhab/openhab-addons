@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
  * @author Leo Siepel - Refactored class, improved separation of concerns
  */
 @NonNullByDefault
-public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler {
+public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler, Callback {
 
     private final Logger logger = LoggerFactory.getLogger(MideaACHandler.class);
     private final boolean imperialUnits;
@@ -85,8 +85,16 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     private @Nullable ScheduledFuture<?> scheduledTask;
     private @Nullable ScheduledFuture<?> scheduledKeyTokenUpdate;
 
-    private Callback callbackLambda = (response) -> {
-        this.updateChannels(response);
+    private final Callback callbackLambda = new Callback() {
+        @Override
+        public void updateChannels(Response response) {
+            MideaACHandler.this.updateChannels(response);
+        }
+
+        @Override
+        public void updateChannels(CapabilitiesResponse capabilitiesResponse) {
+            MideaACHandler.this.updateChannels(capabilitiesResponse);
+        }
     };
 
     /**
@@ -220,6 +228,25 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                 config.ipPort, config.timeout, config.key, config.token, config.cloud, config.email, config.password,
                 config.deviceId, config.version, config.promptTone);
 
+        // Initialize connectionManager
+        connectionManager = new org.openhab.binding.mideaac.internal.connection.ConnectionManager(config.ipAddress,
+                config.ipPort, config.timeout, config.key, config.token, config.cloud, config.email, config.password,
+                config.deviceId, config.version, config.promptTone);
+
+        // This checks for one of the added default properties and means the command
+        // Has already run and doesn't need to be run again
+        if (!properties.containsKey("mode_fan_only")) {
+            try {
+                // Send configuration command and get response
+                CommandSet initializationCommand = new CommandSet();
+                initializationCommand.getCapabilities();
+                // Send the command using the connection manager
+                connectionManager.sendCommand(initializationCommand, this);
+                // 'this' is passed as the callback because MideaACHandler implements Callback
+            } catch (Exception e) {
+                logger.error("Error during capabilities initialization: {}", e.getMessage());
+            }
+        }
         if (scheduledTask == null) {
             scheduledTask = scheduler.scheduleWithFixedDelay(this::pollJob, 2, config.pollingTime, TimeUnit.SECONDS);
             logger.debug("Scheduled task started, Poll Time {} seconds", config.pollingTime);
@@ -262,7 +289,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         }
     }
 
-    private void updateChannels(Response response) {
+    @Override
+    public void updateChannels(Response response) {
         updateChannel(CHANNEL_POWER, OnOffType.from(response.getPowerState()));
         updateChannel(CHANNEL_APPLIANCE_ERROR, OnOffType.from(response.getApplianceError()));
         updateChannel(CHANNEL_OPERATIONAL_MODE, new StringType(response.getOperationalMode().toString()));
@@ -298,6 +326,59 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         updateChannel(CHANNEL_ALTERNATE_TARGET_TEMPERATURE, alternateTemperature);
         updateChannel(CHANNEL_INDOOR_TEMPERATURE, indoorTemperature);
         updateChannel(CHANNEL_OUTDOOR_TEMPERATURE, outdoorTemperature);
+    }
+
+    @Override
+    public void updateChannels(CapabilitiesResponse capabilitiesResponse) {
+        // Handle capabilities responses
+        CapabilityParser parser = new CapabilityParser();
+        parser.parse(capabilitiesResponse.getRawData());
+
+        properties = editProperties();
+
+        parser.getCapabilities().forEach((capabilityId, capabilityMap) -> {
+            capabilityMap.forEach((key, value) -> {
+                properties.put(key, String.valueOf(value));
+            });
+        });
+
+        parser.getNumericCapabilities().forEach((capabilityId, temperatureMap) -> {
+            temperatureMap.forEach((key, value) -> {
+                properties.put(key, String.valueOf(value));
+            });
+        });
+
+        // Default to false if "display_control" is missing from DISPLAY_CONTROL response
+        if (!properties.containsKey("display_control")) {
+            properties.put("display_control", "false - default");
+        }
+        // Default to true if "fan_only" is missing from MODE response
+        if (!properties.containsKey("mode_fan_only")) {
+            properties.put("mode_fan_only", "true - default");
+        }
+        // Defaults if FAN_SPEED_CONTROL is missing from response
+        if (!properties.containsKey("fan_low")) {
+            properties.put("fan_low", "true - default");
+        }
+        if (!properties.containsKey("fan_medium")) {
+            properties.put("fan_medium", "true - default");
+        }
+        if (!properties.containsKey("fan_high")) {
+            properties.put("fan_high", "true - default");
+        }
+        if (!properties.containsKey("fan_auto")) {
+            properties.put("fan_auto", "true - default");
+        }
+        if (!properties.containsKey("cool_min_temperature")) {
+            properties.put("min_target_temperature", "17°C / 62°F default");
+        }
+        if (!properties.containsKey("heat_max_temperature")) {
+            properties.put("max_target_temperature", "30°C / 86°F default");
+        }
+
+        updateProperties(properties);
+
+        logger.debug("Capabilities and temperature settings parsed and stored in properties: {}", properties);
     }
 
     @Override
