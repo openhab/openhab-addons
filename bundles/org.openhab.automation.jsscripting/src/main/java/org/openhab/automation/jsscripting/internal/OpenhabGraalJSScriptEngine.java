@@ -14,6 +14,7 @@ package org.openhab.automation.jsscripting.internal;
 
 import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,7 +26,6 @@ import java.nio.file.LinkOption;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.FileAttribute;
 import java.time.Duration;
 import java.time.Instant;
@@ -77,7 +77,8 @@ public class OpenhabGraalJSScriptEngine
     private static final Source GLOBAL_SOURCE;
     static {
         try {
-            GLOBAL_SOURCE = Source.newBuilder("js", getFileAsReader("node_modules/@jsscripting-globals.js"),
+            GLOBAL_SOURCE = Source.newBuilder("js",
+                    getFileAsReader(GraalJSScriptEngineFactory.NODE_DIR + File.separator + "@jsscripting-globals.js"),
                     "@jsscripting-globals.js").cached(true).build();
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load @jsscripting-globals.js", e);
@@ -87,9 +88,9 @@ public class OpenhabGraalJSScriptEngine
     private static final Source OPENHAB_JS_SOURCE;
     static {
         try {
-            OPENHAB_JS_SOURCE = Source
-                    .newBuilder("js", getFileAsReader("node_modules/@openhab-globals.js"), "@openhab-globals.js")
-                    .cached(true).build();
+            OPENHAB_JS_SOURCE = Source.newBuilder("js",
+                    getFileAsReader(GraalJSScriptEngineFactory.NODE_DIR + File.separator + "@openhab-globals.js"),
+                    "@openhab-globals.js").cached(true).build();
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load @openhab-globals.js", e);
         }
@@ -97,8 +98,6 @@ public class OpenhabGraalJSScriptEngine
     private static final String OPENHAB_JS_INJECTION_CODE = "Object.assign(this, require('openhab'));";
 
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
-    /** Final CommonJS search path for our library */
-    private static final Path NODE_DIR = Paths.get("node_modules");
     /** Shared Polyglot {@link Engine} across all instances of {@link OpenhabGraalJSScriptEngine} */
     private static final Engine ENGINE = Engine.newBuilder().allowExperimentalOptions(true)
             .option("engine.WarnInterpreterOnly", "false").build();
@@ -325,7 +324,7 @@ public class OpenhabGraalJSScriptEngine
      * @return whether the given path is a node root directory
      */
     private static boolean isRootNodePath(Path path) {
-        return path.startsWith(path.getRoot().resolve(NODE_DIR));
+        return path.startsWith(path.getRoot().resolve(GraalJSScriptEngineFactory.NODE_DIR));
     }
 
     /**
