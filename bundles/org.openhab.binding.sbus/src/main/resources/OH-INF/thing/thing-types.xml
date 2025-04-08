@@ -130,10 +130,10 @@
 	</channel-type>
 
 	<channel-type id="paired-channel">
-		<item-type>Contact</item-type>
-		<label>Paired Channel State</label>
-		<description>Paired channel state (OPEN/CLOSED) - controls two opposite channels</description>
-		<category>Contact</category>
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter Control</label>
+		<description>Rollershutter control (UP/DOWN) - controls two opposite channels</description>
+		<category>Blinds</category>
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
 				<label>Channel Number</label>
