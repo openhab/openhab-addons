@@ -73,7 +73,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.semantics.SemanticTag;
-import org.openhab.core.semantics.model.DefaultSemanticTags;
+import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -1075,7 +1075,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateServiceContributors();
                 updateChannelList();
                 updateChannelItemLinksFromLegacy();
-                updateSemanticEquipmentTag();
+                updateEquipmentTag();
                 if (!hasConnectivityIssue) {
                     updateStatus(ThingStatus.ONLINE);
                 }
@@ -1424,49 +1424,45 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * For lights use the product archetype to split between light bulbs and strip lights. Rooms and Zones are
      * considered to be (groups of) light bulbs.
      */
-    private void updateSemanticEquipmentTag() {
-        SemanticTag equipmentTag = null;
+    private void updateEquipmentTag() {
+        if (!disposing) {
+            int sensorCount = 0;
+            SemanticTag equipmentTag = Equipment.LIGHTBULB; // default;
 
-        // sensor equipment
-        if (supportedChannelIdSet.contains(CHANNEL_2_LIGHT_LEVEL) //
-                || supportedChannelIdSet.contains(CHANNEL_2_MOTION)
-                || supportedChannelIdSet.contains(CHANNEL_2_TEMPERATURE)) {
-            equipmentTag = DefaultSemanticTags.Equipment.SENSOR;
-        } else
-
-        // security equipment
-        if (supportedChannelIdSet.contains(CHANNEL_2_SECURITY_CONTACT)) {
-            equipmentTag = DefaultSemanticTags.Equipment.ALARM_SYSTEM; // TODO other tag
-        } else
-
-        // button equipment
-        if (supportedChannelIdSet.contains(CHANNEL_2_BUTTON_LAST_EVENT)) {
-            equipmentTag = DefaultSemanticTags.Equipment.WALL_SWITCH;
-        } else
-
-        // rotary dial equipment
-        if (supportedChannelIdSet.contains(CHANNEL_2_ROTARY_STEPS)) {
-            equipmentTag = DefaultSemanticTags.Equipment.WALL_SWITCH; // TODO other tag
-        } else
-
-        // rooms and zones are a super-set of light bulb equipment
-        if (thisResource.getType() != ResourceType.DEVICE) {
-            equipmentTag = DefaultSemanticTags.Equipment.LIGHTBULB; // TODO snake case
-        } else
-
-        // everything else is individual light equipment
-        if (thisResource.getProductData() instanceof ProductData productData) {
-            if (STRIPLIGHT_ARCHETYPES.contains(productData.getProductArchetype())) {
-                equipmentTag = DefaultSemanticTags.Equipment.LIGHT_STRIPE; // TODO light strip ??
-            } else {
-                equipmentTag = DefaultSemanticTags.Equipment.LIGHTBULB; // TODO snake case
+            if (thisResource.getType() == ResourceType.ROOM //
+                    || thisResource.getType() == ResourceType.ZONE) {
+                equipmentTag = Equipment.LIGHT_SOURCE;
             }
-        }
-
-        if (equipmentTag != null) {
-            String equipmentTagName = equipmentTag.getName();
-            logger.debug("{} -> updateSemanticEquipmentTag({})", resourceId, equipmentTagName);
-            updateThing(editThing().withSemanticEquipmentTag(equipmentTagName).build());
+            if (thisResource.getProductData() instanceof ProductData productData
+                    && STRIPLIGHT_ARCHETYPES.contains(productData.getProductArchetype())) {
+                equipmentTag = Equipment.LIGHT_STRIP;
+            }
+            if (thing.getChannel(CHANNEL_2_BUTTON_LAST_EVENT) != null) {
+                equipmentTag = Equipment.BUTTON;
+            }
+            if (thing.getChannel(CHANNEL_2_ROTARY_STEPS) != null) {
+                equipmentTag = Equipment.DIAL;
+            }
+            if (thing.getChannel(CHANNEL_2_SECURITY_CONTACT) != null) {
+                equipmentTag = Equipment.ALARM_DEVICE;
+            }
+            if (thing.getChannel(CHANNEL_2_MOTION) != null) {
+                sensorCount++;
+                equipmentTag = Equipment.MOTION_DETECTOR;
+            }
+            if (thing.getChannel(CHANNEL_2_LIGHT_LEVEL) != null) {
+                sensorCount++;
+                equipmentTag = Equipment.ILLUMINANCE_SENSOR;
+            }
+            if (thing.getChannel(CHANNEL_2_TEMPERATURE) != null) {
+                sensorCount++;
+                equipmentTag = Equipment.TEMPERATURE_SENSOR;
+            }
+            if (sensorCount > 1) {
+                equipmentTag = Equipment.SENSOR;
+            }
+            logger.debug("{} -> updateEquipmentTag({})", resourceId, equipmentTag.getName());
+            updateThing(editThing().withSemanticEquipmentTag(equipmentTag.getName()).build());
         }
     }
 }
