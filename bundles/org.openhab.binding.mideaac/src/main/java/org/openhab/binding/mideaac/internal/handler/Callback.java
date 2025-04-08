@@ -15,16 +15,25 @@ package org.openhab.binding.mideaac.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Response} performs the byte data stream decoding
+ * The {@link Response} performs the polling byte data stream decoding
+ * The {@link CapabilitiesResponse} performs the capability byte data stream decoding
  *
  * @author Leo Siepel - Initial contribution
+ * @author Bob Eckhoff - added Capabilities Callback
  */
 @NonNullByDefault
 public interface Callback {
     /**
-     * Updates channels with the response
-     * 
-     * @param response Byte response from the device used to update channels
+     * Updates channels with a standard response.
+     *
+     * @param response The standard response from the device used to update channels.
      */
     void updateChannels(Response response);
+
+    /**
+     * Updates channels with a capabilities response.
+     *
+     * @param capabilitiesResponse The capabilities response from the device used to update properties.
+     */
+    void updateChannels(CapabilitiesResponse capabilitiesResponse);
 }

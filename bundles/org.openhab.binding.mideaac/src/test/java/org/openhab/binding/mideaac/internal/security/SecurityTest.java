@@ -49,6 +49,21 @@ public class SecurityTest {
     }
 
     @Test
+    public void testGetUdpIdLittle() {
+        // Cloud Provider has no effect. Based on the deviceId
+        CloudProvider cloudProvider = new CloudProvider("", "", "", "", "", "", "", "");
+        Security security = new Security(cloudProvider);
+
+        String deviceId = "151732605161920";
+        long deviceIdAsInteger = Long.valueOf(deviceId);
+        byte[] sixByteArray = Utils.toIntTo6ByteArray(deviceIdAsInteger, ByteOrder.LITTLE_ENDIAN);
+        String udpid = security.getUdpId(sixByteArray);
+        byte[] expectedArray = new byte[] { -64, 17, 8, 0, 0, -118 };
+        assertArrayEquals(expectedArray, sixByteArray);
+        assertEquals("1a795626332686b426df2939df3e9e3a", udpid);
+    }
+
+    @Test
     public void testencryptIamPassword() {
         // Cloud provider appkey is used to encrypt
         CloudProvider cloudProvider = new CloudProvider("MSmartHome", "ac21b9f9cbfe4ca5a88562ef25e2b768", "", "", "",
