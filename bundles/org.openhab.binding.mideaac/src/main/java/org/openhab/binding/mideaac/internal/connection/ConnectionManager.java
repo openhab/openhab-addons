@@ -31,6 +31,7 @@ import org.openhab.binding.mideaac.internal.connection.exception.MideaAuthentica
 import org.openhab.binding.mideaac.internal.connection.exception.MideaConnectionException;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaException;
 import org.openhab.binding.mideaac.internal.handler.Callback;
+import org.openhab.binding.mideaac.internal.handler.CapabilitiesResponse;
 import org.openhab.binding.mideaac.internal.handler.CommandBase;
 import org.openhab.binding.mideaac.internal.handler.CommandSet;
 import org.openhab.binding.mideaac.internal.handler.Packet;
@@ -385,6 +386,16 @@ public class ConnectionManager {
                                     data.length, Utils.bytesToHex(data));
                             logger.debug("Bytes in BINARY, decoded and stripped without header: length: {}, data: {}",
                                     data.length, Utils.bytesToBinary(data));
+
+                            // Handle the capabilities response
+                            if (bodyType == (byte) 0xB5) {
+                                logger.debug("Capabilities response detected with bodyType 0xB5.");
+                                CapabilitiesResponse capabilitiesResponse = new CapabilitiesResponse(data);
+                                if (callback != null) {
+                                    callback.updateChannels(capabilitiesResponse);
+                                }
+                                return;
+                            }
 
                             if (data.length < 21) {
                                 logger.warn("Response data is {} long, minimum is 21!", data.length);

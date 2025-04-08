@@ -31,6 +31,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mideaac.internal.Utils;
 import org.openhab.binding.mideaac.internal.cloud.CloudProvider;
+import org.openhab.binding.mideaac.internal.handler.CapabilityParser;
 import org.openhab.binding.mideaac.internal.handler.CommandBase;
 import org.openhab.binding.mideaac.internal.security.Security;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -305,7 +306,8 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
             return DiscoveryResultBuilder.create(thingUID).withLabel(thingName)
                     .withRepresentationProperty(CONFIG_IP_ADDRESS).withThingType(THING_TYPE_MIDEAAC)
                     .withProperties(collectProperties(ipAddress, mSmartVersion, mSmartId, mSmartPort, mSmartSN,
-                            mSmartSSID, mSmartType))
+                            mSmartSSID, mSmartType, new TreeMap<>(), // Placeholder for capabilities
+                            new TreeMap<>())) // Placeholder for numericCapabilities
                     .build();
         } else if (Utils.bytesToHex(Arrays.copyOfRange(data, 0, 6)).equals("3C3F786D6C20")) {
             logger.debug("Midea AC v1 device was detected, supported, but not implemented yet.");
@@ -327,7 +329,8 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * Collects properties into a map.
+     * Collects discovered properties into a map and empty Maps
+     * for capabilities.
      *
      * @param ipAddress IP address of the thing
      * @param version Version 2 or 3
@@ -339,8 +342,11 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
      * @return Map with properties
      */
     private Map<String, Object> collectProperties(String ipAddress, String version, String id, String port, String sn,
-            String ssid, String type) {
+            String ssid, String type, @Nullable Map<CapabilityParser.CapabilityId, Map<String, Boolean>> capabilities,
+            @Nullable Map<CapabilityParser.CapabilityId, Map<String, Double>> numericCapabilities) {
         Map<String, Object> properties = new TreeMap<>();
+
+        // Basic properties
         properties.put(CONFIG_IP_ADDRESS, ipAddress);
         properties.put(CONFIG_IP_PORT, port);
         properties.put(CONFIG_DEVICEID, id);
@@ -348,6 +354,23 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
         properties.put(PROPERTY_SN, sn);
         properties.put(PROPERTY_SSID, ssid);
         properties.put(PROPERTY_TYPE, type);
+
+        // Default empty maps for boolean and numeric capabilities
+        if (capabilities != null) {
+            capabilities.forEach((capabilityId, capabilityMap) -> {
+                capabilityMap.forEach((key, value) -> {
+                    properties.put(capabilityId.name() + "_" + key, value);
+                });
+            });
+        }
+
+        if (numericCapabilities != null) {
+            numericCapabilities.forEach((capabilityId, temperatureMap) -> {
+                temperatureMap.forEach((key, value) -> {
+                    properties.put(capabilityId.name() + "_" + key, value);
+                });
+            });
+        }
 
         return properties;
     }
