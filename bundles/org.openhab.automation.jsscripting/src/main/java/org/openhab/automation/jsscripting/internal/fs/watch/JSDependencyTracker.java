@@ -12,9 +12,8 @@
  */
 package org.openhab.automation.jsscripting.internal.fs.watch;
 
-import java.io.File;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.automation.jsscripting.internal.GraalJSScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.rulesupport.loader.AbstractScriptDependencyTracker;
 import org.openhab.core.service.WatchService;
@@ -35,11 +34,9 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 @NonNullByDefault
 public class JSDependencyTracker extends AbstractScriptDependencyTracker {
 
-    private static final String LIB_PATH = String.join(File.separator, "automation", "js", "node_modules");
-
     @Activate
     public JSDependencyTracker(@Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService) {
-        super(watchService, LIB_PATH);
+        super(watchService, GraalJSScriptEngineFactory.JS_LIB_PATH.toString());
     }
 
     @Deactivate
