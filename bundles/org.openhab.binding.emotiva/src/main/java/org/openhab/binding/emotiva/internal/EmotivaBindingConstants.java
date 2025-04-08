@@ -82,7 +82,7 @@ public class EmotivaBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(List.of(THING_PROCESSOR));
 
     /** Default values for Emotiva channels **/
-    public static final String DEFAULT_EMOTIVA_PROTOCOL_VERSION = "2.0";
+    public static final String DEFAULT_EMOTIVA_PROTOCOL_VERSION = "3.0";
     public static final int DEFAULT_VOLUME_MIN_DECIBEL = -96;
     public static final int DEFAULT_VOLUME_MAX_DECIBEL = 15;
     public static final int DEFAULT_TRIM_MIN_DECIBEL = -12;

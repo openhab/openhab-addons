@@ -24,6 +24,7 @@ public enum EmotivaDataType {
     DIMENSIONLESS_DECIBEL("decibel"),
     DIMENSIONLESS_PERCENT("percent"),
     FREQUENCY_HERTZ("hertz"),
+    KEEP_ALIVE("keep_alive"),
     NUMBER("number"),
     NUMBER_TIME("number_time"),
     GOODBYE("goodbye"),
