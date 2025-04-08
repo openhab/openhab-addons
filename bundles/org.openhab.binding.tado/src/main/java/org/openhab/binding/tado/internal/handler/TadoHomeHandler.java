@@ -271,6 +271,6 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
 
     @Override
     public void onAccessTokenResponse(AccessTokenResponse atr) {
-        scheduler.submit(() -> initializeBridgeStatusAndPropertiesIfOffline());
+        initializeBridgeStatusAndPropertiesIfOffline();
     }
 }
