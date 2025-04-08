@@ -35,9 +35,10 @@ Once the `home` thing is online, the binding will discover all its respective zo
 
 ### Channels
 
-| Name           | Type   | Description                                                           | Read/Write |
-|----------------|--------|-----------------------------------------------------------------------|------------|
-| `homePresence` | String | Current presence value of the tado home. `HOME` and `AWAY` can be set | RW         |
+| Name                | Type   | Description                                                         | Read/Write |
+|---------------------|--------|---------------------------------------------------------------------|------------|
+| `homePresence`      | Switch | Current presence value of the tado home; `ON` = HOME / `OFF` = AWAY | RW         |
+| `geofencingEnabled` | Switch | Selects if automatic geofencing is enabled or disabled              | RW         |
 
 ## `zone` Thing
 
