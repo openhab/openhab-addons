@@ -333,7 +333,7 @@ public class JdbcConfiguration {
                         warn += "\tMariaDB:   version >= 3.0.8 from              https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
                         break;
                     case "mysql":
-                        warn += "\tMySQL:     version >= 8.2.0 from              https://mvnrepository.com/artifact/com.mysql/mysql-connector-j\n";
+                        warn += "\tMySQL:     version >= 9.2.0 from              https://mvnrepository.com/artifact/com.mysql/mysql-connector-j\n";
                         break;
                     case "postgresql":
                         warn += "\tPostgreSQL:version >= 42.4.4 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
