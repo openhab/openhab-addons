@@ -14,12 +14,12 @@ package org.openhab.transform.basicprofiles.internal.factory;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +54,7 @@ import org.openhab.transform.basicprofiles.internal.profiles.TimeRangeCommandPro
 @NonNullByDefault
 public class BasicProfilesFactoryTest {
 
-    private static final int NUMBER_OF_PROFILES = 9;
+    private static final int NUMBER_OF_PROFILES = 10;
 
     private static final Map<String, Object> PROPERTIES = Map.of(ThresholdStateProfile.PARAM_THRESHOLD, 15,
             RoundStateProfile.PARAM_SCALE, 2, GenericCommandTriggerProfile.PARAM_EVENTS, "1002,1003",
@@ -68,6 +68,7 @@ public class BasicProfilesFactoryTest {
     private @Mock @NonNullByDefault({}) ProfileCallback mockCallback;
     private @Mock @NonNullByDefault({}) ProfileContext mockContext;
     private @Mock @NonNullByDefault({}) ItemRegistry mockItemRegistry;
+    private @Mock @NonNullByDefault({}) ScheduledExecutorService mockScheduler;
 
     private @NonNullByDefault({}) BasicProfilesFactory profileFactory;
 
@@ -77,6 +78,7 @@ public class BasicProfilesFactoryTest {
                 mockTimeZoneProvider);
 
         when(mockContext.getConfiguration()).thenReturn(CONFIG);
+        when(mockContext.getExecutorService()).thenReturn(mockScheduler);
     }
 
     @Test
