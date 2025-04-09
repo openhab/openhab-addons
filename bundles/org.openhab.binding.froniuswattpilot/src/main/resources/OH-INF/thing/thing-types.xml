@@ -101,54 +101,7 @@
 		</channels>
 	</channel-group-type>
 
-	<!-- Channel Types -->
-	<channel-type id="charging-state">
-		<item-type>String</item-type>
-		<label>Charging State</label>
-		<description>Charging State of the wallbox</description>
-		<category>BatteryLevel</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="NO_CAR">No car connected</option>
-				<option value="CHARGING">Charging</option>
-				<option value="READY">Ready to charge</option>
-				<option value="COMPLETE">Charging completed</option>
-			</options>
-		</state>
-	</channel-type>
-	<channel-type id="charging-possible">
-		<item-type>Switch</item-type>
-		<label>Charging Possible</label>
-		<description>Whether charging is currently possible, e.g. when using ECO mode, too low PV surplus can block charging</description>
-		<category>BatteryLevel</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="ON">Possible</option>
-				<option value="OFF">Not Possible</option>
-			</options>
-		</state>
-	</channel-type>
-	<channel-type id="charging-single-phase">
-		<item-type>Switch</item-type>
-		<label>Single Phase Charging</label>
-		<description>Whether the wallbox is charging single phase only</description>
-		<category>BatteryLevel</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="ON">Single Phase</option>
-				<option value="OFF">Three Phases</option>
-			</options>
-		</state>
-	</channel-type>
+	<!-- Control Channel Types -->
 	<channel-type id="charging-allowed">
 		<item-type>Switch</item-type>
 		<label>Charging Allowed</label>
@@ -204,5 +157,53 @@
 			<tag>Power</tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<!-- Status Channel Types -->
+	<channel-type id="charging-state">
+		<item-type>String</item-type>
+		<label>Charging State</label>
+		<description>Charging State of the wallbox</description>
+		<category>BatteryLevel</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="NO_CAR">No car connected</option>
+				<option value="CHARGING">Charging</option>
+				<option value="READY">Ready to charge</option>
+				<option value="COMPLETE">Charging completed</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="charging-possible">
+		<item-type>Switch</item-type>
+		<label>Charging Possible</label>
+		<description>Whether charging is currently possible, e.g. when using ECO mode, too low PV surplus can block charging</description>
+		<category>BatteryLevel</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Possible</option>
+				<option value="OFF">Not Possible</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="charging-single-phase">
+		<item-type>Switch</item-type>
+		<label>Single Phase Charging</label>
+		<description>Whether the wallbox is charging single phase only</description>
+		<category>BatteryLevel</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Single Phase</option>
+				<option value="OFF">Three Phases</option>
+			</options>
+		</state>
 	</channel-type>
 </thing:thing-descriptions>
