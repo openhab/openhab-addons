@@ -13,6 +13,7 @@
 package org.openhab.binding.mideaac.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.mideaac.internal.handler.capabilities.CapabilitiesResponse;
 
 /**
  * The {@link Response} performs the polling byte data stream decoding

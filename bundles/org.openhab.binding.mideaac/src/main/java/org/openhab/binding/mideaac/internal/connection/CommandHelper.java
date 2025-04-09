@@ -109,6 +109,7 @@ public class CommandHelper {
         return commandSet;
     }
 
+    // Some devices might support 16.0 degrees C
     private static float limitTargetTemperatureToRange(float temperatureInCelsius) {
         if (temperatureInCelsius < 17.0f) {
             return 17.0f;
@@ -147,7 +148,8 @@ public class CommandHelper {
     }
 
     /**
-     * Fan Speeds vary by V2 or V3 and device. This command also turns the power ON
+     * Fan Speeds vary by V2 or V3 and device - See capabilities.
+     * This command also turns the power ON
      * 
      * @param command Fan Speed Auto, Low, High, etc.
      */
@@ -224,7 +226,7 @@ public class CommandHelper {
     }
 
     /**
-     * Modes supported depends on the device
+     * Modes supported depends on the device - See capabilities
      * Power is turned on when swing mode is changed
      * 
      * @param command Swing Mode
@@ -292,7 +294,7 @@ public class CommandHelper {
     }
 
     /**
-     * May not be supported via LAN in all models - IR only
+     * May not be supported via LAN - See capabilities - IR only
      * 
      * @param command Screen Display Toggle to ON or Off - One command
      */
