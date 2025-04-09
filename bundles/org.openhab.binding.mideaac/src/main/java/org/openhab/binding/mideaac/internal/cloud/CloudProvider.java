@@ -50,19 +50,12 @@ public record CloudProvider(String name, String appkey, String appid, String api
             case "Midea Air":
                 return new CloudProvider("Midea Air", "ff0cf6f5f0c3471de36341cab3f7a9af", "1117",
                         "https://mapp.appsmb.com", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
-            // Not in ReadMe yet
-            // case "Ariston Clima":
-            // return new CloudProvider("Ariston Clima", "434a209a5ce141c3b726de067835d7f0", "1005",
-            // "https://mapp.appsmb.com", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
+            // Reported in HA version that this cloud has been shutdown.
+            // The is possible v2 version of security down the road
             case "MSmartHome":
                 return new CloudProvider("MSmartHome", "ac21b9f9cbfe4ca5a88562ef25e2b768", "1010",
                         "https://mp-prod.appsmb.com/mas/v5/app/proxy?alias=", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S",
                         "meicloud", "PROD_VnoClJI9aikS8dyy", "v5");
-            // Future Not sure what to do with "login_key": "ad0ee21d48a64bf49f4fb583ab76e799"
-            // case "MeijuCloud": // "美的美居"
-            // return new CloudProvider("MeijuCloud", "46579c15", "900",
-            // "https://mp-prod.smartmidea.net/mas/v5/app/proxy?alias=",
-            // "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "prod_secret123@muc", "PROD_VnoClJI9aikS8dyy", "v5");
         }
         return new CloudProvider("", "", "", "", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
     }
