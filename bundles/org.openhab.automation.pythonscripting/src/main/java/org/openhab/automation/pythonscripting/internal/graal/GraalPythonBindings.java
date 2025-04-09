@@ -24,6 +24,8 @@ import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Value;
 
 /***
+ * A Graal.Python implementation of Bindings backed by a HashMap or some other specified Map.
+ *
  * @author Holger Hees - Initial contribution
  * @author Jeff James - Initial contribution
  */

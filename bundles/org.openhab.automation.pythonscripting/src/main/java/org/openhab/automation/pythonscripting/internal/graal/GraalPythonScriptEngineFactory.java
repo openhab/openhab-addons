@@ -23,6 +23,8 @@ import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.Language;
 
 /**
+ * A Graal.Python implementation of the script engine factory to exposes metadata describing of the engine class.
+ *
  * @author Holger Hees - Initial contribution
  * @author Jeff James - Initial contribution
  */

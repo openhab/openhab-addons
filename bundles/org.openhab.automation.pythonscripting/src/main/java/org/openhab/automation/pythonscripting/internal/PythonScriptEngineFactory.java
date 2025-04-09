@@ -56,8 +56,8 @@ import org.slf4j.LoggerFactory;
 /**
  * This is an implementation of {@link ScriptEngineFactory} for Python.
  *
- * @author Holger Hees - initial contribution
- * @author Jeff James - initial contribution
+ * @author Holger Hees - Initial contribution
+ * @author Jeff James - Initial contribution
  */
 @Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.automation.pythonscripting", property = Constants.SERVICE_PID
         + "=org.openhab.automation.pythonscripting")

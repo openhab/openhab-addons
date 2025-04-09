@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,11 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class providing script extensions via CommonJS modules (with module name `@runtime`).
+ * Class providing script extensions via common modules
  *
- * @author Jonathan Gilbert - Initial contribution
- * @author Florian Hotze - Pass in lock object for multi-thread synchronization; Switch to {@link Lock} for multi-thread
- *         synchronization
+ * @author Holger Hees - Initial contribution
  */
 
 @NonNullByDefault

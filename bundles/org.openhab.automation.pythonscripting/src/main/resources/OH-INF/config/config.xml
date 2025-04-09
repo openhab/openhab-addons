@@ -20,8 +20,8 @@
 			<label>Use scope and import wrapper</label>
 			<description><![CDATA[
 			This enables a scope module and and import wrapper.<br>
-			An scope module is an encapsulated module containing all openhab jsr223 objects and can be imported with 'import scope'<br>
-			Additionally you can run an import like 'from org.openhab.core import OpenHAB'
+			An scope module is an encapsulated module containing all openhab jsr223 objects and can be imported with <code>import scope</code><br>
+			Additionally you can run an import like <code>from org.openhab.core import OpenHAB</code>
 			]]></description>
 			<default>true</default>
 			<advanced>true</advanced>
@@ -58,7 +58,7 @@
 			<label>Cache compiled openHAB Python helper modules (.pyc files)</label>
 			<description><![CDATA[
 			Cache the openHAB python modules for improved startup performance.<br>
-			Disable this option will result in a slower startup performance, because scripts have to be recompiled every.
+			Disable this option will result in a slower startup performance, because scripts have to be recompiled on every startup.
 			]]></description>
 			<default>true</default>
 			<advanced>true</advanced>
