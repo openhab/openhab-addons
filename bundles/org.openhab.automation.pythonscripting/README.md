@@ -3,7 +3,7 @@
 This add-on provides support for Python 3 that can be used as a scripting language within automation rules.
 It is based on [GraalPy](https://www.graalvm.org/python/) from the [GraalVM project](https://www.graalvm.org/).
 
-Also included is [openhab-python](https://github.com/HolgerHees/openhab-python), a python library to support automation in openHAB. It provides convenient access to common core openHAB functions that make the full range of Java APIs easily accessible and usable
+Also included is [openhab-python](https://github.com/HolgerHees/openhab-python), a python library to support automation in openHAB. It provides convenient access to common core openHAB functions that make the full range of Java APIs easily accessible and usable.
 
 [[toc]]
 
@@ -14,7 +14,7 @@ When this add-on is installed, you can select Python3 as a scripting language wh
 Alternatively, you can create scripts in the `automation/python` configuration directory. If you create an empty file called `test.py`, you will see a log line with information similar to:
 
 ```text
-... [INFO ] [ort.loader.AbstractScriptFileWatcher]] - (Re-)Loading script '/openhab/conf/automation/python/test.py'
+... [INFO ] [ort.loader.AbstractScriptFileWatcher] - (Re-)Loading script '/openhab/conf/automation/python/test.py'
 ```
 
 To enable debug logging, use the [console logging]({{base}}/administration/logging.html) commands to
