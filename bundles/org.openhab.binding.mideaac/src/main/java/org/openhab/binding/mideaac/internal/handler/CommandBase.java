@@ -247,7 +247,7 @@ public class CommandBase {
      */
     public CommandBase() {
         data = new byte[] { (byte) 0xaa,
-                // request is 0x20; setting is 0x23
+                // request is 0x20; setting is 0x23 - This is the message length
                 (byte) 0x20,
                 // device type
                 (byte) 0xac, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,

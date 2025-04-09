@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.openhab.binding.mideaac.internal.handler;
+package org.openhab.binding.mideaac.internal.handler.capabilities;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.mideaac.internal.handler.CapabilityParser.CapabilityId;
+import org.openhab.binding.mideaac.internal.handler.capabilities.CapabilityParser.CapabilityId;
 
 /**
  * The {@link CapabilityParser} parses the capability Response.

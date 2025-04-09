@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mideaac.internal.handler;
+package org.openhab.binding.mideaac.internal.handler.capabilities;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
