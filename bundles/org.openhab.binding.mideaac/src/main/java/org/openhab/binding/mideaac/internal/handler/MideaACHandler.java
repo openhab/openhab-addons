@@ -39,6 +39,8 @@ import org.openhab.binding.mideaac.internal.connection.exception.MideaConnection
 import org.openhab.binding.mideaac.internal.connection.exception.MideaException;
 import org.openhab.binding.mideaac.internal.discovery.DiscoveryHandler;
 import org.openhab.binding.mideaac.internal.discovery.MideaACDiscoveryService;
+import org.openhab.binding.mideaac.internal.handler.capabilities.CapabilitiesResponse;
+import org.openhab.binding.mideaac.internal.handler.capabilities.CapabilityParser;
 import org.openhab.binding.mideaac.internal.security.TokenKey;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -369,6 +371,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         if (!properties.containsKey("fan_auto")) {
             properties.put("fan_auto", "true - default");
         }
+        // Defaults if no TEMPERATURES were in response
         if (!properties.containsKey("cool_min_temperature")) {
             properties.put("min_target_temperature", "17°C / 62°F default");
         }
