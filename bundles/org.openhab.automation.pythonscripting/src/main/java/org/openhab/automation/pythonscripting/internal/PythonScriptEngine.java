@@ -249,14 +249,6 @@ public class PythonScriptEngine
             return;
         }
 
-        // needed to get ThreadGroups working in JDK17 (openhab4). Otherwise, Python threads are not working properly.
-        // - if ThreadGroups.isDaemon == true and last python thread is done
-        // ==> ThreadGroup is closed and new python threads can't started anymore
-        // - in jdk21 is handled differently
-        // ==> ThreadGroups does not use the daemon flag anymore and ThreadGroups are not closable anymore
-        // - can be removed in jdk21 only environments
-        Thread.currentThread().getThreadGroup().setDaemon(false);
-
         logger.debug("Initializing GraalPython script engine...");
 
         ScriptContext ctx = getScriptContext();
