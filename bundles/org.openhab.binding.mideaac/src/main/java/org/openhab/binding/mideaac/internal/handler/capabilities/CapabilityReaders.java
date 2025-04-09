@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mideaac.internal.handler;
+package org.openhab.binding.mideaac.internal.handler.capabilities;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mideaac.internal.handler.CapabilityParser.CapabilityId;
+import org.openhab.binding.mideaac.internal.handler.capabilities.CapabilityParser.CapabilityId;
 
 /**
  * The {@link CapabilityReaders} reads the raw capability message and

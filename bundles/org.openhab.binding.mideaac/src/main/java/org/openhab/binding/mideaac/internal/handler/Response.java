@@ -85,7 +85,7 @@ public class Response {
 
         /**
          * Trace Log Response and Body Type for V3. V2 set at "" and 0x00
-         * This was for future development since only 0xC0 is currently used
+         * This was for future development
          */
         if (version == 3) {
             logger.trace("Response and Body Type: {}, {}", responseType, bodyType);

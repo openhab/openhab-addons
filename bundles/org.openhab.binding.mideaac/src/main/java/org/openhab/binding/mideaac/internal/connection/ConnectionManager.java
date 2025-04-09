@@ -31,11 +31,11 @@ import org.openhab.binding.mideaac.internal.connection.exception.MideaAuthentica
 import org.openhab.binding.mideaac.internal.connection.exception.MideaConnectionException;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaException;
 import org.openhab.binding.mideaac.internal.handler.Callback;
-import org.openhab.binding.mideaac.internal.handler.CapabilitiesResponse;
 import org.openhab.binding.mideaac.internal.handler.CommandBase;
 import org.openhab.binding.mideaac.internal.handler.CommandSet;
 import org.openhab.binding.mideaac.internal.handler.Packet;
 import org.openhab.binding.mideaac.internal.handler.Response;
+import org.openhab.binding.mideaac.internal.handler.capabilities.CapabilitiesResponse;
 import org.openhab.binding.mideaac.internal.security.Decryption8370Result;
 import org.openhab.binding.mideaac.internal.security.Security;
 import org.openhab.binding.mideaac.internal.security.Security.MsgType;
@@ -397,6 +397,7 @@ public class ConnectionManager {
                                 return;
                             }
 
+                            // Handle the poll response
                             if (data.length < 21) {
                                 logger.warn("Response data is {} long, minimum is 21!", data.length);
                                 return;
@@ -436,6 +437,17 @@ public class ConnectionManager {
                         logger.trace("V2 Bytes decoded and stripped without header: length: {}, data: {}", data.length,
                                 Utils.bytesToHex(data));
 
+                        // Handle the capabilities response
+                        if (bodyType == (byte) 0xB5) {
+                            logger.debug("Capabilities response detected with bodyType 0xB5.");
+                            CapabilitiesResponse capabilitiesResponse = new CapabilitiesResponse(data);
+                            if (callback != null) {
+                                callback.updateChannels(capabilitiesResponse);
+                            }
+                            return;
+                        }
+
+                        // Handle the poll response
                         if (data.length < 21) {
                             logger.warn("Response data is {} long, minimum is 21!", data.length);
                             return;
