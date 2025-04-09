@@ -1429,8 +1429,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             int sensorCount = 0;
             SemanticTag equipmentTag = Equipment.LIGHTBULB; // default;
 
-            if (thisResource.getType() == ResourceType.ROOM //
-                    || thisResource.getType() == ResourceType.ZONE) {
+            if (Set.of(ResourceType.ROOM, ResourceType.ZONE).contains(thisResource.getType())) {
                 equipmentTag = Equipment.LIGHT_SOURCE;
             }
             if (thisResource.getProductData() instanceof ProductData productData
@@ -1462,7 +1461,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 equipmentTag = Equipment.SENSOR;
             }
             logger.debug("{} -> updateEquipmentTag({})", resourceId, equipmentTag.getName());
-            updateThing(editThing().withSemanticEquipmentTag(equipmentTag.getName()).build());
+            updateThing(editThing().withSemanticEquipmentTag(equipmentTag).build());
         }
     }
 }
