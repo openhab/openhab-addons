@@ -41,7 +41,7 @@
 	<channel-group-type id="control">
 		<label>Charging Control</label>
 		<channels>
-			<channel id="enforced-charging-state" typeId="enforced-charging-state"/>
+			<channel id="charging-allowed" typeId="charging-allowed"/>
 			<channel id="charging-mode" typeId="charging-mode"/>
 			<channel id="charging-current" typeId="charging-current"/>
 			<channel id="pv-surplus-threshold" typeId="pv-surplus-threshold"/>
@@ -52,7 +52,7 @@
 		<label>Charging Status</label>
 		<channels>
 			<channel id="charging-state" typeId="charging-state"/>
-			<channel id="charging-allowed" typeId="charging-allowed"/>
+			<channel id="charging-possible" typeId="charging-possible"/>
 			<channel id="single-phase" typeId="charging-single-phase"/>
 		</channels>
 	</channel-group-type>
@@ -119,18 +119,18 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="charging-allowed">
+	<channel-type id="charging-possible">
 		<item-type>Switch</item-type>
-		<label>Charging Allowed</label>
-		<description>Whether charging is currently allowed, e.g. when using eco mode too low PV surplus can forbid charging</description>
+		<label>Charging Possible</label>
+		<description>Whether charging is currently possible, e.g. when using ECO mode, too low PV surplus can block charging</description>
 		<category>BatteryLevel</category>
 		<tags>
 			<tag>Status</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
-				<option value="ON">Allowed</option>
-				<option value="OFF">Not Allowed</option>
+				<option value="ON">Possible</option>
+				<option value="OFF">Not Possible</option>
 			</options>
 		</state>
 	</channel-type>
@@ -149,18 +149,17 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="enforced-charging-state">
-		<item-type>String</item-type>
-		<label>Enforced Charging State</label>
-		<description>Force or forbid charging, or let the wallbox decide</description>
+	<channel-type id="charging-allowed">
+		<item-type>Switch</item-type>
+		<label>Charging Allowed</label>
+		<description>Allow or forbid charging</description>
 		<category>BatteryLevel</category>
 		<tags>
 			<tag>Control</tag>
 		</tags>
 		<state>
 			<options>
-				<option value="NEUTRAL">Wallbox decides</option>
-				<option value="ON">Force charging</option>
+				<option value="ON">Allow charging</option>
 				<option value="OFF">Forbid charging</option>
 			</options>
 		</state>

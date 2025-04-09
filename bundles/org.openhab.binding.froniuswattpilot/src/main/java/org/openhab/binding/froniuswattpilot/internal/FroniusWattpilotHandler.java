@@ -80,12 +80,12 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
         String channelId = channelUID.getIdWithoutGroup();
         try {
             switch (channelId) {
-                case CHANNEL_ENFORCED_CHARGING_STATE:
-                    if (command instanceof StringType st) {
-                        client.sendCommand(
-                                new SetEnforcedChargingStateCommand(EnforcedChargingState.valueOf(st.toString())));
+                case CHANNEL_CHARGING_ALLOWED:
+                    if (command instanceof OnOffType oft) {
+                        client.sendCommand(new SetEnforcedChargingStateCommand(
+                                oft == OnOffType.OFF ? EnforcedChargingState.OFF : EnforcedChargingState.NEUTRAL));
                     } else {
-                        logger.debug("Command has wrong type, StringType required!");
+                        logger.debug("Command has wrong type, OnOffType required!");
                     }
                     break;
                 case CHANNEL_CHARGING_MODE:
@@ -233,8 +233,9 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
         final ThingUID uid = getThing().getUID();
         ChannelUID channel;
 
-        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_ENFORCED_CHARGING_STATE);
-        updateState(channel, new StringType(status.getEnforcedChargingState().toString()));
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_CHARGING_ALLOWED);
+        updateState(channel,
+                status.getEnforcedChargingState() == EnforcedChargingState.OFF ? OnOffType.OFF : OnOffType.ON);
 
         channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_CHARGING_MODE);
         updateState(channel, new StringType(status.getChargingMode().toString()));
@@ -253,7 +254,7 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
         channel = new ChannelUID(uid, CHANNEL_GROUP_ID_STATUS, CHANNEL_CHARGING_STATE);
         updateState(channel, new StringType(status.getChargingState().toString()));
 
-        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_STATUS, CHANNEL_CHARGING_ALLOWED);
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_STATUS, CHANNEL_CHARGING_POSSIBLE);
         updateState(channel, status.isChargingAllowed() ? OnOffType.ON : OnOffType.OFF);
 
         channel = new ChannelUID(uid, CHANNEL_GROUP_ID_STATUS, CHANNEL_CHARGING_SINGLE_PHASE);

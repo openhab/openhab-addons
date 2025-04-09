@@ -30,27 +30,27 @@ After adding it from the inbox, you need to configure the password for accessing
 
 ## Channels
 
-| Channel                         | Type                   | Read/Write | Description                                                                                            |
-|---------------------------------|------------------------|------------|--------------------------------------------------------------------------------------------------------|
-| control#enforced-charging-state | String                 | RW         | Force (`ON`) or Forbid (`OFF`) charging, or let the wallbox decide (`NEUTRAL`)                         |
-| control#charging-mode           | String                 | RW         | The mode of charging: `DEFAULT`, `ECO`, `NEXT_TRIP`                                                    |
-| control#charging-current        | Number:ElectricCurrent | RW         | The current to charge with                                                                             |
-| control#pv-surplus-threshold    | Number:Power           | RW         | The PV surplus power at which surplus charging starts                                                  |
-| status#charging-state           | String                 | R          | Charging state: `NO_CAR`, `CHARGING`, `READY` or `COMPLETE`                                            |
-| status#charging-allows          | Switch                 | R          | Whether charging is currently allowed, e.g. when using eco mode too low PV surplus can forbid charging |
-| status#single-phase             | Switch                 | R          | Whether the wallbox is currently charging single phase only                                            |
-| metrics#power                   | Number:Power           | R          | Total power                                                                                            |
-| metrics#energy-session          | Number:Energy          | R          | Amount of energy charged in the current/last charging session                                          |
-| metrics#energy-total            | Number:Energy          | R          | Amount of energy charged in total                                                                      |
-| metrics#l1-power                | Number:Power           | R          | Power of phase 1                                                                                       |
-| metrics#l2-power                | Number:Power           | R          | Power of phase 2                                                                                       |
-| metrics#l3-power                | Number:Power           | R          | Power of phase 3                                                                                       |
-| metrics#l1-voltage              | Number:Voltage         | R          | Voltage of phase 1                                                                                     |
-| metrics#l2-voltage              | Number:Voltage         | R          | Voltage of phase 2                                                                                     |
-| metrics#l3-voltage              | Number:Voltage         | R          | Voltage of phase 3                                                                                     |
-| metrics#l1-current              | Number:ElectricCurrent | R          | Current/amperage of phase 1                                                                            |
-| metrics#l2-current              | Number:ElectricCurrent | R          | Current/amperage of phase 2                                                                            |
-| metrics#l3-current              | Number:ElectricCurrent | R          | Current/amperage of phase 3                                                                            |
+| Channel                      | Type                   | Read/Write | Description                                                                                             |
+|------------------------------|------------------------|------------|---------------------------------------------------------------------------------------------------------|
+| control#charging-allowed     | Switch                 | RW         | Allow (`ON`) or forbid (`OFF`) charging                                                                 |
+| control#charging-mode        | String                 | RW         | The mode of charging: `DEFAULT`, `ECO`, `NEXT_TRIP`                                                     |
+| control#charging-current     | Number:ElectricCurrent | RW         | The current to charge with                                                                              |
+| control#pv-surplus-threshold | Number:Power           | RW         | The PV surplus power at which surplus charging starts                                                   |
+| status#charging-state        | String                 | R          | Charging state: `NO_CAR`, `CHARGING`, `READY` or `COMPLETE`                                             |
+| status#charging-possible     | Switch                 | R          | Whether charging is currently possible, e.g. when using ECO mode, too low PV surplus can block charging |
+| status#single-phase          | Switch                 | R          | Whether the wallbox is currently charging single phase only                                             |
+| metrics#power                | Number:Power           | R          | Total power                                                                                             |
+| metrics#energy-session       | Number:Energy          | R          | Amount of energy charged in the current/last charging session                                           |
+| metrics#energy-total         | Number:Energy          | R          | Amount of energy charged in total                                                                       |
+| metrics#l1-power             | Number:Power           | R          | Power of phase 1                                                                                        |
+| metrics#l2-power             | Number:Power           | R          | Power of phase 2                                                                                        |
+| metrics#l3-power             | Number:Power           | R          | Power of phase 3                                                                                        |
+| metrics#l1-voltage           | Number:Voltage         | R          | Voltage of phase 1                                                                                      |
+| metrics#l2-voltage           | Number:Voltage         | R          | Voltage of phase 2                                                                                      |
+| metrics#l3-voltage           | Number:Voltage         | R          | Voltage of phase 3                                                                                      |
+| metrics#l1-current           | Number:ElectricCurrent | R          | Current/amperage of phase 1                                                                             |
+| metrics#l2-current           | Number:ElectricCurrent | R          | Current/amperage of phase 2                                                                             |
+| metrics#l3-current           | Number:ElectricCurrent | R          | Current/amperage of phase 3                                                                             |
 
 ## Full Example
 
