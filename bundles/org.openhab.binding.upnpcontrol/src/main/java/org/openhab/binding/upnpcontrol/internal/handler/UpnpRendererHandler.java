@@ -61,6 +61,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.media.MediaService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -102,6 +103,8 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     protected @NonNullByDefault({}) UpnpControlRendererConfiguration config;
     private UpnpRenderingControlConfiguration renderingControlConfiguration = new UpnpRenderingControlConfiguration();
+
+    private final MediaService mediaService;
 
     private volatile List<CommandOption> favoriteCommandOptionList = List.of();
     private volatile List<CommandOption> playlistCommandOptionList = List.of();
@@ -163,13 +166,14 @@ public class UpnpRendererHandler extends UpnpHandler {
     public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpAudioSinkReg audioSinkReg,
             UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider,
-            UpnpControlBindingConfiguration configuration) {
+            UpnpControlBindingConfiguration configuration, MediaService mediaService) {
         super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
 
         serviceSubscriptions.add(AV_TRANSPORT);
         serviceSubscriptions.add(RENDERING_CONTROL);
 
         this.audioSinkReg = audioSinkReg;
+        this.mediaService = mediaService;
     }
 
     @Override

@@ -13,32 +13,11 @@
 package org.openhab.binding.spotify.internal.api.model;
 
 /**
- * Spotify Web Api Playlist data class.
+ * Spotify Web Api Playlists data class.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-public class Playlist {
-
-    private String name;
-    private String uri;
-    private String description;
-    private PlayListTracks tracks;
-    private Image[] images;
-    private String href;
-
-    public String getName() {
-        return name;
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public PlayListTracks getTracks() {
-        return tracks;
-    }
-
-    public Image[] getImages() {
-        return images;
-    }
+public class AddedShow {
+    public String added_at;
+    public Show show;
 }
