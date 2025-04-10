@@ -284,7 +284,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Vibration Sensor</label>
-		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
+		<semantic-equipment-tag>VibrationSensor</semantic-equipment-tag>
 		<channels>
 			<channel typeId="vibration" id="vibration"/>
 			<channel typeId="last_updated" id="last_updated"/>
