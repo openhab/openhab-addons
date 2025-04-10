@@ -14,6 +14,7 @@
 		<label>@text/thing-type.velux.actuator.label</label>
 		<description>@text/thing-type.velux.actuator.description</description>
 		<category>Blinds</category>
+		<semantic-equipment-tag>WindowCovering</semantic-equipment-tag>
 		<channels>
 			<channel id="position" typeId="position"/>
 			<channel id="state" typeId="state"/>
