@@ -333,7 +333,7 @@
 		<category>window</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>OpenClosed</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
 		<config-description>
