@@ -86,7 +86,7 @@ public class RdsAccessToken {
 
         try (OutputStream outputStream = https.getOutputStream();
                 DataOutputStream dataOutputStream = new DataOutputStream(outputStream)) {
-            dataOutputStream.writeBytes(payload);
+            dataOutputStream.write(payload.getBytes(StandardCharsets.UTF_8));
             dataOutputStream.flush();
         }
 
