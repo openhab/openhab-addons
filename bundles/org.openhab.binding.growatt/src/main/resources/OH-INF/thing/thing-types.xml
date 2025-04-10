@@ -624,7 +624,7 @@
 	</channel-type>
 
 	<channel-type id="advanced-electric-frequency" advanced="true">
-		<item-type>Number:Frequency</item-type>
+		<item-type unitHint="Hz">Number:Frequency</item-type>
 		<label>Electric Frequency</label>
 		<category>Energy</category>
 		<tags>
