@@ -151,7 +151,7 @@
 
 		<label>Heatmiser Contact Sensor</label>
 		<description>Heatmiser (wireless) Window or Door Contact</description>
-		<semantic-equipment-tag>Contact</semantic-equipment-tag>
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="contactState" typeId="contactState"/>
