@@ -14,7 +14,9 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.measure.quantity.Temperature;
@@ -54,6 +56,12 @@ public class WaterHeater extends AbstractComponent<WaterHeater.ChannelConfigurat
     public static final String MODE_PERFORMANCE = "performance";
     public static final List<String> DEFAULT_MODES = List.of(MODE_OFF, MODE_ECO, MODE_ELECTRIC, MODE_GAS,
             MODE_HEAT_PUMP, MODE_HIGH_DEMAND, MODE_PERFORMANCE);
+
+    private static final Map<String, String> MODE_LABELS = Map.of(MODE_OFF, "@text/state.water-heater.mode.off",
+            MODE_ECO, "@text/state.water-heater.mode.eco", MODE_ELECTRIC, "@text/state.water-heater.mode.electric",
+            MODE_GAS, "@text/state.water-heater.mode.gas", MODE_HEAT_PUMP, "@text/state.water-heater.mode.heat-pump",
+            MODE_HIGH_DEMAND, "@text/state.water-heater.mode.high-demand", MODE_PERFORMANCE,
+            "@text/state.water-heater.mode.performance");
 
     public static final String TEMPERATURE_UNIT_C = "C";
     public static final String TEMPERATURE_UNIT_F = "F";
@@ -153,8 +161,10 @@ public class WaterHeater extends AbstractComponent<WaterHeater.ChannelConfigurat
         }
 
         if (channelConfiguration.modeCommandTopic != null | channelConfiguration.modeStateTopic != null) {
+            Map<String, String> modes = channelConfiguration.modes.stream()
+                    .collect(Collectors.toMap(m -> m, m -> m, (a, b) -> a, LinkedHashMap::new));
             buildChannel(MODE_CHANNEL_ID, ComponentChannelType.STRING,
-                    new TextValue(channelConfiguration.modes.toArray(new String[0])), "Mode",
+                    new TextValue(modes, modes, MODE_LABELS, MODE_LABELS), "Mode",
                     componentConfiguration.getUpdateListener())
                     .stateTopic(channelConfiguration.modeStateTopic, channelConfiguration.modeStateTemplate,
                             channelConfiguration.getValueTemplate())

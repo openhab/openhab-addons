@@ -141,7 +141,7 @@
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:velbus:8channelDeviceWithCounters"/>
+		<config-description-ref uri="thing-type:velbus:8channelDeviceWith8Counters"/>
 	</thing-type>
 
 	<thing-type id="vmb8ir">

@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bambulab"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="printer">
+		<label>Bambu Lab Printer</label>
+		<description>Represents a Bambu Lab 3D printer connected via MQTT</description>
+
+		<channels>
+			<channel id="command" typeId="string-rw">
+				<label>Command</label>
+				<description><![CDATA[
+					Send command to run. See <a href="https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.bambulab#sendcommand">Actions > sendCommand</a>
+				]]></description>
+			</channel>
+			<channel id="nozzle-temperature" typeId="temperature-measurement">
+				<label>Nozzle Temperature</label>
+				<description>Current temperature of the nozzle.</description>
+			</channel>
+			<channel id="nozzle-target-temperature" typeId="temperature-setpoint">
+				<label>Nozzle Target Temperature</label>
+				<description>Target temperature of the nozzle.</description>
+			</channel>
+			<channel id="bed-temperature" typeId="temperature-measurement">
+				<label>Bed Temperature</label>
+				<description>Current temperature of the heated bed.</description>
+			</channel>
+			<channel id="bed-target-temperature" typeId="temperature-setpoint">
+				<label>Bed Target Temperature</label>
+				<description>Target temperature of the heated bed.</description>
+			</channel>
+			<channel id="chamber-temperature" typeId="temperature-measurement">
+				<label>Chamber Temperature</label>
+				<description>Current temperature inside the printer chamber.</description>
+			</channel>
+			<channel id="mc-print-stage" typeId="string">
+				<label>Print Stage</label>
+				<description>Current stage of the print process.</description>
+			</channel>
+			<channel id="mc-percent" typeId="percent">
+				<label>Print Progress</label>
+				<description>Percentage of the print completed.</description>
+			</channel>
+			<channel id="mc-remaining-time" typeId="time-min">
+				<label>Remaining Print Time</label>
+				<description>Estimated time remaining for the print in seconds.</description>
+			</channel>
+			<channel id="end-date" typeId="timestamp">
+				<label>End Time of the Print</label>
+				<description>Estimated end date of the print.</description>
+			</channel>
+			<channel id="wifi-signal" typeId="wifi">
+				<label>WiFi Signal Strength</label>
+				<description>Current WiFi signal strength.</description>
+			</channel>
+			<channel id="bed-type" typeId="string">
+				<label>Bed Type</label>
+				<description>Type of the printer's heated bed.</description>
+			</channel>
+			<channel id="gcode-file" typeId="string-rw">
+				<label>G-code File</label>
+				<description>Name of the currently loaded G-code file.</description>
+			</channel>
+			<channel id="gcode-state" typeId="string">
+				<label>G-code State</label>
+				<description>Current state of the G-code execution.</description>
+			</channel>
+			<channel id="reason" typeId="string">
+				<label>Pause/Stop Reason</label>
+				<description>Reason for pausing or stopping the print.</description>
+			</channel>
+			<channel id="result" typeId="string">
+				<label>Print Result</label>
+				<description>Final result or status of the print job.</description>
+			</channel>
+			<channel id="gcode-file-prepare-percent" typeId="percent">
+				<label>G-code Preparation Progress</label>
+				<description>Percentage of G-code file preparation completed.</description>
+			</channel>
+			<channel id="big-fan1-speed" typeId="number">
+				<label>Big Fan 1 Speed</label>
+				<description>Speed of the first large cooling fan (RPM).</description>
+			</channel>
+			<channel id="big-fan2-speed" typeId="number">
+				<label>Big Fan 2 Speed</label>
+				<description>Speed of the second large cooling fan (RPM).</description>
+			</channel>
+			<channel id="heat-break-fan-speed" typeId="number">
+				<label>Heat Break Fan Speed</label>
+				<description>Speed of the heat break cooling fan (RPM).</description>
+			</channel>
+			<channel id="layer-num" typeId="number">
+				<label>Current Layer Number</label>
+				<description>Current layer being printed.</description>
+			</channel>
+			<channel id="speed-level" typeId="speed-level"/>
+			<channel id="time-laps" typeId="boolean">
+				<label>time-lapse Enabled</label>
+				<description>Indicates whether time-lapse recording is enabled.</description>
+			</channel>
+			<channel id="use-ams" typeId="boolean">
+				<label>AMS System in Use</label>
+				<description>Indicates whether the Automatic Material System (AMS) is active.</description>
+			</channel>
+			<channel id="vibration-calibration" typeId="boolean">
+				<label>Vibration Calibration</label>
+				<description>Indicates whether vibration calibration has been performed.</description>
+			</channel>
+			<channel id="camera-record" typeId="boolean-rw">
+				<label>Camera Record</label>
+				<description>Turns on/off openHAB's capability of recording.</description>
+			</channel>
+			<channel id="camera-image" typeId="camera-image"/>
+
+			<!-- command channels -->
+			<channel id="led-chamber" typeId="boolean-rw">
+				<label>Chamber LED</label>
+				<description>Controls the LED lighting inside the printer chamber.</description>
+			</channel>
+			<channel id="led-work" typeId="boolean-rw">
+				<label>Work Area LED</label>
+				<description>Controls the LED lighting for the work area.</description>
+			</channel>
+
+			<!-- 🟩 AMS -->
+			<channel id="ams-tray-now" typeId="tray-loaded"/>
+			<channel id="ams-tray-previous" typeId="tray-loaded">
+				<label>Previously Loaded Tray</label>
+			</channel>
+			<!-- 🟥 AMS -->
+			<!-- 🟩 VTray -->
+			<channel id="vtray-tray-type" typeId="tray-type"/>
+			<channel id="vtray-tray-color" typeId="tray-color"/>
+			<channel id="vtray-nozzle-temperature-max" typeId="temperature-setpoint">
+				<label>Nozzle Temperature Max</label>
+				<description>Maximum nozzle temperature for tray.</description>
+			</channel>
+			<channel id="vtray-nozzle-temperature-min" typeId="temperature-setpoint">
+				<label>Nozzle Temperature Min</label>
+				<description>Minimum nozzle temperature for tray.</description>
+			</channel>
+			<channel id="vtray-remain" typeId="percent">
+				<label>Remain</label>
+				<description>Amount of remaining filament.</description>
+			</channel>
+			<channel id="vtray-k" typeId="number-advanced">
+				<label>k</label>
+			</channel>
+			<channel id="vtray-n" typeId="number-advanced">
+				<label>n</label>
+			</channel>
+			<channel id="vtray-tag-uuid" typeId="string-advanced">
+				<label>Tag UUID</label>
+			</channel>
+			<channel id="vtray-tray-id-name" typeId="string-advanced">
+				<label>Tray ID Name</label>
+			</channel>
+			<channel id="vtray-tray-info-idx" typeId="string-advanced">
+				<label>Tray Info IDX Name</label>
+			</channel>
+			<channel id="vtray-tray-sub-brands" typeId="string-advanced">
+				<label>Tray Sub Brands</label>
+			</channel>
+			<channel id="vtray-tray-weight" typeId="number-advanced">
+				<label>Tray Weight</label>
+			</channel>
+			<channel id="vtray-tray-diameter" typeId="number-advanced">
+				<label>Tray Diameter</label>
+			</channel>
+			<channel id="vtray-tray-temperature" typeId="temperature-measurement-advanced">
+				<label>Tray Temperature</label>
+			</channel>
+			<channel id="vtray-tray-time" typeId="number-advanced">
+				<label>Tray Time</label>
+			</channel>
+			<channel id="vtray-bed-temp-type" typeId="string-advanced">
+				<label>Bed Temperature Type</label>
+			</channel>
+			<channel id="vtray-bed-temperature" typeId="temperature-measurement-advanced">
+				<label>Bed Temperature</label>
+			</channel>
+			<!-- 🟥 VTray -->
+		</channels>
+
+		<representation-property>serial</representation-property>
+		<config-description>
+			<!-- 🟩Groups -->
+			<parameter-group name="mqtt">
+				<label>MQTT</label>
+				<description>Properties for MQTT.</description>
+			</parameter-group>
+			<parameter-group name="camera">
+				<label>Camera</label>
+				<description>Properties for camera. Note: only A and P series are supported.</description>
+			</parameter-group>
+			<!-- 🟥Groups -->
+			<!-- 🟩Common -->
+			<parameter name="series" type="text" required="true">
+				<label>Series</label>
+				<description>Select the printer series</description>
+				<options>
+					<option value="A">A Series</option>
+					<option value="P">P Series</option>
+					<option value="X">X Series</option>
+				</options>
+			</parameter>
+			<parameter name="serial" type="text" required="true">
+				<label>Serial Number</label>
+				<description>Unique serial number of the printer.</description>
+			</parameter>
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname</label>
+				<description>IP address of the printer or `us.mqtt.bambulab.com` for cloud mode.</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="accessCode" type="text" required="true">
+				<label>Access Code</label>
+				<description>Access code of the printer. The method of obtaining it differs for local and cloud modes.
+				</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>`bblp` for local mode or your Bambu Lab user (starts with `u_`).</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="reconnectTime" type="text" min="1">
+				<label>Reconnect Time</label>
+				<description>Time in seconds to wait before reconnect.</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="reconnectMax" type="text" min="0">
+				<label>Max Reconnections</label>
+				<description>Max times to try reconnections.</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<!-- 🟥Common -->
+			<!-- 🟩MQTT -->
+			<parameter name="scheme" type="text" required="false" groupName="mqtt">
+				<label>Scheme</label>
+				<description>URI scheme.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="port" type="integer" max="65535" min="1" required="false" groupName="mqtt">
+				<label>Port</label>
+				<description>URI port.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<!-- 🟥MQTT -->
+			<!-- 🟩CAMERA -->
+			<parameter name="cameraPort" type="integer" required="false" max="65535" min="1" groupName="camera">
+				<label>Camera Port</label>
+				<description>Defaults to 6000 for A and P series.</description>
+				<advanced>true</advanced>
+				<default>6000</default>
+			</parameter>
+			<parameter name="cameraCertificate" type="text" multiple="true" required="false" groupName="camera">
+				<label>TLS Certificate</label>
+				<description><![CDATA[
+					To disable the use of your own certificate, enter <b>none</b>.
+					If providing your own certificate, ensure it includes the header <i>-----BEGIN CERTIFICATE-----</i> at the beginning and <i>-----END CERTIFICATE-----</i> at the end.
+				]]></description>
+				<advanced>true</advanced>
+			</parameter>
+			<!-- 🟥CAMERA -->
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

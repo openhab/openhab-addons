@@ -116,7 +116,8 @@ public class GreeDeviceFinder {
                     if ("gree".equalsIgnoreCase(scanResponseGson.packJson.brand)) {
                         // Create a new GreeDevice
                         logger.debug("Discovered device at {}:{}", remoteAddress.getHostAddress(), remotePort);
-                        GreeAirDevice newDevice = new GreeAirDevice(remoteAddress, remotePort, scanResponseGson);
+                        GreeAirDevice newDevice = new GreeAirDevice(remoteAddress, remotePort, scanResponseGson,
+                                encryptionTypeConfig);
                         addDevice(newDevice);
                     } else {
                         logger.debug("Unit discovered, but brand is not GREE");

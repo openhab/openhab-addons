@@ -94,11 +94,11 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
             hostname = new URI(config.hostname);
         } catch (URISyntaxException e) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                    "@token/handler.init.invalidHostname[\"" + config.hostname + "\"]");
+                    "@text/handler.init.invalidHostname[\"" + config.hostname + "\"]");
             return;
         }
         if (config.token.isEmpty()) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/handler.init.noToken");
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/handler.init.noToken");
             return;
         }
         adminService = new JettyAdminService(config.token, hostname, httpClient);
