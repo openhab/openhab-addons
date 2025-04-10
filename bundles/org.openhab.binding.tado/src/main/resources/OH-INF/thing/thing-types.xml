@@ -208,7 +208,7 @@
 		<category>Fan</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Speed</tag>
+			<tag>Airflow</tag>
 		</tags>
 		<state>
 			<options>
@@ -249,7 +249,7 @@
 		<category>Fan</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Speed</tag>
+			<tag>Airflow</tag>
 		</tags>
 		<state>
 			<options>
