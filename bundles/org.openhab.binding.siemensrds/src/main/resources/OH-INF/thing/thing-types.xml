@@ -8,7 +8,7 @@
 
 		<label>Siemens Climatix IC Account</label>
 		<description>The Siemens Climatix IC cloud server account for accessing RDS Smart Thermostats</description>
-		<semantic-equipment-tag>CloudService</semantic-equipment-tag>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<properties>
 			<property name="vendor">Siemens</property>
