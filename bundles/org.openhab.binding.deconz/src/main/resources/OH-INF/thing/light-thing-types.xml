@@ -181,7 +181,7 @@
 		<category>Rollershutter</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Open</tag>
+			<tag>OpenState</tag>
 		</tags>
 		<state pattern="%.1f %%"/>
 	</channel-type>

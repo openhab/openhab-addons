@@ -118,7 +118,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Fire Sensor</label>
-		<semantic-equipment-tag>AlarmDevice</semantic-equipment-tag>
+		<semantic-equipment-tag>FireDetector</semantic-equipment-tag>
 		<channels>
 			<channel typeId="fire" id="fire"/>
 			<channel typeId="last_updated" id="last_updated"/>
