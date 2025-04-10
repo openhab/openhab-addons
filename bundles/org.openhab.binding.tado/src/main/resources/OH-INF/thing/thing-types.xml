@@ -174,7 +174,7 @@
 		<label>HVAC Mode</label>
 		<description>Mode of the device (OFF, HEAT, COOL, DRY, FAN, AUTO - if supported)</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state>
@@ -392,7 +392,7 @@
 		<description>The remaining Open Window heating/cooling Override time in the Zone</description>
 		<category>Window</category>
 		<tags>
-			<tag>Control</tag>
+			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
