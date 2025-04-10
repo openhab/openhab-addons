@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
  * the ability to transform the device data into the channel state.
  *
  * @author Mike Major - Initial contribution
+ * @author Roland Tapken - Added refresh value and refresh interval
  */
 @NonNullByDefault
 public abstract class DeviceChannel {
@@ -74,7 +75,7 @@ public abstract class DeviceChannel {
      * @param data the command to transform
      * @return the transformed data if the transform produced a result.
      */
-    protected Optional<String> transformCommand(final String data) {
+    public Optional<String> transformCommand(final String data) {
         return commandTransform.apply(data);
     }
 
@@ -101,5 +102,17 @@ public abstract class DeviceChannel {
         }
 
         return data;
+    }
+
+    public String getRefreshValue() {
+        String command = config.refreshValue;
+        if (command == null) {
+            return "";
+        }
+        return command;
+    }
+
+    public int getRefreshInterval() {
+        return config.refreshInterval;
     }
 }
