@@ -55,19 +55,11 @@
 	<channel-type id="scene-activate">
 		<item-type>Switch</item-type>
 		<label>Activate</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="scene-group-activate">
 		<item-type>Switch</item-type>
 		<label>Activate</label>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="automation-enabled">
