@@ -29,6 +29,11 @@ public class AuthData {
             public @Nullable String name;
             public @Nullable Object value;
 
+            public NameValuePair(String name, Object value) {
+                this.name = name;
+                this.value = value;
+            }
+
             public @Nullable String valueAsString() {
                 return (value instanceof String stringValue) ? stringValue : null;
             }

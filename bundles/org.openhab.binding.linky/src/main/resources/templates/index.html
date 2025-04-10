@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+${pageRefresh}
+<title>Authorize openHAB Linky binding for Enedis</title>
+<link rel="icon" href="img/favicon.ico" type="image/vnd.microsoft.icon">
+<link>
+<style>
+html {
+	font-family: "Roboto", Helvetica, Arial, sans-serif;
+}
+
+
+.block {
+	border: 1px solid #bbb;
+	background-color: white;
+	margin: 10px 0;
+	padding: 8px 10px;
+}
+
+.error {
+	background: #FFC0C0;
+	border: 1px solid darkred;
+	color: darkred
+}
+
+.authorized {
+	border: 1px solid #90EE90;
+	background-color: #E0FFE0;
+}
+
+.button {
+    margin-left:30px;
+	margin-bottom: 10px;
+	float:left;
+}
+
+.olList {
+    margin-top:20px;
+}
+
+.olList li {
+    margin:20px;
+}
+
+
+
+
+.box {
+   float:left;
+   transform: translate(0%, -30%);
+}
+
+.box select {
+  background-color: #0563af;
+  color: white;
+  padding: 12px;
+  width: 350px;
+  border: none;
+  font-size: 20px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+  -webkit-appearance: button;
+  appearance: button;
+  outline: none;
+}
+
+/* Style the arrow inside the select element: */
+.box::before {
+  content: "\f13a";
+  font-family: FontAwesome;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50px;
+  height: 100%;
+  text-align: center;
+  font-size: 28px;
+  line-height: 45px;
+  color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+}
+
+
+.logo {
+    display: inline;
+}
+
+.logoEnedis {
+    display: inline;
+}
+
+.logoTransfer {
+    display: inline;
+    margin-left:300px;
+    top: -30px;    
+}
+
+.button a {
+	background: #1ED760;
+	border-radius: 500px;
+	color: white;
+	padding: 10px 20px 10px;
+	font-size: 16px;
+	font-weight: 700;
+	border-width: 0;
+	text-decoration: none;
+}
+</style>
+<script language="javascript">
+function retrieveToken()
+{
+    var prmId = document.getElementById('prmId').value;
+    document.location= "${retrieveToken.uri}" + "&code=" + prmId; 
+}
+</script>
+</head>
+
+<body>
+	<div style="margin:50px">
+		<div class="logo" style="vertical-align:top;">
+				<div style="display: inline-block;width:500;margin-right:100px;margin-top:0px;margin-bottom:0px;">
+					<img src="/connectlinky/img/openhab_logo.svg" height="100"/>
+				</div>
+				<div style="display: inline-block;width:100;margin-top:0px;margin-bottom:0px;">			
+				</div>
+		</div>
+		<br/><br/><br/>
+		
+		<hr style="margin:0px;padding-left:20px;padding-right:20px;width:97%;"/>
+		<div style="background:linear-gradient(#faf3ff, #e8cbfd);padding:20px;margin:0px;display:inline-block; width:97%;align:center;">
+			<h1>
+			Merci de sélectionner votre provider
+			</h1>
+			
+			<div style="float:center;width:100%;">
+			<div style="display: inline-block;width:300;margin:100px;padding:20px;background-color:#ffffff;">
+				<a href="/connectlinky/myelectricaldata"><img src="/connectlinky/img/MyElectricalData.png" height="100"></a>
+			</div>
+			<div style="display: inline-block;width:300;margin:100px;padding:20px;background-color:#ffffff;">
+				<a href="/connectlinky/enedis"><img src="/connectlinky/img/enedis.png" height="100"></a>
+			</div>
+			</div>
+		</div>
+
+	</div>
+		
+		
+</body>
+</html>
