@@ -392,7 +392,7 @@
 		<description>The remaining Open Window heating/cooling Override time in the Zone</description>
 		<category>Window</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
