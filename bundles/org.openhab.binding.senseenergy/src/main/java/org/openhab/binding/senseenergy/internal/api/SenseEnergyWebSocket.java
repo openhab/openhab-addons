@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.senseenergy.internal.api;
 
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.HEARTBEAT_MINUTES;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -51,6 +54,10 @@ public class SenseEnergyWebSocket implements WebSocketListener {
     private boolean closing;
     private long monitorId;
 
+    private static int BACKOFF_TIME_START = 300;
+    private static int BACKOFF_TIME_MAX = (int) Duration.ofMinutes(HEARTBEAT_MINUTES).toMillis();
+    private int backOffTime = BACKOFF_TIME_START;
+
     private Gson gson = new Gson();
 
     public boolean isClosing() {
@@ -62,7 +69,8 @@ public class SenseEnergyWebSocket implements WebSocketListener {
         this.client = client;
     }
 
-    public void start(long monitorId, String accessToken) throws InterruptedException, ExecutionException, IOException, URISyntaxException {
+    public void start(long monitorId, String accessToken)
+            throws InterruptedException, ExecutionException, IOException, URISyntaxException {
         logger.debug("Starting Sense Energy WebSocket for monitor ID: {}", monitorId);
         this.monitorId = monitorId;
 
@@ -75,6 +83,16 @@ public class SenseEnergyWebSocket implements WebSocketListener {
         logger.debug("Re-starting Sense Energy WebSocket");
 
         stop();
+        start(monitorId, accessToken);
+    }
+
+    public void restartWithBackoff(String accessToken)
+            throws InterruptedException, ExecutionException, IOException, URISyntaxException {
+        logger.debug("Re-starting Sense Energy WebSocket - backoff {} ms", backOffTime);
+
+        stop();
+        Thread.sleep(backOffTime);
+        backOffTime = Math.min(backOffTime * 2, BACKOFF_TIME_MAX);
         start(monitorId, accessToken);
     }
 
@@ -114,7 +132,9 @@ public class SenseEnergyWebSocket implements WebSocketListener {
     @Override
     public void onWebSocketConnect(@Nullable Session session) {
         closing = false;
+        backOffTime = BACKOFF_TIME_START;
         logger.debug("Connected to Sense Energy WebSocket");
+        listener.onWebSocketConnect();
     }
 
     @Override
