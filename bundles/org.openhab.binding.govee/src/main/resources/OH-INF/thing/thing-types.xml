@@ -7,7 +7,7 @@
 	<thing-type id="govee-light">
 		<label>Govee Light</label>
 		<description>Govee light controllable via LAN API</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="color" typeId="system.color"/>
 			<channel id="color-temperature" typeId="system.color-temperature"/>
