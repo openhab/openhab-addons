@@ -8,7 +8,7 @@
 	<bridge-type id="home">
 		<label>Tado Home</label>
 		<description>The user's tado home</description>
-		<semantic-equipment-tag>CloudService</semantic-equipment-tag>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
 			<channel typeId="homePresence" id="homePresence"/>
