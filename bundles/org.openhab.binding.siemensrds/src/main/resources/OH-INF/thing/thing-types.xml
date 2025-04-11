@@ -215,7 +215,7 @@
 		<category>presence</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Presence</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
