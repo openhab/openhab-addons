@@ -25,4 +25,6 @@ public class TadoHomeConfig {
     public @Nullable String username;
     public @Nullable String password;
     public @Nullable Boolean useRfc8628;
+    public @Nullable Boolean rfcWithUser;
+    public @Nullable Integer homeId;
 }
