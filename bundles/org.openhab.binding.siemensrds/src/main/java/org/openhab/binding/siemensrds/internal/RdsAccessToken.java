@@ -22,7 +22,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -87,7 +86,7 @@ public class RdsAccessToken {
 
         try (OutputStream outputStream = https.getOutputStream();
                 DataOutputStream dataOutputStream = new DataOutputStream(outputStream)) {
-            dataOutputStream.writeBytes(URLEncoder.encode(payload, StandardCharsets.UTF_8));
+            dataOutputStream.writeBytes(payload);
             dataOutputStream.flush();
         }
 
