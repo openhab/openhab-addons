@@ -1443,7 +1443,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 equipmentTag = Equipment.DIAL;
             }
             if (thing.getChannel(CHANNEL_2_SECURITY_CONTACT) != null) {
-                equipmentTag = Equipment.ALARM_DEVICE;
+                equipmentTag = Equipment.CONTACT_SENSOR;
             }
             if (thing.getChannel(CHANNEL_2_MOTION) != null) {
                 sensorCount++;
