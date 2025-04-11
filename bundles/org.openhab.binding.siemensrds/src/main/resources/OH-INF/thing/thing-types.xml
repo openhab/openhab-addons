@@ -215,7 +215,7 @@
 		<category>presence</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>HomeAway</tag>
+			<tag>Presence</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
