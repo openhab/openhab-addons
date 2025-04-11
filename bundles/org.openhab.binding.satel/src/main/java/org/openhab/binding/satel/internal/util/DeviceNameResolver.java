@@ -157,6 +157,16 @@ public class DeviceNameResolver {
         return deviceNumber == 0 ? "telephone: unknown" : resolve(DeviceType.TELEPHONE, deviceNumber);
     }
 
+    /**
+     * Returns name of telephone relay with given number.
+     *
+     * @param deviceNumber device number
+     * @return name of telephone relay
+     */
+    public String resolveTelephoneRelay(int deviceNumber) {
+        return "telephone relay: " + deviceNumber;
+    }
+
     private String readDeviceName(DeviceType deviceType, int deviceNumber) {
         String cacheKey = String.format("%s_%d", deviceType, deviceNumber);
         String result = nameCache.computeIfAbsent(cacheKey, k -> {

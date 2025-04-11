@@ -210,10 +210,12 @@ class EventLogReaderTest {
     }
 
     @Test
-    void buildDetailsShouldReturnDefaultDetailsForKind10() {
+    void buildDetailsShouldReturnDetailsForKind10() {
+        when(deviceNameResolver.resolveTelephoneRelay(70)).thenReturn("telephone relay");
+
         String result = testSubject.buildDetails(createEventDescription(10));
 
-        assertEquals("kind=10, partition=40, source=70, object=1, ucn=30", result);
+        assertEquals("telephone relay", result);
     }
 
     @Test
