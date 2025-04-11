@@ -14,6 +14,8 @@ package org.openhab.binding.ddwrt.internal;
 
 import static org.openhab.binding.ddwrt.internal.ddwrtBindingConstants.*;
 
+import org.apache.sshd.client.SshClient;
+import org.apache.sshd.client.session.ClientSession;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ChannelUID;
@@ -74,11 +76,38 @@ public class ddwrtHandler extends BaseThingHandler {
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
         // the framework is then able to reuse the resources from the thing handler initialization.
         // we set this upfront to reliably check status updates in unit tests.
+        logger.debug("Initializing ddwrt handler for '{}'.", getThing().getUID());
+
         updateStatus(ThingStatus.UNKNOWN);
 
         // Example for background initialization:
         scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
+            boolean thingReachable = false; // <background task with long running initialization here>
+
+            SshClient client = SshClient.setUpDefaultClient();
+
+            try {
+                //client.setServerKeyVerifier((ClientSession ssh, InputStream is, int i) -> true);
+                client.start();
+
+                try (ClientSession session = client.connect(config.user, config.hostname, config.port).verify()
+                        .getSession()) {
+                    session.addPasswordIdentity(config.password);
+                    session.auth().verify();
+
+                    logger.debug("Connected to the server!");
+                    thingReachable = true;
+                }
+            } catch (Exception e) {
+                logger.debug("Exception occurred during refresh: {}", e.getMessage(), e);
+            } finally {
+                // Disconnect from the server
+                if (client.isStarted()) {
+                    client.stop();
+                }
+                logger.debug("Disconnected from the server!");
+            }
+
             // when done do:
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);

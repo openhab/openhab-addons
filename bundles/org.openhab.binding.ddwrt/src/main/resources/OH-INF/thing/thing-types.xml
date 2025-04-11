@@ -25,10 +25,22 @@
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
 			</parameter>
+			<parameter name="user" type="text" required="true">
+				<context>user</context>
+				<label>User</label>
+				<description>Username to access the device</description>
+				<default>root</default>
+			</parameter>
 			<parameter name="password" type="text" required="true">
 				<context>password</context>
 				<label>Password</label>
 				<description>Password to access the device</description>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>SSH port</label>
+				<description>SSH port</description>
+				<default>22</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
