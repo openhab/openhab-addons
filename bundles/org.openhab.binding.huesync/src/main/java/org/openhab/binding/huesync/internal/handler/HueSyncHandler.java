@@ -71,6 +71,7 @@ public class HueSyncHandler extends BaseThingHandler {
      * 
      * @author Patrik Gfeller - Initial contribution
      * @author Patrik Gfeller - Issue #18062, improve connection exception handling.
+     * @author Patrik Gfeller - Issue #18376, Fix/improve log message and exception handling
      */
     private class ExceptionHandler implements HueSyncExceptionHandler {
         private final HueSyncHandler handler;
@@ -197,8 +198,6 @@ public class HueSyncHandler extends BaseThingHandler {
 
         switch (id) {
             case POLL -> {
-                this.updateStatus(ThingStatus.ONLINE);
-
                 initialDelay = HueSyncConstants.POLL_INITIAL_DELAY;
 
                 interval = this.getConfigAs(HueSyncConfiguration.class).statusUpdateInterval;
@@ -243,10 +242,10 @@ public class HueSyncHandler extends BaseThingHandler {
 
     private void handleUpdate(@Nullable HueSyncUpdateTaskResult dto) {
         synchronized (this) {
-            ThingStatus status = this.thing.getStatus();
+            ThingStatusInfo statusInfo = this.thing.getStatusInfo();
 
-            switch (status) {
-                case ONLINE:
+            switch (statusInfo.getStatusDetail()) {
+                case CONFIGURATION_PENDING, NONE -> {
                     Optional.ofNullable(dto).ifPresent(taskResult -> {
                         Optional.ofNullable(taskResult.deviceStatus)
                                 .ifPresent(payload -> this.updateFirmwareInformation(payload));
@@ -255,8 +254,12 @@ public class HueSyncHandler extends BaseThingHandler {
                         Optional.ofNullable(taskResult.execution)
                                 .ifPresent(payload -> this.updateExecutionInformation(payload));
                     });
-                    break;
-                case OFFLINE:
+
+                    if (statusInfo.getStatus() != ThingStatus.ONLINE) {
+                        this.updateStatus(ThingStatus.ONLINE);
+                    }
+                }
+                case COMMUNICATION_ERROR -> {
                     this.stopTasks();
 
                     this.connection.ifPresent(connectionInstance -> {
@@ -264,9 +267,9 @@ public class HueSyncHandler extends BaseThingHandler {
                             this.connect(connectionInstance, deviceInfoInstance);
                         });
                     });
-                    break;
-                default:
-                    this.logger.debug("Unable to execute update - Status: [{}]", status);
+                }
+                default -> this.logger.debug("Unable to execute update - Status: [{}, {}]", statusInfo.getStatus(),
+                        statusInfo.getStatusDetail());
             }
         }
     }
