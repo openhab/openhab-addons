@@ -713,7 +713,6 @@
 		<description>The state of the RF link</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>SignalStrength</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
