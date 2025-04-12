@@ -43,6 +43,14 @@ import org.openhab.binding.upnpcontrol.internal.util.UpnpProtocolMatcher;
 import org.openhab.binding.upnpcontrol.internal.util.UpnpXMLParser;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.media.MediaListenner;
+import org.openhab.core.media.MediaService;
+import org.openhab.core.media.model.MediaAlbum;
+import org.openhab.core.media.model.MediaCollection;
+import org.openhab.core.media.model.MediaEntry;
+import org.openhab.core.media.model.MediaRegistry;
+import org.openhab.core.media.model.MediaSource;
+import org.openhab.core.media.model.MediaTrack;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -65,7 +73,7 @@ import org.slf4j.LoggerFactory;
  * @author Karel Goderis - Based on UPnP logic in Sonos binding
  */
 @NonNullByDefault
-public class UpnpServerHandler extends UpnpHandler {
+public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
 
     private final Logger logger = LoggerFactory.getLogger(UpnpServerHandler.class);
 
@@ -74,7 +82,10 @@ public class UpnpServerHandler extends UpnpHandler {
     static final String DIRECTORY_ROOT = "0";
     static final String UP = "..";
 
+    private boolean pathMode = false;
+
     ConcurrentMap<String, UpnpRendererHandler> upnpRenderers;
+    private final MediaService mediaService;
     private volatile @Nullable UpnpRendererHandler currentRendererHandler;
     private volatile List<StateOption> rendererStateOptionList = Collections.synchronizedList(new ArrayList<>());
 
@@ -91,6 +102,8 @@ public class UpnpServerHandler extends UpnpHandler {
     private static final UpnpEntry ROOT_ENTRY = new UpnpEntry(DIRECTORY_ROOT, DIRECTORY_ROOT, DIRECTORY_ROOT,
             "object.container");
     volatile UpnpEntry currentEntry = ROOT_ENTRY;
+    volatile @Nullable MediaEntry currentMediaEntry = null;
+
     // current entry list in selection
     List<UpnpEntry> entries = Collections.synchronizedList(new ArrayList<>());
     // store parents in hierarchy separately to be able to move up in directory structure
@@ -104,9 +117,10 @@ public class UpnpServerHandler extends UpnpHandler {
             ConcurrentMap<String, UpnpRendererHandler> upnpRenderers,
             UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider,
-            UpnpControlBindingConfiguration configuration) {
+            UpnpControlBindingConfiguration configuration, MediaService mediaService) {
         super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
         this.upnpRenderers = upnpRenderers;
+        this.mediaService = mediaService;
 
         // put root as highest level in parent map
         parentMap.put(ROOT_ENTRY.getId(), ROOT_ENTRY);
@@ -144,7 +158,26 @@ public class UpnpServerHandler extends UpnpHandler {
             return;
         }
 
+        MediaRegistry mediaRegistry = mediaService.getMediaRegistry();
+        MediaCollection mediaCollection = mediaRegistry.registerEntry("Upnp", () -> {
+            return new MediaCollection("Upnp", "Upnp", "/static/Upnp.png");
+        });
+
+        String key = this.thing.getUID().getId();
+        this.mediaService.addMediaListenner(key, this);
+        MediaSource mediaSource = mediaCollection.registerEntry(key, () -> {
+            return new MediaSource(key, "" + this.getThing().getLabel(), "/static/Upnp.png");
+        });
+
+        currentMediaEntry = mediaSource;
+
         initDevice();
+
+        if (this.getThing().getUID().getId().equals("b6f2fff2-9300-43c8-bad1-df933609a320")) {
+            pathMode = false;
+        } else {
+            pathMode = true;
+        }
     }
 
     @Override
@@ -188,6 +221,45 @@ public class UpnpServerHandler extends UpnpHandler {
                 addSubscriptions();
             }
         }
+    }
+
+    @Override
+    public void refreshEntry(MediaEntry mediaEntry) {
+        // TODO Auto-generated method stub
+        boolean browse = true;
+        currentMediaEntry = mediaEntry;
+        if (mediaEntry instanceof MediaSource) {
+            browse = false;
+
+        }
+        if (browse) {
+            String browseTarget = "";
+
+            if (pathMode) {
+                browseTarget = mediaEntry.getSubPath();
+            } else {
+                browseTarget = mediaEntry.getKey();
+            }
+
+            logger.debug("Browse target {}", browseTarget);
+            logger.debug("Navigating to node {} on server {}", currentEntry.getId(), thing.getLabel());
+
+            browse(browseTarget, "BrowseDirectChildren", "*", "0", "0", config.sortCriteria);
+        }
+
+        CompletableFuture<Boolean> browsing = isBrowsing;
+        boolean browsed = true;
+        try {
+
+            if (browsing != null) {
+                // wait for maximum 2.5s until browsing is finished
+                browsed = browsing.get(config.responseTimeout, TimeUnit.MILLISECONDS);
+            }
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            logger.debug("Exception, previous server query on {} interrupted or timed out, trying new browse anyway",
+                    thing.getLabel());
+        }
+
     }
 
     /**
@@ -588,6 +660,53 @@ public class UpnpServerHandler extends UpnpHandler {
 
     private void updateTitleSelection(List<UpnpEntry> titleList) {
         // Optionally, filter only items that can be played on the renderer
+
+        MediaEntry mediaEntry = currentMediaEntry;
+
+        logger.debug("aa");
+
+        for (UpnpEntry upnpEntry : titleList) {
+            String id = upnpEntry.getId();
+
+            if (id.startsWith(mediaEntry.getSubPath())) {
+                id = id.substring(mediaEntry.getSubPath().length());
+            }
+
+            if (id.startsWith("/")) {
+                id = id.substring(1);
+            }
+
+            final String idFinal = id;
+            String artUri = upnpEntry.getAlbumArtUri();
+
+            if (upnpEntry.getUpnpClass().equals("object.container.album.musicAlbum")) {
+                MediaAlbum mediaAlbum = mediaEntry.registerEntry(id, () -> {
+                    MediaAlbum album = new MediaAlbum(idFinal, upnpEntry.getTitle());
+                    if (artUri != null && !artUri.isBlank()) {
+                        album.setArtUri(artUri);
+                    }
+                    album.setArtist(upnpEntry.getArtist());
+                    album.setGenre(upnpEntry.getGenre());
+                    return album;
+                });
+            } else if (upnpEntry.getUpnpClass().equals("object.item.audioItem.musicTrack")) {
+                MediaTrack mediaTrack = mediaEntry.registerEntry(id, () -> {
+                    MediaTrack track = new MediaTrack(idFinal, upnpEntry.getTitle());
+                    return track;
+                });
+            } else {
+                MediaCollection mediaCol = mediaEntry.registerEntry(id, () -> {
+                    MediaCollection res = new MediaCollection(idFinal, upnpEntry.getTitle());
+                    if (artUri != null && !artUri.isBlank()) {
+                        res.setArtUri(artUri);
+                    }
+                    return res;
+                });
+            }
+
+        }
+        logger.debug("aa");
+
         logger.debug("Filtering content on server {}: {}", thing.getLabel(), config.filter);
         List<UpnpEntry> resultList = config.filter ? filterEntries(titleList, true) : titleList;
 

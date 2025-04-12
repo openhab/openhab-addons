@@ -61,6 +61,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.media.MediaService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -102,6 +103,8 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     protected @NonNullByDefault({}) UpnpControlRendererConfiguration config;
     private UpnpRenderingControlConfiguration renderingControlConfiguration = new UpnpRenderingControlConfiguration();
+
+    private final MediaService mediaService;
 
     private volatile List<CommandOption> favoriteCommandOptionList = List.of();
     private volatile List<CommandOption> playlistCommandOptionList = List.of();
@@ -170,6 +173,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         serviceSubscriptions.add(RENDERING_CONTROL);
 
         this.audioSinkReg = audioSinkReg;
+        this.mediaService = mediaService;
     }
 
     @Override
@@ -218,6 +222,8 @@ public class UpnpRendererHandler extends UpnpHandler {
     @Override
     protected void initJob() {
         synchronized (jobLock) {
+            sendDeviceSearchRequest();
+
             if (!upnpIOService.isRegistered(this)) {
                 String msg = String.format("@text/offline.device-not-registered [ \"%s\" ]", getUDN());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
@@ -765,6 +771,25 @@ public class UpnpRendererHandler extends UpnpHandler {
                 pos = Integer.max(0, trackPosition - config.seekStep);
             }
             seek(String.format("%02d:%02d:%02d", pos / 3600, (pos % 3600) / 60, pos % 60));
+        } else if (command instanceof StringType) {
+            String val = ((StringType) command).toFullString();
+            logger.debug(val);
+
+            int idx = val.indexOf("/l");
+            val = val.substring(idx);
+
+            if (!serverHandlers.isEmpty()) {
+                UpnpServerHandler serverHandler = (UpnpServerHandler) serverHandlers.toArray()[0];
+                serverHandler.browse(val, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
+                try {
+                    Thread.sleep(2000);
+                } catch (Exception ex) {
+
+                }
+                pause();
+                play();
+            }
+
         }
     }
 
