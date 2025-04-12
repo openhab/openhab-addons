@@ -295,14 +295,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
             // org.apache.karaf.shell.core as a dependency in pom.xml
             engine.put("$console", console);
             engine.put(ScriptEngine.ARGV, argv);
-            engine.eval("""
-                    begin
-                      $terminal = $console.session.terminal
-                    rescue NoMethodError
-                      puts "Error: Unable to resolve terminal. JRuby Console is not supported in this environment."
-                      exit
-                    end
-                    """ + String.format("require '%s'", consoleScript));
+            engine.eval(String.format("require '%s'", consoleScript));
 
             return null;
         });
