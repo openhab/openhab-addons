@@ -13,9 +13,9 @@
 package org.openhab.binding.spotify.internal.api.model;
 
 /**
- * Spotify Web Api Playlists data class.
+ * Spotify Web Api Tracks data class : a collection of Track.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 public class Tracks extends Paging<Track> {
 }

@@ -15,9 +15,9 @@ package org.openhab.binding.spotify.internal.api.model;
 import java.util.List;
 
 /**
- * Spotify Web Api Playlist data class.
+ * Spotify Web Api PlayListTracks data class : a collection of PlayListTrack inside a PlayList.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 public class PlayListTracks {
     private String href;
