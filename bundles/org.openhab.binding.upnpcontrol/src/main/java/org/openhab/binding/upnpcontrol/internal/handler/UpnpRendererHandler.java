@@ -53,6 +53,8 @@ import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.MediaCommandType;
+import org.openhab.core.library.types.MediaType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -771,6 +773,28 @@ public class UpnpRendererHandler extends UpnpHandler {
                 pos = Integer.max(0, trackPosition - config.seekStep);
             }
             seek(String.format("%02d:%02d:%02d", pos / 3600, (pos % 3600) / 60, pos % 60));
+        } else if (command instanceof MediaType) {
+            MediaType mediaType = (MediaType) command;
+            MediaCommandType mediaTypeCommand = mediaType.getCommand();
+            String val = mediaType.getParam().toFullString();
+
+            logger.debug(val);
+
+            int idx = val.indexOf("/l");
+            val = val.substring(idx);
+
+            if (!serverHandlers.isEmpty()) {
+                UpnpServerHandler serverHandler = (UpnpServerHandler) serverHandlers.toArray()[0];
+                serverHandler.browse(val, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
+                try {
+                    Thread.sleep(2000);
+                } catch (Exception ex) {
+
+                }
+                pause();
+                play();
+            }
+
         } else if (command instanceof StringType) {
             String val = ((StringType) command).toFullString();
             logger.debug(val);
