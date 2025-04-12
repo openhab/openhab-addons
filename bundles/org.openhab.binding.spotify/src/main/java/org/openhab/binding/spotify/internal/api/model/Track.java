@@ -15,9 +15,9 @@ package org.openhab.binding.spotify.internal.api.model;
 import java.util.List;
 
 /**
- * Spotify Web Api Playlist data class.
+ * Spotify Web Api Track data class : A track entry.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 public class Track {
 

@@ -13,9 +13,9 @@
 package org.openhab.binding.spotify.internal.api.model;
 
 /**
- * Spotify Web Api Playlists data class.
+ * Spotify Web Api Saved Album data class : an album that in saved inside the current Spotify Account.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 public class SavedAlbum {
     public String added_at;
