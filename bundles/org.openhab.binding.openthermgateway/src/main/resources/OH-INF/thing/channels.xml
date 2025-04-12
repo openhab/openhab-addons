@@ -239,7 +239,7 @@
 		<description>Central heating enabled set at boiler</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>EnabledDisabled</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -250,7 +250,7 @@
 		<description>Central heating enabled requested by thermostat</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>EnabledDisabled</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -260,8 +260,8 @@
 		<label>Central Heating Overridden</label>
 		<description>Central heating enabled overridden at OTGW</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>EnabledDisabled</tag>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -272,7 +272,7 @@
 		<description>Central heating 2 enabled set at boiler</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>EnabledDisabled</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -283,7 +283,7 @@
 		<description>Central heating 2 enabled requested by thermostat</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>EnabledDisabled</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -293,8 +293,8 @@
 		<label>Central Heating 2 Overridden</label>
 		<description>Central heating 2 enabled overridden at OTGW</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>EnabledDisabled</tag>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -305,7 +305,7 @@
 		<description>Central heating active</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>OnOff</tag>
+			<tag>Power</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -316,7 +316,7 @@
 		<description>Domestic hot water enabled</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>EnabledDisabled</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -327,7 +327,7 @@
 		<description>Domestic hot water active</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>OnOff</tag>
+			<tag>Power</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -338,7 +338,7 @@
 		<description>Burner active</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>OnOff</tag>
+			<tag>Power</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -348,7 +348,7 @@
 		<label>Relative Modulation Level</label>
 		<description>Relative modulation level</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
@@ -601,7 +601,7 @@
 		<description>Ventilation enabled</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>EnabledDisabled</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -628,7 +628,7 @@
 		<description>Bypass mode</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>AutoManual</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -643,8 +643,8 @@
 		<label>Free Ventilation Mode</label>
 		<description>Free ventilation mode</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>OnOff</tag>
+			<tag>Status</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -665,7 +665,7 @@
 		<description>Ventilation mode</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>OnOff</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -676,7 +676,7 @@
 		<description>Bypass status</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>OnOff</tag>
+			<tag>Power</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -687,7 +687,7 @@
 		<description>Bypass automatic status</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>AutoManual</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -703,7 +703,7 @@
 		<description>Free ventilation status</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>OnOff</tag>
+			<tag>Power</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -811,7 +811,7 @@
 		<description>Bypass</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>OnOff</tag>
+			<tag>Power</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -966,7 +966,7 @@
 		<description>Nominal ventilation value transfer enabled</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>EnabledDisabled</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1003,7 +1003,7 @@
 		<description>Filter Check enabled</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>EnabledDisabled</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
