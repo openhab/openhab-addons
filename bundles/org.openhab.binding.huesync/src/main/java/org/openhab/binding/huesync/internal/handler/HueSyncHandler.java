@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
  * channels.
  *
  * @author Patrik Gfeller - Initial contribution
+ * @author Patrik Gfeller - Issue #18376, Fix/improve log message and exception handling
  */
 @NonNullByDefault
 public class HueSyncHandler extends BaseThingHandler {
@@ -136,15 +137,6 @@ public class HueSyncHandler extends BaseThingHandler {
         this.exceptionHandler = new ExceptionHandler(this);
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
-
-    // #region override
-    @Override
-    protected Configuration editConfiguration() {
-        this.logger.debug("Configuration change detected.");
-
-        return new Configuration(this.thing.getConfiguration().getProperties());
-    }
-    // #endregion
 
     // #region private
     private Runnable initializeConnection() {
@@ -369,14 +361,9 @@ public class HueSyncHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         try {
-            // this.stopTasks();
-            // this.updateStatus(ThingStatus.OFFLINE);
-
             scheduler.execute(initializeConnection());
         } catch (Exception e) {
-            // this.stopTasks();
             this.logger.warn("{}", e.getMessage());
-            // this.exceptionHandler.handle(e);
         }
     }
 
@@ -419,6 +406,13 @@ public class HueSyncHandler extends BaseThingHandler {
         if (this.connection.isPresent()) {
             this.connection.get().unregisterDevice();
         }
+    }
+
+    @Override
+    protected Configuration editConfiguration() {
+        this.logger.debug("Configuration change detected.");
+
+        return new Configuration(this.thing.getConfiguration().getProperties());
     }
 
     // #endregion
