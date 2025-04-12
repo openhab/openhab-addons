@@ -67,7 +67,7 @@
 		<label>Enable</label>
 		<tags>
 			<tag>Switch</tag>
-			<tag>EnabledDisabled</tag>
+			<tag>Enabled</tag>
 		</tags>
 	</channel-type>
 
