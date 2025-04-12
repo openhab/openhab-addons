@@ -36,6 +36,7 @@ import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.connection.HueSyncDeviceConnection;
 import org.openhab.binding.huesync.internal.exceptions.HueSyncApiException;
 import org.openhab.binding.huesync.internal.exceptions.HueSyncConnectionException;
+import org.openhab.binding.huesync.internal.exceptions.HueSyncException;
 import org.openhab.binding.huesync.internal.handler.tasks.HueSyncRegistrationTask;
 import org.openhab.binding.huesync.internal.handler.tasks.HueSyncUpdateTask;
 import org.openhab.binding.huesync.internal.handler.tasks.HueSyncUpdateTaskResult;
@@ -85,24 +86,28 @@ public class HueSyncHandler extends BaseThingHandler {
             ThingStatusDetail detail = ThingStatusDetail.COMMUNICATION_ERROR;
             String description;
 
-            if (exception instanceof HueSyncConnectionException connectionException) {
-                if (connectionException.getInnerException() instanceof HttpResponseException innerException) {
-                    switch (innerException.getResponse().getStatus()) {
-                        case HttpStatus.BAD_REQUEST_400 -> {
-                            detail = ThingStatusDetail.CONFIGURATION_PENDING;
-                        }
-                        case HttpStatus.UNAUTHORIZED_401 -> {
-                            detail = ThingStatusDetail.CONFIGURATION_ERROR;
-                        }
-                        default -> {
-                            detail = ThingStatusDetail.COMMUNICATION_ERROR;
+            switch (exception) {
+                case HueSyncConnectionException connectionException -> {
+                    if (connectionException.getInnerException() instanceof HttpResponseException innerException) {
+                        switch (innerException.getResponse().getStatus()) {
+                            case HttpStatus.BAD_REQUEST_400 -> {
+                                detail = ThingStatusDetail.CONFIGURATION_PENDING;
+                            }
+                            case HttpStatus.UNAUTHORIZED_401 -> {
+                                detail = ThingStatusDetail.CONFIGURATION_ERROR;
+                            }
+                            default -> {
+                                detail = ThingStatusDetail.COMMUNICATION_ERROR;
+                            }
                         }
                     }
+                    description = connectionException.getLocalizedMessage();
                 }
-                description = connectionException.getLocalizedMessage();
-            } else {
-                detail = ThingStatusDetail.COMMUNICATION_ERROR;
-                description = exception.getLocalizedMessage();
+                case HueSyncException hueSyncException -> description = hueSyncException.getLocalizedMessage();
+                default -> {
+                    detail = ThingStatusDetail.COMMUNICATION_ERROR;
+                    description = exception.getLocalizedMessage();
+                }
             }
 
             ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.OFFLINE, detail, description);
@@ -127,8 +132,6 @@ public class HueSyncHandler extends BaseThingHandler {
 
     public HueSyncHandler(Thing thing, HttpClientFactory httpClientFactory) {
         super(thing);
-
-        this.updateStatus(ThingStatus.UNKNOWN);
 
         this.exceptionHandler = new ExceptionHandler(this);
         this.httpClient = httpClientFactory.getCommonHttpClient();
@@ -199,7 +202,6 @@ public class HueSyncHandler extends BaseThingHandler {
         switch (id) {
             case POLL -> {
                 initialDelay = HueSyncConstants.POLL_INITIAL_DELAY;
-
                 interval = this.getConfigAs(HueSyncConfiguration.class).statusUpdateInterval;
                 task = new HueSyncUpdateTask(connection, this.deviceInfo.get(),
                         deviceStatus -> this.handleUpdate(deviceStatus), this.exceptionHandler);
@@ -227,9 +229,6 @@ public class HueSyncHandler extends BaseThingHandler {
 
         this.tasks.values().forEach(task -> this.stopTask(task));
         this.tasks.clear();
-
-        this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                "@text/thing.config.huesync.box.registration");
     }
 
     private synchronized void stopTask(@Nullable ScheduledFuture<?> task) {
@@ -370,14 +369,14 @@ public class HueSyncHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         try {
-            this.stopTasks();
-            this.updateStatus(ThingStatus.OFFLINE);
+            // this.stopTasks();
+            // this.updateStatus(ThingStatus.OFFLINE);
 
             scheduler.execute(initializeConnection());
         } catch (Exception e) {
-            this.stopTasks();
+            // this.stopTasks();
             this.logger.warn("{}", e.getMessage());
-            this.exceptionHandler.handle(e);
+            // this.exceptionHandler.handle(e);
         }
     }
 
@@ -400,18 +399,16 @@ public class HueSyncHandler extends BaseThingHandler {
     }
 
     @Override
-    public void dispose() {
-        synchronized (this) {
-            super.dispose();
+    public synchronized void dispose() {
+        super.dispose();
 
-            try {
-                this.stopTasks();
-                this.connection.orElseThrow().dispose();
-            } catch (Exception e) {
-                this.logger.warn("{}", e.getMessage());
-            } finally {
-                this.logger.debug("Thing {} ({}) disposed.", this.thing.getLabel(), this.thing.getUID());
-            }
+        try {
+            this.stopTasks();
+            this.connection.orElseThrow().dispose();
+        } catch (Exception e) {
+            this.logger.warn("{}", e.getMessage());
+        } finally {
+            this.logger.debug("Thing {} ({}) disposed.", this.thing.getLabel(), this.thing.getUID());
         }
     }
 

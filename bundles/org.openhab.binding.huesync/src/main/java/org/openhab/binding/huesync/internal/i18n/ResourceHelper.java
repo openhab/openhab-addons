@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.huesync.internal.i18n;
 
-import java.util.Locale;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.i18n.TranslationProvider;
 import org.osgi.framework.Bundle;
@@ -28,7 +26,7 @@ import org.osgi.framework.ServiceReference;
  */
 @NonNullByDefault
 public class ResourceHelper {
-    private static final Locale LOCALE = Locale.ENGLISH;
+    // private static final Locale LOCALE = Locale.ENGLISH;
     private static final BundleContext BUNDLE_CONTEXT = FrameworkUtil.getBundle(ResourceHelper.class)
             .getBundleContext();
     private static final ServiceReference<TranslationProvider> SERVICE_REFERENCE = BUNDLE_CONTEXT
@@ -41,7 +39,7 @@ public class ResourceHelper {
 
         String missingKey = "Missing Translation: " + key;
 
-        var localizedString = TRANSLATION_PROVIDER.getText(BUNDLE, lookupKey, missingKey, LOCALE);
+        var localizedString = TRANSLATION_PROVIDER.getText(BUNDLE, lookupKey, missingKey, null);
 
         return localizedString == null ? missingKey : localizedString;
     }
