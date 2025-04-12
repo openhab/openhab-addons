@@ -12,15 +12,14 @@
  */
 package org.openhab.binding.spotify.internal.api.model;
 
-import java.util.List;
-
 /**
- * Spotify Web Api Playlist data class.
+ * Spotify Web Api FollowedArtists data class : Artists that are followed by the spotify account.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 public class FollowedArtists {
     private Artists artists;
+
     public Artists getArtists() {
         return artists;
     }
