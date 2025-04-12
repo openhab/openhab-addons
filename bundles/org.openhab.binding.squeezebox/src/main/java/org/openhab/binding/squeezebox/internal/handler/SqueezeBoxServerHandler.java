@@ -51,6 +51,12 @@ import org.openhab.binding.squeezebox.internal.dto.StatusResponseDTO;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.openhab.core.io.net.http.HttpRequestBuilder;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.media.MediaListenner;
+import org.openhab.core.media.MediaService;
+import org.openhab.core.media.model.MediaCollection;
+import org.openhab.core.media.model.MediaEntry;
+import org.openhab.core.media.model.MediaRegistry;
+import org.openhab.core.media.model.MediaSource;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -87,7 +93,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Mark Hilbush - Add like/unlike functionality
  */
 @NonNullByDefault
-public class SqueezeBoxServerHandler extends BaseBridgeHandler {
+public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaListenner {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxServerHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(SQUEEZEBOXSERVER_THING_TYPE);
@@ -114,6 +120,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private @Nullable SqueezeServerListener listener;
     private @Nullable Future<?> reconnectFuture;
 
+    private MediaService mediaService;
+
     private String host = "";
 
     private int cliport;
@@ -129,8 +137,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private @Nullable String jsonRpcUrl;
     private @Nullable String basicAuthorization;
 
-    public SqueezeBoxServerHandler(Bridge bridge) {
+    public SqueezeBoxServerHandler(Bridge bridge, MediaService mediaService) {
         super(bridge);
+
+        this.mediaService = mediaService;
     }
 
     @Override
@@ -422,8 +432,27 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         } catch (IllegalThreadStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
+
+        mediaService.addMediaListenner("Lyrion", this);
+
+        MediaRegistry mediaRegistry = mediaService.getMediaRegistry();
+
+        MediaSource mediaSource = mediaRegistry.registerEntry("Lyrion", () -> {
+            return new MediaSource("Lyrion", "Lyrion", "/static/Lyrion.png");
+        });
+
         // Mark the server ONLINE. bridgeStatusChanged will cause the players to come ONLINE
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public void refreshEntry(MediaEntry mediaEntry) {
+        if (mediaEntry.getKey().equals("Lyrion")) {
+            MediaCollection mediaPlaylist = mediaEntry.registerEntry("Playlists", () -> {
+                return new MediaCollection("Playlists", "Playlists", "/static/playlist.png");
+            });
+
+        }
     }
 
     /**
