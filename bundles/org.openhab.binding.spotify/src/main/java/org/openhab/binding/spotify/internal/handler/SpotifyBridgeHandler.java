@@ -586,7 +586,6 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             }
 
         }
-
     }
 
     private int getIntChannelParameter(String channelName, String parameter, int _default) {
