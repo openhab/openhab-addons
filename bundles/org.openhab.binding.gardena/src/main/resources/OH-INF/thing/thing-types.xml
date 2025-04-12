@@ -413,7 +413,6 @@
 		<description>A command for a device</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>OnOff</tag>
 		</tags>
 	</channel-type>
 
