@@ -134,7 +134,7 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
      */
     public static ClusterCommand queryImage(Integer vendorId, Integer productId, Integer softwareVersion,
             List<DownloadProtocolEnum> protocolsSupported, Integer hardwareVersion, String location,
-            Boolean requestorCanConsent, String metadataForProvider) {
+            Boolean requestorCanConsent, OctetString metadataForProvider) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (vendorId != null) {
             map.put("vendorId", vendorId);
@@ -163,7 +163,7 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
         return new ClusterCommand("queryImage", map);
     }
 
-    public static ClusterCommand applyUpdateRequest(String updateToken, Integer newVersion) {
+    public static ClusterCommand applyUpdateRequest(OctetString updateToken, Integer newVersion) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (updateToken != null) {
             map.put("updateToken", updateToken);
@@ -174,7 +174,7 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
         return new ClusterCommand("applyUpdateRequest", map);
     }
 
-    public static ClusterCommand notifyUpdateApplied(String updateToken, Integer softwareVersion) {
+    public static ClusterCommand notifyUpdateApplied(OctetString updateToken, Integer softwareVersion) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (updateToken != null) {
             map.put("updateToken", updateToken);

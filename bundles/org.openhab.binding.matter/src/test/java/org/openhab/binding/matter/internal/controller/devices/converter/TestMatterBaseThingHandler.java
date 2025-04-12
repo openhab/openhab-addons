@@ -15,9 +15,11 @@ package org.openhab.binding.matter.internal.controller.devices.converter;
 import java.math.BigInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.MatterChannelTypeProvider;
 import org.openhab.binding.matter.internal.MatterStateDescriptionOptionProvider;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
+import org.openhab.binding.matter.internal.controller.MatterControllerClient;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -31,10 +33,18 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 public class TestMatterBaseThingHandler extends MatterBaseThingHandler {
     public static final ThingTypeUID THING_TYPE_TEST = new ThingTypeUID("matter", "test");
 
+    private final MatterControllerClient mockClient;
+
     public TestMatterBaseThingHandler(MatterBridgeClient bridgeClient,
             MatterStateDescriptionOptionProvider stateDescriptionProvider,
             MatterChannelTypeProvider channelTypeProvider) {
         super(ThingBuilder.create(THING_TYPE_TEST, "test").build(), stateDescriptionProvider, channelTypeProvider);
+        this.mockClient = new MatterControllerClient();
+    }
+
+    @Override
+    public @Nullable MatterControllerClient getClient() {
+        return mockClient;
     }
 
     @Override

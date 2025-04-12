@@ -18,6 +18,8 @@ package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 import java.math.BigInteger;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 import com.google.gson.Gson;
 
 /**
@@ -59,6 +61,39 @@ public class BaseCluster {
         this.endpointId = endpointId;
         this.id = clusterId;
         this.name = clusterName;
+    }
+
+    public static class OctetString {
+        public byte[] value;
+
+        public OctetString(byte[] value) {
+            this.value = value;
+        }
+
+        public OctetString(String hexString) {
+            int length = hexString.length();
+            value = new byte[length / 2];
+            for (int i = 0; i < length; i += 2) {
+                value[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4)
+                        + Character.digit(hexString.charAt(i + 1), 16));
+            }
+        }
+
+        public @NonNull String toHexString() {
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : value) {
+                String hex = Integer.toHexString(0xFF & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        }
+
+        public @NonNull String toString() {
+            return toHexString();
+        }
     }
 
     // Structs

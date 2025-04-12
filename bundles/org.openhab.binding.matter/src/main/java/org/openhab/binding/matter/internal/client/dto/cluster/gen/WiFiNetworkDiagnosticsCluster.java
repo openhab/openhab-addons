@@ -51,7 +51,7 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
     /**
      * The BSSID attribute shall indicate the BSSID for which the Wi-Fi network the Node is currently connected.
      */
-    public String bssid; // 0 octstr R V
+    public OctetString bssid; // 0 octstr R V
     /**
      * The SecurityType attribute shall indicate the current type of Wi-Fi security used.
      */

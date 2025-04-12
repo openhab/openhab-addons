@@ -406,9 +406,9 @@ public class EnergyEvseCluster extends BaseCluster {
         /**
          * The UID field (ISO 14443A UID) is either 4, 7 or 10 bytes.
          */
-        public String uid; // octstr
+        public OctetString uid; // octstr
 
-        public Rfid(String uid) {
+        public Rfid(OctetString uid) {
             this.uid = uid;
         }
     }

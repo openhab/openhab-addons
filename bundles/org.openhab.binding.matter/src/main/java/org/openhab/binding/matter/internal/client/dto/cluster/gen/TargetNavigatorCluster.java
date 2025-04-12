@@ -60,9 +60,9 @@ public class TargetNavigatorCluster extends BaseCluster {
     public class TargetUpdated {
         public List<TargetInfoStruct> targetList; // list
         public Integer currentTarget; // uint8
-        public String data; // octstr
+        public OctetString data; // octstr
 
-        public TargetUpdated(List<TargetInfoStruct> targetList, Integer currentTarget, String data) {
+        public TargetUpdated(List<TargetInfoStruct> targetList, Integer currentTarget, OctetString data) {
             this.targetList = targetList;
             this.currentTarget = currentTarget;
             this.data = data;

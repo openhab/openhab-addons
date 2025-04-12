@@ -34,6 +34,8 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.RelativeHumidi
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.SwitchCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.TemperatureMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThermostatCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadBorderRouterManagementCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadNetworkDiagnosticsCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.WiFiNetworkDiagnosticsCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.WindowCoveringCluster;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
@@ -70,6 +72,10 @@ public class ConverterRegistry {
         ConverterRegistry.registerConverter(DoorLockCluster.CLUSTER_ID, DoorLockConverter.class);
         ConverterRegistry.registerConverter(ElectricalPowerMeasurementCluster.CLUSTER_ID,
                 ElectricalPowerMeasurementConverter.class);
+        ConverterRegistry.registerConverter(ThreadNetworkDiagnosticsCluster.CLUSTER_ID,
+                ThreadNetworkDiagnosticsConverter.class);
+        ConverterRegistry.registerConverter(ThreadBorderRouterManagementCluster.CLUSTER_ID,
+                ThreadBorderRouterManagementConverter.class);
     }
 
     public static void registerConverter(Integer clusterId,

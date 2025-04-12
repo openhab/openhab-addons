@@ -283,7 +283,8 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
      * If the accessing fabric index is 0, this command shall fail with an UNSUPPORTED_ACCESS status code.
      */
     public static ClusterCommand announceOtaProvider(BigInteger providerNodeId, Integer vendorId,
-            AnnouncementReasonEnum announcementReason, String metadataForNode, Integer endpoint, Integer fabricIndex) {
+            AnnouncementReasonEnum announcementReason, OctetString metadataForNode, Integer endpoint,
+            Integer fabricIndex) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (providerNodeId != null) {
             map.put("providerNodeId", providerNodeId);

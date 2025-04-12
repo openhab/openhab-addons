@@ -8,9 +8,15 @@ import { Bytes } from "@matter/general";
 import { ValueModel } from "@matter/model";
 import { ValidationDatatypeMismatchError } from "@matter/types";
 import { camelize } from "./String";
+import { Logger } from "@matter/general";
+
+const logger = Logger.get("Clusters");
 
 export function convertJsonDataWithModel(model: ValueModel, data: any): any {
     const definingModel = model.definingModel ?? model;
+    logger.debug("convertJsonDataWithModel: type {}", definingModel.effectiveMetatype);
+    logger.debug("convertJsonDataWithModel: data {}", data);
+    logger.debug("convertJsonDataWithModel: model {}", model);
     switch (definingModel.effectiveMetatype) {
         case "array":
             if (!Array.isArray(data)) {
@@ -47,4 +53,28 @@ export function convertJsonDataWithModel(model: ValueModel, data: any): any {
     }
 
     return data;
+}
+
+export function toJSON(data: any) {
+    return JSON.stringify(data, (_, value) => {
+        if (typeof value === "bigint") {
+            return value.toString();
+        }
+        if (value instanceof Uint8Array) {
+            return Bytes.toHex(value);
+        }
+        if (value === undefined) {
+            return "undefined";
+        }
+        return value;
+    });
+}
+
+export function fromJSON(data: any) {
+    return JSON.parse(data, (key, value) => {
+        if (typeof value === "string" && value.startsWith("0x")) {
+            return Bytes.fromHex(value);
+        }
+        return value;
+    });
 }

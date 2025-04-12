@@ -47,7 +47,7 @@ public class JointFabricDatastoreClusterCluster extends BaseCluster {
      * This shall indicate the Anchor Root CA used to sign all NOC Issuers in the Joint Fabric. A null value indicates
      * that the Joint Fabric is not yet formed.
      */
-    public String anchorRootCa; // 0 octstr R S A
+    public OctetString anchorRootCa; // 0 octstr R S A
     /**
      * This shall indicate the Node identifier of the Joint Fabric Anchor Root CA.
      */
@@ -337,11 +337,11 @@ public class JointFabricDatastoreClusterCluster extends BaseCluster {
         /**
          * The ICAC used to issue the NOC.
          */
-        public String icac; // octstr
+        public OctetString icac; // octstr
         public Integer fabricIndex; // FabricIndex
 
         public DatastoreAdministratorInformationEntry(BigInteger nodeId, String friendlyName, Integer vendorId,
-                String icac, Integer fabricIndex) {
+                OctetString icac, Integer fabricIndex) {
             this.nodeId = nodeId;
             this.friendlyName = friendlyName;
             this.vendorId = vendorId;

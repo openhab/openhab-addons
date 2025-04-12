@@ -53,7 +53,7 @@ public class ThreadNetworkDirectoryCluster extends BaseCluster {
      * A client shall obtain user consent before changing the value of this attribute from a non-null value.
      * On a factory reset this attribute shall be reset to null.
      */
-    public String preferredExtendedPanId; // 0 octstr RW VM
+    public OctetString preferredExtendedPanId; // 0 octstr RW VM
     /**
      * Indicates the list of Thread Networks known about by this cluster. If the node hosting this cluster includes a
      * Thread Border Router, then an entry for its Thread Network shall be included in this list.
@@ -79,7 +79,7 @@ public class ThreadNetworkDirectoryCluster extends BaseCluster {
         /**
          * This field shall indicate the Extended PAN ID from the OperationalDataset for the given Thread network.
          */
-        public String extendedPanId; // octstr
+        public OctetString extendedPanId; // octstr
         /**
          * This field shall indicate the Network Name from the OperationalDataset for the given Thread network.
          */
@@ -93,7 +93,7 @@ public class ThreadNetworkDirectoryCluster extends BaseCluster {
          */
         public BigInteger activeTimestamp; // uint64
 
-        public ThreadNetworkStruct(String extendedPanId, String networkName, Integer channel,
+        public ThreadNetworkStruct(OctetString extendedPanId, String networkName, Integer channel,
                 BigInteger activeTimestamp) {
             this.extendedPanId = extendedPanId;
             this.networkName = networkName;
@@ -113,7 +113,7 @@ public class ThreadNetworkDirectoryCluster extends BaseCluster {
      * replaced. As a result, changes to the network parameters (e.g. Channel, Network Name, PSKc, …) of an existing
      * entry with a given Extended PAN ID can be made using this command.
      */
-    public static ClusterCommand addNetwork(String operationalDataset) {
+    public static ClusterCommand addNetwork(OctetString operationalDataset) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (operationalDataset != null) {
             map.put("operationalDataset", operationalDataset);
@@ -124,7 +124,7 @@ public class ThreadNetworkDirectoryCluster extends BaseCluster {
     /**
      * Removes the network with the given Extended PAN ID from the ThreadNetworks attribute.
      */
-    public static ClusterCommand removeNetwork(String extendedPanId) {
+    public static ClusterCommand removeNetwork(OctetString extendedPanId) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (extendedPanId != null) {
             map.put("extendedPanId", extendedPanId);
@@ -135,7 +135,7 @@ public class ThreadNetworkDirectoryCluster extends BaseCluster {
     /**
      * Retrieves the Thread Operational Dataset with the given Extended PAN ID.
      */
-    public static ClusterCommand getOperationalDataset(String extendedPanId) {
+    public static ClusterCommand getOperationalDataset(OctetString extendedPanId) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (extendedPanId != null) {
             map.put("extendedPanId", extendedPanId);

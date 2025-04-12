@@ -44,6 +44,7 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.matter.internal.client.dto.Endpoint;
 import org.openhab.binding.matter.internal.client.dto.Node;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster.OctetString;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ClusterRegistry;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.BridgeEventAttributeChanged;
@@ -96,7 +97,9 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
             .registerTypeAdapter(BigInteger.class, new BigIntegerSerializer())
             .registerTypeHierarchyAdapter(BaseCluster.MatterEnum.class, new MatterEnumDeserializer())
             .registerTypeAdapter(AttributeChangedMessage.class, new AttributeChangedMessageDeserializer())
-            .registerTypeAdapter(EventTriggeredMessage.class, new EventTriggeredMessageDeserializer()).create();
+            .registerTypeAdapter(EventTriggeredMessage.class, new EventTriggeredMessageDeserializer())
+            .registerTypeAdapter(OctetString.class, new OctetStringDeserializer())
+            .registerTypeAdapter(OctetString.class, new OctetStringSerializer()).create();
 
     protected final WebSocketClient client = new WebSocketClient();
     protected final ConcurrentHashMap<String, CompletableFuture<JsonElement>> pendingRequests = new ConcurrentHashMap<>();
@@ -668,6 +671,23 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
                 events[i] = event;
             }
             return new EventTriggeredMessage(path, events);
+        }
+    }
+
+    @NonNullByDefault({})
+    class OctetStringDeserializer implements JsonDeserializer<OctetString> {
+        @Override
+        public OctetString deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+                throws JsonParseException {
+            return new OctetString(json.getAsString());
+        }
+    }
+
+    @NonNullByDefault({})
+    class OctetStringSerializer implements JsonSerializer<OctetString> {
+        @Override
+        public JsonElement serialize(OctetString src, Type typeOfSrc, JsonSerializationContext context) {
+            return new JsonPrimitive(src.toString());
         }
     }
 

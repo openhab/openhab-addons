@@ -496,12 +496,12 @@ public class ThermostatCluster extends BaseCluster {
     /**
      * Indicates the PresetHandle of the active preset. If this attribute is null, then there is no active preset.
      */
-    public String activePresetHandle; // 78 octstr R V
+    public OctetString activePresetHandle; // 78 octstr R V
     /**
      * Indicates the ScheduleHandle of the active schedule. A null value in this attribute indicates that there is no
      * active schedule.
      */
-    public String activeScheduleHandle; // 79 octstr R V
+    public OctetString activeScheduleHandle; // 79 octstr R V
     /**
      * This attribute shall contain the current list of configured presets. On receipt of a write request:
      * 1. If the PresetHandle field is null, the PresetStruct shall be treated as an added preset, and the device shall
@@ -636,7 +636,7 @@ public class ThermostatCluster extends BaseCluster {
          * This field shall only be null when the encompassing PresetStruct is appended to the Presets attribute for the
          * purpose of creating a new Preset. Refer to Presets for the creation of Preset handles.
          */
-        public String presetHandle; // octstr
+        public OctetString presetHandle; // octstr
         /**
          * This field shall indicate the associated PresetScenarioEnum value for this preset.
          */
@@ -663,7 +663,7 @@ public class ThermostatCluster extends BaseCluster {
          */
         public Boolean builtIn; // bool
 
-        public PresetStruct(String presetHandle, PresetScenarioEnum presetScenario, String name,
+        public PresetStruct(OctetString presetHandle, PresetScenarioEnum presetScenario, String name,
                 Integer coolingSetpoint, Integer heatingSetpoint, Boolean builtIn) {
             this.presetHandle = presetHandle;
             this.presetScenario = presetScenario;
@@ -729,7 +729,7 @@ public class ThermostatCluster extends BaseCluster {
          * This field shall only be null when the encompassing ScheduleStruct is appended to the Schedules attribute for
          * the purpose of creating a new Schedule. Refer to Schedules for the creation of Schedule handles.
          */
-        public String scheduleHandle; // octstr
+        public OctetString scheduleHandle; // octstr
         /**
          * This field shall specify the default thermostat system mode for transitions in this schedule. The only valid
          * values for this field shall be Auto, Heat, and Cool.
@@ -742,7 +742,7 @@ public class ThermostatCluster extends BaseCluster {
         /**
          * This field shall indicate the default PresetHandle value for transitions in this schedule.
          */
-        public String presetHandle; // octstr
+        public OctetString presetHandle; // octstr
         /**
          * This field shall specify a list of transitions for the schedule.
          * This field shall NOT contain more than one ScheduleStruct with the same TransitionTime field and overlapping
@@ -773,8 +773,8 @@ public class ThermostatCluster extends BaseCluster {
          */
         public Boolean builtIn; // bool
 
-        public ScheduleStruct(String scheduleHandle, SystemModeEnum systemMode, String name, String presetHandle,
-                List<ScheduleTransitionStruct> transitions, Boolean builtIn) {
+        public ScheduleStruct(OctetString scheduleHandle, SystemModeEnum systemMode, String name,
+                OctetString presetHandle, List<ScheduleTransitionStruct> transitions, Boolean builtIn) {
             this.scheduleHandle = scheduleHandle;
             this.systemMode = systemMode;
             this.name = name;
@@ -837,7 +837,7 @@ public class ThermostatCluster extends BaseCluster {
          * This field shall specify the preset used at the TransitionTime. If this field is provided, then the
          * SystemMode, CoolingSetpoint and HeatingSetpoint fields shall NOT be provided.
          */
-        public String presetHandle; // octstr
+        public OctetString presetHandle; // octstr
         /**
          * This shall specify the default mode to which the thermostat will switch for this transition, overriding the
          * default for the schedule. The only valid values for this field shall be Auto, Heat, Cool and Off. This field
@@ -855,8 +855,8 @@ public class ThermostatCluster extends BaseCluster {
          */
         public Integer heatingSetpoint; // temperature
 
-        public ScheduleTransitionStruct(ScheduleDayOfWeekBitmap dayOfWeek, Integer transitionTime, String presetHandle,
-                SystemModeEnum systemMode, Integer coolingSetpoint, Integer heatingSetpoint) {
+        public ScheduleTransitionStruct(ScheduleDayOfWeekBitmap dayOfWeek, Integer transitionTime,
+                OctetString presetHandle, SystemModeEnum systemMode, Integer coolingSetpoint, Integer heatingSetpoint) {
             this.dayOfWeek = dayOfWeek;
             this.transitionTime = transitionTime;
             this.presetHandle = presetHandle;
@@ -1578,7 +1578,7 @@ public class ThermostatCluster extends BaseCluster {
         return new ClusterCommand("clearWeeklySchedule");
     }
 
-    public static ClusterCommand setActiveScheduleRequest(String scheduleHandle) {
+    public static ClusterCommand setActiveScheduleRequest(OctetString scheduleHandle) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (scheduleHandle != null) {
             map.put("scheduleHandle", scheduleHandle);
@@ -1586,7 +1586,7 @@ public class ThermostatCluster extends BaseCluster {
         return new ClusterCommand("setActiveScheduleRequest", map);
     }
 
-    public static ClusterCommand setActivePresetRequest(String presetHandle) {
+    public static ClusterCommand setActivePresetRequest(OctetString presetHandle) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (presetHandle != null) {
             map.put("presetHandle", presetHandle);

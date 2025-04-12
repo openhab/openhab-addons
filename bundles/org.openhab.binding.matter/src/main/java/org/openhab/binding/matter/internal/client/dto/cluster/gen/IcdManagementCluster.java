@@ -304,8 +304,8 @@ public class IcdManagementCluster extends BaseCluster {
      * This command allows a client to register itself with the ICD to be notified when the device is available for
      * communication.
      */
-    public static ClusterCommand registerClient(BigInteger checkInNodeId, BigInteger monitoredSubject, String key,
-            String verificationKey, ClientTypeEnum clientType) {
+    public static ClusterCommand registerClient(BigInteger checkInNodeId, BigInteger monitoredSubject, OctetString key,
+            OctetString verificationKey, ClientTypeEnum clientType) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (checkInNodeId != null) {
             map.put("checkInNodeId", checkInNodeId);
@@ -330,7 +330,7 @@ public class IcdManagementCluster extends BaseCluster {
      * (e.g. running on a phone which is leaving the home) can (and should) remove its subscriptions and send this
      * UnregisterClient command before leaving to prevent the burden on the ICD of an absent client.
      */
-    public static ClusterCommand unregisterClient(BigInteger checkInNodeId, String verificationKey) {
+    public static ClusterCommand unregisterClient(BigInteger checkInNodeId, OctetString verificationKey) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (checkInNodeId != null) {
             map.put("checkInNodeId", checkInNodeId);

@@ -1,9 +1,11 @@
 import { Logger } from "@matter/general";
 import { ControllerNode } from "../ControllerNode";
 import { convertJsonDataWithModel } from "../../util/Json";
-import { ValidationError } from "@matter/main/types";
+import { ClusterId, ValidationError } from "@matter/main/types";
 import * as MatterClusters from "@matter/types/clusters";
 import { SupportedAttributeClient } from "@matter/protocol"
+import { ClusterModel, MatterModel } from "@matter/model";
+import { camelize, capitalize } from "../../util/String";
 
 const logger = Logger.get("Clusters");
 
@@ -26,25 +28,31 @@ export class Clusters {
      * @param args Optional arguments for executing the command.
      * @throws Error if the cluster or command is not found on the device.
      */
-    async command(nodeId: number, endpointId: number, clusterName: string, commandName: string, args: any[]) {
+    async command(nodeId: number, endpointId: number, clusterName: string, commandName: string, args: any) {
         logger.debug(`command ${nodeId} ${endpointId} ${clusterName} ${commandName} ${Logger.toJSON(args)}`);
-        const device = this.theNode.getEndpoint(await this.theNode.getNode(nodeId), endpointId);
+        const device = await this.theNode.getNode(nodeId).getDeviceById(endpointId);
         if (device == undefined) {
             throw new Error(`Endpoint ${endpointId} not found`);
         }
-        const cluster = (MatterClusters as any)[`${clusterName}Cluster`];
-        const clusterClient: any = device.getClusterClient(cluster);
+
+        const cluster = this.#clusterForName(clusterName);
+        const clusterClient = device.getClusterClientById(ClusterId(cluster.id));       
         if (clusterClient === undefined) {
-            throw new Error(`Cluster ${clusterName} not found`);
+            throw new Error(`Cluster client for ${clusterName} not found`);
         }
-        if (typeof clusterClient[commandName] !== 'function') {
+        
+        const uppercaseName = capitalize(commandName);
+        const command = cluster.commands.find(c => c.name === uppercaseName);
+        if (command == undefined) {
             throw new Error(`Cluster Function ${commandName} not found`);
         }
-        if (args == null || Object.keys(args).length === 0) {
-            return clusterClient[commandName]();
-        } else {
-            return clusterClient[commandName](args);
+
+        let convertedArgs: any = undefined; 
+        if(args !== undefined && Object.keys(args).length > 0) {
+            convertedArgs = convertJsonDataWithModel(command, args);
         }
+        
+        return  clusterClient.commands[commandName](convertedArgs);
     }
 
     /**
@@ -67,27 +75,33 @@ export class Clusters {
             }
         }
 
-        const node = await this.theNode.getNode(nodeId);
-
-        const device = this.theNode.getEndpoint(await this.theNode.getNode(nodeId), endpointId);
+        const device = await this.theNode.getNode(nodeId).getDeviceById(endpointId);
         if (device == undefined) {
             throw new Error(`Endpoint ${endpointId} not found`);
         }
-        const cluster = (MatterClusters as any)[`${clusterName}Cluster`];
-        const clusterClient: any = device.getClusterClient(cluster);
+
+        const cluster = this.#clusterForName(clusterName);
+        const clusterClient = device.getClusterClientById(ClusterId(cluster.id));       
         if (clusterClient === undefined) {
-            throw new Error(`Cluster ${clusterName} not found`);
+            throw new Error(`Cluster client for ${clusterName} not found`);
         }
+        
         const attributeClient = clusterClient.attributes[attributeName];
         if (!(attributeClient instanceof SupportedAttributeClient)) {
-            throw new Error(`Attribute ${node.nodeId.toString()}/${endpointId}/${clusterName}/${attributeName} not supported.`)
+            throw new Error(`Attribute ${nodeId}/${endpointId}/${clusterName}/${attributeName} not supported.`)
+        }
+
+        const uppercaseName = capitalize(attributeName);
+        const attribute = cluster.attributes.find(c => c.name === uppercaseName);
+        if (attribute == undefined) {
+            throw new Error(`Attribute ${attributeName} not found`);
         }
 
         try {
-            parsedValue = convertJsonDataWithModel(cluster, parsedValue);
+            parsedValue = convertJsonDataWithModel(attribute, parsedValue);
             await attributeClient.set(parsedValue);
             console.log(
-                `Attribute ${attributeName} ${node.nodeId.toString()}/${endpointId}/${clusterName}/${attributeName} set to ${Logger.toJSON(value)}`,
+                `Attribute ${attributeName} ${nodeId}/${endpointId}/${clusterName}/${attributeName} set to ${Logger.toJSON(value)}`,
             );
         } catch (error) {
             if (error instanceof ValidationError) {
@@ -107,21 +121,36 @@ export class Clusters {
      * @param attributeName 
      */
     async readAttribute(nodeId: number, endpointId: number, clusterName: string, attributeName: string) {
-        const node = await this.theNode.getNode(nodeId);
-
-        const device = this.theNode.getEndpoint(await this.theNode.getNode(nodeId), endpointId);
+        const device = await this.theNode.getNode(nodeId).getDeviceById(endpointId);
         if (device == undefined) {
             throw new Error(`Endpoint ${endpointId} not found`);
         }
-        const cluster = (MatterClusters as any)[`${clusterName}Cluster`];
-        const clusterClient: any = device.getClusterClient(cluster);
+
+        const cluster = this.#clusterForName(clusterName);
+        const clusterClient = device.getClusterClientById(ClusterId(cluster.id));       
         if (clusterClient === undefined) {
-            throw new Error(`Cluster ${clusterName} not found`);
+            throw new Error(`Cluster client for ${clusterName} not found`);
         }
+        
         const attributeClient = clusterClient.attributes[attributeName];
         if (!(attributeClient instanceof SupportedAttributeClient)) {
-            throw new Error(`Attribute ${node.nodeId.toString()}/${endpointId}/${clusterName}/${attributeName} not supported.`)
+            throw new Error(`Attribute ${nodeId}/${endpointId}/${clusterName}/${attributeName} not supported.`)
         }
+
+        const uppercaseName = capitalize(attributeName);
+        const attribute = cluster.attributes.find(c => c.name === uppercaseName);
+        if (attribute == undefined) {
+            throw new Error(`Attribute ${attributeName} not found`);
+        }
+
         return await attributeClient.get(true);
+    }
+
+    #clusterForName(clusterName: string): ClusterModel {
+        const cluster = MatterModel.standard.clusters.find(c => c.name === clusterName);
+        if (cluster == null) {
+            throw new Error(`Cluster ${clusterName} not found`);
+        }
+        return cluster;
     }
 }

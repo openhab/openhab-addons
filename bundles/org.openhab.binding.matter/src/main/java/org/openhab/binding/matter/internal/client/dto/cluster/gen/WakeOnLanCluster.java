@@ -49,7 +49,7 @@ public class WakeOnLanCluster extends BaseCluster {
      * therefore choose not to include it or read it. The MAC Address can often be determined using ARP in IPv4 or NDP
      * in IPv6.
      */
-    public String linkLocalAddress; // 1 ipv6adr R V
+    public OctetString linkLocalAddress; // 1 ipv6adr R V
 
     public WakeOnLanCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 1283, "WakeOnLan");

@@ -108,7 +108,7 @@ public class JointFabricPkiCluster extends BaseCluster {
      * in the form of an ICACSRResponse command.
      * Check ICA Cross Signing for details about the generation and contents of the ICACSR.
      */
-    public static ClusterCommand icacsrRequest(String icacsr) {
+    public static ClusterCommand icacsrRequest(OctetString icacsr) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (icacsr != null) {
             map.put("icacsr", icacsr);

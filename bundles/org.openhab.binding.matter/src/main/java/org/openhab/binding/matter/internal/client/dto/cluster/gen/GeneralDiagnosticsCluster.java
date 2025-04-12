@@ -223,25 +223,25 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
          * interface and contain the current extended MAC address for a 802.15.4 interface. The byte order of the octstr
          * shall be in wire byte order. For addresses values less than 64 bits, the first two bytes shall be zero.
          */
-        public String hardwareAddress; // hwadr
+        public OctetString hardwareAddress; // hwadr
         /**
          * This field shall provide a list of the IPv4 addresses that are currently assigned to the network interface.
          */
-        public List<String> iPv4Addresses; // list
+        public List<OctetString> iPv4Addresses; // list
         /**
          * This field shall provide a list of the unicast IPv6 addresses that are currently assigned to the network
          * interface. This list shall include the Node’s link-local address and SHOULD include any assigned GUA and ULA
          * addresses. This list shall NOT include any multicast group addresses to which the Node is subscribed.
          */
-        public List<String> iPv6Addresses; // list
+        public List<OctetString> iPv6Addresses; // list
         /**
          * This field shall indicate the type of the interface using the InterfaceTypeEnum.
          */
         public InterfaceTypeEnum type; // InterfaceTypeEnum
 
         public NetworkInterface(String name, Boolean isOperational, Boolean offPremiseServicesReachableIPv4,
-                Boolean offPremiseServicesReachableIPv6, String hardwareAddress, List<String> iPv4Addresses,
-                List<String> iPv6Addresses, InterfaceTypeEnum type) {
+                Boolean offPremiseServicesReachableIPv6, OctetString hardwareAddress, List<OctetString> iPv4Addresses,
+                List<OctetString> iPv6Addresses, InterfaceTypeEnum type) {
             this.name = name;
             this.isOperational = isOperational;
             this.offPremiseServicesReachableIPv4 = offPremiseServicesReachableIPv4;
@@ -420,7 +420,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
      * shall NOT cause any changes to the state of the device that persist after the last fabric is removed.
      * The fields for the TestEventTrigger command are as follows:
      */
-    public static ClusterCommand testEventTrigger(String enableKey, BigInteger eventTrigger) {
+    public static ClusterCommand testEventTrigger(OctetString enableKey, BigInteger eventTrigger) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (enableKey != null) {
             map.put("enableKey", enableKey);
@@ -450,7 +450,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
      * certification testing or manufacturer’s internal tests.
      * The fields for the PayloadTestRequest command are as follows:
      */
-    public static ClusterCommand payloadTestRequest(String enableKey, Integer value, Integer count) {
+    public static ClusterCommand payloadTestRequest(OctetString enableKey, Integer value, Integer count) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (enableKey != null) {
             map.put("enableKey", enableKey);

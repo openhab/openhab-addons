@@ -115,7 +115,7 @@ public class NetworkCommissioningCluster extends BaseCluster {
      * This attribute is present to assist with error recovery during Network commissioning and to assist in
      * non-concurrent networking commissioning flows.
      */
-    public String lastNetworkId; // 6 octstr R A
+    public OctetString lastNetworkId; // 6 octstr R A
     /**
      * Indicates the ErrorValue used in the last failed attempt to connect to an operational network, using this
      * interface, whether by invocation of the ConnectNetwork command or by autonomous connection after loss of
@@ -168,7 +168,7 @@ public class NetworkCommissioningCluster extends BaseCluster {
          * underlying representation.
          * XPAN ID is a big-endian 64-bit unsigned number, represented on the first 8 octets of the octet string.
          */
-        public String networkId; // octstr
+        public OctetString networkId; // octstr
         /**
          * This field shall indicate the connected status of the associated network, where &quot;connected&quot; means
          * currently linked to the network technology (e.g. Associated for a Wi-Fi network, media connected for an
@@ -176,7 +176,7 @@ public class NetworkCommissioningCluster extends BaseCluster {
          */
         public Boolean connected; // bool
 
-        public NetworkInfoStruct(String networkId, Boolean connected) {
+        public NetworkInfoStruct(OctetString networkId, Boolean connected) {
             this.networkId = networkId;
             this.connected = connected;
         }
@@ -187,8 +187,8 @@ public class NetworkCommissioningCluster extends BaseCluster {
      */
     public class WiFiInterfaceScanResultStruct {
         public WiFiSecurityBitmap security; // WiFiSecurityBitmap
-        public String ssid; // octstr
-        public String bssid; // octstr
+        public OctetString ssid; // octstr
+        public OctetString bssid; // octstr
         public Integer channel; // uint16
         /**
          * This field, if present, may be used to differentiate overlapping channel number values across different Wi-Fi
@@ -200,8 +200,8 @@ public class NetworkCommissioningCluster extends BaseCluster {
          */
         public Integer rssi; // int8
 
-        public WiFiInterfaceScanResultStruct(WiFiSecurityBitmap security, String ssid, String bssid, Integer channel,
-                WiFiBandEnum wiFiBand, Integer rssi) {
+        public WiFiInterfaceScanResultStruct(WiFiSecurityBitmap security, OctetString ssid, OctetString bssid,
+                Integer channel, WiFiBandEnum wiFiBand, Integer rssi) {
             this.security = security;
             this.ssid = ssid;
             this.bssid = bssid;
@@ -223,12 +223,12 @@ public class NetworkCommissioningCluster extends BaseCluster {
         /**
          * ExtendedAddress stands for an IEEE 802.15.4 Extended Address.
          */
-        public String extendedAddress; // hwadr
+        public OctetString extendedAddress; // hwadr
         public Integer rssi; // int8
         public Integer lqi; // uint8
 
         public ThreadInterfaceScanResultStruct(Integer panId, BigInteger extendedPanId, String networkName,
-                Integer channel, Integer version, String extendedAddress, Integer rssi, Integer lqi) {
+                Integer channel, Integer version, OctetString extendedAddress, Integer rssi, Integer lqi) {
             this.panId = panId;
             this.extendedPanId = extendedPanId;
             this.networkName = networkName;
@@ -411,7 +411,7 @@ public class NetworkCommissioningCluster extends BaseCluster {
      * network interface is processing the scan. Clients SHOULD NOT use this command unless actively in the process of
      * re-configuring network connectivity.
      */
-    public static ClusterCommand scanNetworks(String ssid, BigInteger breadcrumb) {
+    public static ClusterCommand scanNetworks(OctetString ssid, BigInteger breadcrumb) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (ssid != null) {
             map.put("ssid", ssid);
@@ -433,7 +433,8 @@ public class NetworkCommissioningCluster extends BaseCluster {
      * See Section 11.9.7.5, “Common processing of AddOrUpdateWiFiNetwork and AddOrUpdateThreadNetwork” for behavior of
      * addition/update.
      */
-    public static ClusterCommand addOrUpdateWiFiNetwork(String ssid, String credentials, BigInteger breadcrumb) {
+    public static ClusterCommand addOrUpdateWiFiNetwork(OctetString ssid, OctetString credentials,
+            BigInteger breadcrumb) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (ssid != null) {
             map.put("ssid", ssid);
@@ -458,7 +459,7 @@ public class NetworkCommissioningCluster extends BaseCluster {
      * If the Networks attribute does not contain an entry with the same NetworkID as the one provided in the
      * OperationalDataset, the operation shall be considered an addition, otherwise, it shall be considered an update.
      */
-    public static ClusterCommand addOrUpdateThreadNetwork(String operationalDataset, BigInteger breadcrumb) {
+    public static ClusterCommand addOrUpdateThreadNetwork(OctetString operationalDataset, BigInteger breadcrumb) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (operationalDataset != null) {
             map.put("operationalDataset", operationalDataset);
@@ -480,7 +481,7 @@ public class NetworkCommissioningCluster extends BaseCluster {
      * On success, the NetworkConfigResponse command shall have its NetworkIndex field set to the 0- based index of the
      * entry in the Networks attribute that was just removed, and a NetworkingStatus status field set to Success.
      */
-    public static ClusterCommand removeNetwork(String networkId, BigInteger breadcrumb) {
+    public static ClusterCommand removeNetwork(OctetString networkId, BigInteger breadcrumb) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (networkId != null) {
             map.put("networkId", networkId);
@@ -547,7 +548,7 @@ public class NetworkCommissioningCluster extends BaseCluster {
      * the reason for a failure after reconnecting over a Commissioning channel, especially in non-concurrent
      * commissioning situations.
      */
-    public static ClusterCommand connectNetwork(String networkId, BigInteger breadcrumb) {
+    public static ClusterCommand connectNetwork(OctetString networkId, BigInteger breadcrumb) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (networkId != null) {
             map.put("networkId", networkId);
@@ -562,7 +563,7 @@ public class NetworkCommissioningCluster extends BaseCluster {
      * This command shall set the specific order of the network configuration selected by its NetworkID in the Networks
      * attribute to match the position given by NetworkIndex.
      */
-    public static ClusterCommand reorderNetwork(String networkId, Integer networkIndex, BigInteger breadcrumb) {
+    public static ClusterCommand reorderNetwork(OctetString networkId, Integer networkIndex, BigInteger breadcrumb) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (networkId != null) {
             map.put("networkId", networkId);

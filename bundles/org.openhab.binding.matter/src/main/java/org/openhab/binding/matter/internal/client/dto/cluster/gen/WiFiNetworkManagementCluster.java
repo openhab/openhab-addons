@@ -45,7 +45,7 @@ public class WiFiNetworkManagementCluster extends BaseCluster {
      * common encoding is UTF-8, however this is just a convention. Some configurations may use Latin-1 or other
      * character sets.
      */
-    public String ssid; // 0 octstr R V
+    public OctetString ssid; // 0 octstr R V
     /**
      * This attribute shall contain an arbitrary numeric value; this value shall increase whenever the passphrase or PSK
      * associated with the primary Wi-Fi network provided by this device changes.

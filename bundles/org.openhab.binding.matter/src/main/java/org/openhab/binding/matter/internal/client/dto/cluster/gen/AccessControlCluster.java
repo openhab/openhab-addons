@@ -440,10 +440,10 @@ public class AccessControlCluster extends BaseCluster {
          * Administrators may iterate over this list of elements, and interpret selected elements at their discretion.
          * The content of each element is not specified, but may be coordinated among manufacturers at their discretion.
          */
-        public String data; // octstr
+        public OctetString data; // octstr
         public Integer fabricIndex; // FabricIndex
 
-        public AccessControlExtensionStruct(String data, Integer fabricIndex) {
+        public AccessControlExtensionStruct(OctetString data, Integer fabricIndex) {
             this.data = data;
             this.fabricIndex = fabricIndex;
         }

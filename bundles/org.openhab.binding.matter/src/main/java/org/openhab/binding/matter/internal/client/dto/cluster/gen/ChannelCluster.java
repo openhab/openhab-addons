@@ -558,7 +558,7 @@ public class ChannelCluster extends BaseCluster {
      */
     public static ClusterCommand getProgramGuide(Integer startTime, Integer endTime,
             List<ChannelInfoStruct> channelList, PageTokenStruct pageToken, RecordingFlagBitmap recordingFlag,
-            List<ContentLauncherCluster.AdditionalInfoStruct> externalIdList, String data) {
+            List<ContentLauncherCluster.AdditionalInfoStruct> externalIdList, OctetString data) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (startTime != null) {
             map.put("startTime", startTime);
@@ -588,7 +588,7 @@ public class ChannelCluster extends BaseCluster {
      * Record a specific program or series when it goes live. This functionality enables DVR recording features.
      */
     public static ClusterCommand recordProgram(String programIdentifier, Boolean shouldRecordSeries,
-            List<ContentLauncherCluster.AdditionalInfoStruct> externalIdList, String data) {
+            List<ContentLauncherCluster.AdditionalInfoStruct> externalIdList, OctetString data) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (programIdentifier != null) {
             map.put("programIdentifier", programIdentifier);
@@ -609,7 +609,7 @@ public class ChannelCluster extends BaseCluster {
      * Cancel recording for a specific program or series.
      */
     public static ClusterCommand cancelRecordProgram(String programIdentifier, Boolean shouldRecordSeries,
-            List<ContentLauncherCluster.AdditionalInfoStruct> externalIdList, String data) {
+            List<ContentLauncherCluster.AdditionalInfoStruct> externalIdList, OctetString data) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (programIdentifier != null) {
             map.put("programIdentifier", programIdentifier);

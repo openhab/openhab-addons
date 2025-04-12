@@ -54,7 +54,7 @@ public class ThreadBorderRouterManagementCluster extends BaseCluster {
      * Indicates a 16-byte globally unique ID for a Thread Border Router device. This ID is manufacturer-specific, and
      * it is created and managed by the border router’s implementation.
      */
-    public String borderAgentId; // 1 octstr R V
+    public OctetString borderAgentId; // 1 octstr R V
     /**
      * Indicates the Thread version supported by the Thread interface configured by the cluster instance.
      * The format shall match the value mapping defined in the &quot;Version TLV&quot; section of the Thread
@@ -131,7 +131,7 @@ public class ThreadBorderRouterManagementCluster extends BaseCluster {
      * This command shall be used to set the active Dataset of the Thread network to which the Border Router is
      * connected, when there is no active dataset already.
      */
-    public static ClusterCommand setActiveDatasetRequest(String activeDataset, BigInteger breadcrumb) {
+    public static ClusterCommand setActiveDatasetRequest(OctetString activeDataset, BigInteger breadcrumb) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (activeDataset != null) {
             map.put("activeDataset", activeDataset);
@@ -156,7 +156,7 @@ public class ThreadBorderRouterManagementCluster extends BaseCluster {
      * connected, with the value given in the PendingDataset parameter. The Border Router will manage activation of the
      * pending dataset as defined in the Thread specification.
      */
-    public static ClusterCommand setPendingDatasetRequest(String pendingDataset) {
+    public static ClusterCommand setPendingDatasetRequest(OctetString pendingDataset) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (pendingDataset != null) {
             map.put("pendingDataset", pendingDataset);

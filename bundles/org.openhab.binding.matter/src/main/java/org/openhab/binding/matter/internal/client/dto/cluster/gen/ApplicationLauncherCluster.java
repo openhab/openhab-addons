@@ -150,7 +150,7 @@ public class ApplicationLauncherCluster extends BaseCluster {
      * supported, shall be updated to reflect the new application in the foreground.
      * This command returns a Launcher Response.
      */
-    public static ClusterCommand launchApp(ApplicationStruct application, String data) {
+    public static ClusterCommand launchApp(ApplicationStruct application, OctetString data) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (application != null) {
             map.put("application", application);

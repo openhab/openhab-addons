@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.client.dto.Endpoint;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster.OctetString;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BasicInformationCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BridgedDeviceBasicInformationCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.DescriptorCluster;
@@ -158,39 +159,42 @@ public class MatterLabelUtils {
         return deviceTypeID;
     }
 
-    public static String formatMacAddress(@Nullable String mac) {
+    public static String formatMacAddress(@Nullable OctetString mac) {
         if (mac == null) {
             return "";
         }
-        return IntStream.range(0, mac.length()).filter(i -> i % 2 == 0).mapToObj(i -> mac.substring(i, i + 2))
-                .collect(Collectors.joining(":"));
+        String macString = mac.toString();
+        return IntStream.range(0, macString.length()).filter(i -> i % 2 == 0)
+                .mapToObj(i -> macString.substring(i, i + 2)).collect(Collectors.joining(":"));
     }
 
-    public static String formatIPv4Address(@Nullable String ipv4Hex) {
+    public static String formatIPv4Address(@Nullable OctetString ipv4Hex) {
         if (ipv4Hex == null) {
             return "";
         }
+        String ipv4String = ipv4Hex.toString();
         StringBuilder ipv4 = new StringBuilder();
-        for (int i = 0; i < ipv4Hex.length(); i += 2) {
-            int decimal = Integer.parseInt(ipv4Hex.substring(i, i + 2), 16);
+        for (int i = 0; i < ipv4String.length(); i += 2) {
+            int decimal = Integer.parseInt(ipv4String.substring(i, i + 2), 16);
             ipv4.append(decimal).append(".");
         }
         return ipv4.substring(0, ipv4.length() - 1); // Remove the trailing dot
     }
 
-    public static String formatIPv6Address(@Nullable String ipv6Hex) {
+    public static String formatIPv6Address(@Nullable OctetString ipv6Hex) {
         if (ipv6Hex == null) {
             return "";
         }
+        String ipv6String = ipv6Hex.toString();
         try {
-            byte[] bytes = new byte[ipv6Hex.length() / 2];
-            for (int i = 0; i < ipv6Hex.length(); i += 2) {
-                bytes[i / 2] = (byte) Integer.parseInt(ipv6Hex.substring(i, i + 2), 16);
+            byte[] bytes = new byte[ipv6String.length() / 2];
+            for (int i = 0; i < ipv6String.length(); i += 2) {
+                bytes[i / 2] = (byte) Integer.parseInt(ipv6String.substring(i, i + 2), 16);
             }
             InetAddress address = InetAddress.getByAddress(bytes);
             return address.getHostAddress();
         } catch (UnknownHostException e) {
-            return ipv6Hex;
+            return ipv6String;
         }
     }
 }

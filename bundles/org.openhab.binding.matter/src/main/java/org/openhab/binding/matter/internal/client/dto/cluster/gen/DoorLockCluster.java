@@ -302,30 +302,30 @@ public class DoorLockCluster extends BaseCluster {
      * shall be an uncompressed elliptic curve public key as defined in section 2.3.3 of SEC 1.
      * Null if no Reader key pair has been configured on the lock. See SetAliroReaderConfig.
      */
-    public String aliroReaderVerificationKey; // 128 octstr R A
+    public OctetString aliroReaderVerificationKey; // 128 octstr R A
     /**
      * Indicates the reader_group_identifier as defined in [Aliro].
      * Null if no reader_group_identifier has been configured on the lock. See SetAliroReaderConfig.
      */
-    public String aliroReaderGroupIdentifier; // 129 octstr R A
+    public OctetString aliroReaderGroupIdentifier; // 129 octstr R A
     /**
      * Indicates the reader_group_sub_identifier as defined in [Aliro].
      */
-    public String aliroReaderGroupSubIdentifier; // 130 octstr R A
+    public OctetString aliroReaderGroupSubIdentifier; // 130 octstr R A
     /**
      * Indicates the list of protocol versions supported for expedited transactions as defined in [Aliro].
      */
-    public List<String> aliroExpeditedTransactionSupportedProtocolVersions; // 131 list R A
+    public List<OctetString> aliroExpeditedTransactionSupportedProtocolVersions; // 131 list R A
     /**
      * Indicates the Group Resolving Key as defined in [Aliro].
      * Null if no group resolving key has been configured on the lock. See SetAliroReaderConfig.
      */
-    public String aliroGroupResolvingKey; // 132 octstr R A
+    public OctetString aliroGroupResolvingKey; // 132 octstr R A
     /**
      * Indicates the list of protocol versions supported for the Bluetooth LE + UWB Access Control Flow as defined in
      * [Aliro].
      */
-    public List<String> aliroSupportedBleuwbProtocolVersions; // 133 list R A
+    public List<OctetString> aliroSupportedBleuwbProtocolVersions; // 133 list R A
     /**
      * Indicates the version of the Bluetooth LE advertisement as defined in [Aliro].
      */
@@ -1405,7 +1405,7 @@ public class DoorLockCluster extends BaseCluster {
      * This command causes the lock device to lock the door. This command includes an optional code for the lock. The
      * door lock may require a PIN depending on the value of the RequirePINForRemoteOperation attribute.
      */
-    public static ClusterCommand lockDoor(String pinCode) {
+    public static ClusterCommand lockDoor(OctetString pinCode) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (pinCode != null) {
             map.put("pinCode", pinCode);
@@ -1420,7 +1420,7 @@ public class DoorLockCluster extends BaseCluster {
      * If the attribute AutoRelockTime is supported the lock will transition to the locked state when the auto relock
      * time has expired.
      */
-    public static ClusterCommand unlockDoor(String pinCode) {
+    public static ClusterCommand unlockDoor(OctetString pinCode) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (pinCode != null) {
             map.put("pinCode", pinCode);
@@ -1439,7 +1439,7 @@ public class DoorLockCluster extends BaseCluster {
      * attribute. If the door lock device is not capable of or does not want to support temporary Relock Timeout, it
      * SHOULD NOT support this optional command.
      */
-    public static ClusterCommand unlockWithTimeout(Integer timeout, String pinCode) {
+    public static ClusterCommand unlockWithTimeout(Integer timeout, OctetString pinCode) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (timeout != null) {
             map.put("timeout", timeout);
@@ -1456,7 +1456,7 @@ public class DoorLockCluster extends BaseCluster {
      * one of the following values:
      */
     public static ClusterCommand setPinCode(Integer userId, UserStatusEnum userStatus, UserTypeEnum userType,
-            String pin) {
+            OctetString pin) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (userId != null) {
             map.put("userId", userId);
@@ -1724,7 +1724,7 @@ public class DoorLockCluster extends BaseCluster {
      * one of the following values:
      */
     public static ClusterCommand setRfidCode(Integer userId, UserStatusEnum userStatus, UserTypeEnum userType,
-            String rfidCode) {
+            OctetString rfidCode) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (userId != null) {
             map.put("userId", userId);
@@ -1847,7 +1847,7 @@ public class DoorLockCluster extends BaseCluster {
      * Fields used for different use cases:
      */
     public static ClusterCommand setCredential(DataOperationTypeEnum operationType, CredentialStruct credential,
-            String credentialData, Integer userIndex, UserStatusEnum userStatus, UserTypeEnum userType) {
+            OctetString credentialData, Integer userIndex, UserStatusEnum userStatus, UserTypeEnum userType) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (operationType != null) {
             map.put("operationType", operationType);
@@ -1908,7 +1908,7 @@ public class DoorLockCluster extends BaseCluster {
      * If the attribute AutoRelockTime is supported, the lock will transition to the locked state when the auto relock
      * time has expired.
      */
-    public static ClusterCommand unboltDoor(String pinCode) {
+    public static ClusterCommand unboltDoor(OctetString pinCode) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (pinCode != null) {
             map.put("pinCode", pinCode);
@@ -1919,8 +1919,8 @@ public class DoorLockCluster extends BaseCluster {
     /**
      * This command allows communicating an Aliro Reader configuration, as defined in [Aliro], to the lock.
      */
-    public static ClusterCommand setAliroReaderConfig(String signingKey, String verificationKey, String groupIdentifier,
-            String groupResolvingKey) {
+    public static ClusterCommand setAliroReaderConfig(OctetString signingKey, OctetString verificationKey,
+            OctetString groupIdentifier, OctetString groupResolvingKey) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (signingKey != null) {
             map.put("signingKey", signingKey);

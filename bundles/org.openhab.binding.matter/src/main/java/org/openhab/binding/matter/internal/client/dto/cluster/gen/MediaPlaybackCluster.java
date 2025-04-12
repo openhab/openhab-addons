@@ -181,7 +181,7 @@ public class MediaPlaybackCluster extends BaseCluster {
         /**
          * This field shall indicate Optional app-specific data.
          */
-        public String data; // octstr
+        public OctetString data; // octstr
         /**
          * This field shall indicate whether audio is unmuted by the player due to a FF or REW command. This field is
          * only meaningful when the PlaybackSpeed is present and not equal to 0 (paused) or 1 (normal playback).
@@ -194,7 +194,7 @@ public class MediaPlaybackCluster extends BaseCluster {
 
         public StateChanged(PlaybackStateEnum currentState, BigInteger startTime, BigInteger duration,
                 PlaybackPositionStruct sampledPosition, Float playbackSpeed, BigInteger seekRangeEnd,
-                BigInteger seekRangeStart, String data, Boolean audioAdvanceUnmuted) {
+                BigInteger seekRangeStart, OctetString data, Boolean audioAdvanceUnmuted) {
             this.currentState = currentState;
             this.startTime = startTime;
             this.duration = duration;

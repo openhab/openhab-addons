@@ -207,9 +207,10 @@ function matterNativeTypeToJavaNativeType(field: AnyElement) {
         case "date":
             return "date";
         case "string":
-        case "octstr":
         case "locationdesc":
             return "String";
+        case "octstr":
+            return "OctetString";
         // this are semantic tag fields
         case "tag":
         case "namespace":
@@ -255,15 +256,13 @@ function filterDep(e: AnyValueElement) {
  */
 function typeMapper(mappings: Map<string, string | undefined>, dt: AnyValueElement): any {
     let mappedType: string | undefined;
-    //console.log(dt.name, dt.type)
     if (dt.tag == 'attribute' && dt.type?.startsWith('enum') || dt.type?.startsWith('map') || dt.type?.startsWith('struct')) {
         //these types will be generated as inner classes and will be referred to by name
         mappedType = dt.name;
     } else {
         //this gets raw types
-        mappedType = dt.type && mappings.get(dt.type) || matterNativeTypeToJavaNativeType(dt) || dt.type || "String"  //  no types are strings?
+        mappedType = dt.type && mappings.get(dt.type) || matterNativeTypeToJavaNativeType(dt) || dt.type || "String"  //  no types are strings? (TODO BridgedBasic cluster uses operationalShadow)
     }
-
     if (mappedType == 'list') {
         const ct = dt.children?.[0].type
         //console.log(ct)
@@ -282,8 +281,6 @@ function typeMapper(mappings: Map<string, string | undefined>, dt: AnyValueEleme
         //if the type is already mapped, then use the mapped type
         mappedType = mappings.get(mappedType)
     }
-
-    //console.log(mappedType)
 
     const children = dt.children?.map((child) => {
         return typeMapper(mappings, child as AnyValueElement) as AnyValueElement
@@ -317,10 +314,12 @@ globalTypeMapping.set("FabricIndex", "Integer");
 globalTypeMapping.set("namespace", "Integer");
 globalTypeMapping.set("tag", "Integer");
 
-
 globalDataTypes.forEach(dt => {
     matterNativeTypeToJavaNativeType(dt) && globalTypeMapping.set(dt.name, matterNativeTypeToJavaNativeType(dt))
 });
+//it seems like there is a global data type that overrides the string type
+globalTypeMapping.set("string", "String");
+
 globalAttributes.forEach(dt => matterNativeTypeToJavaNativeType(dt) && globalTypeMapping.set(dt.name, matterNativeTypeToJavaNativeType(dt)));
 
 const clusters: ExtendedClusterElement[] = (matterData.children as ClusterElement[])

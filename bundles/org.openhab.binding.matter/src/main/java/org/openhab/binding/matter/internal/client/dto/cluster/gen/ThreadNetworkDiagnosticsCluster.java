@@ -135,7 +135,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
      * been configured to join to. A value of null shall indicate that the Thread interface is not currently configured
      * or operational.
      */
-    public String meshLocalPrefix; // 5 ipv6pre R V
+    public OctetString meshLocalPrefix; // 5 ipv6pre R V
     /**
      * The OverrunCount attribute shall indicate the number of packets dropped either at ingress or egress, due to lack
      * of buffer memory to retain all packets on the ethernet network interface. The OverrunCount attribute shall be
@@ -447,7 +447,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
      * For example, the most significant bit of the left-most byte indicates channel 0. If channel 0 and channel 10 are
      * selected, the mask would be: 80 20 00 00. Null when there is no dataset configured.
      */
-    public String channelPage0Mask; // 60 octstr R V
+    public OctetString channelPage0Mask; // 60 octstr R V
     /**
      * The OperationalDatasetComponents attribute is a collection of flags to indicate the presence of various
      * operationally acquired values.

@@ -107,7 +107,7 @@ public class GroupKeyManagementCluster extends BaseCluster {
          * This field, if not null, shall be the root credential used in the derivation of an operational group key for
          * epoch slot 0 of the given group key set. If EpochKey0 is not null, EpochStartTime0 shall NOT be null.
          */
-        public String epochKey0; // octstr
+        public OctetString epochKey0; // octstr
         /**
          * This field, if not null, shall define when EpochKey0 becomes valid as specified by Section 4.17.3, “Epoch
          * Keys”. Units are absolute UTC time in microseconds encoded using the epoch-us representation.
@@ -117,7 +117,7 @@ public class GroupKeyManagementCluster extends BaseCluster {
          * This field, if not null, shall be the root credential used in the derivation of an operational group key for
          * epoch slot 1 of the given group key set. If EpochKey1 is not null, EpochStartTime1 shall NOT be null.
          */
-        public String epochKey1; // octstr
+        public OctetString epochKey1; // octstr
         /**
          * This field, if not null, shall define when EpochKey1 becomes valid as specified by Section 4.17.3, “Epoch
          * Keys”. Units are absolute UTC time in microseconds encoded using the epoch-us representation.
@@ -127,7 +127,7 @@ public class GroupKeyManagementCluster extends BaseCluster {
          * This field, if not null, shall be the root credential used in the derivation of an operational group key for
          * epoch slot 2 of the given group key set. If EpochKey2 is not null, EpochStartTime2 shall NOT be null.
          */
-        public String epochKey2; // octstr
+        public OctetString epochKey2; // octstr
         /**
          * This field, if not null, shall define when EpochKey2 becomes valid as specified by Section 4.17.3, “Epoch
          * Keys”. Units are absolute UTC time in microseconds encoded using the epoch-us representation.
@@ -146,8 +146,9 @@ public class GroupKeyManagementCluster extends BaseCluster {
         public GroupKeyMulticastPolicyEnum groupKeyMulticastPolicy; // GroupKeyMulticastPolicyEnum
 
         public GroupKeySetStruct(Integer groupKeySetId, GroupKeySecurityPolicyEnum groupKeySecurityPolicy,
-                String epochKey0, BigInteger epochStartTime0, String epochKey1, BigInteger epochStartTime1,
-                String epochKey2, BigInteger epochStartTime2, GroupKeyMulticastPolicyEnum groupKeyMulticastPolicy) {
+                OctetString epochKey0, BigInteger epochStartTime0, OctetString epochKey1, BigInteger epochStartTime1,
+                OctetString epochKey2, BigInteger epochStartTime2,
+                GroupKeyMulticastPolicyEnum groupKeyMulticastPolicy) {
             this.groupKeySetId = groupKeySetId;
             this.groupKeySecurityPolicy = groupKeySecurityPolicy;
             this.epochKey0 = epochKey0;

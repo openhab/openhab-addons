@@ -80,9 +80,9 @@ public class SoftwareDiagnosticsCluster extends BaseCluster {
          * in further diagnosing or debugging a software fault. The FaultRecording field may be used to convey
          * information such as, but not limited to, thread backtraces or register contents.
          */
-        public String faultRecording; // octstr
+        public OctetString faultRecording; // octstr
 
-        public SoftwareFault(BigInteger id, String name, String faultRecording) {
+        public SoftwareFault(BigInteger id, String name, OctetString faultRecording) {
             this.id = id;
             this.name = name;
             this.faultRecording = faultRecording;

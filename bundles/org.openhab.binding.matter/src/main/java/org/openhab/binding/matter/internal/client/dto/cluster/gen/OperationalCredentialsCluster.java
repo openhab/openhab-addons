@@ -81,7 +81,7 @@ public class OperationalCredentialsCluster extends BaseCluster {
      * cross-referenced with the NOC or ICAC certificates that appear in the NOCs attribute for a given fabric.
      * Upon Factory Data Reset, this attribute shall be set to a default value whereby the list is empty.
      */
-    public List<String> trustedRootCertificates; // 4 list R V
+    public List<OctetString> trustedRootCertificates; // 4 list R V
     /**
      * This attribute shall contain accessing fabric index.
      * This attribute is useful to contextualize Fabric-Scoped entries obtained from response commands or attribute
@@ -100,15 +100,15 @@ public class OperationalCredentialsCluster extends BaseCluster {
          * This field shall contain the NOC for the struct’s associated fabric, encoded using Matter Certificate
          * Encoding.
          */
-        public String noc; // octstr
+        public OctetString noc; // octstr
         /**
          * This field shall contain the ICAC or the struct’s associated fabric, encoded using Matter Certificate
          * Encoding. If no ICAC is present in the chain, this field shall be set to null.
          */
-        public String icac; // octstr
+        public OctetString icac; // octstr
         public Integer fabricIndex; // FabricIndex
 
-        public NOCStruct(String noc, String icac, Integer fabricIndex) {
+        public NOCStruct(OctetString noc, OctetString icac, Integer fabricIndex) {
             this.noc = noc;
             this.icac = icac;
             this.fabricIndex = fabricIndex;
@@ -125,7 +125,7 @@ public class OperationalCredentialsCluster extends BaseCluster {
          * for the key shall be the same as that used in the ec-pub-key field of the Matter Certificate Encoding for the
          * root in the operational certificate chain.
          */
-        public String rootPublicKey; // octstr
+        public OctetString rootPublicKey; // octstr
         /**
          * This field shall contain the value of AdminVendorID provided in the AddNOC command that led to the creation
          * of this FabricDescriptorStruct. The set of allowed values is defined in AdminVendorID.
@@ -154,8 +154,8 @@ public class OperationalCredentialsCluster extends BaseCluster {
         public String label; // string
         public Integer fabricIndex; // FabricIndex
 
-        public FabricDescriptorStruct(String rootPublicKey, Integer vendorId, BigInteger fabricId, BigInteger nodeId,
-                String label, Integer fabricIndex) {
+        public FabricDescriptorStruct(OctetString rootPublicKey, Integer vendorId, BigInteger fabricId,
+                BigInteger nodeId, String label, Integer fabricIndex) {
             this.rootPublicKey = rootPublicKey;
             this.vendorId = vendorId;
             this.fabricId = fabricId;
@@ -239,7 +239,7 @@ public class OperationalCredentialsCluster extends BaseCluster {
      * with a Status Code of INVALID_COMMAND. The AttestationNonce field shall be used in the computation of the
      * Attestation Information.
      */
-    public static ClusterCommand attestationRequest(String attestationNonce) {
+    public static ClusterCommand attestationRequest(OctetString attestationNonce) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (attestationNonce != null) {
             map.put("attestationNonce", attestationNonce);
@@ -278,7 +278,7 @@ public class OperationalCredentialsCluster extends BaseCluster {
      * collide with an existing key pair already previously generated and installed, and that check had been executed,
      * then this command shall fail with a FAILURE status code sent back to the initiator.
      */
-    public static ClusterCommand csrRequest(String csrNonce, Boolean isForUpdateNoc) {
+    public static ClusterCommand csrRequest(OctetString csrNonce, Boolean isForUpdateNoc) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (csrNonce != null) {
             map.put("csrNonce", csrNonce);
@@ -297,8 +297,8 @@ public class OperationalCredentialsCluster extends BaseCluster {
      * response.
      * A Commissioner or Administrator SHOULD issue this command after performing the Attestation Procedure.
      */
-    public static ClusterCommand addNoc(String nocValue, String icacValue, String ipkValue, BigInteger caseAdminSubject,
-            Integer adminVendorId) {
+    public static ClusterCommand addNoc(OctetString nocValue, OctetString icacValue, OctetString ipkValue,
+            BigInteger caseAdminSubject, Integer adminVendorId) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (nocValue != null) {
             map.put("nocValue", nocValue);
@@ -356,7 +356,7 @@ public class OperationalCredentialsCluster extends BaseCluster {
      * Thereafter, the Node shall respond with an NOCResponse with a StatusCode of OK and a FabricIndex field matching
      * the FabricIndex under which the updated NOC is scoped.
      */
-    public static ClusterCommand updateNoc(String nocValue, String icacValue, Integer fabricIndex) {
+    public static ClusterCommand updateNoc(OctetString nocValue, OctetString icacValue, Integer fabricIndex) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (nocValue != null) {
             map.put("nocValue", nocValue);
@@ -432,7 +432,7 @@ public class OperationalCredentialsCluster extends BaseCluster {
      * Note that the only method of removing a trusted root is by removing the Fabric that uses it as its root of trust
      * using the RemoveFabric command.
      */
-    public static ClusterCommand addTrustedRootCertificate(String rootCaCertificate) {
+    public static ClusterCommand addTrustedRootCertificate(OctetString rootCaCertificate) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (rootCaCertificate != null) {
             map.put("rootCaCertificate", rootCaCertificate);

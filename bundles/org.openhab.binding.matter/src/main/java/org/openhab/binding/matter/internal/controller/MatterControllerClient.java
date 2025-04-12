@@ -229,13 +229,11 @@ public class MatterControllerClient extends MatterWebsocketClient {
      * @param command
      * @return
      */
-    public CompletableFuture<Void> clusterCommand(BigInteger nodeId, Integer endpointId, String clusterName,
+    public CompletableFuture<JsonElement> clusterCommand(BigInteger nodeId, Integer endpointId, String clusterName,
             ClusterCommand command) {
         Object[] clusterArgs = { String.valueOf(nodeId), endpointId, clusterName, command.commandName, command.args };
         CompletableFuture<JsonElement> future = sendMessage("clusters", "command", clusterArgs);
-        return future.thenAccept(obj -> {
-            // Do nothing, just to complete the future
-        });
+        return future;
     }
 
     /**

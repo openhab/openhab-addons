@@ -65,6 +65,8 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
+
 /**
  * The {@link MatterBaseThingHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -192,18 +194,22 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         updateStatus(status, detail, description);
     }
 
-    public void sendClusterCommand(Integer endpointId, String clusterName, ClusterCommand command) {
+    public CompletableFuture<JsonElement> sendClusterCommand(Integer endpointId, String clusterName,
+            ClusterCommand command) {
         MatterControllerClient client = getClient();
         if (client != null) {
             logger.debug("sendClusterCommand {} {} {}", getNodeId(), endpointId, clusterName);
-            client.clusterCommand(getNodeId(), endpointId, clusterName, command);
+            return client.clusterCommand(getNodeId(), endpointId, clusterName, command);
         }
+        throw new IllegalStateException("Client is null");
     }
 
     public void writeAttribute(Integer endpointId, String clusterName, String attributeName, String value) {
         MatterControllerClient ws = getClient();
         if (ws != null) {
             ws.clusterWriteAttribute(getNodeId(), endpointId, clusterName, attributeName, value);
+        } else {
+            throw new IllegalStateException("Client is null");
         }
     }
 
