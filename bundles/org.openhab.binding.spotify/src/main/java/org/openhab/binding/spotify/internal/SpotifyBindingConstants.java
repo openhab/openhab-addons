@@ -32,8 +32,13 @@ public class SpotifyBindingConstants {
     /**
      * Spotify scopes needed by this binding to work.
      */
-    public static final String SPOTIFY_SCOPES = Stream.of("user-read-playback-state", "user-modify-playback-state",
-            "playlist-read-private", "playlist-read-collaborative").collect(Collectors.joining(" "));
+    public static final String SPOTIFY_SCOPES = Stream.of("ugc-image-upload", "user-read-playback-state",
+            "user-modify-playback-state", "user-read-currently-playing", "app-remote-control streaming",
+            "playlist-read-private", "playlist-read-collaborative", "playlist-modify-private", "playlist-modify-public",
+            "user-follow-modify", "user-follow-read", "user-read-playback-position", "user-top-read",
+            "user-read-recently-played", "user-library-modify", "user-library-read", "user-read-email",
+            "user-read-private").collect(Collectors.joining(" "));
+    public static final String SPOTIFY_API_BASE_URL = "https://api.spotify.com/v1";
     public static final String SPOTIFY_API_URL = "https://api.spotify.com/v1/me";
     public static final String SPOTIFY_API_PLAYER_URL = SPOTIFY_API_URL + "/player";
 
