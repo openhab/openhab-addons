@@ -21,6 +21,10 @@ public class Playlist {
 
     private String name;
     private String uri;
+    private String description;
+    private PlayListTracks tracks;
+    private Image[] images;
+    private String href;
 
     public String getName() {
         return name;
@@ -28,5 +32,13 @@ public class Playlist {
 
     public String getUri() {
         return uri;
+    }
+
+    public PlayListTracks getTracks() {
+        return tracks;
+    }
+
+    public Image[] getImages() {
+        return images;
     }
 }

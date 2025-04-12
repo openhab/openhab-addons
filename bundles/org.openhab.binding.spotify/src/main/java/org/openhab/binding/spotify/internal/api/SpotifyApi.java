@@ -12,11 +12,8 @@
  */
 package org.openhab.binding.spotify.internal.api;
 
-import static org.eclipse.jetty.http.HttpMethod.GET;
-import static org.eclipse.jetty.http.HttpMethod.POST;
-import static org.eclipse.jetty.http.HttpMethod.PUT;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.SPOTIFY_API_PLAYER_URL;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.SPOTIFY_API_URL;
+import static org.eclipse.jetty.http.HttpMethod.*;
+import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -37,13 +34,24 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyAuthorizationException;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyTokenExpiredException;
+import org.openhab.binding.spotify.internal.api.model.AddedShow;
+import org.openhab.binding.spotify.internal.api.model.Album;
+import org.openhab.binding.spotify.internal.api.model.Albums;
+import org.openhab.binding.spotify.internal.api.model.Artist;
+import org.openhab.binding.spotify.internal.api.model.Artists;
 import org.openhab.binding.spotify.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.spotify.internal.api.model.Device;
 import org.openhab.binding.spotify.internal.api.model.Devices;
+import org.openhab.binding.spotify.internal.api.model.FollowedArtists;
 import org.openhab.binding.spotify.internal.api.model.Me;
 import org.openhab.binding.spotify.internal.api.model.ModelUtil;
 import org.openhab.binding.spotify.internal.api.model.Playlist;
 import org.openhab.binding.spotify.internal.api.model.Playlists;
+import org.openhab.binding.spotify.internal.api.model.SavedAlbum;
+import org.openhab.binding.spotify.internal.api.model.SavedAlbums;
+import org.openhab.binding.spotify.internal.api.model.Shows;
+import org.openhab.binding.spotify.internal.api.model.Track;
+import org.openhab.binding.spotify.internal.api.model.Tracks;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -230,6 +238,85 @@ public class SpotifyApi {
                 Playlists.class);
 
         return playlists == null || playlists.getItems() == null ? Collections.emptyList() : playlists.getItems();
+    }
+
+    /**
+     * @return Returns the albums of the user.
+     */
+    public List<SavedAlbum> getSavedAlbums(int offset, int limit) {
+        final SavedAlbums albums = request(GET, SPOTIFY_API_URL + "/albums?offset" + offset + "&limit=" + limit, "",
+                SavedAlbums.class);
+
+        return albums == null || albums.getItems() == null ? Collections.emptyList() : albums.getItems();
+    }
+
+    /**
+     * @return Returns an album
+     */
+    public @Nullable Album getAlbum(String albumId) {
+        final Album album = request(GET, SPOTIFY_API_BASE_URL + "/albums/" + albumId, "", Album.class);
+
+        return album;
+    }
+
+    /**
+     * @return Returns the artists of the user.
+     */
+    public List<Artist> getArtists(int offset, int limit) {
+        final FollowedArtists followedArtists = request(GET,
+                SPOTIFY_API_URL + "/following?type=artist&offset" + offset + "&limit=" + limit, "",
+                FollowedArtists.class);
+
+        return followedArtists == null || followedArtists.getArtists() == null ? Collections.emptyList()
+                : followedArtists.getArtists().getItems();
+    }
+
+    /**
+     * @return Returns the artists of the user.
+     */
+    public List<Album> getArtistAlbums(String artistId) {
+        final Albums albums = request(GET, SPOTIFY_API_BASE_URL + "/artists/" + artistId + "/albums", "", Albums.class);
+
+        return albums == null || albums.getItems() == null ? Collections.emptyList() : albums.getItems();
+    }
+
+    /**
+     * @return Returns the artists of the user.
+     */
+    public List<Artist> getTopArtists(int offset, int limit) {
+        final Artists topArtists = request(GET, SPOTIFY_API_URL + "/top/artists?offset" + offset + "&limit=" + limit,
+                "", Artists.class);
+
+        return topArtists == null || topArtists.getItems() == null ? Collections.emptyList() : topArtists.getItems();
+    }
+
+    /**
+     * @return Returns the artists of the user.
+     */
+    public List<AddedShow> getShows(int offset, int limit) {
+        final Shows shows = request(GET, SPOTIFY_API_URL + "/shows?offset" + offset + "&limit=" + limit, "",
+                Shows.class);
+
+        return shows == null || shows.getItems() == null ? Collections.emptyList() : shows.getItems();
+    }
+
+    /**
+     * @return Returns the artists of the user.
+     */
+    public List<Track> getTopTracks(int offset, int limit) {
+        final Tracks topTracks = request(GET, SPOTIFY_API_URL + "/top/tracks?offset" + offset + "&limit=" + limit, "",
+                Tracks.class);
+
+        return topTracks == null || topTracks.getItems() == null ? Collections.emptyList() : topTracks.getItems();
+    }
+
+    /**
+     * @return Returns a playlist details
+     */
+    public @Nullable Playlist getPlaylist(String uri) {
+        final Playlist playlist = request(GET,
+                SPOTIFY_API_BASE_URL + "/playlists/" + uri.replace("spotify:playlist:", ""), "", Playlist.class);
+        return playlist;
     }
 
     /**

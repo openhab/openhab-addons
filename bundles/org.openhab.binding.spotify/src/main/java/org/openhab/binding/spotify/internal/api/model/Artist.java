@@ -26,6 +26,7 @@ public class Artist {
     private String name;
     private String type;
     private String uri;
+    private Image[] images;
 
     public ExternalUrl getExternalUrls() {
         return externalUrls;
@@ -49,5 +50,9 @@ public class Artist {
 
     public String getUri() {
         return uri;
+    }
+
+    public Image[] getImages() {
+        return images;
     }
 }

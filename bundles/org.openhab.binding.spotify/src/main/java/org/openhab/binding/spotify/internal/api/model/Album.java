@@ -33,6 +33,8 @@ public class Album {
     private String type;
     private String uri;
 
+    private Tracks tracks;
+
     public String getAlbumType() {
         return albumType;
     }
@@ -71,5 +73,9 @@ public class Album {
 
     public String getUri() {
         return uri;
+    }
+
+    public Tracks getTracks() {
+        return tracks;
     }
 }

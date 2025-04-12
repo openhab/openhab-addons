@@ -37,6 +37,7 @@ import org.openhab.binding.spotify.internal.actions.SpotifyActions;
 import org.openhab.binding.spotify.internal.api.SpotifyApi;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyAuthorizationException;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
+import org.openhab.binding.spotify.internal.api.model.AddedShow;
 import org.openhab.binding.spotify.internal.api.model.Album;
 import org.openhab.binding.spotify.internal.api.model.Artist;
 import org.openhab.binding.spotify.internal.api.model.Context;
@@ -45,7 +46,12 @@ import org.openhab.binding.spotify.internal.api.model.Device;
 import org.openhab.binding.spotify.internal.api.model.Image;
 import org.openhab.binding.spotify.internal.api.model.Item;
 import org.openhab.binding.spotify.internal.api.model.Me;
+import org.openhab.binding.spotify.internal.api.model.PlayListTracks;
 import org.openhab.binding.spotify.internal.api.model.Playlist;
+import org.openhab.binding.spotify.internal.api.model.PlaylistTrack;
+import org.openhab.binding.spotify.internal.api.model.SavedAlbum;
+import org.openhab.binding.spotify.internal.api.model.Track;
+import org.openhab.binding.spotify.internal.api.model.Tracks;
 import org.openhab.binding.spotify.internal.discovery.SpotifyDeviceDiscoveryService;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -63,6 +69,17 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.media.MediaListenner;
+import org.openhab.core.media.MediaService;
+import org.openhab.core.media.model.MediaAlbum;
+import org.openhab.core.media.model.MediaArtist;
+import org.openhab.core.media.model.MediaCollection;
+import org.openhab.core.media.model.MediaEntry;
+import org.openhab.core.media.model.MediaPlayList;
+import org.openhab.core.media.model.MediaPostcast;
+import org.openhab.core.media.model.MediaRegistry;
+import org.openhab.core.media.model.MediaSource;
+import org.openhab.core.media.model.MediaTrack;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -86,7 +103,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SpotifyBridgeHandler extends BaseBridgeHandler
-        implements SpotifyAccountHandler, AccessTokenRefreshListener {
+        implements SpotifyAccountHandler, AccessTokenRefreshListener, MediaListenner {
 
     private static final CurrentlyPlayingContext EMPTY_CURRENTLY_PLAYING_CONTEXT = new CurrentlyPlayingContext();
     private static final Album EMPTY_ALBUM = new Album();
@@ -120,6 +137,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     private final SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider;
     private final ChannelUID devicesChannelUID;
     private final ChannelUID playlistsChannelUID;
+    private final MediaService mediaService;
 
     // Field members assigned in initialize method
     private @NonNullByDefault({}) Future<?> pollingFuture;
@@ -129,6 +147,12 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     private @NonNullByDefault({}) SpotifyHandleCommands handleCommand;
     private @NonNullByDefault({}) ExpiringCache<CurrentlyPlayingContext> playingContextCache;
     private @NonNullByDefault({}) ExpiringCache<List<Playlist>> playlistCache;
+    private @NonNullByDefault({}) ExpiringCache<List<SavedAlbum>> albumsCache;
+    private @NonNullByDefault({}) ExpiringCache<List<Artist>> artistsCache;
+    private @NonNullByDefault({}) ExpiringCache<List<Track>> topTracksCache;
+    private @NonNullByDefault({}) ExpiringCache<List<Artist>> topArtistsCache;
+    private @NonNullByDefault({}) ExpiringCache<List<AddedShow>> showsCache;
+
     private @NonNullByDefault({}) ExpiringCache<List<Device>> devicesCache;
 
     /**
@@ -142,11 +166,12 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     private int imageChannelAlbumImageUrlIndex;
 
     public SpotifyBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient,
-            SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider) {
+            SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider, MediaService mediaService) {
         super(bridge);
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClient;
         this.spotifyDynamicStateDescriptionProvider = spotifyDynamicStateDescriptionProvider;
+        this.mediaService = mediaService;
         devicesChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_DEVICES);
         playlistsChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_PLAYLISTS);
     }
@@ -318,7 +343,23 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         playingContextCache = new ExpiringCache<>(expiringPeriod, spotifyApi::getPlayerInfo);
         final int offset = getIntChannelParameter(CHANNEL_PLAYLISTS, CHANNEL_PLAYLISTS_OFFSET, 0);
         final int limit = getIntChannelParameter(CHANNEL_PLAYLISTS, CHANNEL_PLAYLISTS_LIMIT, 20);
+
+        mediaService.addMediaListenner("Spotify", this);
+
+        MediaRegistry mediaRegistry = mediaService.getMediaRegistry();
+
+        MediaSource mediaSource = mediaRegistry.registerEntry("Spotify", () -> {
+            return new MediaSource("Spotify", "Spotify", "/static/Spotify.png");
+        });
+
         playlistCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getPlaylists(offset, limit));
+        albumsCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getSavedAlbums(offset, limit));
+        artistsCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getArtists(offset, limit));
+
+        topTracksCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getTopTracks(offset, limit));
+        topArtistsCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getTopArtists(offset, limit));
+        showsCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getShows(offset, limit));
+
         devicesCache = new ExpiringCache<>(expiringPeriod, spotifyApi::getDevices);
 
         // Start with update status by calling Spotify. If no credentials available no polling should be started.
@@ -330,6 +371,222 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         imageChannelAlbumImageIndex = getIntChannelParameter(CHANNEL_PLAYED_ALBUMIMAGE, CHANNEL_CONFIG_IMAGE_INDEX, 0);
         imageChannelAlbumImageUrlIndex = getIntChannelParameter(CHANNEL_PLAYED_ALBUMIMAGEURL,
                 CHANNEL_CONFIG_IMAGE_INDEX, 0);
+    }
+
+    @Override
+    public void refreshEntry(MediaEntry mediaEntry) {
+        if (mediaEntry.getKey().equals("Spotify")) {
+
+            MediaCollection mediaAlbums = mediaEntry.registerEntry("Albums", () -> {
+                return new MediaCollection("Albums", "Albums", "/static/Albums.png");
+            });
+
+            MediaCollection mediaArtists = mediaEntry.registerEntry("Artists", () -> {
+                return new MediaCollection("Artists", "Artists", "/static/Artists.png");
+            });
+
+            @SuppressWarnings("unused")
+            MediaCollection mediaPlaylist = mediaEntry.registerEntry("Playlists", () -> {
+                return new MediaCollection("Playlists", "Playlists", "/static/playlist.png");
+            });
+
+            MediaCollection mediaTracks = mediaEntry.registerEntry("Tracks", () -> {
+                return new MediaCollection("Tracks", "Tracks", "/static/Tracks.png");
+            });
+
+            MediaCollection mediaRecent = mediaEntry.registerEntry("RecentlyPlayed", () -> {
+                return new MediaCollection("RecentlyPlayed", "Recently Played", "/static/RecentlyPlayed.png");
+            });
+
+            MediaCollection mediaPodcasts = mediaEntry.registerEntry("Podcasts", () -> {
+                return new MediaCollection("Podcasts", "Podcasts", "/static/PodCasts.png");
+            });
+
+            MediaCollection mediaTopTracks = mediaEntry.registerEntry("TopTracks", () -> {
+                return new MediaCollection("TopTracks", "TopTracks", "/static/TopTracks.png");
+            });
+
+            MediaCollection mediaTopArtists = mediaEntry.registerEntry("TopArtists", () -> {
+                return new MediaCollection("TopArtists", "TopArtists", "/static/TopArtists.png");
+            });
+
+            MediaCollection mediaNewReleases = mediaEntry.registerEntry("NewReleases", () -> {
+                return new MediaCollection("NewReleases", "New Releases", "/static/NewReleases.png");
+            });
+
+        } else if (mediaEntry.getKey().equals("Playlists")) {
+            List<Playlist> playLists = playlistCache.getValue();
+
+            for (Playlist playList : playLists) {
+                String key = playList.getUri();
+                MediaPlayList mediaPlayList = mediaEntry.registerEntry(key, () -> {
+                    MediaPlayList res = new MediaPlayList(key, playList.getName());
+                    if (playList.getImages() != null) {
+                        res.setArtUri(playList.getImages()[0].getUrl());
+                    }
+                    return res;
+                });
+            }
+        } else if (mediaEntry.getKey().equals("Albums")) {
+            List<SavedAlbum> albums = albumsCache.getValue();
+
+            for (SavedAlbum savedAlbum : albums) {
+                String key = savedAlbum.album.getUri();
+                String name = savedAlbum.album.getName();
+                String uri = savedAlbum.album.getImages().getFirst().getUrl();
+
+                MediaAlbum mediaAlbum = mediaEntry.registerEntry(key, () -> {
+                    MediaAlbum res = new MediaAlbum(key, name);
+                    res.setArtUri(uri);
+                    return res;
+                });
+
+            }
+        } else if (mediaEntry.getKey().equals("Artists")) {
+            List<Artist> artists = artistsCache.getValue();
+
+            for (Artist artist : artists) {
+                String key = artist.getUri();
+                String name = artist.getName();
+
+                MediaArtist mediaArtist = mediaEntry.registerEntry(key, () -> {
+                    MediaArtist res = new MediaArtist(key, name);
+                    if (artist.getImages() != null) {
+                        res.setArtUri(artist.getImages()[0].getUrl());
+                    }
+                    return res;
+                });
+
+            }
+
+        } else if (mediaEntry instanceof MediaArtist) {
+            MediaArtist mediaArtist = (MediaArtist) mediaEntry;
+
+            List<Album> albumList = spotifyApi.getArtistAlbums(mediaArtist.getKey().replace("spotify:artist:", ""));
+
+            for (Album album : albumList) {
+                String name = album.getName();
+                String uri = album.getUri();
+                String artUri = album.getImages().getFirst().getUrl();
+
+                MediaAlbum mediaAlbum = mediaEntry.registerEntry(uri, () -> {
+                    MediaAlbum res = new MediaAlbum(uri, name);
+                    res.setArtUri(artUri);
+                    return res;
+
+                });
+
+            }
+
+        } else if (mediaEntry instanceof MediaAlbum) {
+            MediaAlbum mediaAlbum = (MediaAlbum) mediaEntry;
+            List<SavedAlbum> albums = albumsCache.getValue();
+
+            Optional<SavedAlbum> optSavedAlbum = albums.stream()
+                    .filter(x -> x.album.getUri().equals(mediaAlbum.getKey())).findFirst();
+
+            if (optSavedAlbum.isPresent()) {
+
+                SavedAlbum savedAlbum = optSavedAlbum.get();
+                Tracks tracks = savedAlbum.album.getTracks();
+                for (Track track : tracks.getItems()) {
+                    String name = track.getName();
+                    String uri = track.getUri();
+
+                    MediaTrack mediaTrack = mediaEntry.registerEntry(uri, () -> {
+                        return new MediaTrack(uri, name);
+                    });
+
+                }
+            } else {
+                Album album = spotifyApi.getAlbum(mediaAlbum.getKey().replace("spotify:album:", ""));
+
+                Tracks tracks = album.getTracks();
+                for (Track track : tracks.getItems()) {
+                    String name = track.getName();
+                    String uri = track.getUri();
+
+                    MediaTrack mediaTrack = mediaEntry.registerEntry(uri, () -> {
+                        return new MediaTrack(uri, name);
+                    });
+
+                }
+
+            }
+
+        } else if (mediaEntry instanceof MediaPlayList) {
+            Playlist pl = spotifyApi.getPlaylist(mediaEntry.getKey());
+
+            if (pl != null) {
+                PlayListTracks tracks = pl.getTracks();
+                List<PlaylistTrack> playlistTrack = tracks.getPlaylistTrack();
+
+                for (PlaylistTrack plTrack : playlistTrack) {
+
+                    String uri = plTrack.track.getUri();
+                    String name = plTrack.track.getName();
+                    String artUri = plTrack.track.getAlbum().getImages().getFirst().getUrl();
+
+                    MediaTrack mediaTrack = mediaEntry.registerEntry(uri, () -> {
+                        MediaTrack res = new MediaTrack(uri, name);
+                        res.setArtUri(artUri);
+                        return res;
+                    });
+
+                }
+            }
+        } else if (mediaEntry.getKey().equals("TopTracks")) {
+            List<Track> tracks = topTracksCache.getValue();
+
+            for (Track track : tracks) {
+                String key = track.getUri();
+                String name = track.getName();
+
+                MediaTrack mediaTrack = mediaEntry.registerEntry(key, () -> {
+                    MediaTrack res = new MediaTrack(key, name);
+                    if (track.getImages() != null) {
+                        res.setArtUri(track.getImages().getFirst().getUrl());
+                    }
+                    return res;
+                });
+
+            }
+
+        } else if (mediaEntry.getKey().equals("TopArtists")) {
+            List<Artist> artists = topArtistsCache.getValue();
+
+            for (Artist artist : artists) {
+                String key = artist.getUri();
+                String name = artist.getName();
+
+                MediaArtist mediaArtist = mediaEntry.registerEntry(key, () -> {
+                    MediaArtist res = new MediaArtist(key, name);
+                    if (artist.getImages() != null) {
+                        res.setArtUri(artist.getImages()[0].getUrl());
+                    }
+                    return res;
+                });
+
+            }
+        } else if (mediaEntry.getKey().equals("Podcasts")) {
+            List<AddedShow> shows = showsCache.getValue();
+
+            for (AddedShow addedShow : shows) {
+                String key = addedShow.show.getUri();
+                String name = addedShow.show.getName();
+
+                MediaPostcast mediaPostcast = mediaEntry.registerEntry(key, () -> {
+                    MediaPostcast res = new MediaPostcast(key, name);
+                    if (addedShow.show.getImages() != null) {
+                        res.setArtUri(addedShow.show.getImages().getFirst().getUrl());
+                    }
+                    return res;
+                });
+
+            }
+
+        }
+
     }
 
     private int getIntChannelParameter(String channelName, String parameter, int _default) {
