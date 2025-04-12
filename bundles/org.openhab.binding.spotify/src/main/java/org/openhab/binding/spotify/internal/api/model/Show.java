@@ -15,10 +15,9 @@ package org.openhab.binding.spotify.internal.api.model;
 import java.util.List;
 
 /**
- * Spotify Api Album data class.
+ * Spotify Api Show data class : a Podcast entry.
  *
- * @author Andreas Stenlund - Initial contribution
- * @author Hilbrand Bouwkamp - Moved to it's own class
+ * @author Laurent Arnal - Initial contribution
  */
 public class Show {
 
