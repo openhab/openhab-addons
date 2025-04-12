@@ -313,7 +313,7 @@
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>OnOff</tag>
+			<tag>Power</tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -344,7 +344,7 @@
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>EnabledDisabled</tag>
+			<tag>Enabled</tag>
 		</tags>
 	</channel-type>
 
