@@ -296,7 +296,7 @@
 		<category>energy</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>AutoManual</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false"/>
 		<config-description>
