@@ -22,6 +22,7 @@ import org.openhab.binding.spotify.internal.api.SpotifyApi;
 import org.openhab.binding.spotify.internal.api.model.Device;
 import org.openhab.binding.spotify.internal.api.model.Playlist;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.MediaCommandType;
 import org.openhab.core.library.types.MediaType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
@@ -179,7 +180,16 @@ class SpotifyHandleCommands {
             }
             return true;
         } else if (command instanceof MediaType) {
-            spotifyApi.playTrack(deviceId, "spotify:playlist:5Z4AD0u9fwnvtsj7ce5ZLS", 0, 0);
+            MediaType mediaType = (MediaType) command;
+            MediaCommandType mediaTypeCommand = mediaType.getCommand();
+            String param = mediaType.getParam().toFullString();
+
+            int px = param.lastIndexOf("/");
+            if (px >= 0) {
+                param = param.substring(px + 1);
+            }
+
+            spotifyApi.playTrack(deviceId, param, 0, 0);
             return true;
         } else if (command instanceof StringType) {
             String val = command.toFullString();

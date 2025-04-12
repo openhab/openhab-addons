@@ -769,6 +769,25 @@ public class UpnpRendererHandler extends UpnpHandler {
                 pos = Integer.max(0, trackPosition - config.seekStep);
             }
             seek(String.format("%02d:%02d:%02d", pos / 3600, (pos % 3600) / 60, pos % 60));
+        } else if (command instanceof StringType) {
+            String val = ((StringType) command).toFullString();
+            logger.debug(val);
+
+            int idx = val.indexOf("/l");
+            val = val.substring(idx);
+
+            if (!serverHandlers.isEmpty()) {
+                UpnpServerHandler serverHandler = (UpnpServerHandler) serverHandlers.toArray()[0];
+                serverHandler.browse(val, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
+                try {
+                    Thread.sleep(2000);
+                } catch (Exception ex) {
+
+                }
+                pause();
+                play();
+            }
+
         }
     }
 
