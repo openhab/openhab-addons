@@ -205,8 +205,13 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
         upnpEntryQueue = new UpnpEntryQueue(entries, "54321");
 
         handler = spy(new UpnpRendererHandler(requireNonNull(thing), requireNonNull(upnpIOService),
+<<<<<<< HEAD
                 requireNonNull(upnpService), requireNonNull(audioSinkReg), requireNonNull(upnpStateDescriptionProvider),
                 requireNonNull(upnpCommandDescriptionProvider), configuration));
+=======
+                requireNonNull(audioSinkReg), requireNonNull(upnpStateDescriptionProvider),
+                requireNonNull(upnpCommandDescriptionProvider), configuration, requireNonNull(mediaService)));
+>>>>>>> 3f902bb547 (feature-media-spotify : divide branch feature-media to separate branches)
 
         initHandler(requireNonNull(handler));
 

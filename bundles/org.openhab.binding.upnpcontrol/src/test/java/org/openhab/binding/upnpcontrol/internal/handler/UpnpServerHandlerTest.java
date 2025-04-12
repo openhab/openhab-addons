@@ -169,10 +169,16 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         // stub config for initialize
         when(config.as(UpnpControlServerConfiguration.class)).thenReturn(new UpnpControlServerConfiguration());
 
+<<<<<<< HEAD
         handler = spy(
                 new UpnpServerHandler(requireNonNull(thing), requireNonNull(upnpIOService), requireNonNull(upnpService),
                         requireNonNull(upnpRenderers), requireNonNull(upnpStateDescriptionProvider),
                         requireNonNull(upnpCommandDescriptionProvider), configuration));
+=======
+        handler = spy(new UpnpServerHandler(requireNonNull(thing), requireNonNull(upnpIOService),
+                requireNonNull(upnpRenderers), requireNonNull(upnpStateDescriptionProvider),
+                requireNonNull(upnpCommandDescriptionProvider), configuration, requireNonNull(mediaService)));
+>>>>>>> 3f902bb547 (feature-media-spotify : divide branch feature-media to separate branches)
 
         initHandler(requireNonNull(handler));
 
