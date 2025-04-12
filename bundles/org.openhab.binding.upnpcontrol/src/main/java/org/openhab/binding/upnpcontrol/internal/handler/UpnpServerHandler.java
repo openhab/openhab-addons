@@ -259,7 +259,6 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
             logger.debug("Exception, previous server query on {} interrupted or timed out, trying new browse anyway",
                     thing.getLabel());
         }
-
     }
 
     /**
