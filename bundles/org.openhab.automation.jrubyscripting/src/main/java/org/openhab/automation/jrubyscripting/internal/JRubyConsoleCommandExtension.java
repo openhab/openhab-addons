@@ -288,21 +288,17 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         final String consoleScript = script.contains("/") ? script : DEFAULT_CONSOLE_PATH + script;
         final String[] argv = args;
 
-        // Use full class name here to avoid ambiguity against other OSGiConsole implementations
-        if (console instanceof org.openhab.core.io.console.karaf.OSGiConsole) {
-            logger.debug("Starting JRuby console with script: {}", consoleScript);
+        logger.debug("Starting JRuby console with script: {}", consoleScript);
 
-            executeWithFullJRuby(console, engine -> {
-                // Resolve console.getSession().getTerminal() in Ruby to avoid having to add
-                // org.apache.karaf.shell.core as a dependency in pom.xml
-                engine.put("$console", console);
-                engine.put(ScriptEngine.ARGV, argv);
-                engine.eval(String.format("$terminal = $console.session.terminal; require '%s'", consoleScript));
-                return null;
-            });
-        } else {
-            console.println("JRuby Console is not supported in this environment.");
-        }
+        executeWithFullJRuby(console, engine -> {
+            // Resolve console.getSession().getTerminal() in Ruby to avoid having to add
+            // org.apache.karaf.shell.core as a dependency in pom.xml
+            engine.put("$console", console);
+            engine.put(ScriptEngine.ARGV, argv);
+            engine.eval(String.format("require '%s'", consoleScript));
+
+            return null;
+        });
     }
 
     synchronized private void bundler(Console console, String[] args) {
