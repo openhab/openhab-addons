@@ -318,12 +318,12 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
 
     synchronized private void bundler(Console console, String[] args) {
         final File gemfile = jRubyScriptEngineFactory.getConfiguration().getGemfile();
-        boolean bundle_init = args.length >= 1 && "init".equals(args[0]);
+        boolean bundleInit = args.length >= 1 && "init".equals(args[0]);
 
-        if (bundle_init && gemfile.exists()) {
+        if (bundleInit && gemfile.exists()) {
             console.printf("Gemfile '%s' already exists.\n", gemfile.toString());
             return;
-        } else if (!bundle_init && !gemfile.exists()) {
+        } else if (!bundleInit && !gemfile.exists()) {
             console.printf("""
                     No Gemfile found. Please ensure the 'bundle_gemfile' setting is correct and the Gemfile exists.
 
@@ -372,7 +372,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
             logger.debug("Bundler result: {}", result);
             // A null result indicates a successful creation of Gemfile.
             // Otherwise, if a Gemfile already exists, it will return `1`
-            if (bundle_init && result == null) {
+            if (bundleInit && result == null) {
                 try {
                     // bundler init always creates a file called "Gemfile".
                     // if our setting points to any file other than "Gemfile",
