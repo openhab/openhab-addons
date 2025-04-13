@@ -136,7 +136,7 @@ public class JRubyScriptEngineConfiguration {
                 });
         return objectMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
             if (entry.getValue() instanceof List<?> listValue) {
-                return listValue.stream().map(Object::toString).collect(Collectors.joining("\n")).toString();
+                return listValue.stream().map(Object::toString).collect(Collectors.joining("\n"));
             }
             return entry.getValue().toString();
         }));
