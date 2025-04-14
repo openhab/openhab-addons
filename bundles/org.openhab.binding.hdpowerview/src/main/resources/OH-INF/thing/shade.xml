@@ -50,7 +50,7 @@
 		</supported-bridge-type-refs>
 		<label>PowerView Shade</label>
 		<description>Hunter Douglas (Luxaflex) PowerView Gen3 Shade</description>
-		<semantic-equipment-tag>WindowCovering</semantic-equipment-tag>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 
 		<channels>
 			<channel id="position" typeId="shade-position"/>
