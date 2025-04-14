@@ -6,6 +6,7 @@
 	<thing-type id="ntp">
 		<label>NTP Server</label>
 		<description>An NTP server that provides current date and time</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channels>
 			<channel id="dateTime" typeId="dateTime-channel"/>
 			<channel id="string" typeId="string-channel"/>
@@ -47,6 +48,10 @@
 		<label>Date</label>
 		<description>NTP refreshed date and time.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="string-channel">
@@ -54,6 +59,10 @@
 		<label>Date</label>
 		<description>NTP refreshed date and time.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="DateTimeFormat" type="text" required="false">
