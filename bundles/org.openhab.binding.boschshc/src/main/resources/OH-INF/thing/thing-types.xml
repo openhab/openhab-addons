@@ -424,7 +424,7 @@
 
 		<label>Universal Switch</label>
 		<description>Universally configurable switch with two buttons.</description>
-		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 
 		<channels>
 			<channel id="key-code" typeId="key-code"/>
@@ -443,7 +443,7 @@
 
 		<label>Universal Switch II</label>
 		<description>Universally configurable switch with four buttons.</description>
-		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 
 		<channels>
 			<channel id="key-code" typeId="key-code"/>
