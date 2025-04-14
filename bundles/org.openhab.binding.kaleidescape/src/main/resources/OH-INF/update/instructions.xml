@@ -26,6 +26,24 @@
 			<update-channel id="title_length" groupIds="ui">
 				<type>kaleidescape:title_length</type>
 			</update-channel>
+			<update-channel id="title_loc" groupIds="ui">
+				<type>kaleidescape:title_loc</type>
+			</update-channel>
+			<update-channel id="chapter_length" groupIds="ui">
+				<type>kaleidescape:chapter_length</type>
+			</update-channel>
+			<update-channel id="chapter_loc" groupIds="ui">
+				<type>kaleidescape:chapter_loc</type>
+			</update-channel>
+			<update-channel id="track_length" groupIds="music">
+				<type>kaleidescape:track_length</type>
+			</update-channel>
+			<update-channel id="track_position" groupIds="music">
+				<type>kaleidescape:track_position</type>
+			</update-channel>
+			<update-channel id="running_time" groupIds="detail">
+				<type>kaleidescape:running_time</type>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 
@@ -52,6 +70,24 @@
 			<update-channel id="title_length" groupIds="c1-alto_ui">
 				<type>kaleidescape:title_length</type>
 			</update-channel>
+			<update-channel id="title_loc" groupIds="c1-alto_ui">
+				<type>kaleidescape:title_loc</type>
+			</update-channel>
+			<update-channel id="chapter_length" groupIds="c1-alto_ui">
+				<type>kaleidescape:chapter_length</type>
+			</update-channel>
+			<update-channel id="chapter_loc" groupIds="c1-alto_ui">
+				<type>kaleidescape:chapter_loc</type>
+			</update-channel>
+			<update-channel id="track_length" groupIds="music">
+				<type>kaleidescape:track_length</type>
+			</update-channel>
+			<update-channel id="track_position" groupIds="music">
+				<type>kaleidescape:track_position</type>
+			</update-channel>
+			<update-channel id="running_time" groupIds="detail">
+				<type>kaleidescape:running_time</type>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 
@@ -75,6 +111,18 @@
 			<update-channel id="title_length" groupIds="c1-alto_ui">
 				<type>kaleidescape:title_length</type>
 			</update-channel>
+			<update-channel id="title_loc" groupIds="c1-alto_ui">
+				<type>kaleidescape:title_loc</type>
+			</update-channel>
+			<update-channel id="chapter_length" groupIds="c1-alto_ui">
+				<type>kaleidescape:chapter_length</type>
+			</update-channel>
+			<update-channel id="chapter_loc" groupIds="c1-alto_ui">
+				<type>kaleidescape:chapter_loc</type>
+			</update-channel>
+			<update-channel id="running_time" groupIds="detail">
+				<type>kaleidescape:running_time</type>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 
@@ -97,6 +145,18 @@
 			</update-channel>
 			<update-channel id="title_length" groupIds="strato_ui">
 				<type>kaleidescape:title_length</type>
+			</update-channel>
+			<update-channel id="title_loc" groupIds="strato_ui">
+				<type>kaleidescape:title_loc</type>
+			</update-channel>
+			<update-channel id="chapter_length" groupIds="strato_ui">
+				<type>kaleidescape:chapter_length</type>
+			</update-channel>
+			<update-channel id="chapter_loc" groupIds="strato_ui">
+				<type>kaleidescape:chapter_loc</type>
+			</update-channel>
+			<update-channel id="running_time" groupIds="detail">
+				<type>kaleidescape:running_time</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
