@@ -35,6 +35,9 @@
 			<update-channel id="timeElapsed">
 				<type>roku:timeElapsed</type>
 			</update-channel>
+			<update-channel id="timeTotal">
+				<type>roku:timeTotal</type>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 
@@ -78,6 +81,9 @@
 			</update-channel>
 			<update-channel id="timeElapsed">
 				<type>roku:timeElapsed</type>
+			</update-channel>
+			<update-channel id="timeTotal">
+				<type>roku:timeTotal</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
