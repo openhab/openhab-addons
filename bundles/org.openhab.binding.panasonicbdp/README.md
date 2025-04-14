@@ -66,6 +66,7 @@ Some notes:
 - The time and chapter information is only available when playing a Blu-ray disc (not DVD or CD)
 - There are reports in forum postings that not all commands work on all of the older models (i.e.: Power does not work on DMP-BDT110)
 - Not all status information is available from all BD models (i.e.: playback elapsed time not reported by some models)
+- Netflix is no longer supported on the BD models.
 
 ## Channels
 
