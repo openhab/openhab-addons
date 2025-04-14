@@ -134,7 +134,7 @@
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="time-total">
@@ -142,7 +142,7 @@
 		<label>Total Time</label>
 		<description>The total length of the current title</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="chapter-current">

@@ -142,7 +142,7 @@
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%1$tT/>
 	</channel-type>
 
 </thing:thing-descriptions>

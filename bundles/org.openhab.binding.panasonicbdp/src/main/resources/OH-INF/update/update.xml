@@ -11,6 +11,9 @@
 			<update-channel id="time-elapsed">
 				<type>panasonicbdp:time-elapsed</type>
 			</update-channel>
+			<update-channel id="time-total">
+				<type>panasonicbdp:time-total</type>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 
