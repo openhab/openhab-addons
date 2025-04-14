@@ -12,7 +12,7 @@
 
 		<label>Weather and Forecast</label>
 		<description>Provides current weather and forecast data from the OpenWeatherMap API.</description>
-
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="station" typeId="station"/>
 			<channel-group id="current" typeId="weather"/>
