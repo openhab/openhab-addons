@@ -9,7 +9,7 @@
 		</supported-bridge-type-refs>
 		<label>evohome Display</label>
 		<description>This represents the evohome control display.</description>
-		<semantic-equipment-tag>Screen</semantic-equipment-tag>
+		<semantic-equipment-tag>Display</semantic-equipment-tag>
 		<channels>
 			<channel id="SystemMode" typeId="systemMode"/>
 		</channels>
