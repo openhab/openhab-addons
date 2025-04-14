@@ -7,6 +7,8 @@
 	<bridge-type id="hub">
 		<label>Adorne Hub</label>
 		<description>The Adorne Hub serves as the bridge to control Adorne switches, dimmer switches and outlets.</description>
+		<semantic-equipment-tag>Dial</semantic-equipment-tag>
+
 
 		<config-description>
 			<parameter name="host" type="text">

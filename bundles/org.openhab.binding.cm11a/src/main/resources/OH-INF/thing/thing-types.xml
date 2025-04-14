@@ -8,6 +8,7 @@
 	<bridge-type id="cm11a">
 		<label>CM11a Controller for X10 Devices</label>
 		<description>CM11 is a device that allows control of X10 devices for a computer. </description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
@@ -32,6 +33,7 @@
 
 		<label>X10 Dimmer</label>
 		<description>Controls dimmable loads</description>
+		<semantic-equipment-tag>Dial</semantic-equipment-tag>
 
 		<channels>
 			<channel id="lightlevel" typeId="lightDimmer"/>
@@ -53,6 +55,7 @@
 
 		<label>X10 Switch</label>
 		<description>On/off switch</description>
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>

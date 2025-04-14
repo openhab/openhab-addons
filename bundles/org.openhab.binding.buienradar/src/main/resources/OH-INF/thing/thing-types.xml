@@ -10,6 +10,8 @@
 			two hours, in 5 minute increments using
 			the buienradar.nl webservice.
 		</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
+
 
 		<channels>
 			<channel id="actual_datetime" typeId="actual_datetime"/>
