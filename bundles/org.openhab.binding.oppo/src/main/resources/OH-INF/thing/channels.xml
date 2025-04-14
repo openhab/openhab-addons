@@ -125,13 +125,13 @@
 
 	<channel-type id="time_display">
 		<item-type>Number:Time</item-type>
-		<label>Time Display (S)</label>
-		<description>The Playback Time Elapsed/Remaining in Seconds</description>
+		<label>Time Display</label>
+		<description>The Playback Time Elapsed/Remaining</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="current_title">
