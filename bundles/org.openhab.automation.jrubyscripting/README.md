@@ -109,6 +109,7 @@ Additional [example rules are available](https://openhab.github.io/openhab-jruby
   - [Dynamic Generation of Rules](#dynamic-generation-of-rules)
   - [Scenes and Scripts](#scenes-and-scripts)
   - [Hooks](#hooks)
+- [Console Commands](#console-commands)
 - [Calling Java From JRuby](#calling-java-from-jruby)
 - [Full Documentation](#full-documentation)
 
@@ -155,15 +156,17 @@ This functionality can be disabled for users who prefer to manage their own gems
 Simply change the `gems` and `require` configuration settings.
 
 | Parameter             | Description                                                                                                |
-| --------------------- | ---------------------------------------------------------------------------------------------------------- |
+|-----------------------|------------------------------------------------------------------------------------------------------------|
 | `gem_home`            | The path to store Ruby Gems. <br/><br/>Default: `$OPENHAB_CONF/automation/ruby/.gem/{RUBY_ENGINE_VERSION}` |
 | `gems`                | A list of gems to install. <br/><br/>Default: `openhab-scripting=~>5.0`                                    |
+| `bundle_gemfile`      | The path to your Gemfile relative to `$OPENHAB_CONF/automation/ruby`. <br/><br/>Default: `Gemfile`         |
 | `check_update`        | Check for updated version of `gems` on start up or settings change. <br/><br/>Default: `true`              |
 | `require`             | List of scripts to be required automatically. <br/><br/>Default: `openhab/dsl`                             |
 | `rubylib`             | Search path for user libraries. <br/><br/>Default: `$OPENHAB_CONF/automation/ruby/lib`                     |
 | `dependency_tracking` | Enable dependency tracking. <br/><br/>Default: `true`                                                      |
 | `local_context`       | See notes below. <br/><br/>Default: `singlethread`                                                         |
 | `local_variables`     | See notes below. <br/><br/>Default: `transient`                                                            |
+| `console`             | The default script used by `jrubyscripting console` Karaf console command. <br/><br/>Default: `irb`        |
 
 When using file-based configuration, these parameters must be prefixed with `org.openhab.automation.jrubyscripting:`, for example:
 
@@ -191,17 +194,33 @@ Multiple version specifiers can be added by separating them with a semicolon.
 Examples:
 
 | gem setting                                      | Description                                                                                              |
-| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+|--------------------------------------------------|----------------------------------------------------------------------------------------------------------|
 | `openhab-scripting`                              | install the latest version of `openhab-scripting` gem                                                    |
 | `openhab-scripting=~>5.0.0`                      | install the latest version 5.0.x but not 5.1.x                                                           |
-| `openhab-scripting=~>5.0`                        | install the latest version 5.x but not 6.x                                                               |
+| `openhab-scripting=~>5.0`                        | install the latest version 5.x but not 6.x. **This is the default/recommended setting.**                 |
 | `openhab-scripting=~>5.0, faraday=~>2.7;>=2.7.4` | install `openhab-scripting` gem version 5.x and `faraday` gem version 2.7.4 or higher, but less than 3.0 |
 | `gem1= >= 2.2.1; <= 2.2.5`                       | install `gem1` gem version 2.2.1 or above, but less than or equal to version 2.2.5                       |
+
+### bundle_gemfile
+
+A path to your Gemfile, including the file name.
+It can be an absolute path, or just the file-name portion, in which case it will be resolved to `$OPENHAB_CONF/automation/ruby`.
+The default is `Gemfile`.
+
+If the Gemfile doesn't exist, the [gems](#gems) setting will take effect, and bundler will not be used.
+
+The [bundler init console command](#console-commands) can be used to create a new Gemfile, or you can create it manually.
+When this Gemfile exists, the [gems](#gems) setting will be ignored, and only the gems specified in your Gemfile will be installed and used.
+
+Note that by default, the gems listed in the Gemfile will also be required, so it's not necessary to require them again in the [require](#require) setting.
+To disable this behavior for a specific gem, add a `require: false` argument to the `gem` command within the Gemfile.
 
 ### check_update
 
 Check RubyGems for updates to the above gems when openHAB starts or JRuby settings are changed.
 Otherwise it will try to fulfil the requirements with locally installed gems, and you can manage them yourself with an external Ruby by setting the same GEM_HOME.
+
+This setting equally applies whether you're using bundler with [Gemfile](#bundle_gemfile) or the [gems](#gems) way of installing Ruby gems.
 
 ### require
 
@@ -1885,6 +1904,19 @@ script_unloaded do
   logger.info("script unloaded")
 end
 ```
+
+## Console Commands
+
+Karaf Console commands are provided for performing maintenance and troubleshooting tasks.
+The commands are prefixed with `openhab:jrubyscripting` or just `jrubyscripting` followed by the sub-commands listed below:
+
+| Command   | Description                                                                                                      |
+|-----------|------------------------------------------------------------------------------------------------------------------|
+| `info`    | Displays information about JRuby Scripting add-on                                                                |
+| `console` | Starts an interactive JRuby REPL console which allows you to interact directly with the current openHAB runtime. |
+| `bundle`  | Runs Ruby bundler with your Gemfile as configured with [bundle_gemfile](#bundle_gemfile) setting                 |
+| `gem`     | Runs Ruby gem command to install, upgrade, or uninstall gems that are located in your [gem_home](#gem_home)      |
+| `prune`   | Removes gem files and directories from older openhab installations.                                              |
 
 ## Calling Java From JRuby
 
