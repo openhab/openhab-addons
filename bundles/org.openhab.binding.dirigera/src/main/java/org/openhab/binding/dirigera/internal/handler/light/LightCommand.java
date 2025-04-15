@@ -26,7 +26,7 @@ public class LightCommand {
     public enum Action {
         ON,
         BRIGHTNESS,
-        TEMPERARTURE,
+        TEMPERATURE,
         COLOR,
         OFF
     }

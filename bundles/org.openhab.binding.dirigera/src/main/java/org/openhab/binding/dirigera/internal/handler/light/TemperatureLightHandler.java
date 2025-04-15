@@ -87,7 +87,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                             int kelvin = getKelvin(percent.intValue());
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, kelvin);
-                            super.changeProperty(LightCommand.Action.TEMPERARTURE, attributes);
+                            super.changeProperty(LightCommand.Action.TEMPERATURE, attributes);
                             if (!isPowered()) {
                                 // fake event for power OFF
                                 updateState(channelUID, percent);

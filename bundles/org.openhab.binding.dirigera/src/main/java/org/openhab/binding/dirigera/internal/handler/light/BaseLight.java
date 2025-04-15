@@ -163,7 +163,7 @@ public class BaseLight extends BaseHandler implements PowerListener {
                 super.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), OnOffType.OFF);
                 break;
             case BRIGHTNESS:
-            case TEMPERARTURE:
+            case TEMPERATURE:
             case COLOR:
                 super.sendAttributes(request.request);
                 if (isPowered()) {
@@ -188,9 +188,9 @@ public class BaseLight extends BaseHandler implements PowerListener {
             switch (action) {
                 case COLOR:
                     addCommand(requestedCommand);
-                    lastUserMode.remove(LightCommand.Action.TEMPERARTURE);
+                    lastUserMode.remove(LightCommand.Action.TEMPERATURE);
                     break;
-                case TEMPERARTURE:
+                case TEMPERATURE:
                     addCommand(requestedCommand);
                     lastUserMode.remove(LightCommand.Action.COLOR);
                     break;
@@ -216,7 +216,7 @@ public class BaseLight extends BaseHandler implements PowerListener {
             }
             LightCommand brightnessCommand = lastUserMode.remove(LightCommand.Action.BRIGHTNESS);
             LightCommand colorCommand = lastUserMode.remove(LightCommand.Action.COLOR);
-            LightCommand temperatureCommand = lastUserMode.remove(LightCommand.Action.TEMPERARTURE);
+            LightCommand temperatureCommand = lastUserMode.remove(LightCommand.Action.TEMPERATURE);
             switch (lightConfig.fadeSequence) {
                 case 0:
                     addCommand(brightnessCommand);

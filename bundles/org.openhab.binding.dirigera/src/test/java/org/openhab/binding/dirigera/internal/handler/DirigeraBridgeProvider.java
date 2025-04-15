@@ -13,7 +13,7 @@
 package org.openhab.binding.dirigera.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.HashMap;
@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.openhab.binding.dirigera.internal.Constants;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.DicoveryServiceMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
@@ -62,14 +63,15 @@ public class DirigeraBridgeProvider {
          * Prepare persistence
          */
         // prepare persistence data
+        VolatileStorageService storageService = new VolatileStorageService();
+        Storage<String> mockStorage = storageService.getStorage(Constants.BINDING_ID);
+
         JSONObject storageObject = new JSONObject();
         JSONArray knownDevices = new JSONArray(knownDevicesd);
         knownDevices.put("594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1");
         storageObject.put(PROPERTY_DEVICES, knownDevices.toString());
         storageObject.put(PROPERTY_TOKEN, "unit-test");
-        // now mock it
-        Storage<String> mockStorage = mock(Storage.class);
-        when(mockStorage.get(ipAddress)).thenReturn(storageObject.toString());
+        mockStorage.put(ipAddress, storageObject.toString());
 
         // prepare instances
         BridgeImpl hubBridge = new BridgeImpl(THING_TYPE_GATEWAY, new ThingUID(BINDING_ID + ":" + "gateway:9876"));
