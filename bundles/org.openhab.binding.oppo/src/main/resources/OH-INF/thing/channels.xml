@@ -10,6 +10,7 @@
 		<description>
 			Controls an Oppo Blu-ray Player
 		</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>

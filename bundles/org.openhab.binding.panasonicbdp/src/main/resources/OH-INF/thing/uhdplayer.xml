@@ -10,6 +10,7 @@
 		<description>
 			Panasonic UHD Blu-ray model DP-UB420/424, DP-UB820/824 or DP-UB9000/9004
 		</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power">

@@ -8,6 +8,7 @@
 	<thing-type id="rsp1576">
 		<label>RSP-1576 Surround Processor</label>
 		<description>Connection to the Rotel RSP-1576 or RSP-1576MKII surround processor</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
