@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -86,6 +88,9 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     protected HashMap<Integer, DeviceType> devices = new HashMap<>();
     protected @Nullable MatterControllerClient cachedClient;
 
+    private @Nullable ScheduledFuture<?> pollingTask;
+    private static final long DEFAULT_POLLING_INTERVAL = 300; // seconds
+
     public MatterBaseThingHandler(Thing thing, MatterStateDescriptionOptionProvider stateDescriptionProvider,
             MatterChannelTypeProvider channelTypeProvider) {
         super(thing);
@@ -93,7 +98,7 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         this.channelTypeProvider = channelTypeProvider;
     }
 
-    protected abstract BigInteger getNodeId();
+    public abstract BigInteger getNodeId();
 
     protected abstract ThingTypeUID getDynamicThingTypeUID();
 
@@ -130,13 +135,15 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     @Override
     public void initialize() {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NOT_YET_READY, "Waiting for data");
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for data");
         }
     }
 
     @Override
     public void dispose() {
         channelTypeProvider.removeChannelGroupTypesForPrefix(getThing().getThingTypeUID().getId());
+        stopPolling();
+        super.dispose();
     }
 
     // making this public
@@ -158,6 +165,16 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
                 .withChannels(getThing().getChannels()).withConfiguration(getThing().getConfiguration())
                 .withLabel(getThing().getLabel()).withLocation(getThing().getLocation())
                 .withProperties(getThing().getProperties());
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(status, statusDetail, description);
+        if (status != ThingStatus.ONLINE) {
+            stopPolling();
+        } else {
+            startPolling();
+        }
     }
 
     @Override
@@ -221,6 +238,15 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         throw new IllegalStateException("Client is null");
     }
 
+    public <T extends BaseCluster> CompletableFuture<T> readCluster(Class<T> type, Integer endpointId,
+            Integer clusterId) {
+        MatterControllerClient ws = getClient();
+        if (ws != null) {
+            return ws.readCluster(type, getNodeId(), endpointId, clusterId);
+        }
+        throw new IllegalStateException("Client is null");
+    }
+
     public @Nullable MatterControllerClient getClient() {
         if (cachedClient == null) {
             ControllerHandler c = controllerHandler();
@@ -265,16 +291,24 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         }
         cluster = root.clusters.get(GeneralDiagnosticsCluster.CLUSTER_NAME);
         if (cluster != null && cluster instanceof GeneralDiagnosticsCluster generalCluster) {
+            List<String> allIpv6Addresses = new ArrayList<>();
+            List<String> allIpv4Addresses = new ArrayList<>();
             for (NetworkInterface ni : generalCluster.networkInterfaces) {
                 thing.setProperty(Thing.PROPERTY_MAC_ADDRESS, MatterLabelUtils.formatMacAddress(ni.hardwareAddress));
                 if (!ni.iPv6Addresses.isEmpty()) {
-                    thing.setProperty("ipv6Address", ni.iPv6Addresses.stream().map(MatterLabelUtils::formatIPv6Address)
-                            .collect(Collectors.joining(",")));
+                    allIpv6Addresses.addAll(ni.iPv6Addresses.stream().map(MatterLabelUtils::formatIPv6Address)
+                            .collect(Collectors.toList()));
                 }
                 if (!ni.iPv4Addresses.isEmpty()) {
-                    thing.setProperty("ipv4Address", ni.iPv4Addresses.stream().map(MatterLabelUtils::formatIPv4Address)
-                            .collect(Collectors.joining(",")));
+                    allIpv4Addresses.addAll(ni.iPv4Addresses.stream().map(MatterLabelUtils::formatIPv4Address)
+                            .collect(Collectors.toList()));
                 }
+            }
+            if (!allIpv6Addresses.isEmpty()) {
+                thing.setProperty("ipv6Address", String.join(",", allIpv6Addresses));
+            }
+            if (!allIpv4Addresses.isEmpty()) {
+                thing.setProperty("ipv4Address", String.join(",", allIpv4Addresses));
             }
         }
     }
@@ -377,5 +411,25 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         });
         // add any children recursively (endpoints can have child endpoints)
         endpoint.children.forEach(e -> updateEndpointInternal(e, groupTypes, groupDefs, channels));
+    }
+
+    /**
+     * Start polling the device for updates if needed
+     */
+    private synchronized void startPolling() {
+        stopPolling();
+        pollingTask = scheduler.scheduleWithFixedDelay(() -> {
+            if (getThing().getStatus() == ThingStatus.ONLINE) {
+                devices.values().forEach(deviceType -> deviceType.pollClusters());
+            }
+        }, DEFAULT_POLLING_INTERVAL, DEFAULT_POLLING_INTERVAL, TimeUnit.SECONDS);
+    }
+
+    public void stopPolling() {
+        ScheduledFuture<?> pollingTask = this.pollingTask;
+        if (pollingTask != null) {
+            pollingTask.cancel(true);
+            this.pollingTask = null;
+        }
     }
 }

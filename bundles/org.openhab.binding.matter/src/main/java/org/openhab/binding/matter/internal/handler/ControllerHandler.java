@@ -174,8 +174,7 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
         logger.debug("Node onEvent: node {} is {}", message.nodeId, message.state);
         switch (message.state) {
             case CONNECTED:
-                updateEndpointStatuses(message.nodeId, ThingStatus.UNKNOWN, ThingStatusDetail.NOT_YET_READY,
-                        "Waiting for data");
+                updateEndpointStatuses(message.nodeId, ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for data");
                 client.requestAllNodeData(message.nodeId);
                 break;
             case STRUCTURECHANGED:

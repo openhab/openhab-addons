@@ -68,6 +68,29 @@ public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNe
     }
 
     @Override
+    public void pollCluster() {
+        // read the whole cluster
+        handler.readCluster(ThreadNetworkDiagnosticsCluster.class, endpointNumber, initializingCluster.id)
+                .thenAccept(cluster -> {
+                    updateState(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_CHANNEL,
+                            cluster.channel != null ? new DecimalType(cluster.channel) : UnDefType.NULL);
+                    updateState(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_ROUTINGROLE,
+                            cluster.routingRole != null ? new DecimalType(cluster.routingRole.value) : UnDefType.NULL);
+                    updateState(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_NETWORKNAME,
+                            cluster.networkName != null ? new StringType(cluster.networkName) : UnDefType.NULL);
+                    updateState(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_PANID,
+                            cluster.panId != null ? new DecimalType(cluster.panId) : UnDefType.NULL);
+                    updateState(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_EXTENDEDPANID,
+                            cluster.extendedPanId != null ? new DecimalType(cluster.extendedPanId) : UnDefType.NULL);
+                    updateState(CHANNEL_ID_THREADNETWORKDIAGNOSTICS_RLOC16,
+                            cluster.rloc16 != null ? new DecimalType(cluster.rloc16) : UnDefType.NULL);
+                }).exceptionally(e -> {
+                    logger.debug("Error polling thread network diagnostics", e);
+                    return null;
+                });
+    }
+
+    @Override
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
         Map<Channel, @Nullable StateDescription> channels = new HashMap<>();
 

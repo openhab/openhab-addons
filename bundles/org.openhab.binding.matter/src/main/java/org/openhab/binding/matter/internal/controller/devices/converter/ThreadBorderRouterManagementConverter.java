@@ -73,6 +73,7 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class ThreadBorderRouterManagementConverter extends GenericConverter<ThreadBorderRouterManagementCluster> {
+    private static final int FAIL_SAFE_TIMEOUT_SECONDS = 30;
     private final AtomicBoolean activeDatasetPending = new AtomicBoolean(false);
     private final AtomicBoolean pendingDatasetPending = new AtomicBoolean(false);
 
@@ -178,6 +179,8 @@ public class ThreadBorderRouterManagementConverter extends GenericConverter<Thre
                     updateState(CHANNEL_ID_THREADBORDERROUTERMANAGEMENT_ACTIVEDATASETTIMESTAMP,
                             new DecimalType(bigInt));
                     getActiveDataset();
+                } else {
+                    updateState(CHANNEL_ID_THREADBORDERROUTERMANAGEMENT_ACTIVEDATASET, UnDefType.NULL);
                 }
                 break;
             case ThreadBorderRouterManagementCluster.ATTRIBUTE_PENDING_DATASET_TIMESTAMP:
@@ -185,6 +188,8 @@ public class ThreadBorderRouterManagementConverter extends GenericConverter<Thre
                     updateState(CHANNEL_ID_THREADBORDERROUTERMANAGEMENT_PENDINGDATASETTIMESTAMP,
                             new DecimalType(bigInt));
                     getPendingDataset();
+                } else {
+                    updateState(CHANNEL_ID_THREADBORDERROUTERMANAGEMENT_PENDINGDATASET, UnDefType.NULL);
                 }
                 break;
         }
@@ -217,9 +222,13 @@ public class ThreadBorderRouterManagementConverter extends GenericConverter<Thre
 
         if (initializingCluster.activeDatasetTimestamp != null) {
             getActiveDataset();
+        } else {
+            updateState(CHANNEL_ID_THREADBORDERROUTERMANAGEMENT_ACTIVEDATASET, UnDefType.NULL);
         }
         if (initializingCluster.pendingDatasetTimestamp != null) {
             getPendingDataset();
+        } else {
+            updateState(CHANNEL_ID_THREADBORDERROUTERMANAGEMENT_PENDINGDATASET, UnDefType.NULL);
         }
     }
 
@@ -231,8 +240,10 @@ public class ThreadBorderRouterManagementConverter extends GenericConverter<Thre
                 if (command instanceof StringType stringCommand) {
                     // first we need to arm the fail safe on the ROOT endpoint which tells the device a destructive
                     // change is being made
+                    activeDatasetPending.set(true);
                     handler.sendClusterCommand(rootEndpoint, GeneralCommissioningCluster.CLUSTER_NAME,
-                            GeneralCommissioningCluster.armFailSafe(15, BigInteger.ZERO)).thenAccept(result -> {
+                            GeneralCommissioningCluster.armFailSafe(FAIL_SAFE_TIMEOUT_SECONDS, BigInteger.ZERO))
+                            .thenAccept(result -> {
                                 // When the device acknowledges the arm fail safe we can set the active dataset
                                 handler.sendClusterCommand(endpointNumber,
                                         ThreadBorderRouterManagementCluster.CLUSTER_NAME,
@@ -250,25 +261,32 @@ public class ThreadBorderRouterManagementConverter extends GenericConverter<Thre
                                                     }).exceptionally(e -> {
                                                         logger.error("Error commissioning complete", e);
                                                         return null;
+                                                    }).whenComplete((r, e) -> {
+                                                        activeDatasetPending.set(false);
                                                     });
                                         }).exceptionally(e -> {
                                             logger.error("Error setting active dataset", e);
+                                            activeDatasetPending.set(false);
                                             return null;
                                         });
                             }).exceptionally(e -> {
                                 logger.debug("Error sending arm fail safe", e);
+                                activeDatasetPending.set(false);
                                 return null;
                             });
                 }
                 break;
             case CHANNEL_ID_THREADBORDERROUTERMANAGEMENT_PENDINGDATASET:
                 if (command instanceof StringType stringCommand) {
+                    pendingDatasetPending.set(true);
                     handler.sendClusterCommand(endpointNumber, ThreadBorderRouterManagementCluster.CLUSTER_NAME,
                             ThreadBorderRouterManagementCluster
                                     .setPendingDatasetRequest(new BaseCluster.OctetString(stringCommand.toString())))
                             .exceptionally(e -> {
                                 logger.error("Error setting pending dataset", e);
                                 return new JsonObject();
+                            }).whenComplete((r, e) -> {
+                                pendingDatasetPending.set(false);
                             });
                 }
                 break;

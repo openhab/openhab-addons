@@ -288,8 +288,9 @@ export class ControllerNode {
     }
 
     /**
-     * Serializes a node and sends it to the web socket
+     * Serializes a node and sends it to the web socket 
      * @param node 
+     * @param endpointId Optional endpointId to serialize. If omitted, all endpoints will be serialized.
      */
     sendSerializedNode(node: PairedNode, endpointId?: number) {
         this.serializePairedNode(node, endpointId).then(data => {
@@ -345,7 +346,6 @@ export class ControllerNode {
                 endpointData.clusters[cluster.name] = clusterData;
             }
     
-            // Serialize child endpoints recursively
             for (const child of endpoint.getChildEndpoints()) {
                 endpointData.children.push(await serializeEndpoint(child));
             }

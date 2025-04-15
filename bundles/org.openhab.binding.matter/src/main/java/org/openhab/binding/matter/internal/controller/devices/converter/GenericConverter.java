@@ -67,10 +67,24 @@ public abstract class GenericConverter<T extends BaseCluster> implements Attribu
      */
     public abstract void initState();
 
+    /**
+     * Handles a openHAB
+     * 
+     * @param channelUID
+     * @param command
+     */
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             stateCache.forEach((channelId, state) -> handler.updateState(endpointNumber, channelId, state));
         }
+    }
+
+    /**
+     * This method is designed to be optionally overridden in subclasses when a cluster need to poll for one or more
+     * attributes
+     */
+    public void pollCluster() {
+        // add polling logic here in subclasses
     }
 
     @Override

@@ -47,6 +47,18 @@ public class WiFiNetworkDiagnosticsConverter extends GenericConverter<WiFiNetwor
     }
 
     @Override
+    public void pollCluster() {
+        // we only need to read a single attribute, not the whole cluster
+        handler.readAttribute(endpointNumber, initializingCluster.name, WiFiNetworkDiagnosticsCluster.ATTRIBUTE_RSSI)
+                .thenAccept(rssi -> {
+                    updateState(CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI, new DecimalType(rssi));
+                }).exceptionally(e -> {
+                    logger.debug("Error polling wifi network diagnostics", e);
+                    return null;
+                });
+    }
+
+    @Override
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID thingUID) {
         Channel channel = ChannelBuilder
                 .create(new ChannelUID(thingUID, CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI), ITEM_TYPE_NUMBER_POWER)

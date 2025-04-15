@@ -109,6 +109,10 @@ public abstract class DeviceType implements AttributeListener, EventTriggeredLis
         channelUIDToConverters.forEach((channelUID, converter) -> converter.initState());
     }
 
+    public Integer endpointNumber() {
+        return endpointNumber;
+    }
+
     /**
      * Create openHAB channels for the device type based on the clusters provided
      *
@@ -148,6 +152,12 @@ public abstract class DeviceType implements AttributeListener, EventTriggeredLis
 
     public Map<ChannelUID, @Nullable StateDescription> getStateDescriptions() {
         return Collections.unmodifiableMap(new HashMap<>(channelUIDToStateDescription));
+    }
+
+    public void pollClusters() {
+        clusterToConverters.forEach((clusterId, converter) -> {
+            converter.pollCluster();
+        });
     }
 
     // This method is designed to be overridden in subclasses

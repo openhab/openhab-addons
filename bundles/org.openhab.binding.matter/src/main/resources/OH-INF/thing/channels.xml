@@ -495,7 +495,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<!-- Thread Network Diagnostics -->
-	<channel-type id="threadnetworkdiagnostics-channel">
+	<channel-type id="threadnetworkdiagnostics-channel" advanced="true">
 		<item-type>Number</item-type>
 		<label>Channel</label>
 		<description>The current Thread network channel</description>
@@ -503,7 +503,7 @@
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="threadnetworkdiagnostics-routingrole">
+	<channel-type id="threadnetworkdiagnostics-routingrole" advanced="true">
 		<item-type>Number</item-type>
 		<label>Routing Role</label>
 		<description>The current Thread network routing role</description>
@@ -521,7 +521,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="threadnetworkdiagnostics-networkname">
+	<channel-type id="threadnetworkdiagnostics-networkname" advanced="true">
 		<item-type>String</item-type>
 		<label>Network Name</label>
 		<description>The Thread network name</description>
@@ -529,7 +529,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="threadnetworkdiagnostics-panid">
+	<channel-type id="threadnetworkdiagnostics-panid" advanced="true">
 		<item-type>Number</item-type>
 		<label>PAN ID</label>
 		<description>The Thread network PAN ID</description>
@@ -537,7 +537,7 @@
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="threadnetworkdiagnostics-extendedpanid">
+	<channel-type id="threadnetworkdiagnostics-extendedpanid" advanced="true">
 		<item-type>Number</item-type>
 		<label>Extended PAN ID</label>
 		<description>The Thread network extended PAN ID</description>
@@ -545,7 +545,7 @@
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="threadnetworkdiagnostics-rloc16">
+	<channel-type id="threadnetworkdiagnostics-rloc16" advanced="true">
 		<item-type>Number</item-type>
 		<label>RLOC16</label>
 		<description>The Thread network RLOC16 address</description>
@@ -562,7 +562,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="threadborderroutermgmt-borderagentid">
+	<channel-type id="threadborderroutermgmt-borderagentid" advanced="true">
 		<item-type>String</item-type>
 		<label>Border Agent ID</label>
 		<description>The ID of the Thread border agent</description>
@@ -570,7 +570,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="threadborderroutermgmt-threadversion">
+	<channel-type id="threadborderroutermgmt-threadversion" advanced="true">
 		<item-type>Number</item-type>
 		<label>Thread Version</label>
 		<description>The version of the Thread protocol</description>
@@ -607,7 +607,7 @@
 		<label>Active Dataset</label>
 		<description>The active Thread dataset configuration</description>
 		<category>Network</category>
-		<state readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="threadborderroutermgmt-pendingdataset">
@@ -615,7 +615,7 @@
 		<label>Pending Dataset</label>
 		<description>The pending Thread dataset configuration</description>
 		<category>Network</category>
-		<state readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 </thing:thing-descriptions>

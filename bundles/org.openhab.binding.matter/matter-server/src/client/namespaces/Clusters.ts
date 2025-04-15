@@ -13,7 +13,7 @@ const logger = Logger.get("Clusters");
  * This class is used for websocket clients interacting with Matter Clusters to send commands like OnOff, LevelControl, etc... 
  */
 export class Clusters {
-    constructor(private theNode: ControllerNode) {
+    constructor(private controllerNode: ControllerNode) {
     }
 
     /**
@@ -30,7 +30,7 @@ export class Clusters {
      */
     async command(nodeId: number, endpointId: number, clusterName: string, commandName: string, args: any) {
         logger.debug(`command ${nodeId} ${endpointId} ${clusterName} ${commandName} ${Logger.toJSON(args)}`);
-        const device = await this.theNode.getNode(nodeId).getDeviceById(endpointId);
+        const device = await this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
         if (device == undefined) {
             throw new Error(`Endpoint ${endpointId} not found`);
         }
@@ -75,7 +75,7 @@ export class Clusters {
             }
         }
 
-        const device = await this.theNode.getNode(nodeId).getDeviceById(endpointId);
+        const device = await this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
         if (device == undefined) {
             throw new Error(`Endpoint ${endpointId} not found`);
         }
@@ -121,7 +121,7 @@ export class Clusters {
      * @param attributeName 
      */
     async readAttribute(nodeId: number, endpointId: number, clusterName: string, attributeName: string) {
-        const device = await this.theNode.getNode(nodeId).getDeviceById(endpointId);
+        const device = await this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
         if (device == undefined) {
             throw new Error(`Endpoint ${endpointId} not found`);
         }
@@ -144,6 +144,45 @@ export class Clusters {
         }
 
         return await attributeClient.get(true);
+    }
+
+     /**
+     * Requests all attributes data for a single endpoint and its children
+     * @param nodeId 
+     * @param endpointId 
+     * @returns 
+     */
+     async readCluster(nodeId: string | number, endpointId: number, clusterNameOrId: string | number) {
+        const device = await this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
+        if (device == undefined) {
+            throw new Error(`Endpoint ${endpointId} not found`);
+        }
+
+        const clusterId = typeof clusterNameOrId === 'string' ? this.#clusterForName(clusterNameOrId).id : clusterNameOrId;
+        const clusterClient = device.getClusterClientById(ClusterId(clusterId));       
+        if (clusterClient === undefined) {
+            throw new Error(`Cluster client for ${clusterNameOrId} not found`);
+        }
+
+        const clusterData: any = {
+            id: clusterClient.id,
+            name: clusterClient.name
+        };
+
+        // Serialize attributes
+        for (const attributeName in clusterClient.attributes) {
+            // Skip numeric referenced attributes
+            if (/^\d+$/.test(attributeName)) continue;
+            const attribute = clusterClient.attributes[attributeName];
+            if (!attribute) continue;
+            const attributeValue = await attribute.get();
+            logger.debug(`Attribute ${attributeName} value: ${attributeValue}`);
+            if (attributeValue !== undefined) {
+                clusterData[attributeName] = attributeValue;
+            }
+        }
+
+        return clusterData;
     }
 
     #clusterForName(clusterName: string): ClusterModel {

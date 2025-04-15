@@ -4,8 +4,6 @@
 
 The Matter Binding for openHAB allows seamless integration with Matter-compatible devices.
 
-**Please note this binding requires openHAB 4.3 builds or later that support discovery codes when searching for devices.** 
-
 ## Supported functionality
 
 This binding supports 2 different types of matter functionality which operate independently of each other.
@@ -66,13 +64,15 @@ The same codes can also be used in the openHAB Thing discovery UI, although feed
 
 In order to pair (commission in matter terminology) a device, you must have an 11 digit manual pairing code (eg 123-4567-8901 or 12345678901) or a QR Code (eg MT:ABCDEF1234567890123).  If the device has not been paired before, use the code provided by the manufacturer and **ensure the device is in pairing mode**, refer to your devices instructions for pairing for more information. You can include dashes or omit them in a manual pairing code.
 
-If the device is paired with another Matter ecosystem (Apple, Google, Amazon, etc..) you must that ecosystem to generate a new pairing code and search for devices.  The pairing code and device will only be available for commissioning for a limited time.  Refer to the ecosystem that generated the code for the exact duration (typically 1-15 minutes). In this case, openHAB still talks directly to the device and is not associated with that existing ecosystem. 
+If the device is paired with another Matter ecosystem (Apple, Google, Amazon, etc..) you must use that ecosystem to generate a new pairing code and search for devices.  The pairing code and device will only be available for commissioning for a limited time.  Refer to the ecosystem that generated the code for the exact duration (typically 5-15 minutes). In this case, openHAB still talks directly to the device and is not associated with that existing ecosystem. 
 
 If the device seems to be found in the logs, but can not be added, its possible the device has been already paired.  Hard resetting the device may help this case.  See your device documentation for how to hard reset the device.
 
 ### Device Pairing: Thread Devices
 
-Thread devices require a Thread Border Router and a bluetooth enabled device to facilitate the thread joining process (typically a mobile device).  Until there is a supported thread border router integration in openHAB and the openHAB mobile apps, it's strongly recommended to pair the device to a commercial router with thread support first (Apple TV 4k, Google Nest Hub 2, Amazon Gen 4 Echo, etc... ), then generate a matter pairing code and add the device normally.  This will still allow openHAB to have direct access to the device using only the embedded thread border router and does not interact with the underlying providers home automation stack.
+Thread devices require a Thread Border Router and a bluetooth enabled device to facilitate the thread joining process (typically a mobile device).  
+Until there is a supported thread border router integration in openHAB and the openHAB mobile apps, it's strongly recommended to pair the device to a commercial router with thread support first (Apple TV 4k, Google Nest Hub 2, Amazon Gen 4 Echo, etc... ), then generate a matter pairing code using that ecosystem and add the device normally.  
+This will still allow openHAB to have direct access to the device using only the embedded thread border router and does not interact with the underlying providers home automation stack.
 
 Support for using a Open Thread Border Router has been verified to work and will be coming soon to openHAB, but in some cases requires strong expertise in IPv6 routing as well as support in our mobile clients. 
 
@@ -111,14 +111,14 @@ net.ipv6.conf.wlan0.accept_ra_rt_info_max_plen = 64
 
 To make these changes permanent, add the following lines to `/etc/sysctl.conf`:
 
-```
+```ini
 net.ipv6.conf.eth0.accept_ra=1
 net.ipv6.conf.eth0.accept_ra_rt_info_max_plen=64
 ```
 
 Raspberry Pi users may need to add the following lines to `/etc/dhcpcd.conf` to prevent dhcpcd from overriding the accept_ra value:
 
-```
+```ini
 noipv6
 noipv6rs
 ```
@@ -462,22 +462,28 @@ Thread-based Matter devices connect to the network via a **Thread Border Router*
 
 ## IPv6 Requirements
 
-For Matter devices to function correctly, **IPv6 must be enabled** and supported in both the local network (router) and the Matter controllers. Without IPv6, devices won't be able to communicate properly within the Matter ecosystem. Ensure that your router has IPv6 enabled and that any Matter controllers (like smart hubs, apps or openHAB) are configured to support IPv6 as well.
+For Matter devices to function correctly, **IPv6 must be enabled** and supported in both the local network (router) and the Matter controllers. 
+Without IPv6, devices won't be able to communicate properly within the Matter ecosystem. 
+Ensure that your router has IPv6 enabled and that any Matter controllers (like smart hubs, apps or openHAB) are configured to support IPv6 as well.
 
 **Note that environments like Docker require special configurations to enable IPv6**
 
 
 ## Matter Commissioning and Pairing Codes
 
-Commissioning a Matter device involves securely adding it to the network using a **pairing code**. This process ensures that only authorized devices can join the network.
+Commissioning a Matter device involves securely adding it to the network using a **pairing code**. 
+This process ensures that only authorized devices can join the network.
 
 ### Pairing Code from the Device
 
-When commissioning a new Matter device, it typically has a printed QR code or numeric pairing code that you scan or enter during setup. This pairing code allows the controller to establish a secure connection to the device and add it to the network. Once a device pairing code is in use, it typically can not be used again to pair other controllers.
+When commissioning a new Matter device, it typically has a printed QR code or numeric pairing code that you scan or enter during setup. This pairing code allows the controller to establish a secure connection to the device and add it to the network. 
+Once a device pairing code is in use, it typically can not be used again to pair other controllers.
 
 ### Additional Pairing Code from a Controller
 
-If a device has already been commissioned and you want to add it to another Matter controller, the existing controller can generate an additional pairing code. This is useful when sharing access to a device across multiple hubs or apps. Apple Home, Google Home, Amazon Alexa and openHAB all support generating pairing codes for existing paired devices.
+If a device has already been commissioned and you want to add it to another Matter controller, the existing controller can generate an additional pairing code. 
+This is useful when sharing access to a device across multiple hubs or apps. 
+Apple Home, Google Home, Amazon Alexa and openHAB all support generating pairing codes for existing paired devices.
 
 ### Example:
 

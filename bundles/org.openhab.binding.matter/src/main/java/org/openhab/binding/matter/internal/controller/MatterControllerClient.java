@@ -20,10 +20,12 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.client.MatterWebsocketClient;
 import org.openhab.binding.matter.internal.client.MatterWebsocketService;
 import org.openhab.binding.matter.internal.client.dto.PairingCodes;
 import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OperationalCredentialsCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.ActiveSessionInformation;
 
@@ -48,7 +50,7 @@ public class MatterControllerClient extends MatterWebsocketClient {
     }
 
     /**
-     * Get all nodes the are commissioned / paired to this controller
+     * Get all nodes that are commissioned / paired to this controller
      *
      * @param onlyConnected filter to nodes that are currently connected
      * @return
@@ -66,14 +68,14 @@ public class MatterControllerClient extends MatterWebsocketClient {
     /**
      * Initialize a commissioned node, wait for connectionTimeoutMilliseconds for the node to connect before returning
      * 
-     * @param id
+     * @param nodeId
      * @param connectionTimeoutMilliseconds
      * @return
      */
-    public CompletableFuture<Void> initializeNode(BigInteger id, Integer connectionTimeoutMilliseconds) {
+    public CompletableFuture<Void> initializeNode(BigInteger nodeId, Integer connectionTimeoutMilliseconds) {
         // add 1 second delay to the message timeout to allow the function to complete
         CompletableFuture<JsonElement> future = sendMessage("nodes", "initializeNode",
-                new Object[] { id, connectionTimeoutMilliseconds }, connectionTimeoutMilliseconds / 1000 + 1);
+                new Object[] { nodeId, connectionTimeoutMilliseconds }, connectionTimeoutMilliseconds / 1000 + 1);
         return future.thenAccept(obj -> {
             // Do nothing, just to complete the future
         });
@@ -83,11 +85,11 @@ public class MatterControllerClient extends MatterWebsocketClient {
      * Request all cluster attribute data for the node from the controller, the actual data will be sent via a
      * NodeDataListener event
      * 
-     * @param id
+     * @param nodeId
      * @return
      */
-    public CompletableFuture<Void> requestAllNodeData(BigInteger id) {
-        CompletableFuture<JsonElement> future = sendMessage("nodes", "requestAllData", new Object[] { id });
+    public CompletableFuture<Void> requestAllNodeData(BigInteger nodeId) {
+        CompletableFuture<JsonElement> future = sendMessage("nodes", "requestAllData", new Object[] { nodeId });
         return future.thenAccept(obj -> {
             // Do nothing, just to complete the future
         });
@@ -96,13 +98,29 @@ public class MatterControllerClient extends MatterWebsocketClient {
     /**
      * Request all cluster attribute data for a single endpoint and its children
      * 
-     * @param id
+     * @param nodeId
      * @param endpointId
      * @return
      */
-    public CompletableFuture<Void> requestEndpointData(BigInteger id, Integer endpointId) {
+    public CompletableFuture<Void> requestEndpointData(BigInteger nodeId, Integer endpointId) {
         CompletableFuture<JsonElement> future = sendMessage("nodes", "requestEndpointData",
-                new Object[] { id, endpointId });
+                new Object[] { nodeId, endpointId });
+        return future.thenAccept(obj -> {
+            // Do nothing, just to complete the future
+        });
+    }
+
+    /**
+     * Request a specific cluster attribute data for a single endpoint
+     * 
+     * @param nodeId
+     * @param endpointId
+     * @param clusterId
+     * @return
+     */
+    public CompletableFuture<Void> requestClusterData(BigInteger nodeId, Integer endpointId, Integer clusterId) {
+        CompletableFuture<JsonElement> future = sendMessage("nodes", "requestEndpointData",
+                new Object[] { nodeId, endpointId });
         return future.thenAccept(obj -> {
             // Do nothing, just to complete the future
         });
@@ -158,12 +176,12 @@ public class MatterControllerClient extends MatterWebsocketClient {
     /**
      * Get the pairing codes for a node
      * 
-     * @param id
+     * @param nodeId
      * @return
      */
-    public CompletableFuture<PairingCodes> enhancedCommissioningWindow(BigInteger id) {
+    public CompletableFuture<PairingCodes> enhancedCommissioningWindow(BigInteger nodeId) {
         CompletableFuture<JsonElement> future = sendMessage("nodes", "enhancedCommissioningWindow",
-                new Object[] { id });
+                new Object[] { nodeId });
         return future.thenApply(obj -> {
             PairingCodes codes = gson.fromJson(obj, PairingCodes.class);
             if (codes == null) {
@@ -252,6 +270,29 @@ public class MatterControllerClient extends MatterWebsocketClient {
         CompletableFuture<JsonElement> future = sendMessage("clusters", "writeAttribute", clusterArgs);
         return future.thenAccept(obj -> {
             // Do nothing, just to complete the future
+        });
+    }
+
+    /**
+     * Read an attribute from a cluster
+     * 
+     * @param nodeId
+     * @param endpointId
+     * @param clusterName
+     * @param attributeName
+     * @return
+     */
+    public <T extends BaseCluster> CompletableFuture<T> readCluster(Class<T> type, BigInteger nodeId,
+            Integer endpointId, Integer clusterId) {
+        Object[] clusterArgs = { String.valueOf(nodeId), endpointId, clusterId };
+        CompletableFuture<JsonElement> future = sendMessage("clusters", "readCluster", clusterArgs);
+        return future.thenApply(obj -> {
+            @Nullable
+            T result = gson.fromJson(obj, type);
+            if (result == null) {
+                throw new JsonParseException("Could not deserialize cluster data");
+            }
+            return result;
         });
     }
 

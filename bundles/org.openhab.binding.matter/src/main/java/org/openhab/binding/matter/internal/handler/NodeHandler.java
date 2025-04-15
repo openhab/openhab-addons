@@ -43,9 +43,11 @@ import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 
 /**
- * The {@link EndpointHandler} is responsible for handling commands, which are
+ * The {@link NodeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
- *
+ * 
+ * This class is used to handle a Matter Node, an IPV6 based device which is made up of a collection of endpoints.
+ * 
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
