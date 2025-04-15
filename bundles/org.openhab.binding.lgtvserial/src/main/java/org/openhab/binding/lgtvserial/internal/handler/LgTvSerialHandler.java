@@ -53,7 +53,7 @@ public class LgTvSerialHandler extends BaseThingHandler {
     /**
      * Interval at which to send update refresh commands.
      */
-    private static final int EVENT_REFRESH_INTERVAL = 120;
+    private static final int DEFAULT_REFRESH_INTERVAL_SEC = 120;
 
     /**
      * Logger.
@@ -105,6 +105,7 @@ public class LgTvSerialHandler extends BaseThingHandler {
     @Override
     public synchronized void initialize() {
         String portName = (String) getThing().getConfiguration().get("port");
+        int refreshInterval = ((BigDecimal) getThing().getConfiguration().get("refreshInterval")).intValue();
         BigDecimal setIdParam = (BigDecimal) getThing().getConfiguration().get("setId");
         int setId = 1;
         if (setIdParam != null) {
@@ -168,7 +169,8 @@ public class LgTvSerialHandler extends BaseThingHandler {
         }
 
         if (updateJob == null || updateJob.isCancelled()) {
-            updateJob = scheduler.scheduleWithFixedDelay(eventRunnable, 0, EVENT_REFRESH_INTERVAL, TimeUnit.SECONDS);
+            updateJob = scheduler.scheduleWithFixedDelay(eventRunnable, 0,
+                    refreshInterval > 0 ? refreshInterval : DEFAULT_REFRESH_INTERVAL_SEC, TimeUnit.SECONDS);
         }
         // trigger REFRESH commands for all linked Channels to start polling
         getThing().getChannels().forEach(channel -> {
