@@ -10,6 +10,7 @@
 		<description>
 			A Kaleidescape Movie Player (KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen)
 		</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="ui" typeId="ui">
@@ -45,6 +46,7 @@
 		<description>
 			A Kaleidescape Cinema One (2nd Generation) Player
 		</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="ui" typeId="c1-alto_ui">
@@ -80,6 +82,7 @@
 		<description>
 			A Kaleidescape Alto Player
 		</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="ui" typeId="c1-alto_ui">
@@ -111,6 +114,7 @@
 		<description>
 			A Kaleidescape Strato Player
 		</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="ui" typeId="strato_ui">

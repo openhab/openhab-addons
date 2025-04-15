@@ -8,6 +8,7 @@
 	<bridge-type id="api_bridge">
 		<label>Home Connect API</label>
 		<description>This bridge represents the gateway to the Home Connect API.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="clientId" type="text" required="true">
 				<label>Client Id</label>
@@ -34,6 +35,7 @@
 		</supported-bridge-type-refs>
 		<label>Dishwasher</label>
 		<description>Home Connect connected dishwasher (e.g. Bosch or Siemens).</description>
+		<semantic-equipment-tag>Dishwasher</semantic-equipment-tag>
 		<channels>
 			<channel id="power_state" typeId="system.power"/>
 			<channel id="door_state" typeId="door_state"/>
@@ -66,6 +68,7 @@
 		</supported-bridge-type-refs>
 		<label>Oven</label>
 		<description>Home Connect connected oven (e.g. Bosch or Siemens).</description>
+		<semantic-equipment-tag>Oven</semantic-equipment-tag>
 		<channels>
 			<channel id="power_state" typeId="system.power"/>
 			<channel id="door_state" typeId="door_state"/>
@@ -98,6 +101,7 @@
 		</supported-bridge-type-refs>
 		<label>Washer</label>
 		<description>Home Connect connected washing machine (e.g. Bosch or Siemens).</description>
+		<semantic-equipment-tag>WashingMachine</semantic-equipment-tag>
 		<channels>
 			<channel id="door_state" typeId="door_state"/>
 			<channel id="operation_state" typeId="operation_state"/>
@@ -141,6 +145,7 @@
 		</supported-bridge-type-refs>
 		<label>Washer Dryer Combination</label>
 		<description>Home Connect connected combined washer dryer appliance.</description>
+		<semantic-equipment-tag>WashingMachine</semantic-equipment-tag>
 		<channels>
 			<channel id="door_state" typeId="door_state"/>
 			<channel id="operation_state" typeId="operation_state"/>
@@ -181,6 +186,7 @@
 		</supported-bridge-type-refs>
 		<label>Dryer</label>
 		<description>Home Connect connected dryer (e.g. Bosch or Siemens).</description>
+		<semantic-equipment-tag>Dryer</semantic-equipment-tag>
 		<channels>
 			<channel id="door_state" typeId="door_state"/>
 			<channel id="operation_state" typeId="operation_state"/>
@@ -210,6 +216,7 @@
 		</supported-bridge-type-refs>
 		<label>Refrigerator / Freezer</label>
 		<description>Home Connect connected refrigerator/freezer (e.g. Bosch or Siemens).</description>
+		<semantic-equipment-tag>Refrigerator</semantic-equipment-tag>
 		<channels>
 			<channel id="door_state" typeId="door_state"/>
 			<channel id="setpoint_temperature_refrigerator" typeId="setpoint_temperature_refrigerator"/>
@@ -233,6 +240,7 @@
 		</supported-bridge-type-refs>
 		<label>Coffee Machine</label>
 		<description>Home Connect connected coffee machine (e.g. Bosch or Siemens).</description>
+		<semantic-equipment-tag>WhiteGood</semantic-equipment-tag>
 		<channels>
 			<channel id="power_state" typeId="system.power"/>
 			<channel id="operation_state" typeId="operation_state"/>
@@ -262,6 +270,7 @@
 		</supported-bridge-type-refs>
 		<label>Hood</label>
 		<description>Home Connect connected kitchen hood.</description>
+		<semantic-equipment-tag>KitchenHood</semantic-equipment-tag>
 		<channels>
 			<channel id="power_state" typeId="system.power"/>
 			<channel id="operation_state" typeId="operation_state"/>
@@ -295,6 +304,7 @@
 		</supported-bridge-type-refs>
 		<label>Cooktop</label>
 		<description>Home Connect connected kitchen cooktop (hob).</description>
+		<semantic-equipment-tag>Cooktop</semantic-equipment-tag>
 		<channels>
 			<channel id="power_state" typeId="system.power"/>
 			<channel id="operation_state" typeId="operation_state"/>

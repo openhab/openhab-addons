@@ -11,7 +11,7 @@
 
 		<label>Fridge</label>
 		<description>LG ThinQ Fridge</description>
-
+		<semantic-equipment-tag>Refrigerator</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="dashboard" typeId="fr-dashboard"/>
 			<channel-group id="extended-information" typeId="fr-extra-info"/>

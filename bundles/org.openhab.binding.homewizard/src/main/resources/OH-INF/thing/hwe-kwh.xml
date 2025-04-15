@@ -8,7 +8,7 @@
 		<label>HomeWizard kWh Meter</label>
 		<description>This thing provides the measurement data that is available through the API of a HomeWizard
 			kWh Meter.</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="energy" typeId="kwh-energy-group"/>
 		</channel-groups>

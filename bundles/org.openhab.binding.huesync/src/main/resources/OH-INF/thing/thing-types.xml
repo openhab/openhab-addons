@@ -13,6 +13,7 @@
 		</description>
 
 		<category>receiver</category>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="device-firmware" typeId="device-firmware"></channel-group>

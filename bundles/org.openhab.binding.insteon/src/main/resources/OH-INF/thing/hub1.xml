@@ -7,6 +7,7 @@
 	<bridge-type id="hub1">
 		<label>Insteon Hub</label>
 		<description>An Insteon Hub Legacy that communicates with Insteon devices.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">

@@ -6,6 +6,7 @@
 
 	<thing-type id="airconditioner">
 		<label>@text/thing-type.gree.airconditioner.label</label>
+		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="mode" typeId="mode"/>

@@ -8,7 +8,7 @@
 
 		<label>GridBox</label>
 		<description>GridBox Thing</description>
-
+		<semantic-equipment-tag>PowerSupply</semantic-equipment-tag>
 		<channels>
 			<channel id="battery-capacity" typeId="system.electric-energy"/>
 			<channel id="battery-nominal-capacity" typeId="system.electric-energy"/>
