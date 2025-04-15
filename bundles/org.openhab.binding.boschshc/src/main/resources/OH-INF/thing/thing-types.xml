@@ -71,7 +71,7 @@
 
 		<label>Twinguard</label>
 		<description>The Twinguard smoke detector warns you in case of fire and constantly monitors the air.</description>
-		<semantic-equipment-tag>SmokeDetector</semantic-equipment-tag>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
@@ -117,7 +117,7 @@
 
 		<label>Door/Window Contact II</label>
 		<description>Detects open windows and doors and features an additional button.</description>
-		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="contact" typeId="contact"/>
@@ -138,7 +138,7 @@
 
 		<label>Door/Window Contact II Plus</label>
 		<description>Detects open windows and doors, provides a configurable button and a vibration sensor.</description>
-		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="contact" typeId="contact"/>
@@ -290,7 +290,7 @@
 
 		<label>Wall Thermostat</label>
 		<description>Display of the current room temperature as well as the relative humidity in the room.</description>
-		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
+		<semantic-equipment-tag>Display</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
