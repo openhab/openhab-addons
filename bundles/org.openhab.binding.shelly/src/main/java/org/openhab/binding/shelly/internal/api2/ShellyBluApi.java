@@ -58,6 +58,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private boolean connected = false; // true = BLU devices has connected
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private int lastPid = -1;
+    private final int pidCycleThreshold = 50;
 
     private static final Map<String, String> MAP_INPUT_EVENT_TYPE = Map.of( //
             SHELLY2_EVENT_1PUSH, SHELLY_BTNEVENT_1SHORTPUSH, //
@@ -217,7 +218,11 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             getString(e.data.addr), getInteger(e.data.pid));
                     if (e.data.pid != null) {
                         int pid = e.data.pid;
-                        if (pid == lastPid) {
+                        if (lastPid != -1 && pid < (lastPid - pidCycleThreshold)) {
+                            logger.debug(
+                                    "{}: PID={} received is so low that a new cycle has probably begun since lastPID={}",
+                                    thingName, pid, lastPid);
+                        } else if (pid <= lastPid) {
                             logger.debug("{}: Duplicate packet for PID={} received, ignore", thingName, pid);
                             break;
                         }
