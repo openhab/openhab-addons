@@ -270,7 +270,7 @@
 		</supported-bridge-type-refs>
 		<label>Hood</label>
 		<description>Home Connect connected kitchen hood.</description>
-		<semantic-equipment-tag>ExhaustFan</semantic-equipment-tag>
+		<semantic-equipment-tag>KitchenHood</semantic-equipment-tag>
 		<channels>
 			<channel id="power_state" typeId="system.power"/>
 			<channel id="operation_state" typeId="operation_state"/>
